@@ -610,4 +610,215 @@ namespace ArchiveLib
         }
     }
     #endregion
+
+    #region PVMX
+    public class PVMXFile
+    {
+        const int FourCC = 0x584D5650; // 'PVMX'
+        const byte Version = 1;
+
+        List<PVMXEntry> Entries;
+
+        public int GetCount()
+        {
+            return Entries.Count();
+        }
+
+        public byte[] GetFile(int index)
+        {
+            return Entries[index].Data;
+        }
+
+        public string GetName(int index)
+        {
+            return Entries[index].Name;
+        }
+
+        public string GetNameWithoutExtension(int index)
+        {
+            return Path.ChangeExtension(Entries[index].Name, null);
+        }
+
+        public uint GetGBIX(int index)
+        {
+            return Entries[index].GBIX;
+        }
+
+        public int GetWidth(int index)
+        {
+            return Entries[index].Width;
+        }
+
+        public int GetHeight(int index)
+        {
+            return Entries[index].Height;
+        }
+
+        public bool HasDimensions(int index)
+        {
+            if (Entries[index].Width != 0 || Entries[index].Height != 0)
+                return true;
+            else
+                return false;
+        }
+
+        public PVMXFile(byte[] pvmxdata)
+        {
+            Entries = new List<PVMXEntry>();
+            if (!(pvmxdata.Length > 4 && BitConverter.ToInt32(pvmxdata, 0) == 0x584D5650))
+                throw new FormatException("File is not a PVMX archive.");
+            if (pvmxdata[4] != 1) throw new FormatException("Incorrect PVMX archive version.");
+            int off = 5;
+            dictionary_field type;
+            for (type = (dictionary_field)pvmxdata[off++]; type != dictionary_field.none; type = (dictionary_field)pvmxdata[off++])
+            {
+                string name = "";
+                uint gbix = 0;
+                int width = 0;
+                int height = 0;
+                while (type != dictionary_field.none)
+                {
+                    switch (type)
+                    {
+                        case dictionary_field.global_index:
+                            gbix = BitConverter.ToUInt32(pvmxdata, off);
+                            off += sizeof(uint);
+                            break;
+
+                        case dictionary_field.name:
+                            int count = 0;
+                            while (pvmxdata[off + count] != 0)
+                                count++;
+                            name = System.Text.Encoding.UTF8.GetString(pvmxdata, off, count);
+                            off += count + 1;
+                            break;
+
+                        case dictionary_field.dimensions:
+                            width = BitConverter.ToInt32(pvmxdata, off);
+                            off += sizeof(int);
+                            height = BitConverter.ToInt32(pvmxdata, off);
+                            off += sizeof(int);
+                            break;
+                    }
+
+                    type = (dictionary_field)pvmxdata[off++];
+
+                }
+                ulong offset = BitConverter.ToUInt64(pvmxdata, off);
+                off += sizeof(ulong);
+                ulong length = BitConverter.ToUInt64(pvmxdata, off);
+                off += sizeof(ulong);
+                byte[] texdata = new byte[(int)length];
+                Array.Copy(pvmxdata, (int)offset, texdata, 0, (int)length);
+                //Console.WriteLine("Added entry {0} at {1} GBIX {2} width {3} height {4}", name, off, gbix, width, height);
+                Entries.Add(new PVMXEntry(name, gbix, texdata, width, height));
+            }
+        }
+
+        public PVMXFile()
+        {
+            Entries = new List<PVMXEntry>();
+        }
+
+        public void AddFile(string name, uint gbix, byte[] data, int width = 0, int height = 0)
+        {
+            Entries.Add(new PVMXEntry(name, gbix, data, width, height));
+        }
+
+        public byte[] GetBytes()
+        {
+            MemoryStream str = new MemoryStream();
+            BinaryWriter bw = new BinaryWriter(str);
+            bw.Write(FourCC);
+            bw.Write(Version);
+            List<OffData> texdata = new List<OffData>();
+            foreach (PVMXEntry tex in Entries)
+            {
+                bw.Write((byte)dictionary_field.global_index);
+                bw.Write(tex.GBIX);
+                bw.Write((byte)dictionary_field.name);
+                bw.Write(tex.Name.ToCharArray());
+                bw.Write((byte)0);
+                if (tex.HasDimensions())
+                {
+                    bw.Write((byte)dictionary_field.dimensions);
+                    bw.Write(tex.Width);
+                    bw.Write(tex.Height);
+                }
+                bw.Write((byte)dictionary_field.none);
+                long size;
+                using (MemoryStream ms = new MemoryStream(tex.Data))
+                {
+                    texdata.Add(new OffData(str.Position, ms.ToArray()));
+                    size = ms.Length;
+                }
+                bw.Write(0ul);
+                bw.Write(size);
+            }
+            bw.Write((byte)dictionary_field.none);
+            foreach (OffData od in texdata)
+            {
+                long pos = str.Position;
+                str.Position = od.off;
+                bw.Write(pos);
+                str.Position = pos;
+                bw.Write(od.data);
+            }
+            return str.ToArray();
+        }
+
+        internal class PVMXEntry
+        {
+            public string Name { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public byte[] Data { get; set; }
+            public uint GBIX { get; set; }
+            public PVMXEntry(string name, uint gbix, byte[] data, int width, int height)
+            {
+                Name = name;
+                Width = width;
+                Height = height;
+                Data = data;
+                GBIX = gbix;
+            }
+            public bool HasDimensions()
+            {
+                if (Width != 0 || Height != 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        struct OffData
+        {
+            public long off;
+            public byte[] data;
+
+            public OffData(long o, byte[] d)
+            {
+                off = o;
+                data = d;
+            }
+        }
+
+        enum dictionary_field : byte
+        {
+            none,
+            /// <summary>
+            /// 32-bit integer global index
+            /// </summary>
+            global_index,
+            /// <summary>
+            /// Null-terminated file name
+            /// </summary>
+            name,
+            /// <summary>
+            /// Two 32-bit integers defining width and height
+            /// </summary>
+            dimensions,
+        }
+    }
+    #endregion
 }

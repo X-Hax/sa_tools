@@ -12,10 +12,18 @@ using ArchiveLib;
 
 namespace ArchiveTool
 {
-	static class Program
-	{
+    static class Program
+    {
+        enum ArchiveFromFolderMode
+        {
+            PVM = 0,
+            GVM = 1,
+            DAT = 2,
+            PVMX = 3
+        }
         static void Main(string[] args)
         {
+            ArchiveFromFolderMode folderMode;
             string dir;
             string filePath;
             string directoryName;
@@ -25,17 +33,18 @@ namespace ArchiveTool
             string path;
             byte[] filedata;
             bool isPRS;
+            bool isBIN = false;
             string extension;
             // Usage
             if (args.Length == 0)
             {
                 Console.WriteLine("ArchiveTool is a command line tool to extract and create PVM, GVM, PRS, DAT and PB archives.\nIt can also decompress SADX Gamecube 'SaCompGC' REL files.\n");
                 Console.WriteLine("Usage:\n");
-                Console.WriteLine("Extracting a PVM/GVM/PRS/PB/DAT/REL file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create a list of files named 'index.txt'.\n");
+                Console.WriteLine("Extracting a PVM/GVM/PRS/PB/PVMX/DAT/REL file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create a list of files named 'index.txt'.\n");
                 Console.WriteLine("Extracting an NjUtil archive: ArchiveTool -nju <archivefile>\n");
                 Console.WriteLine("Converting PVM/GVM to a folder texture pack: ArchiveTool -png <archivefile>\n");
                 Console.WriteLine("Creating a PB archive from a folder with textures: ArchiveTool -pb <foldername>");
-                Console.WriteLine("Creating a PVM/GVM/DAT from a folder with textures/sounds: ArchiveTool <foldername> [-prs]\nThe program will create an archive from files listed in 'index.txt' in the folder.\nThe -prs option will make the program output a PRS compressed archive.\n");
+                Console.WriteLine("Creating a PVM/GVM/DAT/PVMX from a folder with textures/sounds: ArchiveTool <foldername> [-prs]\nThe program will create an archive from files listed in 'index.txt' in the folder.\nThe -prs option will make the program output a PRS compressed archive.\n");
                 Console.WriteLine("Creating a PVM from PNG textures: ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
                 Console.WriteLine("Converting GVM to PVM (lossy): ArchiveTool -gvm2pvm <file.gvm> [-prs]\n");
                 Console.WriteLine("Creating a PRS compressed binary: ArchiveTool <file.bin>\nFile extension must be .BIN for this option to work.\n");
@@ -350,11 +359,11 @@ namespace ArchiveTool
                                 extension = ".njsm";
                                 break;
                             case "NCAM":
-                               desc = "Ninja Camera Motion";
+                                desc = "Ninja Camera Motion";
                                 extension = ".ncm";
                                 break;
                             case "NJTL":
-                               desc = "Ninja Texlist";
+                                desc = "Ninja Texlist";
                                 extension = ".nj";
                                 break;
                             case "GJTL":
@@ -455,9 +464,6 @@ namespace ArchiveTool
                 default:
                     filePath = args[0];
                     IsPRS = false;
-                    bool IsGVM = false;
-                    bool IsBIN = false;
-                    bool isDAT = false;
                     if (args.Length > 1 && args[1] == "-prs") IsPRS = true;
                     extension = Path.GetExtension(filePath).ToLowerInvariant();
                     //Folder mode
@@ -466,87 +472,111 @@ namespace ArchiveTool
                         string indexfilename = Path.Combine(filePath, "index.txt");
                         List<string> filenames = new List<string>(File.ReadAllLines(indexfilename).Where(a => !string.IsNullOrEmpty(a)));
                         string ext = Path.GetExtension(filenames[0]).ToLowerInvariant();
-                        if (filenames.Any(a => !Path.GetExtension(a).Equals(ext, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            Console.WriteLine("Cannot create archive from mixed file types.");
-                            Console.WriteLine("Press ENTER to exit.");
-                            Console.ReadLine();
-                            return;
-                        }
+                        pvmArchive = new PvmArchive();
                         switch (ext)
                         {
                             case ".pvr":
-                                Console.WriteLine("Creating PVM archive from folder: {0}", filePath);
-                                pvmArchive = new PvmArchive();
+                                folderMode = ArchiveFromFolderMode.PVM;
                                 break;
                             case ".gvr":
-                                Console.WriteLine("Creating GVM archive from folder: {0}", filePath);
                                 pvmArchive = new GvmArchive();
-                                IsGVM = true;
+                                folderMode = ArchiveFromFolderMode.GVM;
                                 break;
                             case ".wav":
-                                Console.WriteLine("Creating DAT archive from folder: {0}", filePath);
-                                isDAT = true;
-                                pvmArchive = null;
+                                folderMode = ArchiveFromFolderMode.DAT;
                                 break;
+                            case ".png":
+                            case ".jpg":
+                            case ".bmp":
+                            case ".dds":
+                            case ".gif":
                             default:
-                                Console.WriteLine("Unknown file type \"{0}\".", ext);
-                                Console.WriteLine("Press ENTER to exit.");
-                                Console.ReadLine();
+                                folderMode = ArchiveFromFolderMode.PVMX;
+                                break;
+                        }
+                        Console.WriteLine("Creating {0} archive from folder: {1}", folderMode.ToString(), filePath);
+                        switch (folderMode)
+                        {
+                            case ArchiveFromFolderMode.DAT:
+                                // Load index
+                                DATFile dat = new DATFile();
+                                TextReader tr = File.OpenText(Path.Combine(filePath, "index.txt"));
+                                string line = tr.ReadLine();
+                                while (line != null)
+                                {
+                                    Console.WriteLine("Adding file {0}", Path.Combine(filePath, line));
+                                    dat.AddFile(Path.Combine(filePath, line));
+                                    line = tr.ReadLine();
+                                }
+                                tr.Close();
+                                // Save DAT archive
+                                File.WriteAllBytes(filePath + ".DAT", dat.GetBytes());
+                                if (IsPRS)
+                                {
+                                    Console.WriteLine("Compressing to PRS...");
+                                    byte[] datdata = File.ReadAllBytes(filePath + ".DAT");
+                                    datdata = FraGag.Compression.Prs.Compress(datdata);
+                                    File.WriteAllBytes(filePath + ".PRS", datdata);
+                                    File.Delete(filePath + ".DAT");
+                                }
+                                Console.WriteLine("Archive compiled successfully!");
+                                return;
+                            case ArchiveFromFolderMode.PVM:
+                            case ArchiveFromFolderMode.GVM:
+                                if (filenames.Any(a => !Path.GetExtension(a).Equals(ext, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    Console.WriteLine("Cannot create archive from mixed file types.");
+                                    Console.WriteLine("Press ENTER to exit.");
+                                    Console.ReadLine();
+                                    return;
+                                }
+                                ext = folderMode == ArchiveFromFolderMode.PVM ? ".pvm" : ".gvm";
+                                using (Stream pvmStream = File.Open(Path.ChangeExtension(filePath, ext), FileMode.Create))
+                                {
+                                    pvmWriter = pvmArchive.Create(pvmStream);
+                                    // Reading in textures
+                                    foreach (string tex in filenames)
+                                    {
+                                        if (folderMode == ArchiveFromFolderMode.PVM)
+                                            pvmWriter.CreateEntryFromFile(Path.Combine(filePath, Path.ChangeExtension(tex, ".pvr")));
+                                        else
+                                            pvmWriter.CreateEntryFromFile(Path.Combine(filePath, Path.ChangeExtension(tex, ".gvr")));
+                                        Console.WriteLine("Adding file: {0}", tex);
+                                    }
+                                    pvmWriter.Flush();
+                                }
+                                if (IsPRS)
+                                {
+                                    Console.WriteLine("Compressing to PRS...");
+                                    byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ext));
+                                    pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
+                                    File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), pvmdata);
+                                    File.Delete(Path.ChangeExtension(filePath, ext));
+                                }
+                                Console.WriteLine("Archive was compiled successfully!");
+                                return;
+                            case ArchiveFromFolderMode.PVMX:
+                                // Load index
+                                PVMXFile pvmx = new PVMXFile();
+                                TextReader trp = File.OpenText(Path.Combine(filePath, "index.txt"));
+                                foreach (string str in filenames)
+                                {
+                                    string[] split = str.Split(',');
+                                    string texfile = Path.Combine(Path.GetFullPath(filePath), split[1]);
+                                    Console.WriteLine("Adding file {0}", texfile);
+                                    if (split.Length > 2)
+                                    {
+                                        string[] dimensions = split[2].Split('x');
+                                        pvmx.AddFile(split[1], uint.Parse(split[0]), File.ReadAllBytes(texfile), int.Parse(dimensions[0]), int.Parse(dimensions[1]));
+                                    }
+                                    else
+                                        pvmx.AddFile(split[1], uint.Parse(split[0]), File.ReadAllBytes(texfile));
+                                }
+                                Console.WriteLine("Output file: {0}", Path.ChangeExtension(filePath, ".pvmx"));
+                                File.WriteAllBytes(Path.ChangeExtension(filePath, ".pvmx"), pvmx.GetBytes());
+                                Console.WriteLine("Archive was compiled successfully!");
                                 return;
                         }
-                        if (isDAT)
-                        {
-                            // Load index
-                            DATFile dat = new DATFile();
-                            TextReader tr = File.OpenText(Path.Combine(filePath, "index.txt"));
-                            string line = tr.ReadLine();
-                            while (line != null)
-                            {
-                                Console.WriteLine("Adding file {0}", Path.Combine(filePath, line));
-                                dat.AddFile(Path.Combine(filePath, line));
-                                line = tr.ReadLine();
-                            }
-                            tr.Close();
-                            // Save DAT archive
-                            File.WriteAllBytes(filePath + ".DAT", dat.GetBytes());
-                            if (IsPRS)
-                            {
-                                Console.WriteLine("Compressing to PRS...");
-                                byte[] datdata = File.ReadAllBytes(filePath + ".DAT");
-                                datdata = FraGag.Compression.Prs.Compress(datdata);
-                                File.WriteAllBytes(filePath + ".PRS", datdata);
-                                File.Delete(filePath + ".DAT");
-                            }
-                            Console.WriteLine("Archive compiled successfully!");
-                            return;
-                        }
-                        else
-                        {
-                            if (!IsGVM) ext = ".pvm"; else ext = ".gvm";
-                            using (Stream pvmStream = File.Open(Path.ChangeExtension(filePath, ext), FileMode.Create))
-                            {
-                                pvmWriter = pvmArchive.Create(pvmStream);
-                                // Reading in textures
-                                foreach (string tex in filenames)
-                                {
-                                    if (!IsGVM) pvmWriter.CreateEntryFromFile(Path.Combine(filePath, Path.ChangeExtension(tex, ".pvr")));
-                                    else pvmWriter.CreateEntryFromFile(Path.Combine(filePath, Path.ChangeExtension(tex, ".gvr")));
-                                    Console.WriteLine("Adding file: {0}", tex);
-                                }
-                                pvmWriter.Flush();
-                            }
-                        }
-                        if (IsPRS)
-                        {
-                            Console.WriteLine("Compressing to PRS...");
-                            byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ext));
-                            pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
-                            File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), pvmdata);
-                            File.Delete(Path.ChangeExtension(filePath, ext));
-                        }
-                        Console.WriteLine("Archive was compiled successfully!");
-                        return;
                     }
                     //Continue with file mode otherwise
                     if (!File.Exists(filePath))
@@ -589,9 +619,35 @@ namespace ArchiveTool
                             }
                             Console.WriteLine("Archive extracted!");
                             break;
+                        case ".pvmx":
+                            Console.WriteLine("Extracting PVMX file: {0}", filePath);
+                            byte[] pvmxdata = File.ReadAllBytes(filePath);
+                            dir = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
+                            Directory.CreateDirectory(dir);
+                            PVMXFile pvmx = new PVMXFile(pvmxdata);
+                            using (TextWriter texList = File.CreateText(Path.Combine(dir, "index.txt")))
+                            {
+                                for (int u = 0; u < pvmx.GetCount(); u++)
+                                {
+                                    byte[] tdata = pvmx.GetFile(u);
+                                    string outpath = Path.Combine(dir, pvmx.GetName(u));
+                                    File.WriteAllBytes(outpath, tdata);
+                                    string entry;
+                                    string dimensions = string.Join("x", pvmx.GetWidth(u).ToString(), pvmx.GetHeight(u).ToString());
+                                    if (pvmx.HasDimensions(u))
+                                        entry = string.Join(",", pvmx.GetGBIX(u).ToString(), pvmx.GetName(u), dimensions);
+                                    else
+                                        entry = string.Join(",", pvmx.GetGBIX(u).ToString(), pvmx.GetName(u));
+                                    texList.WriteLine(entry);
+                                }
+                                texList.Flush();
+                                texList.Close();
+                            }
+                            Console.WriteLine("Archive extracted!");
+                            break;
                         case ".pb":
                             Console.WriteLine("Extracting PB file: {0}", filePath);
-                            byte[] pbdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pb"));
+                            byte[] pbdata = File.ReadAllBytes(filePath);
                             dir = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
                             Directory.CreateDirectory(dir);
                             PBFile pba = new PBFile(pbdata);
@@ -638,11 +694,11 @@ namespace ArchiveTool
                                         if (!GvmArchive.Identify(stream))
                                         {
                                             File.WriteAllBytes(Path.ChangeExtension(filePath, ".bin"), pvmdata);
-                                            IsBIN = true;
+                                            isBIN = true;
                                             Console.WriteLine("PRS archive extracted!");
                                         }
                                     }
-                                    if (!IsBIN)
+                                    if (!isBIN)
                                     {
                                         ArchiveReader pvmReader = pvmfile.Open(pvmdata);
                                         foreach (ArchiveEntry pvmentry in pvmReader.Entries)
@@ -663,7 +719,7 @@ namespace ArchiveTool
                                     throw;
                                 }
                             }
-                            if (IsBIN)
+                            if (isBIN)
                             {
                                 Directory.Delete(path, true);
                             }
@@ -677,24 +733,24 @@ namespace ArchiveTool
                     break;
             }
         }
-		static bool AddTexture(bool gvm, string path, string filename, Stream data, TextWriter index)
-		{
-			Console.WriteLine("Adding texture: {0}", filename);
-			VrTexture vrfile = gvm ? (VrTexture)new GvrTexture(data) : (VrTexture)new PvrTexture(data);
-			if (vrfile.NeedsExternalPalette)
-			{
-				Console.WriteLine("Cannot convert texture files which require external palettes!");
-				return false;
-			}
-			Bitmap bmp;
-			try { bmp = vrfile.ToBitmap(); }
-			catch { bmp = new Bitmap(1, 1); }
-			bmp.Save(Path.Combine(path, Path.ChangeExtension(filename, "png")));
-			bmp.Dispose();
-			index.WriteLine("{0},{1}", vrfile.HasGlobalIndex ? vrfile.GlobalIndex : uint.MaxValue, Path.ChangeExtension(filename, "png"));
-			return true;
-		}
-        	
+        static bool AddTexture(bool gvm, string path, string filename, Stream data, TextWriter index)
+        {
+            Console.WriteLine("Adding texture: {0}", filename);
+            VrTexture vrfile = gvm ? (VrTexture)new GvrTexture(data) : (VrTexture)new PvrTexture(data);
+            if (vrfile.NeedsExternalPalette)
+            {
+                Console.WriteLine("Cannot convert texture files which require external palettes!");
+                return false;
+            }
+            Bitmap bmp;
+            try { bmp = vrfile.ToBitmap(); }
+            catch { bmp = new Bitmap(1, 1); }
+            bmp.Save(Path.Combine(path, Path.ChangeExtension(filename, "png")));
+            bmp.Dispose();
+            index.WriteLine("{0},{1}", vrfile.HasGlobalIndex ? vrfile.GlobalIndex : uint.MaxValue, Path.ChangeExtension(filename, "png"));
+            return true;
+        }
+
 
     }
 }
