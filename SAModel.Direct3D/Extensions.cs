@@ -69,7 +69,7 @@ namespace SonicRetro.SAModel.Direct3D
 
 		public static Texture ToTexture(this Bitmap bitmap, Device device)
 		{
-			//if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb); // May no longer be necessary
+			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb) bitmap = bitmap.Clone(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format32bppArgb);
 			BitmapData bmpData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 			int depth = Image.GetPixelFormatSize(bmpData.PixelFormat);
 			int pixelCount = bmpData.Width * bmpData.Height;

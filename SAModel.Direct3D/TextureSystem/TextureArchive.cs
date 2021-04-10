@@ -65,51 +65,12 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
                     }
                     return newtextures.ToArray();
                 case ".pvmx":
-                    byte[] pvmxdata = File.ReadAllBytes(filename);
-                    if (!(pvmxdata.Length > 4 && BitConverter.ToInt32(pvmxdata, 0) == 0x584D5650))
-                        throw new FormatException("File is not a PVMX archive.");
-                    if (pvmxdata[4] != 1) throw new FormatException("Incorrect PVMX archive version.");
-                    int off = 5;
+                    PVMXFile pvmx = new PVMXFile(File.ReadAllBytes(filename));
                     List<BMPInfo> textures = new List<BMPInfo>();
-                    dictionary_field type;
-                    for (type = (dictionary_field)pvmxdata[off++]; type != dictionary_field.none; type = (dictionary_field)pvmxdata[off++])
+                    for (int i = 0; i < pvmx.GetCount(); i++)
                     {
-                        string name = "";
-                        Bitmap image;
-                        while (type != dictionary_field.none)
-                        {
-                            switch (type)
-                            {
-                                case dictionary_field.global_index:
-                                    off += sizeof(uint);
-                                    break;
-
-                                case dictionary_field.name:
-                                    int count = 0;
-                                    while (pvmxdata[off + count] != 0)
-                                        count++;
-                                    name = Path.ChangeExtension(System.Text.Encoding.UTF8.GetString(pvmxdata, off, count), null);
-                                    off += count + 1;
-                                    break;
-
-                                case dictionary_field.dimensions:
-                                    off += sizeof(int);
-                                    off += sizeof(int);
-                                    break;
-                            }
-
-                            type = (dictionary_field)pvmxdata[off++];
-                        }
-
-                        ulong offset = BitConverter.ToUInt64(pvmxdata, off);
-                        off += sizeof(ulong);
-                        ulong length = BitConverter.ToUInt64(pvmxdata, off);
-                        off += sizeof(ulong);
-
-                        using (MemoryStream ms = new MemoryStream(pvmxdata, (int)offset, (int)length))
-                            image = new System.Drawing.Bitmap(ms);
-
-                        textures.Add(new BMPInfo(name, image));
+                        var bmp = new Bitmap(new MemoryStream(pvmx.GetFile(i)));
+                        textures.Add(new BMPInfo(pvmx.GetNameWithoutExtension(i), bmp));
                     }
                     return textures.ToArray();
                 case ".txt":
