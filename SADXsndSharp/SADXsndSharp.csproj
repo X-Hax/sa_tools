@@ -140,6 +140,13 @@
   <ItemGroup>
     <Content Include="icon_dxSndSharp.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj">
+      <Project>{29bd5a4f-1400-471c-bcfc-f1ee2a0ec73a}</Project>
+      <Name>ArchiveLib</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

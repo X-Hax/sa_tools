@@ -84,7 +84,7 @@ namespace ProjectManager
 			// launch sadxlvl2
 			string sadxlvl2Path = "";
 
-			sadxlvl2Path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SADXLVL2.exe");
+			sadxlvl2Path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SALVL.exe");
 
 			string projectArgumentsPath = string.Format("\"{0}\"", Path.Combine(projectFolder, "sadxlvl.ini"));
 

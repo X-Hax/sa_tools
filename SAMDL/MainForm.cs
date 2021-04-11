@@ -79,7 +79,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			foreach (string file in files)
 			{
-				string extension = Path.GetExtension(file);
+				string extension = Path.GetExtension(file).ToLowerInvariant();
 				switch (extension)
 				{
 					case ".nj":
@@ -118,7 +118,16 @@ namespace SonicRetro.SAModel.SAMDL
 					case ".njm":
 						animFiles.Add(file);
 						break;
-					default:
+                    case ".pvm":
+                    case ".gvm":
+                    case ".pb":
+                    case ".pvmx":
+                    case ".pak":
+                    case ".prs":
+                    case ".txt":
+                        LoadTextures(file);
+                        break;
+                    default:
 						break;
 				}
 			}
@@ -483,7 +492,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void LoadFile(string filename, bool cmdLoad = false)
 		{
-			string extension = Path.GetExtension(filename);
+			string extension = Path.GetExtension(filename).ToLowerInvariant();
 
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
@@ -761,7 +770,7 @@ namespace SonicRetro.SAModel.SAMDL
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animations != null && animations.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -1137,7 +1146,7 @@ namespace SonicRetro.SAModel.SAMDL
 			AddTreeNode(model, treeView1.Nodes);
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			SelectedItemChanged();
@@ -1812,7 +1821,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*" })
+			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
             {
 				if (a.ShowDialog() == DialogResult.OK)
 				{
@@ -2363,7 +2372,7 @@ namespace SonicRetro.SAModel.SAMDL
 			}
 			RebuildModelCache();
 			unsaved = true;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			SelectedItemChanged();
@@ -2488,7 +2497,6 @@ namespace SonicRetro.SAModel.SAMDL
 					case ".njm":
 						byte[] njmFile = File.ReadAllBytes(fn);
 						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
-						bool useShortRot = ByteConverter.ToInt32(njmFile, 0x8) == 0xC;
 
 						byte[] newFile = new byte[njmFile.Length - 0x8];
 						Array.Copy(njmFile, 0x8, newFile, 0, newFile.Length);
@@ -2496,7 +2504,7 @@ namespace SonicRetro.SAModel.SAMDL
 						string njmName = Path.GetFileNameWithoutExtension(fn);
 						Dictionary<int, string> label = new Dictionary<int, string>();
 						label.Add(0, njmName);
-						NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, useShortRot);
+						NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
 						if (first)
 						{
 							first = false;
@@ -3483,6 +3491,49 @@ namespace SonicRetro.SAModel.SAMDL
                     ImportOBJLegacy(selectedObject, ofd.FileName);
                 }
             }
+        }
+
+        private void RandomizeLabels(NJS_OBJECT obj)
+        {
+            obj.Name = "object_" + Extensions.GenerateIdentifier();
+            if (obj.Attach != null)
+            {
+                obj.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
+                if (obj.Attach is BasicAttach)
+                {
+                    BasicAttach basicatt = (BasicAttach)obj.Attach;
+                    basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+                    basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
+                    basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+                    basicatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+                    if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
+                        foreach (NJS_MESHSET meshset in basicatt.Mesh)
+                        {
+                            meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+                            meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+                            meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+                            meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+                        }
+                }
+                else if (obj.Attach is ChunkAttach)
+                {
+                    ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+                    chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+                    chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+                }
+            }
+            if (obj.Children != null && obj.Children.Count > 0)
+                foreach (NJS_OBJECT child in obj.Children)
+                    RandomizeLabels(child);
+            if (obj.Sibling != null)
+                    RandomizeLabels(obj.Sibling);
+        }
+
+		private void resetLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            RandomizeLabels(model);
+            RebuildModelCache();
+            unsaved = true;
         }
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)

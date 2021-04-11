@@ -51,6 +51,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importAsModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importAsNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.legacyOBJImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nJAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -124,6 +125,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.importContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importSelectedAsMeshContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importSelectedAsNodesContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectedLegacyOBJImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.addChildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -151,8 +153,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.legacyOBJImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectedLegacyOBJImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetLabelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -213,7 +214,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem});
             this.newFileMenuitem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources._new;
             this.newFileMenuitem.Name = "newFileMenuitem";
-            this.newFileMenuitem.Size = new System.Drawing.Size(188, 30);
+            this.newFileMenuitem.Size = new System.Drawing.Size(168, 22);
             this.newFileMenuitem.Text = "&New";
             // 
             // basicModelToolStripMenuItem
@@ -241,19 +242,19 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.openToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(185, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
             // 
             // loadTexturesToolStripMenuItem
             // 
             this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
-            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
             this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
             // 
@@ -261,7 +262,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.unloadTextureToolStripMenuItem.Enabled = false;
             this.unloadTextureToolStripMenuItem.Name = "unloadTextureToolStripMenuItem";
-            this.unloadTextureToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.unloadTextureToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.unloadTextureToolStripMenuItem.Text = "Unload Textures";
             this.unloadTextureToolStripMenuItem.Click += new System.EventHandler(this.unloadTextureToolStripMenuItem_Click);
             // 
@@ -269,21 +270,21 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.loadAnimationToolStripMenuItem.Enabled = false;
             this.loadAnimationToolStripMenuItem.Name = "loadAnimationToolStripMenuItem";
-            this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.loadAnimationToolStripMenuItem.Text = "Load Animation...";
             this.loadAnimationToolStripMenuItem.Click += new System.EventHandler(this.loadAnimationToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(165, 6);
             // 
             // saveMenuItem
             // 
             this.saveMenuItem.Enabled = false;
             this.saveMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.save;
             this.saveMenuItem.Name = "saveMenuItem";
-            this.saveMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.saveMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveMenuItem.Text = "&Save Model";
             this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
             // 
@@ -292,7 +293,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveAsToolStripMenuItem.Text = "Save Model &As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -300,14 +301,14 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.saveAnimationsToolStripMenuItem.Enabled = false;
             this.saveAnimationsToolStripMenuItem.Name = "saveAnimationsToolStripMenuItem";
-            this.saveAnimationsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.saveAnimationsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveAnimationsToolStripMenuItem.Text = "Save Ani&mation...";
             this.saveAnimationsToolStripMenuItem.Click += new System.EventHandler(this.saveAnimationsToolStripMenuItem1_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(185, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
             // 
             // importToolStripMenuItem
             // 
@@ -318,7 +319,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.importToolStripMenuItem.Enabled = false;
             this.importToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.importToolStripMenuItem.Text = "&Import...";
             // 
             // importAsModelToolStripMenuItem
@@ -335,6 +336,15 @@ namespace SonicRetro.SAModel.SAMDL
             this.importAsNodesToolStripMenuItem.Text = "As Nodes...";
             this.importAsNodesToolStripMenuItem.Click += new System.EventHandler(this.importAsNodesToolStripMenuItem_Click);
             // 
+            // legacyOBJImportToolStripMenuItem
+            // 
+            this.legacyOBJImportToolStripMenuItem.Name = "legacyOBJImportToolStripMenuItem";
+            this.legacyOBJImportToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.legacyOBJImportToolStripMenuItem.Text = "Legacy OBJ Import...";
+            this.legacyOBJImportToolStripMenuItem.ToolTipText = "Use the old OBJ import from previous versions of SA Tools. This can help import a" +
+    "ssets in older mods that used this system.";
+            this.legacyOBJImportToolStripMenuItem.Click += new System.EventHandler(this.legacyOBJImportToolStripMenuItem_Click);
+            // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -344,39 +354,39 @@ namespace SonicRetro.SAModel.SAMDL
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.export;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // cStructsToolStripMenuItem
             // 
             this.cStructsToolStripMenuItem.Name = "cStructsToolStripMenuItem";
-            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cStructsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.cStructsToolStripMenuItem.Text = "C &Structs...";
             this.cStructsToolStripMenuItem.Click += new System.EventHandler(this.cStructsToolStripMenuItem_Click);
             // 
             // nJAToolStripMenuItem
             // 
             this.nJAToolStripMenuItem.Name = "nJAToolStripMenuItem";
-            this.nJAToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.nJAToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.nJAToolStripMenuItem.Text = "NJA...";
             this.nJAToolStripMenuItem.Click += new System.EventHandler(this.nJAToolStripMenuItem_Click);
             // 
             // aSSIMPExportToolStripMenuItem
             // 
             this.aSSIMPExportToolStripMenuItem.Name = "aSSIMPExportToolStripMenuItem";
-            this.aSSIMPExportToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aSSIMPExportToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.aSSIMPExportToolStripMenuItem.Text = "Assimp...";
             this.aSSIMPExportToolStripMenuItem.Click += new System.EventHandler(this.aSSIMPExportToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(185, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(165, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -388,6 +398,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.materialEditorToolStripMenuItem,
             this.textureRemappingToolStripMenuItem,
             this.swapUVToolStripMenuItem,
+            this.resetLabelsToolStripMenuItem,
             this.toolStripSeparator4,
             this.exportAnimationsToolStripMenuItem,
             this.exportTextureNamesToolStripMenuItem,
@@ -493,7 +504,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showModelToolStripMenuItem.CheckOnClick = true;
             this.showModelToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showModelToolStripMenuItem.Name = "showModelToolStripMenuItem";
-            this.showModelToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showModelToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showModelToolStripMenuItem.Text = "Show &Model";
             this.showModelToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showModelToolStripMenuItem_CheckedChanged);
             // 
@@ -502,7 +513,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showNodesToolStripMenuItem.CheckOnClick = true;
             this.showNodesToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.node;
             this.showNodesToolStripMenuItem.Name = "showNodesToolStripMenuItem";
-            this.showNodesToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showNodesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showNodesToolStripMenuItem.Text = "Show &Nodes";
             this.showNodesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showNodesToolStripMenuItem_CheckedChanged);
             // 
@@ -511,7 +522,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showNodeConnectionsToolStripMenuItem.CheckOnClick = true;
             this.showNodeConnectionsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.nodecon;
             this.showNodeConnectionsToolStripMenuItem.Name = "showNodeConnectionsToolStripMenuItem";
-            this.showNodeConnectionsToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showNodeConnectionsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showNodeConnectionsToolStripMenuItem.Text = "Show Node &Connections";
             this.showNodeConnectionsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showNodeConnectionsToolStripMenuItem_CheckedChanged);
             // 
@@ -520,7 +531,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showVertexIndicesToolStripMenuItem.CheckOnClick = true;
             this.showVertexIndicesToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.vertid;
             this.showVertexIndicesToolStripMenuItem.Name = "showVertexIndicesToolStripMenuItem";
-            this.showVertexIndicesToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showVertexIndicesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showVertexIndicesToolStripMenuItem.Text = "Show Vertex Indices";
             this.showVertexIndicesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showVertexIndicesToolStripMenuItem_CheckedChanged);
             // 
@@ -530,7 +541,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showWeightsToolStripMenuItem.Enabled = false;
             this.showWeightsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.weights;
             this.showWeightsToolStripMenuItem.Name = "showWeightsToolStripMenuItem";
-            this.showWeightsToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showWeightsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showWeightsToolStripMenuItem.Text = "Show &Weights";
             this.showWeightsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.ShowWeightsToolStripMenuItem_CheckedChanged);
             // 
@@ -541,7 +552,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showHintsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showHintsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.messages;
             this.showHintsToolStripMenuItem.Name = "showHintsToolStripMenuItem";
-            this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showHintsToolStripMenuItem.Text = "Show Hints";
             this.showHintsToolStripMenuItem.ToolTipText = "Show Hints";
             this.showHintsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showHintsToolStripMenuItem_CheckedChanged);
@@ -550,7 +561,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.showAdvancedCameraInfoToolStripMenuItem.CheckOnClick = true;
             this.showAdvancedCameraInfoToolStripMenuItem.Name = "showAdvancedCameraInfoToolStripMenuItem";
-            this.showAdvancedCameraInfoToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.showAdvancedCameraInfoToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showAdvancedCameraInfoToolStripMenuItem.Text = "Show Camera Rotation";
             this.showAdvancedCameraInfoToolStripMenuItem.ToolTipText = "Show more details on camera mode, rotation etc.";
             // 
@@ -559,14 +570,14 @@ namespace SonicRetro.SAModel.SAMDL
             this.modelCodeToolStripMenuItem.Enabled = false;
             this.modelCodeToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.source;
             this.modelCodeToolStripMenuItem.Name = "modelCodeToolStripMenuItem";
-            this.modelCodeToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.modelCodeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.modelCodeToolStripMenuItem.Text = "View Model Code";
             this.modelCodeToolStripMenuItem.Click += new System.EventHandler(this.modelCodeToolStripMenuItem_Click);
             // 
             // modelLibraryToolStripMenuItem
             // 
             this.modelLibraryToolStripMenuItem.Name = "modelLibraryToolStripMenuItem";
-            this.modelLibraryToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.modelLibraryToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.modelLibraryToolStripMenuItem.Text = "Model &Library";
             this.modelLibraryToolStripMenuItem.Click += new System.EventHandler(this.modelLibraryToolStripMenuItem_Click);
             // 
@@ -574,7 +585,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.alternativeCameraModeToolStripMenuItem.CheckOnClick = true;
             this.alternativeCameraModeToolStripMenuItem.Name = "alternativeCameraModeToolStripMenuItem";
-            this.alternativeCameraModeToolStripMenuItem.Size = new System.Drawing.Size(217, 30);
+            this.alternativeCameraModeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.alternativeCameraModeToolStripMenuItem.Text = "Alternative Camera Mode";
             this.alternativeCameraModeToolStripMenuItem.ToolTipText = "Use an alternative control mode for camera that hides the mouse cursor.";
             // 
@@ -980,7 +991,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.toolStripSeparator7,
             this.deleteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(212, 350);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(212, 328);
             // 
             // copyModelToolStripMenuItem
             // 
@@ -1061,6 +1072,13 @@ namespace SonicRetro.SAModel.SAMDL
             this.importSelectedAsNodesContextMenuItem.Size = new System.Drawing.Size(182, 22);
             this.importSelectedAsNodesContextMenuItem.Text = "As Child Nodes...";
             this.importSelectedAsNodesContextMenuItem.Click += new System.EventHandler(this.importSelectedAsNodesContextMenuItem_Click);
+            // 
+            // selectedLegacyOBJImportToolStripMenuItem
+            // 
+            this.selectedLegacyOBJImportToolStripMenuItem.Name = "selectedLegacyOBJImportToolStripMenuItem";
+            this.selectedLegacyOBJImportToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.selectedLegacyOBJImportToolStripMenuItem.Text = "Legacy OBJ Import...";
+            this.selectedLegacyOBJImportToolStripMenuItem.Click += new System.EventHandler(this.selectedLegacyOBJImportToolStripMenuItem_Click);
             // 
             // exportContextMenuItem
             // 
@@ -1277,21 +1295,14 @@ namespace SonicRetro.SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem1.Text = "Gamecube Model";
             this.gamecubeModelToolStripMenuItem1.Click += new System.EventHandler(this.gamecubeModelToolStripMenuItem1_Click);
             // 
-            // legacyOBJImportToolStripMenuItem
+            // resetLabelsToolStripMenuItem
             // 
-            this.legacyOBJImportToolStripMenuItem.Name = "legacyOBJImportToolStripMenuItem";
-            this.legacyOBJImportToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.legacyOBJImportToolStripMenuItem.Text = "Legacy OBJ Import...";
-            this.legacyOBJImportToolStripMenuItem.ToolTipText = "Use the old OBJ import from previous versions of SA Tools. This can help import a" +
-    "ssets in older mods that used this system.";
-            this.legacyOBJImportToolStripMenuItem.Click += new System.EventHandler(this.legacyOBJImportToolStripMenuItem_Click);
-            // 
-            // selectedLegacyOBJImportToolStripMenuItem
-            // 
-            this.selectedLegacyOBJImportToolStripMenuItem.Name = "selectedLegacyOBJImportToolStripMenuItem";
-            this.selectedLegacyOBJImportToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.selectedLegacyOBJImportToolStripMenuItem.Text = "Legacy OBJ Import...";
-            this.selectedLegacyOBJImportToolStripMenuItem.Click += new System.EventHandler(this.selectedLegacyOBJImportToolStripMenuItem_Click);
+            this.resetLabelsToolStripMenuItem.Enabled = false;
+            this.resetLabelsToolStripMenuItem.Name = "resetLabelsToolStripMenuItem";
+            this.resetLabelsToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.resetLabelsToolStripMenuItem.Text = "Reset Labels";
+            this.resetLabelsToolStripMenuItem.ToolTipText = "Generate random labels for all data structures in the model.";
+            this.resetLabelsToolStripMenuItem.Click += new System.EventHandler(this.resetLabelsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1458,5 +1469,6 @@ namespace SonicRetro.SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem showVertexIndicesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem legacyOBJImportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem selectedLegacyOBJImportToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem resetLabelsToolStripMenuItem;
 	}
 }

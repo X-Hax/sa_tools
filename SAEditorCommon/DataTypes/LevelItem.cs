@@ -187,17 +187,25 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Edit Materials")]
 		public void EditMaterials()
 		{
-			if (COL.Model.Attach is BasicAttach)
-			{
-				BMPInfo[] textures;
-				if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
-				using (MaterialEditor pw = new MaterialEditor(((BasicAttach)COL.Model.Attach).Material, textures))
-				{
-					pw.FormUpdated += pw_FormUpdated;
-					pw.ShowDialog();
-				}
-			}
-		}
+            BMPInfo[] textures;
+            if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
+            if (COL.Model.Attach is BasicAttach attach)
+            {
+                using (MaterialEditor pw = new MaterialEditor(attach.Material, textures))
+                {
+                    pw.FormUpdated += pw_FormUpdated;
+                    pw.ShowDialog();
+                }
+            }
+            else if (COL.Model.Attach is ChunkAttach)
+            {
+                using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.MeshInfo.Select(a => a.Material).ToList(), textures))
+                {
+                    pw.FormUpdated += pw_FormUpdated;
+                    pw.ShowDialog();
+                }
+            }
+        }
 
 		[Browsable(true)]
 		[DisplayName("Calculate Bounds")]

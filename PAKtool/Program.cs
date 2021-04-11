@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using PAKLib;
+using ArchiveLib;
 
 namespace PAKtool
 {
@@ -42,7 +42,7 @@ namespace PAKtool
 						string fn = Path.Combine(Environment.CurrentDirectory, args[1]);
 						Environment.CurrentDirectory = Path.GetDirectoryName(fn);
 						Dictionary<string, PAKInfo> list = IniFile.Deserialize<Dictionary<string, PAKInfo>>(Path.ChangeExtension(fn, "ini"));
-						PAKFile pak = new PAKFile();
+                        PAKFile pak = new PAKFile();
 						foreach (KeyValuePair<string, PAKInfo> item in list)
 							pak.Files.Add(new PAKFile.File(item.Key, item.Value.LongPath, File.ReadAllBytes(item.Key)));
 						pak.Save(Path.ChangeExtension(fn, "pak"));

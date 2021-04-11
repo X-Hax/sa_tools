@@ -75,9 +75,9 @@
     <Compile Include="TextureSystem\TextureArchive.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PAKLib\PAKLib.csproj">
+    <ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj">
       <Project>{29bd5a4f-1400-471c-bcfc-f1ee2a0ec73a}</Project>
-      <Name>PAKLib</Name>
+      <Name>ArchiveLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
