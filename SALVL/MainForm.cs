@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using SA_Tools;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -22,6 +23,7 @@ using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Text;
 using SharpDX.Mathematics.Interop;
+using SAEditorCommon.ProjectManagement;
 
 namespace SonicRetro.SAModel.SALVL
 {
@@ -137,11 +139,11 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-            if (Environment.Is64BitOperatingSystem)
-			    Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
-            else
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
-            settingsfile = SettingsFile.Load();
+			if (Environment.Is64BitOperatingSystem)
+				Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
+			else
+				Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
+			settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SALVL", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
 			InitGUISettings();
@@ -152,11 +154,11 @@ namespace SonicRetro.SAModel.SALVL
 			InitDisableInvalidControls();
 			log.DeleteLogFile();
 			log.Add("SALVL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-            log.Add("Build Date: ");
-            log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
-            log.Add("OS Version: ");
-            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
-            AppConfig.Reload();
+			log.Add("Build Date: ");
+			log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			log.Add("OS Version: ");
+			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+			AppConfig.Reload();
 			EditorOptions.RenderDrawDistance = settingsfile.SALVL.DrawDistance_General;
 			EditorOptions.LevelDrawDistance = settingsfile.SALVL.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.SALVL.DrawDistance_SET;
@@ -165,7 +167,7 @@ namespace SonicRetro.SAModel.SALVL
 			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.SALVL.MouseWrapScreen;
 			if (settingsfile.SALVL.ShowWelcomeScreen)
 				ShowWelcomeScreen();
-			systemFallback = Program.SADXGameFolder + "/System/";
+			systemFallback = Path.Combine(Program.SADXGameFolder, "system");
 
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
@@ -200,18 +202,35 @@ namespace SonicRetro.SAModel.SALVL
 						break;
 				}
 			}
-			else if (Program.SADXGameFolder == "")
-			{
-				ShowPathWarning();
-			}
 			else
 			{
-				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
+				OpenFileDialog openFileDialog1 = new OpenFileDialog();
+				openFileDialog1.Title = "Please select an SADX Project File to load.";
+				openFileDialog1.Filter = "Project File (*.xml)|*.xml";
+				openFileDialog1.RestoreDirectory = true;
+
+				if (openFileDialog1.ShowDialog() == DialogResult.OK)
 				{
-					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-					if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+					string projectFile = openFileDialog1.FileName;
+
+					var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
+					var projFileStream = File.OpenRead(projectFile);
+					var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+
+					if (projFile.GameInfo.GameName == "SADXPC")
 					{
-						LoadProject(projectSelectDialog.SelectedProject);
+						string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+						systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
+						projFileStream.Close();
+
+						LoadINI(projectPath);
+						ShowLevelSelect();
+					}
+					else
+					{
+						projFileStream.Close();
+
+						DialogResult fileWarning = MessageBox.Show(("The selected Project XML was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					}
 				}
 			}
@@ -894,10 +913,7 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
 
-						LevelData.DeathZones.Add(new DeathZoneItem(
-							new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
-								.Model,
-							dzini[i].Flags, selectedItems));
+						LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
 					}
 				}
 
@@ -920,13 +936,24 @@ namespace SonicRetro.SAModel.SALVL
 				progress.SetTaskAndStep("Loading stage texture lists...");
 
 				// Loads the textures in the texture list for this stage (e.g BEACH01)
-				foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+				if (ini.LevelTextureLists != null)
 				{
-					LevelTextureList texini = LevelTextureList.Load(file);
-					if (texini.Level != levelact)
-						continue;
-
-					LoadTextureList(texini.TextureList, syspath);
+					// Loads the textures in the texture list for this stage (e.g BEACH01)
+					foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+					{
+						LevelTextureList texini = LevelTextureList.Load(file);
+						if (texini.Level != levelact)
+							continue;
+						LoadTextureList(texini.TextureList, syspath);
+					}
+				}
+				else
+				{
+					if (level.TextureList != null)
+					{
+						LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
+						LoadTextureList(texini.TextureList, syspath);
+					}
 				}
 
 				progress.SetTaskAndStep("Loading textures for:", "Objects");
