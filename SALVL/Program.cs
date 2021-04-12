@@ -9,8 +9,8 @@ namespace SonicRetro.SAModel.SALVL
 		internal static string[] args;
 		public static MainForm primaryForm;
 
-		private static string sadxGameFolder;
-		public static string SADXGameFolder { get { return sadxGameFolder; } }
+		private static string fileString;
+		public static string SADXGameFolder { get { return fileString; } }
 
 		/// <summary>
 		/// The main entry point for the application.
@@ -22,15 +22,6 @@ namespace SonicRetro.SAModel.SALVL
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-
-			if (args.Length == 0)
-			{
-				sadxGameFolder = "";
-			}
-			else
-			{
-				sadxGameFolder = args[1];
-			}
 
 			primaryForm = new MainForm();
 			Application.Run(primaryForm);

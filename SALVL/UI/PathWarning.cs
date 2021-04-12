@@ -15,23 +15,6 @@ namespace SonicRetro.SAModel.SALVL
 
 		public List<string> RemovedItems { get; private set; }
 
-		public PathWarning(MainForm parent, StringCollection recentList)
-		{
-			InitializeComponent();
-			if (RemovedItems == null) RemovedItems = new List<string>();
-			this.parent = parent;
-			foreach (string s in recentList)
-				listRecentFiles.Items.Add(s);
-
-			string sadxGamePathInvalidReason = "";
-
-			if (!SAEditorCommon.GamePathChecker.CheckSADXPCValid(Program.SADXGameFolder, out sadxGamePathInvalidReason))
-			{
-				label1.Text = string.Format("SALVL could not locate your SADX game folder for the following reason:\n{0}.\n\nPlease run ProjectManager to configure SADX game path.\n\nFor access without Project Manager, locate sadxlvl.ini in your project folder manually.",
-					sadxGamePathInvalidReason);
-			}
-		}
-
 		private void listRecentFiles_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listRecentFiles.SelectedIndices.Count > 0)

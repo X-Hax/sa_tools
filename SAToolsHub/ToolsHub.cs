@@ -57,9 +57,8 @@ namespace SAToolsHub
 
 		//Program Paths
 		ProcessStartInfo samdlStartInfo;
-		ProcessStartInfo salvlStartInfo;
 		ProcessStartInfo texeditStartInfo;
-		ProcessStartInfo sadxlvl2StartInfo;
+		ProcessStartInfo salvlStartInfo;
 		ProcessStartInfo sadxsndsharpStartInfo;
 		ProcessStartInfo sadxtweakerStartInfo;
 		ProcessStartInfo sadxfonteditStartInfo;
@@ -501,7 +500,7 @@ namespace SAToolsHub
 			switch (game)
 			{
 				case "SADXPC":
-					tsSADXLVL2.Visible = true;
+					tsSALVL.Visible = true;
 					tsSADXTweaker.Visible = true;
 					tsSADXsndSharp.Visible = true;
 					tsSADXFontEdit.Visible = true;
@@ -534,7 +533,6 @@ namespace SAToolsHub
 			browseOpenExplorer.Enabled = false;
 
 			//reset DX game buttons
-			tsSADXLVL2.Visible = false;
 			tsSADXTweaker.Visible = false;
 			tsSADXsndSharp.Visible = false;
 			tsSADXFontEdit.Visible = false;
@@ -559,9 +557,8 @@ namespace SAToolsHub
 #endif
 
 			samdlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAMDL.exe")));
-			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
 			texeditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "TextureEditor.exe")));
-			sadxlvl2StartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXLVL2.exe")));
+			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
 			sadxsndsharpStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXsndSharp.exe")));
 			sadxtweakerStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXTweaker2.exe")));
 			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXFontEdit.exe")));
@@ -687,9 +684,16 @@ namespace SAToolsHub
 			Process samdlProcess = Process.Start(samdlStartInfo);
 		}
 
-		private void sALVLToolStripMenuItem_Click(object sender, EventArgs e)
+		private void toolStripMenuItem3_Click(object sender, EventArgs e)
 		{
-			Process salvlProcess = Process.Start(salvlStartInfo);
+			if (projectDirectory != null && setGame == "SADXPC")
+			{
+				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
+
+				salvlStartInfo.Arguments = projectArgumentsPath;
+			}
+
+			Process sadxlvl2Process = Process.Start(salvlStartInfo);
 		}
 
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -698,17 +702,6 @@ namespace SAToolsHub
 		}
 
 		//SADX Tools Initializers
-		private void sADXLVL2ToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (projectDirectory != null && setGame == "SADXPC")
-			{
-				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
-
-				sadxlvl2StartInfo.Arguments = projectArgumentsPath;
-			}
-
-			Process sadxlvl2Process = Process.Start(sadxlvl2StartInfo);
-		}
 
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -894,11 +887,6 @@ namespace SAToolsHub
 			sAMDLToolStripMenuItem_Click(sender, e);
 		}
 
-		private void tsSALVL_Click(object sender, EventArgs e)
-		{
-			sALVLToolStripMenuItem_Click(sender, e);
-		}
-
 		private void tsTexEdit_Click(object sender, EventArgs e)
 		{
 			textureEditorToolStripMenuItem_Click(sender, e);
@@ -906,7 +894,7 @@ namespace SAToolsHub
 
 		private void tsSADXLVL2_Click(object sender, EventArgs e)
 		{
-			sADXLVL2ToolStripMenuItem_Click(sender, e);
+			toolStripMenuItem3_Click(sender, e);
 		}
 
 		private void tsSADXTweaker_Click(object sender, EventArgs e)
@@ -1098,9 +1086,9 @@ namespace SAToolsHub
 						switch (itemName)
 						{
 							case "sadxlvl.ini":
-								sadxlvl2StartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
+								salvlStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
 
-								Process.Start(sadxlvl2StartInfo);
+								Process.Start(salvlStartInfo);
 								break;
 							case "mod.ini":
 								projectEditorDiag.ShowDialog();

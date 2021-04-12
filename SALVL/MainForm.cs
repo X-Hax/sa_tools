@@ -167,7 +167,6 @@ namespace SonicRetro.SAModel.SALVL
 			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.SALVL.MouseWrapScreen;
 			if (settingsfile.SALVL.ShowWelcomeScreen)
 				ShowWelcomeScreen();
-			systemFallback = Path.Combine(Program.SADXGameFolder, "system");
 
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
@@ -186,7 +185,6 @@ namespace SonicRetro.SAModel.SALVL
 
 			if (Program.args.Length > 0)
 			{
-				if (Program.SADXGameFolder == "") systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
 				switch (Path.GetExtension(Program.args[0]).ToLowerInvariant())
 				{
 					case ".sa1lvl":
@@ -200,38 +198,6 @@ namespace SonicRetro.SAModel.SALVL
 						LoadINI(Program.args[0]);
 						ShowLevelSelect();
 						break;
-				}
-			}
-			else
-			{
-				OpenFileDialog openFileDialog1 = new OpenFileDialog();
-				openFileDialog1.Title = "Please select an SADX Project File to load.";
-				openFileDialog1.Filter = "Project File (*.xml)|*.xml";
-				openFileDialog1.RestoreDirectory = true;
-
-				if (openFileDialog1.ShowDialog() == DialogResult.OK)
-				{
-					string projectFile = openFileDialog1.FileName;
-
-					var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
-					var projFileStream = File.OpenRead(projectFile);
-					var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
-
-					if (projFile.GameInfo.GameName == "SADXPC")
-					{
-						string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
-						systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
-						projFileStream.Close();
-
-						LoadINI(projectPath);
-						ShowLevelSelect();
-					}
-					else
-					{
-						projFileStream.Close();
-
-						DialogResult fileWarning = MessageBox.Show(("The selected Project XML was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					}
 				}
 			}
 		}
@@ -377,22 +343,6 @@ namespace SonicRetro.SAModel.SALVL
 			}
 		}
 
-		private void openNewProjectToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (Program.SADXGameFolder == "")
-			{
-				ShowPathWarning();
-			}
-			else OpenNewProject();
-		}
-
-		private void LoadProject(string projectName)
-		{
-			string projectPath = Path.Combine(Program.SADXGameFolder, string.Format("projects/{0}/sadxlvl.ini", projectName));
-			LoadINI(projectPath);
-			ShowLevelSelect();
-		}
-
 		public bool OpenNewProject()
 		{
 			if (isStageLoaded)
@@ -401,18 +351,38 @@ namespace SonicRetro.SAModel.SALVL
 					return false;
 			}
 
-			using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
-			{
-				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+			OpenFileDialog openFileDialog1 = new OpenFileDialog();
+			openFileDialog1.Title = "Please select an SADX Project File to load.";
+			openFileDialog1.Filter = "Project File (*.xml)|*.xml";
+			openFileDialog1.RestoreDirectory = true;
 
-				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+			if (openFileDialog1.ShowDialog() == DialogResult.OK)
+			{
+				string projectFile = openFileDialog1.FileName;
+
+				var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
+				var projFileStream = File.OpenRead(projectFile);
+				var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+
+				if (projFile.GameInfo.GameName == "SADXPC")
 				{
-					LoadProject(projectSelectDialog.SelectedProject);
+					string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+					systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
+					projFileStream.Close();
+
+					LoadINI(projectPath);
+					ShowLevelSelect();
 					return true;
 				}
+				else
+				{
+					projFileStream.Close();
 
-				else return false;
+					DialogResult fileWarning = MessageBox.Show(("The selected Project XML was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					return false;
+				}
 			}
+			else return false;
 		}
 
 		private void LoadINI(string filename)
@@ -697,28 +667,6 @@ namespace SonicRetro.SAModel.SALVL
 					log.Add("Unable to load texture file: " + GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
 				}
 			}
-		}
-
-		private string GetIniFolderForGame(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case SA_Tools.Game.SA1:
-					return "SA1";
-
-				case SA_Tools.Game.SADX:
-					return "SADXPC";
-
-				case SA_Tools.Game.SA2:
-					return "SA2";
-
-				case SA_Tools.Game.SA2B:
-					return "SA2PC";
-				default:
-					break;
-			}
-
-			return "";
 		}
 
 		private void CopyFolder(string sourceFolder, string destinationFolder)
@@ -3545,41 +3493,6 @@ namespace SonicRetro.SAModel.SALVL
 		private void LibrarySplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
 			if (WindowState == FormWindowState.Maximized) settingsfile.SALVL.LibrarySplitterPosition = LibrarySplitter.SplitterDistance;
-		}
-
-		private bool ShowPathWarning()
-		{
-			bool result;
-			using (PathWarning dialog = new PathWarning(this, GetRecentFiles()))
-			{
-				if (result = (dialog.ShowDialog() == DialogResult.OK))
-				{
-					systemFallback = Path.GetDirectoryName(dialog.SelectedItem) + "\\System\\";
-					if (AppConfig.MRUList.Count > 10)
-					{
-						for (int i = 9; i < AppConfig.MRUList.Count; i++)
-						{
-							AppConfig.MRUList.RemoveAt(i);
-						}
-					}
-					if (!AppConfig.MRUList.Contains(dialog.SelectedItem)) AppConfig.MRUList.Insert(0, dialog.SelectedItem);
-					else
-					{
-						AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(dialog.SelectedItem));
-						AppConfig.MRUList.Insert(0, dialog.SelectedItem);
-					}
-					LoadINI(dialog.SelectedItem);
-					ShowLevelSelect();
-				}
-				if (dialog.RemovedItems.Count > 0)
-				{
-					foreach (string deleted in dialog.RemovedItems)
-					{
-						if (AppConfig.MRUList.Contains(deleted)) AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(deleted));
-					}
-				}
-			}
-			return result;
 		}
 
 		private StringCollection GetRecentFiles()
