@@ -24,46 +24,53 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
             switch (ext)
             {
                 case ".pak":
+                    List<BMPInfo> newtextures;
                     PAKFile pak = new PAKFile(filename);
                     string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
-                    byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
-                    List<BMPInfo> newtextures = new List<BMPInfo>(inf.Length / 0x3C);
-                    for (int i = 0; i < inf.Length; i += 0x3C)
+                    // Check if PAK INF exists
+                    bool inf_exists = false;
+                    foreach (PAKFile.File entry in pak.Files)
+                        if (entry.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
+                                inf_exists = true;
+                    // Get texture names from PAK INF, if it exists
+                    if (inf_exists)
                     {
-						System.Text.StringBuilder sb = new System.Text.StringBuilder(0x1C);
-                        for (int j = 0; j < 0x1C; j++)
-                            if (inf[i + j] != 0)
-                                sb.Append((char)inf[i + j]);
-                            else
-                                break;
-                        byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
-                        using (MemoryStream str = new MemoryStream(dds))
+                        byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                        newtextures = new List<BMPInfo>(inf.Length / 0x3C);
+                        for (int i = 0; i < inf.Length; i += 0x3C)
                         {
-                            uint check = BitConverter.ToUInt32(dds, 0);
-                            if (check == 0x20534444) // DDS header
-                            {
-                                PixelFormat pxformat;
-                                var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
-                                switch (image.Format)
-                                {
-                                    case Pfim.ImageFormat.Rgba32:
-                                        pxformat = PixelFormat.Format32bppArgb;
-                                        break;
-                                    default:
-										System.Windows.Forms.MessageBox.Show("Unsupported image format.");
-                                        throw new NotImplementedException();
-                                }
-                                var bitmap = new Bitmap(image.Width, image.Height, pxformat);
-                                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
-								System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-                                bitmap.UnlockBits(bmpData);
-                                newtextures.Add(new BMPInfo(sb.ToString(), bitmap));
-                            }
-                            else
-                                newtextures.Add(new BMPInfo(sb.ToString(), new Bitmap(str)));
+                            System.Text.StringBuilder sb = new System.Text.StringBuilder(0x1C);
+                            for (int j = 0; j < 0x1C; j++)
+                                if (inf[i + j] != 0)
+                                    sb.Append((char)inf[i + j]);
+                                else
+                                    break;
+                            newtextures.Add(new BMPInfo(sb.ToString(), pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase)).GetBitmap()));
                         }
+                        return newtextures.ToArray();
                     }
-                    return newtextures.ToArray();
+                    // Otherwise just get the textures directly
+                    {
+                        newtextures = new List<BMPInfo>(pak.Files.Count);
+                        foreach (PAKFile.File entry in pak.Files)
+                        {
+                            // Only add files that can be converted to Bitmap
+                            string extension = Path.GetExtension(entry.Name).ToLowerInvariant();
+                            switch (extension)
+                            {
+                                case ".dds":
+                                case ".png":
+                                case ".bmp":
+                                case ".gif":
+                                case ".jpg":
+                                    newtextures.Add(new BMPInfo(Path.GetFileNameWithoutExtension(entry.Name), entry.GetBitmap()));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        return newtextures.ToArray();
+                    }
                 case ".pvmx":
                     PVMXFile pvmx = new PVMXFile(File.ReadAllBytes(filename));
                     List<BMPInfo> textures = new List<BMPInfo>();

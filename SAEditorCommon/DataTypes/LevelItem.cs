@@ -219,10 +219,28 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Export Model")]
 		public void ExportModel()
 		{
-			using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
-			{
-				DefaultExt = "dae",
-				Filter = "SAModel Files|*.sa1mdl|Collada|*.dae|Wavefront|*.obj"
+            string defaultex;
+
+            switch (COL.Model.GetModelFormat())
+            {
+                case ModelFormat.Chunk:
+                    defaultex = ".sa2mdl";
+                    break;
+                case ModelFormat.GC:
+                    defaultex = ".sa2bmdl";
+                    break;
+                case ModelFormat.Basic:
+                case ModelFormat.BasicDX:
+                default:
+                    defaultex = ".sa1mdl";
+                    break;
+            }
+
+            using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
+            {
+                DefaultExt = "dae",
+                FileName = Name + defaultex,
+				Filter = "SAModel Files|*.sa?mdl|Collada|*.dae|Wavefront|*.obj"
 			})
 			{
 				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -231,7 +249,9 @@ namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
 					switch (System.IO.Path.GetExtension(a.FileName).ToLowerInvariant())
 					{
 						case ".sa1mdl":
-							ModelFile.CreateFile(a.FileName, COL.Model, null, null, null, null, COL.Model.GetModelFormat());
+                        case ".sa2mdl":
+                        case ".sa2bmdl":
+                            ModelFile.CreateFile(a.FileName, COL.Model, null, null, null, null, COL.Model.GetModelFormat());
 							return;
 						case ".fbx":
 							ftype = "fbx";
