@@ -2595,7 +2595,7 @@ namespace SonicRetro.SAModel.SALVL
 			ImportToStage();
 		}
 
-		private void ImportToStage()
+        private void ImportToStage(bool multiple = false)
 		{
 			importFileDialog.InitialDirectory = currentProjectPath;
 			if (importFileDialog.ShowDialog() != DialogResult.OK)
@@ -2621,11 +2621,14 @@ namespace SonicRetro.SAModel.SALVL
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-				selectedItems.Add(LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems));
-
-				if (errorFlag)
-					osd.AddMessage(errorMsg + "\n", 300);
-			}
+                List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, osd, multiple);
+                if (errorFlag)
+                    osd.AddMessage(errorMsg + "\n", 300);
+                if (!multiple)
+                    selectedItems.Add(newItems);
+                else
+                    selectedItems.Clear();
+            }
 
 			LevelData.InvalidateRenderState();
 			unsaved = true;
@@ -4533,5 +4536,10 @@ namespace SonicRetro.SAModel.SALVL
             LevelData.InvalidateRenderState();
             selectedItems.Clear();
 		}
+
+		private void wholeLevelToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            ImportToStage(true);
+        }
 	}
 }
