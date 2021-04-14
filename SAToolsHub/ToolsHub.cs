@@ -99,6 +99,9 @@ namespace SAToolsHub
 
 			hubSettings = ProjectSettings.Load();
 
+			if (Program.Arguments.Length > 0)
+				openProject(Program.Arguments[0]);
+
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
 			buildWindowDiag = new buildWindow();
@@ -644,7 +647,7 @@ namespace SAToolsHub
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog openFileDialog1 = new OpenFileDialog();
-			openFileDialog1.Filter = "Project File (*.xml)|*.xml";
+			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			openFileDialog1.RestoreDirectory = true;
 
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -752,7 +755,7 @@ namespace SAToolsHub
 
 		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult convWarning = MessageBox.Show(("This feature will create a project xml for your projects.\n\nSome tools may not function properly with older projects., notably SADXLVL2." +
+			DialogResult convWarning = MessageBox.Show(("This feature will create an sap file for your projects.\n\nSome tools may not function properly with older projects., notably SALVL." +
 				"\n\nWould you like to continue with the project conversion?"), "Project Conversion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (convWarning == DialogResult.Yes)
 				projectConverter.ShowDialog();

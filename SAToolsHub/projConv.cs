@@ -112,7 +112,7 @@ namespace SAToolsHub
 			ProjectTemplate projectFile = new ProjectTemplate();
 
 			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-			saveFileDialog1.Filter = "Project File (*.xml)|*.xml";
+			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			saveFileDialog1.RestoreDirectory = true;
 
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK)

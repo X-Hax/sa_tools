@@ -498,7 +498,7 @@ namespace SAToolsHub
 		private void btnCreate_Click(object sender, EventArgs e)
 		{
 			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-			saveFileDialog1.Filter = "Project File (*.xml)|*.xml";
+			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			saveFileDialog1.RestoreDirectory = true;
 
 			if (checkBox1.Checked && (txtProjFolder.Text != null))

@@ -353,7 +353,7 @@ namespace SonicRetro.SAModel.SALVL
 
 			OpenFileDialog openFileDialog1 = new OpenFileDialog();
 			openFileDialog1.Title = "Please select an SADX Project File to load.";
-			openFileDialog1.Filter = "Project File (*.xml)|*.xml";
+			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			openFileDialog1.RestoreDirectory = true;
 
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
