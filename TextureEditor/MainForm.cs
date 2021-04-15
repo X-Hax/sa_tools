@@ -22,7 +22,7 @@ namespace TextureEditor
         {
             InitializeComponent();
         }
-
+        bool unsaved;
         TextureFormat format;
         string filename;
         List<TextureInfo> textures = new List<TextureInfo>();
@@ -245,53 +245,76 @@ namespace TextureEditor
                 UpdateTextureView(textures[listBox1.SelectedIndex].Image);
         }
 
-        private void newPVMToolStripMenuItem_Click(object sender, EventArgs e)
+        private void NewFile(TextureFormat newfilefmt)
         {
+            if (unsaved)
+            {
+                DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (res)
+                {
+                    case DialogResult.Yes:
+                        SaveTextures();
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                    case DialogResult.No:
+                        break;
+                }
+            }
             textures.Clear();
             listBox1.Items.Clear();
             filename = null;
-            format = TextureFormat.PVM;
-            Text = "PVM Editor";
+            format = newfilefmt;
+            Text = newfilefmt.ToString() + " Editor";
             UpdateTextureCount();
+            listBox1.SelectedIndex = -1;
+        }
+        private void newPVMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewFile(TextureFormat.PVM);
+            listBox1_SelectedIndexChanged(sender, e);
         }
 
         private void newGVMToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            textures.Clear();
-            listBox1.Items.Clear();
-            filename = null;
-            format = TextureFormat.GVM;
-            Text = "GVM Editor";
-            UpdateTextureCount();
+            NewFile(TextureFormat.GVM);
+            listBox1_SelectedIndexChanged(sender, e);
         }
 
         private void newPVMXToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            textures.Clear();
-            listBox1.Items.Clear();
-            filename = null;
-            format = TextureFormat.PVMX;
-            Text = "PVMX Editor";
-            UpdateTextureCount();
+            NewFile(TextureFormat.PVMX);
+            listBox1_SelectedIndexChanged(sender, e);
         }
 
         private void newPAKToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            textures.Clear();
-            listBox1.Items.Clear();
-            filename = null;
-            format = TextureFormat.PAK;
-            Text = "PAK Editor";
-            UpdateTextureCount();
+            NewFile(TextureFormat.PAK);
+            listBox1_SelectedIndexChanged(sender, e);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (unsaved)
+            {
+                DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (res)
+                {
+                    case DialogResult.Yes:
+                        SaveTextures();
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                    case DialogResult.No:
+                        break;
+                }
+            }
             using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak" })
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
                     GetTextures(dlg.FileName);
                     listBox1_SelectedIndexChanged(sender, e);
+                    unsaved = false;
                 }
         }
 
@@ -503,6 +526,7 @@ namespace TextureEditor
                 FraGag.Compression.Prs.Compress(data, filename);
             else
                 File.WriteAllBytes(filename, data);
+            unsaved = false;
         }
 
         private void ConvertTextures(TextureFormat newfmt)
@@ -596,80 +620,69 @@ namespace TextureEditor
                     ConvertTextures((TextureFormat)(dlg.FilterIndex - 1));
                     SetFilename(dlg.FileName);
                     SaveTextures();
+                    unsaved = false;
                 }
             }
         }
 
-        private void saveAsPVMToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAs(TextureFormat savefmt)
         {
-            using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pvm", Filter = "PVM Files|*.pvm;*.prs" })
+            string ext;
+            string filter;
+            switch (savefmt)
+            {
+                case TextureFormat.GVM:
+                    ext = "gvm";
+                    filter = "GVM Files|*.gvm;*.prs";
+                    break;
+                case TextureFormat.PVMX:
+                    ext = "pvmx";
+                    filter = "PVMX Files|*.pvmx";
+                    break;
+                case TextureFormat.PAK:
+                    ext = "pak";
+                    filter = "PAK Files|*.pak";
+                    break;
+                case TextureFormat.PVM:
+                default:
+                    ext = "pvm";
+                    filter = "PVM Files|*.pvm;*.prs";
+                    break;
+            }
+            using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = ext, Filter = filter })
             {
                 if (filename != null)
                 {
                     dlg.InitialDirectory = Path.GetDirectoryName(filename);
-                    dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "pvm");
+                    dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), ext);
                 }
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
-                    ConvertTextures(TextureFormat.PVM);
+                    ConvertTextures(savefmt);
                     SetFilename(dlg.FileName);
                     SaveTextures();
+                    unsaved = false;
                 }
             }
+        }
+        private void saveAsPVMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveAs(TextureFormat.PVM);
         }
 
         private void saveAsGVMToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "gvm", Filter = "GVM Files|*.gvm;*.prs" })
-            {
-                if (filename != null)
-                {
-                    dlg.InitialDirectory = Path.GetDirectoryName(filename);
-                    dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "gvm");
-                }
-                if (dlg.ShowDialog(this) == DialogResult.OK)
-                {
-                    ConvertTextures(TextureFormat.GVM);
-                    SetFilename(dlg.FileName);
-                    SaveTextures();
-                }
-            }
+            SaveAs(TextureFormat.GVM);
         }
 
         private void saveAsPVMXToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pvmx", Filter = "PVMX Files|*.pvmx" })
-            {
-                if (filename != null)
-                {
-                    dlg.InitialDirectory = Path.GetDirectoryName(filename);
-                    dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "pvmx");
-                }
-                if (dlg.ShowDialog(this) == DialogResult.OK)
-                {
-                    ConvertTextures(TextureFormat.PVMX);
-                    SetFilename(dlg.FileName);
-                    SaveTextures();
-                }
-            }
+            SaveAs(TextureFormat.PVMX);
         }
 
         private void saveAsPAKToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "pak", Filter = "PAK Files|*.pak" })
-            {
-                if (filename != null)
-                {
-                    dlg.InitialDirectory = Path.GetDirectoryName(filename);
-                    dlg.FileName = Path.ChangeExtension(Path.GetFileName(filename), "pak");
-                }
-                if (dlg.ShowDialog(this) == DialogResult.OK)
-                {
-                    ConvertTextures(TextureFormat.PAK);
-                    SetFilename(dlg.FileName);
-                    SaveTextures();
-                }
-            }
+            SaveAs(TextureFormat.PAK);
         }
 
         private void importAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -724,13 +737,13 @@ namespace TextureEditor
                         listBox1.EndUpdate();
                         listBox1.SelectedIndex = textures.Count - 1;
                         UpdateTextureCount();
+                        unsaved = true;
                     }
             }
         }
 
         private void exportAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = "texturepack" })
             {
 
@@ -896,6 +909,11 @@ namespace TextureEditor
                 textureUpButton.Enabled = false;
                 textureDownButton.Enabled = false;
                 mipmapCheckBox.Enabled = false;
+                dataFormatLabel.Text = $"Data Format: Unknown";
+                pixelFormatLabel.Text = $"Pixel Format: Unknown";
+                textureSizeLabel.Text = $"Actual Size: ---";
+                indexTextBox.Text = "-1";
+                UpdateTextureView(new Bitmap(64,64));
             }
         }
 
@@ -1100,6 +1118,7 @@ namespace TextureEditor
                     listBox1.EndUpdate();
                     listBox1.SelectedIndex = textures.Count - 1;
                     UpdateTextureCount();
+                    unsaved = true;
                 }
             }
         }
@@ -1113,6 +1132,7 @@ namespace TextureEditor
                 --i;
             listBox1.SelectedIndex = i;
             UpdateTextureCount();
+            unsaved = true;
         }
 
         private void TextureUpButton_Click(object sender, EventArgs e)
@@ -1126,6 +1146,7 @@ namespace TextureEditor
             listBox1.Items.Insert(i - 1, ti.Name);
             listBox1.EndUpdate();
             listBox1.SelectedIndex = i - 1;
+            unsaved = true;
         }
 
         private void TextureDownButton_Click(object sender, EventArgs e)
@@ -1139,6 +1160,7 @@ namespace TextureEditor
             listBox1.Items.Insert(i + 1, ti.Name);
             listBox1.EndUpdate();
             listBox1.SelectedIndex = i + 1;
+            unsaved = true;
         }
 
         private void HexIndexCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -1224,6 +1246,7 @@ namespace TextureEditor
             }
             else
                 mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+            unsaved = true;
         }
 
         private void textureImage_MouseClick(object sender, MouseEventArgs e)
@@ -1253,6 +1276,7 @@ namespace TextureEditor
             }
             else
                 mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+            unsaved = true;
         }
 
         private void importButton_Click(object sender, EventArgs e)
@@ -1261,12 +1285,44 @@ namespace TextureEditor
             if (tex.HasValue)
             {
                 textures[listBox1.SelectedIndex].Image = tex.Value.Value;
-				if (textures[listBox1.SelectedIndex] is PvrTextureInfo pvri)
-					pvri.TextureData = null;
-				else if (textures[listBox1.SelectedIndex] is GvrTextureInfo gvri)
-					gvri.TextureData = null;
+                if (textures[listBox1.SelectedIndex] is PvrTextureInfo pvri)
+                {
+                    pvri.TextureData = null;
+                    int tlevels = GetAlphaLevel(tex.Value.Value);
+                    if (tlevels == 0)
+                        pvri.PixelFormat = PvrPixelFormat.Rgb565;
+                    else if (tlevels == 1)
+                        pvri.PixelFormat = PvrPixelFormat.Argb1555;
+                    else if (tlevels == 2)
+                        pvri.PixelFormat = PvrPixelFormat.Argb4444;
+                    if (tex.Value.Value.Width == tex.Value.Value.Height)
+                        if (pvri.Mipmap)
+                            pvri.DataFormat = PvrDataFormat.SquareTwiddledMipmaps;
+                        else
+                            pvri.DataFormat = PvrDataFormat.SquareTwiddled;
+                    else
+                        pvri.DataFormat = PvrDataFormat.Rectangle;
+                    dataFormatLabel.Text = $"Data Format: {pvri.DataFormat}";
+                    pixelFormatLabel.Text = $"Pixel Format: {pvri.PixelFormat}";
+                }
+                else if (textures[listBox1.SelectedIndex] is GvrTextureInfo gvri)
+                {
+                    gvri.TextureData = null;
+                    if (Settings.PCCompatGVM)
+                    {
+                        int tlevels = GetAlphaLevel(tex.Value.Value);
+                        if (tlevels == 0)
+                            gvri.DataFormat = GvrDataFormat.Dxt1;
+                        else
+                            gvri.DataFormat = GvrDataFormat.Rgb5a3;
+                    }
+                    else
+                        gvri.DataFormat = GvrDataFormat.Argb8888;
+                    dataFormatLabel.Text = $"Data Format: {gvri.DataFormat}";
+                    pixelFormatLabel.Text = $"Pixel Format: {gvri.PixelFormat}";
+                }
 				UpdateTextureView(textures[listBox1.SelectedIndex].Image);
-                textureSizeLabel.Text = $"Size: {tex.Value.Value.Width}x{tex.Value.Value.Height}";
+                textureSizeLabel.Text = $"Actual Size: {tex.Value.Value.Width}x{tex.Value.Value.Height}";
                 if (textures[listBox1.SelectedIndex].CheckMipmap())
                 {
                     mipmapCheckBox.Enabled = true;
@@ -1274,6 +1330,7 @@ namespace TextureEditor
                 }
                 else
                     mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
+                unsaved = true;
             }
 
             listBox1.Select();
@@ -1302,6 +1359,7 @@ namespace TextureEditor
                 }
             if (listBox1.SelectedIndex != -1 && textures[listBox1.SelectedIndex].CheckMipmap())
                 mipmapCheckBox.Checked = true;
+            unsaved = true;
         }
 
         private void makePCCompatibleGVMsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -1312,6 +1370,21 @@ namespace TextureEditor
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Settings.Save();
+            if (unsaved)
+            {
+                DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                switch (res)
+                {
+                    case DialogResult.Yes:
+                        SaveTextures();
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.No:
+                        break;
+                }
+            }
         }
 
         private void numericUpDownOrigSizeX_ValueChanged(object sender, EventArgs e)
@@ -1345,6 +1418,7 @@ namespace TextureEditor
             else
                 pk.DataFormat = GvrDataFormat.Dxt1;
             dataFormatLabel.Text = $"Data Format: {pk.DataFormat}";
+            unsaved = true;
         }
 
         private void PAKEnableAlphaForAll(bool enable)
@@ -1368,6 +1442,7 @@ namespace TextureEditor
                 checkBoxPAKUseAlpha.Checked = pakcur.DataFormat == GvrDataFormat.Rgb5a3;
                 dataFormatLabel.Text = $"Data Format: {pakcur.DataFormat}";
             }
+            unsaved = true;
         }
 
         private void enablePAKAlphaForAllToolStripMenuItem_Click(object sender, EventArgs e)

@@ -34,9 +34,14 @@ namespace ArchiveTool
         /// </summary>
         static void BuildFromFolder(string[] args)
         {
+            bool createPB = false;
             filePath = args[0];
             compressPRS = false;
-            if (args.Length > 1 && args[1] == "-prs") compressPRS = true;
+            for (int a = 0; a < args.Length; a++)
+            {
+                if (args[a] == "-prs") compressPRS = true;
+                if (args[a] == "-pb") createPB = true;
+            }
             //Folder mode
             if (Directory.Exists(filePath))
             {
@@ -47,8 +52,16 @@ namespace ArchiveTool
                 switch (ext)
                 {
                     case ".pvr":
-                        folderMode = ArchiveFromFolderMode.PVM;
-                        arc = new PuyoFile();
+                        if (createPB)
+                        {
+                            folderMode = ArchiveFromFolderMode.PB;
+                            arc = new PBFile();
+                        }
+                        else
+                        {
+                            folderMode = ArchiveFromFolderMode.PVM;
+                            arc = new PuyoFile();
+                        }
                         break;
                     case ".gvr":
                         arc = new PuyoFile();
@@ -69,6 +82,7 @@ namespace ArchiveTool
                         break;
                 }
                 Console.WriteLine("Creating {0} archive from folder: {1}", folderMode.ToString(), filePath);
+                int id = 0;
                 foreach (string line in filenames)
                 {
                     string[] split = line.Split(',');
@@ -87,6 +101,11 @@ namespace ArchiveTool
                             arc.Entries.Add(new GVMEntry(Path.Combine(filePath, filename)));
                             extension = ".gvm";
                             break;
+                        case ArchiveFromFolderMode.PB:
+                            PBFile pbf = (PBFile)arc;
+                            arc.Entries.Add(new PBEntry(Path.Combine(filePath, filename), pbf.GetCurrentOffset(id, filenames.Count)));
+                            extension = ".pb";
+                            break;
                         case ArchiveFromFolderMode.PVMX:
                             extension = ".pvmx";
                             filename = split[1];
@@ -104,7 +123,8 @@ namespace ArchiveTool
                             extension = ".bin";
                             break;
                     }
-                    Console.WriteLine("Added entry: {0}", filename);
+                    Console.WriteLine("Added entry {0}: {1}", id.ToString(), filename);
+                    id++;
                 }
                 byte[] data = arc.GetBytes();
                 outputPath = Path.GetFullPath(filePath) + extension;
@@ -247,7 +267,8 @@ namespace ArchiveTool
             PVM = 0,
             GVM = 1,
             DAT = 2,
-            PVMX = 3
+            PVMX = 3,
+            PB = 4
         }
     }
 }

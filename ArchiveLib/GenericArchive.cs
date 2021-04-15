@@ -50,7 +50,6 @@ namespace ArchiveLib
                 Name = string.Empty;
             }
 
-            public abstract byte[] GetBytes();
             public abstract Bitmap GetBitmap();
 
         }
@@ -80,10 +79,6 @@ namespace ArchiveLib
                 Data = data;
             }
 
-            public override byte[] GetBytes()
-            {
-                return Data;
-            }
 
             public override Bitmap GetBitmap()
             {
@@ -362,11 +357,6 @@ namespace ArchiveLib
                 Array.Copy(file, BitConverter.ToInt32(file, address + 4), Data, 0, Data.Length);
             }
 
-            public override byte[] GetBytes()
-            {
-                return Data;
-            }
-
             private string GetCString(byte[] file, int address)
             {
                 int textsize = 0;
@@ -585,8 +575,9 @@ namespace ArchiveLib
                     PBEntry pbentry_1 = (PBEntry)Entries[u + 1];
                     chunksize = pbentry_1.Offset - pbentry.Offset;
                 }
-                pbentry.Data = new byte[chunksize];
-                Array.Copy(pbdata, pbentry.Offset, pbentry.Data, 0, chunksize);
+                byte[] headerless = new byte[chunksize];
+                Array.Copy(pbdata, pbentry.Offset, headerless, 0, chunksize);
+                pbentry.Data = pbentry.GetPVR(headerless);
                 //Console.WriteLine("Added data: offset {0}, length {1}", headers[u].Offset, pbchunk.Length);
             }
         }
@@ -596,28 +587,21 @@ namespace ArchiveLib
             Entries = new List<GenericArchiveEntry>(count);
         }
 
-        private int GetCurrentOffset(int index)
+        public PBFile() { }
+
+		public int GetCurrentOffset(int index, int total)
         {
-            int offset_base = 8 + 16 * Entries.Capacity;
+            int offset_base = 8 + 16 * total;
             if (index == 0)
                 return offset_base;
             for (int u = 0; u < index; u++)
             {
-                offset_base += Entries[u].Data.Length;
+                PBEntry entry = (PBEntry)Entries[u];
+                offset_base += entry.GetHeaderless().Length;
             }
             return offset_base;
         }
 
-        public void AddPVR(byte[] pvrdata, int index)
-        {
-            int length = BitConverter.ToInt32(pvrdata, 20) - 8;
-            int offset = GetCurrentOffset(index);
-            PvrTexture pvr = new PvrTexture(pvrdata);
-            Entries.Add(new PBEntry(offset, pvr.PixelFormat, pvr.DataFormat, pvr.GlobalIndex, pvr.TextureWidth, pvr.TextureHeight));
-            Entries[index].Data = new byte[length];
-            Array.Copy(pvrdata, 32, Entries[index].Data, 0, length);
-            //Console.WriteLine("Adding texture {0} at offset {1}, length {2} (original PVR {3})", index, offset, length, pvrdata.Length);
-        }
 
         public override byte[] GetBytes()
         {
@@ -634,7 +618,8 @@ namespace ArchiveLib
             }
             for (int u = 0; u < Entries.Count; u++)
             {
-                result.AddRange(Entries[u].Data);
+                PBEntry entry = (PBEntry)Entries[u];
+                result.AddRange(entry.GetHeaderless());
             }
             return result.ToArray();
         }
@@ -663,6 +648,14 @@ namespace ArchiveLib
             return result.ToArray();
         }
 
+        public byte[] GetHeaderless()
+        {
+            int length = BitConverter.ToInt32(Data, 20) - 8;
+            byte[] result = new byte[length];
+            Array.Copy(Data, 32, result, 0, length);
+            return result;
+        }
+
         public PBEntry(byte[] pbdata, int tempaddr, string name)
         {
             Name = name;
@@ -671,7 +664,21 @@ namespace ArchiveLib
             DataFormat = (PvrDataFormat)pbdata[tempaddr + 5];
             GBIX = BitConverter.ToUInt32(pbdata, tempaddr + 8);
             Width = BitConverter.ToUInt16(pbdata, tempaddr + 12);
-            Height = BitConverter.ToUInt16(pbdata, tempaddr + 12);
+            Height = BitConverter.ToUInt16(pbdata, tempaddr + 14);
+        }
+
+        public PBEntry(string filename, int offset)
+        {
+            Data = File.ReadAllBytes(filename);
+            PvrTexture pvrt = new PvrTexture(Data);
+            byte[] data = GetHeaderless();
+            Name = Path.GetFileNameWithoutExtension(filename);
+            Offset = offset;
+            PixelFormat = pvrt.PixelFormat;
+            DataFormat = pvrt.DataFormat;
+            GBIX = pvrt.GlobalIndex;
+            Width = pvrt.TextureWidth;
+            Height = pvrt.TextureHeight;
         }
 
         public PBEntry(int offset, PvrPixelFormat pxformat, PvrDataFormat dataformat, uint gbix, ushort width, ushort height)
@@ -686,13 +693,13 @@ namespace ArchiveLib
 
         public override Bitmap GetBitmap()
         {
-            return new PvrTexture(GetBytes()).ToBitmap();
+            return new PvrTexture(Data).ToBitmap();
         }
 
-        public override byte[] GetBytes()
+        public byte[] GetPVR(byte[] data)
         {
             List<byte> result = new List<byte>();
-            int chunksize_file = Data.Length;
+            int chunksize_file = data.Length;
             // Make chunk size divisible by 16 because it crashes otherwise
             if (chunksize_file % 16 != 0)
             {
@@ -717,7 +724,7 @@ namespace ArchiveLib
             result.Add(0);
             result.AddRange(BitConverter.GetBytes(Width));
             result.AddRange(BitConverter.GetBytes(Height));
-            result.AddRange(Data);
+            result.AddRange(data);
             int pd = 0;
             // Make file size divisible by 16 because it crashes otherwise
             if (result.Count % 16 != 0)
@@ -745,10 +752,6 @@ namespace ArchiveLib
 
         public class NjArchiveEntry : GenericArchiveEntry
         {
-            public override byte[] GetBytes()
-            {
-                return Data;
-            }
 
             public override Bitmap GetBitmap()
             {
@@ -931,8 +934,11 @@ namespace ArchiveLib
         public class PVMXEntry : GenericArchiveEntry
         {
             public int Width { get; set; }
+
             public int Height { get; set; }
+
             public uint GBIX { get; set; }
+
             public PVMXEntry(string name, uint gbix, byte[] data, int width, int height)
             {
                 Name = name;
@@ -941,6 +947,7 @@ namespace ArchiveLib
                 Data = data;
                 GBIX = gbix;
             }
+
             public bool HasDimensions()
             {
                 if (Width != 0 || Height != 0)
@@ -948,10 +955,7 @@ namespace ArchiveLib
                 else
                     return false;
             }
-            public override byte[] GetBytes()
-            {
-                return Data;
-            }
+
             public override Bitmap GetBitmap()
             {
                 MemoryStream ms = new MemoryStream(Data);
@@ -1143,11 +1147,6 @@ namespace ArchiveLib
             GBIX = pvrt.GlobalIndex;
         }
 
-        public override byte[] GetBytes()
-        {
-            return Data;
-        }
-
         public uint GetGBIX()
         {
             return GBIX;
@@ -1181,11 +1180,6 @@ namespace ArchiveLib
             Data = File.ReadAllBytes(filename);
             GvrTexture gvrt = new GvrTexture(Data);
             GBIX = gvrt.GlobalIndex;
-        }
-
-        public override byte[] GetBytes()
-        {
-            return Data;
         }
 
         public uint GetGBIX()

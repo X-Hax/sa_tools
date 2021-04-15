@@ -31,7 +31,7 @@ namespace PAKtool
                         foreach (PAKFile.PAKEntry entry in pak.Entries)
                         {
                             Console.WriteLine("Extracting file: {0}", entry.Name);
-                            File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.GetBytes());
+                            File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.Data);
                         }
                         pak.CreateIndexFile(outputPath);
                         Console.WriteLine("Archive extracted!");
