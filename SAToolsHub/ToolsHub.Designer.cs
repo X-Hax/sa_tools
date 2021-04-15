@@ -361,14 +361,14 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
 			// 
 			this.sAMDLToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSAMDL;
 			this.sAMDLToolStripMenuItem.Name = "sAMDLToolStripMenuItem";
-			this.sAMDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sAMDLToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.sAMDLToolStripMenuItem.Text = "SAMDL";
 			this.sAMDLToolStripMenuItem.ToolTipText = "Open SAMDL (Model Viewer)\r\n";
 			this.sAMDLToolStripMenuItem.Click += new System.EventHandler(this.sAMDLToolStripMenuItem_Click);
@@ -377,7 +377,7 @@
 			// 
 			this.sALVLToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDxLvl2;
 			this.sALVLToolStripMenuItem.Name = "sALVLToolStripMenuItem";
-			this.sALVLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sALVLToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.sALVLToolStripMenuItem.Text = "SALVL";
 			this.sALVLToolStripMenuItem.ToolTipText = "Open SALVL (Level Editor)";
 			this.sALVLToolStripMenuItem.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
@@ -386,7 +386,7 @@
 			// 
 			this.textureEditorToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsTexEdit;
 			this.textureEditorToolStripMenuItem.Name = "textureEditorToolStripMenuItem";
-			this.textureEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.textureEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
 			this.textureEditorToolStripMenuItem.Text = "Texture Editor";
 			this.textureEditorToolStripMenuItem.ToolTipText = "Open Texture Editor (Texture Archive Viewer and Editor)";
 			this.textureEditorToolStripMenuItem.Click += new System.EventHandler(this.textureEditorToolStripMenuItem_Click);
@@ -399,7 +399,7 @@
             this.sAFontEditorToolStripMenuItem,
             this.sASaveToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SADX Tools";
 			// 
 			// sADXTweakerToolStripMenuItem
@@ -446,7 +446,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -488,12 +488,12 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(174, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.ToolTipText = "Opens the Data Toolbox tool.";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
@@ -501,7 +501,7 @@
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
 			this.toolStripMenuItem1.Text = "Template Writer";
 			this.toolStripMenuItem1.ToolTipText = "Open Template Writer";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
@@ -509,7 +509,7 @@
 			// projectConverterToolStripMenuItem
 			// 
 			this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
-			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.projectConverterToolStripMenuItem.Text = "Project Converter";
 			this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
 			this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);

@@ -399,9 +399,18 @@ namespace SAToolsHub
 				progress.SetStep("Copying Object Definitions");
 				string objdefsPath = GetObjDefsDirectory();
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
-				CopyFolder(objdefsPath, outputObjdefsPath);
-				File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
-				File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"));
+				if (Directory.Exists(objdefsPath))
+				{
+					CopyFolder(objdefsPath, outputObjdefsPath);
+					File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
+					File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"));
+				}
+				else
+				{
+					MessageBox.Show(("Path to objdefs is missing\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+					throw new Exception(SplitERRORVALUE.UnhandledException.ToString());
+				}
 				GenerateModFile(gameName, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
 			}
 				
