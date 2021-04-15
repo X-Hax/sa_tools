@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using ArchiveLib;
+using SA_Tools;
 
 namespace PAKtool
 {
@@ -22,30 +23,36 @@ namespace PAKtool
 				case "/u":
 					try
 					{
-						string fn = Path.Combine(Environment.CurrentDirectory, args[1]);
-						Environment.CurrentDirectory = Path.GetDirectoryName(fn);
-						PAKFile pak = new PAKFile(fn);
-						Dictionary<string, PAKInfo> list = new Dictionary<string, PAKInfo>(pak.Files.Count);
-						foreach (PAKFile.File item in pak.Files)
-						{
-							Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Environment.CurrentDirectory, item.Name)));
-							File.WriteAllBytes(item.Name, item.Data);
-							list.Add(item.Name, new PAKInfo(item.LongPath));
-						}
-						IniFile.Serialize(list, Path.ChangeExtension(fn, "ini"));
-					}
+                        string fn = args[1];
+                        Console.WriteLine("Extracting PAK file: {0}", Path.GetFullPath(fn));
+                        string outputPath = Path.Combine(Path.GetDirectoryName(fn), Path.GetFileNameWithoutExtension(fn));
+                        Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
+                        PAKFile pak = new PAKFile(fn);
+                        foreach (PAKFile.PAKEntry entry in pak.Entries)
+                        {
+                            Console.WriteLine("Extracting file: {0}", entry.Name);
+                            File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.GetBytes());
+                        }
+                        pak.CreateIndexFile(outputPath);
+                        Console.WriteLine("Archive extracted!");
+                    }
 					catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 					break;
 				case "/p":
 					try
 					{
-						string fn = Path.Combine(Environment.CurrentDirectory, args[1]);
-						Environment.CurrentDirectory = Path.GetDirectoryName(fn);
-						Dictionary<string, PAKInfo> list = IniFile.Deserialize<Dictionary<string, PAKInfo>>(Path.ChangeExtension(fn, "ini"));
+                        Console.WriteLine("Building PAK from folder: {0}", Path.GetFullPath(args[1]));
+                        string outputPath = Path.Combine(Environment.CurrentDirectory, args[1]);
+                        Environment.CurrentDirectory = Path.GetDirectoryName(outputPath);
+                        Dictionary<string, PAKFile.PAKIniItem> list = IniSerializer.Deserialize<Dictionary<string, PAKFile.PAKIniItem>>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
                         PAKFile pak = new PAKFile();
-						foreach (KeyValuePair<string, PAKInfo> item in list)
-							pak.Files.Add(new PAKFile.File(item.Key, item.Value.LongPath, File.ReadAllBytes(item.Key)));
-						pak.Save(Path.ChangeExtension(fn, "pak"));
+                        foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list)
+                        {
+                            Console.WriteLine("Adding file: {0}", item.Key);
+                            pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(item.Key)));
+                        }
+                        Console.WriteLine("Output file: {0}", Path.ChangeExtension(outputPath, "pak"));
+                        pak.Save(Path.ChangeExtension(outputPath, "pak"));
 					}
 					catch (Exception ex) { Console.WriteLine(ex.ToString()); }
 					break;

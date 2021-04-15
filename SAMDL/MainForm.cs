@@ -124,6 +124,8 @@ namespace SonicRetro.SAModel.SAMDL
                     case ".pvmx":
                     case ".pak":
                     case ".prs":
+                    case ".pvr":
+                    case ".gvr":
                     case ".txt":
                         LoadTextures(file);
                         break;

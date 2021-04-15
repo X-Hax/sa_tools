@@ -53,6 +53,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvertArchive.cs" />
+    <Compile Include="CreateArchive.cs" />
+    <Compile Include="ExtractArchive.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -55,16 +55,16 @@ namespace SA2StageSelEdit
                     levels = new List<StageSelectLevel>(StageSelectLevelList.Load(filename));
                     string resdir = Path.Combine(Path.GetDirectoryName(fd.FileName), ini.SystemFolder);
                     using (MemoryStream str = new MemoryStream(
-                        new PAKFile(Path.Combine(resdir, @"SOC\stageMapBG.pak")).Files.Find(
+                        new PAKFile(Path.Combine(resdir, @"SOC\stageMapBG.pak")).Entries.Find(
                         (a) => a.Name.Equals(@"stagemapbg\stagemap.dds")).Data))
                         bgtex = LoadDDS(str);
                     if (File.Exists(Path.Combine(resdir, @"PRS\stageMap.pak")))
                     {
-                        List<PAKFile.File> files = new PAKFile(Path.Combine(resdir, @"PRS\stageMap.pak")).Files;
-                        byte[] inf = files.Find((a) => a.Name.Equals(@"stagemap\stagemap.inf")).Data;
+                        PAKFile pakf = new PAKFile(Path.Combine(resdir, @"PRS\stageMap.pak"));
+                        byte[] inf = pakf.Entries.Find((a) => a.Name.Equals(@"stagemap\stagemap.inf")).Data;
                         uitexs = new Bitmap[inf.Length / 0x3C];
                         for (int i = 0; i < uitexs.Length; i++)
-                            using (MemoryStream str = new MemoryStream(files.Find(
+                            using (MemoryStream str = new MemoryStream(pakf.Entries.Find(
                                 (a) => a.Name.Equals(@"stagemap\" + Encoding.ASCII.GetString(inf, i * 0x3C, 0x1c).TrimEnd('\0') + ".dds")).Data))
                                 uitexs[i] = LoadDDS(str);
                     }

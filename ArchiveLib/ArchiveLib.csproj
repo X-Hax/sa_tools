@@ -37,6 +37,10 @@
     <Reference Include="Pfim, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
     </Reference>
+    <Reference Include="PuyoTools.Modules, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\PuyoTools.Modules.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -45,6 +49,7 @@
     <Reference Include="System.Drawing.Common, Version=4.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Drawing.Common.5.0.2\lib\net461\System.Drawing.Common.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="VrSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\VrSharp.dll</HintPath>
@@ -59,6 +64,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SA Tools\SA Tools.csproj">
+      <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
+      <Name>SA Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0ee5d36f-cacf-41e9-8c9a-76ffd946b22d}</Project>
       <Name>SAModel</Name>

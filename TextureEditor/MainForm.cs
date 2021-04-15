@@ -69,20 +69,20 @@ namespace TextureEditor
                 format = TextureFormat.PVMX;
                 newtextures = new List<TextureInfo>(PvmxArchive.GetTextures(pvmdata).Cast<TextureInfo>());
             }
-            else if (PAKFile.Is(filename))
+            else if (PAKFile.Identify(filename))
             {
                 format = TextureFormat.PAK;
                 PAKFile pak = new PAKFile(filename);
                 string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
                 bool hasIndex = false;
-                foreach (PAKFile.File fl in pak.Files)
+                foreach (PAKFile.PAKEntry fl in pak.Entries)
                 {
-                    if (fl.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
+                    if (fl.Name.Equals(filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
                         hasIndex = true;
                 }
                 if (!hasIndex)
                 {
-                    MessageBox.Show("This PAK archive does not contain an index file, and Texture Editor cannot open it. Use PAKTool to open such files.", "Texture Editor");
+                    MessageBox.Show("This PAK archive does not contain an index file, and Texture Editor cannot open it. Use ArchiveTool to open such files.", "Texture Editor");
                     textures.Clear();
                     listBox1.Items.Clear();
                     filename = null;
@@ -91,7 +91,7 @@ namespace TextureEditor
                     UpdateTextureCount();
                     return true;
                 }
-                byte[] inf = pak.Files.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                byte[] inf = pak.Entries.Single((file) => file.Name.Equals(filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
                 newtextures = new List<TextureInfo>(inf.Length / 0x3C);
                 for (int i = 0; i < inf.Length; i += 0x3C)
                 {
@@ -100,7 +100,7 @@ namespace TextureEditor
                     Array.Copy(inf, i, pakentry, 0, 0x3C);
                     PAKInfEntry entry = new PAKInfEntry(pakentry);
                     // Load texture data
-                    byte[] dds = pak.Files.First((file) => file.Name.Equals(filenoext + '\\' + entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+                    byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
                     using (MemoryStream str = new MemoryStream(dds))
                     {
                         // Check if the texture is DDS
@@ -459,6 +459,7 @@ namespace TextureEditor
                     case TextureFormat.PAK:
                         PAKFile pak = new PAKFile();
                         string filenoext = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+                        pak.FolderName = filenoext;
                         string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
                         List<byte> inf = new List<byte>(textures.Count * 0x3C);
                         foreach (TextureInfo item in textures)
@@ -470,7 +471,7 @@ namespace TextureEditor
                                 string name = item.Name.ToLowerInvariant();
                                 if (name.Length > 0x1C)
                                     name = name.Substring(0, 0x1C);
-                                pak.Files.Add(new PAKFile.File(filenoext + '\\' + name + ".dds", longdir + '\\' + name + ".dds", tb));
+                                pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb));
                                 // Create a new PAK INF entry
                                 PAKInfEntry entry = new PAKInfEntry();
                                 byte[] namearr = Encoding.ASCII.GetBytes(name);
@@ -489,7 +490,7 @@ namespace TextureEditor
                                 inf.AddRange(entry.GetBytes());
                             }
                         }
-                        pak.Files.Insert(0, new PAKFile.File(filenoext + '\\' + filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
+                        pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
                         pak.Save(filename);
 
                         return;

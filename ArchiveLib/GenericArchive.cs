@@ -7,33 +7,85 @@ using VrSharp.Pvr;
 using SonicRetro.SAModel;
 using System.Drawing;
 using System.Drawing.Imaging;
-
-// This library implements support for archive files that are used by tools other than (or in addition to) Texture Editor and SAMDL/SALVL.
+using static ArchiveLib.GenericArchive;
+using PuyoTools.Modules.Archive;
+using VrSharp;
+using VrSharp.Gvr;
+using SA_Tools;
 
 namespace ArchiveLib
 {
-    #region PAK
-    public class PAKFile
-	{
-		public class File
+    #region Abstract class for all archives
+    public abstract class GenericArchive
+    {
+        public List<GenericArchiveEntry> Entries { get; set; }
+
+        public GenericArchive()
         {
-			public string Name { get; set; }
-			public string LongPath { get; set; }
-			public byte[] Data { get; set; }
+            Entries = new List<GenericArchiveEntry>();
+        }
 
-			public File()
-			{
-				Name = LongPath = string.Empty;
-			}
+        public void Save(string outputFile)
+        {
+            File.WriteAllBytes(outputFile, GetBytes());
+        }
 
-			public File(string name, string longpath, byte[] data)
-			{
-				Name = name;
-				LongPath = longpath;
-				Data = data;
-			}
+        public abstract byte[] GetBytes();
 
-            public Bitmap GetBitmap()
+        public abstract void CreateIndexFile(string path);
+
+        public abstract class GenericArchiveEntry
+        {
+            public string Name { get; set; }
+            public byte[] Data { get; set; }
+
+            public GenericArchiveEntry(string name, byte[] data)
+            {
+                Name = name;
+                Data = data;
+            }
+
+            public GenericArchiveEntry()
+            {
+                Name = string.Empty;
+            }
+
+            public abstract byte[] GetBytes();
+            public abstract Bitmap GetBitmap();
+
+        }
+    }
+    #endregion
+
+    #region PAK
+    public class PAKFile : GenericArchive
+    {
+        const uint Magic = 0x6B617001;
+        public string FolderName;
+
+        public class PAKEntry : GenericArchiveEntry
+        {
+
+            public string LongPath { get; set; }
+
+            public PAKEntry()
+            {
+                Name = LongPath = string.Empty;
+            }
+
+            public PAKEntry(string name, string longpath, byte[] data)
+            {
+                Name = name;
+                LongPath = longpath;
+                Data = data;
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Data;
+            }
+
+            public override Bitmap GetBitmap()
             {
                 using (MemoryStream str = new MemoryStream(Data))
                 {
@@ -60,95 +112,167 @@ namespace ArchiveLib
                         return new Bitmap(str);
                 }
             }
-		}
+        }
 
-		public static uint Magic = 0x6B617001;
+        public PAKFile() { }
 
-		public static bool Is(string filename)
+        public class PAKIniItem
+        {
+            public string LongPath { get; set; }
+            public PAKIniItem(string longPath)
+            {
+                LongPath = longPath;
+            }
+            public PAKIniItem() { }
+        }
+
+        public List<PAKEntry> GetSortedEntries(string filenoext)
+        {
+            bool inf_exists = false;
+            foreach (PAKEntry entry in Entries)
+                if (entry.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
+                    inf_exists = true;
+            // Get texture names from PAK INF, if it exists
+            if (inf_exists)
+            {
+                byte[] inf = Entries.Single((file) => file.Name.Equals(filenoext + '\\' + filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                List<PAKEntry> result = new List<PAKEntry>(inf.Length / 0x3C);
+                for (int i = 0; i < inf.Length; i += 0x3C)
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder(0x1C);
+                    for (int j = 0; j < 0x1C; j++)
+                        if (inf[i + j] != 0)
+                            sb.Append((char)inf[i + j]);
+                        else
+                            break;
+                    GenericArchiveEntry gen = Entries.First((file) => file.Name.Equals(filenoext + '\\' + sb.ToString() + ".dds", StringComparison.OrdinalIgnoreCase));
+                    result.Add((PAKEntry)gen);
+                }
+                return result;
+            }
+            else
+            {
+                // Otherwise get the original list
+                List<PAKEntry> result = new List<PAKEntry>();
+                // But only add files that can be converted to Bitmap
+                foreach (PAKEntry entry in Entries)
+                {
+                    string extension = Path.GetExtension(entry.Name).ToLowerInvariant();
+                    switch (extension)
+                    {
+                        case ".dds":
+                        case ".png":
+                        case ".bmp":
+                        case ".gif":
+                        case ".jpg":
+                            result.Add(entry);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return result;
+            }
+        }
+
+        public override void CreateIndexFile(string path)
 		{
-			using (FileStream fs = System.IO.File.OpenRead(filename))
-			using (BinaryReader br = new BinaryReader(fs))
-				return br.ReadUInt32() == Magic;
-		}
-
-		public List<File> Files { get; set; }
-
-		public PAKFile()
-		{
-			Files = new List<File>();
-		}
+            Dictionary<string, PAKIniItem> list = new Dictionary<string, PAKIniItem>(Entries.Count);
+            foreach (PAKEntry item in Entries)
+            {
+                list.Add(FolderName + "\\" + item.Name, new PAKIniItem(item.LongPath));
+            }
+            IniSerializer.Serialize(list, Path.Combine(Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
+        }
 
 		public PAKFile(string filename)
-			: this()
-		{
-			using (FileStream fs = System.IO.File.OpenRead(filename))
-			using (BinaryReader br = new BinaryReader(fs, Encoding.ASCII))
-			{
-				if (br.ReadUInt32() != Magic)
-					throw new Exception("Error: Unknown archive type");
-				fs.Seek(0x39, SeekOrigin.Begin);
-				int numfiles = br.ReadInt32();
-				string[] longpaths = new string[numfiles];
-				string[] names = new string[numfiles];
-				int[] lens = new int[numfiles];
-				for (int i = 0; i < numfiles; i++)
-				{
-					longpaths[i] = new string(br.ReadChars(br.ReadInt32()));
-					names[i] = new string(br.ReadChars(br.ReadInt32()));
-					lens[i] = br.ReadInt32();
-					br.ReadInt32();
-				}
-				for (int i = 0; i < numfiles; i++)
-					Files.Add(new File(names[i], longpaths[i], br.ReadBytes(lens[i])));
-			}
-		}
+        {
+            FolderName = Path.GetFileNameWithoutExtension(filename).ToLowerInvariant();
+            using (FileStream fs = File.OpenRead(filename))
+            using (BinaryReader br = new BinaryReader(fs, Encoding.ASCII))
+            {
+                if (br.ReadUInt32() != Magic)
+                    throw new Exception("Error: Unknown archive type");
+                fs.Seek(0x39, SeekOrigin.Begin);
+                int numfiles = br.ReadInt32();
+                string[] longpaths = new string[numfiles];
+                string[] names = new string[numfiles];
+                int[] lens = new int[numfiles];
+                for (int i = 0; i < numfiles; i++)
+                {
+                    longpaths[i] = new string(br.ReadChars(br.ReadInt32()));
+                    names[i] = new string(br.ReadChars(br.ReadInt32()));
+                    lens[i] = br.ReadInt32();
+                    br.ReadInt32();
+                }
+                for (int i = 0; i < numfiles; i++)
+                    Entries.Add(new PAKEntry(Path.GetFileName(names[i]), longpaths[i], br.ReadBytes(lens[i])));
+            }
+        }
 
-		public void Save(string filename)
-		{
-			using (FileStream fs = System.IO.File.Create(filename))
-			using (BinaryWriter bw = new BinaryWriter(fs, Encoding.ASCII))
-			{
-				bw.Write(Magic);
-				bw.Write(new byte[33]);
-				bw.Write(Files.Count);
-				byte[] totlen = BitConverter.GetBytes(Files.Sum((a) => a.Data.Length));
-				bw.Write(totlen);
-				bw.Write(totlen);
-				bw.Write(new byte[8]);
-				bw.Write(Files.Count);
-				foreach (File item in Files)
-				{
-					bw.Write(item.LongPath.Length);
-					bw.Write(item.LongPath.ToCharArray());
-					bw.Write(item.Name.Length);
-					bw.Write(item.Name.ToCharArray());
-					bw.Write(item.Data.Length);
-					bw.Write(item.Data.Length);
-				}
-				foreach (File item in Files)
-					bw.Write(item.Data);
-			}
-		}
-	}
+        public static bool Identify(string filename)
+        {
+            using (FileStream fs = System.IO.File.OpenRead(filename))
+            using (BinaryReader br = new BinaryReader(fs))
+                return br.ReadUInt32() == Magic;
+        }
+
+        public override byte[] GetBytes()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter bw = new BinaryWriter(ms, Encoding.ASCII))
+            {
+                bw.Write(Magic);
+                bw.Write(new byte[33]);
+                bw.Write(Entries.Count);
+                byte[] totlen = BitConverter.GetBytes(Entries.Sum((a) => a.Data.Length));
+                bw.Write(totlen);
+                bw.Write(totlen);
+                bw.Write(new byte[8]);
+                bw.Write(Entries.Count);
+                foreach (PAKEntry item in Entries)
+                {
+                    string fullname = FolderName + "\\" + item.Name;
+                    bw.Write(item.LongPath.Length);
+                    bw.Write(item.LongPath.ToCharArray());
+                    bw.Write(fullname.Length);
+                    bw.Write(fullname.ToCharArray());
+                    bw.Write(item.Data.Length);
+                    bw.Write(item.Data.Length);
+                }
+                foreach (PAKEntry item in Entries)
+                    bw.Write(item.Data);
+                return ms.ToArray();
+            }
+        }
+    }
     #endregion
 
     #region DAT
-    public class DATFile
+    public class DATFile : GenericArchive
     {
-        public List<FENTRY> Entries;
         public bool Steam;
-
-        public int GetCount()
-        {
-            return Entries.Count;
-        }
 
         public DATFile()
         {
-            Entries = new List<FENTRY>();
+            Entries = new List<GenericArchiveEntry>();
         }
 
-        public DATFile(byte[] file)
+		public override void CreateIndexFile(string path)
+		{
+            using (TextWriter tw = File.CreateText(Path.Combine(path, "index.txt")))
+            {
+                Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.Name, f2.Name));
+                for (int i = 0; i < Entries.Count; i++)
+                {
+                    tw.WriteLine(Entries[i].Name);
+                }
+                tw.Flush();
+                tw.Close();
+            }
+        }
+
+		public DATFile(byte[] file)
         {
             switch (System.Text.Encoding.ASCII.GetString(file, 0, 0x10))
             {
@@ -162,97 +286,85 @@ namespace ArchiveLib
                     throw new Exception("Error: Unknown archive type");
             }
             int count = BitConverter.ToInt32(file, 0x10);
-            Entries = new List<FENTRY>(count);
+            Entries = new List<GenericArchiveEntry>(count);
             for (int i = 0; i < count; i++)
             {
-                Entries.Add(new FENTRY(file, 0x14 + (i * 0xC)));
+                Entries.Add(new DATEntry(file, 0x14 + (i * 0xC)));
             }
         }
 
         public byte[] GetFile(int index)
         {
-            return CompressDAT.ProcessBuffer(Entries[index].file);
-        }
-
-        public void AddFile(string filePath)
-        {
-            Entries.Add(new FENTRY(filePath));
+            return CompressDAT.ProcessBuffer(Entries[index].Data);
         }
 
         public bool IsFileCompressed(int index)
         {
-            return CompressDAT.isFileCompressed(Entries[index].file);
+            return CompressDAT.isFileCompressed(Entries[index].Data);
         }
 
         public void ReplaceFile(string path, int index)
         {
-            Entries[index] = new FENTRY(path);
+            Entries[index] = new DATEntry(path);
         }
 
-        public void ReplaceData(string path, int index)
-        {
-            Entries[index].file = File.ReadAllBytes(path);
-        }
-
-        public void RemoveFile(int index)
-        {
-            Entries.RemoveAt(index);
-        }
-
-        public byte[] GetBytes()
+        public override byte[] GetBytes()
         {
             int fsize = 0x14;
             int hloc = fsize;
             fsize += Entries.Count * 0xC;
             int tloc = fsize;
-            foreach (FENTRY item in Entries)
+            foreach (DATEntry item in Entries)
             {
-                fsize += item.name.Length + 1;
+                fsize += item.Name.Length + 1;
             }
             int floc = fsize;
-            foreach (FENTRY item in Entries)
+            foreach (DATEntry item in Entries)
             {
-                fsize += item.file.Length;
+                fsize += item.Data.Length;
             }
             byte[] file = new byte[fsize];
             System.Text.Encoding.ASCII.GetBytes(Steam ? "archive  V2.DMZ" : "archive  V2.2").CopyTo(file, 0);
             BitConverter.GetBytes(Entries.Count).CopyTo(file, 0x10);
-            foreach (FENTRY item in Entries)
+            foreach (DATEntry item in Entries)
             {
                 BitConverter.GetBytes(tloc).CopyTo(file, hloc);
                 hloc += 4;
-                System.Text.Encoding.ASCII.GetBytes(item.name).CopyTo(file, tloc);
-                tloc += item.name.Length + 1;
+                System.Text.Encoding.ASCII.GetBytes(item.Name).CopyTo(file, tloc);
+                tloc += item.Name.Length + 1;
                 BitConverter.GetBytes(floc).CopyTo(file, hloc);
                 hloc += 4;
-                item.file.CopyTo(file, floc);
-                floc += item.file.Length;
-                BitConverter.GetBytes(item.file.Length).CopyTo(file, hloc);
+                item.Data.CopyTo(file, floc);
+                floc += item.Data.Length;
+                BitConverter.GetBytes(item.Data.Length).CopyTo(file, hloc);
                 hloc += 4;
             }
             return file;
         }
-        public class FENTRY
+        public class DATEntry : GenericArchiveEntry
         {
-            public string name;
-            public byte[] file;
 
-            public FENTRY()
+            public DATEntry()
             {
-                name = string.Empty;
+                Name = string.Empty;
             }
 
-            public FENTRY(string fileName)
+            public DATEntry(string fileName)
             {
-                name = Path.GetFileName(fileName);
-                file = File.ReadAllBytes(fileName);
+                Name = Path.GetFileName(fileName);
+                Data = File.ReadAllBytes(fileName);
             }
 
-            public FENTRY(byte[] file, int address)
+            public DATEntry(byte[] file, int address)
             {
-                name = GetCString(file, BitConverter.ToInt32(file, address));
-                this.file = new byte[BitConverter.ToInt32(file, address + 8)];
-                Array.Copy(file, BitConverter.ToInt32(file, address + 4), this.file, 0, this.file.Length);
+                Name = GetCString(file, BitConverter.ToInt32(file, address));
+                Data = new byte[BitConverter.ToInt32(file, address + 8)];
+                Array.Copy(file, BitConverter.ToInt32(file, address + 4), Data, 0, Data.Length);
+            }
+
+            public override byte[] GetBytes()
+            {
+                return Data;
             }
 
             private string GetCString(byte[] file, int address)
@@ -262,6 +374,13 @@ namespace ArchiveLib
                     textsize += 1;
                 return System.Text.Encoding.ASCII.GetString(file, address, textsize);
             }
+
+            public override Bitmap GetBitmap()
+            {
+                MemoryStream str = new MemoryStream(Data);
+                return new Bitmap(str);
+            }
+
         }
 
         public static class CompressDAT
@@ -432,54 +551,59 @@ namespace ArchiveLib
     #endregion
 
     #region PB
-    public class PBFile
+    public class PBFile : GenericArchive
     {
-        List<PBTextureHeader> Headers;
-        List<byte[]> Data;
-
-        public int GetCount()
+        public override void CreateIndexFile(string path)
         {
-            return Headers.Count;
+            using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
+            {
+                for (int u = 0; u < Entries.Count; u++)
+                {
+                    texList.WriteLine(u.ToString("D3") + ".pvr");
+                }
+                texList.Flush();
+                texList.Close();
+            }
         }
 
         public PBFile(byte[] pbdata)
         {
-            Headers = new List<PBTextureHeader>();
-            Data = new List<byte[]>();
+            Entries = new List<GenericArchiveEntry>();
             int numtextures = pbdata[4];
             for (int u = 0; u < numtextures; u++)
             {
-                PBTextureHeader hdr = new PBTextureHeader(pbdata, 8 + 16 * u);
-                Headers.Add(hdr);
+                Entries.Add(new PBEntry(pbdata, 8 + 16 * u, u.ToString("D3") + ".pvr"));
                 //Console.WriteLine("Added header {0}: offset {1}, pixel format {2}, data format {3}, GBIX {4}, width {5}, height {6}", u, hdr.Offset, hdr.PixelFormat, hdr.DataFormat, hdr.GBIX, hdr.Width, hdr.Height);
             }
-            PBTextureHeader[] headers = Headers.ToArray();
             for (int u = 0; u < numtextures; u++)
             {
+                PBEntry pbentry = (PBEntry)Entries[u];
                 int chunksize;
-                if (u == numtextures - 1) chunksize = pbdata.Length - headers[u].Offset;
-                else chunksize = headers[u + 1].Offset - headers[u].Offset;
-                byte[] pbchunk = new byte[chunksize];
-                Array.Copy(pbdata, headers[u].Offset, pbchunk, 0, chunksize);
-                Data.Add(pbchunk);
+                if (u == numtextures - 1) chunksize = pbdata.Length - pbentry.Offset;
+                else
+                {
+                    PBEntry pbentry_1 = (PBEntry)Entries[u + 1];
+                    chunksize = pbentry_1.Offset - pbentry.Offset;
+                }
+                pbentry.Data = new byte[chunksize];
+                Array.Copy(pbdata, pbentry.Offset, pbentry.Data, 0, chunksize);
                 //Console.WriteLine("Added data: offset {0}, length {1}", headers[u].Offset, pbchunk.Length);
             }
         }
 
         public PBFile(int count)
         {
-            Headers = new List<PBTextureHeader>(count);
-            Data = new List<byte[]>(count);
+            Entries = new List<GenericArchiveEntry>(count);
         }
 
         private int GetCurrentOffset(int index)
         {
-            int offset_base = 8 + 16 * Headers.Capacity;
+            int offset_base = 8 + 16 * Entries.Capacity;
             if (index == 0)
                 return offset_base;
             for (int u = 0; u < index; u++)
             {
-                offset_base += Data[u].Length;
+                offset_base += Entries[u].Data.Length;
             }
             return offset_base;
         }
@@ -489,17 +613,86 @@ namespace ArchiveLib
             int length = BitConverter.ToInt32(pvrdata, 20) - 8;
             int offset = GetCurrentOffset(index);
             PvrTexture pvr = new PvrTexture(pvrdata);
-            Headers.Add(new PBTextureHeader(offset, pvr.PixelFormat, pvr.DataFormat, pvr.GlobalIndex, pvr.TextureWidth, pvr.TextureHeight));
-            byte[] pvrdata_nohdr = new byte[length];
-            Array.Copy(pvrdata, 32, pvrdata_nohdr, 0, length);
+            Entries.Add(new PBEntry(offset, pvr.PixelFormat, pvr.DataFormat, pvr.GlobalIndex, pvr.TextureWidth, pvr.TextureHeight));
+            Entries[index].Data = new byte[length];
+            Array.Copy(pvrdata, 32, Entries[index].Data, 0, length);
             //Console.WriteLine("Adding texture {0} at offset {1}, length {2} (original PVR {3})", index, offset, length, pvrdata.Length);
-            Data.Add(pvrdata_nohdr);
         }
 
-        public byte[] GetPVR(int index)
+        public override byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            int chunksize_file = Data[index].Length;
+            result.Add(0x50); // P
+            result.Add(0x56); // B
+            result.Add(0x42); // V
+            result.Add(0x02); // Version ID
+            result.AddRange(BitConverter.GetBytes((uint)Entries.Count));
+            for (int u = 0; u < Entries.Count; u++)
+            {
+                PBEntry entry = (PBEntry)Entries[u];
+                result.AddRange(entry.GetHeader());
+            }
+            for (int u = 0; u < Entries.Count; u++)
+            {
+                result.AddRange(Entries[u].Data);
+            }
+            return result.ToArray();
+        }
+    }
+
+    public class PBEntry : GenericArchiveEntry
+    {
+        public int Offset { get; set; }
+        public PvrPixelFormat PixelFormat { get; set; }
+        public PvrDataFormat DataFormat { get; set; }
+        public uint GBIX { get; set; }
+        public ushort Width { get; set; }
+        public ushort Height { get; set; }
+
+        public byte[] GetHeader()
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(BitConverter.GetBytes(Offset));
+            result.Add((byte)PixelFormat);
+            result.Add((byte)DataFormat);
+            result.Add(0);
+            result.Add(0);
+            result.AddRange(BitConverter.GetBytes(GBIX));
+            result.AddRange(BitConverter.GetBytes(Width));
+            result.AddRange(BitConverter.GetBytes(Height));
+            return result.ToArray();
+        }
+
+        public PBEntry(byte[] pbdata, int tempaddr, string name)
+        {
+            Name = name;
+            Offset = BitConverter.ToInt32(pbdata, tempaddr);
+            PixelFormat = (PvrPixelFormat)pbdata[tempaddr + 4];
+            DataFormat = (PvrDataFormat)pbdata[tempaddr + 5];
+            GBIX = BitConverter.ToUInt32(pbdata, tempaddr + 8);
+            Width = BitConverter.ToUInt16(pbdata, tempaddr + 12);
+            Height = BitConverter.ToUInt16(pbdata, tempaddr + 12);
+        }
+
+        public PBEntry(int offset, PvrPixelFormat pxformat, PvrDataFormat dataformat, uint gbix, ushort width, ushort height)
+        {
+            Offset = offset;
+            PixelFormat = pxformat;
+            DataFormat = dataformat;
+            GBIX = gbix;
+            Width = width;
+            Height = height;
+        }
+
+        public override Bitmap GetBitmap()
+        {
+            return new PvrTexture(GetBytes()).ToBitmap();
+        }
+
+        public override byte[] GetBytes()
+        {
+            List<byte> result = new List<byte>();
+            int chunksize_file = Data.Length;
             // Make chunk size divisible by 16 because it crashes otherwise
             if (chunksize_file % 16 != 0)
             {
@@ -514,17 +707,17 @@ namespace ArchiveLib
             byte[] padding = { 0x20, 0x20, 0x20, 0x20 };
             result.AddRange(gbixheader);
             result.AddRange(BitConverter.GetBytes(8));
-            result.AddRange(BitConverter.GetBytes(Headers[index].GBIX));
+            result.AddRange(BitConverter.GetBytes(GBIX));
             result.AddRange(padding);
             result.AddRange(pvrtheader);
             result.AddRange(BitConverter.GetBytes(chunksize_file + 8));
-            result.Add((byte)Headers[index].PixelFormat);
-            result.Add((byte)Headers[index].DataFormat);
+            result.Add((byte)PixelFormat);
+            result.Add((byte)DataFormat);
             result.Add(0);
             result.Add(0);
-            result.AddRange(BitConverter.GetBytes(Headers[index].Width));
-            result.AddRange(BitConverter.GetBytes(Headers[index].Height));
-            result.AddRange(Data[index]);
+            result.AddRange(BitConverter.GetBytes(Width));
+            result.AddRange(BitConverter.GetBytes(Height));
+            result.AddRange(Data);
             int pd = 0;
             // Make file size divisible by 16 because it crashes otherwise
             if (result.Count % 16 != 0)
@@ -538,84 +731,42 @@ namespace ArchiveLib
             }
             return result.ToArray();
         }
-
-        public byte[] GetBytes()
-        {
-            List<byte> result = new List<byte>();
-            result.Add(0x50); // P
-            result.Add(0x56); // B
-            result.Add(0x42); // V
-            result.Add(0x02); // Version ID
-            result.AddRange(BitConverter.GetBytes((uint)Headers.Count));
-            for (int u = 0; u < Headers.Count; u++)
-            {
-                result.AddRange(Headers[u].GetBytes());
-            }
-            for (int u = 0; u < Data.Count; u++)
-            {
-                result.AddRange(Data[u]);
-            }
-            return result.ToArray();
-        }
     }
-
-    internal class PBTextureHeader
-        {
-            public int Offset { get; set; }
-            public PvrPixelFormat PixelFormat { get; set; }
-            public PvrDataFormat DataFormat { get; set; }
-            public uint GBIX { get; set; }
-            public ushort Width { get; set; }
-            public ushort Height { get; set; }
-
-            public byte[] GetBytes()
-            {
-                List<byte> result = new List<byte>();
-                result.AddRange(BitConverter.GetBytes(Offset));
-                result.Add((byte)PixelFormat);
-                result.Add((byte)DataFormat);
-                result.Add(0);
-                result.Add(0);
-                result.AddRange(BitConverter.GetBytes(GBIX));
-                result.AddRange(BitConverter.GetBytes(Width));
-                result.AddRange(BitConverter.GetBytes(Height));
-                return result.ToArray();
-            }
-
-            public PBTextureHeader(byte[] pbdata, int tempaddr)
-            {
-                Offset = BitConverter.ToInt32(pbdata, tempaddr);
-                PixelFormat = (PvrPixelFormat)pbdata[tempaddr + 4];
-                DataFormat = (PvrDataFormat)pbdata[tempaddr + 5];
-                GBIX = BitConverter.ToUInt32(pbdata, tempaddr + 8);
-                Width = BitConverter.ToUInt16(pbdata, tempaddr + 12);
-                Height = BitConverter.ToUInt16(pbdata, tempaddr + 12);
-            }
-
-            public PBTextureHeader(int offset, PvrPixelFormat pxformat, PvrDataFormat dataformat, uint gbix, ushort width, ushort height)
-            {
-                Offset = offset;
-                PixelFormat = pxformat;
-                DataFormat = dataformat;
-                GBIX = gbix;
-                Width = width;
-                Height = height;
-            }
-        }
 
     #endregion
 
     #region NjArchive
-    public class NjArchive
+    public class NjArchive : GenericArchive
     {
-        public List<byte[]> Entries;
+        public override void CreateIndexFile(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public class NjArchiveEntry : GenericArchiveEntry
+        {
+            public override byte[] GetBytes()
+            {
+                return Data;
+            }
+
+            public override Bitmap GetBitmap()
+            {
+                throw new NotImplementedException();
+            }
+
+            public NjArchiveEntry(byte[] data)
+            {
+                Data = data;
+            }
+        }
 
         public NjArchive(byte[] file)
         {
             bool bigendbk = ByteConverter.BigEndian;
             if (file[0] == 0)
                 ByteConverter.BigEndian = true;
-            Entries = new List<byte[]>();
+            Entries = new List<GenericArchiveEntry>();
             int count = ByteConverter.ToInt32(file, 0) - 1;
             List<int> sizehdrs = new List<int>();
             for (int i = 0; i < count; i++)
@@ -631,69 +782,50 @@ namespace ArchiveLib
             {
                 if (i != 0)
                     offset += sizes[i - 1];
-                byte[] entry = new byte[sizes[i]];
-                Array.Copy(file, offset, entry, 0, sizes[i]);
-                Entries.Add(entry);
+                byte[] data = new byte[sizes[i]];
+                Array.Copy(file, offset, data, 0, sizes[i]);
+                Entries.Add(new NjArchiveEntry(data));
             }
             ByteConverter.BigEndian = bigendbk;
+        }
+
+        public override byte[] GetBytes()
+        {
+            throw new NotImplementedException();
         }
     }
     #endregion
 
     #region PVMX
-    public class PVMXFile
+    public class PVMXFile : GenericArchive
     {
         const int FourCC = 0x584D5650; // 'PVMX'
         const byte Version = 1;
 
-        List<PVMXEntry> Entries;
-
-        public int GetCount()
+        public override void CreateIndexFile(string path)
         {
-            return Entries.Count();
-        }
-
-        public byte[] GetFile(int index)
-        {
-            return Entries[index].Data;
-        }
-
-        public string GetName(int index)
-        {
-            return Entries[index].Name;
-        }
-
-        public string GetNameWithoutExtension(int index)
-        {
-            return Path.ChangeExtension(Entries[index].Name, null);
-        }
-
-        public uint GetGBIX(int index)
-        {
-            return Entries[index].GBIX;
-        }
-
-        public int GetWidth(int index)
-        {
-            return Entries[index].Width;
-        }
-
-        public int GetHeight(int index)
-        {
-            return Entries[index].Height;
-        }
-
-        public bool HasDimensions(int index)
-        {
-            if (Entries[index].Width != 0 || Entries[index].Height != 0)
-                return true;
-            else
-                return false;
+            using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
+            {
+                for (int u = 0; u < Entries.Count; u++)
+                {
+                    byte[] tdata = Entries[u].Data;
+                    string entry;
+                    PVMXEntry pvmxentry = (PVMXEntry)Entries[u];
+                    string dimensions = string.Join("x", pvmxentry.Width.ToString(), pvmxentry.Height.ToString());
+                    if (pvmxentry.HasDimensions())
+                        entry = string.Join(",", pvmxentry.GBIX.ToString(), pvmxentry.Name, dimensions);
+                    else
+                        entry = string.Join(",", pvmxentry.GBIX.ToString(), pvmxentry.Name);
+                    texList.WriteLine(entry);
+                }
+                texList.Flush();
+                texList.Close();
+            }
         }
 
         public PVMXFile(byte[] pvmxdata)
         {
-            Entries = new List<PVMXEntry>();
+            Entries = new List<GenericArchiveEntry>();
             if (!(pvmxdata.Length > 4 && BitConverter.ToInt32(pvmxdata, 0) == 0x584D5650))
                 throw new FormatException("File is not a PVMX archive.");
             if (pvmxdata[4] != 1) throw new FormatException("Incorrect PVMX archive version.");
@@ -746,7 +878,7 @@ namespace ArchiveLib
 
         public PVMXFile()
         {
-            Entries = new List<PVMXEntry>();
+            Entries = new List<GenericArchiveEntry>();
         }
 
         public void AddFile(string name, uint gbix, byte[] data, int width = 0, int height = 0)
@@ -754,7 +886,7 @@ namespace ArchiveLib
             Entries.Add(new PVMXEntry(name, gbix, data, width, height));
         }
 
-        public byte[] GetBytes()
+        public override byte[] GetBytes()
         {
             MemoryStream str = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(str);
@@ -796,12 +928,10 @@ namespace ArchiveLib
             return str.ToArray();
         }
 
-        internal class PVMXEntry
+        public class PVMXEntry : GenericArchiveEntry
         {
-            public string Name { get; set; }
             public int Width { get; set; }
             public int Height { get; set; }
-            public byte[] Data { get; set; }
             public uint GBIX { get; set; }
             public PVMXEntry(string name, uint gbix, byte[] data, int width, int height)
             {
@@ -817,6 +947,15 @@ namespace ArchiveLib
                     return true;
                 else
                     return false;
+            }
+            public override byte[] GetBytes()
+            {
+                return Data;
+            }
+            public override Bitmap GetBitmap()
+            {
+                MemoryStream ms = new MemoryStream(Data);
+                return new Bitmap(ms);
             }
         }
 
@@ -847,6 +986,219 @@ namespace ArchiveLib
             /// Two 32-bit integers defining width and height
             /// </summary>
             dimensions,
+        }
+    }
+    #endregion
+
+    #region PVM/GVM
+    public enum PuyoArchiveType
+    {
+        Unknown,
+        PVMFile,
+        GVMFile,
+    }
+
+    public class PuyoFile : GenericArchive
+    {
+        const uint Magic_PVM = 0x484D5650; // PVMH
+        const uint Magic_GVM = 0x484D5647; // GVMH
+
+        public bool PaletteRequired;
+        public PuyoArchiveType Type;
+
+        public override void CreateIndexFile(string path)
+        {
+            using (TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
+            {
+                foreach (GenericArchiveEntry pvmentry in Entries)
+                {
+                    texList.WriteLine(pvmentry.Name);
+                }
+                texList.Flush();
+                texList.Close();
+            }
+        }
+
+        public static PuyoArchiveType Identify(byte[] data)
+        {
+            uint magic = BitConverter.ToUInt32(data, 0);
+            switch (magic)
+            {
+                case Magic_PVM:
+                    return PuyoArchiveType.PVMFile;
+                case Magic_GVM:
+                    return PuyoArchiveType.GVMFile;
+                default:
+                    return PuyoArchiveType.Unknown;
+            }
+        }
+
+        public void AddPalette(string startPath)
+        {
+            VpPalette Palette = null;
+            bool gvm = Type == PuyoArchiveType.GVMFile;
+            using (System.Windows.Forms.OpenFileDialog a = new System.Windows.Forms.OpenFileDialog
+            {
+                DefaultExt = gvm ? "gvp" : "pvp",
+                Filter = gvm ? "GVP Files|*.gvp" : "PVP Files|*.pvp",
+                InitialDirectory = startPath,
+                Title = "External palette file"
+            })
+            {
+                if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    Palette = gvm ? (VpPalette)new GvpPalette(a.FileName) : (VpPalette)new PvpPalette(a.FileName);
+            }
+            foreach (GenericArchiveEntry entry in Entries)
+            {
+                if (entry is PVMEntry pvme)
+                {
+                    PvrTexture pvrt = new PvrTexture(pvme.Data);
+                    if (pvrt.NeedsExternalPalette)
+                        pvme.Palette = (PvpPalette)Palette;
+                }
+                else if (entry is GVMEntry gvme)
+                {
+                    GvrTexture gvrt = new GvrTexture(gvme.Data);
+                    if (gvrt.NeedsExternalPalette)
+                        gvme.Palette = (GvpPalette)Palette;
+                }
+            }
+        }
+
+        public PuyoFile() { }
+
+        public PuyoFile(byte[] pvmdata)
+        {
+            ArchiveBase puyobase;
+            Entries = new List<GenericArchiveEntry>();
+
+            Type = Identify(pvmdata);
+            switch (Type)
+            {
+                case PuyoArchiveType.PVMFile:
+                    puyobase = new PvmArchive();
+                    break;
+                case PuyoArchiveType.GVMFile:
+                    puyobase = new GvmArchive();
+                    break;
+                default:
+                    throw new Exception("Error: Unknown archive format");
+            }
+
+            ArchiveReader archiveReader = puyobase.Open(pvmdata);
+            foreach (ArchiveEntry puyoentry in archiveReader.Entries)
+            {
+                MemoryStream vrstream = (MemoryStream)(puyoentry.Open());
+                switch (Type)
+                {
+                    case PuyoArchiveType.PVMFile:
+                        PvrTexture pvrt = new PvrTexture(vrstream);
+                        if (pvrt.NeedsExternalPalette)
+                            PaletteRequired = true;
+                        Entries.Add(new PVMEntry(vrstream.ToArray(), Path.GetFileName(puyoentry.Name)));
+                        break;
+                    case PuyoArchiveType.GVMFile:
+                        GvrTexture gvrt = new GvrTexture(vrstream);
+                        if (gvrt.NeedsExternalPalette)
+                            PaletteRequired = true;
+                        Entries.Add(new GVMEntry(vrstream.ToArray(), Path.GetFileName(puyoentry.Name)));
+                        break;
+                }
+            }
+        }
+
+        public override byte[] GetBytes()
+        {
+            MemoryStream pvmStream = new MemoryStream();
+            ArchiveBase pvmbase = new PvmArchive();
+            ArchiveWriter puyoArchiveWriter = pvmbase.Create(pvmStream);
+            foreach (PVMEntry tex in Entries)
+            {
+                MemoryStream ms = new MemoryStream(tex.Data);
+                puyoArchiveWriter.CreateEntry(ms, tex.Name);
+            }
+            puyoArchiveWriter.Flush();
+            return pvmStream.ToArray();
+        }
+    }
+
+    public class PVMEntry : GenericArchiveEntry
+    {
+        public uint GBIX;
+        public PvpPalette Palette;
+
+        public PVMEntry(byte[] pvrdata, string name)
+        {
+            Name = name;
+            Data = pvrdata;
+            PvrTexture pvrt = new PvrTexture(pvrdata);
+            GBIX = pvrt.GlobalIndex;
+        }
+
+        public PVMEntry(string filename)
+        {
+            Name = Path.GetFileName(filename);
+            Data = File.ReadAllBytes(filename);
+            PvrTexture pvrt = new PvrTexture(Data);
+            GBIX = pvrt.GlobalIndex;
+        }
+
+        public override byte[] GetBytes()
+        {
+            return Data;
+        }
+
+        public uint GetGBIX()
+        {
+            return GBIX;
+        }
+
+        public override Bitmap GetBitmap()
+        {
+            PvrTexture pvrt = new PvrTexture(Data);
+            if (pvrt.NeedsExternalPalette)
+                pvrt.SetPalette(Palette);
+            return pvrt.ToBitmap();
+        }
+    }
+
+    public class GVMEntry : GenericArchiveEntry
+    {
+        public uint GBIX;
+        public GvpPalette Palette;
+
+        public GVMEntry(byte[] gvrdata, string name)
+        {
+            Name = name;
+            Data = gvrdata;
+            GvrTexture gvrt = new GvrTexture(gvrdata);
+            GBIX = gvrt.GlobalIndex;
+        }
+
+        public GVMEntry(string filename)
+        {
+            Name = Path.GetFileName(filename);
+            Data = File.ReadAllBytes(filename);
+            GvrTexture gvrt = new GvrTexture(Data);
+            GBIX = gvrt.GlobalIndex;
+        }
+
+        public override byte[] GetBytes()
+        {
+            return Data;
+        }
+
+        public uint GetGBIX()
+        {
+            return GBIX;
+        }
+
+        public override Bitmap GetBitmap()
+        {
+            GvrTexture gvrt = new GvrTexture(Data);
+            if (gvrt.NeedsExternalPalette)
+                gvrt.SetPalette(Palette);
+            return gvrt.ToBitmap();
         }
     }
     #endregion
