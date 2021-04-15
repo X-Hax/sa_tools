@@ -149,7 +149,11 @@ namespace Split
                     string name = args[3];
                     string fileOutputPath = "";
                     if (args.Length > 4)
-                        fileOutputPath = args[4];
+                    {
+                        for (int i = 4; i < args.Length; i++)
+                            if (args[i].Substring(0, 1) != "-" && args[i-1].Substring(0, 1) != "-")
+                        fileOutputPath = args[i];
+                    }
                     if (!File.Exists(fullpath_dllex))
                     {
                         Console.WriteLine("File {0} doesn't exist.", fullpath_dllex);
@@ -284,9 +288,11 @@ namespace Split
                             }
                             NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
                             if (fileOutputPath == "")
-                                fileOutputPath = ani.Name + "saanim";
-                            if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
-                                Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
+                                fileOutputPath = ani.Name + ".saanim";
+                            string outpath = Path.GetDirectoryName(Path.GetFullPath(fileOutputPath));
+                            Console.WriteLine("Output file: {0}", Path.GetFullPath(fileOutputPath));
+                            if (!Directory.Exists(outpath))
+                                Directory.CreateDirectory(outpath);
                             ani.Save(fileOutputPath, nometa);
                             break;
                         default:
