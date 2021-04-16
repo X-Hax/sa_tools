@@ -11,6 +11,7 @@ using VrSharp.Gvr;
 using VrSharp.Pvr;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
+using static ArchiveLib.GenericArchive;
 
 namespace TextureEditor
 {
@@ -131,79 +132,24 @@ namespace TextureEditor
             }
             else
             {
-                MemoryStream stream = new MemoryStream(pvmdata);
-                if (PvmArchive.Identify(stream))
-                    format = TextureFormat.PVM;
-                else
+                PuyoArchiveType identifyResult = PuyoFile.Identify(pvmdata);
+                if (identifyResult == PuyoArchiveType.Unknown)
                 {
-                    pvmfile = new GvmArchive();
-                    if (!GvmArchive.Identify(stream))
-                    {
-                        MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return false;
-                    }
-                    format = TextureFormat.GVM;
+                    MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
                 }
-                ArchiveEntryCollection pvmentries = pvmfile.Open(pvmdata).Entries;
-                newtextures = new List<TextureInfo>(pvmentries.Count);
-                switch (format)
+                PuyoFile arc = new PuyoFile(pvmdata);
+                if (arc.PaletteRequired)
+                    arc.AddPalette(Path.GetDirectoryName(filename));
+                newtextures = new List<TextureInfo>(arc.Entries.Count);
+                foreach (GenericArchiveEntry file in arc.Entries)
                 {
-                    case TextureFormat.PVM:
-                        PvpPalette pvp = null;
-                        foreach (ArchiveEntry file in pvmentries)
-                        {
-                            MemoryStream str = (MemoryStream)file.Open();
-                            PvrTexture vrfile = new PvrTexture(str);
-                            if (vrfile.NeedsExternalPalette)
-                            {
-                                if (pvp == null)
-                                    using (OpenFileDialog a = new OpenFileDialog
-                                    {
-                                        DefaultExt = "pvp",
-                                        Filter = "PVP Files|*.pvp",
-                                        InitialDirectory = Path.GetDirectoryName(filename),
-                                        Title = "External palette file"
-                                    })
-                                        if (a.ShowDialog(this) == DialogResult.OK)
-                                            pvp = new PvpPalette(a.FileName);
-                                        else
-                                        {
-                                            MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                            return false;
-                                        }
-                            }
-                            str.Seek(0, SeekOrigin.Begin);
-                            newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, pvp));
-                        }
-                        break;
-                    case TextureFormat.GVM:
-                        GvpPalette gvp = null;
-                        foreach (ArchiveEntry file in pvmentries)
-                        {
-                            MemoryStream str = (MemoryStream)file.Open();
-                            GvrTexture vrfile = new GvrTexture(file.Open());
-                            if (vrfile.NeedsExternalPalette)
-                            {
-                                if (gvp == null)
-                                    using (OpenFileDialog a = new OpenFileDialog
-                                    {
-                                        DefaultExt = "gvp",
-                                        Filter = "GVP Files|*.gvp",
-                                        InitialDirectory = Path.GetDirectoryName(filename),
-                                        Title = "External palette file"
-                                    })
-                                        if (a.ShowDialog(this) == DialogResult.OK)
-                                            gvp = new GvpPalette(a.FileName);
-                                        else
-                                        {
-                                            MessageBox.Show(this, "Could not open file \"" + Program.Arguments[0] + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                            return false;
-                                        }
-                            }
-                            str.Seek(0, SeekOrigin.Begin);
-                            newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, gvp));
-                        }
-                        break;
+                    MemoryStream str = new MemoryStream(file.Data);
+                    str.Seek(0, SeekOrigin.Begin);
+                    if (file is PVMEntry pvme)
+                        newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, pvme.Palette));
+                    else if (file is GVMEntry gvme)
+                        newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, gvme.Palette));
                 }
             }
             textures.Clear();
