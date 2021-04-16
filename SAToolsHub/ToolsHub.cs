@@ -212,7 +212,6 @@ namespace SAToolsHub
 					return node;
 				}
 			}
-
 			return null;
 		}
 
