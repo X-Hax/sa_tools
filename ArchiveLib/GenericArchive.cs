@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using VrSharp.Pvr;
-using SonicRetro.SAModel;
 using System.Drawing;
 using System.Drawing.Imaging;
-using static ArchiveLib.GenericArchive;
-using PuyoTools.Modules.Archive;
-using VrSharp;
-using VrSharp.Gvr;
 using SA_Tools;
+using VrSharp;
+using VrSharp.Pvr;
+using VrSharp.Gvr;
+using PuyoTools.Modules.Archive;
+using SonicRetro.SAModel;
+using static ArchiveLib.GenericArchive;
 
 namespace ArchiveLib
 {
@@ -64,7 +64,6 @@ namespace ArchiveLib
 
         public class PAKEntry : GenericArchiveEntry
         {
-
             public string LongPath { get; set; }
 
             public PAKEntry()
@@ -78,7 +77,6 @@ namespace ArchiveLib
                 LongPath = longpath;
                 Data = data;
             }
-
 
             public override Bitmap GetBitmap()
             {
@@ -267,14 +265,34 @@ namespace ArchiveLib
             }
         }
 
-		public DATFile(byte[] file)
+        public enum DATArchiveType
+        {
+            SADX2004 = 0,
+            SADX2010 = 1,
+            Unknown = -1
+        }
+
+        public static DATArchiveType Identify(byte[] file)
         {
             switch (System.Text.Encoding.ASCII.GetString(file, 0, 0x10))
             {
                 case "archive  V2.2\0\0\0":
+                    return DATArchiveType.SADX2004;
+                case "archive  V2.DMZ\0":
+                    return DATArchiveType.SADX2010;
+                default:
+                    return DATArchiveType.Unknown;
+            }
+        }
+
+        public DATFile(byte[] file)
+        {
+            switch (Identify(file))
+            {
+                case DATArchiveType.SADX2004:
                     Steam = false;
                     break;
-                case "archive  V2.DMZ\0":
+                case DATArchiveType.SADX2010:
                     Steam = true;
                     break;
                 default:
@@ -811,7 +829,6 @@ namespace ArchiveLib
             {
                 for (int u = 0; u < Entries.Count; u++)
                 {
-                    byte[] tdata = Entries[u].Data;
                     string entry;
                     PVMXEntry pvmxentry = (PVMXEntry)Entries[u];
                     string dimensions = string.Join("x", pvmxentry.Width.ToString(), pvmxentry.Height.ToString());
@@ -833,23 +850,23 @@ namespace ArchiveLib
                 throw new FormatException("File is not a PVMX archive.");
             if (pvmxdata[4] != 1) throw new FormatException("Incorrect PVMX archive version.");
             int off = 5;
-            dictionary_field type;
-            for (type = (dictionary_field)pvmxdata[off++]; type != dictionary_field.none; type = (dictionary_field)pvmxdata[off++])
+            PVMXDictionaryField type;
+            for (type = (PVMXDictionaryField)pvmxdata[off++]; type != PVMXDictionaryField.none; type = (PVMXDictionaryField)pvmxdata[off++])
             {
                 string name = "";
                 uint gbix = 0;
                 int width = 0;
                 int height = 0;
-                while (type != dictionary_field.none)
+                while (type != PVMXDictionaryField.none)
                 {
                     switch (type)
                     {
-                        case dictionary_field.global_index:
+                        case PVMXDictionaryField.global_index:
                             gbix = BitConverter.ToUInt32(pvmxdata, off);
                             off += sizeof(uint);
                             break;
 
-                        case dictionary_field.name:
+                        case PVMXDictionaryField.name:
                             int count = 0;
                             while (pvmxdata[off + count] != 0)
                                 count++;
@@ -857,7 +874,7 @@ namespace ArchiveLib
                             off += count + 1;
                             break;
 
-                        case dictionary_field.dimensions:
+                        case PVMXDictionaryField.dimensions:
                             width = BitConverter.ToInt32(pvmxdata, off);
                             off += sizeof(int);
                             height = BitConverter.ToInt32(pvmxdata, off);
@@ -865,7 +882,7 @@ namespace ArchiveLib
                             break;
                     }
 
-                    type = (dictionary_field)pvmxdata[off++];
+                    type = (PVMXDictionaryField)pvmxdata[off++];
 
                 }
                 ulong offset = BitConverter.ToUInt64(pvmxdata, off);
@@ -898,18 +915,18 @@ namespace ArchiveLib
             List<OffData> texdata = new List<OffData>();
             foreach (PVMXEntry tex in Entries)
             {
-                bw.Write((byte)dictionary_field.global_index);
+                bw.Write((byte)PVMXDictionaryField.global_index);
                 bw.Write(tex.GBIX);
-                bw.Write((byte)dictionary_field.name);
+                bw.Write((byte)PVMXDictionaryField.name);
                 bw.Write(tex.Name.ToCharArray());
                 bw.Write((byte)0);
                 if (tex.HasDimensions())
                 {
-                    bw.Write((byte)dictionary_field.dimensions);
+                    bw.Write((byte)PVMXDictionaryField.dimensions);
                     bw.Write(tex.Width);
                     bw.Write(tex.Height);
                 }
-                bw.Write((byte)dictionary_field.none);
+                bw.Write((byte)PVMXDictionaryField.none);
                 long size;
                 using (MemoryStream ms = new MemoryStream(tex.Data))
                 {
@@ -919,7 +936,7 @@ namespace ArchiveLib
                 bw.Write(0ul);
                 bw.Write(size);
             }
-            bw.Write((byte)dictionary_field.none);
+            bw.Write((byte)PVMXDictionaryField.none);
             foreach (OffData od in texdata)
             {
                 long pos = str.Position;
@@ -975,7 +992,7 @@ namespace ArchiveLib
             }
         }
 
-        enum dictionary_field : byte
+        enum PVMXDictionaryField : byte
         {
             none,
             /// <summary>
@@ -1004,11 +1021,34 @@ namespace ArchiveLib
 
     public class PuyoFile : GenericArchive
     {
-        const uint Magic_PVM = 0x484D5650; // PVMH
-        const uint Magic_GVM = 0x484D5647; // GVMH
+        // Archive chunks
+        const uint Magic_PVM = 0x484D5650; // PVMH archive
+        const uint Magic_GVM = 0x484D5647; // GVMH archive
+
+        // PVM metadata chunks
+        const uint Magic_MDLN = 0x4E4C444D; // Model Name
+        const uint Magic_COMM = 0x4D4D4F43; // Model Comment
+        const uint Magic_CONV = 0x564E4F43; // PVM Converter
+        const uint Magic_IMGC = 0x43474D49; // Image Container
+        const uint Magic_PVMI = 0x494D5650; // PVM File Info
+
+        // Texture chunks
+        const uint Magic_GBIX = 0x58494247; // PVR texture header (GBIX)
+        const uint Magic_PVRT = 0x54525650; // PVR texture header (texture data)
+        const uint Magic_PVRI = 0x49525650; // PVR texture header (metadata)
 
         public bool PaletteRequired;
         public PuyoArchiveType Type;
+
+        public enum PVMFlags : ushort
+        {
+            GlobalIndex = 0x1,
+            TextureDimensions = 0x2,
+            PixelDataFormat = 0x4,
+            Filenames = 0x8,
+            ModelName = 0x10,
+            Unknown = 0x100, // "Generated by PVMConv" maybe?
+        }
 
         public override void CreateIndexFile(string path)
         {
@@ -1071,42 +1111,114 @@ namespace ArchiveLib
 
         public PuyoFile() { }
 
+        public int GetPVRTOffset(byte[] pvmdata, int offset)
+        {
+            uint header = BitConverter.ToUInt32(pvmdata, offset);
+            int currentoffset = offset;
+            int size = BitConverter.ToInt32(pvmdata, offset + 4);
+            switch (header)
+            {
+                case Magic_MDLN:
+                case Magic_CONV:
+                case Magic_IMGC:
+                case Magic_COMM:
+                case Magic_PVMI:
+                case Magic_PVRI: // This one probably shouldn't be here but there are no known examples yet of how this was used
+                    goto default;
+                case Magic_PVRT:
+                    break;
+                default:
+                    byte[] metachunk = new byte[size];
+                    Array.Copy(pvmdata, offset + 8, metachunk, 0, size);
+                    currentoffset += size + 8;
+                    // Go through metadata until it gets to a PVRT header
+                    return GetPVRTOffset(pvmdata, currentoffset);
+            }
+            return currentoffset;
+        }
+
         public PuyoFile(byte[] pvmdata)
         {
-            ArchiveBase puyobase;
             Entries = new List<GenericArchiveEntry>();
 
             Type = Identify(pvmdata);
             switch (Type)
             {
                 case PuyoArchiveType.PVMFile:
-                    puyobase = new PvmArchive();
-                    break;
                 case PuyoArchiveType.GVMFile:
-                    puyobase = new GvmArchive();
                     break;
                 default:
                     throw new Exception("Error: Unknown archive format");
             }
 
-            ArchiveReader archiveReader = puyobase.Open(pvmdata);
-            foreach (ArchiveEntry puyoentry in archiveReader.Entries)
+            if (Type == PuyoArchiveType.PVMFile)
             {
-                MemoryStream vrstream = (MemoryStream)(puyoentry.Open());
-                switch (Type)
+                // Get PVM flags and calculate item size in the entry table
+                ushort numtextures = BitConverter.ToUInt16(pvmdata, 0x0A);
+                int pvmentrysize = 2;
+                int gbixoffset = 0;
+                int nameoffset = 0;
+
+                PVMFlags flags = (PVMFlags)BitConverter.ToUInt16(pvmdata, 0x08);
                 {
-                    case PuyoArchiveType.PVMFile:
-                        PvrTexture pvrt = new PvrTexture(vrstream);
-                        if (pvrt.NeedsExternalPalette)
-                            PaletteRequired = true;
-                        Entries.Add(new PVMEntry(vrstream.ToArray(), Path.GetFileName(puyoentry.Name)));
-                        break;
-                    case PuyoArchiveType.GVMFile:
-                        GvrTexture gvrt = new GvrTexture(vrstream);
-                        if (gvrt.NeedsExternalPalette)
-                            PaletteRequired = true;
-                        Entries.Add(new GVMEntry(vrstream.ToArray(), Path.GetFileName(puyoentry.Name)));
-                        break;
+                    if (flags.HasFlag(PVMFlags.Filenames))
+                        nameoffset = pvmentrysize;
+                    pvmentrysize += 28;
+                    if (flags.HasFlag(PVMFlags.PixelDataFormat))
+                        pvmentrysize += 2;
+                    if (flags.HasFlag(PVMFlags.TextureDimensions))
+                        pvmentrysize += 2;
+                    if (flags.HasFlag(PVMFlags.GlobalIndex))
+                        gbixoffset = pvmentrysize;
+                    pvmentrysize += 4;
+                }
+
+                int offsetfirst = BitConverter.ToInt32(pvmdata, 0x4) + 8;
+                int textureaddr = GetPVRTOffset(pvmdata, offsetfirst);
+
+                for (int t = 0; t < numtextures; t++)
+                {
+                    int size_gbix = flags.HasFlag(PVMFlags.GlobalIndex) ? 16 : 0;
+                    int size = BitConverter.ToInt32(pvmdata, textureaddr + 4);
+                    byte[] pvrchunk = new byte[size + 8 + size_gbix];
+                    Array.Copy(pvmdata, textureaddr, pvrchunk, 0 + size_gbix, size + 8);
+
+                    // Add GBIX header if the PVM has GBIX enabled
+                    if (flags.HasFlag(PVMFlags.GlobalIndex))
+                    {
+                        Array.Copy(BitConverter.GetBytes(Magic_GBIX), 0, pvrchunk, 0, 4);
+                        pvrchunk[4] = 0x08; // Always 8 according to PuyoTools
+                        byte[] gbix = BitConverter.GetBytes(BitConverter.ToUInt32(pvmdata, 0xC + pvmentrysize * t + gbixoffset));
+                        Array.Copy(gbix, 0, pvrchunk, 9, 4);
+                    }
+
+                    // Set filename if the PVM has filenames
+                    string entryfn = t.ToString("D3");
+                    if (flags.HasFlag(PVMFlags.Filenames))
+                    {
+                        byte[] namestring = new byte[28];
+                        Array.Copy(pvmdata, 0xC + pvmentrysize * t + nameoffset, namestring, 0, 28);
+                        entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
+                    }
+                    textureaddr += size + 8;
+                    PvrTexture pvrt = new PvrTexture(pvrchunk);
+                    if (pvrt.NeedsExternalPalette)
+                        PaletteRequired = true;
+                    Entries.Add(new PVMEntry(pvrchunk, entryfn + ".pvr"));
+                }
+            }
+            // If it's a GVM, just use Puyo Tools' reader
+            else
+            {
+                ArchiveBase puyobase = new GvmArchive();
+                ArchiveReader archiveReader = puyobase.Open(pvmdata);
+                foreach (ArchiveEntry puyoentry in archiveReader.Entries)
+                {
+                    MemoryStream vrstream = (MemoryStream)puyoentry.Open();
+                    GvrTexture gvrt = new GvrTexture(vrstream);
+                    if (gvrt.NeedsExternalPalette)
+                        PaletteRequired = true;
+                    Entries.Add(new GVMEntry(vrstream.ToArray(), Path.GetFileName(puyoentry.Name)));
                 }
             }
         }
@@ -1193,6 +1305,212 @@ namespace ArchiveLib
             if (gvrt.NeedsExternalPalette)
                 gvrt.SetPalette(Palette);
             return gvrt.ToBitmap();
+        }
+    }
+    #endregion
+
+    #region Sonic Shuffle MDL
+    public class MDLArchive : GenericArchive
+    {
+        public override void CreateIndexFile(string path)
+        {
+            return;
+        }
+
+        public class MDLArchiveEntry : GenericArchiveEntry
+        {
+            public MDLEntryType Type;
+
+            public override Bitmap GetBitmap()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MDLArchiveEntry(byte[] data, string name)
+            {
+                Name = name;
+                Data = data;
+            }
+        }
+
+        public enum MDLEntryType : uint
+        {
+            PVM = 1,
+            ChunkModel = 2,
+            Motion = 4,
+            ShapeMotion = 8,
+            SomeWeirdShit = 10,
+        }
+
+        public MDLArchive(byte[] file)
+        {
+            bool bigendbk = ByteConverter.BigEndian;
+            if (file[0] == 0)
+                ByteConverter.BigEndian = true;
+            int count = ByteConverter.ToUInt16(file, 2);
+            Entries = new List<GenericArchiveEntry>(count);
+            for (int i = 0; i < count; i++)
+            {
+                MDLEntryType type = (MDLEntryType)BitConverter.ToUInt32(file, 8 + i * 12);
+                int size = BitConverter.ToInt32(file, 12 + i * 12);
+                int offset = BitConverter.ToInt32(file, 16 + i * 12);
+                Console.WriteLine("Entry {0} type {1} at offset {2}: size {3}", i, type.ToString(), offset, size);
+                byte[] entrydata = new byte[size];
+                Array.Copy(file, offset, entrydata, 0, size);
+                string extension;
+                switch (type)
+                {
+                    case MDLEntryType.PVM:
+                        extension = ".pvm";
+                        break;
+                    case MDLEntryType.ShapeMotion:
+                    case MDLEntryType.Motion:
+                        extension = ".njm";
+                        break;
+                    case MDLEntryType.ChunkModel:
+                        extension = ".nj";
+                        break;
+                    case MDLEntryType.SomeWeirdShit:
+                    default:
+                        extension = ".bin";
+                        break;
+                }
+                Entries.Add(new MDLArchiveEntry(entrydata, i.ToString("D3") + extension));
+            }
+            ByteConverter.BigEndian = bigendbk;
+        }
+
+        public override byte[] GetBytes()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    #endregion
+
+    #region Sonic Shuffle MDT
+    public class MDTArchive : GenericArchive
+    {
+        const uint Magic_SMPB = 0x42504D53; // SMPB
+        const uint Magic_SMSB = 0x42534D53; // SMPB
+        const uint Magic_SFPB = 0x42504653; // SFPB
+        const uint Magic_SDRV = 0x56524453; // SDRV
+        const uint Magic_SFOB = 0x424F4653; // SFOB
+        const uint Magic_SMLT = 0x544C4D53; // SMLT
+        const uint Magic_SOSB = 0x42534F53; // SOSB
+        const ulong Magic_CRI = 0x4952432963280000; // 0000(c)CRI at 0x20
+
+        public override void CreateIndexFile(string path)
+        {
+            return;
+        }
+
+        public class MDTArchiveEntry : GenericArchiveEntry
+        {
+
+            public override Bitmap GetBitmap()
+            {
+                throw new NotImplementedException();
+            }
+
+            public MDTArchiveEntry(byte[] data, string name)
+            {
+                Name = name;
+                Data = data;
+            }
+        }
+
+        public string GetEntryExtension(byte[] data)
+        {
+            if (data.Length < 4)
+                return ".bin";
+            switch (BitConverter.ToUInt32(data, 0))
+            {
+                case Magic_SMLT:
+                    return ".mlt";
+                case Magic_SMPB:
+                    return ".mpb";
+                case Magic_SMSB:
+                    return ".msb";
+                case Magic_SFPB:
+                    return ".fpb";
+                case Magic_SFOB:
+                    return ".fob";
+                case Magic_SDRV:
+                    return ".drv";
+                case Magic_SOSB:
+                    return ".osb";
+                default:
+                    if (data.Length < 40)
+                        return ".bin";
+                    if (BitConverter.ToUInt64(data, 0x20) == Magic_CRI)
+                        return ".adx";
+                    else return ".bin";
+            }
+        }
+
+        public enum MDTArchiveType
+        {
+            // There are 3 types of MDT files:
+            // Type 0 stores chunk lengths 4 bytes before the data begins.
+            // Type 1 doesn't store chunk lengths.
+            // Type 2 is like Type 2 but the offsets are Big Endian.
+            Manatee = 0,
+            CRI = 1,
+            CRIBigEndian = 2
+        }
+
+        public MDTArchiveType Identify(byte[] file)
+        {
+            if (file[0] == 0)
+                return MDTArchiveType.CRIBigEndian;
+            // Check if there is ADX
+            for (int i = 0; i < file.Length; i += 8)
+            {
+                if (BitConverter.ToUInt64(file, i) == Magic_CRI)
+                    return MDTArchiveType.CRI;
+            }
+            return MDTArchiveType.Manatee;
+        }
+
+        public MDTArchive(byte[] file)
+        {
+            bool bigendbk = ByteConverter.BigEndian;
+            MDTArchiveType type = Identify(file);
+            if (type == MDTArchiveType.CRIBigEndian)
+                ByteConverter.BigEndian = true;
+            int firstoffset = ByteConverter.ToInt32(file, 0);
+            int count = firstoffset / 4;
+            Console.WriteLine("Number of entries: {0}", count);
+            Entries = new List<GenericArchiveEntry>(count);
+            List<int> offsets = new List<int>(count);
+            for (int i = 0; i < count; i++)
+            {
+                int offset = ByteConverter.ToInt32(file, i * 4);
+                Console.WriteLine("Entry {0} at header offset {1}", i, offset.ToString("X"));
+                offsets.Add(offset);
+            }
+            for (int u = 0; u < count; u++)
+            {
+                //Type 0 archives store chunk length in the 4 bytes before the data begins
+                int type1_offset = type == MDTArchiveType.Manatee ? 4 : 0;
+                int end = file.Length - 1;
+                if (u < count - 1)
+                    end = offsets[u + 1];
+                int size = end - offsets[u];
+               // Get size for Type 0 archives
+                if (type == MDTArchiveType.Manatee)
+                    size = BitConverter.ToInt32(file, offsets[u]);
+                byte[] entrydata = new byte[size];
+                Array.Copy(file, offsets[u] + type1_offset, entrydata, 0, size);
+                string extension = GetEntryExtension(entrydata);
+                Entries.Add(new MDTArchiveEntry(entrydata, u.ToString("D3") + extension));
+            }
+            ByteConverter.BigEndian = bigendbk;
+        }
+
+        public override byte[] GetBytes()
+        {
+            throw new NotImplementedException();
         }
     }
     #endregion
