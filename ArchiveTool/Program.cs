@@ -90,6 +90,8 @@ namespace ArchiveTool
                         case ".prs":
                         case ".pvm":
                         case ".gvm":
+                        case ".mdl":
+                        case ".mdt":
                             ExtractArchive(args);
                             return;
                         case ".bin":

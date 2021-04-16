@@ -51,6 +51,12 @@ namespace ArchiveTool
                 case (".dat"):
                     arc = new DATFile(arcdata);
                     break;
+                case (".mdl"):
+                    arc = new MDLArchive(arcdata);
+                    break;
+                case (".mdt"):
+                    arc = new MDTArchive(arcdata);
+                    break;
                 default:
                     Console.WriteLine("Unknown archive type");
                     return;
