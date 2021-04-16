@@ -80,30 +80,28 @@ namespace ArchiveLib
 
             public override Bitmap GetBitmap()
             {
-                using (MemoryStream str = new MemoryStream(Data))
+                MemoryStream str = new MemoryStream(Data);
+                uint check = BitConverter.ToUInt32(Data, 0);
+                if (check == 0x20534444) // DDS header
                 {
-                    uint check = BitConverter.ToUInt32(Data, 0);
-                    if (check == 0x20534444) // DDS header
+                    PixelFormat pxformat;
+                    var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+                    switch (image.Format)
                     {
-                        PixelFormat pxformat;
-                        var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
-                        switch (image.Format)
-                        {
-                            case Pfim.ImageFormat.Rgba32:
-                                pxformat = PixelFormat.Format32bppArgb;
-                                break;
-                            default:
-                                throw new Exception("Error: Unknown image format");
-                        }
-                        var bitmap = new Bitmap(image.Width, image.Height, pxformat);
-                        BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
-                        System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-                        bitmap.UnlockBits(bmpData);
-                        return bitmap;
+                        case Pfim.ImageFormat.Rgba32:
+                            pxformat = PixelFormat.Format32bppArgb;
+                            break;
+                        default:
+                            throw new Exception("Error: Unknown image format");
                     }
-                    else
-                        return new Bitmap(str);
+                    var bitmap = new Bitmap(image.Width, image.Height, pxformat);
+                    BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
+                    System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+                    bitmap.UnlockBits(bmpData);
+                    return bitmap;
                 }
+                else
+                    return new Bitmap(str);
             }
         }
 
