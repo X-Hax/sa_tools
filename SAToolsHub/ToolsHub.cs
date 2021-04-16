@@ -117,27 +117,33 @@ namespace SAToolsHub
 			var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
 			var projFileStream = File.OpenRead(projectFile);
 			var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+			string rootFolder;
 
 			setGame = projFile.GameInfo.GameName;
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
 			gameDirectory = (projFile.GameInfo.GameSystemFolder);
 			projXML = projectFile;
+			
 
 			switch (setGame)
 			{
 				case "SADXPC":
 					gameDir = gameDirectory + "\\system\\";
+					rootFolder = "SADX Game Files";
 					break;
 				case "SA2PC":
 					gameDir = gameDirectory + "\\resource\\gd_PC\\";
+					rootFolder = "SA2PC Game Files";
 					break;
 				default:
 					gameDir = gameDirectory;
+					rootFolder = gameDirectory;
 					break;
 			}
 
 			PopulateTreeView(projectDirectory);
 			PopulateTreeView(gameDir);
+			treeView1.Nodes[1].Text = rootFolder;
 			this.treeView1.NodeMouseClick +=
 				new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
@@ -204,15 +210,6 @@ namespace SAToolsHub
 				if (node.Text == p_sSearchTerm)
 				{
 					return node;
-				}
-
-				if (node.Nodes.Count > 0)
-				{
-					var result = SearchTreeView(p_sSearchTerm, node.Nodes);
-					if (result != null)
-					{
-						return result;
-					}
 				}
 			}
 
@@ -1192,11 +1189,7 @@ namespace SAToolsHub
 		{
 			if (listView1.SelectedItems.Count > 0)
 			{
-				DialogResult delCheck;
-				if (listView1.SelectedItems.Count == 1)
-					delCheck = MessageBox.Show(("You are about to delete this file.\n\nAre you sure you want to delete this file?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-				else
-					delCheck = MessageBox.Show(("You are about to delete " + listView1.SelectedItems.Count.ToString() + " files\n\nAre you sure you want to delete these files?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				DialogResult delCheck = MessageBox.Show(("You are about to delete " + listView1.SelectedItems.Count.ToString() + " file(s).\n\nAre you sure you want to delete these file(s)?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (delCheck == DialogResult.Yes)
 				{
 					foreach (ListViewItem selItem in listView1.SelectedItems)
