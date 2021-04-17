@@ -133,10 +133,17 @@ namespace TextureEditor
             else
             {
                 PuyoArchiveType identifyResult = PuyoFile.Identify(pvmdata);
-                if (identifyResult == PuyoArchiveType.Unknown)
+                switch (identifyResult)
                 {
-                    MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return false;
+                    case PuyoArchiveType.PVMFile:
+                        format = TextureFormat.PVM;
+                        break;
+                    case PuyoArchiveType.GVMFile:
+                        format = TextureFormat.GVM;
+                        break;
+                    case PuyoArchiveType.Unknown:
+                        MessageBox.Show(this, "Could not open file \"" + filename + "\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return false;
                 }
                 PuyoFile arc = new PuyoFile(pvmdata);
                 if (arc.PaletteRequired)
