@@ -735,6 +735,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 
 		private static WeightStatus GetWeightStatus(string name, List<VertWeight> weights)
 		{
+			if (weights.Count == 1) return (WeightStatus)3;
 			int i = weights.Select((w, ind) => (ind, w)).First(a => a.w.name == name).ind;
 			if (i == 0)
 				return WeightStatus.Start;
@@ -767,6 +768,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			}
 			else
 				bones = null;
+			Dictionary<int, int> vertmap = null;
 			if (sortedbones.Count > 1)
 			{
 				result.FirstNode = sortedbones.First();
@@ -776,6 +778,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				for (int i = 0; i < aiMesh.VertexCount; i++)
 					if (verts[i].weights.Count == 0)
 						verts[i].weights.Add(new VertWeight(lastbone, 1));
+				verts.Sort((a, b) =>
+				{
+					if (a.weights.Count > 1)
+						return -1;
+					if (b.weights.Count > 1)
+						return 1;
+					return nodeIndexForSort[a.weights[0].name].CompareTo(nodeIndexForSort[b.weights[0].name]);
+				});
+				vertmap = new Dictionary<int, int>();
+				for (int i = 0; i < aiMesh.VertexCount; i++)
+					vertmap[verts[i].index] = i;
 				foreach (var bonename in sortedbones)
 				{
 					List<VertexChunk> chunks = new List<VertexChunk>();
@@ -783,20 +796,49 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 					{
 						{ WeightStatus.Start, new List<VertInfo>() },
 						{ WeightStatus.Middle, new List<VertInfo>() },
-						{ WeightStatus.End, new List<VertInfo>() }
+						{ WeightStatus.End, new List<VertInfo>() },
+						{ (WeightStatus)3, new List<VertInfo>() }
 					};
 					foreach (var v in verts.Where(a => a.weights.Any(b => b.name == bonename)))
 						vertsbyweight[GetWeightStatus(bonename, v.weights)].Add(v);
 					foreach (var (weight, vertinds) in vertsbyweight.Where(a => a.Value.Count > 0))
 					{
-						VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => a.index), WeightStatus = weight };
-						foreach (var vert in vertinds)
+						if (weight == (WeightStatus)3)
 						{
-							vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
-							vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
-							vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.index - vc.IndexOffset)));
+							ChunkType type = ChunkType.Vertex_Vertex;
+							bool hasnormal = false;
+							bool hasvcolor = false;
+							if (aiMesh.HasVertexColors(0))
+							{
+								hasvcolor = true;
+								type = ChunkType.Vertex_VertexDiffuse8;
+							}
+							else if (aiMesh.HasNormals)
+							{
+								hasnormal = true;
+								type = ChunkType.Vertex_VertexNormal;
+							}
+							VertexChunk vc = new VertexChunk(type) { IndexOffset = (ushort)vertinds.Min(a => vertmap[a.index]) };
+							foreach (var vert in vertinds)
+							{
+								vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
+								if (hasnormal)
+									vc.Normals.Add(Vector3.TransformNormal(aiMesh.Normals[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
+								if (hasvcolor)
+									vc.Diffuse.Add(aiMesh.VertexColorChannels[0][vert.index].ToColor());
+							}
 						}
-						chunks.Add(vc);
+						else
+						{
+							VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => vertmap[a.index]), WeightStatus = weight };
+							foreach (var vert in vertinds)
+							{
+								vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
+								vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
+								vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vertmap[vert.index] - vc.IndexOffset)));
+							}
+							chunks.Add(vc);
+						}
 					}
 
 					result.Vertex.Add(bonename, chunks);
@@ -851,7 +893,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 				for (var j = rev ? 1 : 0; j < grp.Indices.Length; j++)
 				{
 					var vertexIndex = grp.Indices[j];
-					stripIndices.Add(vertexIndex);
+					stripIndices.Add((ushort)(vertmap != null ? vertmap[vertexIndex] : vertexIndex));
 					if (hasUV)
 						stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
 				}
