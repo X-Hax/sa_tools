@@ -752,25 +752,11 @@ namespace SonicRetro.SAModel.SAMDL
 				}
 				else return;
 			}
-			if (hasWeight = model.HasWeight)
-				meshes = model.ProcessWeightedModel().ToArray();
-			else
-			{
-				model.ProcessVertexData();
-				NJS_OBJECT[] models = model.GetObjects();
-				meshes = new Mesh[models.Length];
-				for (int i = 0; i < models.Length; i++)
-					if (models[i].Attach != null)
-						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-						catch { }
-			}
 
-			currentFileName = filename;
+            currentFileName = filename;
 
-			treeView1.Nodes.Clear();
-			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-			AddTreeNode(model, treeView1.Nodes);
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+            RebuildModelCache();
+            loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animations != null && animations.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -1139,11 +1125,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			model = new NJS_OBJECT();
 			model.Morph = false;
-			model.ProcessVertexData();
-			meshes = new Mesh[1];
-			treeView1.Nodes.Clear();
-			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-			AddTreeNode(model, treeView1.Nodes);
+            RebuildModelCache();
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
@@ -2052,10 +2034,7 @@ namespace SonicRetro.SAModel.SAMDL
 					break;
 			}
 			selectedObject.Attach = attach;
-			attach.ProcessVertexData();
-			NJS_OBJECT[] models = model.GetObjects();
-			try { meshes[Array.IndexOf(models, selectedObject)] = attach.CreateD3DMesh(); }
-			catch { }
+            RebuildModelCache();
 			DrawEntireModel();
 			unsaved = true;
 		}
@@ -2351,27 +2330,14 @@ namespace SonicRetro.SAModel.SAMDL
 			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 
-			if (model.HasWeight)
-				meshes = model.ProcessWeightedModel().ToArray();
-			else
-			{
-				model.ProcessVertexData();
-				NJS_OBJECT[] models = model.GetObjects();
-				meshes = new Mesh[models.Length];
-				for (int i = 0; i < models.Length; i++)
-					if (models[i].Attach != null)
-						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-						catch { }
-			}
-
-			if (!selected)
+            if (!selected)
 			{
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 				selectedObject = model;
 				AddModelToLibrary(model, false);
 			}
-			RebuildModelCache();
-			unsaved = true;
+            RebuildModelCache();
+            unsaved = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
@@ -2686,9 +2652,6 @@ namespace SonicRetro.SAModel.SAMDL
 					{
 						m.UV[u] = new UV(m.UV[u].V, m.UV[u].U);
 					}
-					att.ProcessVertexData();
-					NJS_OBJECT[] objs = model.GetObjects();
-					meshes[Array.IndexOf(objs, obj)] = att.CreateD3DMesh();
 				}
 			}
 			if (obj.Children.Count > 0)
@@ -2698,13 +2661,13 @@ namespace SonicRetro.SAModel.SAMDL
 					SwapUV(child);
 				}
 			}
-			DrawEntireModel();
-			unsaved = true;
 		}
 
 		private void swapUVToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (model != null) SwapUV(model);
+            RebuildModelCache();
+            DrawEntireModel();
 		}
 
 		private void DeleteSelectedModel()
@@ -2732,12 +2695,20 @@ namespace SonicRetro.SAModel.SAMDL
 		private void RebuildModelCache()
 		{
 			model.ProcessVertexData();
-			NJS_OBJECT[] models = model.GetObjects();
-			meshes = new Mesh[models.Length];
-			for (int i = 0; i < models.Length; i++)
-				if (models[i].Attach != null)
-					try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-					catch { }
+            if (hasWeight = model.HasWeight)
+            {
+                meshes = model.ProcessWeightedModel().ToArray();
+                UpdateWeightedModel();
+            }
+            else
+            {
+                NJS_OBJECT[] models = model.GetObjects();
+                meshes = new Mesh[models.Length];
+                for (int i = 0; i < models.Length; i++)
+                    if (models[i].Attach != null)
+                        try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+                        catch { }
+            }
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
