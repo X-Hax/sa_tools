@@ -35,29 +35,32 @@ namespace TextureEditor
             PixelFormat = PvrPixelFormat.Unknown;
             DataFormat = PvrDataFormat.Unknown;
             if (tex is PvrTextureInfo pv)
-                TextureData = pv.TextureData;
-        }
-
-        public PvrTextureInfo(GvrTextureInfo tex)
-            : this((TextureInfo)tex)
-        {
-            switch (tex.DataFormat)
             {
-                case GvrDataFormat.Index4:
-                    DataFormat = PvrDataFormat.Index4;
-                    break;
-                case GvrDataFormat.Index8:
-                    DataFormat = PvrDataFormat.Index8;
-                    break;
+                TextureData = pv.TextureData;
+                PixelFormat = pv.PixelFormat;
+                DataFormat = pv.DataFormat;
             }
-        }
-
-        public PvrTextureInfo(PvrTextureInfo tex)
-            : this((TextureInfo)tex)
-        {
-            PixelFormat = tex.PixelFormat;
-            DataFormat = tex.DataFormat;
-            TextureData = tex.TextureData;
+            else if (tex is GvrTextureInfo gv)
+            {
+                switch (gv.DataFormat)
+                {
+                    case GvrDataFormat.Index4:
+                        DataFormat = PvrDataFormat.Index4;
+                        break;
+                    case GvrDataFormat.Index8:
+                        DataFormat = PvrDataFormat.Index8;
+                        break;
+                    default:
+                        DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap);
+                        PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
+                        break;
+                }
+            }
+            else
+            {
+                DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image,tex.Mipmap);
+                PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
+            }
         }
 
         public PvrTextureInfo(string name, uint gbix, Bitmap bitmap)
@@ -66,7 +69,10 @@ namespace TextureEditor
             GlobalIndex = gbix;
             DataFormat = PvrDataFormat.Unknown;
             PixelFormat = PvrPixelFormat.Unknown;
-            Image = bitmap;
+            if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
+                Image = new Bitmap(TextureEditor.Properties.Resources.error);
+            else
+                Image = bitmap;
         }
 
         public PvrTextureInfo(string name, MemoryStream str, PvpPalette pvp = null)
@@ -80,6 +86,11 @@ namespace TextureEditor
             DataFormat = texture.DataFormat;
             Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
             PixelFormat = texture.PixelFormat;
+            if (pvp == null && texture.NeedsExternalPalette)
+            {
+                pvp = new PvpPalette(TextureEditor.Properties.Resources.defaultPVP);
+                texture.SetPalette(pvp);
+            }
             Image = texture.ToBitmap();
         }
 
@@ -106,29 +117,28 @@ namespace TextureEditor
             PixelFormat = GvrPixelFormat.Unknown;
             DataFormat = GvrDataFormat.Unknown;
             if (tex is GvrTextureInfo gvrt)
-                TextureData = gvrt.TextureData;
-        }
-
-        public GvrTextureInfo(PvrTextureInfo tex)
-            : this((TextureInfo)tex)
-        {
-            switch (tex.DataFormat)
             {
-                case PvrDataFormat.Index4:
-                    DataFormat = GvrDataFormat.Index4;
-                    break;
-                case PvrDataFormat.Index8:
-                    DataFormat = GvrDataFormat.Index8;
-                    break;
+                PixelFormat = gvrt.PixelFormat;
+                DataFormat = gvrt.DataFormat;
+                TextureData = gvrt.TextureData;
             }
-        }
-
-        public GvrTextureInfo(GvrTextureInfo tex)
-            : this((TextureInfo)tex)
-        {
-            PixelFormat = tex.PixelFormat;
-            DataFormat = tex.DataFormat;
-            TextureData = tex.TextureData;
+            else if (tex is PvrTextureInfo pvrt)
+            {
+                switch (pvrt.DataFormat)
+                {
+                    case PvrDataFormat.Index4:
+                        DataFormat = GvrDataFormat.Index4;
+                        break;
+                    case PvrDataFormat.Index8:
+                        DataFormat = GvrDataFormat.Index8;
+                        break;
+                    default:
+                        DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false);
+                        break;
+                }
+            }
+            else
+                DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false);
         }
 
         public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
@@ -137,7 +147,10 @@ namespace TextureEditor
             GlobalIndex = gbix;
             DataFormat = GvrDataFormat.Unknown;
             PixelFormat = GvrPixelFormat.Unknown;
-            Image = bitmap;
+            if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
+                Image = new Bitmap(TextureEditor.Properties.Resources.error);
+            else
+                Image = bitmap;
         }
 
         public GvrTextureInfo(string name, MemoryStream str, GvpPalette gvp = null)
@@ -151,6 +164,11 @@ namespace TextureEditor
             DataFormat = texture.DataFormat;
             Mipmap = texture.HasMipmaps;
             PixelFormat = texture.PixelFormat;
+            if (gvp == null && texture.NeedsExternalPalette)
+            {
+                gvp = new GvpPalette(TextureEditor.Properties.Resources.defaultGVP);
+                texture.SetPalette(gvp);
+            }
             Image = texture.ToBitmap();
         }
 
@@ -313,143 +331,4 @@ namespace TextureEditor
             return true;
         }
     }
-
-    static class PvmxArchive
-	{
-		const int FourCC = 0x584D5650; // 'PVMX'
-		const byte Version = 1;
-
-		enum dictionary_field : byte
-		{
-			none,
-			/// <summary>
-			/// 32-bit integer global index
-			/// </summary>
-			global_index,
-			/// <summary>
-			/// Null-terminated file name
-			/// </summary>
-			name,
-			/// <summary>
-			/// Two 32-bit integers defining width and height
-			/// </summary>
-			dimensions,
-		}
-
-		public static bool Is(byte[] file)
-		{
-			return file.Length > 4 && BitConverter.ToInt32(file, 0) == FourCC;
-		}
-
-		public static List<PvmxTextureInfo> GetTextures(byte[] file)
-		{
-			if (!Is(file)) throw new FormatException("File is not a PVMX archive.");
-			if (file[4] != Version) throw new FormatException("Incorrect PVMX archive version.");
-			int off = 5;
-			List<PvmxTextureInfo> textures = new List<PvmxTextureInfo>();
-			dictionary_field type;
-			for (type = (dictionary_field)file[off++]; type != dictionary_field.none; type = (dictionary_field)file[off++])
-			{
-				PvmxTextureInfo tex = new PvmxTextureInfo();
-				while (type != dictionary_field.none)
-				{
-					switch (type)
-					{
-						case dictionary_field.global_index:
-							tex.GlobalIndex = BitConverter.ToUInt32(file, off);
-							off += sizeof(uint);
-							break;
-
-						case dictionary_field.name:
-							int count = 0;
-							while (file[off + count] != 0)
-								count++;
-							tex.Name = Path.ChangeExtension(Encoding.UTF8.GetString(file, off, count), null);
-							off += count + 1;
-							break;
-
-						case dictionary_field.dimensions:
-							System.Drawing.Size size = new System.Drawing.Size();
-							size.Width = BitConverter.ToInt32(file, off);
-							off += sizeof(int);
-							size.Height = BitConverter.ToInt32(file, off);
-							off += sizeof(int);
-							tex.Dimensions = size;
-							break;
-
-						default:
-							break;
-					}
-
-					type = (dictionary_field)file[off++];
-				}
-
-				ulong offset = BitConverter.ToUInt64(file, off);
-				off += sizeof(ulong);
-				ulong length = BitConverter.ToUInt64(file, off);
-				off += sizeof(ulong);
-
-				using (MemoryStream ms = new MemoryStream(file, (int)offset, (int)length))
-					tex.Image = new System.Drawing.Bitmap(ms);
-
-				textures.Add(tex);
-			}
-			return textures;
-		}
-
-		struct OffData
-		{
-			public long off;
-			public byte[] data;
-
-			public OffData(long o, byte[] d)
-			{
-				off = o;
-				data = d;
-			}
-		}
-
-		public static void Save(Stream str, IEnumerable<PvmxTextureInfo> textures)
-		{
-			BinaryWriter bw = new BinaryWriter(str);
-			bw.Write(FourCC);
-			bw.Write(Version);
-			List<OffData> texdata = new List<OffData>();
-			foreach (PvmxTextureInfo tex in textures)
-			{
-				bw.Write((byte)dictionary_field.global_index);
-				bw.Write(tex.GlobalIndex);
-				bw.Write((byte)dictionary_field.name);
-				bw.Write(tex.Name.ToCharArray());
-				bw.Write(new[] { '.', 'p', 'n', 'g' });
-				bw.Write((byte)0);
-				if (tex.Dimensions.HasValue)
-				{
-					bw.Write((byte)dictionary_field.dimensions);
-					bw.Write(tex.Dimensions.Value.Width);
-					bw.Write(tex.Dimensions.Value.Height);
-				}
-				bw.Write((byte)dictionary_field.none);
-				long size;
-				using (MemoryStream ms = new MemoryStream())
-				{
-					System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
-					bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-					texdata.Add(new OffData(str.Position, ms.ToArray()));
-					size = ms.Length;
-				}
-				bw.Write(0ul);
-				bw.Write(size);
-			}
-			bw.Write((byte)dictionary_field.none);
-			foreach (OffData od in texdata)
-			{
-				long pos = str.Position;
-				str.Position = od.off;
-				bw.Write(pos);
-				str.Position = pos;
-				bw.Write(od.data);
-			}
-		}
-	}
 }

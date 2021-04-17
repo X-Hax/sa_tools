@@ -50,15 +50,16 @@
             this.saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.importAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importTexturePackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportTexturePackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addMipmapsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.makePCCompatibleGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.highQualityGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportDefaultPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alphaSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enablePAKAlphaForAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disablePAKAlphaForAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -176,8 +177,8 @@
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator3,
-            this.importAllToolStripMenuItem,
-            this.exportAllToolStripMenuItem,
+            this.importTexturePackToolStripMenuItem,
+            this.exportTexturePackToolStripMenuItem,
             this.toolStripSeparator1,
             this.recentFilesToolStripMenuItem,
             this.toolStripSeparator2,
@@ -300,23 +301,25 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(220, 6);
             // 
-            // importAllToolStripMenuItem
+            // importTexturePackToolStripMenuItem
             // 
-            this.importAllToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.import;
-            this.importAllToolStripMenuItem.Name = "importAllToolStripMenuItem";
-            this.importAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.importAllToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.importAllToolStripMenuItem.Text = "&Import texture pack...";
-            this.importAllToolStripMenuItem.Click += new System.EventHandler(this.importAllToolStripMenuItem_Click);
+            this.importTexturePackToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.import;
+            this.importTexturePackToolStripMenuItem.Name = "importTexturePackToolStripMenuItem";
+            this.importTexturePackToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.importTexturePackToolStripMenuItem.Text = "&Import texture pack...";
+            this.importTexturePackToolStripMenuItem.ToolTipText = "Import a folder texture pack with an index file.";
+            this.importTexturePackToolStripMenuItem.Click += new System.EventHandler(this.importTexturePackToolStripMenuItem_Click);
             // 
-            // exportAllToolStripMenuItem
+            // exportTexturePackToolStripMenuItem
             // 
-            this.exportAllToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.export;
-            this.exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
-            this.exportAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.exportAllToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.exportAllToolStripMenuItem.Text = "&Export texture pack...";
-            this.exportAllToolStripMenuItem.Click += new System.EventHandler(this.exportAllToolStripMenuItem_Click);
+            this.exportTexturePackToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.export;
+            this.exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
+            this.exportTexturePackToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.exportTexturePackToolStripMenuItem.Text = "&Export texture pack...";
+            this.exportTexturePackToolStripMenuItem.ToolTipText = "Export a folder texture pack with an index file.";
+            this.exportTexturePackToolStripMenuItem.Click += new System.EventHandler(this.exportTexturePackToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -347,7 +350,8 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addMipmapsToAllToolStripMenuItem,
-            this.makePCCompatibleGVMsToolStripMenuItem,
+            this.highQualityGVMsToolStripMenuItem,
+            this.exportDefaultPaletteToolStripMenuItem,
             this.alphaSortingToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
@@ -356,17 +360,31 @@
             // addMipmapsToAllToolStripMenuItem
             // 
             this.addMipmapsToAllToolStripMenuItem.Name = "addMipmapsToAllToolStripMenuItem";
-            this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.addMipmapsToAllToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.addMipmapsToAllToolStripMenuItem.Text = "Add &Mipmaps to All";
+            this.addMipmapsToAllToolStripMenuItem.ToolTipText = "Enable the Mipmap flag for all textures.";
             this.addMipmapsToAllToolStripMenuItem.Click += new System.EventHandler(this.addMipmapsToAllToolStripMenuItem_Click);
             // 
-            // makePCCompatibleGVMsToolStripMenuItem
+            // highQualityGVMsToolStripMenuItem
             // 
-            this.makePCCompatibleGVMsToolStripMenuItem.CheckOnClick = true;
-            this.makePCCompatibleGVMsToolStripMenuItem.Name = "makePCCompatibleGVMsToolStripMenuItem";
-            this.makePCCompatibleGVMsToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.makePCCompatibleGVMsToolStripMenuItem.Text = "Make &PC-Compatible GVMs";
-            this.makePCCompatibleGVMsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.makePCCompatibleGVMsToolStripMenuItem_CheckedChanged);
+            this.highQualityGVMsToolStripMenuItem.CheckOnClick = true;
+            this.highQualityGVMsToolStripMenuItem.Name = "highQualityGVMsToolStripMenuItem";
+            this.highQualityGVMsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.highQualityGVMsToolStripMenuItem.Text = "High &Quality GVMs (GC only)";
+            this.highQualityGVMsToolStripMenuItem.ToolTipText = "Enable support for lossless textures in GVM files. Only supported by SA2B Gamecub" +
+    "e.";
+            this.highQualityGVMsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.highQualityGVMsToolStripMenuItem_CheckedChanged);
+            // 
+            // exportDefaultPaletteToolStripMenuItem
+            // 
+            this.exportDefaultPaletteToolStripMenuItem.Checked = true;
+            this.exportDefaultPaletteToolStripMenuItem.CheckOnClick = true;
+            this.exportDefaultPaletteToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.exportDefaultPaletteToolStripMenuItem.Name = "exportDefaultPaletteToolStripMenuItem";
+            this.exportDefaultPaletteToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.exportDefaultPaletteToolStripMenuItem.Text = "Export with Default Palette";
+            this.exportDefaultPaletteToolStripMenuItem.ToolTipText = "Export indexed PVR and GVR textures with a default palette. When this option is d" +
+    "isabled, the current palette will be applied on export.";
             // 
             // alphaSortingToolStripMenuItem
             // 
@@ -375,21 +393,24 @@
             this.disablePAKAlphaForAllToolStripMenuItem});
             this.alphaSortingToolStripMenuItem.Enabled = false;
             this.alphaSortingToolStripMenuItem.Name = "alphaSortingToolStripMenuItem";
-            this.alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.alphaSortingToolStripMenuItem.Text = "Alpha Sorting Flag";
+            this.alphaSortingToolStripMenuItem.ToolTipText = "Transparency flags for SA2 PC PAKs.";
             // 
             // enablePAKAlphaForAllToolStripMenuItem
             // 
             this.enablePAKAlphaForAllToolStripMenuItem.Name = "enablePAKAlphaForAllToolStripMenuItem";
-            this.enablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.enablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.enablePAKAlphaForAllToolStripMenuItem.Text = "Enable for All";
+            this.enablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Set the RGB5A3 pixel format for all PAK items.";
             this.enablePAKAlphaForAllToolStripMenuItem.Click += new System.EventHandler(this.enablePAKAlphaForAllToolStripMenuItem_Click);
             // 
             // disablePAKAlphaForAllToolStripMenuItem
             // 
             this.disablePAKAlphaForAllToolStripMenuItem.Name = "disablePAKAlphaForAllToolStripMenuItem";
-            this.disablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.disablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.disablePAKAlphaForAllToolStripMenuItem.Text = "Disable for All";
+            this.disablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Remove the RGB5A3 format flag in all PAK items.";
             this.disablePAKAlphaForAllToolStripMenuItem.Click += new System.EventHandler(this.disablePAKAlphaForAllToolStripMenuItem_Click);
             // 
             // splitContainer1
@@ -513,6 +534,7 @@
             this.checkBoxPAKUseAlpha.Text = "Alpha Sorting";
             this.checkBoxPAKUseAlpha.UseVisualStyleBackColor = true;
             this.checkBoxPAKUseAlpha.CheckedChanged += new System.EventHandler(this.checkBoxPAKUseAlpha_CheckedChanged);
+            this.checkBoxPAKUseAlpha.Click += new System.EventHandler(this.checkBoxPAKUseAlpha_Click);
             // 
             // numericUpDownOrigSizeY
             // 
@@ -822,7 +844,7 @@
 		private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem exportAllToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportTexturePackToolStripMenuItem;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.CheckBox mipmapCheckBox;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
@@ -845,8 +867,8 @@
 		private System.Windows.Forms.Button textureUpButton;
 		private System.Windows.Forms.Button textureDownButton;
 		private System.Windows.Forms.Label textureSizeLabel;
-		private System.Windows.Forms.ToolStripMenuItem makePCCompatibleGVMsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem importAllToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem highQualityGVMsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem importTexturePackToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.NumericUpDown numericUpDownOrigSizeY;
 		private System.Windows.Forms.NumericUpDown numericUpDownOrigSizeX;
@@ -857,6 +879,7 @@
 		private System.Windows.Forms.ToolStripMenuItem alphaSortingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem enablePAKAlphaForAllToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem disablePAKAlphaForAllToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportDefaultPaletteToolStripMenuItem;
 	}
 }
 

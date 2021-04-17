@@ -57,8 +57,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenericArchive.cs" />
+    <Compile Include="DAT.cs" />
+    <Compile Include="ArchiveLib.cs" />
+    <Compile Include="njUtil.cs" />
+    <Compile Include="PAK.cs" />
+    <Compile Include="PB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Puyo.cs" />
+    <Compile Include="PVMX.cs" />
+    <Compile Include="SkiesOfArcadia.cs" />
+    <Compile Include="SonicShuffle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
