@@ -57,6 +57,9 @@ namespace ArchiveTool
                 case (".mdt"):
                     arc = new MDTArchive(arcdata);
                     break;
+                case (".mld"):
+                    arc = new MLDArchive(arcdata);
+                    break;
                 default:
                     Console.WriteLine("Unknown archive type");
                     return;
