@@ -183,9 +183,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\sa2_ico.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\sadx_ico.png" />
   </ItemGroup>
   <ItemGroup>
@@ -209,12 +206,6 @@
       <Name>SAModel</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SA2BANNER.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SADXBANNER.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\newProj.png" />
@@ -266,36 +257,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\tools_ico.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sa1_final.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sa1_autodemo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sa2_final.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sa2_trial.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sa2_preview.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sadxgc_final.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sadxgc_preview.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sadxgc_review.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sadx360_final.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sa1_final1.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\tsSa2EvDiag.png" />

@@ -1340,6 +1340,25 @@ namespace SAToolsHub
 			hubSettings.Save();
 		}
 
+		void setColors(ProjectSettings.Themes theme)
+		{
+			switch (theme)
+			{
+				case ProjectSettings.Themes.dark:
+					break;
+
+				case ProjectSettings.Themes.light:
+				default:
+					menuStrip1.BackColor = System.Drawing.SystemColors.Control;
+					topToolStrip.BackColor = System.Drawing.SystemColors.Control;
+					toolStrip1.BackColor = System.Drawing.SystemColors.Control;
+					rightToolStrip.BackColor = System.Drawing.SystemColors.Control;
+					treeView1.BackColor = System.Drawing.SystemColors.Window;
+					listView1.BackColor = System.Drawing.SystemColors.Window;
+					break;
+			}
+		}
+
 		//Debug/Developer Only Options
 		private void toolStripMenuItem1_Click(object sender, EventArgs e)
 		{
