@@ -37,7 +37,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FraGag.Compression.Prs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FraGag.Compression.Prs">
+      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
