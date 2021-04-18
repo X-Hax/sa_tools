@@ -184,6 +184,8 @@ namespace TextureEditor
         private List<TextureInfo> GetTexturesFromFile(string fname)
         {
             byte[] datafile = File.ReadAllBytes(fname);
+            if (Path.GetExtension(fname).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                datafile = FraGag.Compression.Prs.Decompress(datafile);
             List<TextureInfo> newtextures;
             if (PVMXFile.Identify(datafile))
             {
