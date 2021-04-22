@@ -667,7 +667,6 @@ namespace SAToolsHub
 		}
 
 		//SADX Tools Initializers
-
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Process tweakerProcess = Process.Start(sadxtweakerStartInfo);
