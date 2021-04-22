@@ -131,6 +131,7 @@
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
+			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -964,7 +965,8 @@
 			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader4});
 			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.listView1.HideSelection = false;
@@ -1137,7 +1139,6 @@
 			// browseCurDirectory
 			// 
 			this.browseCurDirectory.Enabled = false;
-			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.browseCurDirectory.Name = "browseCurDirectory";
 			this.browseCurDirectory.Size = new System.Drawing.Size(560, 32);
 			// 
@@ -1157,6 +1158,10 @@
 			this.browseOpenExplorer.Size = new System.Drawing.Size(85, 29);
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
+			// 
+			// columnHeader4
+			// 
+			this.columnHeader4.Text = "Filesize";
 			// 
 			// SAToolsHub
 			// 
@@ -1296,5 +1301,6 @@
 		private System.Windows.Forms.ToolStripTextBox browseCurDirectory;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 		private System.Windows.Forms.ToolStripMenuItem sALVLToolStripMenuItem;
+		private System.Windows.Forms.ColumnHeader columnHeader4;
 	}
 }

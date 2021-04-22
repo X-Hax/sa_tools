@@ -229,9 +229,21 @@ namespace SAToolsHub
 			}
 		}
 
+		string getFileSize(long length)
+		{
+			if (length > 0)
+			{
+				return (length / (1024)).ToString("$,0.00 KB");
+			}
+			else
+				return "0";
+		}
+
 		void LoadFiles(DirectoryInfo nodeDirInfo, ListViewItem item)
 		{
 			ListViewItem.ListViewSubItem[] subItems;
+			string subItemType = "";
+			string tagType = "";
 			foreach (DirectoryInfo dir in nodeDirInfo.GetDirectories())
 			{
 				if (dir.Name != "dllcache")
@@ -262,10 +274,8 @@ namespace SAToolsHub
 					case ".sa2mdl":
 					case ".sa2bmdl":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Model File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Model File";
+							tagType = "mdl";
 							item.ImageIndex = (int)item_icons.model;
 							item.ToolTipText = "Double click to open in SAMDL";
 							break;
@@ -274,20 +284,16 @@ namespace SAToolsHub
 					case ".sa2lvl":
 					case ".sa2blvl":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Level File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Level File";
+							tagType = "lvl";
 							item.ImageIndex = (int)item_icons.level;
 							item.ToolTipText = "Double click to open in SALVL";
 							break;
 						}
 					case ".ini":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Data File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Data File";
+							tagType = "txt";
 							item.ImageIndex = (int)item_icons.data;
 							switch (fileName)
 							{
@@ -305,38 +311,28 @@ namespace SAToolsHub
 						}
 					case ".txt":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Text File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Text File";
+							tagType = "txt";
 							item.ImageIndex = (int)item_icons.document;
 							item.ToolTipText = "Double click to open in the default text editor.";
 							break;
 						}
 					case ".bin":
 						{
+							tagType = "bin";
 							if (fileName.Contains("cam"))
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Camera Layout"),
-								new ListViewItem.ListViewSubItem(item,
-									file.LastAccessTime.ToShortDateString())};
+								subItemType = "Camera Layout";
 								item.ImageIndex = (int)item_icons.camera;
 							}
 							else if (fileName.Contains("set"))
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Object Layout"),
-								new ListViewItem.ListViewSubItem(item,
-									file.LastAccessTime.ToShortDateString())};
+								subItemType = "Object Layout";
 								item.ImageIndex = (int)item_icons.setobj;
 							}
 							else
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Binary File"),
-								new ListViewItem.ListViewSubItem(item,
-									file.LastAccessTime.ToShortDateString())};
+								subItemType = "Binary File";
 							}
 							break;
 						}
@@ -345,21 +341,22 @@ namespace SAToolsHub
 					case ".gvm":
 					case ".pak":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Texture Archive"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Texture Archive";
+							tagType = "tex";
 							item.ImageIndex = (int)item_icons.texture;
 							item.ToolTipText = "Double click to open in Texture Editor";
 							break;
 						}
 					case ".pvr":
 					case ".gvr":
+					case ".dds":
+					case ".jpg":
+					case ".png":
+					case ".bmp":
+					case ".gif":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Image File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Image File";
+							tagType = "img";
 							item.ImageIndex = (int)item_icons.texture;
 							break;
 						}
@@ -367,68 +364,42 @@ namespace SAToolsHub
 					case ".gvp":
 					case ".plt":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Palette File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Palette File";
+							tagType = "plt";
 							item.ImageIndex = (int)item_icons.texture;
-							break;
-						}
-					case ".dds":
-					case ".jpg":
-					case ".png":
-					case ".bmp":
-					case ".gif":
-						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Image File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
-							item.ImageIndex = (int)item_icons.texture;
-							item.ToolTipText = "Double click to open in default image program";
 							break;
 						}
 					case ".prs":
 						{
 							if (fileName.Contains("mdl"))
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Compressed Model"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+								subItemType = "Compressed Model Archive";
+								tagType = "mdl";
 								item.ToolTipText = "Double click to open in SAMDL";
 							}
 							else if (fileName.Contains("tex") || fileName.Contains("tx") || fileName.Contains("bg"))
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Compressed Texture Archive"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+								subItemType = "Compressed Texture Archive";
+								tagType = "tex";
 								item.ToolTipText = "Double click to open in Texture Editor";
 							}
 							else if (fileName.Contains("mtn"))
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Compressed Animations Archive"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+								subItemType = "Compressed Animations Archive";
+								tagType = "anm";
 							}
 							else
 							{
-								subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Compressed File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+								subItemType = "Compressed File";
+								tagType = "file";
 							}
 							item.ImageIndex = (int)item_icons.compress;
 							break;
 						}
 					case ".saanim":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "Animation File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Animation File";
+							tagType = "anm";
 							item.ImageIndex = (int)item_icons.anim;
 							break;
 						}
@@ -438,10 +409,8 @@ namespace SAToolsHub
 					case ".wma":
 					case ".dat":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Audio File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Audio File";
+							tagType = "snd";
 							item.ImageIndex = (int)item_icons.audio;
 							break;
 						}
@@ -449,42 +418,39 @@ namespace SAToolsHub
 					case ".sfd":
 					case ".m1v":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Video File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Video File";
+							tagType = "vid";
 							item.ImageIndex = (int)item_icons.camera;
 							break;
 						}
 					case ".c":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Code File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Code File";
+							tagType = "txt";
 							item.ImageIndex = (int)item_icons.cfile;
 							break;
 						}
 					case ".json":
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-									{ new ListViewItem.ListViewSubItem(item, "Javascript File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "Javascript File";
+							tagType = "txt";
 							item.ImageIndex = (int)item_icons.json;
 							break;
 						}
 					default:
 						{
-							subItems = new ListViewItem.ListViewSubItem[]
-								{ new ListViewItem.ListViewSubItem(item, "File"),
-							new ListViewItem.ListViewSubItem(item,
-								file.LastAccessTime.ToShortDateString())};
+							subItemType = "File";
+							tagType = "file";
 							break;
 						}
 				}
+				subItems = new ListViewItem.ListViewSubItem[] { 
+					new ListViewItem.ListViewSubItem(item, subItemType),
+					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
+					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length))
+				};
 				itemTags itemTag = new itemTags();
-				itemTag.Type = "file";
+				itemTag.Type = tagType;
 				itemTag.Path = file.FullName;
 				item.Tag = itemTag;
 				item.SubItems.AddRange(subItems);
@@ -986,13 +952,11 @@ namespace SAToolsHub
 						cmsToData.Enabled = true;
 						break;
 					case ".saanim":
-						editOpen.Enabled = true;
 						editCopy.Enabled = true;
 						editDel.Enabled = true;
 						editConvert.Enabled = true;
 						editToData.Enabled = true;
 						editToJson.Enabled = true;
-						cmsOpen.Enabled = true;
 						cmsCopy.Enabled = true;
 						cmsDelete.Enabled = true;
 						cmsConvert.Enabled = true;
@@ -1022,6 +986,7 @@ namespace SAToolsHub
 			TreeNode selNode = new TreeNode();
 			string itemName = item.Text;
 			string itemPath = ((itemTags)item.Tag).Path;
+			string itemType = ((itemTags)item.Tag).Type;
 			string itemExt;
 
 			if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
@@ -1093,7 +1058,7 @@ namespace SAToolsHub
 								projectEditorDiag.ShowDialog();
 								break;
 							default:
-								if (itemName.Contains("_data"))
+								if (itemName.Contains("_data") && setGame == "SADX")
 								{
 									sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
 									Process.Start(sadxtweakerStartInfo);
@@ -1338,25 +1303,6 @@ namespace SAToolsHub
 
 			hubSettings.UpdateFrequency = ProjectSettings.Frequency.monthly;
 			hubSettings.Save();
-		}
-
-		void setColors(ProjectSettings.Themes theme)
-		{
-			switch (theme)
-			{
-				case ProjectSettings.Themes.dark:
-					break;
-
-				case ProjectSettings.Themes.light:
-				default:
-					menuStrip1.BackColor = System.Drawing.SystemColors.Control;
-					topToolStrip.BackColor = System.Drawing.SystemColors.Control;
-					toolStrip1.BackColor = System.Drawing.SystemColors.Control;
-					rightToolStrip.BackColor = System.Drawing.SystemColors.Control;
-					treeView1.BackColor = System.Drawing.SystemColors.Window;
-					listView1.BackColor = System.Drawing.SystemColors.Window;
-					break;
-			}
 		}
 
 		//Debug/Developer Only Options
