@@ -109,9 +109,43 @@ namespace SAToolsHub
 			gameOptionsDiag = new gameOptions();
 			projectConverter = new projConv();
 			abtWindow = new formAbout();
+
+			SetProgramPaths();
+
+			switch (hubSettings.AutoUpdate)
+			{
+				case true:
+					autoUpdateToolStripMenuItem.Checked = true;
+					frequencyToolStripMenuItem.Enabled = true;
+					break;
+				case false:
+					autoUpdateToolStripMenuItem.Checked = false;
+					frequencyToolStripMenuItem.Enabled = false;
+					break;
+			}
+
+			switch (hubSettings.UpdateFrequency)
+			{
+				case ProjectSettings.Frequency.daily:
+					dailyToolStripMenuItem.Checked = true;
+					weeklyToolStripMenuItem.Checked = false;
+					monthlyToolStripMenuItem.Checked = false;
+					break;
+				case ProjectSettings.Frequency.weekly:
+					dailyToolStripMenuItem.Checked = false;
+					weeklyToolStripMenuItem.Checked = true;
+					monthlyToolStripMenuItem.Checked = false;
+					break;
+				case ProjectSettings.Frequency.monthly:
+					dailyToolStripMenuItem.Checked = false;
+					weeklyToolStripMenuItem.Checked = false;
+					monthlyToolStripMenuItem.Checked = true;
+					break;
+			}
 		}
 
-		//Additional Code/Functions
+		#region AdditionalFunctions
+		// TODO: Migrate out for clean up.
 		private void openProject(string projectFile)
 		{
 			var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
@@ -167,7 +201,61 @@ namespace SAToolsHub
 
 			editToolStripMenuItem.Enabled = true;
 		}
-		
+
+		public void resetOpenProject()
+		{
+			treeView1.Nodes.Clear();
+			listView1.Items.Clear();
+
+			//reset Tools Hub Buttons
+			tsBuild.Enabled = false;
+			tsGameRun.Enabled = false;
+			tsEditProj.Enabled = false;
+			closeProjectToolStripMenuItem.Enabled = false;
+			editProjectInfoToolStripMenuItem.Enabled = false;
+			buildToolStripMenuItem.Enabled = false;
+			browseBack.Enabled = false;
+			browseCurDirectory.TextBox.Clear();
+			browseOpenExplorer.Enabled = false;
+
+			//reset DX game buttons
+			tsSADXTweaker.Visible = false;
+			tsSADXsndSharp.Visible = false;
+			tsSADXFontEdit.Visible = false;
+
+			//reset SA2 game buttons
+			tsSA2EvView.Visible = false;
+			tsSA2EvTxt.Visible = false;
+			tsSA2MsgEdit.Visible = false;
+			tsSA2StgSel.Visible = false;
+		}
+
+		void SetProgramPaths()
+		{
+			string rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
+#if DEBUG
+			toolStripMenuItem1.Visible = true;
+			toolStripMenuItem1.Enabled = true;
+#endif
+#if !DEBUG
+			toolStripMenuItem1.Visible = false;
+			toolStripMenuItem1.Enabled = false;
+#endif
+
+			samdlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAMDL.exe")));
+			texeditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "TextureEditor.exe")));
+			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
+			sadxsndsharpStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXsndSharp.exe")));
+			sadxtweakerStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXTweaker2.exe")));
+			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXFontEdit.exe")));
+			sasaveStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SASave.exe")));
+			sa2eventviewStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2EventViewer.exe")));
+			sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));
+			sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
+			sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
+			datatoolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
+		}
+
 		private void PopulateTreeView(string directory)
 		{
 			TreeNode rootNode;
@@ -481,97 +569,107 @@ namespace SAToolsHub
 			}
 		}
 
-		public void resetOpenProject()
+		void reloadFolder()
 		{
-			treeView1.Nodes.Clear();
+			DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
+			ListViewItem item = null;
 			listView1.Items.Clear();
-
-			//reset Tools Hub Buttons
-			tsBuild.Enabled = false;
-			tsGameRun.Enabled = false;
-			tsEditProj.Enabled = false;
-			closeProjectToolStripMenuItem.Enabled = false;
-			editProjectInfoToolStripMenuItem.Enabled = false;
-			buildToolStripMenuItem.Enabled = false;
-			browseBack.Enabled = false;
-			browseCurDirectory.TextBox.Clear();
-			browseOpenExplorer.Enabled = false;
-
-			//reset DX game buttons
-			tsSADXTweaker.Visible = false;
-			tsSADXsndSharp.Visible = false;
-			tsSADXFontEdit.Visible = false;
-
-			//reset SA2 game buttons
-			tsSA2EvView.Visible = false;
-			tsSA2EvTxt.Visible = false;
-			tsSA2MsgEdit.Visible = false;
-			tsSA2StgSel.Visible = false;
+			LoadFiles(info, item);
 		}
 
-		void SetProgramPaths()
+		void openListItem(ListViewItem item)
 		{
-			string rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
-#if DEBUG
-			toolStripMenuItem1.Visible = true;
-			toolStripMenuItem1.Enabled = true;
-#endif
-#if !DEBUG
-			toolStripMenuItem1.Visible = false;
-			toolStripMenuItem1.Enabled = false;
-#endif
+			TreeNode selNode = new TreeNode();
+			string itemName = item.Text;
+			string itemPath = ((itemTags)item.Tag).Path;
+			string itemType = ((itemTags)item.Tag).Type;
+			string itemExt;
 
-			samdlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAMDL.exe")));
-			texeditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "TextureEditor.exe")));
-			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
-			sadxsndsharpStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXsndSharp.exe")));
-			sadxtweakerStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXTweaker2.exe")));
-			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXFontEdit.exe")));
-			sasaveStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SASave.exe")));
-			sa2eventviewStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2EventViewer.exe")));
-			sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));
-			sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
-			sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
-			datatoolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
-		}
-
-		private void toolsHub_Shown(object sender, EventArgs e)
-		{
-			SetProgramPaths();
-
-			switch (hubSettings.AutoUpdate)
+			if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
 			{
-				case true:
-					autoUpdateToolStripMenuItem.Checked = true;
-					frequencyToolStripMenuItem.Enabled = true;
-					break;
-				case false:
-					autoUpdateToolStripMenuItem.Checked = false;
-					frequencyToolStripMenuItem.Enabled = false;
-					break;
+				selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
+				itemExt = "dir";
+			}
+			else
+			{
+				itemExt = Path.GetExtension(itemPath);
 			}
 
-			switch (hubSettings.UpdateFrequency)
+			if (listView1.SelectedItems.Count > 0)
 			{
-				case ProjectSettings.Frequency.daily:
-					dailyToolStripMenuItem.Checked = true;
-					weeklyToolStripMenuItem.Checked = false;
-					monthlyToolStripMenuItem.Checked = false;
-					break;
-				case ProjectSettings.Frequency.weekly:
-					dailyToolStripMenuItem.Checked = false;
-					weeklyToolStripMenuItem.Checked = true;
-					monthlyToolStripMenuItem.Checked = false;
-					break;
-				case ProjectSettings.Frequency.monthly:
-					dailyToolStripMenuItem.Checked = false;
-					weeklyToolStripMenuItem.Checked = false;
-					monthlyToolStripMenuItem.Checked = true;
-					break;
+				switch (itemExt.ToLower())
+				{
+					case "dir":
+						SelectListViewNode(selNode);
+						treeView1.SelectedNode = selNode;
+						break;
+					case ".sa1mdl":
+					case ".sa2mdl":
+					case ".sa2bmdl":
+						samdlStartInfo.Arguments = $"\"{itemPath}\"";
+						Process.Start(samdlStartInfo);
+						break;
+					case ".sa1lvl":
+					case ".sa2lvl":
+					case ".sa2blvl":
+						salvlStartInfo.Arguments = $"\"{itemPath}\"";
+						Process.Start(salvlStartInfo);
+						break;
+					case ".pvm":
+					case ".pvmx":
+					case ".gvm":
+					case ".pak":
+						texeditStartInfo.Arguments = $"\"{itemPath}\"";
+						Process.Start(texeditStartInfo);
+						break;
+					case ".txt":
+					case ".dds":
+					case ".jpg":
+					case ".png":
+					case ".bmp":
+					case ".gif":
+						Process.Start($"\"{itemPath}\"");
+						break;
+					case ".prs":
+						if (itemName.Contains("mdl"))
+						{
+							samdlStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(samdlStartInfo);
+						}
+						else if (itemName.Contains("tex") || itemName.Contains("tx") || itemName.Contains("bg"))
+						{
+							texeditStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(texeditStartInfo);
+						}
+						break;
+					case ".ini":
+						switch (itemName)
+						{
+							case "sadxlvl.ini":
+								salvlStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
+
+								Process.Start(salvlStartInfo);
+								break;
+							case "mod.ini":
+								projectEditorDiag.ShowDialog();
+								break;
+							default:
+								if (itemName.Contains("_data") && setGame == "SADX")
+								{
+									sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
+									Process.Start(sadxtweakerStartInfo);
+								}
+								else
+									Process.Start($"\"{itemPath}\"");
+								break;
+						}
+						break;
+				}
 			}
 		}
+		#endregion
 
-		//Tool Strip Functions
+		#region Menu Projects
 		//Settings
 		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -641,8 +739,9 @@ namespace SAToolsHub
 		{
 			gameOptionsDiag.ShowDialog();
 		}
+		#endregion
 
-		//Tools
+		#region Menu Game Tools
 		//General Tools Initializers
 		private void sAMDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -721,8 +820,9 @@ namespace SAToolsHub
 			if (convWarning == DialogResult.Yes)
 				projectConverter.ShowDialog();
 		}
+		#endregion
 
-		//Help Links
+		#region Web Links
 		//Resources
 		private void sAToolsWikiToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -814,8 +914,9 @@ namespace SAToolsHub
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
 		}
+		#endregion
 
-		//Toolstrip Buttons
+		#region Toolstrip Buttons
 		private void tsNewProj_Click(object sender, EventArgs e)
 		{
 			newProjectToolStripMenuItem_Click(sender, e);
@@ -895,16 +996,9 @@ namespace SAToolsHub
 		{
 			sA2StageSelectEditorToolStripMenuItem_Click(sender, e);
 		}
+		#endregion
 
-		//Edit/Context Menu
-		void reloadFolder()
-		{
-			DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
-			ListViewItem item = null;
-			listView1.Items.Clear();
-			LoadFiles(info, item);
-		}
-
+		#region Edit Menu
 		private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
 		{
 			if (listView1.SelectedItems.Count < 1)
@@ -977,97 +1071,6 @@ namespace SAToolsHub
 			{
 				editPaste.Enabled = true;
 				cmsPaste.Enabled = true;
-			}
-		}
-
-		void openListItem(ListViewItem item)
-		{
-			TreeNode selNode = new TreeNode();
-			string itemName = item.Text;
-			string itemPath = ((itemTags)item.Tag).Path;
-			string itemType = ((itemTags)item.Tag).Type;
-			string itemExt;
-
-			if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
-			{
-				selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
-				itemExt = "dir";
-			}
-			else
-			{
-				itemExt = Path.GetExtension(itemPath);
-			}
-
-			if (listView1.SelectedItems.Count > 0)
-			{
-				switch (itemExt.ToLower())
-				{
-					case "dir":
-						SelectListViewNode(selNode);
-						treeView1.SelectedNode = selNode;
-						break;
-					case ".sa1mdl":
-					case ".sa2mdl":
-					case ".sa2bmdl":
-						samdlStartInfo.Arguments = $"\"{itemPath}\"";
-						Process.Start(samdlStartInfo);
-						break;
-					case ".sa1lvl":
-					case ".sa2lvl":
-					case ".sa2blvl":
-						salvlStartInfo.Arguments = $"\"{itemPath}\"";
-						Process.Start(salvlStartInfo);
-						break;
-					case ".pvm":
-					case ".pvmx":
-					case ".gvm":
-					case ".pak":
-						texeditStartInfo.Arguments = $"\"{itemPath}\"";
-						Process.Start(texeditStartInfo);
-						break;
-					case ".txt":
-					case ".dds":
-					case ".jpg":
-					case ".png":
-					case ".bmp":
-					case ".gif":
-						Process.Start($"\"{itemPath}\"");
-						break;
-					case ".prs":
-						if (itemName.Contains("mdl"))
-						{
-							samdlStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(samdlStartInfo);
-						}
-						else if (itemName.Contains("tex") || itemName.Contains("tx") || itemName.Contains("bg"))
-						{
-							texeditStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(texeditStartInfo);
-						}
-						break;
-					case ".ini":
-						switch (itemName)
-						{
-							case "sadxlvl.ini":
-								salvlStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
-
-								Process.Start(salvlStartInfo);
-								break;
-							case "mod.ini":
-								projectEditorDiag.ShowDialog();
-								break;
-							default:
-								if (itemName.Contains("_data") && setGame == "SADX")
-								{
-									sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
-									Process.Start(sadxtweakerStartInfo);
-								}
-								else
-									Process.Start($"\"{itemPath}\"");
-								break;
-						}
-						break;
-				}
 			}
 		}
 
@@ -1193,8 +1196,9 @@ namespace SAToolsHub
 		{
 			editToJson_Click(sender, e);
 		}
+		#endregion
 
-		//Navigation
+		#region Navigation
 		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			SelectListViewNode(e.Node);
@@ -1250,8 +1254,9 @@ namespace SAToolsHub
 		{
 			Process.Start($"{((DirectoryInfo)treeView1.SelectedNode.Tag).FullName}");
 		}
+		#endregion
 
-		//Settings Handles
+		#region Settings
 		private void autoUpdateToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			bool curState = autoUpdateToolStripMenuItem.Checked;
@@ -1303,11 +1308,13 @@ namespace SAToolsHub
 			hubSettings.UpdateFrequency = ProjectSettings.Frequency.monthly;
 			hubSettings.Save();
 		}
+		#endregion
 
-		//Debug/Developer Only Options
+		#region Debug
 		private void toolStripMenuItem1_Click(object sender, EventArgs e)
 		{
 			templateWriter.ShowDialog();
 		}
+		#endregion
 	}
 }

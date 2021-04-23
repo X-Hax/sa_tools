@@ -1179,7 +1179,6 @@
 			this.Name = "SAToolsHub";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "SA Tools Hub";
-			this.Shown += new System.EventHandler(this.toolsHub_Shown);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.rightToolStrip.ResumeLayout(false);
