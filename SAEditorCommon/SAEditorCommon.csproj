@@ -254,7 +254,7 @@
     <Compile Include="UI\WelcomeForm.Designer.cs">
       <DependentUpon>WelcomeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProjectManagement\StageTemplate.cs" />
+    <Compile Include="ProjectManagement\StageManagement.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">

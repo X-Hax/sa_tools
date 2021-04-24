@@ -3,11 +3,6 @@ using System.Xml.Serialization;
 
 namespace SAEditorCommon.ProjectManagement
 {
-	/// <summary>
-	/// Holds settings necessary for the project manager.
-	/// </summary>
-	/// 
-	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class SplitTemplate
 	{
 		[XmlElement("GameInfo", typeof(SplitInfo))]

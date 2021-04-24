@@ -56,11 +56,12 @@ namespace SAEditorCommon.StageManagement
 		public string NamepaceClass { get; set; }
 	}
 
-	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class ObjectTemplate
 	{
 		[XmlAttribute("ItemName", typeof(string))]
 		public string ItemName { get; set; }
+		[XmlAttribute("ItemIcon", typeof(string))]
+		public string ItemIcon { get; set; }
 		[XmlAttribute("CommonName", typeof(string))]
 		public string CommonName { get; set; }
 		[XmlAttribute("BasicDisplay", typeof(classBasicDisplay))]

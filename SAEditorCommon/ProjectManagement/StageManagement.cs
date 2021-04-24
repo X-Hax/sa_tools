@@ -52,7 +52,6 @@ namespace SAEditorCommon.StageManagement
 		public string StartPosList { get; set; }
 	}
 
-	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class StageTemplate
 	{
 		[XmlAttribute("StageInfo", typeof(StgInfo))]
@@ -61,7 +60,6 @@ namespace SAEditorCommon.StageManagement
 		public List<ActInfo> ActInfos { get; set; }
 	}
 
-	[XmlRoot(Namespace = "http://www.sonicretro.org")]
 	public class CharacterTemplate
 	{
 		[XmlAttribute("CharData", typeof(CharInfo))]

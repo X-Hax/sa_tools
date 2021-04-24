@@ -23,9 +23,6 @@ namespace SAEditorCommon.ProjectManagement
 		public Frequency UpdateFrequency { get; set; }
 		public Themes HubTheme { get; set; }
 
-		public string SADXPCPath { get; set; }
-		public string SA2PCPath { get; set; }
-
 		public static ProjectSettings Load(string iniPath)
 		{
 			if (File.Exists(iniPath))
