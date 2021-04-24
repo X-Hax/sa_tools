@@ -36,6 +36,7 @@ namespace SAToolsHub
 			InitializeComponent();
 		}
 
+		#region Additional Functions
 		void setGame()
 		{
 			if (File.Exists(Path.Combine(txtProjFolder.Text, "sonic_data.ini")))
@@ -93,7 +94,9 @@ namespace SAToolsHub
 
 			return gamePath;
 		}
+		#endregion
 
+		#region Form Functions
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
 			var folderDialog = new VistaFolderBrowserDialog();
@@ -181,5 +184,6 @@ namespace SAToolsHub
 			if (xmlCreated == DialogResult.OK)
 				this.Close();
 		}
+		#endregion
 	}
 }

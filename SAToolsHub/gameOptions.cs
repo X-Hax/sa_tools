@@ -21,6 +21,7 @@ namespace SAToolsHub
 			buildWindowDiag = new buildWindow();
 		}
 
+		#region Additional Functions
 		void RunGame()
 		{
 			string gamePath = Path.Combine(SAToolsHub.gameDirectory, gameEXE);
@@ -82,7 +83,9 @@ namespace SAToolsHub
 					break;
 			}
 		}
+		#endregion
 
+		#region Form Functions
 		private void btnOK_Click(object sender, EventArgs e)
 		{
 			string modName;
@@ -167,5 +170,6 @@ namespace SAToolsHub
 					break;
 			}
 		}
+		#endregion
 	}
 }

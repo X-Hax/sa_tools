@@ -144,8 +144,8 @@ namespace SAToolsHub
 			}
 		}
 
-		#region AdditionalFunctions
-		// TODO: Migrate out for clean up.
+		// TODO: ToolsHub - Migrate some Additional Functions out.
+		#region Additional Functions
 		private void openProject(string projectFile)
 		{
 			var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));

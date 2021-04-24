@@ -25,6 +25,14 @@ namespace SAToolsHub
 		List<string> iniDLLFiles = new List<string>();
 		List<string> sa2MdlMtnFiles = new List<string>();
 
+		public buildWindow()
+		{
+			InitializeComponent();
+		}
+
+		// TODO: buildWindow - Migrate some Additional Functions out.
+		// TODO: buildWindow - Swap to using Async instead of Background Worker?
+		#region Additional Functions
 		void setAssemblies()
 		{
 			assemblies.Clear();
@@ -259,12 +267,68 @@ namespace SAToolsHub
 					break;
 			}
 		}
+		#endregion
 
-		public buildWindow()
+		#region Background Worker
+		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
-			InitializeComponent();
+			using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Building Project"))
+			{
+				Action showProgress = () =>
+				{
+					Invoke((Action)progress.Show);
+				};
+
+				Action<int> setSteps = (int count) =>
+				{
+					progress.SetMaxSteps(count);
+				};
+
+				Action<string> stepProgress = (string update) =>
+				{
+					progress.StepProgress();
+					progress.SetStep(update);
+				};
+
+				AutoBuild(showProgress, setSteps, stepProgress);
+			}
 		}
 
+		private void BackgroundWorker1_RunWorkerCompleteAlert(object sender, RunWorkerCompletedEventArgs e)
+		{
+			backgroundWorker1.RunWorkerCompleted -= BackgroundWorker1_RunWorkerCompleteAlert;
+			MessageBox.Show("Build complete!");
+			this.Close();
+		}
+
+		private void AutoBuild(Action showProgress, Action<int> maxSteps, Action<string> updateProgress)
+		{
+			showProgress();
+
+			string modsFolder = SAToolsHub.gameDirectory + "\\mods";
+			modFolder = Path.Combine(modsFolder, modName);
+
+			if (!Directory.Exists(modFolder))
+				Directory.CreateDirectory(modFolder);
+
+			maxSteps(4);
+
+			updateProgress("Setting up Assets for Mod Export");
+			setAssemblies();
+
+			updateProgress("Exporting Mod Assets");
+			genAssemblies();
+
+			updateProgress("Copying Mod game system folder");
+			CopySystemFolder(modFolder);
+
+			updateProgress("Creating mod.ini");
+			createMod();
+		}
+		#endregion
+
+
+		#region Form Functions
 		private void buildWindow_Shown(object sender, EventArgs e)
 		{
 			chkBoxEXE.Items.Clear();
@@ -322,7 +386,7 @@ namespace SAToolsHub
 				}
 			}
 		}
-
+		
 		private void btnManual_Click(object sender, EventArgs e)
 		{
 			SA_Tools.Game game;
@@ -355,62 +419,6 @@ namespace SAToolsHub
 			backgroundWorker1_DoWork(null, null);
 			BackgroundWorker1_RunWorkerCompleteAlert(null, null);
 #endif
-		}
-
-		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-		{
-			using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Building Project"))
-			{
-				Action showProgress = () =>
-				{
-					Invoke((Action)progress.Show);
-				};
-
-				Action<int> setSteps = (int count) =>
-				{
-					progress.SetMaxSteps(count);
-				};
-
-				Action<string> stepProgress = (string update) =>
-				{
-					progress.StepProgress();
-					progress.SetStep(update);
-				};
-
-				AutoBuild(showProgress, setSteps, stepProgress);
-			}
-		}
-
-		private void BackgroundWorker1_RunWorkerCompleteAlert(object sender, RunWorkerCompletedEventArgs e)
-		{
-			backgroundWorker1.RunWorkerCompleted -= BackgroundWorker1_RunWorkerCompleteAlert;
-			MessageBox.Show("Build complete!");
-			this.Close();
-		}
-
-		private void AutoBuild(Action showProgress, Action<int> maxSteps, Action<string> updateProgress)
-		{
-			showProgress();
-
-			string modsFolder = SAToolsHub.gameDirectory + "\\mods";
-			modFolder = Path.Combine(modsFolder, modName);
-			
-			if (!Directory.Exists(modFolder))
-				Directory.CreateDirectory(modFolder);
-
-			maxSteps(4);
-
-			updateProgress("Setting up Assets for Mod Export");
-			setAssemblies();
-
-			updateProgress("Exporting Mod Assets");
-			genAssemblies();
-
-			updateProgress("Copying Mod game system folder");
-			CopySystemFolder(modFolder);
-
-			updateProgress("Creating mod.ini");
-			createMod();
 		}
 
 		private void btnChkAll_Click(object sender, EventArgs e)
@@ -466,5 +474,6 @@ namespace SAToolsHub
 				}
 			}
 		}
+		#endregion
 	}
 }

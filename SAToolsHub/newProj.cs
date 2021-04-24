@@ -34,6 +34,8 @@ namespace SAToolsHub
 			backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker1_RunWorkerCompleted);
 		}
 
+		// TODO: newProj - Migrate some Additional Functions out.
+		#region Additional Functions
 		private int setProgressMaxStep()
 		{
 			switch (gameName)
@@ -430,7 +432,10 @@ namespace SAToolsHub
 			}
 				
 		}
+		#endregion
 
+		// TODO: newProj - Swap to using Async instead of Background Worker?
+		#region Background Worker
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
 			using (splitProgress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
@@ -459,7 +464,9 @@ namespace SAToolsHub
 				}
 			}
 		}
+		#endregion
 
+		#region Form Functions
 		private void newProj_Shown(object sender, EventArgs e)
 		{
 			comboBox1.Items.Clear();
@@ -479,7 +486,7 @@ namespace SAToolsHub
 
 			btnCreate.Enabled = false;
 		}
-
+		
 		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
 		{
 			var folderDialog = new VistaFolderBrowserDialog();
@@ -579,5 +586,6 @@ namespace SAToolsHub
 			if (gameName != null && gamePath != null)
 				btnCreate.Enabled = true;
 		}
+		#endregion
 	}
 }

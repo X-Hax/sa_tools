@@ -8,6 +8,7 @@ namespace SAToolsHub
 {
 	public partial class templateWriter : Form
 	{
+		// TODO: templateWriter - Rewrite to be actually useable
 		public templateWriter()
 		{
 			InitializeComponent();

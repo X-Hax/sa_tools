@@ -23,6 +23,17 @@ namespace SAToolsHub
 			"Script"
 		};
 
+		public editProj()
+		{
+			InitializeComponent();
+			txtDLLName.Enabled = false;
+			foreach (string item in GBItems)
+			{
+				lstGBItems.Items.Add(item);
+			}
+		}
+
+		#region Additional Functions
 		void setVariables()
 		{
 			if (SAToolsHub.projectDirectory != null)
@@ -42,17 +53,9 @@ namespace SAToolsHub
 			txtAsset.Clear();
 			txtUpdateURL.Clear();
 		}
+		#endregion
 
-		public editProj()
-		{
-			InitializeComponent();
-			txtDLLName.Enabled = false;
-			foreach (string item in GBItems)
-			{
-				lstGBItems.Items.Add(item);
-			}
-		}
-
+		#region Form Functions
 		private void editProj_Shown(object sender, EventArgs e)
 		{
 			setVariables();
@@ -260,5 +263,6 @@ namespace SAToolsHub
 			else
 				txtDLLName.Enabled = false;
 		}
+		#endregion
 	}
 }
