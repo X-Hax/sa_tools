@@ -36,6 +36,7 @@ namespace SAToolsHub
 		private gameOptions gameOptionsDiag;
 		private projConv projectConverter;
 		private formAbout abtWindow;
+		private ListViewColumnSorter lvwColumnSorter;
 
 		//Variables
 		public static string newProjFile { get; set; }
@@ -49,7 +50,7 @@ namespace SAToolsHub
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
 
-		class itemTags
+		public class itemTags
 		{
 			public string Type { get; set; }
 			public string Path { get; set; }
@@ -68,30 +69,6 @@ namespace SAToolsHub
 		ProcessStartInfo sa2streditStartInfo;
 		ProcessStartInfo sa2stgselStartInfo;
 		ProcessStartInfo datatoolboxStartInfo;
-
-		class ListViewItemComparer : IComparer
-		{
-			private int col;
-			public ListViewItemComparer()
-			{
-				col = 0;
-			}
-			public ListViewItemComparer(int column)
-			{
-				col = column;
-			}
-			public int Compare(object x, object y)
-			{
-				itemTags xTags = (itemTags)((ListViewItem)x).Tag;
-				itemTags yTags = (itemTags)((ListViewItem)y).Tag;
-				if (xTags.Type == yTags.Type)
-					return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
-				else if (xTags.Type == "dir")
-					return -1;
-				else
-					return 1;
-			}
-		}
 
 		public SAToolsHub()
 		{
@@ -321,7 +298,7 @@ namespace SAToolsHub
 		{
 			if (length > 0)
 			{
-				return (length / (1024)).ToString("$,0.00 KB");
+				return ((float)(length / (1024.0f))).ToString("#,000.00 KB").Trim();
 			}
 			else
 				return "0";
@@ -337,10 +314,11 @@ namespace SAToolsHub
 				if (dir.Name != "dllcache")
 				{
 					item = new ListViewItem(dir.Name, (int)item_icons.folder);
-					subItems = new ListViewItem.ListViewSubItem[]
-						{new ListViewItem.ListViewSubItem(item, "Directory"),
-						new ListViewItem.ListViewSubItem(item,
-						dir.LastAccessTime.ToShortDateString())};
+					subItems = new ListViewItem.ListViewSubItem[] {
+						new ListViewItem.ListViewSubItem(item, "Directory"),
+						new ListViewItem.ListViewSubItem(item, dir.LastAccessTime.ToShortDateString()),
+						new ListViewItem.ListViewSubItem(item, null)
+					};
 					itemTags dirTag = new itemTags();
 					dirTag.Type = "dir";
 					dirTag.Path = dir.FullName;
@@ -1238,7 +1216,27 @@ namespace SAToolsHub
 
 		private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
-			listView1.ListViewItemSorter = new ListViewItemComparer(e.Column);
+			if (e.Column == lvwColumnSorter.SortColumn)
+			{
+				// Reverse the current sort direction for this column.
+				if (lvwColumnSorter.Order == SortOrder.Ascending)
+				{
+					lvwColumnSorter.Order = SortOrder.Descending;
+				}
+				else
+				{
+					lvwColumnSorter.Order = SortOrder.Ascending;
+				}
+			}
+			else
+			{
+				// Set the column number that is to be sorted; default to ascending.
+				lvwColumnSorter.SortColumn = e.Column;
+				lvwColumnSorter.Order = SortOrder.Ascending;
+			}
+
+			// Perform the sort with these new sort options.
+			this.listView1.Sort();
 		}
 
 		private void browseBack_Click(object sender, EventArgs e)

@@ -108,6 +108,7 @@
     <Compile Include="gameOptions.Designer.cs">
       <DependentUpon>gameOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="ListViewSortingcs.cs" />
     <Compile Include="newProj.cs">
       <SubType>Form</SubType>
     </Compile>
