@@ -7,12 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using PuyoTools.Modules.Archive;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 using ArchiveLib;
-using static ArchiveLib.GenericArchive;
 using SonicRetro.SAModel.SAEditorCommon;
+using static ArchiveLib.GenericArchive;
+using static TextureEditor.TexturePalette;
 
 namespace TextureEditor
 {
@@ -20,10 +20,17 @@ namespace TextureEditor
     {
         readonly Properties.Settings Settings = Properties.Settings.Default;
         bool unsaved;
+        int currentTextureID = -1;
         TextureFormat currentFormat;
         string archiveFilename;
         List<TextureInfo> textures = new List<TextureInfo>();
         bool suppress = false;
+
+        // Palette stuff
+        static int paletteSet = 0;
+        bool paletteApplied = false;
+        TexturePalette currentPalette = new TexturePalette();
+        TexturePalette defaultPalette = new TexturePalette();
 
         public MainForm()
         {
@@ -104,8 +111,6 @@ namespace TextureEditor
                 }
                 else
                     mipmapCheckBox.Checked = mipmapCheckBox.Enabled = false;
-                UpdateTextureView(textures[listBox1.SelectedIndex].Image);
-                textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
                 switch (textures[listBox1.SelectedIndex])
                 {
                     case PakTextureInfo pak:
@@ -116,8 +121,32 @@ namespace TextureEditor
                         checkBoxPAKUseAlpha.Enabled = true;
                         checkBoxPAKUseAlpha.Show();
                         checkBoxPAKUseAlpha.Checked = pak.DataFormat == GvrDataFormat.Rgb5a3;
+                        textureSizeLabel.Hide();
                         break;
                     case PvrTextureInfo pvr:
+                        switch (pvr.DataFormat)
+                        {
+                            case PvrDataFormat.Index4:
+                            case PvrDataFormat.Index8:
+                                if (!paletteApplied)
+                                {
+                                    if (pvr.TextureData == null)
+                                    {
+                                        pvr.PixelFormat = PvrPixelFormat.Rgb565; // Same as default palette
+                                        PvrTextureEncoder enc = new PvrTextureEncoder(pvr.Image, pvr.PixelFormat, pvr.DataFormat);
+                                        pvr.TextureData = new MemoryStream();
+                                        enc.Save(pvr.TextureData);
+                                        pvr.TextureData.Seek(0, SeekOrigin.Begin);
+                                    }
+                                    PvrTexture pt = new PvrTexture(pvr.TextureData.ToArray());
+                                    defaultPalette.IsGVP = false;
+                                    pt.SetPalette(new PvpPalette(defaultPalette.GetBytes()));
+                                    pvr.Image = Palettize(pt.ToBitmap(), GetPalettedTextureFormat(pvr), paletteSet);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                         dataFormatLabel.Text = $"Data Format: {pvr.DataFormat}";
                         pixelFormatLabel.Text = $"Pixel Format: {pvr.PixelFormat}";
                         dataFormatLabel.Show();
@@ -127,10 +156,34 @@ namespace TextureEditor
                         numericUpDownOrigSizeY.Value = pvr.Image.Height;
                         checkBoxPAKUseAlpha.Enabled = false;
                         checkBoxPAKUseAlpha.Hide();
+                        textureSizeLabel.Hide();
                         break;
                     case GvrTextureInfo gvr:
-                        dataFormatLabel.Text = $"Data Format: {gvr.DataFormat}";
+                        switch (gvr.DataFormat)
+                        {
+                            case GvrDataFormat.Index4:
+                            case GvrDataFormat.Index8:
+                                if (!paletteApplied)
+                                {
+                                    if (gvr.TextureData == null)
+                                    {
+                                        gvr.PixelFormat = GvrPixelFormat.Rgb565; // Same as default palette
+                                        GvrTextureEncoder enc = new GvrTextureEncoder(gvr.Image, gvr.PixelFormat, gvr.DataFormat);
+                                        gvr.TextureData = new MemoryStream();
+                                        enc.Save(gvr.TextureData);
+                                        gvr.TextureData.Seek(0, SeekOrigin.Begin);
+                                    }
+                                    GvrTexture gt = new GvrTexture(gvr.TextureData.ToArray());
+                                    defaultPalette.IsGVP = true;
+                                    gt.SetPalette(new GvpPalette(defaultPalette.GetBytes()));
+                                    gvr.Image = Palettize(gt.ToBitmap(), GetPalettedTextureFormat(gvr), paletteSet);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                         pixelFormatLabel.Text = $"Pixel Format: {gvr.PixelFormat}";
+                        dataFormatLabel.Text = $"Data Format: {gvr.DataFormat}";
                         dataFormatLabel.Show();
                         pixelFormatLabel.Show();
                         numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
@@ -138,6 +191,7 @@ namespace TextureEditor
                         numericUpDownOrigSizeY.Value = gvr.Image.Height;
                         checkBoxPAKUseAlpha.Enabled = false;
                         checkBoxPAKUseAlpha.Hide();
+                        textureSizeLabel.Hide();
                         break;
                     case PvmxTextureInfo pvmx:
                         numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = true;
@@ -155,6 +209,8 @@ namespace TextureEditor
                         pixelFormatLabel.Hide();
                         checkBoxPAKUseAlpha.Enabled = false;
                         checkBoxPAKUseAlpha.Hide();
+                        textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
+                        textureSizeLabel.Show();
                         break;
                     default:
                         dataFormatLabel.Hide();
@@ -164,9 +220,12 @@ namespace TextureEditor
                         numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
                         checkBoxPAKUseAlpha.Enabled = false;
                         checkBoxPAKUseAlpha.Hide();
+                        textureSizeLabel.Hide();
                         break;
                 }
                 suppress = false;
+                UpdateTextureView();
+                ShowHidePaletteInfo();
             }
             else
             {
@@ -175,9 +234,11 @@ namespace TextureEditor
                 mipmapCheckBox.Enabled = false;
                 dataFormatLabel.Text = $"Data Format: Unknown";
                 pixelFormatLabel.Text = $"Pixel Format: Unknown";
-                textureSizeLabel.Text = $"Actual Size: ---";
+                textureSizeLabel.Hide();
                 indexTextBox.Text = "-1";
-                UpdateTextureView(new Bitmap(64, 64));
+                textureImage.Image = new Bitmap(64, 64);
+                UpdateTextureView();
+                ShowHidePaletteInfo();
             }
         }
 
@@ -241,17 +302,15 @@ namespace TextureEditor
                     return new List<TextureInfo>();
                 }
                 PuyoFile arc = new PuyoFile(datafile);
-                if (arc.PaletteRequired)
-                    arc.AddPalette(Path.GetDirectoryName(fname));
                 newtextures = new List<TextureInfo>(arc.Entries.Count);
                 foreach (GenericArchiveEntry file in arc.Entries)
                 {
                     MemoryStream str = new MemoryStream(file.Data);
                     str.Seek(0, SeekOrigin.Begin);
                     if (file is PVMEntry pvme)
-                        newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, pvme.Palette));
+                        newtextures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str));
                     else if (file is GVMEntry gvme)
-                        newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str, gvme.Palette));
+                        newtextures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str));
                 }
             }
             // Check if TextureInfo match the current format and convert if necessary
@@ -339,6 +398,8 @@ namespace TextureEditor
             Settings.MRUList = newlist;
 
             highQualityGVMsToolStripMenuItem.Checked = Settings.HighQualityGVM;
+            textureFilteringToolStripMenuItem.Checked = Settings.EnableFiltering;
+            compatibleGVPToolStripMenuItem.Checked = Settings.SACompatiblePalettes;
 
             if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
                 Close();
@@ -347,7 +408,7 @@ namespace TextureEditor
         private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex > -1)
-                UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+                UpdateTextureInformation();
         }
 
         private void NewFile(TextureFormat newfilefmt)
@@ -428,19 +489,8 @@ namespace TextureEditor
         {
             if (tex.TextureData != null)
                 return TextureFunctions.UpdateGBIX(tex.TextureData, tex.GlobalIndex);
-            switch (tex.DataFormat)
-            {
-                case PvrDataFormat.Index8:
-                case PvrDataFormat.Index4:
-                    tex.Image = new Bitmap(TextureEditor.Properties.Resources.error);
-                    tex.PixelFormat = PvrPixelFormat.Rgb565;
-                    tex.DataFormat = PvrDataFormat.SquareTwiddled;
-                    break;
-                default:
-                    tex.PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
-                    tex.DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap);
-                    break;
-            }
+            tex.PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
+            tex.DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap);
             PvrTextureEncoder encoder = new PvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
             encoder.GlobalIndex = tex.GlobalIndex;
             MemoryStream pvr = new MemoryStream();
@@ -453,14 +503,8 @@ namespace TextureEditor
         {
             if (tex.TextureData != null)
                 return TextureFunctions.UpdateGBIX(tex.TextureData, tex.GlobalIndex, true);
-            if (tex.DataFormat != GvrDataFormat.Index4 && tex.DataFormat != GvrDataFormat.Index8)
-                tex.DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(tex.Image, Settings.HighQualityGVM);
-            else // Cannot encode a paletted texture
-            {
-                tex.Image = new Bitmap(TextureEditor.Properties.Resources.error);
-                tex.PixelFormat = GvrPixelFormat.Unknown;
-                tex.DataFormat = GvrDataFormat.Dxt1;
-            }
+            tex.DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(tex.Image, Settings.HighQualityGVM);
+            tex.PixelFormat = TextureFunctions.GetGvrPixelFormatFromBitmap(tex.Image);
             GvrTextureEncoder encoder = new GvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
             encoder.GlobalIndex = tex.GlobalIndex;
             MemoryStream gvr = new MemoryStream();
@@ -474,43 +518,19 @@ namespace TextureEditor
             byte[] data;
             using (MemoryStream str = new MemoryStream())
             {
-                ArchiveWriter writer = null;
-                bool paletteerror = false;
                 switch (currentFormat)
                 {
                     case TextureFormat.PVM:
-                        writer = new PvmArchiveWriter(str);
+                        PuyoFile puyo = new PuyoFile();
                         foreach (PvrTextureInfo tex in textures)
-                        {
-                            MemoryStream pvr = EncodePVR(tex);
-                            if (pvr == null)
-                            {
-                                if (!paletteerror)
-                                {
-                                    MessageBox.Show("Unable to encode textures with an external palette.\nUse ArchiveTool to convert archives with paletted textures.", "Texture Editor Error");
-                                    paletteerror = true;
-                                }
-                                continue;
-                            }
-                            writer.CreateEntry(pvr, tex.Name);
-                        }
+                            puyo.Entries.Add(new PVMEntry(EncodePVR(tex).ToArray(), tex.Name));
+                        data = puyo.GetBytes();
                         break;
                     case TextureFormat.GVM:
-                        writer = new GvmArchiveWriter(str);
+                        PuyoFile puyog = new PuyoFile(true);
                         foreach (GvrTextureInfo tex in textures)
-                        {
-                            MemoryStream gvr = EncodeGVR(tex);
-                            if (gvr == null)
-                            {
-                                if (!paletteerror)
-                                {
-                                    MessageBox.Show("Unable to encode textures with an external palette.\nUse ArchiveTool to convert archives with paletted textures.", "Texture Editor Error");
-                                    paletteerror = true;
-                                }
-                                continue;
-                            }
-                            writer.CreateEntry(gvr, tex.Name);
-                        }
+                            puyog.Entries.Add(new GVMEntry(EncodeGVR(tex).ToArray(), tex.Name));
+                        data = puyog.GetBytes();
                         break;
                     case TextureFormat.PVMX:
                         PVMXFile pvmx = new PVMXFile();
@@ -562,10 +582,9 @@ namespace TextureEditor
                         pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
                         pak.Save(archiveFilename);
                         return;
+                    default:
+                        return;
                 }
-                writer?.Flush();
-                data = str.ToArray();
-                str.Close();
             }
             if (Path.GetExtension(archiveFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                 FraGag.Compression.Prs.Compress(data, archiveFilename);
@@ -741,7 +760,6 @@ namespace TextureEditor
                                         break;
                                 }
                                 listBox1.Items.Add(name);
-
                             }
                             line = texList.ReadLine();
                         }
@@ -773,24 +791,9 @@ namespace TextureEditor
                         foreach (TextureInfo tex in textures)
                         {
                             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
-                            if (tex is PvrTextureInfo pvri)
-                            {
-                                if (pvri.DataFormat == PvrDataFormat.Index4 && exportDefaultPaletteToolStripMenuItem.Checked)
-                                {
-                                    PvrTexture temp = new PvrTexture(pvri.TextureData.ToArray());
-                                    temp.SetPalette(new PvpPalette(TextureEditor.Properties.Resources.defaultPVP));
-                                    bmp = TextureFunctions.ExportPalettedTexture(temp.ToBitmap());
-                                }
-                            }
-                            else if (tex is GvrTextureInfo gvri)
-                            {
-                                if (gvri.DataFormat == GvrDataFormat.Index4 && exportDefaultPaletteToolStripMenuItem.Checked)
-                                {
-                                    GvrTexture temp = new GvrTexture(gvri.TextureData.ToArray());
-                                    temp.SetPalette(new GvpPalette(TextureEditor.Properties.Resources.defaultGVP));
-                                    bmp = TextureFunctions.ExportPalettedTexture(temp.ToBitmap());
-                                }
-                            }
+                            PalettedTextureFormat indexedfmt = GetPalettedTextureFormat(tex);
+                            if (indexedfmt != PalettedTextureFormat.NotIndexed)
+                                bmp = ProcessIndexedBitmap(textures[listBox1.SelectedIndex], indexedfmt);
                             bmp.Save(Path.Combine(dir, tex.Name + ".png"));
                             if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
                                 texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
@@ -812,43 +815,139 @@ namespace TextureEditor
             Close();
         }
 
-        private void UpdateTextureView(Image image)
+        private Bitmap Palettize(Bitmap unpalettedBitmap, PalettedTextureFormat indxfmt, int bankID)
         {
-            int width = image.Width;
-            int height = image.Height;
-            int maxwidth = splitContainer1.Panel2.Width - 20;
-            int maxheight = splitContainer1.Panel2.Height - (tableLayoutPanel1.Top + (tableLayoutPanel1.Height - textureImage.Height)) - 20;
-            if (width > maxwidth || height > maxheight)
+            if (paletteApplied)
+                return unpalettedBitmap;
+
+            Bitmap result;
+            int setsize = 16;
+            switch (indxfmt)
             {
-                double widthpct = width / (double)maxwidth;
-                double heightpct = height / (double)maxheight;
-                switch (Math.Sign(widthpct - heightpct))
-                {
-                    case -1: // height > width
-                        maxwidth = (int)(width / heightpct);
-                        break;
-                    case 1:
-                        maxheight = (int)(height / widthpct);
-                        break;
-                }
-                Bitmap bmp = new Bitmap(maxwidth, maxheight);
-                using (Graphics gfx = Graphics.FromImage(bmp))
-                {
-                    gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                    gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    gfx.DrawImage(image, 0, 0, maxwidth, maxheight);
-                }
-                textureImage.Image = bmp;
+                case PalettedTextureFormat.Index4:
+                    result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format4bppIndexed);
+                    break;
+                case PalettedTextureFormat.Index8:
+                    setsize = 256;
+                    result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format8bppIndexed);
+                    break;
+                default:
+                    return unpalettedBitmap;
             }
-            else
-                textureImage.Image = image;
+            Color[] defaultpaletteSet = defaultPalette.Colors.ToArray();
+            List<Color> usedPaletteSet = new List<Color>(defaultPalette.Colors.Count);
+
+            // Prevent crash with 16-color palettes on a 256-color image
+            if (setsize > currentPalette.Colors.Count)
+            {
+                MessageBox.Show(this, "The current palette has fewer colors than the image. Using the default palette instead.", "Texture Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                currentPalette = new TexturePalette();
+            }
+
+            // Add colors to the palettizer set
+            for (int i = 0; i < setsize; i++)
+            {
+                usedPaletteSet.Add(currentPalette.Colors[bankID * setsize + i]);
+            }
+
+            // Replace the palette in the Bitmap
+            var newAliasForPalette = result.Palette;
+            for (int i = 0; i < usedPaletteSet.Count; i++)
+            {
+                newAliasForPalette.Entries[i] = usedPaletteSet[i];
+            }
+            result.Palette = newAliasForPalette;
+
+            // Set pixels in the indexed image
+            int remaining = unpalettedBitmap.Height * unpalettedBitmap.Width;
+            using (var snoop_u = new BmpPixelSnoop(new Bitmap(unpalettedBitmap)))
+            {
+                for (int y = 0; y < unpalettedBitmap.Height; y++)
+                    for (int x = 0; x < unpalettedBitmap.Width; x++)
+                    {
+                        for (int p = 0; p < setsize; p++)
+                        {
+                            if (snoop_u.GetPixel(x, y) == defaultpaletteSet[p])
+                            {
+                                remaining--;
+                                TextureFunctions.SetPixelIndex(result, x, y, p);
+                                break;
+                            }
+                        }
+                    }
+            }
+            if (remaining > 0)
+                System.Windows.Forms.MessageBox.Show(remaining.ToString() + " pixels were not found in the palette.",
+                    "Texture Editor Export Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+            paletteApplied = true;
+            return new Bitmap(result);
+        }
+
+        private Bitmap ScaleBitmapToWindow(Bitmap image, System.Drawing.Drawing2D.InterpolationMode mode)
+        {
+            float scale = 1.0f;
+            switch (texturePreviewZoomTrackBar.Value)
+            {
+                case 0:
+                    scale = 1.0f / 16.0f;
+                    break;
+                case 1:
+                    scale = 1.0f / 8.0f;
+                    break;
+                case 2:
+                    scale = 1.0f / 4.0f;
+                    break;
+                case 3:
+                    scale = 1.0f / 2.0f;
+                    break;
+                case 4:
+                    scale = 1.0f;
+                    break;
+                case 5:
+                    scale = 2.0f;
+                    break;
+                case 6:
+                    scale = 4.0f;
+                    break;
+                case 7:
+                    scale = 8.0f;
+                    break;
+                case 8:
+                    scale = 16.0f;
+                    break;
+            }
+            int newwidth = (int)((float)image.Width * scale);
+            int newheight = (int)((float)image.Height * scale);
+            Bitmap bmp = new Bitmap(newwidth, newheight);
+            using (Graphics gfx = Graphics.FromImage(bmp))
+            {
+                gfx.InterpolationMode = mode;
+                gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                gfx.DrawImage(image, 0, 0, newwidth, newheight);
+            }
+            return bmp;
+        }
+
+        private void UpdateTextureView()
+        {
+            if (listBox1.SelectedIndex == -1)
+                return;
+            TextureInfo texinfo = textures[listBox1.SelectedIndex];
+            Bitmap image;
+            image = texinfo.Image;
+            textureImage.Image = ScaleBitmapToWindow(image, textureFilteringToolStripMenuItem.Checked ? System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic : System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor);
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateTextureInformation();
+            if (currentTextureID != listBox1.SelectedIndex)
+            {
+                currentTextureID = listBox1.SelectedIndex;
+                paletteApplied = false;
+                UpdateTextureInformation();
+            }
         }
 
         private void addTextureButton_Click(object sender, EventArgs e)
@@ -904,10 +1003,16 @@ namespace TextureEditor
                                         switch (currentFormat)
                                         {
                                             case TextureFormat.PVM:
-                                                textures.Add(new PvrTextureInfo(name, gbix, CreateBitmapFromStream(str)));
+                                                Bitmap bp = CreateBitmapFromStream(str);
+                                                if (TextureFunctions.CheckTextureDimensions(bp.Width, bp.Height))
+                                                    textures.Add(new PvrTextureInfo(name, gbix, bp));
+                                                else return;
                                                 break;
                                             case TextureFormat.GVM:
-                                                textures.Add(new GvrTextureInfo(name, gbix, CreateBitmapFromStream(str)));
+                                                Bitmap gp = CreateBitmapFromStream(str);
+                                                if (TextureFunctions.CheckTextureDimensions(gp.Width, gp.Height))
+                                                    textures.Add(new GvrTextureInfo(name, gbix, gp));
+                                                else return;
                                                 break;
                                             case TextureFormat.PVMX:
                                                 textures.Add(new PvmxTextureInfo(name, gbix, CreateBitmapFromStream(str)));
@@ -1053,7 +1158,7 @@ namespace TextureEditor
             else
                 return;
             textures[listBox1.SelectedIndex].Image = tex;
-            UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+            UpdateTextureView();
             UpdateTextureInformation();
             unsaved = true;
         }
@@ -1076,7 +1181,7 @@ namespace TextureEditor
         {
             Bitmap tex = new Bitmap(Clipboard.GetImage());
             textures[listBox1.SelectedIndex].Image = tex;
-            UpdateTextureView(textures[listBox1.SelectedIndex].Image);
+            UpdateTextureView();
             UpdateTextureInformation();
             unsaved = true;
         }
@@ -1121,7 +1226,7 @@ namespace TextureEditor
                     bitmap_temp = new Bitmap(texmemstr);
             }
             // The bitmap is cloned to avoid access error on the original file
-            textureimg = new Bitmap(bitmap_temp);
+            textureimg = (Bitmap)bitmap_temp.Clone();
             bitmap_temp.Dispose();
             return textureimg;
         }
@@ -1144,10 +1249,21 @@ namespace TextureEditor
                             textures[listBox1.SelectedIndex] = new PvrTextureInfo(oldpvr.Name, texmemstr);
                         else
                         {
-                            PvrTextureInfo newpvr = new PvrTextureInfo(oldpvr.Name, oldpvr.GlobalIndex, CreateBitmapFromStream(texmemstr));
+                            Bitmap bmp = CreateBitmapFromStream(texmemstr);
+                            if (!TextureFunctions.CheckTextureDimensions(bmp.Width, bmp.Height))
+                                return;
+                            PvrPixelFormat pvrPixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(bmp);
+                            PvrDataFormat pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false);
+                            if (pvrDataFormat == PvrDataFormat.Index4 || pvrDataFormat == PvrDataFormat.Index8)
+                            {
+                                RetrievePaletteFromIndexedBitmap(bmp);
+                                bmp = RetrieveMaskFromIndexedBitmap(bmp);
+                                paletteApplied = false;
+                            }
+                            PvrTextureInfo newpvr = new PvrTextureInfo(oldpvr.Name, oldpvr.GlobalIndex, bmp);
+                            newpvr.PixelFormat = pvrPixelFormat;
+                            newpvr.DataFormat = pvrDataFormat;
                             newpvr.TextureData = null;
-                            newpvr.PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(newpvr.Image);
-                            newpvr.DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(newpvr.Image, newpvr.Mipmap);
                             textures[listBox1.SelectedIndex] = newpvr;
                         }
                         break;
@@ -1157,9 +1273,21 @@ namespace TextureEditor
                             textures[listBox1.SelectedIndex] = new GvrTextureInfo(oldgvr.Name, texmemstr);
                         else
                         {
-                            GvrTextureInfo newgvr = new GvrTextureInfo(oldgvr.Name, oldgvr.GlobalIndex, CreateBitmapFromStream(texmemstr));
+                            Bitmap bmp = CreateBitmapFromStream(texmemstr);
+                            if (!TextureFunctions.CheckTextureDimensions(bmp.Width, bmp.Height))
+                                return;
+                            GvrPixelFormat gvrPixelFormat = TextureFunctions.GetGvrPixelFormatFromBitmap(bmp);
+                            GvrDataFormat gvrDataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(bmp, false);
+                            if (gvrDataFormat == GvrDataFormat.Index4 || gvrDataFormat == GvrDataFormat.Index8)
+                            {
+                                RetrievePaletteFromIndexedBitmap(bmp, true);
+                                bmp = RetrieveMaskFromIndexedBitmap(bmp);
+                                paletteApplied = false;
+                            }
+                            GvrTextureInfo newgvr = new GvrTextureInfo(oldgvr.Name, oldgvr.GlobalIndex, bmp);
+                            newgvr.DataFormat = gvrDataFormat;
+                            newgvr.PixelFormat = gvrPixelFormat;
                             newgvr.TextureData = null;
-                            newgvr.DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(newgvr.Image, Settings.HighQualityGVM);
                             textures[listBox1.SelectedIndex] = newgvr;
                         }
                         break;
@@ -1174,7 +1302,6 @@ namespace TextureEditor
                     default:
                         break;
                 }
-                UpdateTextureView(textures[listBox1.SelectedIndex].Image);
                 UpdateTextureInformation();
                 unsaved = true;
             }
@@ -1187,24 +1314,9 @@ namespace TextureEditor
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
                     Bitmap bmp = new Bitmap(textures[listBox1.SelectedIndex].Image);
-                    if (textures[listBox1.SelectedIndex] is PvrTextureInfo pvri)
-                    {
-                        if (pvri.DataFormat == PvrDataFormat.Index4 && exportDefaultPaletteToolStripMenuItem.Checked)
-                        {
-                            PvrTexture temp = new PvrTexture(pvri.TextureData.ToArray());
-                            temp.SetPalette(new PvpPalette(TextureEditor.Properties.Resources.defaultPVP));
-                            bmp = TextureFunctions.ExportPalettedTexture(temp.ToBitmap());
-                        }
-                    }
-                    else if (textures[listBox1.SelectedIndex] is GvrTextureInfo gvri)
-                    {
-                        if (gvri.DataFormat == GvrDataFormat.Index4 && exportDefaultPaletteToolStripMenuItem.Checked)
-                        {
-                            GvrTexture temp = new GvrTexture(gvri.TextureData.ToArray());
-                            temp.SetPalette(new GvpPalette(TextureEditor.Properties.Resources.defaultGVP));
-                            bmp = TextureFunctions.ExportPalettedTexture(temp.ToBitmap());
-                        }
-                    }
+                    PalettedTextureFormat indexedfmt = GetPalettedTextureFormat(textures[listBox1.SelectedIndex]);
+                    if (indexedfmt != PalettedTextureFormat.NotIndexed)
+                        bmp = ProcessIndexedBitmap(textures[listBox1.SelectedIndex], indexedfmt);
                     bmp.Save(dlg.FileName);
                 }
 
@@ -1325,6 +1437,390 @@ namespace TextureEditor
 		{
             checkBoxPAKUseAlpha_CheckedChanged(sender, e);
             unsaved = true;
+        }
+
+
+        #region Palette related functions
+
+        private void ShowHidePaletteInfo()
+        {
+            if (listBox1.SelectedIndex == -1)
+            {
+                labelPaletteFormat.Hide();
+                palettePreview.Hide();
+                buttonLoadPalette.Hide();
+                buttonSavePalette.Hide();
+                buttonResetPalette.Hide();
+                panelPaletteInfo.Hide();
+                return;
+            }
+            PalettedTextureFormat dataformat = GetPalettedTextureFormat(textures[listBox1.SelectedIndex]);
+            switch (dataformat)
+            {
+                case PalettedTextureFormat.Index4:
+                case PalettedTextureFormat.Index8:
+                    int rowsize = dataformat == PalettedTextureFormat.Index8 ? 256 : 16;
+                    int rowsize_stored = rowsize - currentPalette.StartColor;
+                    int numrows = currentPalette.Colors.Count / rowsize_stored;
+                    comboBoxCurrentPaletteBank.Items.Clear();
+                    for (int i = 0; i < numrows; i++)
+                        comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
+                    comboBoxCurrentPaletteBank.SelectedIndex = paletteSet;
+                    numericUpDownStartBank.Value = currentPalette.StartBank;
+                    numericUpDownStartColor.Value = currentPalette.StartColor;
+                    palettePreview.Image = GeneratePalettePreview();
+                    labelPaletteFormat.Text = currentPalette.pixelCodec.ToString() + " / " + currentPalette.Colors.Count.ToString() + " colors"; 
+                    labelPaletteFormat.Show();
+                    palettePreview.Show();
+                    panelPaletteInfo.Show();
+                    buttonLoadPalette.Show();
+                    buttonSavePalette.Show();
+                    buttonResetPalette.Show();
+                    textureSizeLabel.Hide();
+                    numericUpDownOrigSizeX.Value = textures[listBox1.SelectedIndex].Image.Width;
+                    numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
+                    return;
+                default:
+                    labelPaletteFormat.Hide();
+                    palettePreview.Hide();
+                    buttonLoadPalette.Hide();
+                    buttonSavePalette.Hide();
+                    buttonResetPalette.Hide();
+                    panelPaletteInfo.Hide();
+                    return;
+            }
+        }
+
+        private void buttonLoadPalette_Click(object sender, EventArgs e)
+        {
+            LoadPaletteDialog();
+        }
+
+        private void buttonSavePalette_Click(object sender, EventArgs e)
+        {
+            SavePaletteDialog();
+        }
+
+        private void buttonResetPalette_Click(object sender, EventArgs e)
+        {
+            currentPalette = new TexturePalette();
+            paletteSet = 0;
+            comboBoxCurrentPaletteBank.SelectedIndex = 0;
+            paletteApplied = false;
+            UpdateTextureInformation();
+        }
+
+        private void exportMaskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            exportMaskToolStripMenuItem.Checked = true;
+            exportPalettedIndexedToolStripMenuItem.Checked = exportPalettedFullToolStripMenuItem.Checked = false;
+        }
+
+        private void exportPalettedIndexedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            exportPalettedIndexedToolStripMenuItem.Checked = true;
+            exportMaskToolStripMenuItem.Checked = exportPalettedFullToolStripMenuItem.Checked = false;
+        }
+
+        private void exportPalettedFullToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            exportPalettedFullToolStripMenuItem.Checked = true;
+            exportMaskToolStripMenuItem.Checked = exportPalettedIndexedToolStripMenuItem.Checked = false;
+        }
+
+        private void numericUpDownStartBank_ValueChanged(object sender, EventArgs e)
+        {
+            if (currentPalette != null)
+                currentPalette.StartBank = (short)numericUpDownStartBank.Value;
+        }
+
+        private void comboBoxCurrentPaletteBank_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (currentPalette != null && paletteSet != comboBoxCurrentPaletteBank.SelectedIndex)
+            {
+                paletteSet = comboBoxCurrentPaletteBank.SelectedIndex;
+                paletteApplied = false;
+                UpdateTextureInformation();
+            }
+        }
+
+        private void numericUpDownStartColor_ValueChanged(object sender, EventArgs e)
+        {
+            if (currentPalette != null)
+                currentPalette.StartColor = (short)Math.Min(numericUpDownStartColor.Value, currentPalette.Colors.Count);
+        }
+
+        private void LoadPaletteDialog()
+        {
+            using (OpenFileDialog fd = new OpenFileDialog() { Filter = "Texture Palette|*.pvp;*.gvp;*.bmp;*.png", DefaultExt = "pvp", FilterIndex = currentPalette.IsGVP ? 2 : 1 })
+            {
+                DialogResult dr = fd.ShowDialog(this);
+                if (dr == DialogResult.OK)
+                {
+                    switch (Path.GetExtension(fd.FileName).ToLowerInvariant())
+                    {
+                        case ".png":
+                        case ".bmp":
+                            Bitmap bp = new Bitmap(fd.FileName);
+                            currentPalette = new TexturePalette(new Bitmap(bp));
+                            bp.Dispose();
+                            break;
+                        case ".pvp":
+                        case ".gvp":
+                        default:
+                            currentPalette = new TexturePalette(File.ReadAllBytes(fd.FileName), compatibleGVPToolStripMenuItem.Checked);
+                            break;
+                    }
+                    paletteApplied = false;
+                    UpdateTextureInformation();
+                }
+            }
+        }
+
+        private void SavePaletteDialog()
+        {
+            using (SaveFileDialog fd = new SaveFileDialog() { Title = "Save Palette File", Filter = "PVR Palette|*.pvp|GVR Palette|*.gvp|Bitmaps|*.bmp;*.png", DefaultExt = "pvp", FilterIndex = currentPalette.IsGVP ? 2 : 1 })
+            {
+                DialogResult dr = fd.ShowDialog(this);
+                if (dr == DialogResult.OK)
+                {
+                    switch (Path.GetExtension(fd.FileName).ToLowerInvariant())
+                    {
+                        case ".pvp":
+                        case ".gvp":
+                            currentPalette.IsGVP = Path.GetExtension(fd.FileName).ToLowerInvariant() == ".gvp";
+                            File.WriteAllBytes(fd.FileName, currentPalette.GetBytes());
+                            break;
+                        case ".png":
+                        case ".bmp":
+                            ImageFormat fmt = Path.GetExtension(fd.FileName).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Bmp;
+                            Bitmap save = currentPalette.GetBitmap();
+                            save.Save(fd.FileName, fmt);
+                            break;
+                    }
+                }
+            }
+        }
+
+        private PalettedTextureFormat GetPalettedTextureFormat(TextureInfo info)
+        {
+            if (info is PvrTextureInfo pvri)
+                switch (pvri.DataFormat)
+                {
+                    case PvrDataFormat.Index4:
+                        return PalettedTextureFormat.Index4;
+                    case PvrDataFormat.Index8:
+                        return PalettedTextureFormat.Index8;
+                    default:
+                        return PalettedTextureFormat.NotIndexed;
+                }
+            else if (info is GvrTextureInfo gvri)
+                switch (gvri.DataFormat)
+                {
+                    case GvrDataFormat.Index4:
+                        return PalettedTextureFormat.Index4;
+                    case GvrDataFormat.Index8:
+                        return PalettedTextureFormat.Index8;
+                    default:
+                        return PalettedTextureFormat.NotIndexed;
+                }
+            else return PalettedTextureFormat.NotIndexed;
+        }
+
+        private Bitmap ProcessIndexedBitmap(TextureInfo tex, PalettedTextureFormat indxfmt)
+        {
+            // Prepare the mask
+            Bitmap unpalettedBitmap;
+            if (tex is PvrTextureInfo pvri)
+            {
+                PvrTexture pvrt = new PvrTexture(pvri.TextureData.ToArray());
+                defaultPalette.IsGVP = false;
+                pvrt.SetPalette(new PvpPalette(defaultPalette.GetBytes()));
+                unpalettedBitmap = pvrt.ToBitmap();
+            }
+            else if (tex is GvrTextureInfo gvri)
+            {
+                GvrTexture gvrt = new GvrTexture(gvri.TextureData.ToArray());
+                defaultPalette.IsGVP = true;
+                gvrt.SetPalette(new GvpPalette(defaultPalette.GetBytes()));
+                unpalettedBitmap = gvrt.ToBitmap();
+            }
+            else return tex.Image;
+            TexturePalette applyPalette;
+            int applySet;
+
+            // Set the default palette if exporting mask, otherwise use current palette and bank
+            if (exportMaskToolStripMenuItem.Checked)
+            {
+                applyPalette = defaultPalette;
+                applySet = 0;
+            }
+            else
+            {
+                applyPalette = currentPalette;
+                applySet = paletteSet;
+            }
+
+            // Palettize
+            Bitmap result;
+            int setsize = 16;
+            switch (indxfmt)
+            {
+                case PalettedTextureFormat.Index4:
+                    result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format4bppIndexed);
+                    break;
+                case PalettedTextureFormat.Index8:
+                    setsize = 256;
+                    result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format8bppIndexed);
+                    break;
+                default:
+                    return unpalettedBitmap;
+            }
+            Color[] defaultpaletteSet = defaultPalette.Colors.ToArray();
+            //string colorlist = "";
+            List<Color> usedPaletteSet = new List<Color>();
+            {
+                for (int i = 0; i < setsize; i++)
+                {
+                    usedPaletteSet.Add(applyPalette.Colors[applySet * setsize + i]);
+                    //colorlist += applyPalette.Colors[applySet * setsize + i].ToString() + "\n";
+                }
+            }
+            //MessageBox.Show(colorlist);
+
+            // Replace the palette in the Bitmap
+            var newAliasForPalette = result.Palette;
+            for (int i = 0; i < usedPaletteSet.Count; i++)
+            {
+                newAliasForPalette.Entries[i] = usedPaletteSet[i];
+            }
+            result.Palette = newAliasForPalette;
+
+            // Set pixels in the indexed image
+            int remaining = unpalettedBitmap.Height * unpalettedBitmap.Width;
+            //string missed = "";
+            using (var snoop_u = new BmpPixelSnoop(new Bitmap(unpalettedBitmap)))
+            {
+                for (int y = 0; y < unpalettedBitmap.Height; y++)
+                    for (int x = 0; x < unpalettedBitmap.Width; x++)
+                    {
+                        //bool match = false;
+                        for (int p = 0; p < setsize; p++)
+                        {
+                            if (snoop_u.GetPixel(x, y) == defaultpaletteSet[p])
+                            {
+                                remaining--;
+                                TextureFunctions.SetPixelIndex(result, x, y, p);
+                                //match = true;
+                                break;
+                            }
+                        }
+                        //if (!match) 
+                            //missed += snoop_u.GetPixel(x, y).ToString() + "\n";
+                    }
+            }
+            if (remaining > 0)
+                System.Windows.Forms.MessageBox.Show(remaining.ToString() + " pixels were not found in the palette.",
+                    "Texture Editor Export Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+            //MessageBox.Show(missed);
+            if (exportPalettedFullToolStripMenuItem.Checked)
+                return new Bitmap(result);
+            else
+                return result;
+        }
+
+        private void RetrievePaletteFromIndexedBitmap(Bitmap bitmap, bool gvp = false)
+        {
+            if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed && bitmap.PixelFormat != PixelFormat.Format8bppIndexed)
+                return;
+
+            DialogResult rd = MessageBox.Show("Import the palette as ARGB8888?", "Texture Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (rd == DialogResult.Yes)
+                currentPalette.pixelCodec = PixelCodec.ARGB8888;
+            currentPalette.Colors.Clear();
+
+            for (int c = 0; c < bitmap.Palette.Entries.Length; c++)
+                currentPalette.Colors.Add(bitmap.Palette.Entries[c]);
+
+            currentPalette.IsGVP = defaultPalette.IsGVP = gvp;
+        }
+
+        private Bitmap RetrieveMaskFromIndexedBitmap(Bitmap bitmap)
+        {
+            if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed && bitmap.PixelFormat != PixelFormat.Format8bppIndexed)
+                return Properties.Resources.error;
+            int stepsize = 16;
+            if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
+                stepsize = 256;
+            Bitmap result = new Bitmap(bitmap.Width, bitmap.Height, bitmap.PixelFormat);
+            using (var snoop_b = new BmpPixelSnoop(new Bitmap(bitmap)))
+            {
+                for (int y = 0; y < bitmap.Height; y++)
+                    for (int x = 0; x < bitmap.Width; x++)
+                    {
+                        for (int p = 0; p < stepsize; p++)
+                        {
+                            if (snoop_b.GetPixel(x, y) == currentPalette.Colors[p])
+                            {
+                                TextureFunctions.SetPixelIndex(result, x, y, p);
+                                break;
+                            }
+                        }
+                    }
+            }
+            // Replace the palette in the Bitmap
+            var newAliasForPalette = result.Palette;
+            for (int i = 0; i < currentPalette.Colors.Count; i++)
+            {
+                newAliasForPalette.Entries[i] = defaultPalette.Colors[i];
+            }
+            result.Palette = newAliasForPalette;
+            return result;
+        }
+
+        private Bitmap GeneratePalettePreview()
+        {
+            int rows = currentPalette.Colors.Count / 16;
+            Bitmap result = new Bitmap(256 + 16, rows * 16 + rows);
+            using (var snoop_r = new BmpPixelSnoop(result))
+            {
+                int offset_y = 0;
+                for (int y = 0; y < rows; y++)
+                {
+                    int offset_x = 0;
+                    for (int x = 0; x < 16; x++)
+                    {
+                        // Draw a 16x16 square
+                        for (int z = 0; z < 16; z++)
+                            for (int h = 0; h < 16; h++)
+                                snoop_r.SetPixel(offset_x + x * 16 + z, offset_y + y * 16 + h, currentPalette.Colors[y * 16 + x]);
+                        offset_x += 1;
+                    }
+                    offset_y += 1;
+                }
+            }
+            return result;
+        }
+		#endregion
+
+		private void texturePreviewZoomTrackBar_Scroll(object sender, EventArgs e)
+		{
+            UpdateTextureInformation();
+		}
+
+		private void textureFilteringToolStripMenuItem_Click(object sender, EventArgs e)
+        { 
+            UpdateTextureInformation();
+        }
+
+		private void textureFilteringToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+            Settings.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
+        }
+
+		private void compatibleGVPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+            Settings.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
         }
 	}
 }

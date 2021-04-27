@@ -75,23 +75,19 @@ namespace TextureEditor
                 Image = bitmap;
         }
 
-        public PvrTextureInfo(string name, MemoryStream str, PvpPalette pvp = null)
+        public PvrTextureInfo(string name, MemoryStream str)
         {
             TextureData = str;
             PvrTexture texture = new PvrTexture(str);
-            if (pvp != null)
-                texture.SetPalette(pvp);
             Name = name;
             GlobalIndex = texture.GlobalIndex;
             DataFormat = texture.DataFormat;
             Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
             PixelFormat = texture.PixelFormat;
-            if (pvp == null && texture.NeedsExternalPalette)
-            {
-                pvp = new PvpPalette(TextureEditor.Properties.Resources.defaultPVP);
-                texture.SetPalette(pvp);
-            }
-            Image = texture.ToBitmap();
+            if (texture.NeedsExternalPalette)
+                Image = new Bitmap(Properties.Resources.error);
+            else
+                Image = texture.ToBitmap();
         }
 
         public override bool CheckMipmap()
@@ -153,23 +149,19 @@ namespace TextureEditor
                 Image = bitmap;
         }
 
-        public GvrTextureInfo(string name, MemoryStream str, GvpPalette gvp = null)
+        public GvrTextureInfo(string name, MemoryStream str)
         {
             Name = name;
             TextureData = str;
             GvrTexture texture = new GvrTexture(str);
-            if (gvp != null)
-                texture.SetPalette(gvp);
             GlobalIndex = texture.GlobalIndex;
             DataFormat = texture.DataFormat;
             Mipmap = texture.HasMipmaps;
             PixelFormat = texture.PixelFormat;
-            if (gvp == null && texture.NeedsExternalPalette)
-            {
-                gvp = new GvpPalette(TextureEditor.Properties.Resources.defaultGVP);
-                texture.SetPalette(gvp);
-            }
-            Image = texture.ToBitmap();
+            if (texture.NeedsExternalPalette)
+                Image = new Bitmap(Properties.Resources.error);
+            else
+                Image = texture.ToBitmap();
         }
 
         public override bool CheckMipmap()

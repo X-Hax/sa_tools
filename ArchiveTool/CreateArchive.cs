@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using PuyoTools.Modules.Archive;
 using VrSharp.Pvr;
 using ArchiveLib;
 using SA_Tools;
@@ -64,7 +63,8 @@ namespace ArchiveTool
                         }
                         break;
                     case ".gvr":
-                        arc = new PuyoFile();
+                        arc = new PuyoFile(true);
+                        folderMode = ArchiveFromFolderMode.GVM;
                         break;
                     case ".wav":
                     case ".adx":
@@ -177,10 +177,8 @@ namespace ArchiveTool
                 Console.WriteLine("Converting texture pack to PVM: {0}", Path.GetFullPath(filePath));
                 StreamReader texlistStream = File.OpenText(Path.Combine(filePath, "index.txt"));
                 while (!texlistStream.EndOfStream) textureNames.Add(texlistStream.ReadLine());
-                puyoArchiveBase = new PvmArchive();
+                PuyoFile puyo = new PuyoFile();
                 outputPath = Path.ChangeExtension(filePath, ".pvm");
-                Stream pvmStream = File.Open(outputPath, FileMode.Create);
-                puyoArchiveWriter = (PvmArchiveWriter)puyoArchiveBase.Create(pvmStream);
                 // Reading in textures
                 for (uint imgIndx = 0; imgIndx < textureNames.Count; imgIndx++)
                 {
@@ -237,10 +235,9 @@ namespace ArchiveTool
                     encoder.GlobalIndex = GBIX;
                     string pvrPath = Path.ChangeExtension(texturePath, ".pvr");
                     encoder.Save(pvrPath);
-                    puyoArchiveWriter.CreateEntryFromFile(pvrPath);
+                    puyo.Entries.Add(new PVMEntry(pvrPath));
                 }
-                puyoArchiveWriter.Flush();
-                pvmStream.Close();
+                File.WriteAllBytes(outputPath, puyo.GetBytes());
                 if (compressPRS)
                 {
                     Console.WriteLine("Compressing to PRS...");

@@ -1,7 +1,7 @@
+using ArchiveLib;
 using System;
 using System.Drawing;
 using System.IO;
-using PuyoTools.Modules.Archive;
 using VrSharp;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
@@ -42,18 +42,13 @@ namespace ArchiveTool
             {
                 try
                 {
-                    ArchiveBase gvmfile = null;
-                    byte[] gvmdata = File.ReadAllBytes(filePath);
-                    gvmfile = new GvmArchive();
-                    ArchiveReader gvmReader = gvmfile.Open(gvmdata);
+                    PuyoFile gvmFile = new PuyoFile(File.ReadAllBytes(filePath));
+                    PuyoFile pvmFile = new PuyoFile();
                     outputPath = Path.ChangeExtension(filePath, ".pvm");
-                    Stream pvmStream = File.Open(outputPath, FileMode.Create);
-                    puyoArchiveBase = new PvmArchive();
-                    puyoArchiveWriter = puyoArchiveBase.Create(pvmStream);
-                    foreach (ArchiveEntry file in gvmReader.Entries)
+                    foreach (GVMEntry file in gvmFile.Entries)
                     {
                         if (!File.Exists(Path.Combine(fileNameFromFolder, file.Name)))
-                            gvmReader.ExtractToFile(file, Path.Combine(fileNameFromFolder, file.Name));
+                            File.WriteAllBytes(Path.Combine(fileNameFromFolder, file.Name), file.Data);
                         Stream data = File.Open(Path.Combine(fileNameFromFolder, file.Name), FileMode.Open);
                         VrTexture vrfile = new GvrTexture(data);
                         Bitmap tempTexture = vrfile.ToBitmap();
@@ -108,14 +103,11 @@ namespace ArchiveTool
                         data.Close();
                         File.Delete(Path.Combine(fileNameFromFolder, file.Name));
                         MemoryStream readfile = new MemoryStream(File.ReadAllBytes(pvrPath));
-                        puyoArchiveWriter.CreateEntry(readfile, Path.GetFileNameWithoutExtension(pvrPath));
+                        pvmFile.Entries.Add(new PVMEntry(pvrPath));
                         texList.WriteLine(Path.GetFileName(pvrPath));
                         Console.WriteLine("Adding texture {0}", pvrPath);
                     }
-                    puyoArchiveWriter.Flush();
-                    pvmStream.Flush();
-                    pvmStream.Close();
-                    puyoArchiveWriter = new PvmArchiveWriter(new MemoryStream());
+                    File.WriteAllBytes(outputPath, pvmFile.GetBytes());
                     texList.Flush();
                     texList.Close();
                 }

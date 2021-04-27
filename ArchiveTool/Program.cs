@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using PuyoTools.Modules.Archive;
 
 namespace ArchiveTool
 {
@@ -9,8 +8,7 @@ namespace ArchiveTool
         static bool compressPRS;
         static string filePath;
         static string extension;
-        static ArchiveBase puyoArchiveBase;
-        static ArchiveWriter puyoArchiveWriter;
+
         static void Main(string[] args)
         {
             // Usage

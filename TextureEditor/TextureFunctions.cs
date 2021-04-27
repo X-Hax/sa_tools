@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -7,83 +6,64 @@ using System.Runtime.InteropServices;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 
+// Various additional texture related functions to avoid cluttering the MainForm
+
 namespace TextureEditor
 {
     public class TextureFunctions
     {
-
-        private static void SetPixelIndex(Bitmap bmp, int x, int y, int paletteEntry)
+        /// <summary>
+        /// Manipulates pixel data in indexed Bitmaps. 
+        /// <param name="bmp">Indexed Bitmap to modify.</param>
+		/// <param name="x">X coordinate.</param>
+		/// <param name="y">Y coordinate.</param>
+		/// <param name="pixelIndex">Palette color ID to set.</param>
+        /// </summary>
+        public static void SetPixelIndex(Bitmap bmp, int x, int y, int pixelIndex)
         {
-            BitmapData data = bmp.LockBits(new Rectangle(new Point(x, y), new Size(1, 1)), System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format4bppIndexed);
-            byte b = Marshal.ReadByte(data.Scan0);
-            Marshal.WriteByte(data.Scan0, (byte)(b & 0xf | (paletteEntry << 4)));
-            bmp.UnlockBits(data);
-        }
-
-        public static Color[] GenerateDefaultPalette()
-        {
-            List<Color> colors = new List<Color>();
-            colors.Add(Color.FromArgb(0, 0, 0));
-            colors.Add(Color.FromArgb(16, 16, 16));
-            colors.Add(Color.FromArgb(32, 32, 32));
-            colors.Add(Color.FromArgb(49, 48, 49));
-            colors.Add(Color.FromArgb(65, 68, 65));
-            colors.Add(Color.FromArgb(82, 85, 82));
-            colors.Add(Color.FromArgb(98, 101, 98));
-            colors.Add(Color.FromArgb(115, 117, 115));
-            colors.Add(Color.FromArgb(139, 137, 139));
-            colors.Add(Color.FromArgb(156, 153, 156));
-            colors.Add(Color.FromArgb(172, 170, 172));
-            colors.Add(Color.FromArgb(189, 186, 189));
-            colors.Add(Color.FromArgb(205, 206, 205));
-            colors.Add(Color.FromArgb(222, 222, 222));
-            colors.Add(Color.FromArgb(238, 238, 238));
-            colors.Add(Color.FromArgb(255, 255, 255));
-            return colors.ToArray();
-        }
-
-        public static Bitmap ExportPalettedTexture(Bitmap bitmap)
-        {
-            Bitmap result = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format4bppIndexed);
-            Color[] colors = GenerateDefaultPalette();
-            var newAliasForPalette = result.Palette; // Palette loaded from graphic device
-            for (int i = 0; i < colors.Length; i++)
+            switch (bmp.PixelFormat)
             {
-                newAliasForPalette.Entries[i] = colors[i];
+                case PixelFormat.Format8bppIndexed:
+                    BitmapData data8 = bmp.LockBits(new Rectangle(new Point(0, 0), new Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+                    int offset = y * data8.Stride + (x);
+                    Marshal.WriteByte(data8.Scan0, offset, (byte)pixelIndex);
+                    bmp.UnlockBits(data8);
+                    return;
+                case PixelFormat.Format4bppIndexed:
+                    BitmapData data4 = bmp.LockBits(new Rectangle(new Point(x, y), new Size(1, 1)), ImageLockMode.ReadWrite, PixelFormat.Format4bppIndexed);
+                    byte b = Marshal.ReadByte(data4.Scan0);
+                    Marshal.WriteByte(data4.Scan0, (byte)(b & 0xf | (pixelIndex << 4)));
+                    bmp.UnlockBits(data4);
+                    return;
+                default:
+                    return;
             }
-            result.Palette = newAliasForPalette; // Palette data wrote back to the graphic device
-            int remaining = bitmap.Height * bitmap.Width;
-            for (int y = 0; y < bitmap.Height; y++)
-                for (int x = 0; x < bitmap.Width; x++)
-                {
-                    for (int p = 0; p < 16; p++)
-                    {
-                        if (bitmap.GetPixel(x, y).R == result.Palette.Entries[p].R)
-                        {
-                            remaining--;
-                            SetPixelIndex(result, x, y, p);
-                            break;
-                        }
-                    }
-                }
-            if (remaining > 0)
-                System.Windows.Forms.MessageBox.Show(remaining.ToString() + " pixels were not found in the palette.", 
-                    "Texture Editor Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-            return result;
         }
 
+        /// <summary>
+        /// Checks how many levels of transparency a Bitmap has.
+        /// </summary>
+        /// <returns>
+        /// 0 if the Bitmap has only opaque pixels,
+        /// 1 if the Bitmap has fully transparent and fully opaque pixels,
+        /// 2 if the Bitmap contains partially transparent pixels.
+        /// </returns>
         public static int GetAlphaLevelFromBitmap(Bitmap img)
         {
-            BitmapData bmpd = img.LockBits(new Rectangle(Point.Empty, img.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            Bitmap argb;
+            if (img.PixelFormat != PixelFormat.Format32bppArgb)
+                argb = new Bitmap(img);
+            else argb = img;
+            BitmapData bmpd = argb.LockBits(new Rectangle(Point.Empty, argb.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             int stride = bmpd.Stride;
             byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
             Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
-            img.UnlockBits(bmpd);
+            argb.UnlockBits(bmpd);
             int tlevels = 0;
-            for (int y = 0; y < img.Height; y++)
+            for (int y = 0; y < argb.Height; y++)
             {
                 int srcaddr = y * Math.Abs(stride);
-                for (int x = 0; x < img.Width; x++)
+                for (int x = 0; x < argb.Width; x++)
                 {
                     Color c = Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
                     if (c.A == 0)
@@ -102,6 +82,15 @@ namespace TextureEditor
 
         public static PvrDataFormat GetPvrDataFormatFromBitmap(Bitmap image, bool mipmap)
         {
+            switch (image.PixelFormat)
+            {
+                case PixelFormat.Format8bppIndexed:
+                    return PvrDataFormat.Index8;
+                case PixelFormat.Format4bppIndexed:
+                    return PvrDataFormat.Index4;
+                default:
+                    break;
+            }
             if (image.Width == image.Height)
                 if (mipmap)
                     return PvrDataFormat.SquareTwiddledMipmaps;
@@ -128,6 +117,15 @@ namespace TextureEditor
 
         public static GvrDataFormat GetGvrDataFormatFromBitmap(Bitmap image, bool hqGVM)
         {
+            switch (image.PixelFormat)
+            {
+                case PixelFormat.Format8bppIndexed:
+                    return GvrDataFormat.Index8;
+                case PixelFormat.Format4bppIndexed:
+                    return GvrDataFormat.Index4;
+                default:
+                    break;
+            }
             if (!hqGVM)
             {
                 int tlevels = GetAlphaLevelFromBitmap(image);
@@ -140,6 +138,26 @@ namespace TextureEditor
                 return GvrDataFormat.Argb8888;
         }
 
+        public static GvrPixelFormat GetGvrPixelFormatFromBitmap(Bitmap bmp)
+        {
+            int tlevels = GetAlphaLevelFromBitmap(bmp);
+            switch (tlevels)
+            {
+                case 1:
+                case 2:
+                    return GvrPixelFormat.Rgb5a3;
+                case 0:
+                default:
+                    return GvrPixelFormat.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// Looks for the GBIX header in a MemoryStream and sets the GBIX to the specified value. 
+        /// <param name="stream">MemoryStream with data.</param>
+        /// <param name="gbix">Global Index to set.</param>
+        /// <param name="bigendian">Big Endian.</param>
+        /// </summary>
         public static MemoryStream UpdateGBIX(MemoryStream stream, uint gbix, bool bigendian = false)
         {
             byte[] arr = stream.ToArray();
@@ -169,6 +187,9 @@ namespace TextureEditor
             return stream;
         }
 
+        /// <summary>
+        /// Checks if the specified dimensions meet the requirements for PVR and GVR textures.
+        /// </summary>
         public static bool CheckTextureDimensions(int width, int height)
         {
             if ((width != 0) && ((width & (width - 1)) == 0) && (height != 0) && ((height & (height - 1)) == 0) && width <= 1024 && height <= 1024)

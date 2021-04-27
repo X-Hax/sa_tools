@@ -112,8 +112,8 @@ namespace ArchiveTool
                                 gbix = gvme.GetGBIX();
                             Bitmap bmp = entry.GetBitmap();
                             Console.WriteLine("Converting entry: {0}", entry.Name);
-                            texList.WriteLine(string.Join(",", gbix, entry.Name + ".png", bmp.Width + "x" + bmp.Height));
-                            bmp.Save(Path.Combine(outputPath, entry.Name + ".png"), System.Drawing.Imaging.ImageFormat.Png);
+                            texList.WriteLine(string.Join(",", gbix, Path.GetFileNameWithoutExtension(entry.Name) + ".png", bmp.Width + "x" + bmp.Height));
+                            bmp.Save(Path.Combine(outputPath, Path.GetFileNameWithoutExtension(entry.Name) + ".png"), System.Drawing.Imaging.ImageFormat.Png);
                         }
                     }
                     catch (Exception ex)

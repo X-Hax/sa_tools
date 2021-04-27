@@ -47,7 +47,7 @@ namespace SonicRetro.SAModel.Direct3D.TextureSystem
                     break;
                 case ".pvr":
                 case ".gvr":
-                    arc = new PuyoFile();
+                    arc = new PuyoFile(ext == ".gvr");
                     PuyoFile parcx = (PuyoFile)arc;
                     if (ext == ".gvr")
                         arc.Entries.Add(new GVMEntry(filename));
