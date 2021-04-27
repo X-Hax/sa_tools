@@ -725,6 +725,7 @@
             this.textureSizeLabel.TabIndex = 11;
             this.textureSizeLabel.Text = "Actual Size: ---";
             this.textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.textureSizeLabel.Visible = false;
             // 
             // importExportPanel
             // 

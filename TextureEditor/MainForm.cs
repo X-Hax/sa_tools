@@ -1504,8 +1504,7 @@ namespace TextureEditor
         private void buttonResetPalette_Click(object sender, EventArgs e)
         {
             currentPalette = new TexturePalette();
-            paletteSet = 0;
-            comboBoxCurrentPaletteBank.SelectedIndex = 0;
+            paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
             paletteApplied = false;
             UpdateTextureInformation();
         }
@@ -1572,6 +1571,7 @@ namespace TextureEditor
                             break;
                     }
                     paletteApplied = false;
+                    paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
                     UpdateTextureInformation();
                 }
             }
@@ -1743,6 +1743,7 @@ namespace TextureEditor
                 currentPalette.Colors.Add(bitmap.Palette.Entries[c]);
 
             currentPalette.IsGVP = defaultPalette.IsGVP = gvp;
+            paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = 0;
         }
 
         private Bitmap RetrieveMaskFromIndexedBitmap(Bitmap bitmap)
