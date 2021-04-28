@@ -10,7 +10,7 @@ namespace TextureEditor
 {
     enum TextureFormat { PVM, GVM, PVMX, PAK }
 
-    abstract class TextureInfo
+    public abstract class TextureInfo
     {
         public string Name { get; set; }
         public uint GlobalIndex { get; set; }
@@ -51,14 +51,14 @@ namespace TextureEditor
                         DataFormat = PvrDataFormat.Index8;
                         break;
                     default:
-                        DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap);
+                        DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap, true);
                         PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
                         break;
                 }
             }
             else
             {
-                DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image,tex.Mipmap);
+                DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image,tex.Mipmap, true);
                 PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
             }
         }
@@ -129,12 +129,12 @@ namespace TextureEditor
                         DataFormat = GvrDataFormat.Index8;
                         break;
                     default:
-                        DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false);
+                        DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false, true);
                         break;
                 }
             }
             else
-                DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false);
+                DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false, true);
         }
 
         public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)

@@ -62,6 +62,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndexedImageImportDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IndexedImageImportDialog.Designer.cs">
+      <DependentUpon>IndexedImageImportDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="TextureFunctions.cs" />
     <Compile Include="TextureInfo.cs" />
     <Compile Include="TexturePalette.cs" />
+    <EmbeddedResource Include="IndexedImageImportDialog.resx">
+      <DependentUpon>IndexedImageImportDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>

@@ -80,14 +80,18 @@ namespace TextureEditor
             return tlevels;
         }
 
-        public static PvrDataFormat GetPvrDataFormatFromBitmap(Bitmap image, bool mipmap)
+        public static PvrDataFormat GetPvrDataFormatFromBitmap(Bitmap image, bool mipmap, bool includeIndexed)
         {
             switch (image.PixelFormat)
             {
                 case PixelFormat.Format8bppIndexed:
-                    return PvrDataFormat.Index8;
+                    if (includeIndexed)
+                        return PvrDataFormat.Index8;
+                    break;
                 case PixelFormat.Format4bppIndexed:
-                    return PvrDataFormat.Index4;
+                    if (includeIndexed)
+                        return PvrDataFormat.Index4;
+                    break;
                 default:
                     break;
             }
@@ -115,14 +119,18 @@ namespace TextureEditor
             }
         }
 
-        public static GvrDataFormat GetGvrDataFormatFromBitmap(Bitmap image, bool hqGVM)
+        public static GvrDataFormat GetGvrDataFormatFromBitmap(Bitmap image, bool hqGVM, bool includeIndexed)
         {
             switch (image.PixelFormat)
             {
                 case PixelFormat.Format8bppIndexed:
-                    return GvrDataFormat.Index8;
+                    if (includeIndexed)
+                        return GvrDataFormat.Index8;
+                    break;
                 case PixelFormat.Format4bppIndexed:
-                    return GvrDataFormat.Index4;
+                    if (includeIndexed)
+                        return GvrDataFormat.Index4;
+                    break;
                 default:
                     break;
             }
