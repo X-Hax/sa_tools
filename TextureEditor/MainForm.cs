@@ -341,6 +341,37 @@ namespace TextureEditor
 
         private bool LoadArchive(string filename)
         {
+            // If a single PVR/GVR is passed as an argument, create a PVM/GVM archive and add the texture to it.
+            bool gvr = false;
+            switch (Path.GetExtension(filename).ToLowerInvariant())
+            {
+                case ".gvr":
+                    gvr = true;
+                    goto case ".pvr";
+                case ".pvr":
+                    currentFormat = gvr? TextureFormat.GVM : TextureFormat.PVM;
+                    PuyoFile arc = new PuyoFile();
+                    if (gvr)
+                        arc.Entries.Add(new GVMEntry(filename));
+                    else
+                        arc.Entries.Add(new PVMEntry(filename));
+                    MemoryStream str = new MemoryStream(arc.Entries[0].Data);
+                    textures.Clear();
+                    if (gvr)
+                        textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(filename), str));
+                    else
+                        textures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(filename), str));
+                    listBox1.Items.Clear();
+                    listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
+                    UpdateTextureCount();
+                    UpdateMRUList(Path.GetFullPath(filename));
+                    listBox1.SelectedIndex = 0;
+                    return true;
+                default:
+                    break;
+            }
+
+            // Otherwise load the file as an archive
             byte[] datafile = File.ReadAllBytes(filename);
             if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
                 datafile = FraGag.Compression.Prs.Decompress(datafile);
