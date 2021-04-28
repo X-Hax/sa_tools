@@ -1316,6 +1316,7 @@ namespace TextureEditor
                                         paletteApplied = false;
                                     }
                                 }
+                                else return;
                             }
                             GvrTextureInfo newgvr = new GvrTextureInfo(oldgvr.Name, oldgvr.GlobalIndex, bmp);
                             newgvr.DataFormat = gvrDataFormat;
