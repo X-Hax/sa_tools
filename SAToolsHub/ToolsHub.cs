@@ -45,8 +45,8 @@ namespace SAToolsHub
 		public static string setGame { get; set; }
 		public static string gameDirectory { get; set; }
 		string gameDir;
-		public static List<SplitEntry> projSplitEntries { get; set; }
-		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
+		public static List<Templates.SplitEntry> projSplitEntries { get; set; }
+		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
 
@@ -127,9 +127,9 @@ namespace SAToolsHub
 		#region Additional Functions
 		private void openProject(string projectFile)
 		{
-			var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
+			var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 			var projFileStream = File.OpenRead(projectFile);
-			var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+			var projFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 			string rootFolder;
 
 			setGame = projFile.GameInfo.GameName;
