@@ -53,22 +53,41 @@ public class ListViewColumnSorter : IComparer
 		listviewY = (ListViewItem)y;
 
 		// Compare the two items
-		compareResult = ObjectCompare.Compare(listviewX.SubItems[ColumnToSort].Text, listviewY.SubItems[ColumnToSort].Text);
+		switch (ColumnToSort)
+		{
+			case 2:
+				compareResult = ObjectCompare.Compare(((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Access, ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Access);
+				break;
+			case 3:
+				compareResult = ObjectCompare.Compare(((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Size, ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Size);
+				break;
+			default:
+				compareResult = ObjectCompare.Compare(listviewX.SubItems[ColumnToSort].Text, listviewY.SubItems[ColumnToSort].Text);
+				break;
+		}
 
 		// Calculate correct return value based on object comparison
 		if (OrderOfSort == SortOrder.Ascending)
 		{
 			// Ascending sort is selected, return normal result of compare operation
-			if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir")
+			if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+				return compareResult;
+			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type != "dir")
 				return compareResult - 1;
+			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+				return compareResult + 1;
 			else
 				return compareResult;
 		}
 		else if (OrderOfSort == SortOrder.Descending)
 		{
 			// Descending sort is selected, return negative result of compare operation
-			if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir")
+			if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+				return (-compareResult);
+			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type != "dir")
 				return (-compareResult) - 1;
+			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+				return (-compareResult) + 1;
 			else
 				return (-compareResult);
 		}

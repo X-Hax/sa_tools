@@ -49,11 +49,15 @@ namespace SAToolsHub
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
+		public static ListViewGroup lvdirectories;
+		public static ListViewGroup lvfiles;
 
 		public class itemTags
 		{
 			public string Type { get; set; }
 			public string Path { get; set; }
+			public long Size { get; set; }
+			public DateTime Access { get; set; }
 		}
 
 		//Program Paths
@@ -298,7 +302,7 @@ namespace SAToolsHub
 		{
 			if (length > 0)
 			{
-				return ((float)(length / (1024.0f))).ToString("#,000.00 KB").Trim();
+				return ((length / (1024.0f)).ToString("#,0.00 KBs"));
 			}
 			else
 				return "0";
@@ -322,8 +326,11 @@ namespace SAToolsHub
 					itemTags dirTag = new itemTags();
 					dirTag.Type = "dir";
 					dirTag.Path = dir.FullName;
+					dirTag.Size = 0;
+					dirTag.Access = dir.LastAccessTime;
 					item.Tag = dirTag;
 					item.SubItems.AddRange(subItems);
+					item.Group = lvdirectories;
 					listView1.Items.Add(item);
 				}
 			}
@@ -482,6 +489,7 @@ namespace SAToolsHub
 						}
 					case ".wmv":
 					case ".sfd":
+					case ".mpg":
 					case ".m1v":
 						{
 							subItemType = "Video File";
@@ -510,16 +518,19 @@ namespace SAToolsHub
 							break;
 						}
 				}
-				subItems = new ListViewItem.ListViewSubItem[] { 
+				subItems = new ListViewItem.ListViewSubItem[] {
 					new ListViewItem.ListViewSubItem(item, subItemType),
 					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
-					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length))
+					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length).ToString())
 				};
 				itemTags itemTag = new itemTags();
 				itemTag.Type = tagType;
 				itemTag.Path = file.FullName;
+				itemTag.Size = file.Length;
+				itemTag.Access = file.LastAccessTime;
 				item.Tag = itemTag;
 				item.SubItems.AddRange(subItems);
+				item.Group = lvfiles;
 				listView1.Items.Add(item);
 			}
 
