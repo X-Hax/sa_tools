@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.SonicAppretro.org">
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SADX360" gameSystemFolder="" dataFolder="SADX360" />
   <SplitEntry SourceFile="SonicApp.exe" IniFile="STG01" />
   <SplitEntry SourceFile="SonicApp.exe" IniFile="STG02" />

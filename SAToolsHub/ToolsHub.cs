@@ -49,8 +49,6 @@ namespace SAToolsHub
 		public static List<SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
-		public static ListViewGroup lvdirectories;
-		public static ListViewGroup lvfiles;
 
 		public class itemTags
 		{
@@ -330,7 +328,6 @@ namespace SAToolsHub
 					dirTag.Access = dir.LastAccessTime;
 					item.Tag = dirTag;
 					item.SubItems.AddRange(subItems);
-					item.Group = lvdirectories;
 					listView1.Items.Add(item);
 				}
 			}
@@ -530,7 +527,6 @@ namespace SAToolsHub
 				itemTag.Access = file.LastAccessTime;
 				item.Tag = itemTag;
 				item.SubItems.AddRange(subItems);
-				item.Group = lvfiles;
 				listView1.Items.Add(item);
 			}
 

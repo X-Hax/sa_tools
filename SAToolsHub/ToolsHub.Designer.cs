@@ -111,10 +111,6 @@
 			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
-			this.listView1 = new System.Windows.Forms.ListView();
-			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmsOpen = new System.Windows.Forms.ToolStripMenuItem();
@@ -131,6 +127,10 @@
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
+			this.listView1 = new System.Windows.Forms.ListView();
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
@@ -156,7 +156,7 @@
             this.helpToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(800, 25);
+			this.menuStrip1.Size = new System.Drawing.Size(899, 25);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -704,7 +704,7 @@
             this.tsSA2MsgEdit,
             this.tsSA2StgSel});
 			this.rightToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
-			this.rightToolStrip.Location = new System.Drawing.Point(745, 80);
+			this.rightToolStrip.Location = new System.Drawing.Point(844, 80);
 			this.rightToolStrip.Name = "rightToolStrip";
 			this.rightToolStrip.Padding = new System.Windows.Forms.Padding(0);
 			this.rightToolStrip.Size = new System.Drawing.Size(55, 493);
@@ -850,7 +850,7 @@
 			this.topToolStrip.Location = new System.Drawing.Point(0, 25);
 			this.topToolStrip.Name = "topToolStrip";
 			this.topToolStrip.Padding = new System.Windows.Forms.Padding(0);
-			this.topToolStrip.Size = new System.Drawing.Size(800, 55);
+			this.topToolStrip.Size = new System.Drawing.Size(899, 55);
 			this.topToolStrip.TabIndex = 2;
 			this.topToolStrip.Text = "toolStrip2";
 			// 
@@ -944,8 +944,8 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.listView1);
-			this.splitContainer1.Size = new System.Drawing.Size(745, 461);
-			this.splitContainer1.SplitterDistance = 220;
+			this.splitContainer1.Size = new System.Drawing.Size(844, 461);
+			this.splitContainer1.SplitterDistance = 203;
 			this.splitContainer1.TabIndex = 3;
 			// 
 			// treeView1
@@ -956,48 +956,9 @@
 			this.treeView1.HotTracking = true;
 			this.treeView1.Location = new System.Drawing.Point(0, 0);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.Size = new System.Drawing.Size(220, 461);
+			this.treeView1.Size = new System.Drawing.Size(203, 461);
 			this.treeView1.TabIndex = 0;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-			// 
-			// listView1
-			// 
-			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4});
-			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point(0, 0);
-			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(521, 461);
-			this.listView1.SmallImageList = this.imageList1;
-			this.listView1.TabIndex = 0;
-			this.listView1.UseCompatibleStateImageBehavior = false;
-			this.listView1.View = System.Windows.Forms.View.Details;
-			lvwColumnSorter = new ListViewColumnSorter();
-			this.listView1.ListViewItemSorter = lvwColumnSorter;
-			this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
-			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
-			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
-			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
-			// 
-			// columnHeader1
-			// 
-			this.columnHeader1.Text = "Filename";
-			this.columnHeader1.Width = 82;
-			// 
-			// columnHeader2
-			// 
-			this.columnHeader2.Text = "File Type";
-			this.columnHeader2.Width = 81;
-			// 
-			// columnHeader3
-			// 
-			this.columnHeader3.Text = "Last Modified";
-			this.columnHeader3.Width = 97;
 			// 
 			// imageList1
 			// 
@@ -1116,7 +1077,7 @@
             this.browseOpenExplorer});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 80);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(745, 32);
+			this.toolStrip1.Size = new System.Drawing.Size(844, 32);
 			this.toolStrip1.TabIndex = 4;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -1161,6 +1122,43 @@
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
 			// 
+			// listView1
+			// 
+			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4});
+			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.listView1.HideSelection = false;
+			this.listView1.Location = new System.Drawing.Point(0, 0);
+			this.listView1.Name = "listView1";
+			this.listView1.Size = new System.Drawing.Size(637, 461);
+			this.listView1.SmallImageList = this.imageList1;
+			this.listView1.TabIndex = 0;
+			this.listView1.UseCompatibleStateImageBehavior = false;
+			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
+			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
+			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
+			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Text = "Filename";
+			this.columnHeader1.Width = 82;
+			// 
+			// columnHeader2
+			// 
+			this.columnHeader2.Text = "File Type";
+			this.columnHeader2.Width = 81;
+			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.Text = "Last Modified";
+			this.columnHeader3.Width = 97;
+			// 
 			// columnHeader4
 			// 
 			this.columnHeader4.Text = "Filesize";
@@ -1170,7 +1168,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(800, 573);
+			this.ClientSize = new System.Drawing.Size(899, 573);
 			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.rightToolStrip);

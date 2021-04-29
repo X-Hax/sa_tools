@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SA1AD" gameSystemFolder="" dataFolder="AutoDemo" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
   <SplitEntry SourceFile="STG00.PRS" IniFile="STG00" />
