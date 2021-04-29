@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -57,8 +58,9 @@ namespace SAToolsHub
 		{
 			Dictionary<string, string> templates = new Dictionary<string, string>();
 			string[] templateNames = Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly);
+			var ordered = templateNames.OrderByDescending(f => f);
 
-			foreach (string file in templateNames)
+			foreach (string file in ordered)
 			{
 				templates.Add(Path.GetFileNameWithoutExtension(file), file);
 			}

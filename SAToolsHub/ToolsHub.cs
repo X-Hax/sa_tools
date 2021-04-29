@@ -318,7 +318,7 @@ namespace SAToolsHub
 					item = new ListViewItem(dir.Name, (int)item_icons.folder);
 					subItems = new ListViewItem.ListViewSubItem[] {
 						new ListViewItem.ListViewSubItem(item, "Directory"),
-						new ListViewItem.ListViewSubItem(item, dir.LastAccessTime.ToShortDateString()),
+						new ListViewItem.ListViewSubItem(item, dir.LastAccessTime.ToString()),
 						new ListViewItem.ListViewSubItem(item, null)
 					};
 					itemTags dirTag = new itemTags();
@@ -517,8 +517,8 @@ namespace SAToolsHub
 				}
 				subItems = new ListViewItem.ListViewSubItem[] {
 					new ListViewItem.ListViewSubItem(item, subItemType),
-					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
-					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length).ToString())
+					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToString()),
+					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length))
 				};
 				itemTags itemTag = new itemTags();
 				itemTag.Type = tagType;
