@@ -124,6 +124,8 @@ namespace SonicRetro.SAModel.SAMDL
                     case ".pvmx":
                     case ".pak":
                     case ".prs":
+                    case ".pvr":
+                    case ".gvr":
                     case ".txt":
                         LoadTextures(file);
                         break;
@@ -2686,6 +2688,7 @@ namespace SonicRetro.SAModel.SAMDL
 					SelectedItemChanged();
 					unsaved = true;
 					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+                    DrawEntireModel();
 				}
 			}
 			else
