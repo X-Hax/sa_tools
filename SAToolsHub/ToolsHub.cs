@@ -79,7 +79,7 @@ namespace SAToolsHub
 			hubSettings = ProjectSettings.Load();
 
 			if (Program.Arguments.Length > 0)
-				openProject(Program.Arguments[0]);
+				openProject(ProjectFunctions.opeProjectFileString(Program.Arguments[0]));
 
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
@@ -125,18 +125,13 @@ namespace SAToolsHub
 
 		// TODO: ToolsHub - Migrate some Additional Functions out.
 		#region Additional Functions
-		private void openProject(string projectFile)
+		private void openProject(Templates.ProjectTemplate projFile)
 		{
-			var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-			var projFileStream = File.OpenRead(projectFile);
-			var projFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 			string rootFolder;
 
 			setGame = projFile.GameInfo.GameName;
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
-			gameDirectory = (projFile.GameInfo.GameSystemFolder);
-			projXML = projectFile;
-			
+			gameDirectory = (projFile.GameInfo.GameSystemFolder);			
 
 			switch (setGame)
 			{
@@ -318,7 +313,7 @@ namespace SAToolsHub
 					item = new ListViewItem(dir.Name, (int)item_icons.folder);
 					subItems = new ListViewItem.ListViewSubItem[] {
 						new ListViewItem.ListViewSubItem(item, "Directory"),
-						new ListViewItem.ListViewSubItem(item, dir.LastAccessTime.ToString()),
+						new ListViewItem.ListViewSubItem(item, dir.LastAccessTime.ToShortDateString()),
 						new ListViewItem.ListViewSubItem(item, null)
 					};
 					itemTags dirTag = new itemTags();
@@ -517,7 +512,7 @@ namespace SAToolsHub
 				}
 				subItems = new ListViewItem.ListViewSubItem[] {
 					new ListViewItem.ListViewSubItem(item, subItemType),
-					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToString()),
+					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
 					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length))
 				};
 				itemTags itemTag = new itemTags();
@@ -685,21 +680,18 @@ namespace SAToolsHub
 
 			if (newProjFile != null)
 			{
-				openProject(newProjFile);
+				openProject(ProjectFunctions.opeProjectFileString(newProjFile));
 			}
 		}
 
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog openFileDialog1 = new OpenFileDialog();
-			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
-			openFileDialog1.RestoreDirectory = true;
+			Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
 
-			if (openFileDialog1.ShowDialog() == DialogResult.OK)
+			if (projFile != null)
 			{
 				resetOpenProject();
-				string projectFile = openFileDialog1.FileName;
-				openProject(projectFile);
+				openProject(projFile);
 			}
 		}
 

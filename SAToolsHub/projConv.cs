@@ -29,7 +29,7 @@ namespace SAToolsHub
 		string game;
 		string gamePath;
 		string projPath;
-		List<SplitEntryMDL> splitMdlEntries = new List<SplitEntryMDL>();
+		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
 
 		public projConv()
 		{
@@ -62,9 +62,9 @@ namespace SAToolsHub
 					break;
 			}
 
-			var templateFileSerializer = new XmlSerializer(typeof(SplitTemplate));
+			var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
 			var templateFileStream = File.OpenRead(template);
-			var templateFile = (SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+			var templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
 
 			gamePath = templateFile.GameInfo.GameSystemFolder;
 
@@ -112,7 +112,7 @@ namespace SAToolsHub
 		private void btnSave_Click(object sender, EventArgs e)
 		{
 			Stream projFileStream;
-			ProjectTemplate projectFile = new ProjectTemplate();
+			Templates.ProjectTemplate projectFile = new Templates.ProjectTemplate();
 
 			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
@@ -124,10 +124,10 @@ namespace SAToolsHub
 				{
 					GetSystemPath();
 
-					XmlSerializer serializer = new XmlSerializer(typeof(ProjectTemplate));
+					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);
 
-					ProjectInfo projInfo = new ProjectInfo();
+					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
 
 					switch (game)
 					{
@@ -137,19 +137,19 @@ namespace SAToolsHub
 							projInfo.GameSystemFolder = gamePath;
 							projInfo.ModSystemFolder = projPath;
 
-							List<SplitEntry> dxsplitEntries = new List<SplitEntry>()
+							List<Templates.SplitEntry> dxsplitEntries = new List<Templates.SplitEntry>()
 							{
-								new SplitEntry { SourceFile=(sonic + ".exe"), IniFile=(sonic + "_data.ini"), CmnName="Executable Data"},
-								new SplitEntry { SourceFile=(chrmodels + "_orig.dll"), IniFile=(chrmodels + "_orig_data.ini"), CmnName="Chrmodels Data"},
-								new SplitEntry { SourceFile=(adv00models + ".dll"), IniFile=(adv00models + "_data.ini"), CmnName="Station Square Data"},
-								new SplitEntry { SourceFile=(adv01models + ".dll"), IniFile=(adv01models + "_data.ini"), CmnName="Egg Carrier (Exterior) Data"},
-								new SplitEntry { SourceFile=(adv01cmodels + ".dll"), IniFile=(adv01cmodels + "_data.ini"), CmnName="Egg Carrier (Interior) Data"},
-								new SplitEntry { SourceFile=(adv02models + ".dll"), IniFile=(adv02models + "_data.ini"), CmnName="Mystic Ruins Data"},
-								new SplitEntry { SourceFile=(adv03models + ".dll"), IniFile=(adv03models + "_data.ini"), CmnName="The Past Data"},
-								new SplitEntry { SourceFile=(bosschaos0models + ".dll"), IniFile=(bosschaos0models + "_data.ini"), CmnName="Boss Chaos 0 Data"},
-								new SplitEntry { SourceFile=(chaostggarden02mr_daytime + ".dll"), IniFile=(chaostggarden02mr_daytime + "_data.ini"), CmnName="MR Garden (Daytime) Data"},
-								new SplitEntry { SourceFile=(chaostggarden02mr_evening + ".dll"), IniFile=(chaostggarden02mr_evening + "_data.ini"), CmnName="MR Garden (Evening) Data"},
-								new SplitEntry { SourceFile=(chaostggarden02mr_night + ".dll"), IniFile=(chaostggarden02mr_night + "_data.ini"), CmnName="MR Garden (Night) Data"},
+								new Templates.SplitEntry { SourceFile=(sonic + ".exe"), IniFile=(sonic + "_data.ini"), CmnName="Executable Data"},
+								new Templates.SplitEntry { SourceFile=(chrmodels + "_orig.dll"), IniFile=(chrmodels + "_orig_data.ini"), CmnName="Chrmodels Data"},
+								new Templates.SplitEntry { SourceFile=(adv00models + ".dll"), IniFile=(adv00models + "_data.ini"), CmnName="Station Square Data"},
+								new Templates.SplitEntry { SourceFile=(adv01models + ".dll"), IniFile=(adv01models + "_data.ini"), CmnName="Egg Carrier (Exterior) Data"},
+								new Templates.SplitEntry { SourceFile=(adv01cmodels + ".dll"), IniFile=(adv01cmodels + "_data.ini"), CmnName="Egg Carrier (Interior) Data"},
+								new Templates.SplitEntry { SourceFile=(adv02models + ".dll"), IniFile=(adv02models + "_data.ini"), CmnName="Mystic Ruins Data"},
+								new Templates.SplitEntry { SourceFile=(adv03models + ".dll"), IniFile=(adv03models + "_data.ini"), CmnName="The Past Data"},
+								new Templates.SplitEntry { SourceFile=(bosschaos0models + ".dll"), IniFile=(bosschaos0models + "_data.ini"), CmnName="Boss Chaos 0 Data"},
+								new Templates.SplitEntry { SourceFile=(chaostggarden02mr_daytime + ".dll"), IniFile=(chaostggarden02mr_daytime + "_data.ini"), CmnName="MR Garden (Daytime) Data"},
+								new Templates.SplitEntry { SourceFile=(chaostggarden02mr_evening + ".dll"), IniFile=(chaostggarden02mr_evening + "_data.ini"), CmnName="MR Garden (Evening) Data"},
+								new Templates.SplitEntry { SourceFile=(chaostggarden02mr_night + ".dll"), IniFile=(chaostggarden02mr_night + "_data.ini"), CmnName="MR Garden (Night) Data"},
 							};
 
 							projectFile.GameInfo = projInfo;
@@ -162,10 +162,10 @@ namespace SAToolsHub
 							projInfo.GameSystemFolder = gamePath;
 							projInfo.ModSystemFolder = projPath;
 
-							List<SplitEntry> sa2splitEntries = new List<SplitEntry>()
+							List<Templates.SplitEntry> sa2splitEntries = new List<Templates.SplitEntry>()
 							{
-								new SplitEntry { SourceFile=(sonic2app + ".exe"), IniFile=(sonic2app + "_data.ini"), CmnName="Executable Data"},
-								new SplitEntry { SourceFile=(data_dll + "_orig.dll"), IniFile=(data_dll + "_orig_data.ini"), CmnName="Data DLL Data"},
+								new Templates.SplitEntry { SourceFile=(sonic2app + ".exe"), IniFile=(sonic2app + "_data.ini"), CmnName="Executable Data"},
+								new Templates.SplitEntry { SourceFile=(data_dll + "_orig.dll"), IniFile=(data_dll + "_orig_data.ini"), CmnName="Data DLL Data"},
 							};
 
 							projectFile.GameInfo = projInfo;

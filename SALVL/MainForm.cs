@@ -360,9 +360,9 @@ namespace SonicRetro.SAModel.SALVL
 			{
 				string projectFile = openFileDialog1.FileName;
 
-				var projFileSerializer = new XmlSerializer(typeof(ProjectTemplate));
+				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 				var projFileStream = File.OpenRead(projectFile);
-				var projFile = (ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+				var projFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 
 				if (projFile.GameInfo.GameName == "SADXPC")
 				{

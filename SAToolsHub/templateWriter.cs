@@ -25,10 +25,10 @@ namespace SAToolsHub
 			{
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
-					XmlSerializer serializer = new XmlSerializer(typeof(SplitTemplate));
+					XmlSerializer serializer = new XmlSerializer(typeof(Templates.SplitTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);
 
-					SplitTemplate splitTemplateFile = new SplitTemplate();
+					Templates.SplitTemplate splitTemplateFile = new Templates.SplitTemplate();
 
 					serializer.Serialize(writer, splitTemplateFile);
 					projFileStream.Close();

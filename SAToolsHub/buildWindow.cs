@@ -37,13 +37,13 @@ namespace SAToolsHub
 		{
 			assemblies.Clear();
 
-			List<SplitEntry> splitEntries = new List<SplitEntry>();
+			List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 
-			foreach (SplitEntry exeEntry in chkBoxEXE.CheckedItems)
+			foreach (Templates.SplitEntry exeEntry in chkBoxEXE.CheckedItems)
 			{
 				splitEntries.Add(exeEntry);
 			}
-			foreach (SplitEntry dllEntry in chkBoxDLL.CheckedItems)
+			foreach (Templates.SplitEntry dllEntry in chkBoxDLL.CheckedItems)
 			{
 				splitEntries.Add(dllEntry);
 			}
@@ -55,7 +55,7 @@ namespace SAToolsHub
 				}
 			}
 
-			foreach (SplitEntry splitEntry in splitEntries)
+			foreach (Templates.SplitEntry splitEntry in splitEntries)
 			{
 				switch (SAToolsHub.setGame)
 				{
@@ -364,7 +364,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			foreach(SplitEntry splitEntry in SAToolsHub.projSplitEntries)
+			foreach(Templates.SplitEntry splitEntry in SAToolsHub.projSplitEntries)
 			{
 				string srcFile = splitEntry.SourceFile.ToLower();
 				if (srcFile.Contains("exe"))

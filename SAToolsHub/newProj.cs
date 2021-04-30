@@ -16,7 +16,7 @@ namespace SAToolsHub
 	public partial class newProj : Form
 	{
 		Stream projFileStream;
-		ProjectTemplate projectFile;
+		Templates.ProjectTemplate projectFile;
 		SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
 
 		string templatesPath;
@@ -25,8 +25,8 @@ namespace SAToolsHub
 		string projFolder;
 		string dataFolder;
 		string projName;
-		List<SplitEntry> splitEntries = new List<SplitEntry>();
-		List<SplitEntryMDL> splitMdlEntries = new List<SplitEntryMDL>();
+		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
+		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
 
 		public newProj()
 		{
@@ -70,9 +70,9 @@ namespace SAToolsHub
 
 		void openTemplate(string templateSplit)
 		{
-			var templateFileSerializer = new XmlSerializer(typeof(SplitTemplate));
+			var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
 			var templateFileStream = File.OpenRead(templateSplit);
-			var templateFile = (SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+			var templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
 
 			gameName = templateFile.GameInfo.GameName;
 			gamePath = templateFile.GameInfo.GameSystemFolder;
@@ -87,11 +87,11 @@ namespace SAToolsHub
 				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + gameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
 				{
-					var folderDialog = new VistaFolderBrowserDialog();
-					var folderResult = folderDialog.ShowDialog();
-					if (folderResult.HasValue && folderResult.Value)
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select path for " + gameName;
+					if (fsd.ShowDialog(IntPtr.Zero))
 					{
-						gamePath = folderDialog.SelectedPath;
+						gamePath = fsd.FileName;
 
 						var templateFileStreamSave = File.OpenWrite(templateSplit);
 						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
@@ -116,11 +116,11 @@ namespace SAToolsHub
 				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + gameName + " does not exist.\n\nPlease press OK and select the correct path for " + gameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
 				{
-					var folderDialog = new VistaFolderBrowserDialog();
-					var folderResult = folderDialog.ShowDialog();
-					if (folderResult.HasValue && folderResult.Value)
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select path for " + gameName;
+					if (fsd.ShowDialog(IntPtr.Zero))
 					{
-						gamePath = folderDialog.SelectedPath;
+						gamePath = fsd.FileName;
 
 						var templateFileStreamSave = File.OpenWrite(templateSplit);
 						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
@@ -285,7 +285,7 @@ namespace SAToolsHub
 				return Path.Combine(appPath, dataFolder, "objdefs");
 		}
 
-		private void splitFiles(SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+		private void splitFiles(Templates.SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
 			string datafilename; 
 			switch (splitData.IniFile)
@@ -355,7 +355,7 @@ namespace SAToolsHub
 			}
 		}
 
-		private void splitMdlFiles(SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
+		private void splitMdlFiles(Templates.SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
 			string fileOutputFolder = Path.Combine(outputFolder, "Characters");
@@ -390,7 +390,7 @@ namespace SAToolsHub
 				iniFolder = Path.Combine(appPath, "Configuration", dataFolder);
 
 			progress.SetTask("Splitting Game Content");
-			foreach (SplitEntry splitEntry in splitEntries)
+			foreach (Templates.SplitEntry splitEntry in splitEntries)
 			{
 				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
 			}
@@ -423,7 +423,7 @@ namespace SAToolsHub
 				if (splitMdlEntries.Count > 0)
 				{
 					progress.SetTask("Splitting Character Models");
-					foreach (SplitEntryMDL splitMDL in splitMdlEntries)
+					foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
 					{
 						splitMdlFiles(splitMDL, progress, gamePath, projFolder);
 					}
@@ -491,11 +491,11 @@ namespace SAToolsHub
 		
 		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
 		{
-			var folderDialog = new VistaFolderBrowserDialog();
-			var folderResult = folderDialog.ShowDialog();
-			if (folderResult.HasValue && folderResult.Value)
+			var fsd = new FolderSelect.FolderSelectDialog();
+			fsd.Title = "Please select the path for split data to be stored at";
+			if (fsd.ShowDialog(IntPtr.Zero))
 			{
-				txtProjFolder.Text = folderDialog.SelectedPath;
+				txtProjFolder.Text = fsd.FileName;
 			}
 		}
 
@@ -528,7 +528,7 @@ namespace SAToolsHub
 			{
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
-					XmlSerializer serializer = new XmlSerializer(typeof(ProjectTemplate));
+					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);
 					if (checkBox1.Checked && (txtProjFolder.Text != null))
 					{
@@ -544,8 +544,8 @@ namespace SAToolsHub
 					}
 
 					projName = saveFileDialog1.FileName;
-					projectFile = new ProjectTemplate();
-					ProjectInfo projInfo = new ProjectInfo();
+					projectFile = new Templates.ProjectTemplate();
+					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
 
 					projInfo.GameName = gameName;
 					if (gameName == "SADXPC" || gameName == "SA2PC")

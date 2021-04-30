@@ -91,6 +91,8 @@
     <Compile Include="DLLModGenerator\DLLModGenUI.Designer.cs">
       <DependentUpon>DLLModGenUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="FolderBrowser\FolderSelectDialog.cs" />
+    <Compile Include="FolderBrowser\Reflector.cs" />
     <Compile Include="GamePathChecker.cs" />
     <Compile Include="Import\AssimpStuff.cs" />
     <Compile Include="IniData.cs" />
