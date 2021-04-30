@@ -70,76 +70,19 @@ namespace SAToolsHub
 
 		void openTemplate(string templateSplit)
 		{
-			var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
-			var templateFileStream = File.OpenRead(templateSplit);
-			var templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+			Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateSplit);
 
-			gameName = templateFile.GameInfo.GameName;
-			gamePath = templateFile.GameInfo.GameSystemFolder;
-			dataFolder = templateFile.GameInfo.DataFolder;
-			splitEntries = templateFile.SplitEntries;
-			splitMdlEntries = templateFile.SplitMDLEntries;
-
-			templateFileStream.Close();
-
-			if (gamePath.Length <= 0)
+			if (template != null)
 			{
-				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + gameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				if (gamePathWarning == DialogResult.OK)
-				{
-					var fsd = new FolderSelect.FolderSelectDialog();
-					fsd.Title = "Please select path for " + gameName;
-					if (fsd.ShowDialog(IntPtr.Zero))
-					{
-						gamePath = fsd.FileName;
-
-						var templateFileStreamSave = File.OpenWrite(templateSplit);
-						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
-
-						templateFile.GameInfo.GameSystemFolder = gamePath;
-
-						templateFileSerializer.Serialize(splitsWriter, templateFile);
-						templateFileStreamSave.Close();
-					}
-					else
-					{
-						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (pathWarning == DialogResult.OK)
-						{
-							comboBox1.SelectedIndex = -1;
-						}
-					}
-				}
+				gameName = template.GameInfo.GameName;
+				gamePath = template.GameInfo.GameSystemFolder;
+				dataFolder = template.GameInfo.DataFolder;
+				splitEntries = template.SplitEntries;
+				splitMdlEntries = template.SplitMDLEntries;
 			}
-			else if (!Directory.Exists(gamePath))
-			{
-				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + gameName + " does not exist.\n\nPlease press OK and select the correct path for " + gameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				if (gamePathWarning == DialogResult.OK)
-				{
-					var fsd = new FolderSelect.FolderSelectDialog();
-					fsd.Title = "Please select path for " + gameName;
-					if (fsd.ShowDialog(IntPtr.Zero))
-					{
-						gamePath = fsd.FileName;
-
-						var templateFileStreamSave = File.OpenWrite(templateSplit);
-						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
-
-						templateFile.GameInfo.GameSystemFolder = gamePath;
-
-						templateFileSerializer.Serialize(splitsWriter, templateFile);
-						templateFileStreamSave.Close();
-					}
-					else
-					{
-						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (pathWarning == DialogResult.OK)
-						{
-							comboBox1.SelectedIndex = -1;
-						}
-					}
-				}
-			}
+			else
+				comboBox1.SelectedIndex = -1;
+			
 		}
 
 		private void makeProjectFolders(string projFolder, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string game)

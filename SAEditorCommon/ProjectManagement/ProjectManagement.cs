@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
 using System.Windows.Forms;
@@ -172,77 +173,85 @@ namespace SAEditorCommon.ProjectManagement
 		/// Opens a Project Template file to begin the game data split. Asks and saves game directory to template if one does not exist.
 		/// </summary>
 		/// <returns>SplitTemplate file</returns>
-		//public static Templates.SplitTemplate openTemplateFile(string templateSplit)
-		//{
-		//	var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
-		//	var templateFileStream = File.OpenRead(templateSplit);
-		//	var templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+		public static Templates.SplitTemplate openTemplateFile(string templateFilePath)
+		{
+			Templates.SplitTemplate templateFile;
 
-		//	gameName = templateFile.GameInfo.GameName;
-		//	gamePath = templateFile.GameInfo.GameSystemFolder;
-		//	dataFolder = templateFile.GameInfo.DataFolder;
-		//	splitEntries = templateFile.SplitEntries;
-		//	splitMdlEntries = templateFile.SplitMDLEntries;
+			var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
+			var templateFileStream = File.OpenRead(templateFilePath);
+			templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+			templateFileStream.Close();
 
-		//	templateFileStream.Close();
+			if (templateFile.GameInfo.GameSystemFolder.Length <= 0)
+			{
+				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gamePathWarning == DialogResult.OK)
+				{
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+					fsd.ShowDialog();
+					if (Directory.Exists(fsd.FileName))
+					{
+						var templateFileStreamSave = File.OpenWrite(templateFilePath);
+						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
 
-		//	if (gamePath.Length <= 0)
-		//	{
-		//		DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + gameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-		//		if (gamePathWarning == DialogResult.OK)
-		//		{
-		//			SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = "texturepack" };
-		//			if (dlg.FileName && folderResult.Value)
-		//			{
-		//				gamePath = folderDialog.SelectedPath;
+						templateFile.GameInfo.GameSystemFolder = fsd.FileName;
 
-		//				var templateFileStreamSave = File.OpenWrite(templateSplit);
-		//				TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+						templateFileSerializer.Serialize(splitsWriter, templateFile);
+						templateFileStreamSave.Close();
 
-		//				templateFile.GameInfo.GameSystemFolder = gamePath;
+						return templateFile;
+					}
+					else
+					{
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						if (pathWarning == DialogResult.OK)
+						{
+							return null;
+						}
+						else
+							return null;
+					}
+				}
+				else
+					return null;
+			}
+			else if (!Directory.Exists(templateFile.GameInfo.GameSystemFolder))
+			{
+				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + templateFile.GameInfo.GameName + " does not exist.\n\nPlease press OK and select the correct path for " + templateFile.GameInfo.GameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gamePathWarning == DialogResult.OK)
+				{
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+					fsd.ShowDialog();
+					if (Directory.Exists(fsd.FileName))
+					{
+						var templateFileStreamSave = File.OpenWrite(templateFilePath);
+						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
 
-		//				templateFileSerializer.Serialize(splitsWriter, templateFile);
-		//				templateFileStreamSave.Close();
-		//			}
-		//			else
-		//			{
-		//				DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-		//				if (pathWarning == DialogResult.OK)
-		//				{
-		//					comboBox1.SelectedIndex = -1;
-		//				}
-		//			}
-		//		}
-		//	}
-		//	else if (!Directory.Exists(gamePath))
-		//	{
-		//		DialogResult gamePathWarning = MessageBox.Show(("The folder for " + gameName + " does not exist.\n\nPlease press OK and select the correct path for " + gameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-		//		if (gamePathWarning == DialogResult.OK)
-		//		{
-		//			var folderDialog = new VistaFolderBrowserDialog();
-		//			var folderResult = folderDialog.ShowDialog();
-		//			if (folderResult.HasValue && folderResult.Value)
-		//			{
-		//				gamePath = folderDialog.SelectedPath;
+						templateFile.GameInfo.GameSystemFolder = fsd.FileName;
 
-		//				var templateFileStreamSave = File.OpenWrite(templateSplit);
-		//				TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+						templateFileSerializer.Serialize(splitsWriter, templateFile);
+						templateFileStreamSave.Close();
 
-		//				templateFile.GameInfo.GameSystemFolder = gamePath;
-
-		//				templateFileSerializer.Serialize(splitsWriter, templateFile);
-		//				templateFileStreamSave.Close();
-		//			}
-		//			else
-		//			{
-		//				DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-		//				if (pathWarning == DialogResult.OK)
-		//				{
-		//					comboBox1.SelectedIndex = -1;
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
+						return templateFile;
+					}
+					else
+					{
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						if (pathWarning == DialogResult.OK)
+						{
+							return null;
+						}
+						else
+							return null;
+					}
+				}
+				else
+					return null;
+			}
+			else
+				return templateFile;
+		}
 	}
 }
