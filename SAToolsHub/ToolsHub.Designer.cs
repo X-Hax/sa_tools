@@ -87,8 +87,6 @@
 			this.blenderSASupportAddonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sonicAudioToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubIssueTrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.rightToolStrip = new System.Windows.Forms.ToolStrip();
 			this.tsSAMDL = new System.Windows.Forms.ToolStripButton();
 			this.tsSALVL = new System.Windows.Forms.ToolStripButton();
@@ -111,6 +109,11 @@
 			this.tsUpdate = new System.Windows.Forms.ToolStripButton();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.treeView1 = new System.Windows.Forms.TreeView();
+			this.listView1 = new System.Windows.Forms.ListView();
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmsOpen = new System.Windows.Forms.ToolStripMenuItem();
@@ -127,11 +130,6 @@
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
-			this.listView1 = new System.Windows.Forms.ListView();
-			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -588,9 +586,7 @@
 			this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resourcesToolStripMenuItem,
             this.additionalLinksToolStripMenuItem,
-            this.gitHubIssueTrackerToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.toolStripMenuItem2});
+            this.gitHubIssueTrackerToolStripMenuItem});
 			this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
 			this.helpToolStripMenuItem.Size = new System.Drawing.Size(47, 21);
 			this.helpToolStripMenuItem.Text = "Help";
@@ -672,18 +668,6 @@
 			this.gitHubIssueTrackerToolStripMenuItem.ToolTipText = "Opens a link to the SA Tools Issue tracker on GitHub. Use this to submit issues o" +
     "r suggestions for the programs.";
 			this.gitHubIssueTrackerToolStripMenuItem.Click += new System.EventHandler(this.gitHubIssueTrackerToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(192, 6);
-			// 
-			// toolStripMenuItem2
-			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(195, 22);
-			this.toolStripMenuItem2.Text = "About";
-			this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
 			// 
 			// rightToolStrip
 			// 
@@ -960,6 +944,47 @@
 			this.treeView1.TabIndex = 0;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
 			// 
+			// listView1
+			// 
+			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4});
+			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.listView1.HideSelection = false;
+			this.listView1.Location = new System.Drawing.Point(0, 0);
+			this.listView1.Name = "listView1";
+			this.listView1.Size = new System.Drawing.Size(637, 461);
+			this.listView1.SmallImageList = this.imageList1;
+			this.listView1.TabIndex = 0;
+			this.listView1.UseCompatibleStateImageBehavior = false;
+			this.listView1.View = System.Windows.Forms.View.Details;
+			this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
+			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
+			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
+			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Text = "Filename";
+			this.columnHeader1.Width = 82;
+			// 
+			// columnHeader2
+			// 
+			this.columnHeader2.Text = "File Type";
+			this.columnHeader2.Width = 81;
+			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.Text = "Last Modified";
+			this.columnHeader3.Width = 97;
+			// 
+			// columnHeader4
+			// 
+			this.columnHeader4.Text = "Filesize";
+			// 
 			// imageList1
 			// 
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -1122,49 +1147,6 @@
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
 			// 
-			// listView1
-			// 
-			this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4});
-			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.listView1.HideSelection = false;
-			this.listView1.Location = new System.Drawing.Point(0, 0);
-			this.listView1.Name = "listView1";
-			this.listView1.Size = new System.Drawing.Size(637, 461);
-			this.listView1.SmallImageList = this.imageList1;
-			this.listView1.TabIndex = 0;
-			this.listView1.UseCompatibleStateImageBehavior = false;
-			this.listView1.View = System.Windows.Forms.View.Details;
-			this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
-			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
-			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
-			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
-			lvwColumnSorter = new ListViewColumnSorter();
-			this.listView1.ListViewItemSorter = lvwColumnSorter;
-			// 
-			// columnHeader1
-			// 
-			this.columnHeader1.Text = "Filename";
-			this.columnHeader1.Width = 82;
-			// 
-			// columnHeader2
-			// 
-			this.columnHeader2.Text = "File Type";
-			this.columnHeader2.Width = 81;
-			// 
-			// columnHeader3
-			// 
-			this.columnHeader3.Text = "Last Modified";
-			this.columnHeader3.Width = 97;
-			// 
-			// columnHeader4
-			// 
-			this.columnHeader4.Text = "Filesize";
-			// 
 			// SAToolsHub
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1283,8 +1265,6 @@
 		private System.Windows.Forms.ToolStripMenuItem blenderSASupportAddonToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sonicAudioToolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem projectConverterToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
 		private System.Windows.Forms.ToolStripMenuItem cmsDelete;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editOpen;

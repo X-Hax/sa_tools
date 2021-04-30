@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using Ookii.Dialogs.Wpf;
 using SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
@@ -47,6 +46,7 @@ namespace SAToolsHub
 
 		string GetSystemPath()
 		{
+			Templates.SplitTemplate templateFile;
 			string template;
 
 			switch (game)
@@ -62,48 +62,20 @@ namespace SAToolsHub
 					break;
 			}
 
-			var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
-			var templateFileStream = File.OpenRead(template);
-			var templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+			templateFile = ProjectFunctions.openTemplateFile(template);
 
-			gamePath = templateFile.GameInfo.GameSystemFolder;
-
-			if (gamePath != null)
-			{
-				DialogResult gamePathWarning = MessageBox.Show(("No game path was found for this game's template. Please browse to the game's installation folder."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				if (gamePathWarning == DialogResult.OK)
-				{
-					var folderDialog = new VistaFolderBrowserDialog();
-					var folderResult = folderDialog.ShowDialog();
-					if (folderResult.HasValue && folderResult.Value)
-					{
-						gamePath = folderDialog.SelectedPath;
-						if (game == "sa2")
-							splitMdlEntries = templateFile.SplitMDLEntries;
-					}
-					else
-					{
-						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (pathWarning == DialogResult.OK)
-						{
-							this.Close();
-						}
-					}
-				}
-			}
-
-			return gamePath;
+			return templateFile.GameInfo.GameSystemFolder;
 		}
 		#endregion
 
 		#region Form Functions
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			var folderDialog = new VistaFolderBrowserDialog();
-			var folderResult = folderDialog.ShowDialog();
-			if (folderResult.HasValue && folderResult.Value)
+			var fsd = new FolderSelect.FolderSelectDialog();
+			fsd.Title = "Please select an old project folder.";
+			if (fsd.ShowDialog(IntPtr.Zero))
 			{
-				txtProjFolder.Text = folderDialog.SelectedPath;
+				txtProjFolder.Text = fsd.FileName;
 				projPath = txtProjFolder.Text;
 				setGame();
 			}

@@ -62,10 +62,6 @@
       <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Ookii.Dialogs.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ookii.Dialogs.Wpf.3.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -95,12 +91,6 @@
     </Compile>
     <Compile Include="editProj.Designer.cs">
       <DependentUpon>editProj.cs</DependentUpon>
-    </Compile>
-    <Compile Include="abtInfo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="abtInfo.Designer.cs">
-      <DependentUpon>abtInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="gameOptions.cs">
       <SubType>Form</SubType>
@@ -146,9 +136,6 @@
     <EmbeddedResource Include="editProj.resx">
       <DependentUpon>editProj.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="abtInfo.resx">
-      <DependentUpon>abtInfo.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="gameOptions.resx">
       <DependentUpon>gameOptions.cs</DependentUpon>
     </EmbeddedResource>
@@ -169,7 +156,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

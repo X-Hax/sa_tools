@@ -154,7 +154,7 @@ namespace SAEditorCommon.ProjectManagement
 		/// Uses a path string to open and deserialize a Sonic Adventure Project file.
 		/// </summary>
 		/// <returns>ProjectTemplate File</returns>
-		public static Templates.ProjectTemplate opeProjectFileString(string fileName)
+		public static Templates.ProjectTemplate openProjectFileString(string fileName)
 		{
 			Templates.ProjectTemplate projectFile;
 

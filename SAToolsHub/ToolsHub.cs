@@ -35,7 +35,6 @@ namespace SAToolsHub
 		private templateWriter templateWriter;
 		private gameOptions gameOptionsDiag;
 		private projConv projectConverter;
-		private formAbout abtWindow;
 		private ListViewColumnSorter lvwColumnSorter;
 
 		//Variables
@@ -79,7 +78,7 @@ namespace SAToolsHub
 			hubSettings = ProjectSettings.Load();
 
 			if (Program.Arguments.Length > 0)
-				openProject(ProjectFunctions.opeProjectFileString(Program.Arguments[0]));
+				openProject(ProjectFunctions.openProjectFileString(Program.Arguments[0]));
 
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
@@ -87,7 +86,6 @@ namespace SAToolsHub
 			templateWriter = new templateWriter();
 			gameOptionsDiag = new gameOptions();
 			projectConverter = new projConv();
-			abtWindow = new formAbout();
 
 			SetProgramPaths();
 
@@ -680,7 +678,7 @@ namespace SAToolsHub
 
 			if (newProjFile != null)
 			{
-				openProject(ProjectFunctions.opeProjectFileString(newProjFile));
+				openProject(ProjectFunctions.openProjectFileString(newProjFile));
 			}
 		}
 
@@ -847,11 +845,6 @@ namespace SAToolsHub
 			{
 				MessageBox.Show("Something went wrong, could not open link in browser.");
 			}
-		}
-
-		private void toolStripMenuItem2_Click(object sender, EventArgs e)
-		{
-			abtWindow.Show();
 		}
 
 		//Additiional Links

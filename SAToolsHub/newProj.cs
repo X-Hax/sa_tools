@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ComponentModel;
-using Ookii.Dialogs.Wpf;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
 using SA_Tools.Split;
