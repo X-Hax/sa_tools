@@ -1,10 +1,10 @@
 ﻿//Original SADXsnd by Tux/SANiK, SADXsndSharp by MainMemory
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using ArchiveLib;
+using static ArchiveLib.DATFile;
 
 namespace SADXsndSharp
 {
@@ -93,12 +93,12 @@ namespace SADXsndSharp
 					string dir = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileName(a.FileName));
 					using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
 					{
-						archive.Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.name, f2.name));
-                        for (int i = 0; i < archive.GetCount(); i++)
+						archive.Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.Name, f2.Name));
+                        for (int i = 0; i < archive.Entries.Count; i++)
                         {
-							Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archive.GetCount().ToString() + ", please wait...";
-							sw.WriteLine(archive.Entries[i].name);
-                            File.WriteAllBytes(Path.Combine(dir, archive.Entries[i].name), archive.GetFile(i));
+							Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
+							sw.WriteLine(archive.Entries[i].Name);
+                            File.WriteAllBytes(Path.Combine(dir, archive.Entries[i].Name), archive.GetFile(i));
 						}
 						sw.Flush();
 						sw.Close();
@@ -134,7 +134,7 @@ namespace SADXsndSharp
 				{
 					foreach (string item in a.FileNames)
 					{
-                        archive.AddFile(item);
+                        archive.Entries.Add(new DATEntry(item));
 					}
 					RefreshListView(mainView);
 					unsaved = true;
@@ -158,7 +158,7 @@ namespace SADXsndSharp
 		{
 			if (selectedItem == null) return;
 			int i = int.Parse(selectedItem.SubItems[2].Text);
-			string fn = archive.Entries[i].name;
+			string fn = archive.Entries[i].Name;
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "wav",
@@ -167,12 +167,12 @@ namespace SADXsndSharp
 			})
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					if (archive.Entries[i].name != a.FileName)
+					if (archive.Entries[i].Name != a.FileName)
 					{
 						DialogResult mb = MessageBox.Show("Keep original filename " + fn + "?", "Keep filename?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (mb == DialogResult.Yes)
-                            archive.ReplaceData(a.FileName, i);
-                        else archive.ReplaceFile(a.FileName, i);
+                            archive.Entries[i].Data=File.ReadAllBytes(a.FileName);
+                        else archive.Entries[i] = new DATEntry(a.FileName);
                     }
                     else
                         archive.ReplaceFile(a.FileName, i);
@@ -196,7 +196,7 @@ namespace SADXsndSharp
 					int i = int.Parse(selectedItem.SubItems[2].Text);
 					foreach (string item in a.FileNames)
 					{
-						archive.AddFile(item);
+						archive.Entries.Add(new DATEntry(item));
 						i++;
 					}
 					RefreshListView(mainView);
@@ -224,7 +224,7 @@ namespace SADXsndSharp
 			if (oldName == e.Label) return;
             for (int i = 0; i < archive.Entries.Count; i++)
 			{
-				if (archive.Entries[i].name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
+				if (archive.Entries[i].Name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
 				{
 					e.CancelEdit = true;
 					MessageBox.Show("This name is being used by another file.");
@@ -237,14 +237,14 @@ namespace SADXsndSharp
 				MessageBox.Show("This name contains invalid characters.");
 				return;
 			}
-            archive.Entries[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].name = e.Label;
+            archive.Entries[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].Name = e.Label;
 			RefreshListView(mainView);
 			unsaved = true;
 		}
 
 		private void listView1_ItemActivate(object sender, EventArgs e)
 		{
-			string fp = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].name);
+			string fp = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].Name);
 			File.WriteAllBytes(fp, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
 			System.Diagnostics.Process.Start(fp);
 		}
@@ -278,7 +278,7 @@ namespace SADXsndSharp
 				int i = archive.Entries.Count;
 				foreach (string item in dropfiles)
 				{
-					archive.AddFile(item);
+					archive.Entries.Add(new DATEntry(item));
 					i++;
 				}
 				RefreshListView(mainView);
@@ -288,7 +288,7 @@ namespace SADXsndSharp
 
 		private void listView1_ItemDrag(object sender, ItemDragEventArgs e)
 		{
-			string fn = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].name);
+			string fn = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].Name);
 			File.WriteAllBytes(fn, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
 			DoDragDrop(new DataObject(DataFormats.FileDrop, new string[] { fn }), DragDropEffects.All);
 			unsaved = true;
@@ -358,10 +358,10 @@ namespace SADXsndSharp
 			for (int j = 0; j < archive.Entries.Count; j++)
 			{
 				Text = $"SADXsndSharp - Loading item " + j.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
-				if (view == View.LargeIcon || view == View.Tile) imageList1.Images.Add(GetIcon(archive.Entries[j].name, false));
-				else imageList2.Images.Add(GetIcon(archive.Entries[j].name, true));
-				ListViewItem it = listView1.Items.Add(archive.Entries[j].name, j);
-				it.SubItems.Add(archive.Entries[j].file.Length.ToString());
+				if (view == View.LargeIcon || view == View.Tile) imageList1.Images.Add(GetIcon(archive.Entries[j].Name, false));
+				else imageList2.Images.Add(GetIcon(archive.Entries[j].Name, true));
+				ListViewItem it = listView1.Items.Add(archive.Entries[j].Name, j);
+				it.SubItems.Add(archive.Entries[j].Data.Length.ToString());
 				it.SubItems.Add(j.ToString());
 				it.ForeColor = archive.IsFileCompressed(j) ? Color.Blue : Color.Black;
 			}
