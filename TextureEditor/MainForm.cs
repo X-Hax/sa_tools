@@ -122,6 +122,9 @@ namespace TextureEditor
                         checkBoxPAKUseAlpha.Show();
                         checkBoxPAKUseAlpha.Checked = pak.DataFormat == GvrDataFormat.Rgb5a3;
                         textureSizeLabel.Hide();
+                        numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+                        numericUpDownOrigSizeX.Value = pak.Image.Width;
+                        numericUpDownOrigSizeY.Value = pak.Image.Height;
                         break;
                     case PvrTextureInfo pvr:
                         switch (pvr.DataFormat)
