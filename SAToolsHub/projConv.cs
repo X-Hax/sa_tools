@@ -94,7 +94,7 @@ namespace SAToolsHub
 			{
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
-					GetSystemPath();
+					gamePath = GetSystemPath();
 
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);

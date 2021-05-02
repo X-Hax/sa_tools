@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2TT" gameSystemFolder="" dataFolder="SA2TheTrial" />
+  <GameInfo gameName="SA2TT" gameSystemFolder="" dataFolder="SA2TheTrial" checkFile="1ST_READ.BIN" />
   <SplitEntry SourceFile="1ST_READ.bin" IniFile="1ST_READ" />
   <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" />
   <SplitEntryMDL BigEndian="false" ModelFile="sonicmdl.prs">

@@ -37,6 +37,8 @@ namespace SAEditorCommon.ProjectManagement
 			public string GameSystemFolder { get; set; }
 			[XmlAttribute("dataFolder")]
 			public string DataFolder { get; set; }
+			[XmlAttribute("checkFile")]
+			public string CheckFile { get; set; }
 		}
 
 		public class ProjectInfo
@@ -70,6 +72,19 @@ namespace SAEditorCommon.ProjectManagement
 			[XmlElement("MotionFile")]
 			public List<string> MotionFiles { get; set; }
 		}
+
+		//TODO: Add hashes for checkFiles
+		public Dictionary<string, string> checkFileHashes = new Dictionary<string, string>()
+		{
+			{ "SA1", "" },
+			{ "SA1AD", "" },
+			{ "SA2", "" },
+			{ "SA2TT", "" },
+			{ "SADXGC", "" },
+			{ "SADX360", "" },
+			{ "SADXPC", "" },
+			{ "SA2PC", "" }
+		};
 	}
 
 	public class ProjectSettings
@@ -173,6 +188,7 @@ namespace SAEditorCommon.ProjectManagement
 		/// Opens a Project Template file to begin the game data split. Asks and saves game directory to template if one does not exist.
 		/// </summary>
 		/// <returns>SplitTemplate file</returns>
+		//TODO: Add hash verification to checkFile verification.
 		public static Templates.SplitTemplate openTemplateFile(string templateFilePath)
 		{
 			Templates.SplitTemplate templateFile;
@@ -184,7 +200,7 @@ namespace SAEditorCommon.ProjectManagement
 
 			if (templateFile.GameInfo.GameSystemFolder.Length <= 0)
 			{
-				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease press OK to select the game path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease select a valid game path containing this file: " + templateFile.GameInfo.CheckFile + ".\n\nPress OK to select a valid path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
 				{
 					var fsd = new FolderSelect.FolderSelectDialog();
@@ -192,15 +208,28 @@ namespace SAEditorCommon.ProjectManagement
 					fsd.ShowDialog();
 					if (Directory.Exists(fsd.FileName))
 					{
-						var templateFileStreamSave = File.OpenWrite(templateFilePath);
-						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+						if (File.Exists(Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile)))
+						{
+							var templateFileStreamSave = File.OpenWrite(templateFilePath);
+							TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
 
-						templateFile.GameInfo.GameSystemFolder = fsd.FileName;
+							templateFile.GameInfo.GameSystemFolder = fsd.FileName;
 
-						templateFileSerializer.Serialize(splitsWriter, templateFile);
-						templateFileStreamSave.Close();
+							templateFileSerializer.Serialize(splitsWriter, templateFile);
+							templateFileStreamSave.Close();
 
-						return templateFile;
+							return templateFile;
+						}
+						else
+						{
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Invalid Game Path", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.OK)
+							{
+								return null;
+							}
+							else
+								return null;
+						}
 					}
 					else
 					{
@@ -226,15 +255,28 @@ namespace SAEditorCommon.ProjectManagement
 					fsd.ShowDialog();
 					if (Directory.Exists(fsd.FileName))
 					{
-						var templateFileStreamSave = File.OpenWrite(templateFilePath);
-						TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+						if (File.Exists(Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile)))
+						{
+							var templateFileStreamSave = File.OpenWrite(templateFilePath);
+							TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
 
-						templateFile.GameInfo.GameSystemFolder = fsd.FileName;
+							templateFile.GameInfo.GameSystemFolder = fsd.FileName;
 
-						templateFileSerializer.Serialize(splitsWriter, templateFile);
-						templateFileStreamSave.Close();
+							templateFileSerializer.Serialize(splitsWriter, templateFile);
+							templateFileStreamSave.Close();
 
-						return templateFile;
+							return templateFile;
+						}
+						else
+						{
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Invalid Game Path", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.OK)
+							{
+								return null;
+							}
+							else
+								return null;
+						}
 					}
 					else
 					{
