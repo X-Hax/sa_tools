@@ -143,7 +143,7 @@ namespace SAToolsHub
 					break;
 				default:
 					gameDir = gameDirectory;
-					rootFolder = gameDirectory;
+					rootFolder = setGame + " Game Directory";
 					break;
 			}
 

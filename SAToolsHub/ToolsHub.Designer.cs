@@ -1127,8 +1127,9 @@
 			// browseCurDirectory
 			// 
 			this.browseCurDirectory.Enabled = false;
+			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.browseCurDirectory.Name = "browseCurDirectory";
-			this.browseCurDirectory.Size = new System.Drawing.Size(560, 32);
+			this.browseCurDirectory.Size = new System.Drawing.Size(665, 32);
 			// 
 			// toolStripSeparator10
 			// 
