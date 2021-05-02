@@ -412,6 +412,12 @@ namespace SAToolsHub
 						}
 					case ".pvr":
 					case ".gvr":
+						{
+							subItemType = "Sega VR Image";
+							tagType = "vr";
+							item.ImageIndex = (int)item_icons.texture;
+							break;
+						}
 					case ".dds":
 					case ".jpg":
 					case ".png":
@@ -501,10 +507,18 @@ namespace SAToolsHub
 							item.ImageIndex = (int)item_icons.json;
 							break;
 						}
+					case ".action":
+						{
+							subItemType = "Animation Linker";
+							tagType = "txt";
+							item.ImageIndex = (int)item_icons.document;
+							break;
+						}
 					default:
 						{
 							subItemType = "File";
 							tagType = "file";
+							item.ImageIndex = (int)item_icons.file;
 							break;
 						}
 				}
@@ -561,66 +575,33 @@ namespace SAToolsHub
 			string itemName = item.Text;
 			string itemPath = ((itemTags)item.Tag).Path;
 			string itemType = ((itemTags)item.Tag).Type;
-			string itemExt;
 
 			if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
 			{
 				selNode = SearchTreeView(itemName, treeView1.SelectedNode.Nodes);
-				itemExt = "dir";
-			}
-			else
-			{
-				itemExt = Path.GetExtension(itemPath);
 			}
 
 			if (listView1.SelectedItems.Count > 0)
 			{
-				switch (itemExt.ToLower())
+				switch (itemType)
 				{
 					case "dir":
 						SelectListViewNode(selNode);
 						treeView1.SelectedNode = selNode;
 						break;
-					case ".sa1mdl":
-					case ".sa2mdl":
-					case ".sa2bmdl":
+					case "mdl":
 						samdlStartInfo.Arguments = $"\"{itemPath}\"";
 						Process.Start(samdlStartInfo);
 						break;
-					case ".sa1lvl":
-					case ".sa2lvl":
-					case ".sa2blvl":
+					case "lvl":
 						salvlStartInfo.Arguments = $"\"{itemPath}\"";
 						Process.Start(salvlStartInfo);
 						break;
-					case ".pvm":
-					case ".pvmx":
-					case ".gvm":
-					case ".pak":
+					case "tex":
 						texeditStartInfo.Arguments = $"\"{itemPath}\"";
 						Process.Start(texeditStartInfo);
 						break;
-					case ".txt":
-					case ".dds":
-					case ".jpg":
-					case ".png":
-					case ".bmp":
-					case ".gif":
-						Process.Start($"\"{itemPath}\"");
-						break;
-					case ".prs":
-						if (itemName.Contains("mdl"))
-						{
-							samdlStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(samdlStartInfo);
-						}
-						else if (itemName.Contains("tex") || itemName.Contains("tx") || itemName.Contains("bg"))
-						{
-							texeditStartInfo.Arguments = $"\"{itemPath}\"";
-							Process.Start(texeditStartInfo);
-						}
-						break;
-					case ".ini":
+					case "txt":
 						switch (itemName)
 						{
 							case "sadxlvl.ini":
@@ -641,6 +622,21 @@ namespace SAToolsHub
 									Process.Start($"\"{itemPath}\"");
 								break;
 						}
+						break;
+					case "img":
+						Process.Start($"\"{itemPath}\"");
+						break;
+					case "snd":
+						if (itemName.Contains("dat"))
+						{
+							sadxsndsharpStartInfo.Arguments = $"\"{itemPath}\"";
+							Process.Start(sadxsndsharpStartInfo);
+						}
+						else
+							Process.Start($"\"{itemPath}\"");
+						break;
+					case "vid":
+						Process.Start($"\"{itemPath}\"");
 						break;
 				}
 			}
