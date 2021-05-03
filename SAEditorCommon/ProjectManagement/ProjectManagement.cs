@@ -73,14 +73,13 @@ namespace SAEditorCommon.ProjectManagement
 			public List<string> MotionFiles { get; set; }
 		}
 
-		//TODO: Add hash for SADXGC.
 		public static Dictionary<string, string> checkFileHashes = new Dictionary<string, string>()
 		{
 			{ "SA1", "060cad2ceefc07c7429085f30a356046" },
 			{ "SA1AD", "fcb1da8942278871136e41e127ce979b" },
 			{ "SA2", "1c1b63fcb551187e7c7b456b4e28a022" },
 			{ "SA2TT", "f3d6cf600af7d8daf156eee220225379" },
-			{ "SADXGC", "" },
+			{ "SADXGC", "036e39da11f19e6e3598ae6384dcae14" },
 			{ "SADX360", "e1f01f48442cf711e2206370c60b7218" },
 			{ "SADXPC", "c6d65712475602252bfce53d0d8b7d6f" },
 			{ "SA2PC", "4f03dff9b720986cd922ab461d2a6c69" }
