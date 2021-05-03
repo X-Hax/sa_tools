@@ -39,7 +39,7 @@ namespace SAToolsHub
 
 		//Variables
 		public static string newProjFile { get; set; }
-		public static string projXML { get; set; }
+		string projXML = "";
 		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameDirectory { get; set; }
@@ -123,6 +123,21 @@ namespace SAToolsHub
 
 		// TODO: ToolsHub - Migrate some Additional Functions out.
 		#region Additional Functions
+		private void initProject()
+		{
+			Templates.ProjectTemplate projectFile;
+			OpenFileDialog openFileDialog1 = new OpenFileDialog();
+			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
+			openFileDialog1.RestoreDirectory = true;
+
+			if (openFileDialog1.ShowDialog() == DialogResult.OK)
+			{
+				projXML = openFileDialog1.FileName;
+				projectFile = ProjectFunctions.openProjectFileString(projXML);
+				openProject(projectFile);
+			}
+		}
+
 		private void openProject(Templates.ProjectTemplate projFile)
 		{
 			string rootFolder;
@@ -680,13 +695,7 @@ namespace SAToolsHub
 
 		private void openProjectToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-			Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
-
-			if (projFile != null)
-			{
-				resetOpenProject();
-				openProject(projFile);
-			}
+			initProject();
 		}
 
 		private void editProjectInfoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -723,7 +732,7 @@ namespace SAToolsHub
 		{
 			if (projectDirectory != null && setGame == "SADXPC")
 			{
-				string projectArgumentsPath = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
+				string projectArgumentsPath = $"\"{projXML}\"";
 
 				salvlStartInfo.Arguments = projectArgumentsPath;
 			}

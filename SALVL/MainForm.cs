@@ -193,6 +193,13 @@ namespace SonicRetro.SAModel.SALVL
 						LoadLandtable(Program.args[0]);
 						unsaved = false;
 						break;
+					case ".sap":
+						Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFileString(Program.args[0]);
+						string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+						systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
+						LoadINI(projectPath);
+						ShowLevelSelect();
+						break;
 					case ".ini":
 					default:
 						LoadINI(Program.args[0]);
@@ -351,15 +358,10 @@ namespace SonicRetro.SAModel.SALVL
 					return false;
 			}
 
-			OpenFileDialog openFileDialog1 = new OpenFileDialog();
-			openFileDialog1.Title = "Please select an SADX Project File to load.";
-			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
-			openFileDialog1.RestoreDirectory = true;
+			Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
 
-			if (openFileDialog1.ShowDialog() == DialogResult.OK)
+			if (projFile != null)
 			{
-				Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
-
 				if (projFile.GameInfo.GameName == "SADXPC")
 				{
 					string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
@@ -371,7 +373,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 				else
 				{
-					DialogResult fileWarning = MessageBox.Show(("The selected Project XML was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					DialogResult fileWarning = MessageBox.Show(("The selected Project SAP File was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					return false;
 				}
 			}

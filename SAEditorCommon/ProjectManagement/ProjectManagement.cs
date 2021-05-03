@@ -143,29 +143,6 @@ namespace SAEditorCommon.ProjectManagement
 	public class ProjectFunctions
 	{
 		/// <summary>
-		/// Opens and Deserializes a Sonic Adventure Project file.
-		/// </summary>
-		/// <returns>ProjectTemplate File</returns>
-		public static Templates.ProjectTemplate openProjectFile()
-		{
-			Templates.ProjectTemplate projectFile;
-			OpenFileDialog openFileDialog1 = new OpenFileDialog();
-			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
-			openFileDialog1.RestoreDirectory = true;
-
-			if (openFileDialog1.ShowDialog() == DialogResult.OK)
-			{
-				string fileName = openFileDialog1.FileName;
-				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-				var projFileStream = File.OpenRead(fileName);
-				projectFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
-				return projectFile;
-			}
-			else
-				return null;
-		}
-
-		/// <summary>
 		/// Uses a path string to open and deserialize a Sonic Adventure Project file.
 		/// </summary>
 		/// <returns>ProjectTemplate File</returns>
@@ -178,6 +155,26 @@ namespace SAEditorCommon.ProjectManagement
 				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 				var projFileStream = File.OpenRead(fileName);
 				projectFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+				return projectFile;
+			}
+			else
+				return null;
+		}
+
+		/// <summary>
+		/// Opens and Deserializes a Sonic Adventure Project file.
+		/// </summary>
+		/// <returns>ProjectTemplate File</returns>
+		public static Templates.ProjectTemplate openProjectFile()
+		{
+			Templates.ProjectTemplate projectFile;
+			OpenFileDialog openFileDialog1 = new OpenFileDialog();
+			openFileDialog1.Filter = "Project File (*.sap)|*.sap";
+			openFileDialog1.RestoreDirectory = true;
+
+			if (openFileDialog1.ShowDialog() == DialogResult.OK)
+			{
+				projectFile = openProjectFileString(openFileDialog1.FileName);
 				return projectFile;
 			}
 			else
