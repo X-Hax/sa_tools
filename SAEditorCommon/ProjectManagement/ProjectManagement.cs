@@ -73,6 +73,7 @@ namespace SAEditorCommon.ProjectManagement
 			public List<string> MotionFiles { get; set; }
 		}
 
+		//TODO: Update hashes to include alternate file hashes that also work with the existing split config.
 		public static Dictionary<string, string> checkFileHashes = new Dictionary<string, string>()
 		{
 			{ "SA1", "060cad2ceefc07c7429085f30a356046" },
