@@ -358,17 +358,12 @@ namespace SonicRetro.SAModel.SALVL
 
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
-				string projectFile = openFileDialog1.FileName;
-
-				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-				var projFileStream = File.OpenRead(projectFile);
-				var projFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+				Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
 
 				if (projFile.GameInfo.GameName == "SADXPC")
 				{
 					string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
 					systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
-					projFileStream.Close();
 
 					LoadINI(projectPath);
 					ShowLevelSelect();
@@ -376,8 +371,6 @@ namespace SonicRetro.SAModel.SALVL
 				}
 				else
 				{
-					projFileStream.Close();
-
 					DialogResult fileWarning = MessageBox.Show(("The selected Project XML was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					return false;
 				}
