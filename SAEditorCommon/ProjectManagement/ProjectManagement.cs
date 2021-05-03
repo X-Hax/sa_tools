@@ -73,17 +73,17 @@ namespace SAEditorCommon.ProjectManagement
 			public List<string> MotionFiles { get; set; }
 		}
 
-		//TODO: Add hashes for checkFiles
-		public Dictionary<string, string> checkFileHashes = new Dictionary<string, string>()
+		//TODO: Add hash for SADXGC.
+		public static Dictionary<string, string> checkFileHashes = new Dictionary<string, string>()
 		{
-			{ "SA1", "" },
-			{ "SA1AD", "" },
-			{ "SA2", "" },
-			{ "SA2TT", "" },
+			{ "SA1", "060cad2ceefc07c7429085f30a356046" },
+			{ "SA1AD", "fcb1da8942278871136e41e127ce979b" },
+			{ "SA2", "1c1b63fcb551187e7c7b456b4e28a022" },
+			{ "SA2TT", "f3d6cf600af7d8daf156eee220225379" },
 			{ "SADXGC", "" },
-			{ "SADX360", "" },
-			{ "SADXPC", "" },
-			{ "SA2PC", "" }
+			{ "SADX360", "e1f01f48442cf711e2206370c60b7218" },
+			{ "SADXPC", "c6d65712475602252bfce53d0d8b7d6f" },
+			{ "SA2PC", "4f03dff9b720986cd922ab461d2a6c69" }
 		};
 	}
 
@@ -188,7 +188,6 @@ namespace SAEditorCommon.ProjectManagement
 		/// Opens a Project Template file to begin the game data split. Asks and saves game directory to template if one does not exist.
 		/// </summary>
 		/// <returns>SplitTemplate file</returns>
-		//TODO: Add hash verification to checkFile verification.
 		public static Templates.SplitTemplate openTemplateFile(string templateFilePath)
 		{
 			Templates.SplitTemplate templateFile;
@@ -203,29 +202,47 @@ namespace SAEditorCommon.ProjectManagement
 				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease select a valid game path containing this file: " + templateFile.GameInfo.CheckFile + ".\n\nPress OK to select a valid path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
 				{
+					FolderSelectionNew:
 					var fsd = new FolderSelect.FolderSelectDialog();
 					fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
 					fsd.ShowDialog();
 					if (Directory.Exists(fsd.FileName))
 					{
-						if (File.Exists(Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile)))
+						string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+						if (File.Exists(checkFile))
 						{
-							var templateFileStreamSave = File.OpenWrite(templateFilePath);
-							TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+							string fileHash = HelperFunctions.FileHash(checkFile);
+							string compareHash = Templates.checkFileHashes[templateFile.GameInfo.GameName];
+							if (fileHash == compareHash.ToLower())
+							{
+								var templateFileStreamSave = File.OpenWrite(templateFilePath);
+								TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
 
-							templateFile.GameInfo.GameSystemFolder = fsd.FileName;
+								templateFile.GameInfo.GameSystemFolder = fsd.FileName;
 
-							templateFileSerializer.Serialize(splitsWriter, templateFile);
-							templateFileStreamSave.Close();
+								templateFileSerializer.Serialize(splitsWriter, templateFile);
+								templateFileStreamSave.Close();
 
-							return templateFile;
+								return templateFile;
+							}
+							else
+							{
+								DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+								if (pathWarning == DialogResult.Retry)
+								{
+									goto FolderSelectionNew;
+								}
+								else
+									return null;
+							}
+							
 						}
 						else
 						{
-							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Invalid Game Path", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-							if (pathWarning == DialogResult.OK)
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.Retry)
 							{
-								return null;
+								goto FolderSelectionNew;
 							}
 							else
 								return null;
@@ -233,10 +250,10 @@ namespace SAEditorCommon.ProjectManagement
 					}
 					else
 					{
-						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (pathWarning == DialogResult.OK)
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						if (pathWarning == DialogResult.Retry)
 						{
-							return null;
+							goto FolderSelectionNew;
 						}
 						else
 							return null;
@@ -247,32 +264,48 @@ namespace SAEditorCommon.ProjectManagement
 			}
 			else if (!Directory.Exists(templateFile.GameInfo.GameSystemFolder))
 			{
-				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + templateFile.GameInfo.GameName + " does not exist.\n\nPlease press OK and select the correct path for " + templateFile.GameInfo.GameName + "."), "Game Path Does Not Exist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + templateFile.GameInfo.GameName + " does not exist.\n\nPlease press OK and select the correct path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
 				{
+				FolderSelectionMissing:
 					var fsd = new FolderSelect.FolderSelectDialog();
 					fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
 					fsd.ShowDialog();
 					if (Directory.Exists(fsd.FileName))
 					{
-						if (File.Exists(Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile)))
+						string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+						if (File.Exists(checkFile))
 						{
-							var templateFileStreamSave = File.OpenWrite(templateFilePath);
-							TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
+							if (HelperFunctions.FileHash(checkFile) == Templates.checkFileHashes[templateFile.GameInfo.GameName])
+							{
+								var templateFileStreamSave = File.OpenWrite(templateFilePath);
+								TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
 
-							templateFile.GameInfo.GameSystemFolder = fsd.FileName;
+								templateFile.GameInfo.GameSystemFolder = fsd.FileName;
 
-							templateFileSerializer.Serialize(splitsWriter, templateFile);
-							templateFileStreamSave.Close();
+								templateFileSerializer.Serialize(splitsWriter, templateFile);
+								templateFileStreamSave.Close();
 
-							return templateFile;
+								return templateFile;
+							}
+							else
+							{
+								DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+								if (pathWarning == DialogResult.Retry)
+								{
+									goto FolderSelectionMissing;
+								}
+								else
+									return null;
+							}
+
 						}
 						else
 						{
-							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Invalid Game Path", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-							if (pathWarning == DialogResult.OK)
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.Retry)
 							{
-								return null;
+								goto FolderSelectionMissing;
 							}
 							else
 								return null;
@@ -280,10 +313,10 @@ namespace SAEditorCommon.ProjectManagement
 					}
 					else
 					{
-						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-						if (pathWarning == DialogResult.OK)
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						if (pathWarning == DialogResult.Retry)
 						{
-							return null;
+							goto FolderSelectionMissing;
 						}
 						else
 							return null;
