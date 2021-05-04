@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.IO;
@@ -72,19 +73,6 @@ namespace SAEditorCommon.ProjectManagement
 			[XmlElement("MotionFile")]
 			public List<string> MotionFiles { get; set; }
 		}
-
-		//TODO: Update hashes to include alternate file hashes that also work with the existing split config.
-		public static Dictionary<string, string> checkFileHashes = new Dictionary<string, string>()
-		{
-			{ "SA1", "060cad2ceefc07c7429085f30a356046" },
-			{ "SA1AD", "fcb1da8942278871136e41e127ce979b" },
-			{ "SA2", "1c1b63fcb551187e7c7b456b4e28a022" },
-			{ "SA2TT", "f3d6cf600af7d8daf156eee220225379" },
-			{ "SADXGC", "036e39da11f19e6e3598ae6384dcae14" },
-			{ "SADX360", "e1f01f48442cf711e2206370c60b7218" },
-			{ "SADXPC", "c6d65712475602252bfce53d0d8b7d6f" },
-			{ "SA2PC", "4f03dff9b720986cd922ab461d2a6c69" }
-		};
 	}
 
 	public class ProjectSettings
@@ -142,6 +130,51 @@ namespace SAEditorCommon.ProjectManagement
 
 	public class ProjectFunctions
 	{
+		private static bool checkFileHashes(string game, string checkFileHash)
+		{
+			List<string> hashes = new List<string>();
+			switch (game)
+			{
+				case "SA1":
+					hashes.Add("060cad2ceefc07c7429085f30a356046");
+					break;
+				case "SA2":
+					hashes.Add("1c1b63fcb551187e7c7b456b4e28a022");
+					break;
+				case "SA2TT":
+					hashes.Add("f3d6cf600af7d8daf156eee220225379");
+					break;
+				case "SA1AD":
+					hashes.Add("fcb1da8942278871136e41e127ce979b");
+					break;
+				case "SADXGC":
+					hashes.Add("036e39da11f19e6e3598ae6384dcae14");
+					break;
+				case "SADX360":
+					hashes.Add("e1f01f48442cf711e2206370c60b7218");
+					break;
+				case "SADXPC":
+					hashes.Add("c6d65712475602252bfce53d0d8b7d6f");
+					hashes.Add("4d9b59aea4ee361e4f25475df1447bfd");
+					hashes.Add("3cd8ce57f5e1946762e7526a429e572f");
+					hashes.Add("e46580fc390285174acae895a90c5c84");
+					hashes.Add("b215d5dfc16514c0cc354449c101c7d0");
+					hashes.Add("f8c0b356519d7c459f7b726d63462791");
+					hashes.Add("a35eb183684e3eb964351de391db82e8");
+					break;
+				case "SA2PC":
+					hashes.Add("4f03dff9b720986cd922ab461d2a6c69");
+					break;
+			}
+
+			if (!hashes.Any(h => h.Equals(checkFileHash, StringComparison.OrdinalIgnoreCase)))
+			{
+				return false;
+			}
+			else
+				return true;
+		}
+		
 		/// <summary>
 		/// Uses a path string to open and deserialize a Sonic Adventure Project file.
 		/// </summary>
@@ -208,9 +241,8 @@ namespace SAEditorCommon.ProjectManagement
 						string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
 						if (File.Exists(checkFile))
 						{
-							string fileHash = HelperFunctions.FileHash(checkFile);
-							string compareHash = Templates.checkFileHashes[templateFile.GameInfo.GameName];
-							if (fileHash == compareHash.ToLower())
+							string checkFileHash = HelperFunctions.FileHash(checkFile);
+							if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
 							{
 								var templateFileStreamSave = File.OpenWrite(templateFilePath);
 								TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
@@ -273,7 +305,8 @@ namespace SAEditorCommon.ProjectManagement
 						string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
 						if (File.Exists(checkFile))
 						{
-							if (HelperFunctions.FileHash(checkFile) == Templates.checkFileHashes[templateFile.GameInfo.GameName])
+							string checkFileHash = HelperFunctions.FileHash(checkFile);
+							if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
 							{
 								var templateFileStreamSave = File.OpenWrite(templateFilePath);
 								TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
