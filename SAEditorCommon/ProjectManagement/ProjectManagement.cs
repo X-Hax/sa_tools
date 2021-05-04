@@ -140,6 +140,7 @@ namespace SAEditorCommon.ProjectManagement
 					break;
 				case "SA2":
 					hashes.Add("1c1b63fcb551187e7c7b456b4e28a022");
+					hashes.Add("ef0138133ff61fca7075fd520abb7618");
 					break;
 				case "SA2TT":
 					hashes.Add("f3d6cf600af7d8daf156eee220225379");
@@ -164,6 +165,7 @@ namespace SAEditorCommon.ProjectManagement
 					break;
 				case "SA2PC":
 					hashes.Add("4f03dff9b720986cd922ab461d2a6c69");
+					hashes.Add("1c28ae7958300273484a32923788a060");
 					break;
 			}
 
