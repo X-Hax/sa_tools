@@ -662,7 +662,20 @@ namespace SAToolsHub
 		//Settings
 		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			// TODO: Implement proper update system.
+			DialogResult diagUpdates = MessageBox.Show(("This feature has not been implemented yet.\n\nWould you like to manually download the latest build?" +
+				"\n\n(Pressing yes will open a link to the latest SA Tools.7z.)"), "SA Tools Update", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+			if (diagUpdates == DialogResult.Yes)
+			{
+				try
+				{
+					Process.Start("https://mm.reimuhakurei.net/SA%20Tools.7z");
+				}
+				catch
+				{
+					MessageBox.Show("Something went wrong, could not open link in browser.");
+				}
+			}
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
