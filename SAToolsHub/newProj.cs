@@ -34,6 +34,128 @@ namespace SAToolsHub
 			backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker1_RunWorkerCompleted);
 		}
 
+		#region Form Functions
+		private void newProj_Shown(object sender, EventArgs e)
+		{
+			comboBox1.Items.Clear();
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
+				templatesPath = Path.Combine(appPath, "Configuration/Templates/");
+			else
+				templatesPath = Path.Combine(appPath, "Templates");
+
+			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
+
+			foreach (KeyValuePair<string, string> entry in templateList)
+			{
+				comboBox1.Items.Add(entry);
+			}
+			comboBox1.DisplayMember = "Key";
+
+			btnCreate.Enabled = false;
+		}
+
+		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
+		{
+			var fsd = new FolderSelect.FolderSelectDialog();
+			fsd.Title = "Please select the path for split data to be stored at";
+			if (fsd.ShowDialog(IntPtr.Zero))
+			{
+				txtProjFolder.Text = fsd.FileName;
+			}
+		}
+
+		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			if (checkBox1.Checked)
+			{
+				txtProjFolder.Enabled = true;
+				btnBrowse.Enabled = true;
+			}
+			else
+			{
+				txtProjFolder.Enabled = false;
+				btnBrowse.Enabled = false;
+			}
+		}
+
+		private void btnCreate_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
+			saveFileDialog1.RestoreDirectory = true;
+
+			if (checkBox1.Checked && (txtProjFolder.Text != null))
+			{
+				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
+			}
+
+			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+			{
+				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
+				{
+					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
+					TextWriter writer = new StreamWriter(projFileStream);
+					if (checkBox1.Checked && (txtProjFolder.Text != null))
+					{
+						projFolder = txtProjFolder.Text;
+					}
+					else
+					{
+						projFolder = Path.Combine((Path.GetDirectoryName(saveFileDialog1.FileName)), Path.GetFileNameWithoutExtension(saveFileDialog1.FileName));
+						if (!Directory.Exists(projFolder))
+						{
+							Directory.CreateDirectory(projFolder);
+						}
+					}
+
+					projName = saveFileDialog1.FileName;
+					projectFile = new Templates.ProjectTemplate();
+					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
+
+					projInfo.GameName = gameName;
+					if (gameName == "SADXPC" || gameName == "SA2PC")
+						projInfo.CanBuild = true;
+					else
+						projInfo.CanBuild = false;
+					projInfo.GameSystemFolder = gamePath;
+					projInfo.ModSystemFolder = projFolder;
+
+					projectFile.GameInfo = projInfo;
+					projectFile.SplitEntries = splitEntries;
+					if (gameName == "SA2" || gameName == "SA2GC" || gameName == "SA2PC")
+						projectFile.SplitMDLEntries = splitMdlEntries;
+
+					serializer.Serialize(writer, projectFile);
+					projFileStream.Close();
+
+#if !DEBUG
+					backgroundWorker1.RunWorkerAsync();
+#endif
+#if DEBUG
+					backgroundWorker1_DoWork(null, null);
+					BackgroundWorker1_RunWorkerCompleted(null, null);
+#endif
+				}
+			}
+		}
+
+		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			string templateFile = "";
+			if (comboBox1.SelectedIndex > -1)
+			{
+				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value.ToString());
+			}
+
+			if (templateFile.Length > 0)
+				openTemplate(templateFile);
+
+			if (gameName != null && gamePath != null)
+				btnCreate.Enabled = true;
+		}
+		#endregion
+
 		// TODO: newProj - Migrate some Additional Functions out.
 		#region Additional Functions
 		private int setProgressMaxStep()
@@ -41,7 +163,7 @@ namespace SAToolsHub
 			switch (gameName)
 			{
 				case "SADXPC":
-					return (splitEntries.Count + 3);
+					return (splitEntries.Count + 4);
 				case "SA2PC":
 					return (splitEntries.Count + splitMdlEntries.Count + 2);
 				case "SA2":
@@ -108,25 +230,12 @@ namespace SAToolsHub
 			};
 
 			string systemPath;
-
-			//Exports Folder
-			string exportFolderPath = Path.Combine(projFolder, "Exports");
-			if (!Directory.Exists(exportFolderPath))
-				Directory.CreateDirectory(exportFolderPath);
-
-			//Imports Folder
-			string importFolderPath = Path.Combine(projFolder, "Imports");
-			if (!Directory.Exists(importFolderPath))
-				Directory.CreateDirectory(importFolderPath);
-
 			//Source Folder
 			string sourceFolderPath = Path.Combine(projFolder, "Code");
 			if (!Directory.Exists(sourceFolderPath))
 				Directory.CreateDirectory(sourceFolderPath);
 
 			//Game System Folder
-			
-
 			string projReadMePath = Path.Combine(projFolder, "ReadMe.txt");
 
 			switch (game)
@@ -163,7 +272,6 @@ namespace SAToolsHub
 					SADXModInfo modInfoSADX = new SADXModInfo
 					{
 						Name = name
-
 					};
 					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
 
@@ -329,7 +437,7 @@ namespace SAToolsHub
 			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
 				iniFolder = Path.Combine(appPath, dataFolder);
 			else
-				iniFolder = Path.Combine(appPath, "Configuration", dataFolder);
+				iniFolder = Path.Combine(appPath, "Configuration", dataFolder, "newsplit");
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
@@ -337,44 +445,47 @@ namespace SAToolsHub
 				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
 			}
 
-			if (game == "SADXPC")
+			switch (game)
 			{
-				progress.SetTask("Finalizing Moddable Project Setup");
-				makeProjectFolders(projFolder, progress, gameName);
-				progress.StepProgress();
-				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory();
-				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
-				if (Directory.Exists(objdefsPath))
-				{
-					CopyFolder(objdefsPath, outputObjdefsPath);
-					File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
-					File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"));
-				}
-				else
-				{
-					MessageBox.Show(("Path to objdefs is missing\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-					throw new Exception(SplitERRORVALUE.UnhandledException.ToString());
-				}
-				GenerateModFile(gameName, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
-			}
-				
-			if (game == "SA2PC")
-			{
-				if (splitMdlEntries.Count > 0)
-				{
-					progress.SetTask("Splitting Character Models");
-					foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
+				case "SADXPC":
+					progress.SetTask("Finalizing Moddable Project Setup");
+					makeProjectFolders(projFolder, progress, gameName);
+					progress.StepProgress();
+					progress.SetStep("Copying Object Definitions");
+					string objdefsPath = GetObjDefsDirectory();
+					string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+					if (Directory.Exists(objdefsPath))
 					{
-						splitMdlFiles(splitMDL, progress, gamePath, projFolder);
+						CopyFolder(objdefsPath, outputObjdefsPath);
+						File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
+						File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"));
 					}
-				}
-				progress.SetTask("Finalizing Moddable Project Setup");
-				makeProjectFolders(projFolder, progress, gameName);
-				GenerateModFile(gameName, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
+					else
+					{
+						MessageBox.Show(("Path to objdefs is missing\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+						throw new Exception(SplitERRORVALUE.UnhandledException.ToString());
+					}
+					break;
+				case "SA2PC":
+					if (splitMdlEntries.Count > 0)
+					{
+						progress.SetTask("Splitting Character Models");
+						foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
+						{
+							splitMdlFiles(splitMDL, progress, gamePath, projFolder);
+						}
+					}
+					
+					break;
 			}
-				
+			if (game == "SADXPC" || game == "SA2PC")
+			{
+				progress.SetTask("Finalizing Project Setup");
+				makeProjectFolders(projFolder, progress, game);
+				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
+
+			}
 		}
 		#endregion
 
@@ -407,128 +518,6 @@ namespace SAToolsHub
 					this.Close();
 				}
 			}
-		}
-		#endregion
-
-		#region Form Functions
-		private void newProj_Shown(object sender, EventArgs e)
-		{
-			comboBox1.Items.Clear();
-			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
-				templatesPath = Path.Combine(appPath, "Configuration/Templates/");
-			else
-				templatesPath = Path.Combine(appPath, "Templates");
-
-			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
-
-			foreach(KeyValuePair<string, string> entry in templateList)
-			{
-				comboBox1.Items.Add(entry);
-			}
-			comboBox1.DisplayMember = "Key";
-
-			btnCreate.Enabled = false;
-		}
-		
-		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
-		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select the path for split data to be stored at";
-			if (fsd.ShowDialog(IntPtr.Zero))
-			{
-				txtProjFolder.Text = fsd.FileName;
-			}
-		}
-
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
-		{
-			if (checkBox1.Checked)
-			{
-				txtProjFolder.Enabled = true;
-				btnBrowse.Enabled = true;
-			}
-			else
-			{
-				txtProjFolder.Enabled = false;
-				btnBrowse.Enabled = false;
-			}
-		}
-
-		private void btnCreate_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
-			saveFileDialog1.RestoreDirectory = true;
-
-			if (checkBox1.Checked && (txtProjFolder.Text != null))
-			{
-				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
-			}
-
-			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-			{
-				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
-				{
-					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
-					if (checkBox1.Checked && (txtProjFolder.Text != null))
-					{
-						projFolder = txtProjFolder.Text;
-					}
-					else
-					{
-						projFolder = Path.Combine((Path.GetDirectoryName(saveFileDialog1.FileName)), Path.GetFileNameWithoutExtension(saveFileDialog1.FileName));
-						if (!Directory.Exists(projFolder))
-						{
-							Directory.CreateDirectory(projFolder);
-						}
-					}
-
-					projName = saveFileDialog1.FileName;
-					projectFile = new Templates.ProjectTemplate();
-					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
-
-					projInfo.GameName = gameName;
-					if (gameName == "SADXPC" || gameName == "SA2PC")
-						projInfo.CanBuild = true;
-					else
-						projInfo.CanBuild = false;
-					projInfo.GameSystemFolder = gamePath;
-					projInfo.ModSystemFolder = projFolder;
-
-					projectFile.GameInfo = projInfo;
-					projectFile.SplitEntries = splitEntries;
-					if (gameName == "SA2" || gameName == "SA2GC" || gameName == "SA2PC")
-						projectFile.SplitMDLEntries = splitMdlEntries;
-
-					serializer.Serialize(writer, projectFile);
-					projFileStream.Close();
-
-#if !DEBUG
-					backgroundWorker1.RunWorkerAsync();
-#endif
-#if DEBUG
-					backgroundWorker1_DoWork(null, null);
-					BackgroundWorker1_RunWorkerCompleted(null, null);
-#endif
-				}
-			}
-		}
-
-		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			string templateFile = "";
-			if (comboBox1.SelectedIndex > -1)
-			{
-				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value.ToString());
-			}
-
-			if (templateFile.Length > 0)
-				openTemplate(templateFile);
-
-			if (gameName != null && gamePath != null)
-				btnCreate.Enabled = true;
 		}
 		#endregion
 	}
