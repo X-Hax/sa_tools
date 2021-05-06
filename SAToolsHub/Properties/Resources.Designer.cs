@@ -91,16 +91,6 @@ namespace SAToolsHub.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap saSave {
-            get {
-                object obj = ResourceManager.GetObject("saSave", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon ToolsHub_ico {
@@ -256,6 +246,16 @@ namespace SAToolsHub.Properties {
         internal static System.Drawing.Bitmap tsSAMDL {
             get {
                 object obj = ResourceManager.GetObject("tsSAMDL", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tsSaSave {
+            get {
+                object obj = ResourceManager.GetObject("tsSaSave", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

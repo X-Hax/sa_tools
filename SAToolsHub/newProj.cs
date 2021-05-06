@@ -212,8 +212,6 @@ namespace SAToolsHub
 			progress.SetStep("Making Additional Mod Folders");
 			string[] readMeSADX = {
 				"Welcome to your new SADX Mod! The info below will assist with some additional folders created for your Mod.\n\n" +
-				"Exports - You can store models for Exports here.\n" +
-				"Imports - You can store models for Imports here.\n" +
 				"Code - You can store your source Code here.\n" +
 				"system - SADX's system folder. Store your textures (PVM) here. Stage object layouts are stored here as well.\n" +
 				"textures - You can store PVMX and Texture Pack Archives here.\n\n" +
@@ -222,8 +220,6 @@ namespace SAToolsHub
 
 			string[] readMeSA2PC = {
 				"Welcome to your new SA2PC Mod! The info below will assist with some additional folders created for your Mod.\n\n" +
-				"Exports - You can store models for Exports here.\n" +
-				"Imports - You can store models for Imports here.\n" +
 				"Code - You can store your source Code here.\n" +
 				"gd_PC - SA2's system folder. Store your textures (GVM/PAK) here. Stage object layouts are stored here as well.\n\n" +
 				"Please refer to the Help drop down in the SA Tools Hub for additional resources or you can reach members for help in the X-Hax Discord."
