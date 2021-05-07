@@ -132,6 +132,7 @@ namespace SAToolsHub
 
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
+				resetOpenProject();
 				projXML = openFileDialog1.FileName;
 				projectFile = ProjectFunctions.openProjectFileString(projXML);
 				openProject(projectFile);
@@ -215,6 +216,11 @@ namespace SAToolsHub
 			tsSA2EvTxt.Visible = false;
 			tsSA2MsgEdit.Visible = false;
 			tsSA2StgSel.Visible = false;
+
+			//reset Game strings
+			setGame = "";
+			projectDirectory = "";
+			gameDirectory = "";
 		}
 
 		void SetProgramPaths()

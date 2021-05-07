@@ -331,6 +331,7 @@ namespace SAToolsHub
 		#region Form Functions
 		private void buildWindow_Shown(object sender, EventArgs e)
 		{
+			bool sa2 = true;
 			chkBoxEXE.Items.Clear();
 			chkBoxDLL.Items.Clear();
 			chkBoxMDL.Items.Clear();
@@ -351,6 +352,8 @@ namespace SAToolsHub
 					gameEXE = "sonic2app";
 					sysFolder = "gd_PC";
 
+					if (!tabControl1.Contains(tabMDL))
+						tabControl1.TabPages.Add(tabMDL);
 					DirectoryInfo charFiles = new DirectoryInfo(Path.Combine(SAToolsHub.projectDirectory, "Characters"));
 
 					foreach (DirectoryInfo dir in charFiles.GetDirectories())
