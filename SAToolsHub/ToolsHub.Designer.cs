@@ -577,7 +577,7 @@
 			// dailyToolStripMenuItem
 			// 
 			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
-			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.dailyToolStripMenuItem.Text = "Daily";
 			this.dailyToolStripMenuItem.ToolTipText = "Checks daily for updates.";
 			this.dailyToolStripMenuItem.Click += new System.EventHandler(this.dailyToolStripMenuItem_Click);
@@ -585,7 +585,7 @@
 			// weeklyToolStripMenuItem
 			// 
 			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
-			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.weeklyToolStripMenuItem.Text = "Weekly";
 			this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
 			this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);
@@ -593,7 +593,7 @@
 			// monthlyToolStripMenuItem
 			// 
 			this.monthlyToolStripMenuItem.Name = "monthlyToolStripMenuItem";
-			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
 			this.monthlyToolStripMenuItem.Text = "Monthly";
 			this.monthlyToolStripMenuItem.ToolTipText = "Checks monthly for updates.";
 			this.monthlyToolStripMenuItem.Click += new System.EventHandler(this.monthlyToolStripMenuItem_Click);
@@ -983,8 +983,6 @@
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
 			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
 			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
-			lvwColumnSorter = new ListViewColumnSorter();
-			this.listView1.ListViewItemSorter = lvwColumnSorter;
 			// 
 			// columnHeader1
 			// 
@@ -1147,7 +1145,6 @@
 			// browseCurDirectory
 			// 
 			this.browseCurDirectory.Enabled = false;
-			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.browseCurDirectory.Name = "browseCurDirectory";
 			this.browseCurDirectory.Size = new System.Drawing.Size(665, 32);
 			// 
