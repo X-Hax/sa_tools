@@ -1025,7 +1025,7 @@ namespace SAToolsHub
 						editCopy.Enabled = true;
 						editDel.Enabled = true;
 						editConvert.Enabled = true;
-						editToData.Enabled = false;
+						editToData.Enabled = true;
 						cmsOpen.Enabled = true;
 						cmsCopy.Enabled = true;
 						cmsDelete.Enabled = true;
