@@ -983,6 +983,8 @@
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
 			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
 			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+			lvwColumnSorter = new ListViewColumnSorter();
+			this.listView1.ListViewItemSorter = lvwColumnSorter;
 			// 
 			// columnHeader1
 			// 
@@ -1145,6 +1147,7 @@
 			// browseCurDirectory
 			// 
 			this.browseCurDirectory.Enabled = false;
+			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.browseCurDirectory.Name = "browseCurDirectory";
 			this.browseCurDirectory.Size = new System.Drawing.Size(665, 32);
 			// 
