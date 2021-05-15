@@ -55,6 +55,7 @@ call splitmdl.bat
 ..\bin\split binary data/SONIC2/BOSS_LAST1.prs BOSS_LAST1.ini output/
 ..\bin\split binary data/SONIC2/BOSS_LAST2.prs BOSS_LAST2.ini output/
 ..\bin\split binary data/SONIC2/CART.prs CART.ini output/
+..\bin\split binary data/SONIC2/CHAO_MODEL.prs CHAO_MODEL.ini output/
 ..\bin\split binary data/SONIC2/CHAOSTGDARK.prs CHAOSTGDARK.ini output/
 ..\bin\split binary data/SONIC2/CHAOSTGENTRANCE.prs CHAOSTGENTRANCE.ini output/
 ..\bin\split binary data/SONIC2/CHAOSTGHERO.prs CHAOSTGHERO.ini output/
