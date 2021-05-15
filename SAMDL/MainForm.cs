@@ -3253,6 +3253,7 @@ namespace SonicRetro.SAModel.SAMDL
 				opaqueatt.VertexName = basicatt.VertexName + "_" + id.ToString();
 				opaqueatt.NormalName = basicatt.NormalName + "_" + id.ToString();
 				opaqueatt.MeshName = basicatt.MeshName + "_" + id.ToString();
+                id++;
 			}
 			// Add meshes to a child model (or both opaque and transparent if the option is off)
 			foreach (NJS_MESHSET m in basicatt.Mesh)
