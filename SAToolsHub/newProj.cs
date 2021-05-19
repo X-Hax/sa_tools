@@ -334,19 +334,19 @@ namespace SAToolsHub
 		private void splitFiles(Templates.SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
 			string datafilename; 
-			switch (splitData.IniFile)
+			switch (splitData.SourceFile)
 			{
-				case ("chrmodels"):
+				case ("system/chrmodels.dll"):
 					if (File.Exists(Path.Combine(gameFolder, "system/chrmodels_orig.dll")))
 						datafilename = Path.Combine(gameFolder, "system/chrmodels_orig.dll");
 					else
 						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
 					break;
-				case ("DLL_Data"):
-					if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/DLL_Data_orig.dll")))
-						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/DLL_Data_orig.dll");
+				case ("DLL"):
+					if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
+						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll");
 					else
-						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL.dll");
 					break;
 				default:
 					datafilename = Path.Combine(gameFolder, splitData.SourceFile);

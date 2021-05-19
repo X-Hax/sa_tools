@@ -246,14 +246,10 @@ namespace SAEditorCommon.ProjectManagement
 							string checkFileHash = HelperFunctions.FileHash(checkFile);
 							if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
 							{
-								var templateFileStreamSave = File.OpenWrite(templateFilePath);
-								TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
-
+								TextWriter splitsWriter = File.CreateText(templateFilePath);
 								templateFile.GameInfo.GameSystemFolder = fsd.FileName;
-
 								templateFileSerializer.Serialize(splitsWriter, templateFile);
-								templateFileStreamSave.Close();
-
+								
 								return templateFile;
 							}
 							else
@@ -310,13 +306,9 @@ namespace SAEditorCommon.ProjectManagement
 							string checkFileHash = HelperFunctions.FileHash(checkFile);
 							if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
 							{
-								var templateFileStreamSave = File.OpenWrite(templateFilePath);
-								TextWriter splitsWriter = new StreamWriter(templateFileStreamSave);
-
+								TextWriter splitsWriter = File.CreateText(templateFilePath);
 								templateFile.GameInfo.GameSystemFolder = fsd.FileName;
-
 								templateFileSerializer.Serialize(splitsWriter, templateFile);
-								templateFileStreamSave.Close();
 
 								return templateFile;
 							}

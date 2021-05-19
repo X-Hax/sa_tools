@@ -92,12 +92,12 @@ namespace SAToolsHub
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
-					SADXModInfo modInfoDX = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(SAToolsHub.projectDirectory + "mod.ini");
+					SADXModInfo modInfoDX = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory,"mod.ini"));
 					modName = modInfoDX.Name;
 					break;
 
 				case ("SA2PC"):
-					SA2ModInfo modInfoSA2 = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(SAToolsHub.projectDirectory + "mod.ini");
+					SA2ModInfo modInfoSA2 = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = modInfoSA2.Name;
 					break;
 
@@ -106,7 +106,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			if (!Directory.Exists(SAToolsHub.gameDirectory + "\\mods\\" + modName))
+			if (!Directory.Exists(Path.Combine(SAToolsHub.gameDirectory, "\\mods\\", modName)))
 			{
 				DialogResult buildCheckWindow = MessageBox.Show("No folder for this mod exists in " + SAToolsHub.setGame + "'s mod directory.\n\nWould you like to build a mod?", "Build Mod", MessageBoxButtons.YesNo);
 				if (buildCheckWindow == DialogResult.Yes)
