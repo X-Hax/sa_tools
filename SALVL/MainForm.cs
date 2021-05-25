@@ -4250,15 +4250,36 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void advancedSavelevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+            string filter;
+            string defext;
+            switch (LevelData.geo.Format)
+            {
+                case LandTableFormat.SA2:
+                    defext = "sa2lvl";
+                    filter = "SA2 Level Files|*.sa2lvl";
+                    break;
+                case LandTableFormat.SA2B:
+                    defext = "sa2blvl";
+                    filter = "SA2B Level Files|*.sa2blvl";
+                    break;
+                case LandTableFormat.SA1:
+                case LandTableFormat.SADX:
+                default:
+                    defext = "sa1lvl";
+                    filter = "SA1/SADX Level Files| *.sa1lvl";
+                    break;
+                    
+                    
+            }
 			using (SaveFileDialog a = new SaveFileDialog
 			{
-				DefaultExt = "sa1lvl",
-				Filter = "SA1/SADX Level Files|*.sa1lvl",
+				DefaultExt = defext,
+				Filter = filter,
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					LevelData.geo.SaveToFile(a.FileName, LandTableFormat.SADX);
+					LevelData.geo.SaveToFile(a.FileName, LevelData.geo.Format);
 				}
 			}
 		}
