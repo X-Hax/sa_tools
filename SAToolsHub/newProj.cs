@@ -433,7 +433,7 @@ namespace SAToolsHub
 			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
 				iniFolder = Path.Combine(appPath, dataFolder);
 			else
-				iniFolder = Path.Combine(appPath, "Configuration", dataFolder, "newsplit");
+				iniFolder = Path.Combine(appPath, "Configuration", dataFolder);
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
