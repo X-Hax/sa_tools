@@ -5,10 +5,10 @@ using SonicRetro.SAModel;
 
 namespace CompareTool
 {
-	class Program
-	{
+    class Program
+    {
 
-		/*
+        /*
 		public struct DiffData
 		{
 			public string type;
@@ -34,9 +34,9 @@ namespace CompareTool
 
 		static Dictionary<int, List<DiffData>> biglist;
 		*/
-		static bool overwrite = true;
-		static bool savediff = false;
-		static int uvcount = 0;
+        static bool overwrite = true;
+        static bool savediff = false;
+        static int uvcount = 0;
 
         static void SortModel(NJS_OBJECT mdl, bool withchildren)
         {
@@ -113,10 +113,74 @@ namespace CompareTool
                 foreach (NJS_OBJECT child in mdl.Children)
                     SortModel(child, true);
             }
-           // RebuildModelCache();
+            // RebuildModelCache();
             //DrawEntireModel();
             //SelectedItemChanged();
             //unsaved = true;
+        }
+
+        static bool CompareModel(NJS_OBJECT mdl_src, NJS_OBJECT mdl_dst)
+        {
+            bool result = false;
+            try
+            {
+                if (mdl_src.Attach != null)
+                    if (CompareAttach((BasicAttach)mdl_src.Attach, (BasicAttach)mdl_dst.Attach)) 
+                        result = true;
+                if (mdl_src.Children.Count > 0)
+                {
+                    for (int id = 0; id < mdl_src.Children.Count; id++)
+                    {
+                        if (mdl_src.Children[id].Attach != null) 
+                            if (CompareAttach((BasicAttach)mdl_src.Children[id].Attach, (BasicAttach)mdl_dst.Children[id].Attach))
+                                result = true;
+                    }
+                }
+                if (mdl_src.Sibling != null && mdl_src.Sibling.Attach != null)
+                    if (CompareAttach((BasicAttach)mdl_src.Sibling.Attach, (BasicAttach)mdl_dst.Sibling.Attach))
+                        result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                result = true;
+            }
+            return result;
+        }
+
+        static void DoFolderStuff(string[] args)
+        {
+            List<string> results = new List<string>();
+            string folder1 = args[0];
+            string folder2 = args[1];
+            string[] files1 = System.IO.Directory.GetFiles(folder1, "*.sa1mdl", SearchOption.AllDirectories);
+            string[] files2 = System.IO.Directory.GetFiles(folder2, "*.sa1mdl", SearchOption.AllDirectories);
+            for (int u = 0; u < files1.Length; u++)
+            {
+                bool found = false;
+                for (int i = 0; i < files2.Length; i++)
+                {
+                    if (Path.GetFileNameWithoutExtension(files1[u]) == Path.GetFileNameWithoutExtension(files2[i]))
+                    {
+                        found = true;
+                        if (CompareModel(new ModelFile(files1[u]).Model, new ModelFile(files2[i]).Model))
+                        {
+                            Console.WriteLine("Model is different: {0}", files1[u]);
+                            results.Add(files1[u]);
+                        }
+                        break;
+                    }
+                }
+                if (!found)
+                    Console.WriteLine("Model not found: {0}", files1[u]);
+            }
+            TextWriter tw = File.CreateText("result.txt");
+            foreach (var item in results)
+            {
+                tw.WriteLine(item);
+            }
+            tw.Flush();
+            tw.Close();
         }
 
         static void Main(string[] args)
@@ -135,19 +199,25 @@ namespace CompareTool
                 }
                 return;
             }
-			string filename_out = "Result.ini";
 			if (args.Length > 1)
 			{
-				filename_src = Path.GetFullPath(args[0]);
+                string filename_out = "Result.ini";
+                for (int a = 0; a < args.Length; a++)
+                {
+                    if (args[a] == "-f")
+                    {
+                        Console.WriteLine("Folder mode");
+                        DoFolderStuff(args);
+                        return;
+                    }
+                    if (args[a] == "-s") savediff = true;
+                    if (args[a] == "-a") overwrite = false;
+                    if (args[a] == "-o") filename_out = Path.GetFullPath(args[a + 1]);
+                }
+                filename_src = Path.GetFullPath(args[0]);
 				filename_dst = Path.GetFullPath(args[1]);
 				Console.WriteLine("Source file: {0}", filename_src);
 				Console.WriteLine("Destination file: {0}", filename_dst);
-				for (int a = 0; a < args.Length; a++)
-				{
-					if (args[a] == "-s") savediff = true;
-					if (args[a] == "-a") overwrite = false;
-					if (args[a] == "-o") filename_out = Path.GetFullPath(args[a + 1]);
-				}
 				if (savediff)
 				{
 					Console.Write("Output file: {0}, ", filename_out);
@@ -252,16 +322,7 @@ namespace CompareTool
 				case ".sa1mdl":
 					NJS_OBJECT mdl_src = new ModelFile(filename_src).Model;
 					NJS_OBJECT mdl_dst = new ModelFile(filename_dst).Model;
-					if (mdl_src.Attach != null) CompareAttach((BasicAttach)mdl_src.Attach, (BasicAttach)mdl_dst.Attach);
-					if (mdl_src.Children.Count > 0)
-					{
-						for (int id = 0; id < mdl_src.Children.Count; id++)
-						{
-							if (mdl_src.Children[id].Attach != null) CompareAttach((BasicAttach)mdl_src.Children[id].Attach, (BasicAttach)mdl_dst.Children[id].Attach);
-						}
-					}
-					if (mdl_src.Sibling != null && mdl_src.Sibling.Attach != null)
-						CompareAttach((BasicAttach)mdl_src.Sibling.Attach, (BasicAttach)mdl_dst.Sibling.Attach);
+                    CompareModel(mdl_src, mdl_dst);
 					//if (savediff) SerializeDiffList(filename_out);
 					break;
 				default:
@@ -270,79 +331,149 @@ namespace CompareTool
 			if (savediff) Console.WriteLine("Total UV array differences: {0}", uvcount);
 		}
 
-		static void CompareAttach(BasicAttach att_src, BasicAttach att_dst)
+		static bool CompareAttach(BasicAttach att_src, BasicAttach att_dst)
 		{
-			//Compare materials
-			if (att_src.Material.Count != att_dst.Material.Count)
-				Console.WriteLine("Material count different! {0} vs {1}", att_src.Material.Count, att_dst.Material.Count);
-			for (int m = 0; m < att_src.Material.Count; m++)
-			{
-				NJS_MATERIAL[] mat_src = att_src.Material.ToArray();
-				NJS_MATERIAL[] mat_dst = att_dst.Material.ToArray();
-				if (m >= mat_dst.Length) break;
-				if (mat_src[m].TextureID != mat_dst[m].TextureID)
-					Console.WriteLine("Different texture ID for material {0}: {1} vs {2}", m, mat_src[m].TextureID, mat_dst[m].TextureID);
-				if (mat_src[m].DiffuseColor != mat_dst[m].DiffuseColor)
-					Console.WriteLine("Different diffuse color for material {0}: {1} vs {2}", m, mat_src[m].DiffuseColor.ToArgb(), mat_dst[m].DiffuseColor.ToArgb());
-				if (mat_src[m].Flags != mat_dst[m].Flags)
-					Console.WriteLine("Different flags for material {0}: {1} vs {2}", m, mat_src[m].Flags.ToString("X8"), mat_dst[m].Flags.ToString("X8"));
-			}
+            //Compare materials
+            if (att_src.Material != null && att_src.Material.Count != att_dst.Material.Count)
+            {
+                Console.WriteLine("Material count different! {0} vs {1}", att_src.Material.Count, att_dst.Material.Count);
+                return true;
+            }
+            for (int m = 0; m < att_src.Material.Count; m++)
+            {
+                NJS_MATERIAL[] mat_src = att_src.Material.ToArray();
+                NJS_MATERIAL[] mat_dst = att_dst.Material.ToArray();
+                if (m >= mat_dst.Length) break;
+                if (mat_src[m].TextureID != mat_dst[m].TextureID)
+                {
+                    Console.WriteLine("Different texture ID for material {0}: {1} vs {2}", m, mat_src[m].TextureID, mat_dst[m].TextureID);
+                    return true;
+                }
+                if (mat_src[m].DiffuseColor != mat_dst[m].DiffuseColor)
+                {
+                    Console.WriteLine("Different diffuse color for material {0}: {1} vs {2}", m, mat_src[m].DiffuseColor.ToArgb().ToString("X"), mat_dst[m].DiffuseColor.ToArgb().ToString("X"));
+                    return true;
+                }
+                if (mat_src[m].Flags != mat_dst[m].Flags)
+                {
+                    Console.WriteLine("Different flags for material {0}: {1} vs {2}", m, mat_src[m].Flags.ToString("X8"), mat_dst[m].Flags.ToString("X8"));
+                    return true;
+                }
+            }
 
-			//Compare vertices
-			if (att_src.Vertex.Length != att_dst.Vertex.Length)
-				Console.WriteLine("Vertex count different! {0} vs {1}", att_src.Vertex.Length, att_dst.Vertex.Length);
+            //Compare vertices
+            if (att_src.Vertex.Length != att_dst.Vertex.Length)
+            {
+                Console.WriteLine("Vertex count different! {0} vs {1}", att_src.Vertex.Length, att_dst.Vertex.Length);
+                return true;
+            }
 			for (int m = 0; m < att_src.Vertex.Length; m++)
 			{
 				if (m >= att_dst.Vertex.Length) break;
-				if (att_src.Vertex[m].X != att_dst.Vertex[m].X || att_src.Vertex[m].Y != att_dst.Vertex[m].Y || att_src.Vertex[m].Z != att_dst.Vertex[m].Z)
-					Console.WriteLine("Different vertex {0}: {1} vs {2}", m, att_src.Vertex[m], att_dst.Vertex[m]);
+                bool x = false;
+                bool y = false;
+                bool z = false;
+                if (Math.Abs(att_src.Vertex[m].X - att_dst.Vertex[m].X) > 0.01f)
+                    x = true;
+                if (Math.Abs(att_src.Vertex[m].Y - att_dst.Vertex[m].Y) > 0.01f)
+                    y = true;
+                if (Math.Abs(att_src.Vertex[m].Z - att_dst.Vertex[m].Z) > 0.01f)
+                    z = true;
+                if (x || y || z)
+                {
+                    Console.WriteLine("Different vertex {0}: {1} vs {2}", m, att_src.Vertex[m], att_dst.Vertex[m]);
+                    return true;
+                }
 			}
 
-			//Compare normals
-			if (att_src.Normal.Length != att_dst.Normal.Length)
-				Console.WriteLine("Normal count different! {0} vs {1}", att_src.Normal.Length, att_dst.Normal.Length);
+            //Compare normals
+            if (att_src.Normal.Length != att_dst.Normal.Length)
+            {
+                Console.WriteLine("Normal count different! {0} vs {1}", att_src.Normal.Length, att_dst.Normal.Length);
+                return true;
+            }
 			for (int m = 0; m < att_src.Normal.Length; m++)
 			{
 				if (m >= att_dst.Normal.Length) break;
-				if (att_src.Normal[m].X != att_dst.Normal[m].X || att_src.Normal[m].Y != att_dst.Normal[m].Y || att_src.Normal[m].Z != att_dst.Normal[m].Z)
-					Console.WriteLine("Different normal {0}: {1} vs {2}", m, att_src.Normal[m], att_dst.Normal[m]);
+                bool x = false;
+                bool y = false;
+                bool z = false;
+                if (Math.Abs(att_src.Normal[m].X - att_dst.Normal[m].X) > 0.01f)
+                    x = true;
+                if (Math.Abs(att_src.Normal[m].Y - att_dst.Normal[m].Y) > 0.01f)
+                    y = true;
+                if (Math.Abs(att_src.Normal[m].Z - att_dst.Normal[m].Z) > 0.01f)
+                    z = true;
+                if (x || y || z)
+                {
+                    Console.WriteLine("Different normal {0}: {1} vs {2}", m, att_src.Normal[m], att_dst.Normal[m]);
+                    return true;
+                }
 			}
 
-			//Compare meshsets
-			if (att_src.Mesh.Count != att_dst.Mesh.Count)
-				Console.WriteLine("Mesh count different! {0} vs {1}", att_src.Mesh.Count, att_dst.Mesh.Count);
+            //Compare meshsets
+            if (att_src.Mesh.Count != att_dst.Mesh.Count)
+            {
+                Console.WriteLine("Mesh count different! {0} vs {1}", att_src.Mesh.Count, att_dst.Mesh.Count);
+                return true;
+            }
 			for (int u = 0; u < att_src.Mesh.Count; u++)
 			{
-				//Compare attributes
-				if (att_src.Mesh[u].PAttr != att_dst.Mesh[u].PAttr)
-					Console.WriteLine("Attributes different for mesh {0}: {1} vs {2}", att_src.Mesh[u].PAttr.ToString("X"), att_dst.Mesh[u].PAttr.ToString("X"));
+                //Compare attributes
+                if (att_src.Mesh[u].PAttr != att_dst.Mesh[u].PAttr)
+                {
+                    Console.WriteLine("Attributes different for mesh {0}: {1} vs {2}", att_src.Mesh[u].PAttr.ToString("X"), att_dst.Mesh[u].PAttr.ToString("X"));
+                    return true;
+                }
 
-				//Compare polys
-				if (att_src.Mesh[u].Poly == null) continue;
-				if (att_src.Mesh[u].Poly.Count != att_dst.Mesh[u].Poly.Count)
-					Console.WriteLine("Poly count different for mesh {0}: {1} vs {2}", u, att_src.Mesh[u].Poly.Count, att_dst.Mesh[u].Poly.Count);
+                //Compare vertex colors
+                if (att_dst.Mesh[u].VColor != null)
+                {
+                    Console.WriteLine("Mesh has vertex colors");
+                    return true;
+                }
+
+                //Compare polys
+                if (att_src.Mesh[u].Poly == null) continue;
+                if (att_src.Mesh[u].Poly.Count != att_dst.Mesh[u].Poly.Count)
+                {
+                    Console.WriteLine("Poly count different for mesh {0}: {1} vs {2}", u, att_src.Mesh[u].Poly.Count, att_dst.Mesh[u].Poly.Count);
+                    return true;
+                }
 				for (int v = 0; v < att_src.Mesh[u].Poly.Count; v++)
 				{
 					if (v >= att_dst.Mesh[u].Poly.Count) break;
-					if (att_src.Mesh[u].Poly[v].Indexes.Length != att_dst.Mesh[u].Poly[v].Indexes.Length)
-						Console.WriteLine("Poly index count different for mesh {0}: {1} vs {2}", u, att_src.Mesh[u].Poly[v].Indexes.Length, att_dst.Mesh[u].Poly[v].Indexes.Length);
+                    if (att_src.Mesh[u].Poly[v].Indexes.Length != att_dst.Mesh[u].Poly[v].Indexes.Length)
+                    {
+                        Console.WriteLine("Poly index count different for mesh {0}: {1} vs {2}", u, att_src.Mesh[u].Poly[v].Indexes.Length, att_dst.Mesh[u].Poly[v].Indexes.Length);
+                        return true;
+                    }
 					for (int i = 0; i < att_src.Mesh[u].Poly[v].Indexes.Length; i++)
 					{
 						if (i >= att_dst.Mesh[u].Poly[v].Indexes.Length) break;
-						if (att_src.Mesh[u].Poly[v].Indexes[i] != att_dst.Mesh[u].Poly[v].Indexes[i])
-							Console.WriteLine("Mesh {0} poly {1} index {2} different: {3} vs {4}", u, v, i, att_src.Mesh[u].Poly[v].Indexes[i], att_dst.Mesh[u].Poly[v].Indexes[i]);
+                        if (att_src.Mesh[u].Poly[v].Indexes[i] != att_dst.Mesh[u].Poly[v].Indexes[i])
+                        {
+                            Console.WriteLine("Mesh {0} poly {1} index {2} different: {3} vs {4}", u, v, i, att_src.Mesh[u].Poly[v].Indexes[i], att_dst.Mesh[u].Poly[v].Indexes[i]);
+                            return true;
+                        }
 					}
 				}
 
 				//Compare vcolors
 				if (att_src.Mesh[u].VColor == null) continue;
-				if (att_src.Mesh[u].VColor.Length != att_dst.Mesh[u].VColor.Length)				
-					Console.WriteLine("VColor count different for mesh {0}: {1} vs {2}", u, att_src.Mesh[u].VColor.Length, att_dst.Mesh[u].VColor.Length);
+                if (att_src.Mesh[u].VColor.Length != att_dst.Mesh[u].VColor.Length)
+                {
+                    Console.WriteLine("VColor count different for mesh {0}: {1} vs {2}", u, att_src.Mesh[u].VColor.Length, att_dst.Mesh[u].VColor.Length);
+                    return true;
+                }
 				for (int v = 0; v < att_src.Mesh[u].VColor.Length; v++)
 				{
 					if (v >= att_dst.Mesh[u].VColor.Length) break;
-					if (att_src.Mesh[u].VColor[v].A != att_dst.Mesh[u].VColor[v].A || att_src.Mesh[u].VColor[v].R != att_dst.Mesh[u].VColor[v].R || att_src.Mesh[u].VColor[v].G != att_dst.Mesh[u].VColor[v].G || att_src.Mesh[u].VColor[v].B != att_dst.Mesh[u].VColor[v].B)
-						Console.WriteLine("VColor {0} different for mesh {1}: {2} vs {3}", v, u, att_src.Mesh[u].VColor[v], att_dst.Mesh[u].VColor[v]);
+                    if (att_src.Mesh[u].VColor[v].A != att_dst.Mesh[u].VColor[v].A || att_src.Mesh[u].VColor[v].R != att_dst.Mesh[u].VColor[v].R || att_src.Mesh[u].VColor[v].G != att_dst.Mesh[u].VColor[v].G || att_src.Mesh[u].VColor[v].B != att_dst.Mesh[u].VColor[v].B)
+                    {
+                        Console.WriteLine("VColor {0} different for mesh {1}: {2} vs {3}", v, u, att_src.Mesh[u].VColor[v], att_dst.Mesh[u].VColor[v]);
+                        return true;
+                    }
 				}
 
 				//Compare UVs
@@ -362,7 +493,8 @@ namespace CompareTool
 						{
 							name = true;
 							Console.WriteLine("UV array {0} is different", att_src.Mesh[u].UVName);
-						}
+                            return true;
+                        }
 						//items.Add(new DiffData { id = v, u = dst_U, v = dst_V });
 						//Console.WriteLine("{0} : {1}, {2} is {3}, {4}", v, src_U, src_V, dst_U, dst_V);
 					}
@@ -381,6 +513,7 @@ namespace CompareTool
 					}
 				}*/
 			}
+            return false;
 		}
 
 		static bool CompareCOL(COL item1, COL item2, int tryhard = 0)
