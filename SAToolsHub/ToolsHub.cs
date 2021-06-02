@@ -626,7 +626,7 @@ namespace SAToolsHub
 						switch (itemName)
 						{
 							case "sadxlvl.ini":
-								salvlStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, "sadxlvl.ini")}\" \"{gameDirectory}\"";
+								salvlStartInfo.Arguments = $"\"{projXML}\"";
 
 								Process.Start(salvlStartInfo);
 								break;
@@ -709,6 +709,7 @@ namespace SAToolsHub
 			if (newProjFile != null)
 			{
 				openProject(ProjectFunctions.openProjectFileString(newProjFile));
+				projXML = newProjFile;
 			}
 		}
 
@@ -725,6 +726,7 @@ namespace SAToolsHub
 		private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			projectDirectory = null;
+			projXML = null;
 			resetOpenProject();
 		}
 

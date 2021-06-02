@@ -327,6 +327,8 @@ namespace SAToolsHub
 
 			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
 				return Path.Combine(appPath, "SADXObjectDefinitions");
+			else if (dataFolder.Contains("newsplit"))
+				return Path.Combine(appPath, dataFolder, "..\\objdefs\\");
 			else
 				return Path.Combine(appPath, dataFolder, "objdefs");
 		}
