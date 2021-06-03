@@ -133,6 +133,9 @@
   <data name="browseBack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\browseBack.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="tsSaSave" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tsSaSave.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tsSa2StgEdit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsSa2StgEdit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -151,8 +154,8 @@
   <data name="tsDxTweaker" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsDxTweaker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="browseFoward" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\browseFoward.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="newProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\newProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tsEditProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsEditProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -178,13 +181,13 @@
   <data name="tsNewProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsNewProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="newProj" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\newProj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="browseFoward" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\browseFoward.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tsUpdate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tsUpdate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tsSaSave" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tsSaSave.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="tsDLCtool" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tsDLCtool.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -287,6 +287,9 @@
   <ItemGroup>
     <None Include="Resources\tsSaSave.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tsDLCtool.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -123,6 +123,16 @@ namespace SAToolsHub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap tsDLCtool {
+            get {
+                object obj = ResourceManager.GetObject("tsDLCtool", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tsDxFontEdit {
             get {
                 object obj = ResourceManager.GetObject("tsDxFontEdit", resourceCulture);

@@ -70,6 +70,7 @@ namespace SAToolsHub
 		ProcessStartInfo sa2streditStartInfo;
 		ProcessStartInfo sa2stgselStartInfo;
 		ProcessStartInfo datatoolboxStartInfo;
+		ProcessStartInfo sadlctoolStartInfo;
 
 		public SAToolsHub()
 		{
@@ -247,6 +248,7 @@ namespace SAToolsHub
 			sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
 			sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
 			datatoolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
+			sadlctoolStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DLCTool.exe")));
 		}
 
 		private void PopulateTreeView(string directory)
@@ -785,6 +787,11 @@ namespace SAToolsHub
 		private void sASaveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Process saSaveProcess = Process.Start(sasaveStartInfo);
+		}
+
+		private void sADLCToolToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Process saDLCToolProcess = Process.Start(sadlctoolStartInfo);
 		}
 
 		//SA2 Tools Initializers
