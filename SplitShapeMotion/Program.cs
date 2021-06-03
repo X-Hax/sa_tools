@@ -37,7 +37,7 @@ namespace SplitShapeMotion
 			else
 				outdir = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(mtnname)), Path.GetFileNameWithoutExtension(mtnname));
 			Directory.CreateDirectory(outdir);
-			MTNInfo inf = new MTNInfo() { Name = mtn.Name, Frames = mtn.Frames, InterpolationMode = mtn.InterpolationMode };
+			MTNInfo inf = new MTNInfo() { ModelFormat = fmt, Name = mtn.Name, Frames = mtn.Frames, InterpolationMode = mtn.InterpolationMode };
 			IniSerializer.Serialize(inf, Path.Combine(outdir, Path.ChangeExtension(Path.GetFileName(mtnname), ".ini")));
 			NJS_OBJECT[] objs = basemdl.GetObjects().Where(a => a.Morph).ToArray();
 			for (int frame = 0; frame < mtn.Frames; frame++)
@@ -84,6 +84,7 @@ namespace SplitShapeMotion
 
 	class MTNInfo
 	{
+		public ModelFormat ModelFormat { get; set; }
 		public string Name { get; set; }
 		public int Frames { get; set; }
 		public InterpolationMode InterpolationMode { get; set; }
