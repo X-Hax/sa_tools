@@ -19,12 +19,10 @@ namespace ArchiveTool
             Console.WriteLine("Extracting {0} file: {1}", arcname.Substring(1, arcname.Length - 1), filePath);
             byte[] arcdata = File.ReadAllBytes(filePath);
             outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
-            Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
-            Directory.CreateDirectory(outputPath);
             switch (extension.ToLowerInvariant())
             {
                 case (".rel"):
-                    string outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_dec.rel");
+                    outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_dec.rel");
                     Console.WriteLine("Output file: {0}", outputPath);
                     byte[] inputData = File.ReadAllBytes(args[0]);
                     byte[] outputData = SA_Tools.HelperFunctions.DecompressREL(inputData);
@@ -36,6 +34,14 @@ namespace ArchiveTool
                     break;
                 case (".prs"):
                     arcdata = FraGag.Compression.Prs.Decompress(arcdata);
+                    if (PuyoFile.Identify(arcdata) == PuyoArchiveType.Unknown)
+                    {
+                        outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".bin");
+                        Console.WriteLine("Output file: {0}", Path.GetFullPath(outputPath));
+                        File.WriteAllBytes(outputPath, arcdata);
+                        Console.WriteLine("Archive extracted!");
+                        return;
+                    }
                     arc = new PuyoFile(arcdata);
                     break;
                 case (".pvm"):
@@ -60,10 +66,15 @@ namespace ArchiveTool
                 case (".mld"):
                     arc = new MLDArchive(arcdata);
                     break;
+                case (".mlt"):
+                    arc = new MLTArchive(arcdata);
+                    break;
                 default:
                     Console.WriteLine("Unknown archive type");
                     return;
             }
+            Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
+            Directory.CreateDirectory(outputPath);
             foreach (GenericArchiveEntry entry in arc.Entries)
             {
                 Console.WriteLine("Extracting file: {0}", entry.Name);
