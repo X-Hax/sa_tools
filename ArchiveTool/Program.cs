@@ -91,6 +91,7 @@ namespace ArchiveTool
                         case ".mdl":
                         case ".mdt":
                         case ".mld":
+                        case ".mlt":
                             ExtractArchive(args);
                             return;
                         case ".bin":
