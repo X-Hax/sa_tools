@@ -680,8 +680,8 @@ namespace DLCTool
 		{
             public enum VMIFlags
             {
-                Game = 0x1,
-                Protected = 0x10
+                Protected = 0x1,
+                Game = 0x2
             }
             public string Description; // 32 bytes
             public string Copyright; // 32 bytes

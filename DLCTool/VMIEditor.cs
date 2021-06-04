@@ -35,6 +35,7 @@ namespace DLCTool
             numericUpDownHour.Value = vmi.Hour;
             numericUpDownMinute.Value = vmi.Minute;
             numericUpDownSecond.Value = vmi.Second;
+            numericUpDownVMSFileSize.Value = vmi.Size;
         }
 
         private void buttonGenerateVMI_Click(object sender, EventArgs e)
@@ -46,6 +47,7 @@ namespace DLCTool
             vmi.ResourceName = "SA1_" + vms.Identifier.ToString("D3");
             vmi.FileName = "SONICADV_" + vms.Identifier.ToString("D3");
             vmi.Flags = 0;
+            vmi.Size = (uint)vms.GetBytes().Length;
             SetCurrentTime();
             UpdateAllLabels();
         }
@@ -100,8 +102,32 @@ namespace DLCTool
                 }
         }
 
+        private void UpdateAllData()
+        {
+            vmi.Description = textBoxDescription.Text;
+            vmi.Copyright = textBoxCopyright.Text;
+            vmi.Version = (ushort)numericUpDownVersion.Value;
+            vmi.FileID = (ushort)numericUpDownFileID.Value;
+            vmi.ResourceName = textBoxResourceName.Text;
+            vmi.FileName = textBoxFileName.Text;
+            vmi.Flags = 0;
+            if (checkBoxCopyProtect.Checked)
+                vmi.Flags |= VMIFile.VMIFlags.Protected;
+            if (checkBoxGameSave.Checked)
+                vmi.Flags |= VMIFile.VMIFlags.Game;
+            vmi.Year = (ushort)numericUpDownYear.Value;
+            vmi.Month = (byte)numericUpDownMonth.Value;
+            vmi.Day = (byte)numericUpDownDay.Value;
+            vmi.Weekday = (byte)comboBoxWeekday.SelectedIndex;
+            vmi.Hour = (byte)numericUpDownHour.Value;
+            vmi.Minute = (byte)numericUpDownMinute.Value;
+            vmi.Second = (byte)numericUpDownSecond.Value;
+            vmi.Size = (uint)numericUpDownVMSFileSize.Value;
+        }
+
         private void buttonSaveVMI_Click(object sender, EventArgs e)
         {
+            UpdateAllData();
             using (SaveFileDialog sv = new SaveFileDialog() { FileName = vmi.ResourceName, Title = "Save VMI File", Filter = "VMI Files|*.vmi", DefaultExt = "vmi" })
             {
                 if (sv.ShowDialog() == DialogResult.OK)
