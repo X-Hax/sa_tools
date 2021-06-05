@@ -210,10 +210,17 @@ namespace DLCTool
                 prsdata = FraGag.Compression.Prs.Decompress(prsdata);
                 // Model pointer
                 uint modelpointer = BitConverter.ToUInt32(prsdata, 0) - 0xCCA4000;
-                Console.WriteLine("Model pointer: {0}", modelpointer.ToString("X"));
-                NJS_OBJECT mdl = new NJS_OBJECT(prsdata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
+                //Console.WriteLine("Model pointer: {0}", modelpointer.ToString("X"));
                 labelModelSectionSize.Text = "Section size: " + prsdata.Length.ToString() + " bytes";
-                labelModelInfo.Text = GetModelInfo(mdl);
+                try
+                {
+                    NJS_OBJECT mdl = new NJS_OBJECT(prsdata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
+                    labelModelInfo.Text = GetModelInfo(mdl);
+                }
+                catch (Exception)
+                {
+                    labelModelInfo.Text = "Error getting model information.";
+                }
                 checkBoxEnableModel.Checked = true;
             }
             UpdateGeneralInfo();
@@ -437,8 +444,15 @@ namespace DLCTool
             labelModelSectionSize.Text = "Section size: " + meta.ModelData.Length.ToString() + " bytes";
             byte[] modeldata = FraGag.Compression.Prs.Decompress(meta.ModelData);
             uint modelpointer = BitConverter.ToUInt32(modeldata, 0) - 0xCCA4000;
-            NJS_OBJECT mdl = new NJS_OBJECT(modeldata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
-            labelModelInfo.Text = GetModelInfo(mdl);
+            try
+            {
+                NJS_OBJECT mdl = new NJS_OBJECT(modeldata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
+                labelModelInfo.Text = GetModelInfo(mdl);
+            }
+            catch (Exception)
+            {
+                labelModelInfo.Text = "Error getting model information.";
+            }
             buttonLoadModel.Enabled = buttonSaveModel.Enabled = buttonImportRawModel.Enabled = buttonSaveRawModel.Enabled = true;
             UpdateSize();
         }

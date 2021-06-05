@@ -66,6 +66,8 @@ namespace DLCTool
             this.buttonSaveVMI = new System.Windows.Forms.Button();
             this.buttonGenerateVMI = new System.Windows.Forms.Button();
             this.buttonClose = new System.Windows.Forms.Button();
+            this.label13 = new System.Windows.Forms.Label();
+            this.numericUpDownVMSFileSize = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSecond)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinute)).BeginInit();
@@ -77,6 +79,7 @@ namespace DLCTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFileID)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVersion)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVMSFileSize)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -291,6 +294,8 @@ namespace DLCTool
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.numericUpDownVMSFileSize);
+            this.groupBox2.Controls.Add(this.label13);
             this.groupBox2.Controls.Add(this.checkBoxCopyProtect);
             this.groupBox2.Controls.Add(this.checkBoxGameSave);
             this.groupBox2.Controls.Add(this.label12);
@@ -328,9 +333,9 @@ namespace DLCTool
             this.checkBoxGameSave.AutoSize = true;
             this.checkBoxGameSave.Location = new System.Drawing.Point(38, 224);
             this.checkBoxGameSave.Name = "checkBoxGameSave";
-            this.checkBoxGameSave.Size = new System.Drawing.Size(119, 24);
+            this.checkBoxGameSave.Size = new System.Drawing.Size(108, 24);
             this.checkBoxGameSave.TabIndex = 25;
-            this.checkBoxGameSave.Text = "Game Save";
+            this.checkBoxGameSave.Text = "Game File";
             this.checkBoxGameSave.UseVisualStyleBackColor = true;
             this.checkBoxGameSave.Click += new System.EventHandler(this.checkBoxGameSave_Click);
             // 
@@ -478,6 +483,27 @@ namespace DLCTool
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(208, 91);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(112, 20);
+            this.label13.TabIndex = 27;
+            this.label13.Text = "VMS File Size:";
+            // 
+            // numericUpDownVMSFileSize
+            // 
+            this.numericUpDownVMSFileSize.Location = new System.Drawing.Point(212, 121);
+            this.numericUpDownVMSFileSize.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.numericUpDownVMSFileSize.Name = "numericUpDownVMSFileSize";
+            this.numericUpDownVMSFileSize.Size = new System.Drawing.Size(137, 26);
+            this.numericUpDownVMSFileSize.TabIndex = 28;
+            // 
             // VMIEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -509,6 +535,7 @@ namespace DLCTool
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVersion)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownVMSFileSize)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -552,5 +579,7 @@ namespace DLCTool
 		private System.Windows.Forms.Button buttonSaveVMI;
 		private System.Windows.Forms.Button buttonGenerateVMI;
 		private System.Windows.Forms.Button buttonClose;
+		private System.Windows.Forms.NumericUpDown numericUpDownVMSFileSize;
+		private System.Windows.Forms.Label label13;
 	}
 }
