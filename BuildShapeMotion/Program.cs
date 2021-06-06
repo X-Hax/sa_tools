@@ -19,7 +19,9 @@ namespace BuildShapeMotion
 				Console.Write("Path: ");
 				path = Console.ReadLine().Trim('"');
 			}
-			path = Path.GetDirectoryName(Path.GetFullPath(path));
+			path = Path.GetFullPath(path);
+			if (path.EndsWith(".ini"))
+				path = Path.GetDirectoryName(path);
 			string mtnfn = new DirectoryInfo(path).Name;
 			MTNInfo info = IniSerializer.Deserialize<MTNInfo>(Path.Combine(path, mtnfn + ".ini"));
 			string fext = null;
