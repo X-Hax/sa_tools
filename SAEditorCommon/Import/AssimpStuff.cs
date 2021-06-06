@@ -441,6 +441,8 @@ namespace SonicRetro.SAModel.SAEditorCommon.Import
 			else
 			{
 				int nameMeshIndex = 0;
+                if (attach.MeshInfo == null)
+                    attach.ProcessVertexData();
 				foreach (MeshInfo meshInfo in attach.MeshInfo)
 				{
 					Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");

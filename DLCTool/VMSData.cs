@@ -680,8 +680,8 @@ namespace DLCTool
 		{
             public enum VMIFlags
             {
-                Game = 0x1,
-                Protected = 0x10
+                Protected = 0x1,
+                Game = 0x2
             }
             public string Description; // 32 bytes
             public string Copyright; // 32 bytes
@@ -1016,43 +1016,24 @@ namespace DLCTool
 
         public static string GetModelInfo(NJS_OBJECT obj)
 		{
+            string result;
             int numverts = 0;
             int numpolys = 0;
             int nummeshes = 0;
             int nummats = 0;
             int numuvs = 0;
             int numvcolors = 0;
-            if (obj.Attach != null && obj.Attach is BasicAttach batt)
+            try
             {
-                if (batt.Material != null)
-                    nummats += batt.Material.Count;
-                if (batt.Vertex != null)
-                    numverts += batt.Vertex.Length;
-                if (batt.Mesh != null)
+                if (obj.Attach != null && obj.Attach is BasicAttach batt)
                 {
-                    foreach (NJS_MESHSET mesh in batt.Mesh)
+                    if (batt.Material != null)
+                        nummats += batt.Material.Count;
+                    if (batt.Vertex != null)
+                        numverts += batt.Vertex.Length;
+                    if (batt.Mesh != null)
                     {
-                        nummeshes++;
-                        if (mesh.Poly != null) 
-                            numpolys += mesh.Poly.Count;
-                        if (mesh.UV != null)
-                            numuvs += mesh.UV.Length;
-                        if (mesh.VColor != null)
-                            numvcolors += mesh.VColor.Length;
-                    }
-                }
-            }
-            if (obj.Children != null && obj.Children.Count > 0)
-            {
-                foreach (NJS_OBJECT child in obj.Children)
-                {
-                    if (child.Attach != null && child.Attach is BasicAttach childatt)
-                    {
-                        if (childatt.Material != null)
-                            nummats += childatt.Material.Count;
-                        if (childatt.Vertex != null)
-                            numverts += childatt.Vertex.Length;
-                        foreach (NJS_MESHSET mesh in childatt.Mesh)
+                        foreach (NJS_MESHSET mesh in batt.Mesh)
                         {
                             nummeshes++;
                             if (mesh.Poly != null)
@@ -1064,8 +1045,36 @@ namespace DLCTool
                         }
                     }
                 }
+                if (obj.Children != null && obj.Children.Count > 0)
+                {
+                    foreach (NJS_OBJECT child in obj.Children)
+                    {
+                        if (child.Attach != null && child.Attach is BasicAttach childatt)
+                        {
+                            if (childatt.Material != null)
+                                nummats += childatt.Material.Count;
+                            if (childatt.Vertex != null)
+                                numverts += childatt.Vertex.Length;
+                            foreach (NJS_MESHSET mesh in childatt.Mesh)
+                            {
+                                nummeshes++;
+                                if (mesh.Poly != null)
+                                    numpolys += mesh.Poly.Count;
+                                if (mesh.UV != null)
+                                    numuvs += mesh.UV.Length;
+                                if (mesh.VColor != null)
+                                    numvcolors += mesh.VColor.Length;
+                            }
+                        }
+                    }
+                }
+                result = "Vertices: " + numverts.ToString() + ", Polys: " + numpolys.ToString() + ", Meshes: " + nummeshes.ToString() + ", Materials: " + nummats.ToString() + ", UVs: " + numuvs.ToString() + ", VColors: " + numvcolors.ToString();
             }
-            return "Vertices: " + numverts.ToString() + ", Polys: " + numpolys.ToString() + ", Meshes: " + nummeshes.ToString() + ", Materials: " + nummats.ToString() + ", UVs: " + numuvs.ToString() + ", VColors: " + numvcolors.ToString();
+            catch (Exception)
+            {
+                result = "Error getting model information.";
+            }
+            return result;
         }
 
         public static string[] LevelIDStrings =

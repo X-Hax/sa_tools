@@ -493,6 +493,11 @@ namespace DLCTool
             // 
             this.numericUpDownScaleZ.Location = new System.Drawing.Point(44, 106);
             this.numericUpDownScaleZ.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownScaleZ.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.numericUpDownScaleZ.Name = "numericUpDownScaleZ";
             this.numericUpDownScaleZ.Size = new System.Drawing.Size(116, 26);
             this.numericUpDownScaleZ.TabIndex = 8;
@@ -523,6 +528,11 @@ namespace DLCTool
             // 
             this.numericUpDownScaleY.Location = new System.Drawing.Point(44, 65);
             this.numericUpDownScaleY.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownScaleY.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.numericUpDownScaleY.Name = "numericUpDownScaleY";
             this.numericUpDownScaleY.Size = new System.Drawing.Size(116, 26);
             this.numericUpDownScaleY.TabIndex = 7;
@@ -543,6 +553,11 @@ namespace DLCTool
             // 
             this.numericUpDownScaleX.Location = new System.Drawing.Point(44, 25);
             this.numericUpDownScaleX.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownScaleX.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.numericUpDownScaleX.Name = "numericUpDownScaleX";
             this.numericUpDownScaleX.Size = new System.Drawing.Size(116, 26);
             this.numericUpDownScaleX.TabIndex = 6;
@@ -570,6 +585,11 @@ namespace DLCTool
             // 
             this.numericUpDownRotSpeedZ.Location = new System.Drawing.Point(44, 106);
             this.numericUpDownRotSpeedZ.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownRotSpeedZ.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.numericUpDownRotSpeedZ.Minimum = new decimal(new int[] {
             100,
             0,
@@ -605,6 +625,11 @@ namespace DLCTool
             // 
             this.numericUpDownRotSpeedY.Location = new System.Drawing.Point(44, 65);
             this.numericUpDownRotSpeedY.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownRotSpeedY.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.numericUpDownRotSpeedY.Minimum = new decimal(new int[] {
             100,
             0,
@@ -630,6 +655,11 @@ namespace DLCTool
             // 
             this.numericUpDownRotSpeedX.Location = new System.Drawing.Point(44, 25);
             this.numericUpDownRotSpeedX.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownRotSpeedX.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.numericUpDownRotSpeedX.Minimum = new decimal(new int[] {
             100,
             0,
