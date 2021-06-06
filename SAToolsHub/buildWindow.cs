@@ -156,8 +156,8 @@ namespace SAToolsHub
 			{
 				string filePath;
 
-				if (Directory.Exists(Path.Combine(SAToolsHub.projectDirectory, "Characters")))
-					filePath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+				if (Directory.Exists(Path.Combine(SAToolsHub.projectDirectory, "figure")))
+					filePath = Path.Combine(SAToolsHub.projectDirectory, "figure");
 				else
 					filePath = Path.Combine(SAToolsHub.projectDirectory, "resource/gd_PC");
 
@@ -174,7 +174,7 @@ namespace SAToolsHub
 
 		void CopySA2Files(string sysFolder)
 		{
-			string charPath = Path.Combine(SAToolsHub.projectDirectory, "Characters");
+			string charPath = Path.Combine(SAToolsHub.projectDirectory, "figure");
 			string[] charFiles = Directory.GetFiles(charPath, "*.prs");
 			foreach (string file in charFiles)
 			{
@@ -326,7 +326,6 @@ namespace SAToolsHub
 			createMod();
 		}
 		#endregion
-
 
 		#region Form Functions
 		private void buildWindow_Shown(object sender, EventArgs e)
