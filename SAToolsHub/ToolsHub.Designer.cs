@@ -59,7 +59,9 @@
 			this.sADXTweakerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sADXsndSharpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sAFontEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.sASaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.sADLCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sA2ToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sA2EventViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sA2CutsceneTextEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -130,8 +132,6 @@
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
-			this.sADLCToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -367,7 +367,7 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
@@ -410,7 +410,7 @@
             this.sASaveToolStripMenuItem,
             this.sADLCToolToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SA1/DX Tools";
 			// 
 			// sADXTweakerToolStripMenuItem
@@ -418,7 +418,7 @@
 			this.sADXTweakerToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDxTweaker;
 			this.sADXTweakerToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.sADXTweakerToolStripMenuItem.Name = "sADXTweakerToolStripMenuItem";
-			this.sADXTweakerToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+			this.sADXTweakerToolStripMenuItem.Size = new System.Drawing.Size(208, 54);
 			this.sADXTweakerToolStripMenuItem.Text = "SADX Tweaker";
 			this.sADXTweakerToolStripMenuItem.ToolTipText = "Open SADX Tweaker (Modify *_data.ini Files)";
 			this.sADXTweakerToolStripMenuItem.Click += new System.EventHandler(this.sADXTweakerToolStripMenuItem_Click);
@@ -428,7 +428,7 @@
 			this.sADXsndSharpToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSndSharp;
 			this.sADXsndSharpToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.sADXsndSharpToolStripMenuItem.Name = "sADXsndSharpToolStripMenuItem";
-			this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+			this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(208, 54);
 			this.sADXsndSharpToolStripMenuItem.Text = "SADXsndSharp";
 			this.sADXsndSharpToolStripMenuItem.ToolTipText = "Open SADXsndSharp (Open SADX Sound .dat Files)\r\n";
 			this.sADXsndSharpToolStripMenuItem.Click += new System.EventHandler(this.sADXsndSharpToolStripMenuItem_Click);
@@ -438,20 +438,34 @@
 			this.sAFontEditorToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDxFontEdit;
 			this.sAFontEditorToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.sAFontEditorToolStripMenuItem.Name = "sAFontEditorToolStripMenuItem";
-			this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+			this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(208, 54);
 			this.sAFontEditorToolStripMenuItem.Text = "SADX Font Editor";
 			this.sAFontEditorToolStripMenuItem.ToolTipText = "Open SADX Font Editor";
 			this.sAFontEditorToolStripMenuItem.Click += new System.EventHandler(this.sAFontEditorToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(205, 6);
 			// 
 			// sASaveToolStripMenuItem
 			// 
 			this.sASaveToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsSaSave;
 			this.sASaveToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.sASaveToolStripMenuItem.Name = "sASaveToolStripMenuItem";
-			this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+			this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(208, 54);
 			this.sASaveToolStripMenuItem.Text = "SASave";
 			this.sASaveToolStripMenuItem.ToolTipText = "Open SA Save";
 			this.sASaveToolStripMenuItem.Click += new System.EventHandler(this.sASaveToolStripMenuItem_Click);
+			// 
+			// sADLCToolToolStripMenuItem
+			// 
+			this.sADLCToolToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDLCtool;
+			this.sADLCToolToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+			this.sADLCToolToolStripMenuItem.Name = "sADLCToolToolStripMenuItem";
+			this.sADLCToolToolStripMenuItem.Size = new System.Drawing.Size(208, 54);
+			this.sADLCToolToolStripMenuItem.Text = "SA DLC Tool";
+			this.sADLCToolToolStripMenuItem.Click += new System.EventHandler(this.sADLCToolToolStripMenuItem_Click);
 			// 
 			// sA2ToolsToolStripMenuItem
 			// 
@@ -461,7 +475,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -507,12 +521,12 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(174, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.ToolTipText = "Opens the Data Toolbox tool.";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
@@ -520,7 +534,7 @@
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
 			this.toolStripMenuItem1.Text = "Template Writer";
 			this.toolStripMenuItem1.ToolTipText = "Open Template Writer";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
@@ -528,7 +542,7 @@
 			// projectConverterToolStripMenuItem
 			// 
 			this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
-			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.projectConverterToolStripMenuItem.Text = "Project Converter";
 			this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
 			this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
@@ -1151,7 +1165,6 @@
 			// browseCurDirectory
 			// 
 			this.browseCurDirectory.Enabled = false;
-			this.browseCurDirectory.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.browseCurDirectory.Name = "browseCurDirectory";
 			this.browseCurDirectory.Size = new System.Drawing.Size(665, 32);
 			// 
@@ -1171,20 +1184,6 @@
 			this.browseOpenExplorer.Size = new System.Drawing.Size(85, 29);
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
-			// 
-			// sADLCToolToolStripMenuItem
-			// 
-			this.sADLCToolToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsDLCtool;
-			this.sADLCToolToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-			this.sADLCToolToolStripMenuItem.Name = "sADLCToolToolStripMenuItem";
-			this.sADLCToolToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
-			this.sADLCToolToolStripMenuItem.Text = "SA DLC Tool";
-			this.sADLCToolToolStripMenuItem.Click += new System.EventHandler(this.sADLCToolToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(209, 6);
 			// 
 			// SAToolsHub
 			// 
