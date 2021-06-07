@@ -156,8 +156,8 @@ namespace SAToolsHub
 			{
 				string filePath;
 
-				if (Directory.Exists(Path.Combine(SAToolsHub.projectDirectory, "figure")))
-					filePath = Path.Combine(SAToolsHub.projectDirectory, "figure");
+				if (Directory.Exists(Path.Combine(SAToolsHub.projectDirectory, "figure\\bin")))
+					filePath = Path.Combine(SAToolsHub.projectDirectory, "figure\\bin");
 				else
 					filePath = Path.Combine(SAToolsHub.projectDirectory, "resource/gd_PC");
 
@@ -353,7 +353,7 @@ namespace SAToolsHub
 
 					if (!tabControl1.Contains(tabMDL))
 						tabControl1.TabPages.Add(tabMDL);
-					DirectoryInfo charFiles = new DirectoryInfo(Path.Combine(SAToolsHub.projectDirectory, "Characters"));
+					DirectoryInfo charFiles = new DirectoryInfo(Path.Combine(SAToolsHub.projectDirectory, "figure\\bin"));
 
 					foreach (DirectoryInfo dir in charFiles.GetDirectories())
 					{

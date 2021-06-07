@@ -406,7 +406,7 @@ namespace SAToolsHub
 		private void splitMdlFiles(Templates.SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-			string fileOutputFolder = Path.Combine(outputFolder, "figure");
+			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
 			progress.StepProgress();
 			progress.SetStep("Splitting models from " + splitMDL.ModelFile);
