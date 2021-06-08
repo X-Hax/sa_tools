@@ -39,10 +39,11 @@ namespace SAToolsHub
 		{
 			comboBox1.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
-				templatesPath = Path.Combine(appPath, "Configuration/Templates/");
-			else
+
+			if (Directory.Exists(Path.Combine(appPath, "Templates")))
 				templatesPath = Path.Combine(appPath, "Templates");
+			else
+				templatesPath = Path.Combine(appPath, "..\\..\\Configuration/Templates");
 
 			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
 
@@ -325,12 +326,10 @@ namespace SAToolsHub
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
-			if (Directory.Exists(Path.Combine(appPath, "Configuration")))
-				return Path.Combine(appPath, "SADXObjectDefinitions");
-			else if (dataFolder.Contains("newsplit"))
+			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
 				return Path.Combine(appPath, dataFolder, "..\\objdefs\\");
 			else
-				return Path.Combine(appPath, dataFolder, "objdefs");
+				return Path.Combine(appPath, "..\\..\\SADXObjectDefinitions");
 		}
 
 		private void splitFiles(Templates.SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -435,7 +434,7 @@ namespace SAToolsHub
 			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
 				iniFolder = Path.Combine(appPath, dataFolder);
 			else
-				iniFolder = Path.Combine(appPath, "Configuration", dataFolder);
+				iniFolder = Path.Combine(appPath, "..\\..\\Configuration", dataFolder);
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)

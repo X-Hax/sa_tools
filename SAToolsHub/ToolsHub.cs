@@ -226,7 +226,11 @@ namespace SAToolsHub
 
 		void SetProgramPaths()
 		{
-			string rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
+			string rootPath = "";
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools")))
+				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "tools");
+			else
+				rootPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../../tools");
 #if DEBUG
 			toolStripMenuItem1.Visible = true;
 			toolStripMenuItem1.Enabled = true;
@@ -517,6 +521,7 @@ namespace SAToolsHub
 							break;
 						}
 					case ".c":
+					case ".cs":
 						{
 							subItemType = "Code File";
 							tagType = "txt";
@@ -1098,10 +1103,10 @@ namespace SAToolsHub
 			{
 				foreach (ListViewItem selItem in listView1.SelectedItems)
 				{
-					SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
-						((itemTags)selItem.Tag).Path,
-						SonicRetro.SAModel.DataToolbox.StructConversion.TextType.CStructs,
-						Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path + ".c"))));
+					string filename = ((itemTags)selItem.Tag).Path;
+					string outName = Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path))) + ".c";
+
+					SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(filename, SonicRetro.SAModel.DataToolbox.StructConversion.TextType.CStructs, outName);
 				}
 			}
 		}
