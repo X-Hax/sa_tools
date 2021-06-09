@@ -18,7 +18,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/RING.sa1mdl");
+			model = ObjectHelper.LoadModel("object/obj_ring.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

@@ -15,7 +15,7 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act)
 		{
-			carriermdl = ObjectHelper.LoadModel("Levels/Sky Chase/Egg Carrier model.sa1mdl");
+			carriermdl = ObjectHelper.LoadModel("shooting/common/models/shot_bf_s_bodya.nja.sa1mdl");
 			carriermesh = ObjectHelper.GetMeshes(carriermdl);
 		}
 

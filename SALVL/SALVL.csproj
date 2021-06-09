@@ -76,6 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="UI\BinaryFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,7 +102,6 @@
     <Compile Include="MainForm.designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\ProjectSelectDialog.cs">
       <SubType>Form</SubType>

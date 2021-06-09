@@ -89,6 +89,7 @@ namespace ProjectManager
 
 			this.Hide();
 			ProjectSelected(projectName.Game, projectName.Name, projectFolderPath);
+
 		}
 
 		private void ProjectSelect_FormClosing(object sender, FormClosingEventArgs e)

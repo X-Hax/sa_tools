@@ -103,7 +103,7 @@ namespace SADXObjectDefinitions.Common
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/SPRING.sa1mdl");
+			model = ObjectHelper.LoadModel("object/bane_banebottom.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -114,7 +114,7 @@ namespace SADXObjectDefinitions.Common
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/SPRINGB.sa1mdl");
+			model = ObjectHelper.LoadModel("object/bane_type_b_type_b.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

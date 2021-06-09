@@ -98,7 +98,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O KAMOME.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kamome_a.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -109,7 +109,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O KAMOMEL.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_kamome_b.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

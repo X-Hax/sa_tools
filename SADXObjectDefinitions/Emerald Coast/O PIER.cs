@@ -20,9 +20,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PIER_A.sa1mdl");
+			model2 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_pier_a01.nja.sa1mdl");
 			meshes2 = ObjectHelper.GetMeshes(model2);
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PIER_B.sa1mdl");
+			model1 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_pier_b.nja.sa1mdl");
 			meshes1 = ObjectHelper.GetMeshes(model1);
 		}
 

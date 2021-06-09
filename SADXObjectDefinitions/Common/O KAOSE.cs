@@ -21,11 +21,11 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			eme_a = ObjectHelper.LoadModel("Objects/Common/O KAOSE_A.sa1mdl");
+			eme_a = ObjectHelper.LoadModel("stg02_windy/common/models/goaleme_blue.nja.sa1mdl");
 			ememsh_a = ObjectHelper.GetMeshes(eme_a);
-			eme_b = ObjectHelper.LoadModel("Objects/Common/O KAOSE_B.sa1mdl");
+			eme_b = ObjectHelper.LoadModel("stg02_windy/common/models/goaleme_white.nja.sa1mdl");
 			ememsh_b = ObjectHelper.GetMeshes(eme_b);
-			eme_c = ObjectHelper.LoadModel("Objects/Common/O KAOSE_C.sa1mdl");
+			eme_c = ObjectHelper.LoadModel("stg02_windy/common/models/goaleme_green.nja.sa1mdl");
 			ememsh_c = ObjectHelper.GetMeshes(eme_c);
 		}
 

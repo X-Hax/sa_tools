@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.WindyValley
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O GRASS.sa1mdl");
+			model = ObjectHelper.LoadModel("stg02_windy/common/models/wvobj_busshu.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

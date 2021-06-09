@@ -19,9 +19,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			whale = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/Whale.sa1mdl");
+			whale = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_oruka.nja.sa1mdl");
 			whalemsh = ObjectHelper.GetMeshes(whale);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			sphere = ObjectHelper.LoadModel("nondisp/sphere01.nja.sa1mdl");
 			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
@@ -108,9 +108,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			whale = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/Whale.sa1mdl");
+			whale = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_oruka.nja.sa1mdl");
 			whalemsh = ObjectHelper.GetMeshes(whale);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			sphere = ObjectHelper.LoadModel("nondisp/sphere01.nja.sa1mdl");
 			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 
@@ -188,9 +188,9 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			whale = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/Whale.sa1mdl");
+			whale = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_oruka.nja.sa1mdl");
 			whalemsh = ObjectHelper.GetMeshes(whale);
-			sphere = ObjectHelper.LoadModel("Objects/Collision/C SPHERE.sa1mdl");
+			sphere = ObjectHelper.LoadModel("nondisp/sphere01.nja.sa1mdl");
 			spheremsh = ObjectHelper.GetMeshes(sphere);
 		}
 

@@ -16,9 +16,9 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act)
 		{
-			for (int i = 0; i < 3; i++)
+			for (char i = 'a'; i < 'c'; i++)
 			{
-				models[i] = ObjectHelper.LoadModel("Levels/Windy Valley/Act 2/Skybox model " + (i + 1).ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+				models[i] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kaze" + (i) + ".nja.sa1mdl");
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 			}
 		}

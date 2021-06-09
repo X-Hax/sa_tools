@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.IO;
-
 using SA_Tools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.StructConverter

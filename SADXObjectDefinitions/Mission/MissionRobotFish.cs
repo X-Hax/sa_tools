@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.Mission
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Mission/Mission Robot Fish.sa1mdl");
+			model = ObjectHelper.LoadModel("mission/model/mi_meka_sakana.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

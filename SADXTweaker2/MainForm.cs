@@ -56,7 +56,7 @@ namespace SADXTweaker2
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "ini",
-				Filter = "sonic_data.ini|sonic_data.ini|All Files|*.*"
+				Filter = "*.ini|*.ini|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadINI(a.FileName);

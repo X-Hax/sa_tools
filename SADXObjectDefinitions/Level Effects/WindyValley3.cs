@@ -19,12 +19,12 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Windy Valley/Skybox Data.ini");
+			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg02_windy/bg/bgScale.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			for (int i = 0; i < 4; i++)
 			{
-				models[i] = ObjectHelper.LoadModel("Levels/Windy Valley/Act 3/Skybox model " + (i + 1).ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+				models[i] = ObjectHelper.LoadModel("stg02_windy/bg/models/act3nbg_nbg" + (i + 1).ToString(NumberFormatInfo.InvariantInfo) + ".nja.sa1mdl");
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 			}
 		}

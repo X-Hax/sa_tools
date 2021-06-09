@@ -18,7 +18,7 @@ namespace SADXObjectDefinitions.Mission
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Mission/Mission Sign.sa1mdl");
+			model = ObjectHelper.LoadModel("mission/model/mi_kanban.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using SA_Tools;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -22,6 +23,7 @@ using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Text;
 using SharpDX.Mathematics.Interop;
+using SAEditorCommon.ProjectManagement;
 
 namespace SonicRetro.SAModel.SALVL
 {
@@ -137,11 +139,11 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-            if (Environment.Is64BitOperatingSystem)
-			    Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
-            else
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
-            settingsfile = SettingsFile.Load();
+			if (Environment.Is64BitOperatingSystem)
+				Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
+			else
+				Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
+			settingsfile = SettingsFile.Load();
 			progress = new ProgressDialog("SALVL", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
 			InitGUISettings();
@@ -152,11 +154,11 @@ namespace SonicRetro.SAModel.SALVL
 			InitDisableInvalidControls();
 			log.DeleteLogFile();
 			log.Add("SALVL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-            log.Add("Build Date: ");
-            log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
-            log.Add("OS Version: ");
-            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
-            AppConfig.Reload();
+			log.Add("Build Date: ");
+			log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			log.Add("OS Version: ");
+			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+			AppConfig.Reload();
 			EditorOptions.RenderDrawDistance = settingsfile.SALVL.DrawDistance_General;
 			EditorOptions.LevelDrawDistance = settingsfile.SALVL.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.SALVL.DrawDistance_SET;
@@ -165,7 +167,6 @@ namespace SonicRetro.SAModel.SALVL
 			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.SALVL.MouseWrapScreen;
 			if (settingsfile.SALVL.ShowWelcomeScreen)
 				ShowWelcomeScreen();
-			systemFallback = Program.SADXGameFolder + "/System/";
 
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
@@ -184,7 +185,6 @@ namespace SonicRetro.SAModel.SALVL
 
 			if (Program.args.Length > 0)
 			{
-				if (Program.SADXGameFolder == "") systemFallback = Path.GetDirectoryName(Program.args[0]) + "\\System\\";
 				switch (Path.GetExtension(Program.args[0]).ToLowerInvariant())
 				{
 					case ".sa1lvl":
@@ -193,26 +193,18 @@ namespace SonicRetro.SAModel.SALVL
 						LoadLandtable(Program.args[0]);
 						unsaved = false;
 						break;
+					case ".sap":
+						Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFileString(Program.args[0]);
+						string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+						systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
+						LoadINI(projectPath);
+						ShowLevelSelect();
+						break;
 					case ".ini":
 					default:
 						LoadINI(Program.args[0]);
 						ShowLevelSelect();
 						break;
-				}
-			}
-			else if (Program.SADXGameFolder == "")
-			{
-				ShowPathWarning();
-			}
-			else
-			{
-				using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
-				{
-					projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
-					if (projectSelectDialog.ShowDialog() == DialogResult.OK)
-					{
-						LoadProject(projectSelectDialog.SelectedProject);
-					}
 				}
 			}
 		}
@@ -358,22 +350,6 @@ namespace SonicRetro.SAModel.SALVL
 			}
 		}
 
-		private void openNewProjectToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (Program.SADXGameFolder == "")
-			{
-				ShowPathWarning();
-			}
-			else OpenNewProject();
-		}
-
-		private void LoadProject(string projectName)
-		{
-			string projectPath = Path.Combine(Program.SADXGameFolder, string.Format("projects/{0}/sadxlvl.ini", projectName));
-			LoadINI(projectPath);
-			ShowLevelSelect();
-		}
-
 		public bool OpenNewProject()
 		{
 			if (isStageLoaded)
@@ -382,18 +358,26 @@ namespace SonicRetro.SAModel.SALVL
 					return false;
 			}
 
-			using (ProjectSelectDialog projectSelectDialog = new ProjectSelectDialog())
-			{
-				projectSelectDialog.LoadProjectList(Program.SADXGameFolder);
+			Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
 
-				if (projectSelectDialog.ShowDialog() == DialogResult.OK)
+			if (projFile != null)
+			{
+				if (projFile.GameInfo.GameName == "SADXPC")
 				{
-					LoadProject(projectSelectDialog.SelectedProject);
+					string projectPath = Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini");
+					systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, "system");
+
+					LoadINI(projectPath);
+					ShowLevelSelect();
 					return true;
 				}
-
-				else return false;
+				else
+				{
+					DialogResult fileWarning = MessageBox.Show(("The selected Project SAP File was not for SADXPC.\n\nPlease open an SADXPC Project XML."), "Incorrect Project XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					return false;
+				}
 			}
+			else return false;
 		}
 
 		private void LoadINI(string filename)
@@ -680,28 +664,6 @@ namespace SonicRetro.SAModel.SALVL
 			}
 		}
 
-		private string GetIniFolderForGame(SA_Tools.Game game)
-		{
-			switch (game)
-			{
-				case SA_Tools.Game.SA1:
-					return "SA1";
-
-				case SA_Tools.Game.SADX:
-					return "SADXPC";
-
-				case SA_Tools.Game.SA2:
-					return "SA2";
-
-				case SA_Tools.Game.SA2B:
-					return "SA2PC";
-				default:
-					break;
-			}
-
-			return "";
-		}
-
 		private void CopyFolder(string sourceFolder, string destinationFolder)
 		{
 			string[] files = Directory.GetFiles(sourceFolder);
@@ -894,10 +856,7 @@ namespace SonicRetro.SAModel.SALVL
 					{
 						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
 
-						LevelData.DeathZones.Add(new DeathZoneItem(
-							new ModelFile(Path.Combine(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl"))
-								.Model,
-							dzini[i].Flags, selectedItems));
+						LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
 					}
 				}
 
@@ -920,13 +879,24 @@ namespace SonicRetro.SAModel.SALVL
 				progress.SetTaskAndStep("Loading stage texture lists...");
 
 				// Loads the textures in the texture list for this stage (e.g BEACH01)
-				foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+				if (ini.LevelTextureLists != null)
 				{
-					LevelTextureList texini = LevelTextureList.Load(file);
-					if (texini.Level != levelact)
-						continue;
-
-					LoadTextureList(texini.TextureList, syspath);
+					// Loads the textures in the texture list for this stage (e.g BEACH01)
+					foreach (string file in Directory.GetFiles(ini.LevelTextureLists))
+					{
+						LevelTextureList texini = LevelTextureList.Load(file);
+						if (texini.Level != levelact)
+							continue;
+						LoadTextureList(texini.TextureList, syspath);
+					}
+				}
+				else
+				{
+					if (level.TextureList != null)
+					{
+						LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
+						LoadTextureList(texini.TextureList, syspath);
+					}
 				}
 
 				progress.SetTaskAndStep("Loading textures for:", "Objects");
@@ -3521,41 +3491,6 @@ namespace SonicRetro.SAModel.SALVL
 		private void LibrarySplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
 			if (WindowState == FormWindowState.Maximized) settingsfile.SALVL.LibrarySplitterPosition = LibrarySplitter.SplitterDistance;
-		}
-
-		private bool ShowPathWarning()
-		{
-			bool result;
-			using (PathWarning dialog = new PathWarning(this, GetRecentFiles()))
-			{
-				if (result = (dialog.ShowDialog() == DialogResult.OK))
-				{
-					systemFallback = Path.GetDirectoryName(dialog.SelectedItem) + "\\System\\";
-					if (AppConfig.MRUList.Count > 10)
-					{
-						for (int i = 9; i < AppConfig.MRUList.Count; i++)
-						{
-							AppConfig.MRUList.RemoveAt(i);
-						}
-					}
-					if (!AppConfig.MRUList.Contains(dialog.SelectedItem)) AppConfig.MRUList.Insert(0, dialog.SelectedItem);
-					else
-					{
-						AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(dialog.SelectedItem));
-						AppConfig.MRUList.Insert(0, dialog.SelectedItem);
-					}
-					LoadINI(dialog.SelectedItem);
-					ShowLevelSelect();
-				}
-				if (dialog.RemovedItems.Count > 0)
-				{
-					foreach (string deleted in dialog.RemovedItems)
-					{
-						if (AppConfig.MRUList.Contains(deleted)) AppConfig.MRUList.RemoveAt(AppConfig.MRUList.IndexOf(deleted));
-					}
-				}
-			}
-			return result;
 		}
 
 		private StringCollection GetRecentFiles()

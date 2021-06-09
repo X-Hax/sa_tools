@@ -18,12 +18,12 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Emerald Coast/Skybox Data.ini");
+			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg01_beach/bg/bgScale.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
-			model1 = ObjectHelper.LoadModel("Levels/Emerald Coast/Skybox model.sa1mdl");
+			model1 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg.nja.sa1mdl");
 			mesh1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("Levels/Emerald Coast/Skybox bottom model.sa1mdl");
+			model2 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg3.nja.sa1mdl");
 			mesh2 = ObjectHelper.GetMeshes(model2);
 		}
 

@@ -91,7 +91,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI0.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi00.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
@@ -103,7 +103,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI1.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi01.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
@@ -115,7 +115,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI2.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi02.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}
@@ -127,7 +127,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/YASI3.sa1mdl");
+			model = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_yashi04.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			meshes2 = ObjectHelper.GetMeshes(model.Sibling);
 		}

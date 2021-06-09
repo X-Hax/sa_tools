@@ -23,11 +23,11 @@ namespace SADXObjectDefinitions.WindyValley
 
 		public override void Init(ObjectData data, string name)
 		{
-			modelA = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_CUBES.sa1mdl");
+			modelA = ObjectHelper.LoadModel("stg02_windy/common/models/wvobj_cube_s.nja.sa1mdl");
 			meshesA = ObjectHelper.GetMeshes(modelA);
-			modelB = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_CUBEM.sa1mdl");
+			modelB = ObjectHelper.LoadModel("stg02_windy/common/models/wvobj_cube_m.nja.sa1mdl");
 			meshesB = ObjectHelper.GetMeshes(modelB);
-			modelC = ObjectHelper.LoadModel("Objects/Levels/Windy Valley/O_CUBEL.sa1mdl");
+			modelC = ObjectHelper.LoadModel("stg02_windy/common/models/wvobj_cube_l.nja.sa1mdl");
 			meshesC = ObjectHelper.GetMeshes(modelC);
 		}
 

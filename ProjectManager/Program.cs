@@ -8,8 +8,8 @@ namespace ProjectManager
 {
 	static class Program
 	{
-		private static ProjectManagerSettings settings;
-		public static ProjectManagerSettings Settings { get { return settings; } } 
+		private static SAEditorCommon.ProjectManagement.ProjectSettings settings;
+		public static SAEditorCommon.ProjectManagement.ProjectSettings Settings { get { return settings; } } 
 
 		private static void PrintHelp()
 		{
@@ -67,7 +67,7 @@ namespace ProjectManager
 			ProjectManager projectSelect;
 
 			//Properties.Settings.Default.Upgrade();
-			settings = ProjectManagerSettings.Load();
+			settings = SAEditorCommon.ProjectManagement.ProjectSettings.Load();
 
 			// first check to see if we're configured properly.
 			if (!AnyGamesConfigured())

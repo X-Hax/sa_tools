@@ -18,10 +18,10 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("Levels/Twinkle Park/Skybox Data.ini");
+			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("shareobj/bg/bgScale_tp.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
-			model = ObjectHelper.LoadModel("Levels/Twinkle Park/Skybox model.sa1mdl");
+			model = ObjectHelper.LoadModel("shareobj/bg/models/tp_nbg2.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			NoRender = act == 1;
 		}

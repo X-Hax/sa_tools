@@ -9,8 +9,8 @@ namespace SonicRetro.SAModel.SALVL
 		internal static string[] args;
 		public static MainForm primaryForm;
 
-		private static string sadxGameFolder;
-		public static string SADXGameFolder { get { return sadxGameFolder; } }
+		private static string fileString;
+		public static string SADXGameFolder { get { return fileString; } }
 
 		/// <summary>
 		/// The main entry point for the application.
@@ -22,24 +22,6 @@ namespace SonicRetro.SAModel.SALVL
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-
-			// check for our game folder validity.
-			// if it isn't set up, let the user know that they need to run and configure project maanger
-			// before continuing
-
-			string projectManagerPath = "";
-
-			projectManagerPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
-
-			ProjectManager.ProjectManagerSettings settings = ProjectManager.ProjectManagerSettings.Load(projectManagerPath);
-
-			string sadxGamePathInvalidReason = "";
-
-			if (args.Length == 0 && !SAEditorCommon.GamePathChecker.CheckSADXPCValid(settings.SADXPCPath, out sadxGamePathInvalidReason))
-			{
-				sadxGameFolder = "";
-			}
-			else sadxGameFolder = settings.SADXPCPath;
 
 			primaryForm = new MainForm();
 			Application.Run(primaryForm);

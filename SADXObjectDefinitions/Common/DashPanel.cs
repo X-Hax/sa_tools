@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Common/O AXPNL.sa1mdl");
+			model = ObjectHelper.LoadModel("object/kasoku_panel.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

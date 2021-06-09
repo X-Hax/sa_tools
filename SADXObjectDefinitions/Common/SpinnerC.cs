@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("Objects/Enemies/SPINA.sa1mdl");
+			model = ObjectHelper.LoadModel("enemy/spinna/models/supi_supi.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 

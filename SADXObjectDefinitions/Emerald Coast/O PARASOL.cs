@@ -26,15 +26,15 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 		public override void Init(ObjectData data, string name)
 		{
-			model1 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_A.sa1mdl");
+			model1 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_parasol01.nja.sa1mdl");
 			meshes1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_B.sa1mdl");
+			model2 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_parasol02.nja.sa1mdl");
 			meshes2 = ObjectHelper.GetMeshes(model2);
-			model3 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_C.sa1mdl");
+			model3 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_chair_a.nja.sa1mdl");
 			meshes3 = ObjectHelper.GetMeshes(model3);
-			model4 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_D.sa1mdl");
+			model4 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_chair_b.nja.sa1mdl");
 			meshes4 = ObjectHelper.GetMeshes(model4);
-			model5 = ObjectHelper.LoadModel("Objects/Levels/Emerald Coast/O PARASOL_E.sa1mdl");
+			model5 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_table.nja.sa1mdl");
 			meshes5 = ObjectHelper.GetMeshes(model5);
 		}
 

@@ -217,3 +217,6 @@ pip-log.txt
 *.opendb
 /.vs
 /tools
+/SAEditorCommon.dll
+/SAToolsHub.exe
+/SAToolsHub.exe.config
