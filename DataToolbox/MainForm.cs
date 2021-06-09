@@ -474,31 +474,32 @@ namespace SonicRetro.SAModel.DataToolbox
 		}
 		private void comboBoxGameSelect_SelectedIndexChanged(object sender, EventArgs e)
 		{
+            // TODO: Rework these with template support
 			switch (comboBoxSplitGameSelect.SelectedIndex)
 			{
 				case 0:
-					DataMappingFolder = "SA1";
+					DataMappingFolder = "DC_SA1";
 					break;
 				case 1:
-					DataMappingFolder = "AutoDemo";
+					DataMappingFolder = "DC_SA1AutoDemo";
 					break;
 				case 2:
-					DataMappingFolder = "SADXPC";
+					DataMappingFolder = "PC_SADX";
 					break;
 				case 3:
-					DataMappingFolder = "SADXGC";
+					DataMappingFolder = "GC_SADX";
 					break;
 				case 4:
-					DataMappingFolder = "SADXX360";
+					DataMappingFolder = "X360_SADXBETA";
 					break;
 				case 5:
-					DataMappingFolder = "SA2";
+					DataMappingFolder = "DC_SA2";
 					break;
 				case 6:
-					DataMappingFolder = "SA2TheTrial";
+					DataMappingFolder = "DC_SA2TheTrial";
 					break;
 				case 7:
-					DataMappingFolder = "SA2PC";
+					DataMappingFolder = "PC_SA2";
 					break;
 			}
 		}

@@ -55,11 +55,10 @@ namespace SonicRetro.SAModel.DataToolbox
 					SplitData splitdata = new SplitData();
 					splitdata.dataFile = file;
 					string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
-#if DEBUG
-					folder_parent = Path.Combine(folder_parent, "Configuration");
-					if (!Directory.Exists(Path.Combine(folder_parent, game_path))) folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
-#endif
-					List<string> inilist = FindRelevantINIFiles(file, Path.Combine(folder_parent, game_path));
+                    string templatefolder = Path.Combine(folder_parent, "GameConfig");
+					if (!Directory.Exists(templatefolder))
+                        templatefolder = Path.Combine(Directory.GetParent(folder_parent).ToString(), "GameConfig");
+					List<string> inilist = FindRelevantINIFiles(file, Path.Combine(templatefolder, game_path));
 					if (inilist.Count > 0)
 					{
 						foreach (string iniitem in inilist)
