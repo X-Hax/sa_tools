@@ -71,7 +71,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Dependencies\SACompGC.dll">
+    <Content Include="..\..\Dependencies\SACompGC.dll">
       <Link>SACompGC.dll</Link>
     </Content>
   </ItemGroup>
