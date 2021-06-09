@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAMDL", "SAMDL\SAMDL.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataToolbox", "DataToolbox\DataToolbox.csproj", "{9B0BD77B-12B8-4B68-96B9-90A2868E6DF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SALVL_Legacy", "SALVL_Legacy\SALVL_Legacy.csproj", "{C02613CE-6906-4E97-A584-17852746E39D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splitMDL", "splitMDL\splitMDL.csproj", "{61AFA433-FBD9-4033-9822-EE5D991937EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splitMTN", "splitMTN\splitMTN.csproj", "{58051113-C935-4EBD-99AE-DED1D3D0C42A}"
@@ -175,10 +173,6 @@ Global
 		{9B0BD77B-12B8-4B68-96B9-90A2868E6DF0}.Release|Any CPU.ActiveCfg = Release|x86
 		{9B0BD77B-12B8-4B68-96B9-90A2868E6DF0}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{9B0BD77B-12B8-4B68-96B9-90A2868E6DF0}.Release|Mixed Platforms.Build.0 = Release|x86
-		{C02613CE-6906-4E97-A584-17852746E39D}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{C02613CE-6906-4E97-A584-17852746E39D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{C02613CE-6906-4E97-A584-17852746E39D}.Release|Any CPU.ActiveCfg = Release|x86
-		{C02613CE-6906-4E97-A584-17852746E39D}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{61AFA433-FBD9-4033-9822-EE5D991937EB}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{61AFA433-FBD9-4033-9822-EE5D991937EB}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{61AFA433-FBD9-4033-9822-EE5D991937EB}.Debug|Mixed Platforms.Build.0 = Debug|x86
