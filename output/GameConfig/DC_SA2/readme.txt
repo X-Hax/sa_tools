@@ -1,1 +1,0 @@
-To use this, extract a GDI or CDI rip of Sonic Adventure 2 into a "data" folder and run the batch files.
