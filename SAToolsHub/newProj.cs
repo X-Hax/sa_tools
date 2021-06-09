@@ -196,7 +196,10 @@ namespace SAToolsHub
 			if (template != null)
 			{
 				gameName = template.GameInfo.GameName;
-				gamePath = template.GameInfo.GameSystemFolder;
+				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
+                // This should never happen under normal circumstances
+                if (gamePath == "")
+                    throw new Exception("Game path not set");
 				dataFolder = template.GameInfo.DataFolder;
 				splitEntries = template.SplitEntries;
 				splitMdlEntries = template.SplitMDLEntries;

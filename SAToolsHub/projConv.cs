@@ -64,7 +64,7 @@ namespace SAToolsHub
 
 			templateFile = ProjectFunctions.openTemplateFile(template);
 
-			return templateFile.GameInfo.GameSystemFolder;
+			return ProjectFunctions.GetGamePath(templateFile.GameInfo.GameName);
 		}
 		#endregion
 

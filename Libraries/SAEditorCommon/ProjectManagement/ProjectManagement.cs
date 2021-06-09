@@ -34,8 +34,6 @@ namespace SAEditorCommon.ProjectManagement
 		{
 			[XmlAttribute("gameName")]
 			public string GameName { get; set; }
-			[XmlAttribute("gameSystemFolder")]
-			public string GameSystemFolder { get; set; }
 			[XmlAttribute("dataFolder")]
 			public string DataFolder { get; set; }
 			[XmlAttribute("checkFile")]
@@ -229,7 +227,7 @@ namespace SAEditorCommon.ProjectManagement
 			templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
 			templateFileStream.Close();
 
-			if (templateFile.GameInfo.GameSystemFolder.Length <= 0)
+			if (GetGamePath(templateFile.GameInfo.GameName) == "")
 			{
 				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease select a valid game path containing this file: " + templateFile.GameInfo.CheckFile + ".\n\nPress OK to select a valid path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
@@ -247,7 +245,7 @@ namespace SAEditorCommon.ProjectManagement
 							if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
 							{
 								TextWriter splitsWriter = File.CreateText(templateFilePath);
-								templateFile.GameInfo.GameSystemFolder = fsd.FileName;
+                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
 								templateFileSerializer.Serialize(splitsWriter, templateFile);
 								
 								return templateFile;
@@ -289,7 +287,7 @@ namespace SAEditorCommon.ProjectManagement
 				else
 					return null;
 			}
-			else if (!Directory.Exists(templateFile.GameInfo.GameSystemFolder))
+			else if (!Directory.Exists(GetGamePath(templateFile.GameInfo.GameName)))
 			{
 				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + templateFile.GameInfo.GameName + " does not exist.\n\nPlease press OK and select the correct path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gamePathWarning == DialogResult.OK)
@@ -306,10 +304,7 @@ namespace SAEditorCommon.ProjectManagement
 							string checkFileHash = HelperFunctions.FileHash(checkFile);
 							if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
 							{
-								TextWriter splitsWriter = File.CreateText(templateFilePath);
-								templateFile.GameInfo.GameSystemFolder = fsd.FileName;
-								templateFileSerializer.Serialize(splitsWriter, templateFile);
-
+                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
 								return templateFile;
 							}
 							else
@@ -352,5 +347,54 @@ namespace SAEditorCommon.ProjectManagement
 			else
 				return templateFile;
 		}
-	}
+
+        /// <summary>
+        /// Gets the path for a specified game from GamePaths.ini.
+        /// </summary>
+        /// <returns>Path string</returns>
+        public static string GetGamePath(string gameName)
+        {
+            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+            // Release mode
+            string gamePathsFile = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
+            if (File.Exists(gamePathsFile))
+                goto getpath;
+            // Visual Studio mode
+            else
+            {
+                gamePathsFile = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
+                if (File.Exists(gamePathsFile))
+                    goto getpath;
+            }
+            return "";
+        getpath:
+            Dictionary<string, string> gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFile);
+            return gamePathsList.ContainsKey(gameName) ? gamePathsList[gameName] : "";
+        }
+
+        /// <summary>
+        /// Sets the path for a specified game in GamePaths.ini.
+        /// </summary>
+        public static void SetGamePath(string gameName, string gamePath)
+        {
+            Dictionary<string, string> gamePathsList;
+            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+            string gamePathsFilePath;
+            // Release mode
+            if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
+                gamePathsFilePath = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
+            // Visual Studio mode
+            else
+                gamePathsFilePath = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
+            if (File.Exists(gamePathsFilePath))
+                gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
+            else 
+                gamePathsList = new Dictionary<string, string>();
+            if (gamePathsList.ContainsKey(gameName))
+                gamePathsList[gameName] = gamePath;
+            else
+                gamePathsList.Add(gameName, gamePath);
+            IniSerializer.Serialize(gamePathsList, gamePathsFilePath);
+        }
+    }
 }

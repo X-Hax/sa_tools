@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SADXPC" gameSystemFolder="D:\SADX" dataFolder="PC_SADX" checkFile="sonic.exe" />
+  <GameInfo gameName="SADXPC" dataFolder="PC_SADX" checkFile="sonic.exe" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg01" CmnName="Emerald Coast" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg02" CmnName="Windy Valley" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg03" CmnName="Twinkle Park" />
