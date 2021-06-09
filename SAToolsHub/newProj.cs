@@ -430,8 +430,8 @@ namespace SAToolsHub
 
 			progress.SetMaxSteps(setProgressMaxStep());
 
-			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
-				iniFolder = Path.Combine(appPath, dataFolder);
+			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder)))
+				iniFolder = Path.Combine(appPath, "GameConfig", dataFolder);
 			else
 				iniFolder = Path.Combine(appPath, "..\\GameConfig", dataFolder);
 
@@ -503,7 +503,7 @@ namespace SAToolsHub
 		{
 			if (e.Error != null)
 			{
-				MessageBox.Show("Project failed to split :" + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{
