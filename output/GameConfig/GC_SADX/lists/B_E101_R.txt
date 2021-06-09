@@ -1,0 +1,3 @@
+boss_e101_r/landtable2400.c.sa1lvl
+boss_e101_r/common/bgmodels/ecsc_s_hare_umi.nja.sa1mdl
+boss_e101_r/common/bgmodels/ecsc_s_sora_hare.nja.sa1mdl

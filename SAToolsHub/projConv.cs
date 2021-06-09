@@ -52,10 +52,10 @@ namespace SAToolsHub
 			switch (game)
 			{
 				case "sadx":
-					template = "Configuration/Templates/sadxpc_template.xml";
+					template = "GameConfig/PC - SADX.xml";
 					break;
 				case "sa2":
-					template = "Configuration/Templates/sa2pc_template.xml";
+					template = "GameConfig/PC - SA2.xml";
 					break;
 				default:
 					template = "";

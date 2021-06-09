@@ -1,0 +1,7 @@
+chao/stg_garden01_ec/obj/0000B520.sa1mdl
+chao/stg_garden01_ec/obj/0000BC6C.sa1mdl
+chao/stg_garden01_ec/landtablegarden01.c.sa1lvl
+chao/stg_garden01_ec/sky/ecch_nc_sky.nja.sa1mdl
+chao/stg_garden01_ec/sky/ecch_nc_sea01.nja.sa1mdl
+chao/stg_garden01_ec/sky/ecch_nc_sea02.nja.sa1mdl
+chao/stg_garden01_ec/killcolli/00010854.sa1mdl

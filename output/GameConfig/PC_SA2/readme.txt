@@ -1,0 +1,1 @@
+To use this, copy all files from Sonic Adventure 2 PC to the "data" folder and run the batch files.

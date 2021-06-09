@@ -40,12 +40,11 @@ namespace SAToolsHub
 			comboBox1.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
-			if (Directory.Exists(Path.Combine(appPath, "Templates")))
-				templatesPath = Path.Combine(appPath, "Templates");
-			else
-				templatesPath = Path.Combine(appPath, "..\\..\\Configuration/Templates");
-
-			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
+            if (Directory.Exists(Path.Combine(Application.ExecutablePath, "GameConfig")))
+				templatesPath = Path.Combine(appPath, "GameConfig");
+            else
+                templatesPath = Path.Combine(appPath, "..\\GameConfig");
+            Dictionary<string, string> templateList = loadTemplateList(templatesPath);
 
 			foreach (KeyValuePair<string, string> entry in templateList)
 			{
@@ -326,10 +325,10 @@ namespace SAToolsHub
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
-			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
-				return Path.Combine(appPath, dataFolder, "..\\objdefs\\");
+			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder, "objdefs")))
+				return Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
 			else
-				return Path.Combine(appPath, "..\\..\\SADXObjectDefinitions");
+				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
 		private void splitFiles(Templates.SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
@@ -434,7 +433,7 @@ namespace SAToolsHub
 			if (Directory.Exists(Path.Combine(appPath, dataFolder)))
 				iniFolder = Path.Combine(appPath, dataFolder);
 			else
-				iniFolder = Path.Combine(appPath, "..\\..\\Configuration", dataFolder);
+				iniFolder = Path.Combine(appPath, "..\\GameConfig", dataFolder);
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
@@ -454,8 +453,8 @@ namespace SAToolsHub
 					if (Directory.Exists(objdefsPath))
 					{
 						CopyFolder(objdefsPath, outputObjdefsPath);
-						File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"));
-						File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"));
+						File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
+						File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
 					}
 					else
 					{
@@ -502,9 +501,9 @@ namespace SAToolsHub
 
 		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			if (!(e.Error == null))
+			if (e.Error != null)
 			{
-				MessageBox.Show("Project failed to split!", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Project failed to split :" + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
 			{

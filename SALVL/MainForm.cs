@@ -427,7 +427,7 @@ namespace SonicRetro.SAModel.SALVL
 			changeLevelToolStripMenuItem.Enabled = true;
 
 			// load stage lights
-			string stageLightPath = Path.Combine(Environment.CurrentDirectory, "Levels", "Stage Lights.ini");
+			string stageLightPath = Path.Combine(Environment.CurrentDirectory, "Misc", "Stage Lights.ini");
 
 			if (File.Exists(stageLightPath))
 			{

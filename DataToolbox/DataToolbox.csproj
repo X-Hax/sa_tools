@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\tools\</OutputPath>
+    <OutputPath>..\build\tools\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\tools\</OutputPath>
+    <OutputPath>..\build\tools\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,13 +40,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FraGag.Compression.Prs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -101,17 +96,22 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SA Tools\SA Tools.csproj">
+    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
+      <Name>FraGag.Compression.Prs</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\SA Tools\SA Tools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
       <Name>SA Tools</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">
+    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
       <Project>{0d72870c-29a2-4b16-b016-2f2e266a0e64}</Project>
       <Name>SAEditorCommon</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SAModel\SAModel.csproj">
+    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>
       <Private>False</Private>

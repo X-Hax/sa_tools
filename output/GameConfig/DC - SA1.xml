@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <GameInfo gameName="SA1" gameSystemFolder="D:\ISO\Extracted\US 1.005" dataFolder="DC_SA1" checkFile="1ST_READ.BIN" />
+  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
+  <SplitEntry SourceFile="SONICADV\S_MOT.PRS" IniFile="S_MOT" />
+  <SplitEntry SourceFile="SONICADV\S_SBMOT.PRS" IniFile="S_SBMOT" />
+  <SplitEntry SourceFile="SONICADV\M_SBMOT.PRS" IniFile="M_SBMOT" />
+  <SplitEntry SourceFile="SONICADV\K_MOT.PRS" IniFile="K_MOT" />
+  <SplitEntry SourceFile="SONICADV\A_MOT.PRS" IniFile="A_MOT" />
+  <SplitEntry SourceFile="SONICADV\B_MOT.PRS" IniFile="B_MOT" />
+  <SplitEntry SourceFile="SONICADV\E_MOT.PRS" IniFile="E_MOT" />
+  <SplitEntry SourceFile="SONICADV\TIKAL_PROG.PRS" IniFile="TIKAL_PROG" />
+  <SplitEntry SourceFile="SONICADV\STG00.PRS" IniFile="STG00" />
+  <SplitEntry SourceFile="SONICADV\STG01.PRS" IniFile="STG01" />
+  <SplitEntry SourceFile="SONICADV\STG02.PRS" IniFile="STG02" />
+  <SplitEntry SourceFile="SONICADV\STG03.PRS" IniFile="STG03" />
+  <SplitEntry SourceFile="SONICADV\STG04.PRS" IniFile="STG04" />
+  <SplitEntry SourceFile="SONICADV\STG05.PRS" IniFile="STG05" />
+  <SplitEntry SourceFile="SONICADV\STG06.PRS" IniFile="STG06" />
+  <SplitEntry SourceFile="SONICADV\STG07.PRS" IniFile="STG07" />
+  <SplitEntry SourceFile="SONICADV\STG08.PRS" IniFile="STG08" />
+  <SplitEntry SourceFile="SONICADV\STG09.PRS" IniFile="STG09" />
+  <SplitEntry SourceFile="SONICADV\STG10.PRS" IniFile="STG10" />
+  <SplitEntry SourceFile="SONICADV\STG12.PRS" IniFile="STG12" />
+  <SplitEntry SourceFile="SONICADV\ADV00.PRS" IniFile="ADV00" />
+  <SplitEntry SourceFile="SONICADV\ADV0100.PRS" IniFile="ADV0100" />
+  <SplitEntry SourceFile="SONICADV\ADV0130.PRS" IniFile="ADV0130" />
+  <SplitEntry SourceFile="SONICADV\ADV02.PRS" IniFile="ADV02" />
+  <SplitEntry SourceFile="SONICADV\ADV03.PRS" IniFile="ADV03" />
+  <SplitEntry SourceFile="SONICADV\AL_MAIN.PRS" IniFile="AL_MAIN" />
+  <SplitEntry SourceFile="SONICADV\AL_GARDEN00.PRS" IniFile="AL_GARDEN00" />
+  <SplitEntry SourceFile="SONICADV\AL_GARDEN01.PRS" IniFile="AL_GARDEN01" />
+  <SplitEntry SourceFile="SONICADV\AL_GARDEN02.PRS" IniFile="AL_GARDEN02" />
+  <SplitEntry SourceFile="SONICADV\AL_RACE.PRS" IniFile="AL_RACE" />
+  <SplitEntry SourceFile="SONICADV\B_CHAOS0.PRS" IniFile="B_CHAOS0" />
+  <SplitEntry SourceFile="SONICADV\B_CHAOS2.PRS" IniFile="B_CHAOS2" />
+  <SplitEntry SourceFile="SONICADV\B_CHAOS4.PRS" IniFile="B_CHAOS4" />
+  <SplitEntry SourceFile="SONICADV\B_CHAOS4.PRS" IniFile="B_CHAOS6" />
+  <SplitEntry SourceFile="SONICADV\B_CHAOS7.PRS" IniFile="B_CHAOS7" />
+  <SplitEntry SourceFile="SONICADV\B_E101.PRS" IniFile="B_E101" />
+  <SplitEntry SourceFile="SONICADV\B_E101_R.PRS" IniFile="B_E101_R" />
+  <SplitEntry SourceFile="SONICADV\B_EGM1.PRS" IniFile="B_EGM1" />
+  <SplitEntry SourceFile="SONICADV\B_EGM2.PRS" IniFile="B_EGM2" />
+  <SplitEntry SourceFile="SONICADV\B_EGM3.PRS" IniFile="B_EGM3" />
+  <SplitEntry SourceFile="SONICADV\B_ROBO.PRS" IniFile="B_ROBO" />
+  <SplitEntry SourceFile="SONICADV\MINICART.PRS" IniFile="MINICART" />
+  <SplitEntry SourceFile="SONICADV\SBOARD.PRS" IniFile="SBOARD" />
+  <SplitEntry SourceFile="SONICADV\SHOOTING.PRS" IniFile="SHOOTING" />
+  <SplitEntry SourceFile="SONICADV\ADVERTISE.PRS" IniFile="ADVERTISE" />
+  <SplitEntry SourceFile="SONICADV\SUMMARY.PRS" IniFile="SUMMARY" />
+  <SplitEntry SourceFile="SONICADV\B_ROBO.PRS" IniFile="B_ROBO_NB" />
+  <SplitEntry SourceFile="SONICADV\B_E101_R.PRS" IniFile="B_E101_R_NB" />
+</SplitTemplate>

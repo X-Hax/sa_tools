@@ -1,0 +1,11 @@
+call splitsonic.bat
+call splitadv00models.bat
+call splitadv01cmodels.bat
+call splitadv01models.bat
+call splitadv02models.bat
+call splitadv03models.bat
+call splitbosschaos0models.bat
+call splitchaostggarden02mr_daytime.bat
+call splitchaostggarden02mr_evening.bat
+call splitchaostggarden02mr_night.bat
+call splitchrmodels.bat

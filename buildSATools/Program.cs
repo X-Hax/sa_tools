@@ -9,7 +9,7 @@ namespace buildSATools
         {
             // Set output directory
             int retries = 0;
-            string outdir = "build";
+            string outdir = "output";
             if (args.Length > 0)
                 outdir = args[0];
             Console.WriteLine("Output directory: {0}", Path.GetFullPath(outdir));
