@@ -40,8 +40,8 @@ namespace SAToolsHub
 			comboBox1.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
-            if (Directory.Exists(Path.Combine(Application.ExecutablePath, "GameConfig")))
-				templatesPath = Path.Combine(appPath, "GameConfig");
+            if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
+                templatesPath = Path.Combine(appPath, "GameConfig");
             else
                 templatesPath = Path.Combine(appPath, "..\\GameConfig");
             Dictionary<string, string> templateList = loadTemplateList(templatesPath);
