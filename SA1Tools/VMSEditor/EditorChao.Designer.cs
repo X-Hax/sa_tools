@@ -77,7 +77,6 @@ namespace VMSEditor
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label71 = new System.Windows.Forms.Label();
-            this.numericUpDownID = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.tabPageAppearance = new System.Windows.Forms.TabPage();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.label33 = new System.Windows.Forms.Label();
@@ -92,7 +91,6 @@ namespace VMSEditor
             this.label72 = new System.Windows.Forms.Label();
             this.checkBoxColorFlag0x10 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagJewel = new System.Windows.Forms.CheckBox();
-            this.numericUpDown_ColorFlags = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.checkBoxColorFlag0x80 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagSilver = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlag0x1 = new System.Windows.Forms.CheckBox();
@@ -270,56 +268,48 @@ namespace VMSEditor
             this.label97 = new System.Windows.Forms.Label();
             this.groupBoxMemories_7 = new System.Windows.Forms.GroupBox();
             this.label94 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_7 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label95 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_7 = new System.Windows.Forms.NumericUpDown();
             this.label96 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_7 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_6 = new System.Windows.Forms.GroupBox();
             this.label91 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_6 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label92 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_6 = new System.Windows.Forms.NumericUpDown();
             this.label93 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_6 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_5 = new System.Windows.Forms.GroupBox();
             this.label88 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_5 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label89 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_5 = new System.Windows.Forms.NumericUpDown();
             this.label90 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_5 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_4 = new System.Windows.Forms.GroupBox();
             this.label85 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_4 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label86 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_4 = new System.Windows.Forms.NumericUpDown();
             this.label87 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_4 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_3 = new System.Windows.Forms.GroupBox();
             this.label82 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_3 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label83 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_3 = new System.Windows.Forms.NumericUpDown();
             this.label84 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_3 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_2 = new System.Windows.Forms.GroupBox();
             this.label79 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_2 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label80 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_2 = new System.Windows.Forms.NumericUpDown();
             this.label81 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_2 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_1 = new System.Windows.Forms.GroupBox();
             this.label76 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_1 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label77 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_1 = new System.Windows.Forms.NumericUpDown();
             this.label78 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_1 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_0 = new System.Windows.Forms.GroupBox();
             this.label66 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_0 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label65 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_0 = new System.Windows.Forms.NumericUpDown();
             this.label64 = new System.Windows.Forms.Label();
@@ -374,6 +364,16 @@ namespace VMSEditor
             this.japaneseHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.listBoxDataSlots = new System.Windows.Forms.ListBox();
+            this.numericUpDownID = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDown_ColorFlags = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_7 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_6 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_5 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_4 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_3 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_2 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_1 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownMemoriesID_0 = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.tabControl1.SuspendLayout();
             this.tabPageGeneral.SuspendLayout();
             this.groupBox15.SuspendLayout();
@@ -397,14 +397,12 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZ)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).BeginInit();
             this.tabPageAppearance.SuspendLayout();
             this.groupBox9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKindness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAggressive)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCurious)).BeginInit();
             this.groupBox10.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).BeginInit();
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFeet)).BeginInit();
@@ -496,35 +494,27 @@ namespace VMSEditor
             this.tabPageChaoMemories.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesPage)).BeginInit();
             this.groupBoxMemories_7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_7)).BeginInit();
             this.groupBoxMemories_6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_6)).BeginInit();
             this.groupBoxMemories_5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_5)).BeginInit();
             this.groupBoxMemories_4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_4)).BeginInit();
             this.groupBoxMemories_3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_3)).BeginInit();
             this.groupBoxMemories_2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_2)).BeginInit();
             this.groupBoxMemories_1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_1)).BeginInit();
             this.groupBoxMemories_0.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_0)).BeginInit();
             this.tabPageRace.SuspendLayout();
@@ -558,6 +548,16 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox23)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox22)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxType
@@ -1110,14 +1110,6 @@ namespace VMSEditor
             this.label71.TabIndex = 56;
             this.label71.Text = "ID:";
             // 
-            // numericUpDownID
-            // 
-            this.numericUpDownID.Hexadecimal = true;
-            this.numericUpDownID.Location = new System.Drawing.Point(78, 91);
-            this.numericUpDownID.Name = "numericUpDownID";
-            this.numericUpDownID.Size = new System.Drawing.Size(133, 26);
-            this.numericUpDownID.TabIndex = 55;
-            // 
             // tabPageAppearance
             // 
             this.tabPageAppearance.BackColor = System.Drawing.SystemColors.Control;
@@ -1253,6 +1245,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x20.TabIndex = 80;
             this.checkBoxColorFlag0x20.Text = "0x20";
             this.checkBoxColorFlag0x20.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlag0x20.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // checkBoxColorFlagGold
             // 
@@ -1263,6 +1256,7 @@ namespace VMSEditor
             this.checkBoxColorFlagGold.TabIndex = 77;
             this.checkBoxColorFlagGold.Text = "Gold";
             this.checkBoxColorFlagGold.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlagGold.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // label72
             // 
@@ -1282,6 +1276,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x10.TabIndex = 79;
             this.checkBoxColorFlag0x10.Text = "0x10";
             this.checkBoxColorFlag0x10.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlag0x10.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // checkBoxColorFlagJewel
             // 
@@ -1292,16 +1287,7 @@ namespace VMSEditor
             this.checkBoxColorFlagJewel.TabIndex = 76;
             this.checkBoxColorFlagJewel.Text = "Jewel:";
             this.checkBoxColorFlagJewel.UseVisualStyleBackColor = true;
-            this.checkBoxColorFlagJewel.CheckedChanged += new System.EventHandler(this.checkBoxColorFlagJewel_CheckedChanged);
-            // 
-            // numericUpDown_ColorFlags
-            // 
-            this.numericUpDown_ColorFlags.Hexadecimal = true;
-            this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(75, 144);
-            this.numericUpDown_ColorFlags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
-            this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 26);
-            this.numericUpDown_ColorFlags.TabIndex = 73;
+            this.checkBoxColorFlagJewel.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // checkBoxColorFlag0x80
             // 
@@ -1312,6 +1298,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x80.TabIndex = 81;
             this.checkBoxColorFlag0x80.Text = "0x80";
             this.checkBoxColorFlag0x80.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlag0x80.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // checkBoxColorFlagSilver
             // 
@@ -1322,6 +1309,7 @@ namespace VMSEditor
             this.checkBoxColorFlagSilver.TabIndex = 75;
             this.checkBoxColorFlagSilver.Text = "Silver";
             this.checkBoxColorFlagSilver.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlagSilver.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // checkBoxColorFlag0x1
             // 
@@ -1332,6 +1320,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x1.TabIndex = 78;
             this.checkBoxColorFlag0x1.Text = "0x1";
             this.checkBoxColorFlag0x1.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlag0x1.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // checkBoxColorFlagBlack
             // 
@@ -1342,6 +1331,7 @@ namespace VMSEditor
             this.checkBoxColorFlagBlack.TabIndex = 74;
             this.checkBoxColorFlagBlack.Text = "Black";
             this.checkBoxColorFlagBlack.UseVisualStyleBackColor = true;
+            this.checkBoxColorFlagBlack.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             // 
             // comboBoxJewelColor
             // 
@@ -3458,14 +3448,6 @@ namespace VMSEditor
             this.label94.TabIndex = 6;
             this.label94.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_7
-            // 
-            this.numericUpDownMemoriesID_7.Hexadecimal = true;
-            this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
-            this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_7.TabIndex = 1;
-            // 
             // label95
             // 
             this.label95.AutoSize = true;
@@ -3486,6 +3468,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_7.Name = "numericUpDownMemoriesMeet_7";
             this.numericUpDownMemoriesMeet_7.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_7.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label96
             // 
@@ -3507,6 +3490,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_7.Name = "numericUpDownMemoriesLike_7";
             this.numericUpDownMemoriesLike_7.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_7.TabIndex = 3;
+            this.numericUpDownMemoriesLike_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_6
             // 
@@ -3532,14 +3516,6 @@ namespace VMSEditor
             this.label91.TabIndex = 6;
             this.label91.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_6
-            // 
-            this.numericUpDownMemoriesID_6.Hexadecimal = true;
-            this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
-            this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_6.TabIndex = 1;
-            // 
             // label92
             // 
             this.label92.AutoSize = true;
@@ -3560,6 +3536,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_6.Name = "numericUpDownMemoriesMeet_6";
             this.numericUpDownMemoriesMeet_6.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_6.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label93
             // 
@@ -3581,6 +3558,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_6.Name = "numericUpDownMemoriesLike_6";
             this.numericUpDownMemoriesLike_6.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_6.TabIndex = 3;
+            this.numericUpDownMemoriesLike_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_5
             // 
@@ -3606,14 +3584,6 @@ namespace VMSEditor
             this.label88.TabIndex = 6;
             this.label88.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_5
-            // 
-            this.numericUpDownMemoriesID_5.Hexadecimal = true;
-            this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
-            this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_5.TabIndex = 1;
-            // 
             // label89
             // 
             this.label89.AutoSize = true;
@@ -3634,6 +3604,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_5.Name = "numericUpDownMemoriesMeet_5";
             this.numericUpDownMemoriesMeet_5.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_5.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label90
             // 
@@ -3655,6 +3626,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_5.Name = "numericUpDownMemoriesLike_5";
             this.numericUpDownMemoriesLike_5.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_5.TabIndex = 3;
+            this.numericUpDownMemoriesLike_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_4
             // 
@@ -3680,14 +3652,6 @@ namespace VMSEditor
             this.label85.TabIndex = 6;
             this.label85.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_4
-            // 
-            this.numericUpDownMemoriesID_4.Hexadecimal = true;
-            this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
-            this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_4.TabIndex = 1;
-            // 
             // label86
             // 
             this.label86.AutoSize = true;
@@ -3708,6 +3672,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_4.Name = "numericUpDownMemoriesMeet_4";
             this.numericUpDownMemoriesMeet_4.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_4.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label87
             // 
@@ -3729,6 +3694,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_4.Name = "numericUpDownMemoriesLike_4";
             this.numericUpDownMemoriesLike_4.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_4.TabIndex = 3;
+            this.numericUpDownMemoriesLike_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_3
             // 
@@ -3754,14 +3720,6 @@ namespace VMSEditor
             this.label82.TabIndex = 6;
             this.label82.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_3
-            // 
-            this.numericUpDownMemoriesID_3.Hexadecimal = true;
-            this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
-            this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_3.TabIndex = 1;
-            // 
             // label83
             // 
             this.label83.AutoSize = true;
@@ -3782,6 +3740,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_3.Name = "numericUpDownMemoriesMeet_3";
             this.numericUpDownMemoriesMeet_3.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_3.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label84
             // 
@@ -3803,6 +3762,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_3.Name = "numericUpDownMemoriesLike_3";
             this.numericUpDownMemoriesLike_3.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_3.TabIndex = 3;
+            this.numericUpDownMemoriesLike_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_2
             // 
@@ -3828,14 +3788,6 @@ namespace VMSEditor
             this.label79.TabIndex = 6;
             this.label79.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_2
-            // 
-            this.numericUpDownMemoriesID_2.Hexadecimal = true;
-            this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
-            this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_2.TabIndex = 1;
-            // 
             // label80
             // 
             this.label80.AutoSize = true;
@@ -3856,6 +3808,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_2.Name = "numericUpDownMemoriesMeet_2";
             this.numericUpDownMemoriesMeet_2.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_2.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label81
             // 
@@ -3877,6 +3830,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_2.Name = "numericUpDownMemoriesLike_2";
             this.numericUpDownMemoriesLike_2.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_2.TabIndex = 3;
+            this.numericUpDownMemoriesLike_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_1
             // 
@@ -3902,14 +3856,6 @@ namespace VMSEditor
             this.label76.TabIndex = 6;
             this.label76.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_1
-            // 
-            this.numericUpDownMemoriesID_1.Hexadecimal = true;
-            this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
-            this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_1.TabIndex = 1;
-            // 
             // label77
             // 
             this.label77.AutoSize = true;
@@ -3930,6 +3876,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_1.Name = "numericUpDownMemoriesMeet_1";
             this.numericUpDownMemoriesMeet_1.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_1.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label78
             // 
@@ -3951,6 +3898,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_1.Name = "numericUpDownMemoriesLike_1";
             this.numericUpDownMemoriesLike_1.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_1.TabIndex = 3;
+            this.numericUpDownMemoriesLike_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // groupBoxMemories_0
             // 
@@ -3976,14 +3924,6 @@ namespace VMSEditor
             this.label66.TabIndex = 6;
             this.label66.Text = "Meet:";
             // 
-            // numericUpDownMemoriesID_0
-            // 
-            this.numericUpDownMemoriesID_0.Hexadecimal = true;
-            this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(64, 36);
-            this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
-            this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(100, 26);
-            this.numericUpDownMemoriesID_0.TabIndex = 1;
-            // 
             // label65
             // 
             this.label65.AutoSize = true;
@@ -4004,6 +3944,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_0.Name = "numericUpDownMemoriesMeet_0";
             this.numericUpDownMemoriesMeet_0.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesMeet_0.TabIndex = 2;
+            this.numericUpDownMemoriesMeet_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // label64
             // 
@@ -4025,6 +3966,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_0.Name = "numericUpDownMemoriesLike_0";
             this.numericUpDownMemoriesLike_0.Size = new System.Drawing.Size(100, 26);
             this.numericUpDownMemoriesLike_0.TabIndex = 3;
+            this.numericUpDownMemoriesLike_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // tabPageRace
             // 
@@ -4457,7 +4399,7 @@ namespace VMSEditor
             this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1163, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(1163, 36);
             this.menuStrip1.TabIndex = 19;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -4468,14 +4410,14 @@ namespace VMSEditor
             this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 32);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openAVMSFileToolStripMenuItem
             // 
             this.openAVMSFileToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.open;
             this.openAVMSFileToolStripMenuItem.Name = "openAVMSFileToolStripMenuItem";
-            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(257, 34);
             this.openAVMSFileToolStripMenuItem.Text = "Open a VMS File...";
             this.openAVMSFileToolStripMenuItem.Click += new System.EventHandler(this.openAVMSFileToolStripMenuItem_Click);
             // 
@@ -4488,7 +4430,7 @@ namespace VMSEditor
             this.chaoUploadDataToolStripMenuItem});
             this.saveAsToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(257, 34);
             this.saveAsToolStripMenuItem.Text = "Save as";
             // 
             // chaoDownloadDataToolStripMenuItem
@@ -4533,7 +4475,7 @@ namespace VMSEditor
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(257, 34);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -4543,7 +4485,7 @@ namespace VMSEditor
             this.generateAVMIFileToolStripMenuItem,
             this.japaneseHeaderToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 32);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // generateAVMIFileToolStripMenuItem
@@ -4582,6 +4524,96 @@ namespace VMSEditor
             this.listBoxDataSlots.Size = new System.Drawing.Size(322, 504);
             this.listBoxDataSlots.TabIndex = 21;
             this.listBoxDataSlots.SelectedIndexChanged += new System.EventHandler(this.listBoxDataSlots_SelectedIndexChanged);
+            // 
+            // numericUpDownID
+            // 
+            this.numericUpDownID.Hexadecimal = true;
+            this.numericUpDownID.Location = new System.Drawing.Point(78, 91);
+            this.numericUpDownID.Name = "numericUpDownID";
+            this.numericUpDownID.Size = new System.Drawing.Size(133, 26);
+            this.numericUpDownID.TabIndex = 55;
+            // 
+            // numericUpDown_ColorFlags
+            // 
+            this.numericUpDown_ColorFlags.Enabled = false;
+            this.numericUpDown_ColorFlags.Hexadecimal = true;
+            this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(75, 144);
+            this.numericUpDown_ColorFlags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
+            this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 26);
+            this.numericUpDown_ColorFlags.TabIndex = 73;
+            // 
+            // numericUpDownMemoriesID_7
+            // 
+            this.numericUpDownMemoriesID_7.Hexadecimal = true;
+            this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
+            this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_7.TabIndex = 1;
+            this.numericUpDownMemoriesID_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_6
+            // 
+            this.numericUpDownMemoriesID_6.Hexadecimal = true;
+            this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
+            this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_6.TabIndex = 1;
+            this.numericUpDownMemoriesID_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_5
+            // 
+            this.numericUpDownMemoriesID_5.Hexadecimal = true;
+            this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
+            this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_5.TabIndex = 1;
+            this.numericUpDownMemoriesID_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_4
+            // 
+            this.numericUpDownMemoriesID_4.Hexadecimal = true;
+            this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
+            this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_4.TabIndex = 1;
+            this.numericUpDownMemoriesID_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_3
+            // 
+            this.numericUpDownMemoriesID_3.Hexadecimal = true;
+            this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
+            this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_3.TabIndex = 1;
+            this.numericUpDownMemoriesID_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_2
+            // 
+            this.numericUpDownMemoriesID_2.Hexadecimal = true;
+            this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
+            this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_2.TabIndex = 1;
+            this.numericUpDownMemoriesID_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_1
+            // 
+            this.numericUpDownMemoriesID_1.Hexadecimal = true;
+            this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
+            this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_1.TabIndex = 1;
+            this.numericUpDownMemoriesID_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            // 
+            // numericUpDownMemoriesID_0
+            // 
+            this.numericUpDownMemoriesID_0.Hexadecimal = true;
+            this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(64, 36);
+            this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
+            this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(100, 26);
+            this.numericUpDownMemoriesID_0.TabIndex = 1;
+            this.numericUpDownMemoriesID_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             // 
             // EditorChao
             // 
@@ -4627,7 +4659,6 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZ)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).EndInit();
             this.tabPageAppearance.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
@@ -4636,7 +4667,6 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCurious)).EndInit();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).EndInit();
@@ -4747,42 +4777,34 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesPage)).EndInit();
             this.groupBoxMemories_7.ResumeLayout(false);
             this.groupBoxMemories_7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_7)).EndInit();
             this.groupBoxMemories_6.ResumeLayout(false);
             this.groupBoxMemories_6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_6)).EndInit();
             this.groupBoxMemories_5.ResumeLayout(false);
             this.groupBoxMemories_5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_5)).EndInit();
             this.groupBoxMemories_4.ResumeLayout(false);
             this.groupBoxMemories_4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_4)).EndInit();
             this.groupBoxMemories_3.ResumeLayout(false);
             this.groupBoxMemories_3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_3)).EndInit();
             this.groupBoxMemories_2.ResumeLayout(false);
             this.groupBoxMemories_2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_2)).EndInit();
             this.groupBoxMemories_1.ResumeLayout(false);
             this.groupBoxMemories_1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_1)).EndInit();
             this.groupBoxMemories_0.ResumeLayout(false);
             this.groupBoxMemories_0.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_0)).EndInit();
             this.tabPageRace.ResumeLayout(false);
@@ -4819,6 +4841,16 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox22)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

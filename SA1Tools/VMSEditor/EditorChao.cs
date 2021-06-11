@@ -180,7 +180,7 @@ namespace VMSEditor
             trackBarBondGamma.Value = chaoData.Memories.player[5].like;
             numericUpDownMeetGamma.Value = chaoData.Memories.player[5].meet;
             // Chao memories
-            RefreshChaoMemories();
+            ReadChaoMemories();
             // Other stuff
             numericUpDownReincarnations.Value = chaoData.Reincarnations;
             numericUpDownRaceTrack.Value = chaoData.Lane;
@@ -224,143 +224,139 @@ namespace VMSEditor
             chaoData.Key2 = (byte)numericUpDownKey2.Value;
             chaoData.Key3 = (byte)numericUpDownKey3.Value;
             chaoData.Key4 = (byte)numericUpDownKey4.Value;
-            //TODO here
-            numericUpDownFly.Value = chaoData.Fly;
-            numericUpDownRun.Value = chaoData.Run;
-            numericUpDownPower.Value = chaoData.Power;
-            numericUpDownHP.Value = chaoData.HP;
-            numericUpDownMaxHP.Value = chaoData.HP_Max;
-            comboBoxFruit0.SelectedIndex = (int)chaoData.Fruits[0];
-            comboBoxFruit1.SelectedIndex = (int)chaoData.Fruits[1];
-            comboBoxFruit2.SelectedIndex = (int)chaoData.Fruits[2];
-            comboBoxFruit3.SelectedIndex = (int)chaoData.Fruits[3];
-            comboBoxFruit4.SelectedIndex = (int)chaoData.Fruits[4];
-            comboBoxFruit5.SelectedIndex = (int)chaoData.Fruits[5];
-            comboBoxFruit6.SelectedIndex = (int)chaoData.Fruits[6];
-            comboBoxFruit7.SelectedIndex = (int)chaoData.Fruits[7];
-            trackBarSwimFly.Value = (int)(chaoData.FlyOrSwim * 100);
-            trackBarRunPower.Value = (int)(chaoData.RunOrPower * 100);
-            trackBarMagnitude.Value = (int)(chaoData.Magnitude * 100);
-            trackBarAffection.Value = chaoData.Affection;
-            numericUpDownLifeSpan.Value = chaoData.LifeLeft;
-            numericUpDownAgingFactor.Value = chaoData.AgingFactor;
+            chaoData.Fly = (ushort)numericUpDownFly.Value;
+            chaoData.Run = (ushort)numericUpDownRun.Value;
+            chaoData.Power = (ushort)numericUpDownPower.Value;
+            chaoData.HP = (ushort)numericUpDownHP.Value;
+            chaoData.HP_Max = (ushort)numericUpDownMaxHP.Value;
+            chaoData.Fruits[0] = (ChaoFruitsSA1)comboBoxFruit0.SelectedIndex;
+            chaoData.Fruits[1] = (ChaoFruitsSA1)comboBoxFruit1.SelectedIndex;
+            chaoData.Fruits[2] = (ChaoFruitsSA1)comboBoxFruit2.SelectedIndex;
+            chaoData.Fruits[3] = (ChaoFruitsSA1)comboBoxFruit3.SelectedIndex;
+            chaoData.Fruits[4] = (ChaoFruitsSA1)comboBoxFruit4.SelectedIndex;
+            chaoData.Fruits[5] = (ChaoFruitsSA1)comboBoxFruit5.SelectedIndex;
+            chaoData.Fruits[6] = (ChaoFruitsSA1)comboBoxFruit6.SelectedIndex;
+            chaoData.Fruits[7] = (ChaoFruitsSA1)comboBoxFruit7.SelectedIndex;
+            chaoData.FlyOrSwim = (float)trackBarSwimFly.Value / 100.0f;
+            chaoData.RunOrPower = (float)trackBarRunPower.Value / 100.0f;
+            chaoData.Magnitude = (float)trackBarMagnitude.Value / 100.0f;
+            chaoData.Affection = (ushort)trackBarAffection.Value;
+            chaoData.LifeLeft = (ushort)numericUpDownLifeSpan.Value;
+            chaoData.AgingFactor = (ushort)numericUpDownAgingFactor.Value;
             // Abilities
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Deer))
-                checkBoxDeerBow.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Gorilla))
-                checkBoxGorillaChest.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Elephant))
-                checkBoxElephantSumo.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Koala))
-                checkBoxKoalaTrumpet.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Lion))
-                checkBoxLionWash.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Mole))
-                checkBoxMoleDig.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Otter))
-                checkBoxOtterSwim.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Parrot))
-                checkBoxParrotSing.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Peacock))
-                checkBoxPeacockPose.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Penguin))
-                checkBoxPenguinSkate.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Rabbit))
-                checkBoxRabbitSomersault.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Seal))
-                checkBoxSealDance.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Skunk))
-                checkBoxSkunkDraw.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Swallow))
-                checkBoxSwallowTwirl.Checked = true;
-            if (chaoData.AnimalAbilities.HasFlag(AnimalFlagsSA1.Wallaby))
-                checkBoxWallabyPunch.Checked = true;
-            // Jewels
-            if (chaoData.Jewels.HasFlag(ChaoJewelsSA1.Amethyst))
-                checkBoxAmethyst.Checked = true;
-            if (chaoData.Jewels.HasFlag(ChaoJewelsSA1.Pearl))
-                checkBoxPearl.Checked = true;
-            if (chaoData.Jewels.HasFlag(ChaoJewelsSA1.Ruby))
-                checkBoxRuby.Checked = true;
-            if (chaoData.Jewels.HasFlag(ChaoJewelsSA1.Sapphire))
-                checkBoxSapphire.Checked = true;
-            if (chaoData.Jewels.HasFlag(ChaoJewelsSA1.Emerald))
-                checkBoxEmerald.Checked = true;
-            checkBoxColorFlag0x1.Checked = checkBoxColorFlag0x10.Checked = checkBoxColorFlag0x20.Checked = checkBoxColorFlag0x80.Checked =
-                checkBoxColorFlagBlack.Checked = checkBoxColorFlagSilver.Checked = checkBoxColorFlagGold.Checked = checkBoxColorFlagJewel.Checked = comboBoxJewelColor.Enabled = false;
-            numericUpDown_ColorFlags.Value = (ushort)chaoData.Flags;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Flag1))
-                checkBoxColorFlag0x1.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Flag10))
-                checkBoxColorFlag0x10.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Flag20))
-                checkBoxColorFlag0x20.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Flag80))
-                checkBoxColorFlag0x80.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Black))
-                checkBoxColorFlagBlack.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Silver))
-                checkBoxColorFlagSilver.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Gold))
-                checkBoxColorFlagGold.Checked = true;
-            if (chaoData.Flags.HasFlag(ChaoColorFlagsSA1.Jewel))
-                checkBoxColorFlagJewel.Checked = comboBoxJewelColor.Enabled = true;
-            numericUpDownX.Value = (int)chaoData.Position.X;
-            numericUpDownY.Value = (int)chaoData.Position.Y;
-            numericUpDownZ.Value = (int)chaoData.Position.Z;
-            numericUpDownAge.Value = chaoData.Age;
-            numericUpDownID.Value = chaoData.ID;
-            comboBoxAnimalHeadFront.SelectedIndex = (byte)chaoData.AnimalParts[0] != 0xFF ? (byte)chaoData.AnimalParts[0] : 16;
-            comboBoxAnimalHeadBack.SelectedIndex = (byte)chaoData.AnimalParts[1] != 0xFF ? (byte)chaoData.AnimalParts[1] : 16;
-            comboBoxAnimalEars.SelectedIndex = (byte)chaoData.AnimalParts[2] != 0xFF ? (byte)chaoData.AnimalParts[2] : 16;
-            comboBoxAnimalWings.SelectedIndex = (byte)chaoData.AnimalParts[3] != 0xFF ? (byte)chaoData.AnimalParts[3] : 16;
-            comboBoxAnimalArms.SelectedIndex = (byte)chaoData.AnimalParts[4] != 0xFF ? (byte)chaoData.AnimalParts[4] : 16;
-            comboBoxAnimalFeet.SelectedIndex = (byte)chaoData.AnimalParts[5] != 0xFF ? (byte)chaoData.AnimalParts[5] : 16;
-            comboBoxAnimalTail.SelectedIndex = (byte)chaoData.AnimalParts[6] != 0xFF ? (byte)chaoData.AnimalParts[6] : 16;
-            pictureBoxHeadFront.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[0]);
-            pictureBoxHeadBack.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[1]);
-            pictureBoxEars.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[2]);
-            pictureBoxWings.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[3]);
-            pictureBoxArms.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[4]);
-            pictureBoxFeet.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[5]);
-            pictureBoxTail.Image = GetAnimalPartPicture((int)chaoData.AnimalParts[6]);
+            AnimalFlagsSA1 flags = 0;
+            if (checkBoxDeerBow.Checked)
+                flags |= AnimalFlagsSA1.Deer;
+            if (checkBoxGorillaChest.Checked)
+                flags |= AnimalFlagsSA1.Gorilla;
+            if (checkBoxElephantSumo.Checked)
+                flags |= AnimalFlagsSA1.Elephant;
+            if (checkBoxKoalaTrumpet.Checked)
+                flags |= AnimalFlagsSA1.Koala;
+            if (checkBoxLionWash.Checked)
+                flags |= AnimalFlagsSA1.Lion;
+            if (checkBoxMoleDig.Checked)
+                flags |= AnimalFlagsSA1.Mole;
+            if (checkBoxOtterSwim.Checked)
+                flags |= AnimalFlagsSA1.Otter;
+            if (checkBoxParrotSing.Checked)
+                flags |= AnimalFlagsSA1.Parrot;
+            if (checkBoxPeacockPose.Checked)
+                flags |= AnimalFlagsSA1.Peacock;
+            if (checkBoxPenguinSkate.Checked)
+                flags |= AnimalFlagsSA1.Penguin;
+            if (checkBoxRabbitSomersault.Checked)
+                flags |= AnimalFlagsSA1.Rabbit;
+            if (checkBoxSealDance.Checked)
+                flags |= AnimalFlagsSA1.Seal;
+            if (checkBoxSkunkDraw.Checked)
+                flags |= AnimalFlagsSA1.Skunk;
+            if (checkBoxSwallowTwirl.Checked)
+                flags |= AnimalFlagsSA1.Swallow;
+            if (checkBoxWallabyPunch.Checked)
+                flags |= AnimalFlagsSA1.Wallaby;
+            chaoData.AnimalAbilities = flags;
+            // Chao Race Jewels
+            ChaoJewelsSA1 raceJewelFlags = 0;
+            if (checkBoxPearl.Checked)
+                raceJewelFlags |= ChaoJewelsSA1.Pearl;
+            if (checkBoxAmethyst.Checked)
+                raceJewelFlags |= ChaoJewelsSA1.Amethyst;
+            if (checkBoxSapphire.Checked)
+                raceJewelFlags |= ChaoJewelsSA1.Sapphire;
+            if (checkBoxRuby.Checked)
+                raceJewelFlags |= ChaoJewelsSA1.Ruby;
+            if (checkBoxEmerald.Checked)
+                raceJewelFlags |= ChaoJewelsSA1.Emerald;
+            chaoData.Jewels = raceJewelFlags;
+            // Color
+            ChaoColorFlagsSA1 colorFlags = 0;
+            if (checkBoxColorFlag0x1.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag1;
+            if (checkBoxColorFlag0x10.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag10;
+            if (checkBoxColorFlag0x20.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag20;
+            if (checkBoxColorFlag0x80.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag80;
+            if (checkBoxColorFlagBlack.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Black;
+            if (checkBoxColorFlagSilver.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Silver;
+            if (checkBoxColorFlagGold.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Gold;
+            if (checkBoxColorFlagJewel.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Jewel;
+            chaoData.Flags = colorFlags;
+            chaoData.Position.X = (float)numericUpDownX.Value;
+            chaoData.Position.Y = (float)numericUpDownY.Value;
+            chaoData.Position.Z = (float)numericUpDownZ.Value;
+            chaoData.Age = (uint)numericUpDownAge.Value;
+            chaoData.ID=(uint)numericUpDownID.Value;
+            chaoData.AnimalParts[0] = comboBoxAnimalHeadFront.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalHeadFront.SelectedIndex : AnimalPartsSA1.None;
+            chaoData.AnimalParts[1] = comboBoxAnimalHeadBack.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalHeadBack.SelectedIndex : AnimalPartsSA1.None;
+            chaoData.AnimalParts[2] = comboBoxAnimalEars.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalEars.SelectedIndex : AnimalPartsSA1.None;
+            chaoData.AnimalParts[3] = comboBoxAnimalWings.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalWings.SelectedIndex : AnimalPartsSA1.None;
+            chaoData.AnimalParts[4] = comboBoxAnimalArms.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalArms.SelectedIndex : AnimalPartsSA1.None;
+            chaoData.AnimalParts[5] = comboBoxAnimalFeet.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalFeet.SelectedIndex : AnimalPartsSA1.None;
+            chaoData.AnimalParts[6] = comboBoxAnimalTail.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalTail.SelectedIndex : AnimalPartsSA1.None;
             // Face
-            numericUpDownKindness.Value = chaoData.Kindness;
-            numericUpDownAggressive.Value = chaoData.Aggressive;
-            numericUpDownCurious.Value = chaoData.Curiosity;
+            chaoData.Kindness=(sbyte)numericUpDownKindness.Value;
+            chaoData.Aggressive=(sbyte)numericUpDownAggressive.Value;
+            chaoData.Curiosity = (sbyte)numericUpDownCurious.Value;
             // Emotion
-            numericUpDownCharm.Value = chaoData.Charm;
-            numericUpDownHorny.Value = chaoData.Breed;
-            numericUpDownSleepy.Value = chaoData.Sleep;
-            numericUpDownHungry.Value = chaoData.Hunger;
-            numericUpDownBored.Value = chaoData.Tedious;
-            numericUpDownTired.Value = chaoData.Tiredness;
-            numericUpDownStressed.Value = chaoData.Stress;
-            numericUpDownNarrow.Value = chaoData.Narrow;
-            numericUpDownJoyful.Value = chaoData.Pleasure;
-            numericUpDownAngry.Value = chaoData.Anger;
-            numericUpDownSad.Value = chaoData.Sorrow;
-            numericUpDownFearful.Value = chaoData.Fear;
-            numericUpDownLonely.Value = chaoData.Loneliness;
+            chaoData.Charm = (byte)numericUpDownCharm.Value;
+            chaoData.Breed = (byte)numericUpDownHorny.Value;
+            chaoData.Sleep = (byte)numericUpDownSleepy.Value;
+            chaoData.Hunger = (byte)numericUpDownHungry.Value;
+            chaoData.Tedious = (byte)numericUpDownBored.Value;
+            chaoData.Tiredness=(byte)numericUpDownTired.Value;
+            chaoData.Stress = (byte)numericUpDownStressed.Value;
+            chaoData.Narrow = (byte)numericUpDownNarrow.Value;
+            chaoData.Pleasure=(byte)numericUpDownJoyful.Value;
+            chaoData.Anger=(byte)numericUpDownAngry.Value;
+            chaoData.Sorrow=(byte)numericUpDownSad.Value;
+            chaoData.Fear = (byte)numericUpDownFearful.Value;
+            chaoData.Loneliness = (byte)numericUpDownLonely.Value;
             // Character memories
-            trackBarBondSonic.Value = chaoData.Memories.player[0].like;
-            numericUpDownMeetSonic.Value = chaoData.Memories.player[0].meet;
-            trackBarBondTails.Value = chaoData.Memories.player[1].like;
-            numericUpDownMeetTails.Value = chaoData.Memories.player[1].meet;
-            trackBarBondKnuckles.Value = chaoData.Memories.player[2].like;
-            numericUpDownMeetKnuckles.Value = chaoData.Memories.player[2].meet;
-            trackBarBondAmy.Value = chaoData.Memories.player[3].like;
-            numericUpDownMeetAmy.Value = chaoData.Memories.player[3].meet;
-            trackBarBondBig.Value = chaoData.Memories.player[4].like;
-            numericUpDownMeetBig.Value = chaoData.Memories.player[4].meet;
-            trackBarBondGamma.Value = chaoData.Memories.player[5].like;
-            numericUpDownMeetGamma.Value = chaoData.Memories.player[5].meet;
+            chaoData.Memories.player[0].like = (sbyte)trackBarBondSonic.Value;
+            chaoData.Memories.player[0].meet = (byte)numericUpDownMeetSonic.Value;
+            chaoData.Memories.player[1].like = (sbyte)trackBarBondTails.Value;
+            chaoData.Memories.player[1].meet = (byte)numericUpDownMeetTails.Value;
+            chaoData.Memories.player[2].like = (sbyte)trackBarBondKnuckles.Value;
+            chaoData.Memories.player[2].meet = (byte)numericUpDownMeetKnuckles.Value;
+            chaoData.Memories.player[3].like = (sbyte)trackBarBondAmy.Value;
+            chaoData.Memories.player[3].meet = (byte)numericUpDownMeetAmy.Value;
+            chaoData.Memories.player[4].like = (sbyte)trackBarBondBig.Value;
+            chaoData.Memories.player[4].meet = (byte)numericUpDownMeetBig.Value;
+            chaoData.Memories.player[5].like = (sbyte)trackBarBondGamma.Value;
+            chaoData.Memories.player[5].meet = (byte)numericUpDownMeetGamma.Value;
             // Chao memories
-            RefreshChaoMemories();
+            ReadChaoMemories();
             // Other stuff
-            numericUpDownReincarnations.Value = chaoData.Reincarnations;
-            numericUpDownRaceTrack.Value = chaoData.Lane;
-            numericUpDownExists.Value = chaoData.Exists;
+            chaoData.Reincarnations = (byte)numericUpDownReincarnations.Value;
+            chaoData.Lane = (byte)numericUpDownRaceTrack.Value;
+            chaoData.Exists = (sbyte)numericUpDownExists.Value;
             chaoData.CocoonTimer = (ushort)numericUpDownCocoonTimer.Value;
             // Chao Race results
             chaoData.RaceTime[0] = (byte)numericUpDownRace0.Value;
@@ -505,7 +501,7 @@ namespace VMSEditor
             labelMagnitudeValue.Text = ((float)trackBarMagnitude.Value / 100.0f).ToString();
         }
 
-        private void RefreshChaoMemories()
+        private void ReadChaoMemories()
         {
             if (listBoxDataSlots.SelectedIndex == -1)
                 return;
@@ -550,9 +546,45 @@ namespace VMSEditor
             numericUpDownMemoriesMeet_7.Value = chaoData.Memories.chao[page * 8 + 7].meet;
         }
 
+        private void WriteChaoMemories()
+        {
+            if (listBoxDataSlots.SelectedIndex == -1)
+                return;
+            VMS_Chao chaoData = chaoDataList[listBoxDataSlots.SelectedIndex];
+
+            int page = (int)numericUpDownMemoriesPage.Value - 1;
+
+            chaoData.Memories.chao[page * 8].id = (uint)numericUpDownMemoriesID_0.Value;
+            chaoData.Memories.chao[page * 8 + 1].id = (uint)numericUpDownMemoriesID_1.Value;
+            chaoData.Memories.chao[page * 8 + 2].id = (uint)numericUpDownMemoriesID_2.Value;
+            chaoData.Memories.chao[page * 8 + 3].id = (uint)numericUpDownMemoriesID_3.Value;
+            chaoData.Memories.chao[page * 8 + 4].id = (uint)numericUpDownMemoriesID_4.Value;
+            chaoData.Memories.chao[page * 8 + 5].id = (uint)numericUpDownMemoriesID_5.Value;
+            chaoData.Memories.chao[page * 8 + 6].id = (uint)numericUpDownMemoriesID_6.Value;
+            chaoData.Memories.chao[page * 8 + 7].id = (uint)numericUpDownMemoriesID_7.Value;
+
+            chaoData.Memories.chao[page * 8].like = (byte)numericUpDownMemoriesLike_0.Value;
+            chaoData.Memories.chao[page * 8 + 1].like = (byte)numericUpDownMemoriesLike_1.Value;
+            chaoData.Memories.chao[page * 8 + 2].like = (byte)numericUpDownMemoriesLike_2.Value;
+            chaoData.Memories.chao[page * 8 + 3].like = (byte)numericUpDownMemoriesLike_3.Value;
+            chaoData.Memories.chao[page * 8 + 4].like = (byte)numericUpDownMemoriesLike_4.Value;
+            chaoData.Memories.chao[page * 8 + 5].like = (byte)numericUpDownMemoriesLike_5.Value;
+            chaoData.Memories.chao[page * 8 + 6].like = (byte)numericUpDownMemoriesLike_6.Value;
+            chaoData.Memories.chao[page * 8 + 7].like = (byte)numericUpDownMemoriesLike_7.Value;
+
+            chaoData.Memories.chao[page * 8].meet = (byte)numericUpDownMemoriesMeet_0.Value;
+            chaoData.Memories.chao[page * 8 + 1].meet = (byte)numericUpDownMemoriesMeet_1.Value;
+            chaoData.Memories.chao[page * 8 + 2].meet = (byte)numericUpDownMemoriesMeet_2.Value;
+            chaoData.Memories.chao[page * 8 + 3].meet = (byte)numericUpDownMemoriesMeet_3.Value;
+            chaoData.Memories.chao[page * 8 + 4].meet = (byte)numericUpDownMemoriesMeet_4.Value;
+            chaoData.Memories.chao[page * 8 + 5].meet = (byte)numericUpDownMemoriesMeet_5.Value;
+            chaoData.Memories.chao[page * 8 + 6].meet = (byte)numericUpDownMemoriesMeet_6.Value;
+            chaoData.Memories.chao[page * 8 + 7].meet = (byte)numericUpDownMemoriesMeet_7.Value;
+        }
+
         private void numericUpDownMemoriesPage_ValueChanged(object sender, EventArgs e)
         {
-            RefreshChaoMemories();
+            ReadChaoMemories();
         }
 
         private void trackBarAffection_ValueChanged(object sender, EventArgs e)
@@ -716,6 +748,7 @@ namespace VMSEditor
 
         private void CreateVMS(string filename, ChaoSaveMode mode)
         {
+            RefreshData();
             MemoryStream output;
             VMS_Chao chao1;
             VMS_Chao chao2;
@@ -839,6 +872,38 @@ namespace VMSEditor
         private void checkBoxColorFlagJewel_CheckedChanged(object sender, EventArgs e)
         {
             comboBoxJewelColor.Enabled = checkBoxColorFlagJewel.Checked;
+        }
+
+        private void numericUpDownMemoriesID_0_ValueChanged(object sender, EventArgs e)
+        {
+            WriteChaoMemories();
+        }
+
+        private void checkBoxColorFlag0x1_CheckedChanged(object sender, EventArgs e)
+        {
+            ChaoColorFlagsSA1 colorFlags = 0;
+            comboBoxJewelColor.Enabled = false;
+            if (checkBoxColorFlag0x1.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag1;
+            if (checkBoxColorFlag0x10.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag10;
+            if (checkBoxColorFlag0x20.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag20;
+            if (checkBoxColorFlag0x80.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Flag80;
+            if (checkBoxColorFlagBlack.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Black;
+            if (checkBoxColorFlagSilver.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Silver;
+            if (checkBoxColorFlagGold.Checked)
+                colorFlags |= ChaoColorFlagsSA1.Gold;
+            if (checkBoxColorFlagJewel.Checked)
+            {
+                colorFlags |= ChaoColorFlagsSA1.Jewel;
+                comboBoxJewelColor.Enabled = true;
+            }
+            numericUpDown_ColorFlags.Value = (ushort)colorFlags;
+
         }
     }
 }
