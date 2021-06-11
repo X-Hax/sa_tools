@@ -1,7 +1,7 @@
 ﻿
-namespace DLCTool
+namespace VMSEditor
 {
-	partial class ObjectEditor
+	partial class EditorDLCObjectEditor
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -1347,7 +1347,7 @@ namespace DLCTool
             this.buttonAddNew.UseVisualStyleBackColor = true;
             this.buttonAddNew.Click += new System.EventHandler(this.buttonAddNew_Click);
             // 
-            // ObjectEditor
+            // EditorDLCObjectEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1367,10 +1367,11 @@ namespace DLCTool
             this.Controls.Add(this.groupBox5);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "ObjectEditor";
+            this.Name = "EditorDLCObjectEditor";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Object Editor";
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();

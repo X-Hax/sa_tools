@@ -1,23 +1,18 @@
 ﻿using ArchiveLib;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static DLCTool.SA1DLC;
+using static VMSEditor.SA1DLC;
 
-namespace DLCTool
+namespace VMSEditor
 {
-    public partial class ObjectEditor : Form
+    public partial class EditorDLCObjectEditor : Form
     {
-        public VMSFile editorMeta = new VMSFile();
+        public VMS_DLC editorMeta = new VMS_DLC();
         PuyoFile puyo = new PuyoFile();
 
-        public ObjectEditor(VMSFile meta, PuyoFile pvm)
+        public EditorDLCObjectEditor(VMS_DLC meta, PuyoFile pvm)
         {
             editorMeta = meta;
             puyo = pvm;
