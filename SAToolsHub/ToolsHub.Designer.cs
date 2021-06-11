@@ -464,7 +464,7 @@
 			this.sADLCToolToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
 			this.sADLCToolToolStripMenuItem.Name = "sADLCToolToolStripMenuItem";
 			this.sADLCToolToolStripMenuItem.Size = new System.Drawing.Size(208, 54);
-			this.sADLCToolToolStripMenuItem.Text = "SA DLC Tool";
+			this.sADLCToolToolStripMenuItem.Text = "SA VMS Editor";
 			this.sADLCToolToolStripMenuItem.Click += new System.EventHandler(this.sADLCToolToolStripMenuItem_Click);
 			// 
 			// sA2ToolsToolStripMenuItem

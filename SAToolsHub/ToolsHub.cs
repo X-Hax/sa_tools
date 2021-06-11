@@ -252,7 +252,7 @@ namespace SAToolsHub
 			sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
 			sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
 			datatoolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
-			sadlctoolStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DLCTool.exe")));
+			sadlctoolStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "VMSEditor.exe")));
 		}
 
 		private void PopulateTreeView(string directory)
