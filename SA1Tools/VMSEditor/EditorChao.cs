@@ -740,7 +740,8 @@ namespace VMSEditor
                     break;
             }
             vmi.FileID = 1;
-            vmi.ResourceName = vmi.FileName = Path.GetFileNameWithoutExtension(filename);
+            vmi.ResourceName = Path.GetFileNameWithoutExtension(filename);
+            vmi.FileName = "SONICADV_VM";
             vmi.Size = (uint)data.Length;
             vmi.Flags |= VMIFile.VMIFlags.Game;
             File.WriteAllBytes(Path.ChangeExtension(filename, ".VMI"), vmi.GetBytes());
