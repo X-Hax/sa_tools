@@ -1,5 +1,6 @@
 ﻿using SonicRetro.SAModel;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -13,46 +14,44 @@ namespace ArchiveLib
         public uint MotionPointer;
         public uint TexlistPointer;
         public uint Unknown;
-        byte[] Data;
+        public byte[] Data;
 
-        public NMLDEntryInfo(byte[] data, int start)
+        public NMLDEntryInfo(byte[] srcdata, int start, int end)
         {
-            Data = data;
-            ObjectPointer = ByteConverter.ToUInt32(Data, start) + (uint)start;
-            MotionPointer = ByteConverter.ToUInt32(Data, start + 4) + (uint)start;
-            TexlistPointer = ByteConverter.ToUInt32(Data, start + 8) + (uint)start;
-            Unknown = ByteConverter.ToUInt32(Data, start + 12);
+            int size = end - start;
+            Data = new byte[size - 16];
+            Array.Copy(srcdata, start + 16, Data, 0, size - 16);
+            ObjectPointer = ByteConverter.ToUInt32(Data, 0);
+            MotionPointer = ByteConverter.ToUInt32(Data, 4);
+            TexlistPointer = ByteConverter.ToUInt32(Data, 8);
+            Unknown = ByteConverter.ToUInt32(Data, 12);
             Console.WriteLine("NMLD Entry Info at {0}: NJCM at {1}, NMDM at {2}, NJTL at {3}, Unknown: {4}", start.ToString("X"), ObjectPointer.ToString("X"), MotionPointer.ToString("X"), TexlistPointer.ToString("X"), Unknown.ToString("X"));
-      
-        }
-
-        public byte[] GetModel()
-        {
-            byte[] njcm = new byte[MotionPointer - ObjectPointer];
-            Array.Copy(Data, ObjectPointer, njcm, 0, njcm.Length);
-            return njcm;
         }
     }
 
     public class NMLDEntry
     {
-        public NMLDEntryInfo Info;
+        public uint PointerInfo;
+        public string Name;
 
-        public NMLDEntry(byte[] data, int start, int index)
+        public NMLDEntry(byte[] data, int start, int index, string name)
         {
+            Name = name;
             int Count = ByteConverter.ToInt32(data, start);
-            uint PointerInfo = ByteConverter.ToUInt32(data, start + 4);
-            Console.WriteLine("NMLD Entry at {0}, Count {1}, Data at {2}", start.ToString("X"), Count, PointerInfo.ToString("X"));
-            if (PointerInfo != 0)
-            {
-                Info = new NMLDEntryInfo(data, (int)PointerInfo);
-            }
+            PointerInfo = ByteConverter.ToUInt32(data, start + 4);
+            uint EndPointer = ByteConverter.ToUInt32(data, start + 24);
+            Console.WriteLine("NMLD Entry at {0}, End at {1}, Count {2}, Data at {3}", start.ToString("X"), EndPointer.ToString("X"), Count, PointerInfo.ToString("X"));
+        }
+
+        public byte[] GetBytes(byte[] src, int nextEntry)
+        {
+            NMLDEntryInfo info = new NMLDEntryInfo(src, (int)PointerInfo, nextEntry);
+            return info.Data;
         }
     }
 
     public class NMLDObject
     {
-        public NMLDEntry Entry;
         public int EntryID; // 0x00
         public int Rotation; // 0x04
         public uint Pointer1; // 0x08
@@ -104,8 +103,7 @@ namespace ArchiveLib
             ScaleX = ByteConverter.ToSingle(data, start + 0x5C);
             ScaleY = ByteConverter.ToSingle(data, start + 0x60);
             ScaleZ = ByteConverter.ToSingle(data, start + 0x64);
-            Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}", start.ToString("X"),EntryID.ToString(), Name, PointerEntry.ToString("X"));
-            Entry = new NMLDEntry(data, (int)PointerEntry, EntryID);
+            Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}, GRND at: {4}, Motion at: {5}, Texlist at: {6}", start.ToString("X"),EntryID.ToString(), Name, PointerEntry.ToString("X"), PointerGRNDChunk.ToString("X"), PointerMotion.ToString("X"), PointerTexlist.ToString("X"));
         }
     }
 
@@ -133,6 +131,7 @@ namespace ArchiveLib
 
         public MLDArchive(byte[] file)
         {
+            List<NMLDEntry> nMLDEntries = new List<NMLDEntry>();
             int count = BitConverter.ToInt32(file, 0);
             uint nmlddatapointer = BitConverter.ToUInt32(file, 0x04);
             uint flags = BitConverter.ToUInt32(file, 0x08);
@@ -146,8 +145,27 @@ namespace ArchiveLib
             for (int m = 0; m < count; m++)
             {
                 NMLDObject nmld = new NMLDObject(file, (int)nmlddatapointer + 104 * m);
-                if (nmld.Entry.Info != null)
-                    Entries.Add(new MLDArchiveEntry(nmld.Entry.Info.GetModel(), Path.ChangeExtension(m.ToString("D3") + "_" + nmld.Name, ".nj")));
+                if (nmld.PointerEntry != 0)
+                {
+                    nMLDEntries.Add(new NMLDEntry(file, (int)nmld.PointerEntry, nmld.EntryID, nmld.Name));
+                    Console.WriteLine("Create NMLDEntry {0} at {1}", m, nmld.PointerEntry.ToString("X"));
+                }
+            }
+            for (int n = 0; n < nMLDEntries.Count; n++)
+            {
+                // Find next entry that has data
+                int nextentry = 0;
+                for (int k = n; k < nMLDEntries.Count - 1; k++)
+                {
+                    if (nMLDEntries[k].PointerInfo != 0 && nMLDEntries[k].PointerInfo > nMLDEntries[n].PointerInfo)
+                        nextentry = k;
+                }
+                int end = (n < nMLDEntries.Count - 1 && nextentry != 0) ? (int)nMLDEntries[nextentry].PointerInfo : (int)textablepointer;
+                if (nMLDEntries[n].PointerInfo != 0)
+                {
+                    Console.WriteLine("Write NMLDEntry {0}, end {1} (model)", n, end.ToString("X"));
+                    Entries.Add(new MLDArchiveEntry(nMLDEntries[n].GetBytes(file, end), Path.ChangeExtension(n.ToString("D3") + "_" + nMLDEntries[n].Name, ".nj")));
+                }
             }
             int numtex = BitConverter.ToInt32(file, (int)textablepointer);
             // Extract textures
