@@ -1,22 +1,116 @@
-﻿using System;
+﻿using SonicRetro.SAModel;
+using System;
 using System.Drawing;
+using System.IO;
 using System.Text;
 
-// Various archive formats from Skies of Arcadia (Dreamcast).
+// Skies of Arcadia (Dreamcast) MLD archives.
 namespace ArchiveLib
 {
-    #region Skies of Arcadia MLD
+    public class NMLDEntryInfo
+    {
+        public uint ObjectPointer;
+        public uint MotionPointer;
+        public uint TexlistPointer;
+        public uint Unknown;
+        byte[] Data;
+
+        public NMLDEntryInfo(byte[] data, int start)
+        {
+            Data = data;
+            ObjectPointer = ByteConverter.ToUInt32(Data, start) + (uint)start;
+            MotionPointer = ByteConverter.ToUInt32(Data, start + 4) + (uint)start;
+            TexlistPointer = ByteConverter.ToUInt32(Data, start + 8) + (uint)start;
+            Unknown = ByteConverter.ToUInt32(Data, start + 12);
+            Console.WriteLine("NMLD Entry Info at {0}: NJCM at {1}, NMDM at {2}, NJTL at {3}, Unknown: {4}", start.ToString("X"), ObjectPointer.ToString("X"), MotionPointer.ToString("X"), TexlistPointer.ToString("X"), Unknown.ToString("X"));
+      
+        }
+
+        public byte[] GetModel()
+        {
+            byte[] njcm = new byte[MotionPointer - ObjectPointer];
+            Array.Copy(Data, ObjectPointer, njcm, 0, njcm.Length);
+            return njcm;
+        }
+    }
+
+    public class NMLDEntry
+    {
+        public NMLDEntryInfo Info;
+
+        public NMLDEntry(byte[] data, int start, int index)
+        {
+            int Count = ByteConverter.ToInt32(data, start);
+            uint PointerInfo = ByteConverter.ToUInt32(data, start + 4);
+            Console.WriteLine("NMLD Entry at {0}, Count {1}, Data at {2}", start.ToString("X"), Count, PointerInfo.ToString("X"));
+            if (PointerInfo != 0)
+            {
+                Info = new NMLDEntryInfo(data, (int)PointerInfo);
+            }
+        }
+    }
+
+    public class NMLDObject
+    {
+        public NMLDEntry Entry;
+        public int EntryID; // 0x00
+        public int Rotation; // 0x04
+        public uint Pointer1; // 0x08
+        public uint Pointer2; // 0x0C
+        public uint Pointer3; // 0x10
+        public uint PointerEntry; // 0x14
+        public uint PointerGRNDChunk; // 0x18
+        public uint PointerMotion; // 0x1C
+        public uint PointerTexlist; // 0x20
+        public string Name; // 0x24 (32 bytes)
+        public float Float1; // 0x44
+        public float Float2; // 0x48
+        public float Float3; // 0x4C
+        public int Int1; // 0x50
+        public int Int2; // 0x54
+        public int Int3; // 0x58
+        public float ScaleX; // 0x5C
+        public float ScaleY; // 0x60
+        public float ScaleZ; // 0x64
+
+        public NMLDObject(byte[] data, int start)
+        {
+            EntryID = ByteConverter.ToInt32(data, start);
+            Rotation = ByteConverter.ToInt32(data, start + 0x04);
+            Pointer1 = ByteConverter.ToUInt32(data, start + 0x08);
+            Pointer2 = ByteConverter.ToUInt32(data, start + 0x0C);
+            Pointer3 = ByteConverter.ToUInt32(data, start + 0x10);
+            PointerEntry = ByteConverter.ToUInt32(data, start + 0x14);
+            PointerGRNDChunk = ByteConverter.ToUInt32(data, start + 0x18);
+            PointerMotion = ByteConverter.ToUInt32(data, start + 0x1C);
+            PointerTexlist = ByteConverter.ToUInt32(data, start + 0x20);
+            int namesize = 0;
+            for (int s = 0; s < 32; s++)
+            {
+                if (data[start + 0x24 + s] != 0)
+                    namesize++;
+                else
+                    break;
+            }
+            byte[] namechunk = new byte[namesize];
+            Array.Copy(data, start + 0x24, namechunk, 0, namesize);
+            Name = System.Text.Encoding.ASCII.GetString(namechunk);
+            Float1 = ByteConverter.ToSingle(data, start + 0x44);
+            Float2 = ByteConverter.ToSingle(data, start + 0x48);
+            Float3 = ByteConverter.ToSingle(data, start + 0x4C);
+            Int1 = ByteConverter.ToInt32(data, start + 0x50);
+            Int2 = ByteConverter.ToInt32(data, start + 0x54);
+            Int3 = ByteConverter.ToInt32(data, start + 0x58);
+            ScaleX = ByteConverter.ToSingle(data, start + 0x5C);
+            ScaleY = ByteConverter.ToSingle(data, start + 0x60);
+            ScaleZ = ByteConverter.ToSingle(data, start + 0x64);
+            Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}", start.ToString("X"),EntryID.ToString(), Name, PointerEntry.ToString("X"));
+            Entry = new NMLDEntry(data, (int)PointerEntry, EntryID);
+        }
+    }
+
     public class MLDArchive : GenericArchive
     {
-        const uint Magic_SMPB = 0x42504D53; // SMPB
-        const uint Magic_SMSB = 0x42534D53; // SMPB
-        const uint Magic_SFPB = 0x42504653; // SFPB
-        const uint Magic_SDRV = 0x56524453; // SDRV
-        const uint Magic_SFOB = 0x424F4653; // SFOB
-        const uint Magic_SMLT = 0x544C4D53; // SMLT
-        const uint Magic_SOSB = 0x42534F53; // SOSB
-        const ulong Magic_CRI = 0x4952432963280000; // 0000(c)CRI at 0x20
-
         public override void CreateIndexFile(string path)
         {
             return;
@@ -37,76 +131,30 @@ namespace ArchiveLib
             }
         }
 
-        public string GetEntryExtension(byte[] data)
-        {
-            if (data.Length < 4)
-                return ".bin";
-            switch (BitConverter.ToUInt32(data, 0))
-            {
-                case Magic_SMLT:
-                    return ".mlt";
-                case Magic_SMPB:
-                    return ".mpb";
-                case Magic_SMSB:
-                    return ".msb";
-                case Magic_SFPB:
-                    return ".fpb";
-                case Magic_SFOB:
-                    return ".fob";
-                case Magic_SDRV:
-                    return ".drv";
-                case Magic_SOSB:
-                    return ".osb";
-                default:
-                    if (data.Length < 40)
-                        return ".bin";
-                    if (BitConverter.ToUInt64(data, 0x20) == Magic_CRI)
-                        return ".adx";
-                    else return ".bin";
-            }
-        }
-
-        public enum MLDArchiveType
-        {
-            Manatee = 0,
-            CRI = 1,
-            CRIBigEndian = 2
-        }
-
-        public MLDArchiveType Identify(byte[] file)
-        {
-            if (file[0] == 0)
-                return MLDArchiveType.CRIBigEndian;
-            // Check if there is ADX
-            for (int i = 0; i < file.Length; i += 8)
-            {
-                if (BitConverter.ToUInt64(file, i) == Magic_CRI)
-                    return MLDArchiveType.CRI;
-            }
-            return MLDArchiveType.Manatee;
-        }
-
         public MLDArchive(byte[] file)
         {
             int count = BitConverter.ToInt32(file, 0);
-            int nmlddatapointer = BitConverter.ToInt32(file, 4);
-            uint flags = BitConverter.ToUInt32(file, 8);
-            int realdatapointer = BitConverter.ToInt32(file, 12);
-            int textablepointer = BitConverter.ToInt32(file, 16);
-            Console.WriteLine("Number of NMLD entries: {0}", count);
-            int sizereal = textablepointer - realdatapointer;
-            int sizenmld = realdatapointer - nmlddatapointer;
+            uint nmlddatapointer = BitConverter.ToUInt32(file, 0x04);
+            uint flags = BitConverter.ToUInt32(file, 0x08);
+            uint realdatapointer = BitConverter.ToUInt32(file, 0x0C);
+            uint textablepointer = BitConverter.ToUInt32(file, 0x10);
+            Console.WriteLine("Number of NMLD entries: {0}, NMLD data starts at {1}, real data starts at {2}", count, nmlddatapointer.ToString("X"), realdatapointer.ToString("X"));
+            uint sizereal = textablepointer - realdatapointer;
+            uint sizenmld = realdatapointer - nmlddatapointer;
             Console.WriteLine("First entry: {0} size {1}", realdatapointer.ToString("X"), sizereal);
-            byte[] nmld = new byte[sizenmld];
-            Array.Copy(file, nmlddatapointer, nmld, 0, sizenmld);
-            Entries.Add(new MLDArchiveEntry(nmld, "data.nmld"));
-            //Entries = new List<GenericArchiveEntry>(count);
-            //List<int> offsets = new List<int>(count);
-            int numtex = BitConverter.ToInt32(file, textablepointer);
+            // Extract NMLD stuff
+            for (int m = 0; m < count; m++)
+            {
+                NMLDObject nmld = new NMLDObject(file, (int)nmlddatapointer + 104 * m);
+                if (nmld.Entry.Info != null)
+                    Entries.Add(new MLDArchiveEntry(nmld.Entry.Info.GetModel(), Path.ChangeExtension(m.ToString("D3") + "_" + nmld.Name, ".nj")));
+            }
+            int numtex = BitConverter.ToInt32(file, (int)textablepointer);
+            // Extract textures
             Console.WriteLine("Number of textures: {0}, pointer: {1}", numtex, textablepointer.ToString("X"));
             if (numtex > 0)
             {
-                int texdataoffset = textablepointer + 4 + numtex * 44;
+                int texdataoffset = (int)textablepointer + 4 + numtex * 44;
                 Console.WriteLine("Texture offset original: {0}", texdataoffset.ToString("X"));
                 // Get through the padding
                 if (file[texdataoffset] == 0)
@@ -124,7 +172,7 @@ namespace ArchiveLib
                     byte[] namestring = new byte[36];
                     Array.Copy(file, textablepointer + 4 + i * 44, namestring, 0, 36);
                     string entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
-                    int size = BitConverter.ToInt32(file, textablepointer + 4 + i * 44 + 40);
+                    int size = BitConverter.ToInt32(file, (int)textablepointer + 4 + i * 44 + 40);
                     Console.WriteLine("Entry {0} name {1} size {2}", i, entryfn, size);
                     byte[] texture = new byte[size];
                     Array.Copy(file, currenttextureoffset, texture, 0, size);
@@ -139,5 +187,4 @@ namespace ArchiveLib
             throw new NotImplementedException();
         }
     }
-    #endregion
 }
