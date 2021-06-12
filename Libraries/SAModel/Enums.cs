@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	public enum Basic_PolyType
 	{

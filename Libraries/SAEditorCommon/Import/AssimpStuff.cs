@@ -1,13 +1,13 @@
 ﻿using Assimp;
 using SharpDX;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Color = System.Drawing.Color;
 
-namespace SonicRetro.SAModel.SAEditorCommon.Import
+namespace SAModel.SAEditorCommon.Import
 {
 	public static class AssimpStuff
 	{

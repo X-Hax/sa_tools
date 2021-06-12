@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	static class Program
 	{

@@ -1,11 +1,11 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 using System;
 using Color = System.Drawing.Color;
 using Font = SharpDX.Direct3D9.Font;
 
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
 	/// <summary>
 	/// This class will store all of the common editor options, from rendering to interface configuration.

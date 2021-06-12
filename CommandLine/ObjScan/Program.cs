@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SonicRetro.SAModel;
+using SAModel;
 using SplitTools;
 using System.Linq;
 
@@ -171,7 +171,7 @@ namespace ObjScan
 		}
 		static uint FindModel(ModelFormat modelfmt, string filename)
 		{
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			//Basic only for now
 			uint result = 0;
 			ModelFile modelFile = new ModelFile(filename);
@@ -209,7 +209,7 @@ namespace ObjScan
 		}
 		static bool CheckModel(uint address, bool recursive, ModelFormat modelfmt)
 		{
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			if (address > (uint)datafile.Length - 20) return false;
 			int flags = 0;
 			uint vertlist = 0;
@@ -382,7 +382,7 @@ namespace ObjScan
 		}
 		static bool CheckLandTable(uint address, LandTableFormat landfmt)
 		{
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			if (address > (uint)datafile.Length - 52) return false;
 			short COLCount;
 			short AnimCount;
@@ -457,7 +457,7 @@ namespace ObjScan
 		}
 		static void ScanLandtable(LandTableFormat landfmt)
 		{
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			Console.WriteLine("Scanning for {0} landtables", landfmt.ToString());
 			string landtable_extension = ".sa1lvl";
 			switch (landfmt)
@@ -521,7 +521,7 @@ namespace ObjScan
 		static int ScanActions(uint addr, uint nummdl, ModelFormat modelfmt)
 		{
 			int count = 0;
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			if (nummdl == 0) return 0;
 			for (uint address = addr; address < datafile.Length - 8; address += 1)
 			{
@@ -556,7 +556,7 @@ namespace ObjScan
 		static void ScanAnimations(ModelFormat modelfmt)
 		{
 			int count = 0;
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			string modelstring = "basicmodels";
 			string modelext = ".sa1mdl";
 			List<uint> modeladdr = new List<uint>();
@@ -656,7 +656,7 @@ namespace ObjScan
 		static void ScanModel(ModelFormat modelfmt)
 		{
 			int count = 0;
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			Console.WriteLine("Scanning for {0} models", modelfmt);
 			string model_extension = ".sa1mdl";
 			string model_dir = "basicmodels";
@@ -720,7 +720,7 @@ namespace ObjScan
 			bool delete_basic = false;
 			bool delete_chunk = false;
 			bool delete_gc = false;
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			string model_extension = ".sa1mdl";
 			string model_dir = "basicmodels";
 			LandTableFormat landfmt = LandTableFormat.SA1;
@@ -822,7 +822,7 @@ namespace ObjScan
 			Console.WriteLine("Scanning for motions with at least {0} model parts... ", modelparts);
 			if (shortrot) Console.WriteLine("Using short rotations");
 			int count = 0;
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
 			if (!nodir) 
 				Directory.CreateDirectory(Path.Combine(dir, "actions"));
 			for (uint address = start; address < end; address += 1)
@@ -1104,8 +1104,8 @@ namespace ObjScan
 				}
 			}
 			Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename));
-			ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
-			ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
+			ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
+			ByteConverter.Reverse = SAModel.ByteConverter.Reverse = reverse;
 			byte[] datafile_temp = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile_temp = FraGag.Compression.Prs.Decompress(datafile_temp);
 			if (Path.GetExtension(filename).ToLowerInvariant() == ".rel")

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	public partial class BinaryFileDialog : Form
 	{

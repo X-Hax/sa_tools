@@ -860,7 +860,7 @@ namespace SAToolsHub
 		{
 			try
 			{
-				Process.Start("https://info.sonicretro.org/SCHG:Sonic_Adventure_DX:_PC");
+				Process.Start("https://info.org/SCHG:Sonic_Adventure_DX:_PC");
 			}
 			catch
 			{
@@ -872,7 +872,7 @@ namespace SAToolsHub
 		{
 			try
 			{
-				Process.Start("https://info.sonicretro.org/SCHG:Sonic_Adventure_2_(PC)");
+				Process.Start("https://info.org/SCHG:Sonic_Adventure_2_(PC)");
 			}
 			catch
 			{
@@ -1113,7 +1113,7 @@ namespace SAToolsHub
 					string filename = ((itemTags)selItem.Tag).Path;
 					string outName = Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path))) + ".c";
 
-					SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(filename, SonicRetro.SAModel.DataToolbox.StructConversion.TextType.CStructs, outName);
+					SAModel.DataToolbox.StructConversion.ConvertFileToText(filename, SAModel.DataToolbox.StructConversion.TextType.CStructs, outName);
 				}
 			}
 		}
@@ -1126,9 +1126,9 @@ namespace SAToolsHub
 				{
 					if (Path.GetExtension(((itemTags)selItem.Tag).Path) == ".saanim")
 					{
-						SonicRetro.SAModel.DataToolbox.StructConversion.ConvertFileToText(
+						SAModel.DataToolbox.StructConversion.ConvertFileToText(
 							((itemTags)selItem.Tag).Path,
-							SonicRetro.SAModel.DataToolbox.StructConversion.TextType.JSON);
+							SAModel.DataToolbox.StructConversion.TextType.JSON);
 					}
 					
 				}

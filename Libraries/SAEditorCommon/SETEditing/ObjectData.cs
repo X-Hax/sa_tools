@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using SplitTools;
 
-namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
+namespace SAModel.SAEditorCommon.SETEditing
 {
 	public class ObjectData
 	{

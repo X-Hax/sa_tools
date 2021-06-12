@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SALVL
+﻿namespace SAModel.SALVL
 {
     partial class EditLevelInfoDialog
     {

@@ -9,7 +9,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Color = System.Drawing.Color;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	public static partial class Extensions
 	{

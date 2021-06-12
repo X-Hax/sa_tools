@@ -1,12 +1,12 @@
 ﻿using SharpDX;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SAModel.Direct3D.TextureSystem;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Color = System.Drawing.Color;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	// Legacy code for Import/export
 	public static partial class Extensions

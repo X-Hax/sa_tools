@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	[TypeConverter(typeof (VertexConverter))]

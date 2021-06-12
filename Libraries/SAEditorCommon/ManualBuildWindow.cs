@@ -7,7 +7,7 @@ using Ookii.Dialogs.Wpf;
 using SplitTools;
 using SplitTools.SplitDLL;
 
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
 	public partial class ManualBuildWindow : Form
 	{

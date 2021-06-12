@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	public class NJS_MATERIAL : ICloneable

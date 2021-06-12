@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel
+﻿namespace SAModel
 {
 	public static class MathHelper
 	{

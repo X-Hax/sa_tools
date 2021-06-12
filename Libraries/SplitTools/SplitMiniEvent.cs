@@ -1,6 +1,6 @@
 ﻿using FraGag.Compression;
 using Newtonsoft.Json;
-using SonicRetro.SAModel;
+using SAModel;
 using System;
 using System.Collections.Generic;
 using System.IO;

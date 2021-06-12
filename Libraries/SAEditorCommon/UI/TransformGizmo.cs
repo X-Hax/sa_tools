@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 using Color = System.Drawing.Color;
 
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.DataTypes;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	/// <summary>Describes which axes the Gizmo will operate upon.</summary>
 	public enum GizmoSelectedAxes

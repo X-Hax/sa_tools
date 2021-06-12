@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
+﻿namespace SAModel.SAEditorCommon.StructConverter
 {
     partial class StructConverterUI
     {

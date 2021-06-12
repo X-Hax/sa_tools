@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
 	public partial class ErrorDialog : Form
 	{

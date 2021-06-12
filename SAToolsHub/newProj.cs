@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ComponentModel;
-using SonicRetro.SAModel.SAEditorCommon.ModManagement;
+using SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
 using SplitTools.Split;
 using SplitTools.SAArc;
@@ -16,7 +16,7 @@ namespace SAToolsHub
 	{
 		Stream projFileStream;
 		Templates.ProjectTemplate projectFile;
-		SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
+		SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
 
 		string templatesPath;
 		string gameName;
@@ -209,7 +209,7 @@ namespace SAToolsHub
 			
 		}
 
-		private void makeProjectFolders(string projFolder, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string game)
+		private void makeProjectFolders(string projFolder, SAModel.SAEditorCommon.UI.ProgressDialog progress, string game)
 		{
 			progress.StepProgress();
 			progress.SetStep("Making Additional Mod Folders");
@@ -260,7 +260,7 @@ namespace SAToolsHub
 			}
 		}
 
-		private void GenerateModFile(string game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string projectFolder, string name)
+		private void GenerateModFile(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress, string projectFolder, string name)
 		{
 			progress.StepProgress();
 			progress.SetStep("Generating mod.ini");
@@ -334,7 +334,7 @@ namespace SAToolsHub
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
-		private void splitFiles(Templates.SplitEntry splitData, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+		private void splitFiles(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
 		{
 			string datafilename; 
 			switch (splitData.SourceFile)
@@ -404,7 +404,7 @@ namespace SAToolsHub
 			}
 		}
 
-		private void splitMdlFiles(Templates.SplitEntryMDL splitMDL, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
+		private void splitMdlFiles(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
@@ -426,7 +426,7 @@ namespace SAToolsHub
 				fileOutputFolder, splitMDL.MotionFiles.ToArray());
 		}
 
-		void splitGame(string game, SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress)
+		void splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress)
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
@@ -496,7 +496,7 @@ namespace SAToolsHub
 		#region Background Worker
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
-			using (splitProgress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
+			using (splitProgress = new SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
 			{
 				Invoke((Action)splitProgress.Show);
 

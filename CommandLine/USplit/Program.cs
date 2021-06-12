@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SonicRetro.SAModel;
+using SAModel;
 using SplitTools;
 using System.Linq;
 using static UniversalSplit;
@@ -365,8 +365,8 @@ public class UniversalSplit
 		string dir = Environment.CurrentDirectory;
 		string model_extension = ".sa1mdl";
 		string landtable_extension = ".sa1lvl";
-		ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = bigendian;
-		ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = reverse;
+		ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = bigendian;
+		ByteConverter.Reverse = SAModel.ByteConverter.Reverse = reverse;
 		byte[] datafile = File.ReadAllBytes(filename);
 		if (Path.GetExtension(filename).ToLowerInvariant() == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
 		if (Path.GetExtension(filename).ToLowerInvariant() == ".rel") HelperFunctions.FixRELPointers(datafile, 0xC900000);

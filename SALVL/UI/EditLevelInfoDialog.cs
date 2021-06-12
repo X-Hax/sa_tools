@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.DataTypes;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	public partial class EditLevelInfoDialog : Form
 	{

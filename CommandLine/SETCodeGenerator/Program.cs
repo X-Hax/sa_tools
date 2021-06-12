@@ -1,9 +1,9 @@
 ﻿using SplitTools;
 using System;
 using System.IO;
-using Vertex = SonicRetro.SAModel.Vertex;
-using Rotation = SonicRetro.SAModel.Rotation;
-using SonicRetro.SAModel;
+using Vertex = SAModel.Vertex;
+using Rotation = SAModel.Rotation;
+using SAModel;
 
 namespace SETCodeGenerator
 {

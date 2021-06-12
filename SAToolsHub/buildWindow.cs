@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using SonicRetro.SAModel.SAEditorCommon.ModManagement;
+using SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
 using SplitTools.SAArc;
 
@@ -11,11 +11,11 @@ namespace SAToolsHub
 {
 	public partial class buildWindow : Form
 	{
-		SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow manualBuildWindow =
-			new SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow();
+		SAModel.SAEditorCommon.ManualBuildWindow manualBuildWindow =
+			new SAModel.SAEditorCommon.ManualBuildWindow();
 
-		Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
-				new Dictionary<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
+		Dictionary<string, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assemblies =
+				new Dictionary<string, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType>();
 
 		string gameEXE;
 		string modName;
@@ -62,17 +62,17 @@ namespace SAToolsHub
 					case ("SADXPC"):
 						if (splitEntry.SourceFile.Contains("exe"))
 						{
-							assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+							assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
 						}
 						else
 						{
 							if (splitEntry.IniFile == "chrmodels")
 							{
-								assemblies.Add((splitEntry.IniFile + "_orig"), SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+								assemblies.Add((splitEntry.IniFile + "_orig"), SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 							else
 							{
-								assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+								assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 						}
 						break;
@@ -80,17 +80,17 @@ namespace SAToolsHub
 					case ("SA2PC"):
 						if (splitEntry.SourceFile.Contains("exe"))
 						{
-							assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+							assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
 						}
 						else
 						{
 							if (splitEntry.IniFile == "data_dll")
 							{
-								assemblies.Add((splitEntry.IniFile + "_orig"), SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+								assemblies.Add((splitEntry.IniFile + "_orig"), SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 							else
 							{
-								assemblies.Add(splitEntry.IniFile, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+								assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 							}
 						}
 						break;
@@ -105,7 +105,7 @@ namespace SAToolsHub
 			Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
 			Dictionary<string, bool> itemsDLLToExport = new Dictionary<string, bool>();
 
-			foreach (KeyValuePair<string, SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assembly in assemblies)
+			foreach (KeyValuePair<string, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType> assembly in assemblies)
 			{
 				string iniPath = Path.Combine(SAToolsHub.projectDirectory.ToString(), assembly.Key + "_data.ini");
 
@@ -113,11 +113,11 @@ namespace SAToolsHub
 
 				switch (assembly.Value)
 				{
-					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe:
+					case SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe:
 						iniEXEFiles.Add(iniPath);
 						break;
 
-					case SonicRetro.SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
+					case SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL:
 						if (SAToolsHub.setGame == "SA2PC")
 						{
 							iniDLLFiles.Add(iniPath);
@@ -125,9 +125,9 @@ namespace SAToolsHub
 						else
 						{
 							SplitTools.SplitDLL.DllIniData dllIniData =
-								SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
+								SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 
-							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
+							SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
 								itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
 						}
 						break;
@@ -138,17 +138,17 @@ namespace SAToolsHub
 
 			if (iniEXEFiles.Count > 0)
 			{
-				EXEiniData = SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(iniEXEFiles, ref itemsEXEToExport);
+				EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(iniEXEFiles, ref itemsEXEToExport);
 
-				SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
+				SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
 					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
 			}
 
 			if (iniDLLFiles.Count > 0)
 			{
-				DLLiniData = SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadMultiINI(iniDLLFiles, ref itemsDLLToExport);
+				DLLiniData = SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadMultiINI(iniDLLFiles, ref itemsDLLToExport);
 
-				SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(DLLiniData,
+				SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(DLLiniData,
 					itemsDLLToExport, Path.Combine(modFolder, "Data_DLL_orig_data.ini"));
 			}
 
@@ -252,14 +252,14 @@ namespace SAToolsHub
 			string projectSystemPath = Path.Combine(SAToolsHub.projectDirectory, sysFolder);
 			string modSystemPath = Path.Combine(modFolder, sysFolder);
 
-			SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(
+			SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(
 				new DirectoryInfo(projectSystemPath), modSystemPath);
 
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
 					string texturesPath = Path.Combine(SAToolsHub.projectDirectory, "textures");
-					SonicRetro.SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), modSystemPath);
+					SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), modSystemPath);
 					break;
 
 				case ("SA2PC"):
@@ -272,7 +272,7 @@ namespace SAToolsHub
 		#region Background Worker
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
-			using (SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog progress = new SonicRetro.SAModel.SAEditorCommon.UI.ProgressDialog("Building Project"))
+			using (SAModel.SAEditorCommon.UI.ProgressDialog progress = new SAModel.SAEditorCommon.UI.ProgressDialog("Building Project"))
 			{
 				Action showProgress = () =>
 				{

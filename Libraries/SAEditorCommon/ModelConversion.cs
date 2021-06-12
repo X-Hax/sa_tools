@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace SonicRetro.SAModel.SAEditorCommon.ModelConversion
+namespace SAModel.SAEditorCommon.ModelConversion
 {
 	public static class ModelConversion
 	{

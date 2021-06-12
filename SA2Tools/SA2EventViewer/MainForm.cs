@@ -1,18 +1,18 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SonicRetro.SAModel.SAEditorCommon;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
+using BoundingSphere = SAModel.BoundingSphere;
 using Color = System.Drawing.Color;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 
 namespace SA2EventViewer
@@ -399,7 +399,7 @@ namespace SA2EventViewer
 						dir = Vector3.Normalize(cam.Position - data.GetTarget(fr).ToVector3());
 					cam.Direction = dir;
 					cam.Roll = data.GetRoll(fr);
-					cam.FOV = SonicRetro.SAModel.Direct3D.Extensions.BAMSToRad(@event.Scenes[scenenum].CameraMotions[an].Models[0].GetAngle(fr));
+					cam.FOV = SAModel.Direct3D.Extensions.BAMSToRad(@event.Scenes[scenenum].CameraMotions[an].Models[0].GetAngle(fr));
 				}
 				else
 				{
@@ -422,8 +422,8 @@ namespace SA2EventViewer
 						else
 							dir = Vector3.Normalize(pos - data.GetTarget(fr).ToVector3());
 						int roll = data.GetRoll(fr);
-						float bams_sin = SonicRetro.SAModel.Direct3D.Extensions.NJSin(roll);
-						float bams_cos = SonicRetro.SAModel.Direct3D.Extensions.NJCos(-roll);
+						float bams_sin = SAModel.Direct3D.Extensions.NJSin(roll);
+						float bams_cos = SAModel.Direct3D.Extensions.NJCos(-roll);
 						float thing = dir.X * dir.X + dir.Z * dir.Z;
 						double sqrt = Math.Sqrt(thing);
 						float v3 = dir.Y * dir.Y + thing;

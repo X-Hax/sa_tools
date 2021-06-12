@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[DebuggerNonUserCode]
 	public static class ByteConverter

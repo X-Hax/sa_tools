@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.DataTypes;
 
-namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
+namespace SAModel.SAEditorCommon.SETEditing
 {
 	public abstract class ObjectDefinition
 	{

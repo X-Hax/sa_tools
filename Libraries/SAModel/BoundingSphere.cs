@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	public class BoundingSphere : ICloneable

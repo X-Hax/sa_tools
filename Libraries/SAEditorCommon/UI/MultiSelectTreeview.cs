@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public class MultiSelectTreeview : TreeView
 	{

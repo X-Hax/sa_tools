@@ -1,8 +1,8 @@
 ﻿using SplitTools;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,9 +10,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Mesh = SAModel.Direct3D.Mesh;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+namespace SAModel.SAEditorCommon.DataTypes
 {
 	public class DeathZoneItem : Item, IScaleable
 	{

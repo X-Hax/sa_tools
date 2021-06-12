@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.DataToolbox
+namespace SAModel.DataToolbox
 {
 	public partial class SplitProgress : Form
 	{

@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAEditorCommon.UI
+﻿namespace SAModel.SAEditorCommon.UI
 {
     partial class DefaultLightEditor
     {

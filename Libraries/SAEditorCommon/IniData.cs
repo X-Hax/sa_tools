@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using SplitTools;
 
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
 	public class IniData
 	{

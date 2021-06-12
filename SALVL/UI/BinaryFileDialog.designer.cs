@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
     partial class BinaryFileDialog : Form
     {
@@ -43,8 +43,8 @@ namespace SonicRetro.SAModel.SALVL
             this.comboLevelFormat = new System.Windows.Forms.ComboBox();
             this.labelFormat = new System.Windows.Forms.Label();
             this.checkBoxBigEndian = new System.Windows.Forms.CheckBox();
-            this.numericKey = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericKey = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             ((System.ComponentModel.ISupportInitialize)(this.numericKey)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAddress)).BeginInit();
             this.SuspendLayout();

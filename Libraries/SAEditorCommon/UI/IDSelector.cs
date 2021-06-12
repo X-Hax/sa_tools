@@ -5,10 +5,10 @@ using System.Drawing.Design;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public class IDControl : UserControl
 	{

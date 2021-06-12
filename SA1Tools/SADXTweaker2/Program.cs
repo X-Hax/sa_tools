@@ -31,7 +31,7 @@ namespace SADXTweaker2
 				Exception ex = (Exception)e.ExceptionObject;
 				string errDesc = "SADXTweaker2 has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
 	"If you wish to report a bug, please include the following in your report:";
-				SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, ex.ToString());
+				SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, ex.ToString());
 				DialogResult dgresult = report.ShowDialog(FormInstance);
 				switch (dgresult)
 				{

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SonicRetro.SAModel;
+using SAModel;
 using SplitTools;
 using System.Linq;
-using SonicRetro.SAModel.GC;
+using SAModel.GC;
 
 namespace StructExporter
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public partial class EditorOptionsEditor : Form
 	{

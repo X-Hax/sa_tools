@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.DataTypes;
 using System;
 using SharpDX.Direct3D9;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Mesh = SAModel.Direct3D.Mesh;
 using SharpDX;
 
-namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
+namespace SAModel.SAEditorCommon.SETEditing
 {
 	public class DefaultObjectDefinition : ObjectDefinition
 	{

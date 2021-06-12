@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 
 
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
     /// <summary>
     /// Editor-specific user settings stored in EditorPreferences.ini

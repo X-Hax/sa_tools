@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAMDL
+namespace SAModel.SAMDL
 {
 	public partial class FindDialog : Form
 	{

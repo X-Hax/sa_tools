@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SonicRetro.SAModel.SAEditorCommon.ModManagement
+namespace SAModel.SAEditorCommon.ModManagement
 {
 	public class SADXModInfo : ModInfo
 	{

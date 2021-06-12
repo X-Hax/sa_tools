@@ -1,4 +1,4 @@
-﻿using SonicRetro.SAModel;
+﻿using SAModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

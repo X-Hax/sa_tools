@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.DataTypes;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public partial class SceneGraphControl : UserControl
 	{

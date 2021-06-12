@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace SonicRetro.SAModel.SAEditorCommon.ModManagement
+namespace SAModel.SAEditorCommon.ModManagement
 {
 	enum FillMode
 	{

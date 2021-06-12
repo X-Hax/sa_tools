@@ -1,10 +1,10 @@
-﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+﻿using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
 using System;
 using System.ComponentModel.Design;
 using System.Reflection;
 
-namespace SonicRetro.SAModel.SAEditorCommon.PropertyGrid
+namespace SAModel.SAEditorCommon.PropertyGrid
 {
 	public class CustomDesignerVerb : DesignerVerb
 	{

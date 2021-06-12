@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.DataToolbox
+﻿namespace SAModel.DataToolbox
 {
     partial class MainForm
     {
@@ -46,9 +46,9 @@
             this.labelFile = new System.Windows.Forms.Label();
             this.groupBoxBinary = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.hexNumericBinaryOffset = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownBinaryKey = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownBinaryAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.hexNumericBinaryOffset = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownBinaryKey = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownBinaryAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageBinaryData = new System.Windows.Forms.TabPage();
             this.buttonBinaryBrowse = new System.Windows.Forms.Button();

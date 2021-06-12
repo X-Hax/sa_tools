@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public enum ActionFireType
 	{

@@ -1,7 +1,7 @@
 ﻿using SharpDX;
 using System;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	public class HitResult : IComparable<HitResult>
 	{

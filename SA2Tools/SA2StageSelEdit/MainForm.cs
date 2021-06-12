@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using ArchiveLib;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SAModel.Direct3D.TextureSystem;
 using SplitTools;
 using Pfim;
 using System.Linq;

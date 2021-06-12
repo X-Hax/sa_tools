@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAEditorCommon.UI
+﻿namespace SAModel.SAEditorCommon.UI
 {
     partial class SceneGraphControl
     {
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneGraphControl));
-            this.sceneTreeView = new SonicRetro.SAModel.SAEditorCommon.UI.MultiSelectTreeview();
+            this.sceneTreeView = new SAModel.SAEditorCommon.UI.MultiSelectTreeview();
             this.SuspendLayout();
             // 
             // sceneTreeView

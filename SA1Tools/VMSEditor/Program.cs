@@ -53,7 +53,7 @@ namespace VMSEditor
                 Exception ex = (Exception)e.ExceptionObject;
                 string errDesc = "VMS Editor has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
                     "If you wish to report a bug, please include the following in your report:";
-				SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("VMS Editor", errDesc, ex.ToString());
+				SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("VMS Editor", errDesc, ex.ToString());
                 DialogResult dgresult = report.ShowDialog(primaryForm);
                 switch (dgresult)
                 {

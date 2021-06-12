@@ -2,9 +2,9 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SAModel.Direct3D.TextureSystem;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public partial class TexturePicker : Form
 	{

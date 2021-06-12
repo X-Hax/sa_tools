@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using SonicRetro.SAModel.SAEditorCommon.ModManagement;
+using SAModel.SAEditorCommon.ModManagement;
 
 namespace SAToolsHub
 {

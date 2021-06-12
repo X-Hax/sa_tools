@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using SonicRetro.SAModel;
+using SAModel;
 
 namespace SplitTools.Split
 {

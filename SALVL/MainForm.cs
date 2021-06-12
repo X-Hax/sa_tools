@@ -12,12 +12,12 @@ using System.Xml.Serialization;
 using SplitTools;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SonicRetro.SAModel.SAEditorCommon;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
@@ -25,7 +25,7 @@ using System.Text;
 using SharpDX.Mathematics.Interop;
 using SAEditorCommon.ProjectManagement;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	// TODO: Organize this whole class.
 	// TODO: Unify as much SET/CAM load and save code as possible. They're practically identical.

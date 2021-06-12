@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 using ArchiveLib;
-using SonicRetro.SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon;
 using static ArchiveLib.GenericArchive;
 using static TextureEditor.TexturePalette;
 

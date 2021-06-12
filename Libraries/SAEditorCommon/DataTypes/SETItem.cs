@@ -1,14 +1,14 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+namespace SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
 	public class SETItem : Item, ICustomTypeDescriptor, IScaleable

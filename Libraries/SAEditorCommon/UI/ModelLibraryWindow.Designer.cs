@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAEditorCommon.UI
+﻿namespace SAModel.SAEditorCommon.UI
 {
     partial class ModelLibraryWindow
     {
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.modelLibraryControl1 = new SonicRetro.SAModel.SAEditorCommon.UI.ModelLibraryControl();
+            this.modelLibraryControl1 = new SAModel.SAEditorCommon.UI.ModelLibraryControl();
             this.SuspendLayout();
             // 
             // modelLibraryControl1

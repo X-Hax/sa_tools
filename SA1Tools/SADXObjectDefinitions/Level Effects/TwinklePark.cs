@@ -1,11 +1,11 @@
 ﻿using SplitTools;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using SAModel;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.SETEditing;
+using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
 {

@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
+﻿namespace SAModel.SAEditorCommon.DLLModGenerator
 {
     partial class DLLModGenUI
     {

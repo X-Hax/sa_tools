@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SplitTools;
-using SonicRetro.SAModel;
-using SonicRetro.SAModel.GC;
+using SAModel;
+using SAModel.GC;
 
 
 namespace SplitTools.SplitDLL

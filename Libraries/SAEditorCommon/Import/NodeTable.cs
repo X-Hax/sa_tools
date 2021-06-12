@@ -1,11 +1,11 @@
-﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+﻿using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-namespace SonicRetro.SAModel.SAEditorCommon.Import
+namespace SAModel.SAEditorCommon.Import
 {
 	public static class NodeTable
 	{

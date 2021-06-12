@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.SAEditorCommon.UI;
 
 namespace SA2EventViewer
 {

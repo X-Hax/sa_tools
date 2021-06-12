@@ -1,5 +1,5 @@
-﻿using SonicRetro.SAModel;
-using SonicRetro.SAModel.SAEditorCommon.ModelConversion;
+﻿using SAModel;
+using SAModel.SAEditorCommon.ModelConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;

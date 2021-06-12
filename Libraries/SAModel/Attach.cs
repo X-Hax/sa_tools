@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using SonicRetro.SAModel.GC;
+using SAModel.GC;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	public abstract class Attach : ICloneable

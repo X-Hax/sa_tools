@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	/// <summary>
 	/// This is a standard tri mesh representation of a BasicAttach or ChunkAttach.

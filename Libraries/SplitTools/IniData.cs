@@ -1,11 +1,11 @@
-﻿using SonicRetro.SAModel;
+﻿using SAModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using ByteConverter = SonicRetro.SAModel.ByteConverter;
+using ByteConverter = SAModel.ByteConverter;
 
 namespace SplitTools
 {

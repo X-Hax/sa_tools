@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SonicRetro.SAModel.GC
+namespace SAModel.GC
 {
 	/// <summary>
 	/// A single mesh, with its own parameter and primitive data <br/>

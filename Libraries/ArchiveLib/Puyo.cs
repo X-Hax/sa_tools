@@ -6,7 +6,7 @@ using System.Text;
 using VrSharp;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
-using SonicRetro.SAModel;
+using SAModel;
 using static ArchiveLib.GenericArchive;
 
 // PVM/GVM archives used in Dreamcast/Gamecube games and their ports.

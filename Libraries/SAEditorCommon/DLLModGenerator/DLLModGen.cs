@@ -6,7 +6,7 @@ using SplitTools;
 using SplitTools.SplitDLL;
 using System.Globalization;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
+namespace SAModel.SAEditorCommon.DLLModGenerator
 {
 	public static class DLLModGen
 	{

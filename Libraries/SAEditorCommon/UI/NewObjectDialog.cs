@@ -1,8 +1,8 @@
-﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+﻿using SAModel.SAEditorCommon.DataTypes;
 using System;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public partial class NewObjectDialog : Form
 	{

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.PropertyGrid;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.PropertyGrid;
+using SAModel.SAEditorCommon.UI;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+namespace SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
 	public abstract class Item : IComponent

@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+﻿namespace SAModel.SAEditorCommon.DataTypes
 {
 	public interface IScaleable
 	{

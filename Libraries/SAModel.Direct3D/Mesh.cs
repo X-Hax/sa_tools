@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	public abstract class Mesh
 	{

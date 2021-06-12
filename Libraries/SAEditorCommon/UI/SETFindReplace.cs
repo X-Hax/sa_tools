@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public partial class SETFindReplace : Form
 	{

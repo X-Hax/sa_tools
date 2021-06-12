@@ -6,7 +6,7 @@ using System.Text;
 using System.IO;
 using SplitTools;
 
-namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
+namespace SAModel.SAEditorCommon.StructConverter
 {
 	public static class StructConverter
 	{

@@ -5,7 +5,7 @@ using SplitTools;
 using System.Drawing;
 using System.Drawing.Imaging;
 using AForge.Imaging.ColorReduction;
-using SonicRetro.SAModel;
+using SAModel;
 using System.IO;
 
 namespace VMSEditor

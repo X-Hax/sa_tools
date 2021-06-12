@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
+namespace SAModel.SAEditorCommon.StructConverter
 {
 	public partial class StructConverterUI : Form
 	{

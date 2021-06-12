@@ -1,12 +1,12 @@
 ﻿using System.Drawing;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.Properties;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.Properties;
+using Mesh = SAModel.Direct3D.Mesh;
 
-//using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+//using SAModel.SAEditorCommon.DataTypes;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	/// <summary>
 	/// Houses elements common to several kinds of gizmos / helpers.

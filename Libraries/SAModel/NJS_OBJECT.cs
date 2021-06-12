@@ -6,7 +6,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	public class NJS_OBJECT : ICloneable

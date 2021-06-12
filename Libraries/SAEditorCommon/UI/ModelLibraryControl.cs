@@ -5,10 +5,10 @@ using System.Drawing;
 using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.Properties;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.Properties;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	/// <summary>
 	/// Manages a list of attach objects, as well as provides a visual interface for allowing users to select them.

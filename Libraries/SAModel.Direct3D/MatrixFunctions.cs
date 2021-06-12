@@ -1,7 +1,7 @@
 ﻿using SharpDX;
 using System.Collections.Generic;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	public static class MatrixFunctions
 	{

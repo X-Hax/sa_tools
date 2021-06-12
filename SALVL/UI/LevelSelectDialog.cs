@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	public partial class LevelSelectDialog : Form
 	{

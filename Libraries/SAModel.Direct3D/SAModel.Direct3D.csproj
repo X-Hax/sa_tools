@@ -8,7 +8,7 @@
     <ProjectGuid>{E81631CC-8721-425B-87A3-CB6199DECAF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SonicRetro.SAModel.Direct3D</RootNamespace>
+    <RootNamespace>SAModel.Direct3D</RootNamespace>
     <AssemblyName>SAModel.Direct3D</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -4,7 +4,7 @@ using System.Linq;
 using ArchiveLib;
 using static ArchiveLib.GenericArchive;
 
-namespace SonicRetro.SAModel.Direct3D.TextureSystem
+namespace SAModel.Direct3D.TextureSystem
 {
     /// <summary>
     /// This TextureArchive class is the primary interface for retrieving a texture list/array from a container format, such as PVM/GVM, and eventually PAK.

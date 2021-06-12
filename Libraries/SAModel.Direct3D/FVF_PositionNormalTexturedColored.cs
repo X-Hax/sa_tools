@@ -3,7 +3,7 @@ using SharpDX.Direct3D9;
 using System.Runtime.InteropServices;
 using Color = System.Drawing.Color;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	public interface IVertex
 	{

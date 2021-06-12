@@ -1,11 +1,11 @@
 ﻿using FraGag.Compression;
 using SplitTools;
-using SonicRetro.SAModel;
+using SAModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using ByteConverter = SonicRetro.SAModel.ByteConverter;
+using ByteConverter = SAModel.ByteConverter;
 
 namespace SA2EventViewer
 {

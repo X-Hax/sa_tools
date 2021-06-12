@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Forms;
 using SplitTools;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.SAEditorCommon.UI;
 
 namespace SADXTweaker2
 {
@@ -23,7 +23,7 @@ namespace SADXTweaker2
 		{
 			string errDesc = "SADXTweaker2 has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
 				"If you wish to report a bug, please include the following in your report:";
-			SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, e.Exception.ToString());
+			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, e.Exception.ToString());
 			DialogResult dgresult = report.ShowDialog();
 			switch (dgresult)
 			{
@@ -118,7 +118,7 @@ namespace SADXTweaker2
 		private void bugReportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string errDesc = "You can submit a new issue on SA Tools GitHub issue tracker.\n\nPlease make sure the problem is reproducible on the latest version of SA Tools.\n\nIf you wish to report a bug, please include the following in your report:";
-			SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, null);
+			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SADXTweaker2", errDesc, null);
 			DialogResult dgresult = report.ShowDialog();
 			switch (dgresult)
 			{

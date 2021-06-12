@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using SplitTools;
-using SonicRetro.SAModel;
+using SAModel;
 
 namespace SplitTools.Split
 {
@@ -40,8 +40,8 @@ namespace SplitTools.Split
 						return (int)SplitERRORVALUE.InvalidDataMapping;
 					}
 				}
-				ByteConverter.BigEndian = SonicRetro.SAModel.ByteConverter.BigEndian = inifile.BigEndian;
-				ByteConverter.Reverse = SonicRetro.SAModel.ByteConverter.Reverse = inifile.Reverse;
+				ByteConverter.BigEndian = SAModel.ByteConverter.BigEndian = inifile.BigEndian;
+				ByteConverter.Reverse = SAModel.ByteConverter.Reverse = inifile.Reverse;
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				if (Path.GetExtension(datafilename).ToLowerInvariant() == ".prs" || (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin")) datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;

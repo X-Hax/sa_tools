@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Text;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	public class NJS_MESHSET : ICloneable

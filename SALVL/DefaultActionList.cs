@@ -1,8 +1,8 @@
 ﻿using System.Windows.Forms;
 
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.SAEditorCommon.UI;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	public static class DefaultActionList
 	{

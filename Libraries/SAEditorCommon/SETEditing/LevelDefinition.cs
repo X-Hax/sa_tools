@@ -1,7 +1,7 @@
 ﻿using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 
-namespace SonicRetro.SAModel.SAEditorCommon.SETEditing
+namespace SAModel.SAEditorCommon.SETEditing
 {
 	public abstract class LevelDefinition
 	{

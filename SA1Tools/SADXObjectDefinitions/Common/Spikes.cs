@@ -1,13 +1,13 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SAModel;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
 using System;
 using System.Collections.Generic;
-using BoundingSphere = SonicRetro.SAModel.BoundingSphere;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using BoundingSphere = SAModel.BoundingSphere;
+using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -110,7 +110,7 @@ namespace SADXObjectDefinitions.Common
 				transform.Push();
 				for (int j = 0; j < cols; ++j)
 				{
-					result = SonicRetro.SAModel.Direct3D.Extensions.Merge(result, ObjectHelper.GetModelBounds(model, transform));
+					result = SAModel.Direct3D.Extensions.Merge(result, ObjectHelper.GetModelBounds(model, transform));
 					transform.NJTranslate(0, 0, 15);
 				}
 				transform.Pop();

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SonicRetro.SAModel.GC
+namespace SAModel.GC
 {
 	/// <summary>
 	/// The blendmode for the geometries surface

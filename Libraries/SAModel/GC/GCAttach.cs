@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SonicRetro.SAModel.GC
+namespace SAModel.GC
 {
 	/// <summary>
 	/// An attach/mesh using the Gamecube format

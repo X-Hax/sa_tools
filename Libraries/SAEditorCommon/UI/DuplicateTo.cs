@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.DataTypes;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	/// <summary>
 	/// The 'Duplicate To' dialog allows the user to clone specified SET Items to any other character's layout. This is useful for quickly porting things from one layout to another.

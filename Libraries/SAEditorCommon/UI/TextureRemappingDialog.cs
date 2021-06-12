@@ -1,10 +1,10 @@
-using SonicRetro.SAModel.Direct3D.TextureSystem;
+using SAModel.Direct3D.TextureSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	public partial class TextureRemappingDialog : Form
 	{

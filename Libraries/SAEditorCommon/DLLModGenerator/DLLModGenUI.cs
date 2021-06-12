@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DLLModGenerator
+namespace SAModel.SAEditorCommon.DLLModGenerator
 {
 	public partial class DLLModGenUI : Form
 	{

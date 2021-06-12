@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SonicRetro.SAModel.Direct3D.TextureSystem
+namespace SAModel.Direct3D.TextureSystem
 {
 	/// <summary>
 	/// Contains name and image information for a bitmap file.

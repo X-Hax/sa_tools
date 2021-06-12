@@ -2,7 +2,7 @@
 using SharpDX.Direct3D9;
 using System.Collections.Generic;
 
-namespace SonicRetro.SAModel.Direct3D
+namespace SAModel.Direct3D
 {
 	public class RenderInfo
 	{

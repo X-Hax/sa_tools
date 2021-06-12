@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SonicRetro.SAModel.GC
+namespace SAModel.GC
 {
 	/// <summary>
 	/// An interface used to write the structs

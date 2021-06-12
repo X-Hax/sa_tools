@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 
-namespace SonicRetro.SAModel.GC
+namespace SAModel.GC
 {
 	/// <summary>
 	/// A single corner of a polygon, called loop

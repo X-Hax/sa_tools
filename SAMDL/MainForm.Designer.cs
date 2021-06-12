@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms.VisualStyles;
 
-namespace SonicRetro.SAModel.SAMDL
+namespace SAModel.SAMDL
 {
 	partial class MainForm
 	{
@@ -212,7 +212,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.basicModelToolStripMenuItem,
             this.chunkModelToolStripMenuItem,
             this.gamecubeModelToolStripMenuItem});
-            this.newFileMenuitem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources._new;
+            this.newFileMenuitem.Image = global::SAModel.SAMDL.Properties.Resources._new;
             this.newFileMenuitem.Name = "newFileMenuitem";
             this.newFileMenuitem.Size = new System.Drawing.Size(168, 22);
             this.newFileMenuitem.Text = "&New";
@@ -240,7 +240,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             // openToolStripMenuItem
             // 
-            this.openToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.open;
+            this.openToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.openToolStripMenuItem.Text = "&Open...";
@@ -282,7 +282,7 @@ namespace SonicRetro.SAModel.SAMDL
             // saveMenuItem
             // 
             this.saveMenuItem.Enabled = false;
-            this.saveMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.save;
+            this.saveMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.save;
             this.saveMenuItem.Name = "saveMenuItem";
             this.saveMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveMenuItem.Text = "&Save Model";
@@ -291,7 +291,7 @@ namespace SonicRetro.SAModel.SAMDL
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Enabled = false;
-            this.saveAsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.saveas;
+            this.saveAsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveAsToolStripMenuItem.Text = "Save Model &As...";
@@ -317,7 +317,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.importAsNodesToolStripMenuItem,
             this.legacyOBJImportToolStripMenuItem});
             this.importToolStripMenuItem.Enabled = false;
-            this.importToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.import;
+            this.importToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.importToolStripMenuItem.Text = "&Import...";
@@ -352,7 +352,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.nJAToolStripMenuItem,
             this.aSSIMPExportToolStripMenuItem});
             this.exportToolStripMenuItem.Enabled = false;
-            this.exportToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.export;
+            this.exportToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.export;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.exportToolStripMenuItem.Text = "&Export";
@@ -409,7 +409,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             // preferencesToolStripMenuItem
             // 
-            this.preferencesToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.settings;
+            this.preferencesToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
             this.preferencesToolStripMenuItem.Text = "Preferences";
@@ -418,7 +418,7 @@ namespace SonicRetro.SAModel.SAMDL
             // findToolStripMenuItem
             // 
             this.findToolStripMenuItem.Enabled = false;
-            this.findToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.find;
+            this.findToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.findToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
@@ -511,7 +511,7 @@ namespace SonicRetro.SAModel.SAMDL
             // showNodesToolStripMenuItem
             // 
             this.showNodesToolStripMenuItem.CheckOnClick = true;
-            this.showNodesToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.node;
+            this.showNodesToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.node;
             this.showNodesToolStripMenuItem.Name = "showNodesToolStripMenuItem";
             this.showNodesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showNodesToolStripMenuItem.Text = "Show &Nodes";
@@ -520,7 +520,7 @@ namespace SonicRetro.SAModel.SAMDL
             // showNodeConnectionsToolStripMenuItem
             // 
             this.showNodeConnectionsToolStripMenuItem.CheckOnClick = true;
-            this.showNodeConnectionsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.nodecon;
+            this.showNodeConnectionsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.nodecon;
             this.showNodeConnectionsToolStripMenuItem.Name = "showNodeConnectionsToolStripMenuItem";
             this.showNodeConnectionsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showNodeConnectionsToolStripMenuItem.Text = "Show Node &Connections";
@@ -529,7 +529,7 @@ namespace SonicRetro.SAModel.SAMDL
             // showVertexIndicesToolStripMenuItem
             // 
             this.showVertexIndicesToolStripMenuItem.CheckOnClick = true;
-            this.showVertexIndicesToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.vertid;
+            this.showVertexIndicesToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.vertid;
             this.showVertexIndicesToolStripMenuItem.Name = "showVertexIndicesToolStripMenuItem";
             this.showVertexIndicesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showVertexIndicesToolStripMenuItem.Text = "Show Vertex Indices";
@@ -539,7 +539,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.showWeightsToolStripMenuItem.CheckOnClick = true;
             this.showWeightsToolStripMenuItem.Enabled = false;
-            this.showWeightsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.weights;
+            this.showWeightsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.weights;
             this.showWeightsToolStripMenuItem.Name = "showWeightsToolStripMenuItem";
             this.showWeightsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showWeightsToolStripMenuItem.Text = "Show &Weights";
@@ -550,7 +550,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.showHintsToolStripMenuItem.Checked = true;
             this.showHintsToolStripMenuItem.CheckOnClick = true;
             this.showHintsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showHintsToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.messages;
+            this.showHintsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.messages;
             this.showHintsToolStripMenuItem.Name = "showHintsToolStripMenuItem";
             this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.showHintsToolStripMenuItem.Text = "Show Hints";
@@ -568,7 +568,7 @@ namespace SonicRetro.SAModel.SAMDL
             // modelCodeToolStripMenuItem
             // 
             this.modelCodeToolStripMenuItem.Enabled = false;
-            this.modelCodeToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.source;
+            this.modelCodeToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.source;
             this.modelCodeToolStripMenuItem.Name = "modelCodeToolStripMenuItem";
             this.modelCodeToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.modelCodeToolStripMenuItem.Text = "View Model Code";
@@ -599,7 +599,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             // welcomeTutorialToolStripMenuItem
             // 
-            this.welcomeTutorialToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.help;
+            this.welcomeTutorialToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.help;
             this.welcomeTutorialToolStripMenuItem.Name = "welcomeTutorialToolStripMenuItem";
             this.welcomeTutorialToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
             this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
@@ -741,7 +741,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonNew
             // 
             this.buttonNew.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonNew.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources._new;
+            this.buttonNew.Image = global::SAModel.SAMDL.Properties.Resources._new;
             this.buttonNew.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonNew.Name = "buttonNew";
             this.buttonNew.Size = new System.Drawing.Size(40, 40);
@@ -751,7 +751,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonOpen
             // 
             this.buttonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonOpen.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.open;
+            this.buttonOpen.Image = global::SAModel.SAMDL.Properties.Resources.open;
             this.buttonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonOpen.Name = "buttonOpen";
             this.buttonOpen.Size = new System.Drawing.Size(40, 40);
@@ -762,7 +762,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonSave.Enabled = false;
-            this.buttonSave.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.save;
+            this.buttonSave.Image = global::SAModel.SAMDL.Properties.Resources.save;
             this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(40, 40);
@@ -773,7 +773,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonSaveAs.Enabled = false;
-            this.buttonSaveAs.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.saveas;
+            this.buttonSaveAs.Image = global::SAModel.SAMDL.Properties.Resources.saveas;
             this.buttonSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonSaveAs.Name = "buttonSaveAs";
             this.buttonSaveAs.Size = new System.Drawing.Size(40, 40);
@@ -788,7 +788,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonShowNodes
             // 
             this.buttonShowNodes.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonShowNodes.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.node;
+            this.buttonShowNodes.Image = global::SAModel.SAMDL.Properties.Resources.node;
             this.buttonShowNodes.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonShowNodes.Name = "buttonShowNodes";
             this.buttonShowNodes.Size = new System.Drawing.Size(40, 40);
@@ -798,7 +798,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonShowNodeConnections
             // 
             this.buttonShowNodeConnections.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonShowNodeConnections.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.nodecon;
+            this.buttonShowNodeConnections.Image = global::SAModel.SAMDL.Properties.Resources.nodecon;
             this.buttonShowNodeConnections.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonShowNodeConnections.Name = "buttonShowNodeConnections";
             this.buttonShowNodeConnections.Size = new System.Drawing.Size(40, 40);
@@ -809,7 +809,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonShowVertexIndices.CheckOnClick = true;
             this.buttonShowVertexIndices.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonShowVertexIndices.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.vertid;
+            this.buttonShowVertexIndices.Image = global::SAModel.SAMDL.Properties.Resources.vertid;
             this.buttonShowVertexIndices.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonShowVertexIndices.Name = "buttonShowVertexIndices";
             this.buttonShowVertexIndices.Size = new System.Drawing.Size(40, 40);
@@ -821,7 +821,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonShowWeights.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonShowWeights.Enabled = false;
-            this.buttonShowWeights.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.weights;
+            this.buttonShowWeights.Image = global::SAModel.SAMDL.Properties.Resources.weights;
             this.buttonShowWeights.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonShowWeights.Name = "buttonShowWeights";
             this.buttonShowWeights.Size = new System.Drawing.Size(40, 40);
@@ -833,7 +833,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.buttonLighting.Checked = true;
             this.buttonLighting.CheckState = System.Windows.Forms.CheckState.Checked;
             this.buttonLighting.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonLighting.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.lighting;
+            this.buttonLighting.Image = global::SAModel.SAMDL.Properties.Resources.lighting;
             this.buttonLighting.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonLighting.Name = "buttonLighting";
             this.buttonLighting.Size = new System.Drawing.Size(40, 40);
@@ -846,7 +846,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.buttonMaterialColors.CheckOnClick = true;
             this.buttonMaterialColors.CheckState = System.Windows.Forms.CheckState.Checked;
             this.buttonMaterialColors.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonMaterialColors.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.material;
+            this.buttonMaterialColors.Image = global::SAModel.SAMDL.Properties.Resources.material;
             this.buttonMaterialColors.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonMaterialColors.Name = "buttonMaterialColors";
             this.buttonMaterialColors.Size = new System.Drawing.Size(40, 40);
@@ -858,7 +858,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.buttonShowHints.Checked = true;
             this.buttonShowHints.CheckState = System.Windows.Forms.CheckState.Checked;
             this.buttonShowHints.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonShowHints.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.messages;
+            this.buttonShowHints.Image = global::SAModel.SAMDL.Properties.Resources.messages;
             this.buttonShowHints.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonShowHints.Name = "buttonShowHints";
             this.buttonShowHints.Size = new System.Drawing.Size(40, 40);
@@ -868,7 +868,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonPreferences
             // 
             this.buttonPreferences.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonPreferences.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.settings;
+            this.buttonPreferences.Image = global::SAModel.SAMDL.Properties.Resources.settings;
             this.buttonPreferences.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPreferences.Name = "buttonPreferences";
             this.buttonPreferences.Size = new System.Drawing.Size(40, 40);
@@ -885,7 +885,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.buttonSolid.Checked = true;
             this.buttonSolid.CheckState = System.Windows.Forms.CheckState.Checked;
             this.buttonSolid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonSolid.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.solid;
+            this.buttonSolid.Image = global::SAModel.SAMDL.Properties.Resources.solid;
             this.buttonSolid.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonSolid.Name = "buttonSolid";
             this.buttonSolid.Size = new System.Drawing.Size(40, 40);
@@ -895,7 +895,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonVertices
             // 
             this.buttonVertices.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonVertices.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.point;
+            this.buttonVertices.Image = global::SAModel.SAMDL.Properties.Resources.point;
             this.buttonVertices.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonVertices.Name = "buttonVertices";
             this.buttonVertices.Size = new System.Drawing.Size(40, 40);
@@ -905,7 +905,7 @@ namespace SonicRetro.SAModel.SAMDL
             // buttonWireframe
             // 
             this.buttonWireframe.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonWireframe.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.wireframe;
+            this.buttonWireframe.Image = global::SAModel.SAMDL.Properties.Resources.wireframe;
             this.buttonWireframe.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonWireframe.Name = "buttonWireframe";
             this.buttonWireframe.Size = new System.Drawing.Size(40, 40);
@@ -921,7 +921,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonPrevAnimation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonPrevAnimation.Enabled = false;
-            this.buttonPrevAnimation.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.prevanim;
+            this.buttonPrevAnimation.Image = global::SAModel.SAMDL.Properties.Resources.prevanim;
             this.buttonPrevAnimation.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPrevAnimation.Name = "buttonPrevAnimation";
             this.buttonPrevAnimation.Size = new System.Drawing.Size(40, 40);
@@ -932,7 +932,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonNextAnimation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonNextAnimation.Enabled = false;
-            this.buttonNextAnimation.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.nextanim;
+            this.buttonNextAnimation.Image = global::SAModel.SAMDL.Properties.Resources.nextanim;
             this.buttonNextAnimation.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonNextAnimation.Name = "buttonNextAnimation";
             this.buttonNextAnimation.Size = new System.Drawing.Size(40, 40);
@@ -943,7 +943,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonPrevFrame.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonPrevFrame.Enabled = false;
-            this.buttonPrevFrame.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.prevframe;
+            this.buttonPrevFrame.Image = global::SAModel.SAMDL.Properties.Resources.prevframe;
             this.buttonPrevFrame.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPrevFrame.Name = "buttonPrevFrame";
             this.buttonPrevFrame.Size = new System.Drawing.Size(40, 40);
@@ -954,7 +954,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonPlayAnimation.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonPlayAnimation.Enabled = false;
-            this.buttonPlayAnimation.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.playanim;
+            this.buttonPlayAnimation.Image = global::SAModel.SAMDL.Properties.Resources.playanim;
             this.buttonPlayAnimation.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPlayAnimation.Name = "buttonPlayAnimation";
             this.buttonPlayAnimation.Size = new System.Drawing.Size(40, 40);
@@ -965,7 +965,7 @@ namespace SonicRetro.SAModel.SAMDL
             // 
             this.buttonNextFrame.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonNextFrame.Enabled = false;
-            this.buttonNextFrame.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.nextframe;
+            this.buttonNextFrame.Image = global::SAModel.SAMDL.Properties.Resources.nextframe;
             this.buttonNextFrame.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonNextFrame.Name = "buttonNextFrame";
             this.buttonNextFrame.Size = new System.Drawing.Size(40, 40);
@@ -996,7 +996,7 @@ namespace SonicRetro.SAModel.SAMDL
             // copyModelToolStripMenuItem
             // 
             this.copyModelToolStripMenuItem.Enabled = false;
-            this.copyModelToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.copy;
+            this.copyModelToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.copy;
             this.copyModelToolStripMenuItem.Name = "copyModelToolStripMenuItem";
             this.copyModelToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.copyModelToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
@@ -1006,7 +1006,7 @@ namespace SonicRetro.SAModel.SAMDL
             // pasteModelToolStripMenuItem
             // 
             this.pasteModelToolStripMenuItem.Enabled = false;
-            this.pasteModelToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.paste;
+            this.pasteModelToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.paste;
             this.pasteModelToolStripMenuItem.Name = "pasteModelToolStripMenuItem";
             this.pasteModelToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.pasteModelToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
@@ -1054,7 +1054,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.importSelectedAsNodesContextMenuItem,
             this.selectedLegacyOBJImportToolStripMenuItem});
             this.importContextMenuItem.Enabled = false;
-            this.importContextMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.import;
+            this.importContextMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.import;
             this.importContextMenuItem.Name = "importContextMenuItem";
             this.importContextMenuItem.Size = new System.Drawing.Size(211, 30);
             this.importContextMenuItem.Text = "&Import selected";
@@ -1083,7 +1083,7 @@ namespace SonicRetro.SAModel.SAMDL
             // exportContextMenuItem
             // 
             this.exportContextMenuItem.Enabled = false;
-            this.exportContextMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.export;
+            this.exportContextMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.export;
             this.exportContextMenuItem.Name = "exportContextMenuItem";
             this.exportContextMenuItem.Size = new System.Drawing.Size(211, 30);
             this.exportContextMenuItem.Text = "&Export selected...";
@@ -1097,7 +1097,7 @@ namespace SonicRetro.SAModel.SAMDL
             // addChildToolStripMenuItem
             // 
             this.addChildToolStripMenuItem.Enabled = false;
-            this.addChildToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.addchild;
+            this.addChildToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.addchild;
             this.addChildToolStripMenuItem.Name = "addChildToolStripMenuItem";
             this.addChildToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
             this.addChildToolStripMenuItem.Text = "Add Child";
@@ -1111,7 +1111,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.toolStripSeparator13,
             this.transparentOnlyToolStripMenuItem});
             this.splitToolStripMenuItem.Enabled = false;
-            this.splitToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.split;
+            this.splitToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.split;
             this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
             this.splitToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
             this.splitToolStripMenuItem.Text = "Split Meshsets";
@@ -1154,7 +1154,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.sortMeshsetsToolStripMenuItem,
             this.hierarchyToolStripMenuItem});
             this.sortToolStripMenuItem.Enabled = false;
-            this.sortToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.sort;
+            this.sortToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.sort;
             this.sortToolStripMenuItem.Name = "sortToolStripMenuItem";
             this.sortToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
             this.sortToolStripMenuItem.Text = "Sort Transparent Meshes";
@@ -1187,7 +1187,7 @@ namespace SonicRetro.SAModel.SAMDL
             this.emptyModelDataToolStripMenuItem,
             this.deleteNodeToolStripMenuItem});
             this.deleteToolStripMenuItem.Enabled = false;
-            this.deleteToolStripMenuItem.Image = global::SonicRetro.SAModel.SAMDL.Properties.Resources.delete;
+            this.deleteToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.delete;
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
             this.deleteToolStripMenuItem.Text = "Delete";

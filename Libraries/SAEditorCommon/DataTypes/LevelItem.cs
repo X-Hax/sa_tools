@@ -5,12 +5,12 @@ using System.Globalization;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SonicRetro.SAModel.SAEditorCommon.UI;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon.UI;
+using Mesh = SAModel.Direct3D.Mesh;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+namespace SAModel.SAEditorCommon.DataTypes
 {
 	[Serializable]
 	public class LevelItem : Item, IScaleable

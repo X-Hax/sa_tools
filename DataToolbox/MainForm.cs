@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using SAEditorCommon.ProjectManagement;
 
-namespace SonicRetro.SAModel.DataToolbox
+namespace SAModel.DataToolbox
 {
 	public partial class MainForm : Form
 	{

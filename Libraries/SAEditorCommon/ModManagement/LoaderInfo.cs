@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 using SplitTools;
 
-namespace SonicRetro.SAModel.SAEditorCommon.ModManagement
+namespace SAModel.SAEditorCommon.ModManagement
 {
 	public enum UpdateUnit
 	{

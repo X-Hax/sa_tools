@@ -1,9 +1,9 @@
-﻿using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+﻿using SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.UI;
 using System;
 using System.ComponentModel;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+namespace SAModel.SAEditorCommon.DataTypes
 {
 	public class MissionSETItem : SETItem
 	{

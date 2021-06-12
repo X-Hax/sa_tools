@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using static VMSEditor.SA1DLC;
 using ArchiveLib;
-using SonicRetro.SAModel;
+using SAModel;
 using System.Drawing.Imaging;
 using AForge.Imaging.ColorReduction;
 using System.Text;
@@ -35,7 +35,7 @@ namespace VMSEditor
         {
             string errDesc = "DLC Tool has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
                 "If you wish to report a bug, please include the following in your report:";
-			SonicRetro.SAModel.SAEditorCommon.ErrorDialog report = new SonicRetro.SAModel.SAEditorCommon.ErrorDialog("DLC Tool", errDesc, e.Exception.ToString());
+			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("DLC Tool", errDesc, e.Exception.ToString());
             DialogResult dgresult = report.ShowDialog();
             switch (dgresult)
             {

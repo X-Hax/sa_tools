@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 using Color = System.Drawing.Color;
 
-namespace SonicRetro.SAModel.SAEditorCommon.UI
+namespace SAModel.SAEditorCommon.UI
 {
 	/// <summary>
 	/// Point Helpers are useful for displaying and manipulating verts in 3d space.

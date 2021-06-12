@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	public static class VColor
 	{

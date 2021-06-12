@@ -8,7 +8,7 @@
     <ProjectGuid>{9B0BD77B-12B8-4B68-96B9-90A2868E6DF0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SonicRetro.SAModel.DataToolbox</RootNamespace>
+    <RootNamespace>DataToolbox</RootNamespace>
     <AssemblyName>DataToolbox</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>

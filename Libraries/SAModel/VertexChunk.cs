@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	[Serializable]
 	public class VertexChunk : ICloneable

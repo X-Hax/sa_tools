@@ -1,4 +1,4 @@
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
 	partial class ErrorDialog
 	{

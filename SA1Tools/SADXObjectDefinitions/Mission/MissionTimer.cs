@@ -1,8 +1,8 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.SAEditorCommon.DataTypes;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
+using SAModel.Direct3D;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 
 namespace SADXObjectDefinitions.Mission

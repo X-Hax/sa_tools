@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SonicRetro.SAModel.SAEditorCommon.Import;
-using SonicRetro.SAModel.SAEditorCommon.SETEditing;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon.Import;
+using SAModel.SAEditorCommon.SETEditing;
+using SAModel.SAEditorCommon.UI;
 
-namespace SonicRetro.SAModel.SAEditorCommon.DataTypes
+namespace SAModel.SAEditorCommon.DataTypes
 {
     public static class LevelData
     {

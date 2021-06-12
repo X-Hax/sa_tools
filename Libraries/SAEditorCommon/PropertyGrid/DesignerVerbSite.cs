@@ -1,10 +1,10 @@
-﻿using SonicRetro.SAModel.SAEditorCommon.DataTypes;
+﻿using SAModel.SAEditorCommon.DataTypes;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
 
-namespace SonicRetro.SAModel.SAEditorCommon.PropertyGrid
+namespace SAModel.SAEditorCommon.PropertyGrid
 {
 	public class DesignerVerbSite : IMenuCommandService, ISite
 	{

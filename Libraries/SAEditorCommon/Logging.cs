@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
+using SAModel.Direct3D;
 using Color = System.Drawing.Color;
 using System.Text;
 using SharpDX.Mathematics.Interop;
 
-namespace SonicRetro.SAModel.SAEditorCommon
+namespace SAModel.SAEditorCommon
 {
     /// <summary>
     /// Class for creating log files.

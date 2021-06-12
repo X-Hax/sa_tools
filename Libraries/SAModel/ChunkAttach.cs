@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
-namespace SonicRetro.SAModel
+namespace SAModel
 {
 	class CachedVertex : IEquatable<CachedVertex>
 	{

@@ -7,15 +7,15 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SonicRetro.SAModel.SAEditorCommon;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 
-namespace SonicRetro.SAModel.SAMDL
+namespace SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
