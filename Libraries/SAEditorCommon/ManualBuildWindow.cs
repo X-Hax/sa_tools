@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Ookii.Dialogs.Wpf;
-using SA_Tools;
-using SA_Tools.SplitDLL;
+using SplitTools;
+using SplitTools.SplitDLL;
 
 namespace SonicRetro.SAModel.SAEditorCommon
 {
@@ -27,7 +27,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			InitializeComponent();
 		}
 
-		public void Initalize(SA_Tools.Game game, string projectName, string projectFolder,
+		public void Initalize(SplitTools.Game game, string projectName, string projectFolder,
 			string modFolder, Dictionary<string, AssemblyType> assemblies)
 		{
 			this.projectFolder = projectFolder;
@@ -50,7 +50,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				switch (assembly.Value)
 				{
 					case AssemblyType.Exe:
-						SA_Tools.IniData iniData = StructConverter.StructConverter.LoadINI(iniPath, ref itemsToExport);
+						SplitTools.IniData iniData = StructConverter.StructConverter.LoadINI(iniPath, ref itemsToExport);
 						assemblyItemsToExport.Add(assembly.Key, itemsToExport);
 						assemblyIniFiles.Add(assembly.Key, iniData);
 						break;
@@ -111,10 +111,10 @@ namespace SonicRetro.SAModel.SAEditorCommon
 				// fill list view with items to export
 				object iniFile = assemblyIniFiles[assembly.Key];
 
-				if (iniFile is SA_Tools.IniData)
+				if (iniFile is SplitTools.IniData)
 				{
 					FillListViewIniData(tabListView, assembly.Value,
-						assembly.Key, (SA_Tools.IniData)iniFile, assemblyItemsToExport[assembly.Key]);
+						assembly.Key, (SplitTools.IniData)iniFile, assemblyItemsToExport[assembly.Key]);
 
 				}
 				else if (iniFile is DllIniData)
@@ -131,12 +131,12 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		}
 
 		private void FillListViewIniData(ListView listView, AssemblyType assemblyType, string assemblyname,
-			SA_Tools.IniData iniData, Dictionary<string, bool> itemsToExport)
+			SplitTools.IniData iniData, Dictionary<string, bool> itemsToExport)
 		{
 			listView.BeginUpdate();
 			listView.Items.Clear();
 
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 			{
 				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
 
@@ -242,7 +242,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 					switch (assembly.Value)
 					{
 						case AssemblyType.Exe:
-							StructConverter.StructConverter.ExportCPP((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
+							StructConverter.StructConverter.ExportCPP((SplitTools.IniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(outputFolder, assembly.Key + ".cpp"));
 							break;
 
@@ -278,7 +278,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 					switch (assembly.Value)
 					{
 						case AssemblyType.Exe:
-							StructConverter.StructConverter.ExportINI((SA_Tools.IniData)assemblyIniFiles[assembly.Key],
+							StructConverter.StructConverter.ExportINI((SplitTools.IniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 

@@ -1,4 +1,4 @@
-using SA_Tools;
+using SplitTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,13 +138,13 @@ namespace SonicRetro.SAModel.DataToolbox
 					switch (Path.GetExtension(datafilename).ToLowerInvariant())
 					{
 						case ".dll":
-							SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+							SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
 							break;
 						case ".nb":
-							SA_Tools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
+							SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
 							break;
 						default:
-							SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+							SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName);
 							break;
 					}
 				}
@@ -153,7 +153,7 @@ namespace SonicRetro.SAModel.DataToolbox
 			{
 				Console.WriteLine("Starting split for " + files[0] + System.Environment.NewLine);
 				Console.WriteLine("Output folder: " + out_path + System.Environment.NewLine);
-				SA_Tools.SAArc.sa2MDL.Split(splitMDL > 1, files[0], out_path, files.Skip(1).ToArray());
+				SplitTools.SAArc.sa2MDL.Split(splitMDL > 1, files[0], out_path, files.Skip(1).ToArray());
 			}
 			Console.WriteLine("Split job finished.");
 		}
@@ -176,7 +176,7 @@ namespace SonicRetro.SAModel.DataToolbox
 					if (inifiles[u].ToLowerInvariant().Contains("_data") || inifiles[u].ToLowerInvariant().Contains("output")) continue;
 					if (dllmode)
 					{
-						SA_Tools.SplitDLL.IniData inifile = IniSerializer.Deserialize<SA_Tools.SplitDLL.IniData>(inifiles[u]);
+						SplitTools.SplitDLL.IniDataSplitDLL inifile = IniSerializer.Deserialize<SplitTools.SplitDLL.IniDataSplitDLL>(inifiles[u]);
 						if (inifile.ModuleName != null && inifile.ModuleName.ToLowerInvariant() == Path.GetFileNameWithoutExtension(file).ToLowerInvariant())
 						{
 							relevantini.Add(Path.GetFullPath(inifiles[u]));
@@ -185,7 +185,7 @@ namespace SonicRetro.SAModel.DataToolbox
 					}
 					else
 					{
-						SA_Tools.IniData inifile = IniSerializer.Deserialize<SA_Tools.IniData>(inifiles[u]);
+						SplitTools.IniData inifile = IniSerializer.Deserialize<SplitTools.IniData>(inifiles[u]);
 						if (inifile.DataFilename != null && inifile.DataFilename.ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant())
 						{
 							relevantini.Add(Path.GetFullPath(inifiles[u]));

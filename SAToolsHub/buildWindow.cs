@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
-using SA_Tools.SAArc;
+using SplitTools.SAArc;
 
 namespace SAToolsHub
 {
@@ -100,8 +100,8 @@ namespace SAToolsHub
 
 		void genAssemblies()
 		{
-			SA_Tools.IniData EXEiniData = new SA_Tools.IniData();
-			SA_Tools.SplitDLL.DllIniData DLLiniData = new SA_Tools.SplitDLL.DllIniData();
+			SplitTools.IniData EXEiniData = new SplitTools.IniData();
+			SplitTools.SplitDLL.DllIniData DLLiniData = new SplitTools.SplitDLL.DllIniData();
 			Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
 			Dictionary<string, bool> itemsDLLToExport = new Dictionary<string, bool>();
 
@@ -124,7 +124,7 @@ namespace SAToolsHub
 						}
 						else
 						{
-							SA_Tools.SplitDLL.DllIniData dllIniData =
+							SplitTools.SplitDLL.DllIniData dllIniData =
 								SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 
 							SonicRetro.SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
@@ -191,7 +191,7 @@ namespace SAToolsHub
 			switch (SAToolsHub.setGame)
 			{
 				case "SADXPC":
-					SADXModInfo sadxModInfo = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(baseModIniPath);
+					SADXModInfo sadxModInfo = SplitTools.IniSerializer.Deserialize<SADXModInfo>(baseModIniPath);
 
 					// set all of our assemblies properly
 					string ADV00MODELS = "ADV00MODELS";
@@ -223,11 +223,11 @@ namespace SAToolsHub
 						if (assemblies.ContainsKey("CHRMODELS")) sadxModInfo.CHRMODELSData = "chrmodels_data.ini";
 					}
 
-					SA_Tools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
+					SplitTools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
 					break;
 
 				case "SA2PC":
-					SA2ModInfo sa2ModInfo = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
+					SA2ModInfo sa2ModInfo = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
 					if (File.Exists(Path.Combine(SAToolsHub.projectDirectory, "Data_DLL_orig.ini")))
 					{
@@ -240,7 +240,7 @@ namespace SAToolsHub
 
 					if (iniEXEFiles.Count > 0) sa2ModInfo.EXEData = "sonic2app_data.ini";
 
-					SA_Tools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
+					SplitTools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
 					break;
 				default:
 					break;
@@ -338,7 +338,7 @@ namespace SAToolsHub
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
-					SADXModInfo sadxMod = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
+					SADXModInfo sadxMod = SplitTools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = sadxMod.Name;
 					gameEXE = "sonic";
 					sysFolder = "system";
@@ -346,7 +346,7 @@ namespace SAToolsHub
 					tabControl1.TabPages.Remove(tabMDL);
 					break;
 				case ("SA2PC"):
-					SA2ModInfo sa2Mod = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
+					SA2ModInfo sa2Mod = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = sa2Mod.Name;
 					gameEXE = "sonic2app";
 					sysFolder = "gd_PC";
@@ -391,17 +391,17 @@ namespace SAToolsHub
 		
 		private void btnManual_Click(object sender, EventArgs e)
 		{
-			SA_Tools.Game game;
+			SplitTools.Game game;
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
-					game = SA_Tools.Game.SADX;
+					game = SplitTools.Game.SADX;
 					break;
 				case ("SA2PC"):
-					game = SA_Tools.Game.SA2B;
+					game = SplitTools.Game.SA2B;
 					break;
 				default:
-					game = SA_Tools.Game.SADX;
+					game = SplitTools.Game.SADX;
 					break;
 			}
 

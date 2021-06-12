@@ -25,7 +25,7 @@ namespace ArchiveTool
                     outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_dec.rel");
                     Console.WriteLine("Output file: {0}", outputPath);
                     byte[] inputData = File.ReadAllBytes(args[0]);
-                    byte[] outputData = SA_Tools.HelperFunctions.DecompressREL(inputData);
+                    byte[] outputData = SplitTools.HelperFunctions.DecompressREL(inputData);
                     File.WriteAllBytes(outputPath, outputData);
                     Console.WriteLine("File extracted!");
                     return;

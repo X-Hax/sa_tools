@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.IO;
-using SA_Tools;
+using SplitTools;
 
 namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 {
@@ -60,7 +60,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			{ "physicsdata", "Player Parameters" }
 		};
 
-		private static void CheckItems(KeyValuePair<string, SA_Tools.FileInfo> item, SA_Tools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
+		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
 		{
 			bool? modified = null;
 			switch (item.Value.Type)
@@ -274,15 +274,15 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			defaultExportState.Add(item.Key, modified ?? true);
 		}
 
-		public static SA_Tools.IniData LoadINI(string filename,
+		public static SplitTools.IniData LoadINI(string filename,
 			ref Dictionary<string, bool> defaultExportState)
 		{
-			SA_Tools.IniData iniData = IniSerializer.Deserialize<SA_Tools.IniData>(filename);
+			SplitTools.IniData iniData = IniSerializer.Deserialize<SplitTools.IniData>(filename);
 			defaultExportState.Clear();
 
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 			{
 				CheckItems(item, iniData, ref defaultExportState);
 			}
@@ -290,20 +290,20 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			return iniData;
 		}
 
-		public static SA_Tools.IniData LoadMultiINI(List<string> filename,
+		public static SplitTools.IniData LoadMultiINI(List<string> filename,
 			ref Dictionary<string, bool> defaultExportState)
 		{
 			defaultExportState.Clear();
-			SA_Tools.IniData newiniData = new SA_Tools.IniData();
-			Dictionary<string, SA_Tools.FileInfo> curItems = new Dictionary<string, SA_Tools.FileInfo>();
+			SplitTools.IniData newiniData = new SplitTools.IniData();
+			Dictionary<string, SplitTools.FileInfo> curItems = new Dictionary<string, SplitTools.FileInfo>();
 
 			foreach (string arrFile in filename)
 			{
-				SA_Tools.IniData iniData = IniSerializer.Deserialize<SA_Tools.IniData>(arrFile);
+				SplitTools.IniData iniData = IniSerializer.Deserialize<SplitTools.IniData>(arrFile);
 
 				Environment.CurrentDirectory = Path.GetDirectoryName(arrFile);
 
-				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+				foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 				{
 					CheckItems(item, iniData, ref defaultExportState);
 
@@ -314,17 +314,17 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			return newiniData;
 		}
 
-		public static void ExportINI(SA_Tools.IniData iniData,
+		public static void ExportINI(SplitTools.IniData iniData,
 			Dictionary<string, bool> itemsToExport, string fileName)
 		{
 			string dstfol = Path.GetDirectoryName(fileName);
 
-			SA_Tools.IniData output = new SA_Tools.IniData
+			SplitTools.IniData output = new SplitTools.IniData
 			{
-				Files = new Dictionary<string, SA_Tools.FileInfo>()
+				Files = new Dictionary<string, SplitTools.FileInfo>()
 			};
 
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in
 				iniData.Files.Where(i => itemsToExport[i.Key]))
 			{
 				if (Directory.Exists(item.Value.Filename))
@@ -361,7 +361,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			IniSerializer.Serialize(output, fileName);
 		}
 
-		public static void ExportCPP(SA_Tools.IniData iniData,
+		public static void ExportCPP(SplitTools.IniData iniData,
 			Dictionary<string, bool> itemsToExport, string fileName)
 		{
 			using (TextWriter writer = File.CreateText(fileName))
@@ -396,12 +396,12 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 					writer.WriteLine("#include \"SADXModLoader.h\"");
 				writer.WriteLine();
 				Dictionary<string, string> models = new Dictionary<string, string>();
-				//foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
-				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in
+				//foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files.Where((a, i) => listView1.CheckedIndices.Contains(i)))
+				foreach (KeyValuePair<string, SplitTools.FileInfo> item in
 					iniData.Files.Where(i => itemsToExport[i.Key]))
 				{
 					string name = item.Key.MakeIdentifier();
-					SA_Tools.FileInfo data = item.Value;
+					SplitTools.FileInfo data = item.Value;
 					switch (data.Type)
 					{
 						case "landtable":

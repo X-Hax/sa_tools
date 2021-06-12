@@ -39,7 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Pfim, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
+      <HintPath>..\..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -90,9 +90,9 @@
       <Name>ArchiveLib</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\SA Tools\SA Tools.csproj">
+    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj">
       <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
-      <Name>SA Tools</Name>
+      <Name>SplitTools</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">

@@ -9,7 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using SA_Tools;
+using SplitTools;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SonicRetro.SAModel.Direct3D;
@@ -310,7 +310,7 @@ namespace SonicRetro.SAModel.SALVL
 
 			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) =>
 			{
-				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SALVL");
+				welcomeForm.GoToSite("https://github.com/X-Hax/sa_tools/wiki/SALVL");
 			};
 
 			welcomeForm.ShowDialog();
@@ -3692,8 +3692,8 @@ namespace SonicRetro.SAModel.SALVL
 					else if (ext == ".rel")
 					{
 						ByteConverter.BigEndian = true;
-						datafile = SA_Tools.HelperFunctions.DecompressREL(datafile);
-						SA_Tools.HelperFunctions.FixRELPointers(datafile, 0xC900000);
+						datafile = SplitTools.HelperFunctions.DecompressREL(datafile);
+						SplitTools.HelperFunctions.FixRELPointers(datafile, 0xC900000);
 						if (bd.comboLevelFormat.SelectedIndex == 0)
 							ByteConverter.Reverse = true; // SADX GC
 						key = 0xC900000; // Key always the same for REL pointers

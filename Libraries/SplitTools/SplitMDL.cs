@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace SA_Tools.SAArc
+namespace SplitTools.SAArc
 {
 	public static class sa2MDL
 	{

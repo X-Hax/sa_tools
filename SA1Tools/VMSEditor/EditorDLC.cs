@@ -9,7 +9,7 @@ using System.Drawing.Imaging;
 using AForge.Imaging.ColorReduction;
 using System.Text;
 using System.Collections.Generic;
-using SA_Tools;
+using SplitTools;
 
 namespace VMSEditor
 {
@@ -344,12 +344,12 @@ namespace VMSEditor
 
         private void dLCToolManualToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/wiki/Dreamcast-DLC-Tool");
+            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/Dreamcast-DLC-Tool");
         }
 
         private void gitHubIssueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
+            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
         }
 
         private void checkBoxEnableTextures_Click(object sender, EventArgs e)

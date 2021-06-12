@@ -65,21 +65,21 @@ namespace SAToolsHub
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
-					SADXLoaderInfo dxLoaderIni = SA_Tools.IniSerializer.Deserialize<SADXLoaderInfo>(modLoaderIniPath);
+					SADXLoaderInfo dxLoaderIni = SplitTools.IniSerializer.Deserialize<SADXLoaderInfo>(modLoaderIniPath);
 
 					if (!dxLoaderIni.Mods.Contains(modName))
 						dxLoaderIni.Mods.Add(modName);
 
-					SA_Tools.IniSerializer.Serialize(dxLoaderIni, modLoaderIniPath);
+					SplitTools.IniSerializer.Serialize(dxLoaderIni, modLoaderIniPath);
 					break;
 
 				case ("SA2PC"):
-					SA2LoaderInfo sa2LoaderIni = SA_Tools.IniSerializer.Deserialize<SA2LoaderInfo>(modLoaderIniPath);
+					SA2LoaderInfo sa2LoaderIni = SplitTools.IniSerializer.Deserialize<SA2LoaderInfo>(modLoaderIniPath);
 
 					if (!sa2LoaderIni.Mods.Contains(modName))
 						sa2LoaderIni.Mods.Add(modName);
 
-					SA_Tools.IniSerializer.Serialize(sa2LoaderIni, modLoaderIniPath);
+					SplitTools.IniSerializer.Serialize(sa2LoaderIni, modLoaderIniPath);
 					break;
 			}
 		}
@@ -92,12 +92,12 @@ namespace SAToolsHub
 			switch (SAToolsHub.setGame)
 			{
 				case ("SADXPC"):
-					SADXModInfo modInfoDX = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory,"mod.ini"));
+					SADXModInfo modInfoDX = SplitTools.IniSerializer.Deserialize<SADXModInfo>(Path.Combine(SAToolsHub.projectDirectory,"mod.ini"));
 					modName = modInfoDX.Name;
 					break;
 
 				case ("SA2PC"):
-					SA2ModInfo modInfoSA2 = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
+					SA2ModInfo modInfoSA2 = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(Path.Combine(SAToolsHub.projectDirectory, "mod.ini"));
 					modName = modInfoSA2.Name;
 					break;
 

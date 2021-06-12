@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SA_Tools;
+using SplitTools;
 
 namespace SADXTweaker2
 {

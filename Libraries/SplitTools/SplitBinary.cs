@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using SA_Tools;
+using SplitTools;
 using SonicRetro.SAModel;
 
-namespace SA_Tools.Split
+namespace SplitTools.Split
 {
-	public static class Split
+    public static class SplitBinary
 	{
-		public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
+        public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
 		{
 #if !DEBUG
 			try
@@ -77,11 +77,11 @@ namespace SA_Tools.Split
 				Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
 				Stopwatch timer = new Stopwatch();
 				timer.Start();
-				foreach (KeyValuePair<string, SA_Tools.FileInfo> item in new List<KeyValuePair<string, SA_Tools.FileInfo>>( inifile.Files))
+				foreach (KeyValuePair<string, SplitTools.FileInfo> item in new List<KeyValuePair<string, SplitTools.FileInfo>>( inifile.Files))
 				{
 					if (string.IsNullOrEmpty(item.Key)) continue;
 					string filedesc = item.Key;
-					SA_Tools.FileInfo data = item.Value;
+					SplitTools.FileInfo data = item.Value;
 					Dictionary<string, string> customProperties = data.CustomProperties;
 					string type = data.Type;
 					int address = data.Address;
@@ -557,4 +557,16 @@ namespace SA_Tools.Split
 			return (int)SplitERRORVALUE.Success;
 		}
 	}
+
+    public enum SplitERRORVALUE
+    {
+        Success = 0,
+        NoProject = -1,
+        InvalidProject = -2,
+        NoSourceFile = -3,
+        NoDataMapping = -4,
+        InvalidDataMapping = -5,
+        UnhandledException = -6,
+        InvalidConfig = -7
+    }
 }

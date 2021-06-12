@@ -5,7 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SA_Tools;
+using SplitTools;
 
 // Generic archive format used in Sonic Adventure 2 PC.
 namespace ArchiveLib

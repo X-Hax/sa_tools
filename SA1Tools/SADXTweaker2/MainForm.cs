@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows.Forms;
-using SA_Tools;
+using SplitTools;
 using SonicRetro.SAModel.SAEditorCommon.UI;
 
 namespace SADXTweaker2
@@ -142,7 +142,7 @@ namespace SADXTweaker2
 
 		private void AddChildForm(Type formType, string dataType, ToolStripMenuItem menuItem)
 		{
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in Program.IniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.Files)
 				if (item.Value.Type.Equals(dataType, StringComparison.OrdinalIgnoreCase))
 				{
 					AddChildForm(formType, menuItem);

@@ -72,8 +72,8 @@ namespace Split
 					Console.WriteLine("Output folder: {0}", fullpath_out);
 					if (nometa) Console.WriteLine("Labels are disabled");
 					if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll")
-						SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, nometa, nolabel);
-					else SA_Tools.Split.Split.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, nometa, nolabel);
+						SplitTools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, nometa, nolabel);
+					else SplitTools.Split.SplitBinary.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, nometa, nolabel);
 					break;
 				case "nb":
 				case "nb_b":
@@ -97,7 +97,7 @@ namespace Split
 						fullpath_out = Path.GetFullPath(fullpath_out);
 					}
 					Console.WriteLine("Output folder: {0}", fullpath_out);
-					SA_Tools.Split.SplitNB.SplitNBFile(fullpath_nb, false, fullpath_out, 1, path_ini);
+					SplitTools.Split.SplitNB.SplitNBFile(fullpath_nb, false, fullpath_out, 1, path_ini);
 					break;
 				case "mdl":
 				case "mdl_b":
@@ -138,10 +138,10 @@ namespace Split
 							else
 								Console.WriteLine("File {0} doesn't exist.", animpath);
 						}
-						SA_Tools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
+						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
 					}
 					else
-						SA_Tools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
+						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
 					break;
                 case "dllexport":
                     string fullpath_dllex = Path.GetFullPath(args[1]);
@@ -161,7 +161,7 @@ namespace Split
                     }
                     Console.Write("File: {0}", fullpath_dllex);
                     byte[] datafile = File.ReadAllBytes(fullpath_dllex);
-                    uint imageBase = SA_Tools.HelperFunctions.SetupEXE(ref datafile).Value;
+                    uint imageBase = SplitTools.HelperFunctions.SetupEXE(ref datafile).Value;
                     Dictionary<string, int> exports;
                     Dictionary<int, string> labels = new Dictionary<int, string>();
                     {

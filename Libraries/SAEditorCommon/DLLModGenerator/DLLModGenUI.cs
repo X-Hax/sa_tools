@@ -1,4 +1,4 @@
-﻿using SA_Tools.SplitDLL;
+﻿using SplitTools.SplitDLL;
 using System;
 using System.Collections.Generic;
 using System.IO;

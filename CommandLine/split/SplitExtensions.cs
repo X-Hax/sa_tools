@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using SA_Tools;
+using SplitTools;
 using SonicRetro.SAModel;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -67,7 +67,7 @@ namespace Split
 			inidata3.DataFilename = inidata1.DataFilename;
 			inidata3.ImageBase = inidata1.ImageBase;
 			inidata3.Reverse = inidata1.Reverse;
-			inidata3.Files = new Dictionary<string, SA_Tools.FileInfo>();
+			inidata3.Files = new Dictionary<string, SplitTools.FileInfo>();
 			foreach (var file in inidata1.Files)
 			{
 				if (file.Value.Type == "action")
@@ -114,8 +114,8 @@ namespace Split
 			string[] list = File.ReadAllLines(listfilename);
 			int n = 0;
 			Dictionary<int, string> filenames = new Dictionary<int, string>();
-			Dictionary<string, SA_Tools.FileInfo> fileinfo_new = new Dictionary<string, SA_Tools.FileInfo>();
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+			Dictionary<string, SplitTools.FileInfo> fileinfo_new = new Dictionary<string, SplitTools.FileInfo>();
+			foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo in inifile.Files)
 			{
 				if (list.Length <= n)
 				{
@@ -136,7 +136,7 @@ namespace Split
 				n++;
 			}
 			// Relink animations
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo in inifile.Files)
 			{
 				if (fileinfo.Value.CustomProperties.ContainsKey("animations"))
 				{
@@ -156,15 +156,15 @@ namespace Split
 		}
 
 		// Loads an IniData and returns a sorted version of it, as well as outputs a sorted list of filenames to console
-		static Dictionary<string, SA_Tools.FileInfo> SortIniData(Dictionary<string, SA_Tools.FileInfo> fileinfodicc)
+		static Dictionary<string, SplitTools.FileInfo> SortIniData(Dictionary<string, SplitTools.FileInfo> fileinfodicc)
 		{
-			Dictionary<string, SA_Tools.FileInfo> fileinfo_new = new Dictionary<string, SA_Tools.FileInfo>();
+			Dictionary<string, SplitTools.FileInfo> fileinfo_new = new Dictionary<string, SplitTools.FileInfo>();
 			uint lowest = 0xFFFFFFFF;
 			List<uint> found = new List<uint>();
 			for (int n = 0; n < fileinfodicc.Count; n++)
 			{
 				//Console.WriteLine(n);
-				foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in fileinfodicc)
+				foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo in fileinfodicc)
 				{
 					//Console.WriteLine("testing");
 					if ((uint)fileinfo.Value.Address < lowest && !found.Contains((uint)fileinfo.Value.Address))
@@ -181,7 +181,7 @@ namespace Split
 				{
 					found.Add(lowest);
 					//Console.WriteLine(lowest.ToString("X"));
-					foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo_x in fileinfodicc)
+					foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo_x in fileinfodicc)
 					{
 						if (fileinfo_x.Value.Address == lowest)
 						{
@@ -213,11 +213,11 @@ namespace Split
 			string[] modelfiles = System.IO.Directory.GetFiles(dirpath, "*.sa1mdl", SearchOption.AllDirectories);
 			string[] levelfiles = System.IO.Directory.GetFiles(dirpath, "*.sa1lvl", SearchOption.AllDirectories);
 			string[] animfiles = System.IO.Directory.GetFiles(dirpath, "*.saanim", SearchOption.AllDirectories);
-			Dictionary<string, SA_Tools.FileInfo> files_ini = new Dictionary<string, SA_Tools.FileInfo>();
+			Dictionary<string, SplitTools.FileInfo> files_ini = new Dictionary<string, SplitTools.FileInfo>();
 			for (int u = 0; u < modelfiles.Length; u++)
 			{
 				ModelFile mdl = new ModelFile(modelfiles[u]);
-				SA_Tools.FileInfo fileinfo = new SA_Tools.FileInfo();
+				SplitTools.FileInfo fileinfo = new SplitTools.FileInfo();
 				fileinfo.Type = "model";
 				fileinfo.Filename = modelfiles[u];
 				string mdlname = mdl.Model.Name;
@@ -230,7 +230,7 @@ namespace Split
 			for (int u = 0; u < levelfiles.Length; u++)
 			{
 				LandTable lvl = LandTable.LoadFromFile(levelfiles[u]);
-				SA_Tools.FileInfo fileinfo = new SA_Tools.FileInfo();
+				SplitTools.FileInfo fileinfo = new SplitTools.FileInfo();
 				fileinfo.Type = "landtable";
 				fileinfo.Filename = levelfiles[u];
 				string lvlname = lvl.Name;
@@ -243,7 +243,7 @@ namespace Split
 			for (int u = 0; u < animfiles.Length; u++)
 			{
 				NJS_MOTION mtn = NJS_MOTION.Load(animfiles[u]);
-				SA_Tools.FileInfo fileinfo = new SA_Tools.FileInfo();
+				SplitTools.FileInfo fileinfo = new SplitTools.FileInfo();
 				fileinfo.Type = "animation";
 				fileinfo.Filename = animfiles[u];
 				string mtnname = mtn.Name;
@@ -253,7 +253,7 @@ namespace Split
 					files_ini.Add(mtnname, fileinfo);
 				else Console.WriteLine("Duplicate of {0}", mtnname);
 			}
-			IniData inidata_new = new SA_Tools.IniData();
+			IniData inidata_new = new SplitTools.IniData();
 			inidata_new.Files = SortIniData(files_ini);
 			IniSerializer.Serialize(inidata_new, dirpath + "_sorted.ini");
 		}
@@ -271,13 +271,13 @@ namespace Split
 			byte[] datafile = File.ReadAllBytes(args[1]);
 			uint imageBase = uint.Parse(args[2], System.Globalization.NumberStyles.AllowHexSpecifier);
 			IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo_mot in inifile.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo_mot in inifile.Files)
 			{
 				if (fileinfo_mot.Value.Type == "animation")
 				{
 					string motionname = Path.GetFileNameWithoutExtension(fileinfo_mot.Value.Filename.Replace(".saanim", ""));
 					bool sucksess = false;
-					foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo_mdl in inifile.Files)
+					foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo_mdl in inifile.Files)
 					{
 						string modelname = Path.GetFileNameWithoutExtension(fileinfo_mdl.Value.Filename.Replace(".sa1mdl", ""));
 						if (modelname == motionname)
@@ -328,7 +328,7 @@ namespace Split
 				{
 					string filename = Path.GetFullPath(list[l]);
 					match = false;
-					foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+					foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo in inifile.Files)
 					{
 						if (fnd.Contains(fileinfo.Key)) continue;
 						splitfilename = Path.GetFileNameWithoutExtension(fileinfo.Value.Filename);
@@ -410,7 +410,7 @@ namespace Split
 				}
 				nomatchlist.Close();
 				matchlist.Close();
-				foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+				foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo in inifile.Files)
 				{
 					if (!matchstrings.ContainsKey(fileinfo.Value.Filename))
 					{
@@ -439,8 +439,8 @@ namespace Split
 			newinifile.ImageBase = inifile.ImageBase;
 			newinifile.Reverse = inifile.Reverse;
 			newinifile.StartOffset = inifile.StartOffset;
-			newinifile.Files = new Dictionary<string, SA_Tools.FileInfo>();
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> fileinfo in inifile.Files)
+			newinifile.Files = new Dictionary<string, SplitTools.FileInfo>();
+			foreach (KeyValuePair<string, SplitTools.FileInfo> fileinfo in inifile.Files)
 			{
 				if ((!addressmatch && matchlist.ContainsKey(fileinfo.Value.Filename)) || (addressmatch && matchlist.ContainsKey(fileinfo.Value.Address.ToString("X8"))))
 				{
@@ -462,7 +462,7 @@ namespace Split
 					}
 					else duplicatecheck.Add(newfilename);
 					splitext = Path.GetExtension(fileinfo.Value.Filename).ToLowerInvariant();
-					SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
+					SplitTools.FileInfo newfileinfo = new SplitTools.FileInfo();
 					newfileinfo.Address = newaddress;
 					if (fileinfo.Value.Filename != null) newfileinfo.Filename = newfilename + splitext;
 					if (fileinfo.Value.PointerList != null) newfileinfo.PointerList = fileinfo.Value.PointerList;
@@ -545,7 +545,7 @@ namespace Split
 			string listname = args[0];
 			matchlist = IniSerializer.Deserialize<Dictionary<string, string>>(listname);
 			IniData newinifile = new IniData();
-			newinifile.Files = new Dictionary<string, SA_Tools.FileInfo>();
+			newinifile.Files = new Dictionary<string, SplitTools.FileInfo>();
 			foreach (KeyValuePair<string, string> item in matchlist)
 			{
 				int addr = int.Parse(item.Key, System.Globalization.NumberStyles.AllowHexSpecifier);
@@ -556,7 +556,7 @@ namespace Split
 				}
 				else duplicatecheck.Add(newfilename);
 				splitext = Path.GetExtension(newfilename).ToLowerInvariant();
-				SA_Tools.FileInfo newfileinfo = new SA_Tools.FileInfo();
+				SplitTools.FileInfo newfileinfo = new SplitTools.FileInfo();
 				string tp = "unk";
 				string finalext = ".";
 				switch (splitext)

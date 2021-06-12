@@ -306,7 +306,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) =>
 			{
-				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SAMDL");
+				welcomeForm.GoToSite("https://github.com/X-Hax/sa_tools/wiki/SAMDL");
 			};
 
 			welcomeForm.ShowDialog();
@@ -553,7 +553,7 @@ namespace SonicRetro.SAModel.SAMDL
 				{
 					case "GJTL":
 					case "NJTL":
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
 						int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
 						int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
 						int texListOffset = POF0Offset + POF0Size + 0x8;
@@ -584,11 +584,11 @@ namespace SonicRetro.SAModel.SAMDL
 						break;
 					case "GJCM":
 					case "NJCM":
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
 						ninjaDataOffset = 0x8;
 						break;
 					case "NJBM":
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
 						ninjaDataOffset = 0x8;
 						basicModel = true;
 						break;
@@ -633,7 +633,7 @@ namespace SonicRetro.SAModel.SAMDL
 				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					file = FraGag.Compression.Prs.Decompress(file);
 				ByteConverter.BigEndian = false;
-				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
+				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
 				if (baseaddr.HasValue)
 				{
 					modelinfo.NumericUpDown_Key.Value = baseaddr.Value;
@@ -645,7 +645,7 @@ namespace SonicRetro.SAModel.SAMDL
 				else if (extension.Equals(".rel", StringComparison.OrdinalIgnoreCase))
 				{
 					ByteConverter.BigEndian = true;
-					SA_Tools.HelperFunctions.FixRELPointers(file);
+					SplitTools.HelperFunctions.FixRELPointers(file);
 					modelinfo.NumericUpDown_Key.Value = 0;
 					modelinfo.NumericUpDown_Key.Enabled = false;
 					modelinfo.ComboBox_FileType.Enabled = false;
@@ -2464,7 +2464,7 @@ namespace SonicRetro.SAModel.SAMDL
 						break;
 					case ".njm":
 						byte[] njmFile = File.ReadAllBytes(fn);
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
+						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
 
 						byte[] newFile = new byte[njmFile.Length - 0x8];
 						Array.Copy(njmFile, 0x8, newFile, 0, newFile.Length);
@@ -2496,11 +2496,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 						if (BitConverter.ToInt16(anifile, 0) == 0)
 						{
-							ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt16(anifile, 0);
+							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 0);
 						}
 						else
 						{
-							ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
+							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
 						}
 
 						int address = 0;

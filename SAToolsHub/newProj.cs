@@ -7,8 +7,8 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using SonicRetro.SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
-using SA_Tools.Split;
-using SA_Tools.SAArc;
+using SplitTools.Split;
+using SplitTools.SAArc;
 
 namespace SAToolsHub
 {
@@ -274,7 +274,7 @@ namespace SAToolsHub
 					};
 					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
 
-					SA_Tools.IniSerializer.Serialize(modInfoSADX, outputPath);
+					SplitTools.IniSerializer.Serialize(modInfoSADX, outputPath);
 					break;
 
 				case ("SA2PC"):
@@ -284,7 +284,7 @@ namespace SAToolsHub
 					};
 					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
 
-					SA_Tools.IniSerializer.Serialize(modInfoSA2PC, outputPath);
+					SplitTools.IniSerializer.Serialize(modInfoSA2PC, outputPath);
 					break;
 
 				default:
@@ -373,7 +373,7 @@ namespace SAToolsHub
 			{
 				MessageBox.Show((datafilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoSourceFile.ToString());
+				throw new Exception(SplitTools.Split.SplitERRORVALUE.NoSourceFile.ToString());
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 
@@ -381,7 +381,7 @@ namespace SAToolsHub
 			{
 				MessageBox.Show((inifilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-				throw new Exception(SA_Tools.Split.SplitERRORVALUE.NoDataMapping.ToString());
+				throw new Exception(SplitTools.Split.SplitERRORVALUE.NoDataMapping.ToString());
 				//return (int)ERRORVALUE.NoDataMapping;
 			}
 			#endregion
@@ -393,13 +393,13 @@ namespace SAToolsHub
 			switch (ext.ToLower())
 			{
 				case ".dll":
-					SA_Tools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
 					break;
 				case ".nb":
-					SA_Tools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
+					SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
 					break;
 				default:
-					SA_Tools.Split.Split.SplitFile(datafilename, inifilename, projectFolderName);
+					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName);
 					break;
 			}
 		}

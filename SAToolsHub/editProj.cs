@@ -66,7 +66,7 @@ namespace SAToolsHub
 			switch (game)
 			{
 				case "SADXPC":
-					SADXModInfo modInfoSADX = SA_Tools.IniSerializer.Deserialize<SADXModInfo>(projModFile);
+					SADXModInfo modInfoSADX = SplitTools.IniSerializer.Deserialize<SADXModInfo>(projModFile);
 					txtName.Text = modInfoSADX.Name;
 					txtAuth.Text = modInfoSADX.Author;
 					txtDesc.Text = modInfoSADX.Description;
@@ -106,7 +106,7 @@ namespace SAToolsHub
 					break;
 
 				case "SA2PC":
-					SA2ModInfo modInfoSA2PC = SA_Tools.IniSerializer.Deserialize<SA2ModInfo>(projModFile);
+					SA2ModInfo modInfoSA2PC = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(projModFile);
 					txtName.Text = modInfoSA2PC.Name;
 					txtAuth.Text = modInfoSA2PC.Author;
 					txtDesc.Text = modInfoSA2PC.Description;
@@ -183,7 +183,7 @@ namespace SAToolsHub
 						modInfoSADX.ChangelogUrl = txtAsset.Text;
 					}
 
-					SA_Tools.IniSerializer.Serialize(modInfoSADX, projModFile);
+					SplitTools.IniSerializer.Serialize(modInfoSADX, projModFile);
 					break;
 
 				case "SA2PC":
@@ -214,7 +214,7 @@ namespace SAToolsHub
 						modInfoSA2PC.ChangelogUrl = txtAsset.Text;
 					}
 
-					SA_Tools.IniSerializer.Serialize(modInfoSA2PC, projModFile);
+					SplitTools.IniSerializer.Serialize(modInfoSA2PC, projModFile);
 					break;
 
 				default:

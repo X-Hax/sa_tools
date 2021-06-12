@@ -1,4 +1,4 @@
-How to use: https://github.com/sonicretro/sa_tools/wiki/Using-Command-Line-Tools
+How to use: https://github.com/X-Hax/sa_tools/wiki/Using-Command-Line-Tools
 
 This folder contains the following command line tools:
 
@@ -25,4 +25,4 @@ USplit: Universal tool to extract any data supported by SA Tools from a binary f
 VariableListGenerator: Create variable lists from text files
 
 Documentation for specific tools:
-DLCTool: https://github.com/sonicretro/sa_tools/wiki/Dreamcast-DLC-Tool
+DLCTool: https://github.com/X-Hax/sa_tools/wiki/Dreamcast-DLC-Tool

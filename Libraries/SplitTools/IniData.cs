@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using ByteConverter = SonicRetro.SAModel.ByteConverter;
 
-namespace SA_Tools
+namespace SplitTools
 {
 	public class IniData
 	{

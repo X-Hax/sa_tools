@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SA_Tools
+namespace SplitTools
 {
 	public static class HelperFunctions
 	{

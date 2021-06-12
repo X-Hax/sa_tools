@@ -5,12 +5,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SA_Tools;
+using SplitTools;
 using SonicRetro.SAModel;
 using SonicRetro.SAModel.GC;
 
 
-namespace SA_Tools.SplitDLL
+namespace SplitTools.SplitDLL
 {
 	public static class SplitDLL
 	{
@@ -26,7 +26,7 @@ namespace SA_Tools.SplitDLL
 #endif
 			{
 				byte[] datafile = File.ReadAllBytes(datafilename);
-				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				IniDataSplitDLL inifile = IniSerializer.Deserialize<IniDataSplitDLL>(inifilename);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile).Value;
 				Dictionary<string, int> exports;
 				{
@@ -932,10 +932,10 @@ namespace SA_Tools.SplitDLL
 				Console.WriteLine(e.StackTrace);
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
-				return (int)SA_Tools.Split.SplitERRORVALUE.UnhandledException;
+				return (int)SplitTools.Split.SplitERRORVALUE.UnhandledException;
 			}
 #endif
-			return (int)SA_Tools.Split.SplitERRORVALUE.Success;
+			return (int)SplitTools.Split.SplitERRORVALUE.Success;
 		}
 
 		[DllImport("shlwapi.dll", SetLastError = true)]

@@ -43,10 +43,10 @@ namespace NBTool
 			switch (ext)
 			{
 				case ".nb":
-					SA_Tools.Split.SplitNB.SplitNBFile(filename, extractchunks, Path.GetDirectoryName(filename), 2);
+					SplitTools.Split.SplitNB.SplitNBFile(filename, extractchunks, Path.GetDirectoryName(filename), 2);
 					return;
 				case ".ini":
-					SA_Tools.Split.SplitNB.BuildNBFile(filename, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + "_new.NB"), 2);
+					SplitTools.Split.SplitNB.BuildNBFile(filename, Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename) + "_new.NB"), 2);
 					return;
 			}
 		}

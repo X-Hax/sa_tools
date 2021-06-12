@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SA_Tools.SAArc
+namespace SplitTools.SAArc
 {
 	public static class SA2MiniEvent
 	{

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using SA_Tools;
+using SplitTools;
 
-namespace SA_Tools.SplitDLL
+namespace SplitTools.SplitDLL
 {
-	public class IniData
+	public class IniDataSplitDLL
 	{
 		[IniName("game")]
 		[DefaultValue(Game.SADX)]

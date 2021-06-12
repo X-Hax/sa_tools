@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace SA_Tools
+namespace SplitTools
 {
 	public class EndianReader : BinaryReader
 	{

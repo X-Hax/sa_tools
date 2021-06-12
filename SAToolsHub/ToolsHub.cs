@@ -848,7 +848,7 @@ namespace SAToolsHub
 		{
 			try
 			{
-				Process.Start("https://github.com/sonicretro/sa_tools/wiki");
+				Process.Start("https://github.com/X-Hax/sa_tools/wiki");
 			}
 			catch
 			{
@@ -922,7 +922,7 @@ namespace SAToolsHub
 		{
 			try
 			{
-				Process.Start("https://github.com/sonicretro/sa_tools/issues");
+				Process.Start("https://github.com/X-Hax/sa_tools/issues");
 			}
 			catch
 			{

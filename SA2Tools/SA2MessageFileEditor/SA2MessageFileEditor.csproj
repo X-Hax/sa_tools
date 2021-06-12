@@ -100,9 +100,9 @@
       <Name>FraGag.Compression.Prs</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\SA Tools\SA Tools.csproj">
+    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
-      <Name>SA Tools</Name>
+      <Name>SplitTools</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj">

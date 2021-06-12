@@ -24,7 +24,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void WikiDocLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			GoToSite("https://github.com/sonicretro/sa_tools/blob/master/README.md");
+			GoToSite("https://github.com/X-Hax/sa_tools/blob/master/README.md");
 		}
 
 		private void discordLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -39,7 +39,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.UI
 
 		private void controlsLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			GoToSite("https://github.com/sonicretro/sa_tools/wiki/3D-Editor-Controls");
+			GoToSite("https://github.com/X-Hax/sa_tools/wiki/3D-Editor-Controls");
 		}
 	}
 }

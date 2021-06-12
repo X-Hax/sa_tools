@@ -1,5 +1,5 @@
 --DOCUMENTATION--
-SA Tools Wiki: https://github.com/sonicretro/sa_tools/wiki
+SA Tools Wiki: https://github.com/X-Hax/sa_tools/wiki
 SADX Modding Guide: https://github.com/kellsnc/sadx-modding-guide
 
 --BLENDER ADDON--

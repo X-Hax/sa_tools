@@ -256,7 +256,7 @@ namespace SonicRetro.SAModel.DataToolbox
 				file = File.ReadAllBytes(textBoxBinaryFilename.Text);
 				if (Path.GetExtension(textBoxBinaryFilename.Text).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
 				buttonBinaryExtract.Enabled = true;
-				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
+				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
 				if (!baseaddr.HasValue)
 				{
 					int u = CheckKnownFile(textBoxBinaryFilename.Text);

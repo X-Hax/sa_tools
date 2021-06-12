@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using SA_Tools;
+using SplitTools;
 
 namespace SADXTweaker2
 {
@@ -27,7 +27,7 @@ namespace SADXTweaker2
 		private void NPCMessageEditor_Load(object sender, EventArgs e)
 		{
 			level.BeginUpdate();
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in Program.IniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.Files)
 				if (item.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase))
 				{
 					NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(item.Value.Filename, int.Parse(item.Value.CustomProperties["length"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo))));

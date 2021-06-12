@@ -18,7 +18,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			InitializeComponent();
 		}
 
-		SA_Tools.IniData iniData;
+		SplitTools.IniData iniData;
 		Dictionary<string, bool> itemsToExport = new Dictionary<string, bool>();
 
 		public void SetProjectFolder(string projectFolder)
@@ -73,7 +73,7 @@ namespace SonicRetro.SAModel.SAEditorCommon.StructConverter
 			listView1.BeginUpdate();
 			listView1.Items.Clear();
 
-			foreach (KeyValuePair<string, SA_Tools.FileInfo> item in iniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 			{
 				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
 

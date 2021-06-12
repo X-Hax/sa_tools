@@ -30,7 +30,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
             Thread newThread = new Thread(new ParameterizedThreadStart(UpdateClipboard));
             newThread.SetApartmentState(ApartmentState.STA);
             newThread.Start(textBoxLog.Text);
-            System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/issues");
+            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
             Close();
         }
 

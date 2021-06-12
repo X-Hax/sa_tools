@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using SonicRetro.SAModel;
 
-namespace SA_Tools.Split
+namespace SplitTools.Split
 {
 	public static class SplitNB
 	{

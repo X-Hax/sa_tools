@@ -7,7 +7,8 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using ArchiveLib;
 using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SA_Tools;
+using SplitTools;
+using Pfim;
 using System.Linq;
 
 namespace SA2StageSelEdit
