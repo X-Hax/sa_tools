@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using SAEditorCommon.ProjectManagement;
 
 namespace SonicRetro.SAModel.DataToolbox
 {
@@ -10,17 +11,28 @@ namespace SonicRetro.SAModel.DataToolbox
 	{
 		byte[] file;
 		Properties.Settings Settings = Properties.Settings.Default;
+        Dictionary<string, string> templateList = new Dictionary<string, string>();
 
-		public MainForm()
+        public MainForm()
 		{
 			InitializeComponent();
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
+        private void loadTemplateList(string folder)
+        {
+            templateList = new Dictionary<string, string>();
+            string[] templateNames = Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly);
+            var ordered = templateNames.OrderByDescending(f => f);
+
+            foreach (string file in ordered)
+            {
+                templateList.Add(Path.GetFileNameWithoutExtension(file), file);
+            }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
 		{
 			// Binary File Extractor defaults
-			DataMappingFolder = "SADXPC";
-			comboBoxSplitGameSelect.SelectedIndex = 2;
 			comboBoxBinaryFormat.SelectedIndex = 1;
 			textBoxBinaryAuthor.Text = Settings.Author;
 			ComboBoxBinaryType.Items.Clear();
@@ -29,11 +41,29 @@ namespace SonicRetro.SAModel.DataToolbox
 			{
 				ComboBoxBinaryType.Items.Add(ModelFileTypes[i].name_or_type);
 			}
-		}
+
+            // Initialize templates
+            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+            string templatesPath;
+            if (Directory.Exists(Path.Combine(appPath, "..\\GameConfig")))
+                templatesPath = Path.Combine(appPath, "..\\GameConfig");
+            else
+                templatesPath = Path.Combine(appPath, "..\\..\\GameConfig");
+            loadTemplateList(templatesPath);
+            foreach (KeyValuePair<string, string> entry in templateList)
+            {
+                comboBoxSplitGameSelect.Items.Add(entry);
+            }
+            comboBoxSplitGameSelect.DisplayMember = "Key";
+            if (comboBoxSplitGameSelect.Items.Count > 0)
+                comboBoxSplitGameSelect.SelectedIndex = 0;
+            else
+                MessageBox.Show(this, "Game templates not found.", "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
 
-		#region Binary Data Extractor Tab
-		public struct BinaryModelType
+        #region Binary Data Extractor Tab
+        public struct BinaryModelType
 		{
 			public string name_or_type;
 			public UInt32 key;
@@ -45,8 +75,6 @@ namespace SonicRetro.SAModel.DataToolbox
 			public string name_or_type;
 			public UInt32 key;
 		};
-
-		public static string DataMappingFolder;
 
 		public static readonly ModelFileType[] ModelFileTypes = new[] {
 		new ModelFileType { name_or_type = "EXE", key = 0x00400000u },
@@ -427,19 +455,20 @@ namespace SonicRetro.SAModel.DataToolbox
 			}
 		}
 
-		private void buttonSplit_Click(object sender, EventArgs e)
-		{
-			string outdir = "";
-			if (!checkBoxSameFolderSplit.Checked)
-			{
-				SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
-				if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-				{
-					outdir = sd.FileName;
-				}
-				else return;
-			}
-			SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir, checkBoxFindAllSplit.Checked);
+        private void buttonSplit_Click(object sender, EventArgs e)
+        {
+            string outdir = "";
+            if (!checkBoxSameFolderSplit.Checked)
+            {
+                SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
+                if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    outdir = sd.FileName;
+                }
+                else return;
+            }
+            Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateList[comboBoxSplitGameSelect.Text], true);
+            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir);
 			spl.ShowDialog();
 		}
 
@@ -471,37 +500,6 @@ namespace SonicRetro.SAModel.DataToolbox
 		{
 			listBoxSplitFiles.Items.Clear();
 			buttonSplitStart.Enabled = false;
-		}
-		private void comboBoxGameSelect_SelectedIndexChanged(object sender, EventArgs e)
-		{
-            // TODO: Rework these with template support
-			switch (comboBoxSplitGameSelect.SelectedIndex)
-			{
-				case 0:
-					DataMappingFolder = "DC_SA1";
-					break;
-				case 1:
-					DataMappingFolder = "DC_SA1AutoDemo";
-					break;
-				case 2:
-					DataMappingFolder = "PC_SADX";
-					break;
-				case 3:
-					DataMappingFolder = "GC_SADX";
-					break;
-				case 4:
-					DataMappingFolder = "X360_SADXBETA";
-					break;
-				case 5:
-					DataMappingFolder = "DC_SA2";
-					break;
-				case 6:
-					DataMappingFolder = "DC_SA2TheTrial";
-					break;
-				case 7:
-					DataMappingFolder = "PC_SA2";
-					break;
-			}
 		}
 		private void listBox_SplitFiles_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -550,7 +548,7 @@ namespace SonicRetro.SAModel.DataToolbox
 			List<string> files = new List<string>();
 			files.Add(textBoxMDLFilename.Text);
 			files.AddRange(listBoxMDLAnimationFiles.Items.Cast<String>().ToList());
-			SplitProgress spl = new SplitProgress(null, files, null, outdir, false, checkBoxMDLBigEndian.Checked ? 2 : 1);
+			SplitProgress spl = new SplitProgress(null, files, null, outdir, checkBoxMDLBigEndian.Checked ? 2 : 1);
 			spl.ShowDialog();
 		}
 

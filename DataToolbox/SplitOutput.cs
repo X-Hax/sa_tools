@@ -1,3 +1,4 @@
+using SAEditorCommon.ProjectManagement;
 using SplitTools;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,13 @@ namespace SonicRetro.SAModel.DataToolbox
 {
 	public partial class SplitProgress : Form
 	{
-		public bool findAll = true;
-		public bool pauseLog = false;
+        private Templates.SplitTemplate splitTemplate;
+        private string templateFolder;
+
+        public bool pauseLog = false;
 		public int splitMDL = 0; // 0 - not MDL, 1 - Little Endian, 2 - Big Endian
 		public TextBoxWriter writer;
-		public List<SplitData> SplitDataList;
+		public List<SplitData> splitDataList;
 		public struct SplitData
 		{
 			public string dataFile;
@@ -22,17 +25,15 @@ namespace SonicRetro.SAModel.DataToolbox
 
 		public List<string> logger;
 		public List<string> files;
-		public string game_path;
 		public string out_path;
 
-		public SplitProgress(List<string> log, List <string> files_a, string gamepath, string output_folder, bool findall, int splitMdl = 0)
+		public SplitProgress(List<string> log, List <string> files_a, Templates.SplitTemplate template, string output_folder, int splitMdl = 0)
 		{
 			InitializeComponent();
 			logger = log;
 			files = files_a;
-			findAll = findall;
-			game_path = gamepath;
-			out_path = output_folder;
+            splitTemplate = template;
+            out_path = output_folder;
 			splitMDL = splitMdl;
 		}
 
@@ -50,31 +51,23 @@ namespace SonicRetro.SAModel.DataToolbox
 			if (splitMDL == 0)
 			{
 				Console.WriteLine("Starting batch split for " + files.Count.ToString() + " file(s)" + System.Environment.NewLine);
-				foreach (string file in files)
-				{
-					SplitData splitdata = new SplitData();
-					splitdata.dataFile = file;
-					string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
-                    string templatefolder = Path.Combine(folder_parent, "GameConfig");
-					if (!Directory.Exists(templatefolder))
-                        templatefolder = Path.Combine(Directory.GetParent(folder_parent).ToString(), "GameConfig");
-					List<string> inilist = FindRelevantINIFiles(file, Path.Combine(templatefolder, game_path));
-					if (inilist.Count > 0)
-					{
-						foreach (string iniitem in inilist)
-						{
-							splitdata.iniFile = Path.Combine(folder_parent, game_path, iniitem);
-							SplitDataList.Add(splitdata);
-						}
-					}
-					else
-					{
-						splitdata.iniFile = Path.Combine(folder_parent, game_path, Path.GetFileNameWithoutExtension(file) + ".ini");
-						SplitDataList.Add(splitdata);
-					}
-				}
+                foreach (string file in files)
+                {
+                    SplitData splitdata = new SplitData();
+                    splitdata.dataFile = file;
+                    string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
+                    templateFolder = Path.Combine(folder_parent, "GameConfig");
+                    if (!Directory.Exists(templateFolder))
+                        templateFolder = Path.Combine(Directory.GetParent(folder_parent).ToString(), "GameConfig");
+                    List<string> inilist = FindRelevantINIFiles(file, splitTemplate);
+                    foreach (string iniitem in inilist)
+                    {
+                        splitdata.iniFile = iniitem;
+                        splitDataList.Add(splitdata);
+                    }
+                }
 
-				foreach (SplitData CurrentSplitData in SplitDataList)
+				foreach (SplitData CurrentSplitData in splitDataList)
 				{
 					datafilename = CurrentSplitData.dataFile;
 					inifilename = CurrentSplitData.iniFile;
@@ -158,50 +151,53 @@ namespace SonicRetro.SAModel.DataToolbox
 			Console.WriteLine("Split job finished.");
 		}
 
-		private List<string> FindRelevantINIFiles(string file, string inilocation)
-		{
-			bool dllmode = false;
-			string extension = Path.GetExtension(file).ToLowerInvariant();
-			List<string> relevantini = new List<string>();
-			if (extension == ".dll")
-				dllmode = true;
-			else if (extension == ".nb")
-				return relevantini;
-			if (findAll)
-			{
-				Console.WriteLine("Finding relevant split INI files for {0} in {1}", Path.GetFileName(file), inilocation);
-				string[] inifiles = System.IO.Directory.GetFiles(inilocation, "*.ini", SearchOption.AllDirectories);
-				for (int u = 0; u < inifiles.Length; u++)
-				{
-					if (inifiles[u].ToLowerInvariant().Contains("_data") || inifiles[u].ToLowerInvariant().Contains("output")) continue;
-					if (dllmode)
-					{
-						SplitTools.SplitDLL.IniDataSplitDLL inifile = IniSerializer.Deserialize<SplitTools.SplitDLL.IniDataSplitDLL>(inifiles[u]);
-						if (inifile.ModuleName != null && inifile.ModuleName.ToLowerInvariant() == Path.GetFileNameWithoutExtension(file).ToLowerInvariant())
-						{
-							relevantini.Add(Path.GetFullPath(inifiles[u]));
-							Console.WriteLine("Found split file {0}", inifiles[u]);
-						}
-					}
-					else
-					{
-						SplitTools.IniData inifile = IniSerializer.Deserialize<SplitTools.IniData>(inifiles[u]);
-						if (inifile.DataFilename != null && inifile.DataFilename.ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant())
-						{
-							relevantini.Add(Path.GetFullPath(inifiles[u]));
-							Console.WriteLine("Found split file {0}", inifiles[u]);
-						}
-						else if (inifile.DataFilename != null) Console.WriteLine("Datafilename: {0}", inifile.DataFilename);
-						else Console.WriteLine("Datafilename in {0} is null", inifiles[u]);
-					}
-				}
-			}
-			return relevantini;
-		}
+        private List<string> FindRelevantINIFiles(string file, Templates.SplitTemplate splitTemplate)
+        {
+            bool dllmode = false;
+            string extension = Path.GetExtension(file).ToLowerInvariant();
+            List<string> relevantini = new List<string>();
+            if (extension == ".dll")
+            {
+                if (file.ToLowerInvariant().Contains("_orig"))
+                    file = file.ToLowerInvariant().Replace("_orig", "");
+                dllmode = true;
+            }
+            else if (extension == ".nb")
+                return relevantini;
+            Console.WriteLine("Finding relevant split INI files for {0} in {1}", Path.GetFileName(file), splitTemplate.GameInfo.DataFolder);
+            foreach (Templates.SplitEntry entry in splitTemplate.SplitEntries)
+            {
+                if (Path.GetFileName(entry.SourceFile).ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant())
+                {
+                    string inifilename = Path.Combine(templateFolder, splitTemplate.GameInfo.DataFolder, entry.IniFile + ".ini");
+                    if (dllmode)
+                    {
+                        SplitTools.SplitDLL.IniDataSplitDLL inifile = IniSerializer.Deserialize<SplitTools.SplitDLL.IniDataSplitDLL>(inifilename);
+                        if (inifile.ModuleName != null)
+                        {
+                            relevantini.Add(Path.GetFullPath(inifilename));
+                            Console.WriteLine("Found split file {0}", inifilename);
+                        }
+                    }
+                    else
+                    {
+                        SplitTools.IniData inifile = IniSerializer.Deserialize<SplitTools.IniData>(inifilename);
+                        if (inifile.DataFilename != null && inifile.DataFilename.ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant())
+                        {
+                            relevantini.Add(Path.GetFullPath(inifilename));
+                            Console.WriteLine("Found split file {0}", inifilename);
+                        }
+                        else if (inifile.DataFilename != null) Console.WriteLine("Datafilename: {0}", inifile.DataFilename);
+                        else Console.WriteLine("Datafilename in {0} is null", inifilename);
+                    }
+                }
+            }
+            return relevantini;
+        }
 
 	private void SplitProgress_Shown(object sender, EventArgs e)
 		{
-			SplitDataList = new List<SplitData>();
+			splitDataList = new List<SplitData>();
 			writer = new TextBoxWriter(txtConsole);
 			Console.SetOut(writer);
 			buttonCloseSplitProgress.Text = "Cancel";
