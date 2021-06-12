@@ -77,7 +77,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DrawLevel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Input.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LevelSelectMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Loading.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectDefinitions.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="Saving.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI\BinaryFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>

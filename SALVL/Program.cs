@@ -9,9 +9,6 @@ namespace SAModel.SALVL
 		internal static string[] args;
 		public static MainForm primaryForm;
 
-		private static string fileString;
-		public static string SADXGameFolder { get { return fileString; } }
-
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
