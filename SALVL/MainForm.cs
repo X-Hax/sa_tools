@@ -35,7 +35,7 @@ namespace SonicRetro.SAModel.SALVL
 	{
 		SettingsFile settingsfile; //For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SALVL.config
-		ProgressDialog progress;
+        ProgressDialog progress;
 
 		public MainForm()
 		{
@@ -169,7 +169,22 @@ namespace SonicRetro.SAModel.SALVL
 			if (settingsfile.SALVL.ShowWelcomeScreen)
 				ShowWelcomeScreen();
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
+            // MRU list
+            System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
+            if (AppConfig.MRUList != null)
+            {
+                foreach (string file in AppConfig.MRUList)
+                {
+                    if (File.Exists(file))
+                    {
+                        newlist.Add(file);
+                        recentFilesToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+                    }
+                }
+            }
+            AppConfig.MRUList = newlist;
+
+            actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -185,23 +200,29 @@ namespace SonicRetro.SAModel.SALVL
 			sceneGraphControl1.InitSceneControl(selectedItems);
 
 			if (Program.args.Length > 0)
-			{
-				switch (Path.GetExtension(Program.args[0]).ToLowerInvariant())
-				{
-					case ".sa1lvl":
-					case ".sa2lvl":
-					case ".sa2blvl":
-						LoadLandtable(Program.args[0]);
-						unsaved = false;
-						break;
-					case ".sap":
-                        LoadTemplate(ProjectFunctions.openProjectFileString(Program.args[0]));
-                        break;
-                    default:
-                        break;
-				}
-			}
+                OpenAnyFile(Program.args[0]);
 		}
+
+        private void OpenAnyFile(string filename)
+        {
+            switch (Path.GetExtension(filename.ToLowerInvariant()))
+            {
+                case ".sa1lvl":
+                case ".sa2lvl":
+                case ".sa2blvl":
+                    LoadLandtable(filename);
+                    UpdateMRUList(Path.GetFullPath(filename));
+                    unsaved = false;
+                    break;
+                case ".sap":
+                    LoadTemplate(ProjectFunctions.openProjectFileString(filename));
+                    UpdateMRUList(Path.GetFullPath(filename));
+                    break;
+                default:
+                    MessageBox.Show(this, "Unsupported file extension: " + Path.GetExtension(filename) + ".", "SALVL Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    break;
+            }
+        }
 
 		private void InitGUISettings()
 		{
@@ -352,14 +373,14 @@ namespace SonicRetro.SAModel.SALVL
                     return false;
             }
 
-            Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFile();
-
-            if (projFile != null)
-            {
-                LoadTemplate(projFile);
-                return true;
-            }
-            else return false;
+            using (OpenFileDialog openFileDialog1 = new OpenFileDialog() { Filter = "Project File (*.sap)|*.sap", RestoreDirectory = true })
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    LoadTemplate(ProjectFunctions.openProjectFileString(openFileDialog1.FileName));
+                    UpdateMRUList(openFileDialog1.FileName);
+                    return true;
+                }
+            return false;
         }
 
 		private void LoadSadxlvlIni(SAEditorCommon.IniData ini)
@@ -3747,7 +3768,7 @@ namespace SonicRetro.SAModel.SALVL
 			saveAdvancedToolStripMenuItem.Enabled = true;
 			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
 			upgradeObjDefsToolStripMenuItem.Enabled = sadxlvlini != null;
-		}
+        }
 
 		private void unloadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -4353,6 +4374,7 @@ namespace SonicRetro.SAModel.SALVL
                 if (result == DialogResult.OK)
                 {
                     LoadLandtable(fileDialog.FileName);
+                    UpdateMRUList(fileDialog.FileName);
                 }
             }
         }
@@ -4506,5 +4528,30 @@ namespace SonicRetro.SAModel.SALVL
             ShowLevelSelect();
         }
 
+        private void UpdateMRUList(string filename)
+        {
+            if (AppConfig.MRUList.Count > 10)
+            {
+                for (int i = 9; i < AppConfig.MRUList.Count; i++)
+                {
+                    AppConfig.MRUList.RemoveAt(i);
+                }
+            }
+            if (AppConfig.MRUList.Contains(filename))
+            {
+                int i = AppConfig.MRUList.IndexOf(filename);
+                AppConfig.MRUList.RemoveAt(i);
+                recentFilesToolStripMenuItem.DropDownItems.RemoveAt(i);
+            }
+            AppConfig.MRUList.Insert(0, filename);
+            recentFilesToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename.Replace("&", "&&")));
+        }
+
+		private void recentFilesToolStripMenuItem_DropDownItemClicked_1(object sender, ToolStripItemClickedEventArgs e)
+		{
+            OpenAnyFile(AppConfig.MRUList[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
+        }
 	}
+
+
 }

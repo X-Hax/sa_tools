@@ -104,18 +104,6 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\ProjectSelectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ProjectSelectDialog.Designer.cs">
-      <DependentUpon>ProjectSelectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\PathWarning.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\PathWarning.Designer.cs">
-      <DependentUpon>PathWarning.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="UI\BinaryFileDialog.resx">
       <DependentUpon>BinaryFileDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -139,12 +127,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UI\ProjectSelectDialog.resx">
-      <DependentUpon>ProjectSelectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\PathWarning.resx">
-      <DependentUpon>PathWarning.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />

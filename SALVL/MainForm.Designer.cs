@@ -48,6 +48,7 @@
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toModelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wholeLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAssimpLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -199,7 +200,7 @@
             this.showHintsButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.wholeLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -250,6 +251,7 @@
             this.toolStripSeparator1,
             this.saveAdvancedToolStripMenuItem,
             this.toolStripSeparator4,
+            this.recentFilesToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
@@ -385,7 +387,7 @@
             // toStageToolStripMenuItem
             // 
             this.toStageToolStripMenuItem.Name = "toStageToolStripMenuItem";
-            this.toStageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toStageToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.toStageToolStripMenuItem.Text = "To &Stage...";
             this.toStageToolStripMenuItem.ToolTipText = "Import a model to the level.";
             this.toStageToolStripMenuItem.Click += new System.EventHandler(this.toStageToolStripMenuItem_Click);
@@ -393,9 +395,16 @@
             // toModelLibraryToolStripMenuItem
             // 
             this.toModelLibraryToolStripMenuItem.Name = "toModelLibraryToolStripMenuItem";
-            this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.toModelLibraryToolStripMenuItem.Text = "To Model Library...";
             this.toModelLibraryToolStripMenuItem.Click += new System.EventHandler(this.importToModelLibrary_Click);
+            // 
+            // wholeLevelToolStripMenuItem
+            // 
+            this.wholeLevelToolStripMenuItem.Name = "wholeLevelToolStripMenuItem";
+            this.wholeLevelToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.wholeLevelToolStripMenuItem.Text = "&Whole Level...";
+            this.wholeLevelToolStripMenuItem.Click += new System.EventHandler(this.wholeLevelToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -549,7 +558,7 @@
             this.splinesToolStripMenuItem,
             this.toolClearAll});
             this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
-            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.clearLevelToolStripMenuItem.Text = "Clear Level";
             // 
             // toolClearGeometry
@@ -616,7 +625,7 @@
             this.addMissionItemToolStripMenuItem,
             this.addDeathZoneToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(226, 30);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
             this.addToolStripMenuItem1.Text = "&Add";
             // 
             // addLevelPieceToolStripMenuItem
@@ -666,7 +675,7 @@
             this.deleteAllOfTypeToolStripMenuItem,
             this.duplicateToToolStripMenuItem});
             this.editSETItemsToolStripMenuItem.Name = "editSETItemsToolStripMenuItem";
-            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.editSETItemsToolStripMenuItem.Text = "SET Items";
             // 
             // findReplaceToolStripMenuItem
@@ -696,7 +705,7 @@
             this.duplicateToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.duplicate;
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
             this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.duplicateToolStripMenuItem.Text = "&Duplicate Selected";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
@@ -704,27 +713,27 @@
             // 
             this.deleteSelectedToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.delete;
             this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
-            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
             this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // pointOneObjectAtAnotherToolStripMenuItem
             // 
             this.pointOneObjectAtAnotherToolStripMenuItem.Name = "pointOneObjectAtAnotherToolStripMenuItem";
-            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.pointOneObjectAtAnotherToolStripMenuItem.Text = "Point one object at another";
             this.pointOneObjectAtAnotherToolStripMenuItem.Click += new System.EventHandler(this.pointToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(223, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 6);
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.preferencesToolStripMenuItem.Text = "&Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -732,7 +741,7 @@
             // 
             this.editLevelInfoToolStripMenuItem.Image = global::SonicRetro.SAModel.SALVL.Properties.Resources.editinfo;
             this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
-            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
             this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
             // 
@@ -743,7 +752,7 @@
             this.calculateAllBoundsToolStripMenuItem,
             this.exportTextureNamesToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.advancedToolStripMenuItem.Text = "Advanced";
             // 
             // usetBasicDXFormatToolStripMenuItem
@@ -1867,12 +1876,12 @@
             this.BackgroundPanel.Size = new System.Drawing.Size(1141, 612);
             this.BackgroundPanel.TabIndex = 2;
             // 
-            // wholeLevelToolStripMenuItem
+            // recentFilesToolStripMenuItem
             // 
-            this.wholeLevelToolStripMenuItem.Name = "wholeLevelToolStripMenuItem";
-            this.wholeLevelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.wholeLevelToolStripMenuItem.Text = "&Whole Level...";
-            this.wholeLevelToolStripMenuItem.Click += new System.EventHandler(this.wholeLevelToolStripMenuItem_Click);
+            this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
+            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.recentFilesToolStripMenuItem.Text = "Recent Files";
+            this.recentFilesToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentFilesToolStripMenuItem_DropDownItemClicked_1);
             // 
             // MainForm
             // 
@@ -2090,6 +2099,7 @@
 		private System.Windows.Forms.ToolStripMenuItem loadObjectDefinitionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem splinesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem wholeLevelToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
 	}
 }
 
