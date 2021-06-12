@@ -652,7 +652,7 @@ namespace SonicRetro.SAModel.SALVL
 				string textureFallbackPath = Path.Combine(systemFallback, pvmName) + ".PVM";
 				string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
 
-				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
+				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures;
 				if (textureBitmaps != null)
 				{
@@ -665,7 +665,7 @@ namespace SonicRetro.SAModel.SALVL
 				}
 				else
 				{
-					log.Add("Unable to load texture file: " + GamePathChecker.PathOrFallback(texturePath, textureFallbackPath));
+					log.Add("Unable to load texture file: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				}
 			}
 		}
@@ -969,7 +969,7 @@ namespace SonicRetro.SAModel.SALVL
                         string formatted = string.Format(setstr, LevelData.SETChars[i]);
                         string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
 
-                        string useSetPath = GamePathChecker.PathOrFallback(formatted, formattedFallback);
+                        string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
                         if (File.Exists(useSetPath))
                         {
                             if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
@@ -1021,8 +1021,8 @@ namespace SonicRetro.SAModel.SALVL
                         string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
                         string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
 
-                        string setfmt = GamePathChecker.PathOrFallback(setNormFmt, setFallbackFmt);
-                        string prmfmt = GamePathChecker.PathOrFallback(prmNormFmt, prmFallbackFmt);
+                        string setfmt = ProjectFunctions.ModPathOrGameFallback(setNormFmt, setFallbackFmt);
+                        string prmfmt = ProjectFunctions.ModPathOrGameFallback(prmNormFmt, prmFallbackFmt);
 
                         if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
                         if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
@@ -1078,7 +1078,7 @@ namespace SonicRetro.SAModel.SALVL
                 string camfmt = string.Format(camstr, LevelData.SETChars[i]);
                 string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
 
-                string formatted = (GamePathChecker.PathOrFallback(camfmt, camfmtFallback));
+                string formatted = (ProjectFunctions.ModPathOrGameFallback(camfmt, camfmtFallback));
 
                 /*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
                     camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));

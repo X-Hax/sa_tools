@@ -9,7 +9,10 @@ using SharpDX.Mathematics.Interop;
 
 namespace SonicRetro.SAModel.SAEditorCommon
 {
-	public class Logger
+    /// <summary>
+    /// Class for creating log files.
+    /// </summary>
+    public class Logger
 	{
 		private string file;
 		public List<string> LogQueue { get; set; }

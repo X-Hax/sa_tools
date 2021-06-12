@@ -396,5 +396,13 @@ namespace SAEditorCommon.ProjectManagement
                 gamePathsList.Add(gameName, gamePath);
             IniSerializer.Serialize(gamePathsList, gamePathsFilePath);
         }
+
+        /// <summary>
+        /// Returns a file path in the mod folder or in the game's fallback folder.
+        /// </summary>
+        public static string ModPathOrGameFallback(string path, string fallbackPath)
+        {
+            return (File.Exists(path)) ? path : fallbackPath;
+        }
     }
 }

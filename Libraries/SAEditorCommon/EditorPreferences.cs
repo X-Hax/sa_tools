@@ -3,13 +3,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 
+
 namespace SonicRetro.SAModel.SAEditorCommon
 {
-	public class SettingsFile
+    /// <summary>
+    /// Editor-specific user settings stored in EditorPreferences.ini
+    /// </summary>
+    public class SettingsFile
 	{
-		//public string SADXPCPath { get; set; }
-		//public string SA2PCPath { get; set; }
-
 		public Settings_SALVL SALVL;
 		public Settings_SAMDL SAMDL;
 		public Settings_SA2EventViewer SA2EventViewer;
@@ -30,8 +31,6 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			{
 				SettingsFile settings = new SettingsFile
 				{
-					//SA2PCPath = "",
-					//SADXPCPath = "",
 					SALVL = new Settings_SALVL(),
 					SAMDL = new Settings_SAMDL(),
 					SA2EventViewer = new Settings_SA2EventViewer()
@@ -49,7 +48,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 		{
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
-			[DefaultValue(false)]
+			[DefaultValue(true)]
 			public bool DisableModelLibrary { get; set; }
 			[DefaultValue(0)]
 			public int LibrarySplitterPosition { get; set; }
@@ -70,7 +69,7 @@ namespace SonicRetro.SAModel.SAEditorCommon
 			public Settings_SALVL()
 			{
 				ShowWelcomeScreen = true;
-				DisableModelLibrary = false;
+				DisableModelLibrary = true;
 				LibrarySplitterPosition = 0;
 				ItemsSplitterPosition = 0;
 				PropertiesSplitterPosition = 0;

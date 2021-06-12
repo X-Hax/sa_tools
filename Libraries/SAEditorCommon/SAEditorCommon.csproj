@@ -94,7 +94,6 @@
     </Compile>
     <Compile Include="FolderBrowser\FolderSelectDialog.cs" />
     <Compile Include="FolderBrowser\Reflector.cs" />
-    <Compile Include="GamePathChecker.cs" />
     <Compile Include="Import\AssimpStuff.cs" />
     <Compile Include="IniData.cs" />
     <Compile Include="ManualBuildWindow.cs">
@@ -111,7 +110,7 @@
     <Compile Include="ModManagement\SADXLoaderInfo.cs" />
     <Compile Include="ModManagement\SADXModInfo.cs" />
     <Compile Include="Logging.cs" />
-    <Compile Include="ProgramSettings.cs" />
+    <Compile Include="EditorPreferences.cs" />
     <Compile Include="ProjectManagement\ProjectManagement.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
