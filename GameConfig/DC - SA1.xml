@@ -35,7 +35,7 @@
   <SplitEntry SourceFile="SONICADV\B_CHAOS0.PRS" IniFile="B_CHAOS0" />
   <SplitEntry SourceFile="SONICADV\B_CHAOS2.PRS" IniFile="B_CHAOS2" />
   <SplitEntry SourceFile="SONICADV\B_CHAOS4.PRS" IniFile="B_CHAOS4" />
-  <SplitEntry SourceFile="SONICADV\B_CHAOS4.PRS" IniFile="B_CHAOS6" />
+  <SplitEntry SourceFile="SONICADV\B_CHAOS6.PRS" IniFile="B_CHAOS6" />
   <SplitEntry SourceFile="SONICADV\B_CHAOS7.PRS" IniFile="B_CHAOS7" />
   <SplitEntry SourceFile="SONICADV\B_E101.PRS" IniFile="B_E101" />
   <SplitEntry SourceFile="SONICADV\B_E101_R.PRS" IniFile="B_E101_R" />
