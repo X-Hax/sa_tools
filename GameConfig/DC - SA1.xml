@@ -48,6 +48,6 @@
   <SplitEntry SourceFile="SONICADV\SHOOTING.PRS" IniFile="SHOOTING" />
   <SplitEntry SourceFile="SONICADV\ADVERTISE.PRS" IniFile="ADVERTISE" />
   <SplitEntry SourceFile="SONICADV\SUMMARY.PRS" IniFile="SUMMARY" />
-  <SplitEntry SourceFile="SONICADV\B_ROBO.PRS" IniFile="B_ROBO_NB" />
-  <SplitEntry SourceFile="SONICADV\B_E101_R.PRS" IniFile="B_E101_R_NB" />
+  <SplitEntry SourceFile="SONICADV\B_ROBO.PRS" IniFile="B_ROBO" />
+  <SplitEntry SourceFile="SONICADV\B_E101_R.PRS" IniFile="B_E101_R" />
 </SplitTemplate>
