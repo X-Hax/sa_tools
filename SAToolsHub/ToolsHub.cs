@@ -758,13 +758,20 @@ namespace SAToolsHub
 
 		private void toolStripMenuItem3_Click(object sender, EventArgs e)
 		{
-			if (projectDirectory != null && setGame == "SADXPC")
-			{
-				string projectArgumentsPath = $"\"{projXML}\"";
-
-				salvlStartInfo.Arguments = projectArgumentsPath;
+            if (projectDirectory != null)
+            {
+                // Check if the game supports SALVL project mode
+                switch (setGame)
+                {
+                    case "SADXPC":
+                    case "SA1":
+                        string projectArgumentsPath = $"\"{projXML}\"";
+                        salvlStartInfo.Arguments = projectArgumentsPath;
+                        break;
+                    default:
+                        break;
+                }
 			}
-
 			Process sadxlvl2Process = Process.Start(salvlStartInfo);
 		}
 

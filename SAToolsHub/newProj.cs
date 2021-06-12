@@ -446,7 +446,12 @@ namespace SAToolsHub
 
 			switch (game)
 			{
-				case "SADXPC":
+                case "SA1":
+                    progress.SetTask("Finalizing SALVL Supported Setup");
+                    File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
+                    File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
+                    break;
+                case "SADXPC":
 					progress.SetTask("Finalizing Moddable Project Setup");
 					makeProjectFolders(projFolder, progress, gameName);
 					progress.StepProgress();
@@ -483,7 +488,6 @@ namespace SAToolsHub
 				progress.SetTask("Finalizing Project Setup");
 				makeProjectFolders(projFolder, progress, game);
 				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
-
 			}
 		}
 		#endregion
@@ -504,7 +508,7 @@ namespace SAToolsHub
 
 		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			if (e.Error != null)
+			if (e != null && e.Error != null)
 			{
 				MessageBox.Show("Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
