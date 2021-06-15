@@ -42,7 +42,6 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			Model = new NJS_OBJECT();
 			ImportModel();
-			Paste();
 
 			rotateZYX = Model.RotateZYX;
 			GetHandleMatrix();
@@ -278,10 +277,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		public DeathZoneFlags Save(string path, int i)
+		public DeathZoneFlags Save(string path, int i, string filename)
 		{
-			ModelFile.CreateFile(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), Model, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), null, ModelFormat.Basic);
-			return new DeathZoneFlags() { Flags = Flags };
+			ModelFile.CreateFile(Path.Combine(path, filename), Model, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), null, ModelFormat.Basic);
+			return new DeathZoneFlags() { Flags = Flags, Filename = filename };
 		}
 
 		public Vertex GetScale()

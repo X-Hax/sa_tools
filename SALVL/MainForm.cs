@@ -770,7 +770,7 @@ namespace SAModel.SALVL
 					item.Big = true;
 					break;
 			}
-			LevelData.DeathZones.Add(item);
+            LevelData.DeathZones.Add(item);
 			selectedItems.Clear();
 			//selectedItems.Add(item); //Crashes
 			LevelData.InvalidateRenderState();
