@@ -277,9 +277,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 			}
 		}
 
-		public DeathZoneFlags Save(string path, int i, string filename)
+		public DeathZoneFlags Save(string path, string filename)
 		{
-			ModelFile.CreateFile(Path.Combine(path, filename), Model, null, null, LevelData.LevelName + " Death Zone " + i.ToString(NumberFormatInfo.InvariantInfo), null, ModelFormat.Basic);
+			ModelFile.CreateFile(Path.Combine(path, filename), Model, null, null, LevelData.LevelName + " Death Zone " + filename, null, ModelFormat.Basic);
 			return new DeathZoneFlags() { Flags = Flags, Filename = filename };
 		}
 
