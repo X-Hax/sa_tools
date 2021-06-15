@@ -74,7 +74,7 @@ namespace SAModel.SALVL
                 DeathZoneFlags[] dzini = new DeathZoneFlags[LevelData.DeathZones.Count];
                 string path = Path.GetDirectoryName(level.DeathZones);
                 for (int i = 0; i < LevelData.DeathZones.Count; i++)
-                    dzini[i] = LevelData.DeathZones[i].Save(path, i);
+                    dzini[i] = LevelData.DeathZones[i].Save(path, i, dzini[i] != null ? dzini[i].Filename : i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl");
                 dzini.Save(level.DeathZones);
             }
 
