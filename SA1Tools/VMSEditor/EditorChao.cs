@@ -26,6 +26,8 @@ namespace VMSEditor
         public EditorChao()
         {
             InitializeComponent();
+            DrawChaoEvolution();
+            CreateFacePreview();
             if (Program.args.Length > 0)
                 if (File.Exists(Program.args[0]))
                     LoadChaoVMSFile(Program.args[0]);
@@ -209,6 +211,10 @@ namespace VMSEditor
             numericUpDownRace19.Value = chaoData.RaceTime[19];
             // Jewel breeds
             comboBoxJewelColor.SelectedIndex = (byte)chaoData.JewelBreed;
+            // Evolution graph
+            DrawChaoEvolution();
+            // Face
+            CreateFacePreview();
         }
 
         private void RefreshData()
@@ -589,37 +595,61 @@ namespace VMSEditor
 
         private void trackBarAffection_ValueChanged(object sender, EventArgs e)
         {
-            labelAffectionValue.Text = trackBarAffection.Value.ToString();
+            labelAffectionValue.Text = (trackBarAffection.Value / 10).ToString() + " %";
         }
 
         private void trackBarBondSonic_ValueChanged(object sender, EventArgs e)
         {
             labelBondSonic.Text = trackBarBondSonic.Value.ToString();
+            if (Math.Abs(trackBarBondSonic.Value) > 100)
+                labelBondSonic.ForeColor = Color.Red;
+            else
+                labelBondSonic.ForeColor = Color.Black;
         }
 
         private void trackBarBondTails_ValueChanged(object sender, EventArgs e)
         {
             labelBondTails.Text = trackBarBondTails.Value.ToString();
+            if (Math.Abs(trackBarBondTails.Value) > 100)
+                labelBondTails.ForeColor = Color.Red;
+            else
+                labelBondTails.ForeColor = Color.Black;
         }
 
         private void trackBarBondKnuckles_ValueChanged(object sender, EventArgs e)
         {
             labelBondKnuckles.Text = trackBarBondKnuckles.Value.ToString();
+            if (Math.Abs(trackBarBondKnuckles.Value) > 100)
+                labelBondKnuckles.ForeColor = Color.Red;
+            else
+                labelBondKnuckles.ForeColor = Color.Black;
         }
 
         private void trackBarBondAmy_ValueChanged(object sender, EventArgs e)
         {
             labelBondAmy.Text = trackBarBondAmy.Value.ToString();
+            if (Math.Abs(trackBarBondAmy.Value) > 100)
+                labelBondAmy.ForeColor = Color.Red;
+            else
+                labelBondAmy.ForeColor = Color.Black;
         }
 
         private void trackBarBondBig_ValueChanged(object sender, EventArgs e)
         {
             labelBondBig.Text = trackBarBondBig.Value.ToString();
+            if (Math.Abs(trackBarBondBig.Value) > 100)
+                labelBondBig.ForeColor = Color.Red;
+            else
+                labelBondBig.ForeColor = Color.Black;
         }
 
         private void trackBarBondGamma_ValueChanged(object sender, EventArgs e)
         {
             labelBondGamma.Text = trackBarBondGamma.Value.ToString();
+            if (Math.Abs(trackBarBondGamma.Value) > 100)
+                labelBondGamma.ForeColor = Color.Red;
+            else
+                labelBondGamma.ForeColor = Color.Black;
         }
 
         public static string ToStringEnums(Enum en)
@@ -906,5 +936,231 @@ namespace VMSEditor
             numericUpDown_ColorFlags.Value = (ushort)colorFlags;
 
         }
-    }
+
+        private void DrawChaoEvolution()
+        {
+            pictureBoxEvolution.Image = new Bitmap(150, 150);
+            using (Graphics gfx = Graphics.FromImage(pictureBoxEvolution.Image))
+            {
+                gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                Rectangle rect_big = new Rectangle(0, 0, 150, 150);
+                gfx.DrawRectangle(new Pen(Color.Black, 1.0f), rect_big);
+                gfx.FillRectangle(new SolidBrush(Color.Black), rect_big);
+                Rectangle rect_smol = new Rectangle(25, 25, 100, 100);
+                gfx.DrawRectangle(new Pen(new SolidBrush(Color.DimGray)), rect_smol);
+                gfx.FillRectangle(new System.Drawing.SolidBrush(Color.DimGray), rect_smol);
+                gfx.DrawLine(new Pen(Color.FromArgb(0, 255, 0), 2.0f), 75, 0, 75, 150);
+                gfx.DrawLine(new Pen(Color.FromArgb(0, 255, 0), 2.0f), 0, 75, 150, 75);
+                Color pencolor = Color.White;
+                if (Math.Abs(trackBarRunPower.Value) > 100 || Math.Abs(trackBarSwimFly.Value) > 100)
+                    pencolor = Color.Red;
+                gfx.DrawRectangle(new Pen(pencolor, 4.0f), new Rectangle(new Point((trackBarRunPower.Value + 150)/2 - 2, (trackBarSwimFly.Value + 150)/2 - 2), new Size(4, 4)));
+            }
+        }
+
+		private void trackBarSwimFly_Scroll(object sender, EventArgs e)
+		{
+            DrawChaoEvolution();
+        }
+
+		private void trackBarRunPower_Scroll(object sender, EventArgs e)
+		{
+            DrawChaoEvolution();
+        }
+
+        private Bitmap GetFruitPreview(ChaoFruitsSA1 fruit)
+        {
+            switch (fruit)
+            {
+                case ChaoFruitsSA1.Chaonut:
+                    return Properties.Resources.fruit_chaonut;
+                case ChaoFruitsSA1.Cherry:
+                    return Properties.Resources.fruit_cherry;
+                case ChaoFruitsSA1.Coconut:
+                    return Properties.Resources.fruit_coconut;
+                case ChaoFruitsSA1.Grape:
+                    return Properties.Resources.fruit_grape;
+                case ChaoFruitsSA1.Hastenut:
+                    return Properties.Resources.fruit_hastnut;
+                case ChaoFruitsSA1.Lazynut:
+                    return Properties.Resources.fruit_lazynut;
+                case ChaoFruitsSA1.Lemon:
+                    return Properties.Resources.fruit_lemon;
+                case ChaoFruitsSA1.Lifenut:
+                    return Properties.Resources.fruit_lifenut;
+                case ChaoFruitsSA1.Plum:
+                    return Properties.Resources.fruit_plum;
+                case ChaoFruitsSA1.Starnut:
+                    return Properties.Resources.fruit_starnut;
+                case ChaoFruitsSA1.None:
+                default:
+                    return new Bitmap(75, 75);
+            }
+        }
+
+		private void comboBoxFruit0_SelectedIndexChanged(object sender, EventArgs e)
+		{
+            pictureBoxFruit0.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit0.SelectedIndex);
+            pictureBoxFruit1.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit1.SelectedIndex);
+            pictureBoxFruit2.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit2.SelectedIndex);
+            pictureBoxFruit3.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit3.SelectedIndex);
+            pictureBoxFruit4.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit4.SelectedIndex);
+            pictureBoxFruit5.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit5.SelectedIndex);
+            pictureBoxFruit6.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit6.SelectedIndex);
+            pictureBoxFruit7.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit7.SelectedIndex);
+        }
+
+		private void comboBoxGarden_SelectedIndexChanged(object sender, EventArgs e)
+		{
+            switch ((ChaoLocationSA1)comboBoxGarden.SelectedIndex)
+            {
+                case ChaoLocationSA1.EggCarrier:
+                    pictureBoxGarden.Image = Properties.Resources.ec_panel;
+                    break;
+                case ChaoLocationSA1.MysticRuins:
+                    pictureBoxGarden.Image = Properties.Resources.ml_panel;
+                    break;
+                case ChaoLocationSA1.StationSquare:
+                default:
+                    pictureBoxGarden.Image = Properties.Resources.ss_panel;
+                    break;
+            }
+		}
+
+        private int GetFaceValue(int src)
+        {
+            if (src >= -35)
+                if (src >= 35) return 2; else return 1;
+            else return 0;
+        }
+
+        byte[,,] mouse_default_num_0 = {
+            { { 0x5, 0, 0x2 }, { 0x5, 0x5, 0x2 }, { 0x5, 0, 0x1 } },
+            { { 0, 0x4, 0x4 }, { 0, 0, 0 }, { 0, 0x1, 0x1 } },
+            { { 0, 0x4, 0x4 }, { 0, 0x2, 0x2 }, { 0x1, 0x1, 0x1 } } };
+
+        byte[,,] eye_default_num_0 = {
+            { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } },
+            { { 0, 0, 0 }, { 0, 0, 0x2 }, { 0, 0, 0x2 } },
+            { { 0, 0, 0 }, { 0, 0, 0x2 }, { 0, 0x2, 0x2 } }
+        };
+
+        private Bitmap GetMouthPart(int part)
+		{
+            switch (part)
+            {
+                case 0:
+                default:
+                    return Properties.Resources.al_kuchi00;
+                case 1:
+                    return Properties.Resources.al_kuchi01;
+                case 2:
+                    return Properties.Resources.al_kuchi02;
+                case 3:
+                    return Properties.Resources.al_kuchi03;
+                case 4:
+                    return Properties.Resources.al_kuchi04;
+                case 5:
+                    return Properties.Resources.al_kuchi05;
+                case 6:
+                    return Properties.Resources.al_kuchi06;
+                case 7:
+                    return Properties.Resources.al_kuchi07;
+                case 8:
+                    return Properties.Resources.al_kuchi08;
+            }
+		}
+
+        private Bitmap ComposeMouthTexture(int m1, int m2)
+		{
+            Bitmap result = new Bitmap(96, 32);
+            using (Graphics gfx = Graphics.FromImage(result))
+            {
+                gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                Image mouth_right = GetMouthPart(m1);
+                mouth_right.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                gfx.DrawImage(GetMouthPart(m1), 0, 0);
+                gfx.DrawImage(GetMouthPart(m2), 32, 0);
+                gfx.DrawImage(mouth_right, 64, 0);
+            }
+            return result;
+        }
+
+        private Image GetEyeTexture(int idx)
+        {
+            switch (idx)
+            {
+                case 0:
+                default:
+                    return Properties.Resources.al_eye00;
+                case 1:
+                    return Properties.Resources.al_eye01;
+                case 2:
+                    return Properties.Resources.al_eye02;
+                case 3:
+                    return Properties.Resources.al_eye03;
+                case 4:
+                    return Properties.Resources.al_eye04;
+                case 5:
+                    return Properties.Resources.al_eye05;
+                case 6:
+                    return Properties.Resources.al_eye06;
+                case 7:
+                    return Properties.Resources.al_eye07;
+            }
+        }
+
+        private Image GetMouthPreview(int index)
+        {
+            int a = 0;
+            int b = 0;
+            switch (index)
+            {
+                case 0:
+                default:
+                    break;
+                case 1:
+                    b = 1;
+                    break;
+                case 2:
+                    b = 4;
+                    break;
+                case 3:
+                    b = 5;
+                    break;
+                case 4:
+                    a = 2;
+                    b = 3;
+                    break;
+                case 5:
+                    a = 6;
+                    b = 7;
+                    break;
+                case 6:
+                    b = 8;
+                    break;
+            }
+            return ComposeMouthTexture(a, b);
+        }
+
+        private void CreateFacePreview()
+		{
+            int kindness = GetFaceValue((int)numericUpDownKindness.Value);
+            int aggressive = GetFaceValue((int)numericUpDownAggressive.Value);
+            int curious = GetFaceValue((int)numericUpDownCurious.Value);
+            pictureBoxEyeLeft.Image = pictureBoxEyeRight.Image = GetEyeTexture(eye_default_num_0[aggressive, kindness, curious]);
+            pictureBoxMouth.Image = GetMouthPreview(mouse_default_num_0[aggressive, kindness, curious]);
+        }
+
+		private void numericUpDownKindness_ValueChanged(object sender, EventArgs e)
+		{
+            CreateFacePreview();
+        }
+	}
 }

@@ -106,7 +106,8 @@ namespace VMSEditor
         Chaonut = 6,
         Hastenut = 7,
         Starnut = 8,
-        Lazynut = 9
+        Lazynut = 9,
+        Coconut = 10
     }
 
     public enum AnimalFlagsSA1 : ushort
