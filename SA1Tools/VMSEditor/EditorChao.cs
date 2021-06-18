@@ -22,6 +22,7 @@ namespace VMSEditor
 
         public List<VMS_Chao> chaoDataList = new List<VMS_Chao>();
         string currentFilename = "";
+        int previousChaoIndex = -1;
 
         public EditorChao()
         {
@@ -217,11 +218,11 @@ namespace VMSEditor
             CreateFacePreview();
         }
 
-        private void RefreshData()
+        private void RefreshData(int index)
         {
-            if (listBoxDataSlots.SelectedIndex == -1)
+            if (index == -1 || (chaoDataList.Count - 1) < index)
                 return;
-            VMS_Chao chaoData = chaoDataList[listBoxDataSlots.SelectedIndex];
+            VMS_Chao chaoData = chaoDataList[index];
             chaoData.Name = textBoxName.Text;
             chaoData.Type = (ChaoTypeSA1)comboBoxType.SelectedIndex;
             chaoData.Garden = (ChaoLocationSA1)comboBoxGarden.SelectedIndex;
@@ -668,6 +669,11 @@ namespace VMSEditor
 
         private void listBoxDataSlots_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (previousChaoIndex != listBoxDataSlots.SelectedIndex)
+            {
+                RefreshData(previousChaoIndex);
+                previousChaoIndex = listBoxDataSlots.SelectedIndex;
+            }
             RefreshLabels();
         }
 
@@ -779,7 +785,7 @@ namespace VMSEditor
 
         private void CreateVMS(string filename, ChaoSaveMode mode)
         {
-            RefreshData();
+            RefreshData(listBoxDataSlots.SelectedIndex);
             MemoryStream output;
             VMS_Chao chao1;
             VMS_Chao chao2;
