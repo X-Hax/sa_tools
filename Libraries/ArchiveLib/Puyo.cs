@@ -217,7 +217,14 @@ namespace ArchiveLib
                 if (flags.HasFlag(PuyoArchiveFlags.Filenames))
                 {
                     byte[] namestring = new byte[28];
-                    Array.Copy(pvmdata, 0xC + pvmentrysize * t + nameoffset, namestring, 0, 28);
+                    for (int n = 0; n < 28; n++)
+                    {
+                        // Entry names in some PVMs (e.g. DEMO.PVM in Dream Passport 3) have garbage data after the first 0, so it needs to be truncated
+                        byte ndt = pvmdata[0xC + pvmentrysize * t + nameoffset + n];
+                        if (ndt == 0)
+                            break;
+                        namestring[n] = ndt;
+                    }
                     entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
                 }
 
