@@ -60,21 +60,14 @@ namespace SAToolsHub
 				switch (SAToolsHub.setGame)
 				{
 					case ("SADXPC"):
-						if (splitEntry.SourceFile.Contains("exe"))
-						{
-							assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-						}
-						else
-						{
-							if (splitEntry.IniFile == "chrmodels")
-							{
-								assemblies.Add((splitEntry.IniFile + "_orig"), SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-							}
-							else
-							{
-								assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-							}
-						}
+                        if (splitEntry.SourceFile.Contains("exe"))
+                        {
+                            assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+                        }
+                        else
+                        {
+                            assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+                        }
 						break;
 
 					case ("SA2PC"):
