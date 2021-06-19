@@ -493,7 +493,8 @@ namespace SplitTools.SplitDLL
 										string mfn = Path.ChangeExtension(fn, modelext_def);
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
-											mfn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
+                                            outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
+                                            mfn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
 										}
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
@@ -919,8 +920,8 @@ namespace SplitTools.SplitDLL
 					}
 					output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(modelOutputPath));
 				}
-				IniSerializer.Serialize(output, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename))
-					+ "_data.ini");
+                IniSerializer.Serialize(output, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename))
+                    + "_data.ini");
 				timer.Stop();
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
