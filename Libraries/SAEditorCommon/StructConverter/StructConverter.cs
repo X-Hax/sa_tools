@@ -346,8 +346,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 						string path = Path.GetDirectoryName(item.Value.Filename);
 						for (int j = 0; j < list.Length; j++)
 						{
-							System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"));
-							fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl"), true);
+							System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, list[j].Filename));
+							fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), list[j].Filename), true);
 						}
 						File.Copy(item.Value.Filename, Path.Combine(dstfol, item.Value.Filename), true);
 						break;
