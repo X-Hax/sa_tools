@@ -9,11 +9,15 @@ assignees: ''
 
 Before creating a new issue, please read the following:
 
-This issue tracker is for bug reports and feature requests. This is not the place to ask how to use the tools or where to find models etc. If you need help with the tools, use the [Wiki](https://github.com/X-Hax/sa_tools/wiki) or ask on [Discord](https://t.co/QHzmLrHHDy).
+This issue tracker is for bug reports and feature requests. This is not the place to ask how to use the tools or where to find models etc. If you need help with the tools, use the wiki or ask on Discord.
 
-- I am using the [latest version](http://mm.reimuhakurei.net/SA%20Tools.7z) of SA Tools.
-- The problem is consistently reproducible.
-- I have looked through [the list of open issues](https://github.com/X-Hax/sa_tools/issues) and confirmed that the problem hasn't been reported before.
+In addition, please confirm the following:
+
+- [ ] I am using the latest version of SA Tools.
+
+- [ ] The problem is consistently reproducible.
+
+- [ ] I have looked through the list of open issues and confirmed that the problem hasn't been reported before.
 
 **Describe the bug/request**
 A clear and concise description of what the issue is.
