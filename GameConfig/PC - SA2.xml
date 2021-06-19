@@ -78,10 +78,10 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGKINDER" CmnName="Chao Kindergarten"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="EMBLEMGET" CmnName="Emblem Acquired Screen"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Enemies" CmnName="Enemy Data"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="ObjectLists" CmnName="Object List Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="ChaoCommon" CmnName="Chao Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Characters" CmnName="Character Level Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CommonObjects" CmnName="Common Object Data"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="ObjectLists" CmnName="Object List Data"/>
   <SplitEntry SourceFile="DLL" IniFile="STG34_DLL" CmnName="Cannon's Core (Sonic) Models"/>
   <SplitEntry SourceFile="DLL" IniFile="ADVERTISE_DLL" CmnName="Battle GUI Elements"/>
   <SplitEntry SourceFile="DLL" IniFile="BOSS_GOLEM_DLL" CmnName="Boss Egg Golem (Sonic)"/>
