@@ -193,7 +193,9 @@ namespace SAModel.SALVL
                     texturePath = Path.Combine(modFolder, "textures", pvmName, "index.txt");
                 else
                 {
-                    if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PRS"))
+                    if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PVM"))
+                        extension = ".PVM";
+                    else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PRS"))
                         extension = ".PRS";
                     else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".GVM"))
                         extension = ".GVM";
