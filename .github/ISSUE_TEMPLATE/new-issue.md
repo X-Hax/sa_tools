@@ -9,7 +9,7 @@ assignees: ''
 
 Before creating a new issue, please read the following:
 
-This issue tracker is for bug reports and feature requests. This is not the place to ask how to use the tools or where to find models etc. If you need help with the tools, use the wiki or ask on Discord.
+This issue tracker is for bug reports and feature requests. This is not the place to ask how to use the tools or where to find models etc. If you need help using the tools, check out the wiki or ask on Discord.
 
 In addition, please confirm the following:
 
@@ -22,7 +22,7 @@ In addition, please confirm the following:
 **Describe the bug/request**
 A clear and concise description of what the issue is.
 
-**To Reproduce**
+**To Reproduce (if applicable)**
 Steps to reproduce the behavior:
 
 **Expected behavior**
