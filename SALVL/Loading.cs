@@ -505,6 +505,7 @@ namespace SAModel.SALVL
                 {
                     LevelData.Clear();
                     selectedItems = new EditorItemSelection();
+                    sceneGraphControl1.InitSceneControl(selectedItems);
                     PointHelper.Instances.Clear();
                     LevelData.ClearTextures();
                 }
