@@ -51,8 +51,8 @@ namespace SAToolsHub
 			{
 				foreach (string chrFile in chkBoxMDL.CheckedItems)
 				{
-					sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "Characters"), chrFile));
-				}
+                    sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "figure", "bin"), chrFile));
+                }
 			}
 
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
