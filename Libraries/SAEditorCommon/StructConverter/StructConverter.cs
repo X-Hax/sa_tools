@@ -57,8 +57,11 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },
-			{ "physicsdata", "Player Parameters" }
-		};
+			{ "physicsdata", "Player Parameters" },
+            { "fogdatatable", "Fog Data Table" },
+            { "palettelightlist", "LS Palette Data" },
+            { "camera", "Ninja Camera Data" }
+        };
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
 		{
@@ -137,7 +140,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 						}
 						string path = Path.GetDirectoryName(item.Value.Filename);
 						for (int i = 0; i < flags.Length; i++)
-							if (HelperFunctions.FileHash(Path.Combine(path, i.ToString(NumberFormatInfo.InvariantInfo) + (iniData.Game == Game.SA2 || iniData.Game == Game.SA2B ? ".sa2mdl" : ".sa1mdl")))
+							if (HelperFunctions.FileHash(Path.Combine(path, flags[i].Filename))
 								!= hashes[i + 1])
 							{
 								modified = true;
