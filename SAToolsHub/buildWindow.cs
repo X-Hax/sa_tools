@@ -167,7 +167,7 @@ namespace SAToolsHub
 
 		void CopySA2Files(string sysFolder)
 		{
-			string charPath = Path.Combine(SAToolsHub.projectDirectory, "figure");
+			string charPath = Path.Combine(SAToolsHub.projectDirectory, "figure", "bin");
 			string[] charFiles = Directory.GetFiles(charPath, "*.prs");
 			foreach (string file in charFiles)
 			{
