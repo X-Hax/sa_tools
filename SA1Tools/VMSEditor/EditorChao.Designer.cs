@@ -68,6 +68,7 @@ namespace VMSEditor
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.pictureBoxGarden = new System.Windows.Forms.PictureBox();
             this.label38 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
             this.numericUpDownX = new System.Windows.Forms.NumericUpDown();
@@ -77,8 +78,12 @@ namespace VMSEditor
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label71 = new System.Windows.Forms.Label();
+            this.numericUpDownID = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.tabPageAppearance = new System.Windows.Forms.TabPage();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.pictureBoxEyeRight = new System.Windows.Forms.PictureBox();
+            this.pictureBoxMouth = new System.Windows.Forms.PictureBox();
+            this.pictureBoxEyeLeft = new System.Windows.Forms.PictureBox();
             this.label33 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
@@ -91,12 +96,20 @@ namespace VMSEditor
             this.label72 = new System.Windows.Forms.Label();
             this.checkBoxColorFlag0x10 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagJewel = new System.Windows.Forms.CheckBox();
+            this.numericUpDown_ColorFlags = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.checkBoxColorFlag0x80 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagSilver = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlag0x1 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagBlack = new System.Windows.Forms.CheckBox();
             this.comboBoxJewelColor = new System.Windows.Forms.ComboBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.pictureBoxTail = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFeet = new System.Windows.Forms.PictureBox();
+            this.pictureBoxArms = new System.Windows.Forms.PictureBox();
+            this.pictureBoxWings = new System.Windows.Forms.PictureBox();
+            this.pictureBoxEars = new System.Windows.Forms.PictureBox();
+            this.pictureBoxHeadBack = new System.Windows.Forms.PictureBox();
+            this.pictureBoxHeadFront = new System.Windows.Forms.PictureBox();
             this.label30 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
@@ -133,6 +146,7 @@ namespace VMSEditor
             this.labelMagnitudeValue = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.pictureBoxEvolution = new System.Windows.Forms.PictureBox();
             this.labelSwimFlyValue = new System.Windows.Forms.Label();
             this.labelRunPowerValue = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -173,24 +187,47 @@ namespace VMSEditor
             this.groupBox25 = new System.Windows.Forms.GroupBox();
             this.checkBoxGorillaChest = new System.Windows.Forms.CheckBox();
             this.checkBoxLionWash = new System.Windows.Forms.CheckBox();
+            this.pictureBox12 = new System.Windows.Forms.PictureBox();
+            this.pictureBox11 = new System.Windows.Forms.PictureBox();
             this.checkBoxElephantSumo = new System.Windows.Forms.CheckBox();
+            this.pictureBox10 = new System.Windows.Forms.PictureBox();
             this.groupBox29 = new System.Windows.Forms.GroupBox();
+            this.pictureBox9 = new System.Windows.Forms.PictureBox();
+            this.pictureBox7 = new System.Windows.Forms.PictureBox();
             this.checkBoxSkunkDraw = new System.Windows.Forms.CheckBox();
             this.checkBoxMoleDig = new System.Windows.Forms.CheckBox();
+            this.pictureBox8 = new System.Windows.Forms.PictureBox();
             this.checkBoxKoalaTrumpet = new System.Windows.Forms.CheckBox();
             this.groupBox26 = new System.Windows.Forms.GroupBox();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.checkBoxSealDance = new System.Windows.Forms.CheckBox();
+            this.pictureBox5 = new System.Windows.Forms.PictureBox();
+            this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.checkBoxOtterSwim = new System.Windows.Forms.CheckBox();
             this.checkBoxPenguinSkate = new System.Windows.Forms.CheckBox();
             this.groupBox28 = new System.Windows.Forms.GroupBox();
+            this.pictureBox13 = new System.Windows.Forms.PictureBox();
+            this.pictureBox15 = new System.Windows.Forms.PictureBox();
             this.checkBoxWallabyPunch = new System.Windows.Forms.CheckBox();
             this.checkBoxDeerBow = new System.Windows.Forms.CheckBox();
+            this.pictureBox14 = new System.Windows.Forms.PictureBox();
             this.checkBoxRabbitSomersault = new System.Windows.Forms.CheckBox();
             this.groupBox27 = new System.Windows.Forms.GroupBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.checkBoxPeacockPose = new System.Windows.Forms.CheckBox();
             this.checkBoxParrotSing = new System.Windows.Forms.CheckBox();
             this.checkBoxSwallowTwirl = new System.Windows.Forms.CheckBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.pictureBoxFruit7 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit6 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit5 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit4 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit3 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit2 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit1 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxFruit0 = new System.Windows.Forms.PictureBox();
             this.comboBoxFruit0 = new System.Windows.Forms.ComboBox();
             this.comboBoxFruit7 = new System.Windows.Forms.ComboBox();
             this.comboBoxFruit1 = new System.Windows.Forms.ComboBox();
@@ -202,25 +239,30 @@ namespace VMSEditor
             this.tabPageCharacters = new System.Windows.Forms.TabPage();
             this.groupBox23 = new System.Windows.Forms.GroupBox();
             this.trackBarBondBig = new System.Windows.Forms.TrackBar();
+            this.pictureBox20 = new System.Windows.Forms.PictureBox();
             this.numericUpDownMeetBig = new System.Windows.Forms.NumericUpDown();
             this.labelBondBig = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox24 = new System.Windows.Forms.GroupBox();
+            this.pictureBox21 = new System.Windows.Forms.PictureBox();
             this.trackBarBondGamma = new System.Windows.Forms.TrackBar();
             this.numericUpDownMeetGamma = new System.Windows.Forms.NumericUpDown();
             this.label42 = new System.Windows.Forms.Label();
             this.labelBondGamma = new System.Windows.Forms.Label();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.pictureBox18 = new System.Windows.Forms.PictureBox();
             this.numericUpDownMeetKnuckles = new System.Windows.Forms.NumericUpDown();
             this.label43 = new System.Windows.Forms.Label();
             this.trackBarBondKnuckles = new System.Windows.Forms.TrackBar();
             this.labelBondKnuckles = new System.Windows.Forms.Label();
             this.groupBox20 = new System.Windows.Forms.GroupBox();
+            this.pictureBox17 = new System.Windows.Forms.PictureBox();
             this.labelBondTails = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.numericUpDownMeetTails = new System.Windows.Forms.NumericUpDown();
             this.trackBarBondTails = new System.Windows.Forms.TrackBar();
             this.groupBox22 = new System.Windows.Forms.GroupBox();
+            this.pictureBox19 = new System.Windows.Forms.PictureBox();
             this.trackBarBondAmy = new System.Windows.Forms.TrackBar();
             this.numericUpDownMeetAmy = new System.Windows.Forms.NumericUpDown();
             this.label18 = new System.Windows.Forms.Label();
@@ -229,6 +271,7 @@ namespace VMSEditor
             this.numericUpDownMeetSonic = new System.Windows.Forms.NumericUpDown();
             this.labelBondSonic = new System.Windows.Forms.Label();
             this.trackBarBondSonic = new System.Windows.Forms.TrackBar();
+            this.pictureBox16 = new System.Windows.Forms.PictureBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tabPageChaoMemories = new System.Windows.Forms.TabPage();
             this.label98 = new System.Windows.Forms.Label();
@@ -236,48 +279,56 @@ namespace VMSEditor
             this.label97 = new System.Windows.Forms.Label();
             this.groupBoxMemories_7 = new System.Windows.Forms.GroupBox();
             this.label94 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_7 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label95 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_7 = new System.Windows.Forms.NumericUpDown();
             this.label96 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_7 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_6 = new System.Windows.Forms.GroupBox();
             this.label91 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_6 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label92 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_6 = new System.Windows.Forms.NumericUpDown();
             this.label93 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_6 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_5 = new System.Windows.Forms.GroupBox();
             this.label88 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_5 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label89 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_5 = new System.Windows.Forms.NumericUpDown();
             this.label90 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_5 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_4 = new System.Windows.Forms.GroupBox();
             this.label85 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_4 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label86 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_4 = new System.Windows.Forms.NumericUpDown();
             this.label87 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_4 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_3 = new System.Windows.Forms.GroupBox();
             this.label82 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_3 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label83 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_3 = new System.Windows.Forms.NumericUpDown();
             this.label84 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_3 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_2 = new System.Windows.Forms.GroupBox();
             this.label79 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_2 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label80 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_2 = new System.Windows.Forms.NumericUpDown();
             this.label81 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_2 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_1 = new System.Windows.Forms.GroupBox();
             this.label76 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_1 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label77 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_1 = new System.Windows.Forms.NumericUpDown();
             this.label78 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_1 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_0 = new System.Windows.Forms.GroupBox();
             this.label66 = new System.Windows.Forms.Label();
+            this.numericUpDownMemoriesID_0 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label65 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_0 = new System.Windows.Forms.NumericUpDown();
             this.label64 = new System.Windows.Forms.Label();
@@ -328,81 +379,35 @@ namespace VMSEditor
             this.numericUpDownRace10 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownRace9 = new System.Windows.Forms.NumericUpDown();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.pictureBox26 = new System.Windows.Forms.PictureBox();
+            this.pictureBox22 = new System.Windows.Forms.PictureBox();
             this.checkBoxPearl = new System.Windows.Forms.CheckBox();
             this.checkBoxEmerald = new System.Windows.Forms.CheckBox();
             this.checkBoxRuby = new System.Windows.Forms.CheckBox();
             this.checkBoxSapphire = new System.Windows.Forms.CheckBox();
             this.checkBoxAmethyst = new System.Windows.Forms.CheckBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generateAVMIFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.japaneseHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.listBoxDataSlots = new System.Windows.Forms.ListBox();
-            this.pictureBoxGarden = new System.Windows.Forms.PictureBox();
-            this.pictureBoxMouth = new System.Windows.Forms.PictureBox();
-            this.pictureBoxEyeLeft = new System.Windows.Forms.PictureBox();
-            this.pictureBoxTail = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFeet = new System.Windows.Forms.PictureBox();
-            this.pictureBoxArms = new System.Windows.Forms.PictureBox();
-            this.pictureBoxWings = new System.Windows.Forms.PictureBox();
-            this.pictureBoxEars = new System.Windows.Forms.PictureBox();
-            this.pictureBoxHeadBack = new System.Windows.Forms.PictureBox();
-            this.pictureBoxHeadFront = new System.Windows.Forms.PictureBox();
-            this.pictureBoxEvolution = new System.Windows.Forms.PictureBox();
-            this.pictureBox12 = new System.Windows.Forms.PictureBox();
-            this.pictureBox11 = new System.Windows.Forms.PictureBox();
-            this.pictureBox10 = new System.Windows.Forms.PictureBox();
-            this.pictureBox9 = new System.Windows.Forms.PictureBox();
-            this.pictureBox7 = new System.Windows.Forms.PictureBox();
-            this.pictureBox8 = new System.Windows.Forms.PictureBox();
-            this.pictureBox4 = new System.Windows.Forms.PictureBox();
-            this.pictureBox5 = new System.Windows.Forms.PictureBox();
-            this.pictureBox6 = new System.Windows.Forms.PictureBox();
-            this.pictureBox13 = new System.Windows.Forms.PictureBox();
-            this.pictureBox15 = new System.Windows.Forms.PictureBox();
-            this.pictureBox14 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit7 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit6 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit5 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit4 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit3 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit2 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit1 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxFruit0 = new System.Windows.Forms.PictureBox();
-            this.pictureBox20 = new System.Windows.Forms.PictureBox();
-            this.pictureBox21 = new System.Windows.Forms.PictureBox();
-            this.pictureBox18 = new System.Windows.Forms.PictureBox();
-            this.pictureBox17 = new System.Windows.Forms.PictureBox();
-            this.pictureBox19 = new System.Windows.Forms.PictureBox();
-            this.pictureBox16 = new System.Windows.Forms.PictureBox();
-            this.pictureBox26 = new System.Windows.Forms.PictureBox();
-            this.pictureBox22 = new System.Windows.Forms.PictureBox();
             this.pictureBox25 = new System.Windows.Forms.PictureBox();
             this.pictureBox23 = new System.Windows.Forms.PictureBox();
             this.pictureBox24 = new System.Windows.Forms.PictureBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openAVMSFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chaoDownloadDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gardenFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chaoAdventureDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chaoUploadDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBoxEyeRight = new System.Windows.Forms.PictureBox();
-            this.numericUpDownID = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDown_ColorFlags = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_7 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_6 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_5 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_4 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_3 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_2 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_1 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownMemoriesID_0 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateAVMIFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.japaneseHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabelFilename = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelHint = new System.Windows.Forms.ToolStripStatusLabel();
+            this.listBoxDataSlots = new System.Windows.Forms.ListBox();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chaoEditorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPageGeneral.SuspendLayout();
             this.groupBox15.SuspendLayout();
@@ -422,17 +427,30 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.trackBarAffection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarHappy)).BeginInit();
             this.groupBox12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGarden)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZ)).BeginInit();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).BeginInit();
             this.tabPageAppearance.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeRight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMouth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeLeft)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKindness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAggressive)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCurious)).BeginInit();
             this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).BeginInit();
             this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFeet)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxArms)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWings)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEars)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadBack)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadFront)).BeginInit();
             this.tabPageStats.SuspendLayout();
             this.groupBox19.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMaxHP)).BeginInit();
@@ -447,6 +465,7 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRun)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPower)).BeginInit();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEvolution)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarMagnitude)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarRunPower)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSwimFly)).BeginInit();
@@ -467,54 +486,91 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSleepy)).BeginInit();
             this.tabPageInventory.SuspendLayout();
             this.groupBox25.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox12)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).BeginInit();
             this.groupBox29.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).BeginInit();
             this.groupBox26.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
             this.groupBox28.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox13)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox15)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox14)).BeginInit();
             this.groupBox27.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit0)).BeginInit();
             this.tabPageCharacters.SuspendLayout();
             this.groupBox23.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondBig)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox20)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetBig)).BeginInit();
             this.groupBox24.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox21)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondGamma)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetGamma)).BeginInit();
             this.groupBox21.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox18)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetKnuckles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondKnuckles)).BeginInit();
             this.groupBox20.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox17)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetTails)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondTails)).BeginInit();
             this.groupBox22.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox19)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondAmy)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetAmy)).BeginInit();
             this.groupBox14.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetSonic)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondSonic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox16)).BeginInit();
             this.tabPageChaoMemories.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesPage)).BeginInit();
             this.groupBoxMemories_7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_7)).BeginInit();
             this.groupBoxMemories_6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_6)).BeginInit();
             this.groupBoxMemories_5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_5)).BeginInit();
             this.groupBoxMemories_4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_4)).BeginInit();
             this.groupBoxMemories_3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_3)).BeginInit();
             this.groupBoxMemories_2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_2)).BeginInit();
             this.groupBoxMemories_1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_1)).BeginInit();
             this.groupBoxMemories_0.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_0)).BeginInit();
             this.tabPageRace.SuspendLayout();
@@ -542,63 +598,13 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRace10)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRace9)).BeginInit();
             this.groupBox5.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGarden)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMouth)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeLeft)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFeet)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxArms)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWings)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEars)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadBack)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadFront)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEvolution)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox12)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox13)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox15)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox14)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit0)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox20)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox21)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox18)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox17)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox19)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox16)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox26)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox22)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox25)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox23)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox24)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeRight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).BeginInit();
+            this.menuStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBoxType
@@ -619,6 +625,7 @@ namespace VMSEditor
             this.comboBoxType.Name = "comboBoxType";
             this.comboBoxType.Size = new System.Drawing.Size(130, 28);
             this.comboBoxType.TabIndex = 0;
+            this.comboBoxType.Click += new System.EventHandler(this.comboBoxType_Click);
             // 
             // comboBoxGarden
             // 
@@ -633,13 +640,16 @@ namespace VMSEditor
             this.comboBoxGarden.Size = new System.Drawing.Size(118, 28);
             this.comboBoxGarden.TabIndex = 1;
             this.comboBoxGarden.SelectedIndexChanged += new System.EventHandler(this.comboBoxGarden_SelectedIndexChanged);
+            this.comboBoxGarden.Click += new System.EventHandler(this.comboBoxGarden_Click);
             // 
             // textBoxName
             // 
             this.textBoxName.Location = new System.Drawing.Point(88, 25);
+            this.textBoxName.MaxLength = 8;
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(130, 26);
             this.textBoxName.TabIndex = 3;
+            this.textBoxName.Click += new System.EventHandler(this.textBoxName_Click);
             // 
             // label1
             // 
@@ -677,7 +687,7 @@ namespace VMSEditor
             this.tabPageGeneral.Controls.Add(this.groupBox2);
             this.tabPageGeneral.Location = new System.Drawing.Point(4, 29);
             this.tabPageGeneral.Name = "tabPageGeneral";
-            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageGeneral.Size = new System.Drawing.Size(808, 472);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
@@ -715,6 +725,7 @@ namespace VMSEditor
             this.numericUpDownCocoonTimer.Name = "numericUpDownCocoonTimer";
             this.numericUpDownCocoonTimer.Size = new System.Drawing.Size(88, 26);
             this.numericUpDownCocoonTimer.TabIndex = 60;
+            this.numericUpDownCocoonTimer.Click += new System.EventHandler(this.numericUpDownCocoonTimer_Click);
             // 
             // label63
             // 
@@ -740,6 +751,7 @@ namespace VMSEditor
             this.numericUpDownReincarnations.Name = "numericUpDownReincarnations";
             this.numericUpDownReincarnations.Size = new System.Drawing.Size(88, 26);
             this.numericUpDownReincarnations.TabIndex = 57;
+            this.numericUpDownReincarnations.Click += new System.EventHandler(this.numericUpDownReincarnations_Click);
             // 
             // numericUpDownLifeSpan
             // 
@@ -757,6 +769,7 @@ namespace VMSEditor
             this.numericUpDownLifeSpan.Name = "numericUpDownLifeSpan";
             this.numericUpDownLifeSpan.Size = new System.Drawing.Size(88, 26);
             this.numericUpDownLifeSpan.TabIndex = 28;
+            this.numericUpDownLifeSpan.Click += new System.EventHandler(this.numericUpDownLifeSpan_Click);
             // 
             // label41
             // 
@@ -783,6 +796,7 @@ namespace VMSEditor
             this.numericUpDownAgingFactor.Name = "numericUpDownAgingFactor";
             this.numericUpDownAgingFactor.Size = new System.Drawing.Size(88, 26);
             this.numericUpDownAgingFactor.TabIndex = 29;
+            this.numericUpDownAgingFactor.Click += new System.EventHandler(this.numericUpDownAgingFactor_Click);
             // 
             // label40
             // 
@@ -822,6 +836,7 @@ namespace VMSEditor
             this.numericUpDownExists.Name = "numericUpDownExists";
             this.numericUpDownExists.Size = new System.Drawing.Size(88, 26);
             this.numericUpDownExists.TabIndex = 58;
+            this.numericUpDownExists.Click += new System.EventHandler(this.numericUpDownExists_Click);
             // 
             // label14
             // 
@@ -848,6 +863,7 @@ namespace VMSEditor
             this.numericUpDownAge.Name = "numericUpDownAge";
             this.numericUpDownAge.Size = new System.Drawing.Size(88, 26);
             this.numericUpDownAge.TabIndex = 30;
+            this.numericUpDownAge.Click += new System.EventHandler(this.numericUpDownAge_Click);
             // 
             // label34
             // 
@@ -899,6 +915,7 @@ namespace VMSEditor
             this.numericUpDownKey1.Name = "numericUpDownKey1";
             this.numericUpDownKey1.Size = new System.Drawing.Size(70, 26);
             this.numericUpDownKey1.TabIndex = 46;
+            this.numericUpDownKey1.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // label68
             // 
@@ -915,6 +932,7 @@ namespace VMSEditor
             this.numericUpDownKey2.Name = "numericUpDownKey2";
             this.numericUpDownKey2.Size = new System.Drawing.Size(70, 26);
             this.numericUpDownKey2.TabIndex = 47;
+            this.numericUpDownKey2.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // numericUpDownKey3
             // 
@@ -922,6 +940,7 @@ namespace VMSEditor
             this.numericUpDownKey3.Name = "numericUpDownKey3";
             this.numericUpDownKey3.Size = new System.Drawing.Size(70, 26);
             this.numericUpDownKey3.TabIndex = 48;
+            this.numericUpDownKey3.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // label67
             // 
@@ -938,6 +957,7 @@ namespace VMSEditor
             this.numericUpDownKey4.Name = "numericUpDownKey4";
             this.numericUpDownKey4.Size = new System.Drawing.Size(70, 26);
             this.numericUpDownKey4.TabIndex = 49;
+            this.numericUpDownKey4.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // groupBox6
             // 
@@ -973,6 +993,7 @@ namespace VMSEditor
             this.trackBarAffection.SmallChange = 10;
             this.trackBarAffection.TabIndex = 40;
             this.trackBarAffection.TickFrequency = 0;
+            this.trackBarAffection.Click += new System.EventHandler(this.trackBarAffection_Click);
             this.trackBarAffection.ValueChanged += new System.EventHandler(this.trackBarAffection_ValueChanged);
             // 
             // label16
@@ -1003,6 +1024,7 @@ namespace VMSEditor
             this.trackBarHappy.Size = new System.Drawing.Size(327, 69);
             this.trackBarHappy.TabIndex = 31;
             this.trackBarHappy.TickFrequency = 5;
+            this.trackBarHappy.Click += new System.EventHandler(this.trackBarHappy_Click);
             this.trackBarHappy.ValueChanged += new System.EventHandler(this.trackBarHappy_ValueChanged);
             // 
             // label10
@@ -1041,6 +1063,18 @@ namespace VMSEditor
             this.label9.TabIndex = 29;
             this.label9.Text = "Garden:";
             // 
+            // pictureBoxGarden
+            // 
+            this.pictureBoxGarden.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxGarden.Image = global::VMSEditor.Properties.Resources.ss_panel;
+            this.pictureBoxGarden.Location = new System.Drawing.Point(225, 52);
+            this.pictureBoxGarden.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxGarden.Name = "pictureBoxGarden";
+            this.pictureBoxGarden.Size = new System.Drawing.Size(94, 96);
+            this.pictureBoxGarden.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxGarden.TabIndex = 28;
+            this.pictureBoxGarden.TabStop = false;
+            // 
             // label38
             // 
             this.label38.AutoSize = true;
@@ -1075,6 +1109,7 @@ namespace VMSEditor
             this.numericUpDownX.Name = "numericUpDownX";
             this.numericUpDownX.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownX.TabIndex = 27;
+            this.numericUpDownX.Click += new System.EventHandler(this.numericUpDownX_Click);
             // 
             // label39
             // 
@@ -1101,6 +1136,7 @@ namespace VMSEditor
             this.numericUpDownY.Name = "numericUpDownY";
             this.numericUpDownY.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownY.TabIndex = 25;
+            this.numericUpDownY.Click += new System.EventHandler(this.numericUpDownX_Click);
             // 
             // numericUpDownZ
             // 
@@ -1118,6 +1154,7 @@ namespace VMSEditor
             this.numericUpDownZ.Name = "numericUpDownZ";
             this.numericUpDownZ.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownZ.TabIndex = 26;
+            this.numericUpDownZ.Click += new System.EventHandler(this.numericUpDownX_Click);
             // 
             // groupBox2
             // 
@@ -1152,6 +1189,15 @@ namespace VMSEditor
             this.label71.TabIndex = 56;
             this.label71.Text = "ID:";
             // 
+            // numericUpDownID
+            // 
+            this.numericUpDownID.Hexadecimal = true;
+            this.numericUpDownID.Location = new System.Drawing.Point(88, 100);
+            this.numericUpDownID.Name = "numericUpDownID";
+            this.numericUpDownID.Size = new System.Drawing.Size(132, 26);
+            this.numericUpDownID.TabIndex = 55;
+            this.numericUpDownID.Click += new System.EventHandler(this.numericUpDownID_Click);
+            // 
             // tabPageAppearance
             // 
             this.tabPageAppearance.BackColor = System.Drawing.SystemColors.Control;
@@ -1160,7 +1206,7 @@ namespace VMSEditor
             this.tabPageAppearance.Controls.Add(this.groupBox8);
             this.tabPageAppearance.Location = new System.Drawing.Point(4, 29);
             this.tabPageAppearance.Name = "tabPageAppearance";
-            this.tabPageAppearance.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPageAppearance.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageAppearance.Size = new System.Drawing.Size(808, 472);
             this.tabPageAppearance.TabIndex = 1;
             this.tabPageAppearance.Text = "Appearance";
@@ -1182,6 +1228,36 @@ namespace VMSEditor
             this.groupBox9.TabIndex = 72;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Face Settings";
+            // 
+            // pictureBoxEyeRight
+            // 
+            this.pictureBoxEyeRight.Location = new System.Drawing.Point(160, 133);
+            this.pictureBoxEyeRight.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxEyeRight.Name = "pictureBoxEyeRight";
+            this.pictureBoxEyeRight.Size = new System.Drawing.Size(48, 64);
+            this.pictureBoxEyeRight.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxEyeRight.TabIndex = 10;
+            this.pictureBoxEyeRight.TabStop = false;
+            // 
+            // pictureBoxMouth
+            // 
+            this.pictureBoxMouth.Location = new System.Drawing.Point(89, 207);
+            this.pictureBoxMouth.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxMouth.Name = "pictureBoxMouth";
+            this.pictureBoxMouth.Size = new System.Drawing.Size(96, 32);
+            this.pictureBoxMouth.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxMouth.TabIndex = 9;
+            this.pictureBoxMouth.TabStop = false;
+            // 
+            // pictureBoxEyeLeft
+            // 
+            this.pictureBoxEyeLeft.Location = new System.Drawing.Point(65, 133);
+            this.pictureBoxEyeLeft.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxEyeLeft.Name = "pictureBoxEyeLeft";
+            this.pictureBoxEyeLeft.Size = new System.Drawing.Size(48, 64);
+            this.pictureBoxEyeLeft.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxEyeLeft.TabIndex = 8;
+            this.pictureBoxEyeLeft.TabStop = false;
             // 
             // label33
             // 
@@ -1227,6 +1303,7 @@ namespace VMSEditor
             this.numericUpDownKindness.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownKindness.TabIndex = 2;
             this.numericUpDownKindness.ValueChanged += new System.EventHandler(this.numericUpDownKindness_ValueChanged);
+            this.numericUpDownKindness.Click += new System.EventHandler(this.numericUpDownKindness_Click);
             // 
             // numericUpDownAggressive
             // 
@@ -1245,6 +1322,7 @@ namespace VMSEditor
             this.numericUpDownAggressive.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownAggressive.TabIndex = 3;
             this.numericUpDownAggressive.ValueChanged += new System.EventHandler(this.numericUpDownKindness_ValueChanged);
+            this.numericUpDownAggressive.Click += new System.EventHandler(this.numericUpDownKindness_Click);
             // 
             // numericUpDownCurious
             // 
@@ -1263,6 +1341,7 @@ namespace VMSEditor
             this.numericUpDownCurious.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownCurious.TabIndex = 4;
             this.numericUpDownCurious.ValueChanged += new System.EventHandler(this.numericUpDownKindness_ValueChanged);
+            this.numericUpDownCurious.Click += new System.EventHandler(this.numericUpDownKindness_Click);
             // 
             // groupBox10
             // 
@@ -1294,6 +1373,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x20.Text = "0x20 (?)";
             this.checkBoxColorFlag0x20.UseVisualStyleBackColor = true;
             this.checkBoxColorFlag0x20.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlag0x20.Click += new System.EventHandler(this.checkBoxColorFlag0x1_Click);
             // 
             // checkBoxColorFlagGold
             // 
@@ -1305,6 +1385,7 @@ namespace VMSEditor
             this.checkBoxColorFlagGold.Text = "Gold";
             this.checkBoxColorFlagGold.UseVisualStyleBackColor = true;
             this.checkBoxColorFlagGold.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlagGold.Click += new System.EventHandler(this.checkBoxColorFlagBlack_Click);
             // 
             // label72
             // 
@@ -1325,6 +1406,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x10.Text = "0x10 (?)";
             this.checkBoxColorFlag0x10.UseVisualStyleBackColor = true;
             this.checkBoxColorFlag0x10.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlag0x10.Click += new System.EventHandler(this.checkBoxColorFlag0x1_Click);
             // 
             // checkBoxColorFlagJewel
             // 
@@ -1336,6 +1418,17 @@ namespace VMSEditor
             this.checkBoxColorFlagJewel.Text = "Jewel:";
             this.checkBoxColorFlagJewel.UseVisualStyleBackColor = true;
             this.checkBoxColorFlagJewel.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlagJewel.Click += new System.EventHandler(this.checkBoxColorFlagBlack_Click);
+            // 
+            // numericUpDown_ColorFlags
+            // 
+            this.numericUpDown_ColorFlags.Enabled = false;
+            this.numericUpDown_ColorFlags.Hexadecimal = true;
+            this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(67, 147);
+            this.numericUpDown_ColorFlags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
+            this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 26);
+            this.numericUpDown_ColorFlags.TabIndex = 73;
             // 
             // checkBoxColorFlag0x80
             // 
@@ -1347,6 +1440,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x80.Text = "0x80 (?)";
             this.checkBoxColorFlag0x80.UseVisualStyleBackColor = true;
             this.checkBoxColorFlag0x80.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlag0x80.Click += new System.EventHandler(this.checkBoxColorFlag0x1_Click);
             // 
             // checkBoxColorFlagSilver
             // 
@@ -1358,6 +1452,7 @@ namespace VMSEditor
             this.checkBoxColorFlagSilver.Text = "Silver";
             this.checkBoxColorFlagSilver.UseVisualStyleBackColor = true;
             this.checkBoxColorFlagSilver.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlagSilver.Click += new System.EventHandler(this.checkBoxColorFlagBlack_Click);
             // 
             // checkBoxColorFlag0x1
             // 
@@ -1369,6 +1464,7 @@ namespace VMSEditor
             this.checkBoxColorFlag0x1.Text = "0x1 (?)";
             this.checkBoxColorFlag0x1.UseVisualStyleBackColor = true;
             this.checkBoxColorFlag0x1.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlag0x1.Click += new System.EventHandler(this.checkBoxColorFlag0x1_Click);
             // 
             // checkBoxColorFlagBlack
             // 
@@ -1380,6 +1476,7 @@ namespace VMSEditor
             this.checkBoxColorFlagBlack.Text = "Black";
             this.checkBoxColorFlagBlack.UseVisualStyleBackColor = true;
             this.checkBoxColorFlagBlack.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
+            this.checkBoxColorFlagBlack.Click += new System.EventHandler(this.checkBoxColorFlagBlack_Click);
             // 
             // comboBoxJewelColor
             // 
@@ -1394,6 +1491,7 @@ namespace VMSEditor
             this.comboBoxJewelColor.Name = "comboBoxJewelColor";
             this.comboBoxJewelColor.Size = new System.Drawing.Size(110, 28);
             this.comboBoxJewelColor.TabIndex = 1;
+            this.comboBoxJewelColor.Click += new System.EventHandler(this.comboBoxJewelColor_Click);
             // 
             // groupBox8
             // 
@@ -1424,6 +1522,83 @@ namespace VMSEditor
             this.groupBox8.TabIndex = 0;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Animal Parts";
+            // 
+            // pictureBoxTail
+            // 
+            this.pictureBoxTail.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxTail.Location = new System.Drawing.Point(255, 392);
+            this.pictureBoxTail.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxTail.Name = "pictureBoxTail";
+            this.pictureBoxTail.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxTail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxTail.TabIndex = 79;
+            this.pictureBoxTail.TabStop = false;
+            // 
+            // pictureBoxFeet
+            // 
+            this.pictureBoxFeet.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFeet.Location = new System.Drawing.Point(255, 331);
+            this.pictureBoxFeet.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxFeet.Name = "pictureBoxFeet";
+            this.pictureBoxFeet.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFeet.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFeet.TabIndex = 78;
+            this.pictureBoxFeet.TabStop = false;
+            // 
+            // pictureBoxArms
+            // 
+            this.pictureBoxArms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxArms.Location = new System.Drawing.Point(255, 269);
+            this.pictureBoxArms.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxArms.Name = "pictureBoxArms";
+            this.pictureBoxArms.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxArms.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxArms.TabIndex = 77;
+            this.pictureBoxArms.TabStop = false;
+            // 
+            // pictureBoxWings
+            // 
+            this.pictureBoxWings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxWings.Location = new System.Drawing.Point(255, 208);
+            this.pictureBoxWings.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxWings.Name = "pictureBoxWings";
+            this.pictureBoxWings.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxWings.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxWings.TabIndex = 76;
+            this.pictureBoxWings.TabStop = false;
+            // 
+            // pictureBoxEars
+            // 
+            this.pictureBoxEars.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxEars.Location = new System.Drawing.Point(255, 146);
+            this.pictureBoxEars.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxEars.Name = "pictureBoxEars";
+            this.pictureBoxEars.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxEars.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxEars.TabIndex = 75;
+            this.pictureBoxEars.TabStop = false;
+            // 
+            // pictureBoxHeadBack
+            // 
+            this.pictureBoxHeadBack.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxHeadBack.Location = new System.Drawing.Point(255, 85);
+            this.pictureBoxHeadBack.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxHeadBack.Name = "pictureBoxHeadBack";
+            this.pictureBoxHeadBack.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxHeadBack.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxHeadBack.TabIndex = 74;
+            this.pictureBoxHeadBack.TabStop = false;
+            // 
+            // pictureBoxHeadFront
+            // 
+            this.pictureBoxHeadFront.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxHeadFront.Location = new System.Drawing.Point(255, 23);
+            this.pictureBoxHeadFront.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxHeadFront.Name = "pictureBoxHeadFront";
+            this.pictureBoxHeadFront.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxHeadFront.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxHeadFront.TabIndex = 73;
+            this.pictureBoxHeadFront.TabStop = false;
             // 
             // label30
             // 
@@ -1515,6 +1690,7 @@ namespace VMSEditor
             this.comboBoxAnimalTail.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalTail.TabIndex = 6;
             this.comboBoxAnimalTail.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalTail.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // comboBoxAnimalFeet
             // 
@@ -1543,6 +1719,7 @@ namespace VMSEditor
             this.comboBoxAnimalFeet.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalFeet.TabIndex = 5;
             this.comboBoxAnimalFeet.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalFeet.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // comboBoxAnimalArms
             // 
@@ -1571,6 +1748,7 @@ namespace VMSEditor
             this.comboBoxAnimalArms.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalArms.TabIndex = 4;
             this.comboBoxAnimalArms.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalArms.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // comboBoxAnimalWings
             // 
@@ -1599,6 +1777,7 @@ namespace VMSEditor
             this.comboBoxAnimalWings.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalWings.TabIndex = 3;
             this.comboBoxAnimalWings.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalWings.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // comboBoxAnimalEars
             // 
@@ -1627,6 +1806,7 @@ namespace VMSEditor
             this.comboBoxAnimalEars.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalEars.TabIndex = 2;
             this.comboBoxAnimalEars.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalEars.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // comboBoxAnimalHeadBack
             // 
@@ -1655,6 +1835,7 @@ namespace VMSEditor
             this.comboBoxAnimalHeadBack.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalHeadBack.TabIndex = 1;
             this.comboBoxAnimalHeadBack.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalHeadBack.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // comboBoxAnimalHeadFront
             // 
@@ -1683,6 +1864,7 @@ namespace VMSEditor
             this.comboBoxAnimalHeadFront.Size = new System.Drawing.Size(121, 28);
             this.comboBoxAnimalHeadFront.TabIndex = 0;
             this.comboBoxAnimalHeadFront.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
+            this.comboBoxAnimalHeadFront.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
             // 
             // tabPageStats
             // 
@@ -1719,6 +1901,7 @@ namespace VMSEditor
             this.numericUpDownMaxHP.Name = "numericUpDownMaxHP";
             this.numericUpDownMaxHP.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownMaxHP.TabIndex = 14;
+            this.numericUpDownMaxHP.Click += new System.EventHandler(this.numericUpDownMaxHP_Click);
             // 
             // label6
             // 
@@ -1740,6 +1923,7 @@ namespace VMSEditor
             this.numericUpDownHP.Name = "numericUpDownHP";
             this.numericUpDownHP.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownHP.TabIndex = 13;
+            this.numericUpDownHP.Click += new System.EventHandler(this.numericUpDownHP_Click);
             // 
             // groupBox1
             // 
@@ -1773,6 +1957,7 @@ namespace VMSEditor
             this.numericUpDownPointsPower.Name = "numericUpDownPointsPower";
             this.numericUpDownPointsPower.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownPointsPower.TabIndex = 7;
+            this.numericUpDownPointsPower.Click += new System.EventHandler(this.numericUpDownPointsPower_Click);
             // 
             // numericUpDownPointsFly
             // 
@@ -1785,6 +1970,7 @@ namespace VMSEditor
             this.numericUpDownPointsFly.Name = "numericUpDownPointsFly";
             this.numericUpDownPointsFly.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownPointsFly.TabIndex = 6;
+            this.numericUpDownPointsFly.Click += new System.EventHandler(this.numericUpDownPointsFly_Click);
             // 
             // numericUpDownPointsRun
             // 
@@ -1797,6 +1983,7 @@ namespace VMSEditor
             this.numericUpDownPointsRun.Name = "numericUpDownPointsRun";
             this.numericUpDownPointsRun.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownPointsRun.TabIndex = 8;
+            this.numericUpDownPointsRun.Click += new System.EventHandler(this.numericUpDownPointsRun_Click);
             // 
             // numericUpDownPointsSwim
             // 
@@ -1809,6 +1996,7 @@ namespace VMSEditor
             this.numericUpDownPointsSwim.Name = "numericUpDownPointsSwim";
             this.numericUpDownPointsSwim.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownPointsSwim.TabIndex = 5;
+            this.numericUpDownPointsSwim.Click += new System.EventHandler(this.numericUpDownPointsSwim_Click);
             // 
             // numericUpDownSwim
             // 
@@ -1821,6 +2009,7 @@ namespace VMSEditor
             this.numericUpDownSwim.Name = "numericUpDownSwim";
             this.numericUpDownSwim.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownSwim.TabIndex = 5;
+            this.numericUpDownSwim.Click += new System.EventHandler(this.numericUpDownSwim_Click);
             // 
             // numericUpDownFly
             // 
@@ -1833,6 +2022,7 @@ namespace VMSEditor
             this.numericUpDownFly.Name = "numericUpDownFly";
             this.numericUpDownFly.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownFly.TabIndex = 6;
+            this.numericUpDownFly.Click += new System.EventHandler(this.numericUpDownFly_Click);
             // 
             // numericUpDownRun
             // 
@@ -1845,6 +2035,7 @@ namespace VMSEditor
             this.numericUpDownRun.Name = "numericUpDownRun";
             this.numericUpDownRun.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownRun.TabIndex = 7;
+            this.numericUpDownRun.Click += new System.EventHandler(this.numericUpDownRun_Click);
             // 
             // numericUpDownPower
             // 
@@ -1857,6 +2048,7 @@ namespace VMSEditor
             this.numericUpDownPower.Name = "numericUpDownPower";
             this.numericUpDownPower.Size = new System.Drawing.Size(90, 26);
             this.numericUpDownPower.TabIndex = 8;
+            this.numericUpDownPower.Click += new System.EventHandler(this.numericUpDownPower_Click);
             // 
             // label2
             // 
@@ -1943,6 +2135,17 @@ namespace VMSEditor
             this.label17.Text = "Fly";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // pictureBoxEvolution
+            // 
+            this.pictureBoxEvolution.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxEvolution.Location = new System.Drawing.Point(135, 43);
+            this.pictureBoxEvolution.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxEvolution.Name = "pictureBoxEvolution";
+            this.pictureBoxEvolution.Size = new System.Drawing.Size(224, 230);
+            this.pictureBoxEvolution.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxEvolution.TabIndex = 42;
+            this.pictureBoxEvolution.TabStop = false;
+            // 
             // labelSwimFlyValue
             // 
             this.labelSwimFlyValue.AutoSize = true;
@@ -1988,6 +2191,8 @@ namespace VMSEditor
             this.trackBarMagnitude.Size = new System.Drawing.Size(278, 69);
             this.trackBarMagnitude.TabIndex = 27;
             this.trackBarMagnitude.TickFrequency = 5;
+            this.trackBarMagnitude.Click += new System.EventHandler(this.trackBarMagnitude_Click);
+            this.trackBarMagnitude.Scroll += new System.EventHandler(this.trackBarMagnitude_Scroll);
             this.trackBarMagnitude.ValueChanged += new System.EventHandler(this.trackBarMagnitude_ValueChanged);
             // 
             // trackBarRunPower
@@ -2000,6 +2205,7 @@ namespace VMSEditor
             this.trackBarRunPower.Size = new System.Drawing.Size(225, 69);
             this.trackBarRunPower.TabIndex = 23;
             this.trackBarRunPower.TickFrequency = 5;
+            this.trackBarRunPower.Click += new System.EventHandler(this.trackBarRunPower_Click);
             this.trackBarRunPower.Scroll += new System.EventHandler(this.trackBarRunPower_Scroll);
             this.trackBarRunPower.ValueChanged += new System.EventHandler(this.trackBarRunPower_ValueChanged);
             // 
@@ -2014,6 +2220,7 @@ namespace VMSEditor
             this.trackBarSwimFly.Size = new System.Drawing.Size(69, 231);
             this.trackBarSwimFly.TabIndex = 25;
             this.trackBarSwimFly.TickFrequency = 5;
+            this.trackBarSwimFly.Click += new System.EventHandler(this.trackBarSwimFly_Click);
             this.trackBarSwimFly.Scroll += new System.EventHandler(this.trackBarSwimFly_Scroll);
             this.trackBarSwimFly.ValueChanged += new System.EventHandler(this.trackBarSwimFly_ValueChanged);
             // 
@@ -2083,6 +2290,7 @@ namespace VMSEditor
             this.numericUpDownHungry.Name = "numericUpDownHungry";
             this.numericUpDownHungry.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownHungry.TabIndex = 71;
+            this.numericUpDownHungry.Click += new System.EventHandler(this.numericUpDownHungry_Click);
             // 
             // label62
             // 
@@ -2113,6 +2321,7 @@ namespace VMSEditor
             this.numericUpDownLonely.Name = "numericUpDownLonely";
             this.numericUpDownLonely.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownLonely.TabIndex = 69;
+            this.numericUpDownLonely.Click += new System.EventHandler(this.numericUpDownLonely_Click);
             // 
             // label48
             // 
@@ -2134,6 +2343,7 @@ namespace VMSEditor
             this.numericUpDownFearful.Name = "numericUpDownFearful";
             this.numericUpDownFearful.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownFearful.TabIndex = 68;
+            this.numericUpDownFearful.Click += new System.EventHandler(this.numericUpDownFearful_Click);
             // 
             // numericUpDownSad
             // 
@@ -2146,6 +2356,7 @@ namespace VMSEditor
             this.numericUpDownSad.Name = "numericUpDownSad";
             this.numericUpDownSad.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownSad.TabIndex = 67;
+            this.numericUpDownSad.Click += new System.EventHandler(this.numericUpDownSad_Click);
             // 
             // label50
             // 
@@ -2167,6 +2378,7 @@ namespace VMSEditor
             this.numericUpDownAngry.Name = "numericUpDownAngry";
             this.numericUpDownAngry.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownAngry.TabIndex = 66;
+            this.numericUpDownAngry.Click += new System.EventHandler(this.numericUpDownAngry_Click);
             // 
             // label51
             // 
@@ -2188,6 +2400,7 @@ namespace VMSEditor
             this.numericUpDownCharm.Name = "numericUpDownCharm";
             this.numericUpDownCharm.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownCharm.TabIndex = 65;
+            this.numericUpDownCharm.Click += new System.EventHandler(this.numericUpDownCharm_Click);
             // 
             // label52
             // 
@@ -2236,6 +2449,7 @@ namespace VMSEditor
             this.numericUpDownJoyful.Name = "numericUpDownJoyful";
             this.numericUpDownJoyful.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownJoyful.TabIndex = 62;
+            this.numericUpDownJoyful.Click += new System.EventHandler(this.numericUpDownJoyful_Click);
             // 
             // label55
             // 
@@ -2257,6 +2471,7 @@ namespace VMSEditor
             this.numericUpDownNarrow.Name = "numericUpDownNarrow";
             this.numericUpDownNarrow.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownNarrow.TabIndex = 61;
+            this.numericUpDownNarrow.Click += new System.EventHandler(this.numericUpDownNarrow_Click);
             // 
             // label56
             // 
@@ -2278,6 +2493,7 @@ namespace VMSEditor
             this.numericUpDownStressed.Name = "numericUpDownStressed";
             this.numericUpDownStressed.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownStressed.TabIndex = 60;
+            this.numericUpDownStressed.Click += new System.EventHandler(this.numericUpDownStressed_Click);
             // 
             // label57
             // 
@@ -2299,6 +2515,7 @@ namespace VMSEditor
             this.numericUpDownTired.Name = "numericUpDownTired";
             this.numericUpDownTired.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownTired.TabIndex = 59;
+            this.numericUpDownTired.Click += new System.EventHandler(this.numericUpDownTired_Click);
             // 
             // label58
             // 
@@ -2320,6 +2537,7 @@ namespace VMSEditor
             this.numericUpDownBored.Name = "numericUpDownBored";
             this.numericUpDownBored.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownBored.TabIndex = 58;
+            this.numericUpDownBored.Click += new System.EventHandler(this.numericUpDownBored_Click);
             // 
             // numericUpDownHorny
             // 
@@ -2332,6 +2550,7 @@ namespace VMSEditor
             this.numericUpDownHorny.Name = "numericUpDownHorny";
             this.numericUpDownHorny.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownHorny.TabIndex = 55;
+            this.numericUpDownHorny.Click += new System.EventHandler(this.numericUpDownHorny_Click);
             // 
             // numericUpDownSleepy
             // 
@@ -2344,6 +2563,7 @@ namespace VMSEditor
             this.numericUpDownSleepy.Name = "numericUpDownSleepy";
             this.numericUpDownSleepy.Size = new System.Drawing.Size(120, 26);
             this.numericUpDownSleepy.TabIndex = 56;
+            this.numericUpDownSleepy.Click += new System.EventHandler(this.numericUpDownSleepy_Click);
             // 
             // tabPageInventory
             // 
@@ -2378,32 +2598,68 @@ namespace VMSEditor
             // checkBoxGorillaChest
             // 
             this.checkBoxGorillaChest.AutoSize = true;
-            this.checkBoxGorillaChest.Location = new System.Drawing.Point(60, 94);
+            this.checkBoxGorillaChest.Location = new System.Drawing.Point(68, 94);
             this.checkBoxGorillaChest.Name = "checkBoxGorillaChest";
-            this.checkBoxGorillaChest.Size = new System.Drawing.Size(115, 24);
+            this.checkBoxGorillaChest.Size = new System.Drawing.Size(74, 24);
             this.checkBoxGorillaChest.TabIndex = 20;
-            this.checkBoxGorillaChest.Text = "Beat Chest";
+            this.checkBoxGorillaChest.Text = "Drum";
             this.checkBoxGorillaChest.UseVisualStyleBackColor = true;
+            this.checkBoxGorillaChest.Click += new System.EventHandler(this.checkBoxGorillaChest_Click);
             // 
             // checkBoxLionWash
             // 
             this.checkBoxLionWash.AutoSize = true;
-            this.checkBoxLionWash.Location = new System.Drawing.Point(60, 43);
+            this.checkBoxLionWash.Location = new System.Drawing.Point(68, 37);
             this.checkBoxLionWash.Name = "checkBoxLionWash";
             this.checkBoxLionWash.Size = new System.Drawing.Size(116, 24);
             this.checkBoxLionWash.TabIndex = 18;
             this.checkBoxLionWash.Text = "Wash Face";
             this.checkBoxLionWash.UseVisualStyleBackColor = true;
+            this.checkBoxLionWash.Click += new System.EventHandler(this.checkBoxLionWash_Click);
+            // 
+            // pictureBox12
+            // 
+            this.pictureBox12.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox12.Image = global::VMSEditor.Properties.Resources.icon_lion;
+            this.pictureBox12.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox12.Name = "pictureBox12";
+            this.pictureBox12.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox12.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox12.TabIndex = 19;
+            this.pictureBox12.TabStop = false;
+            // 
+            // pictureBox11
+            // 
+            this.pictureBox11.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox11.Image = global::VMSEditor.Properties.Resources.icon_gori;
+            this.pictureBox11.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox11.Name = "pictureBox11";
+            this.pictureBox11.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox11.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox11.TabIndex = 21;
+            this.pictureBox11.TabStop = false;
             // 
             // checkBoxElephantSumo
             // 
             this.checkBoxElephantSumo.AutoSize = true;
-            this.checkBoxElephantSumo.Location = new System.Drawing.Point(60, 148);
+            this.checkBoxElephantSumo.Location = new System.Drawing.Point(68, 148);
             this.checkBoxElephantSumo.Name = "checkBoxElephantSumo";
-            this.checkBoxElephantSumo.Size = new System.Drawing.Size(89, 24);
+            this.checkBoxElephantSumo.Size = new System.Drawing.Size(77, 24);
             this.checkBoxElephantSumo.TabIndex = 22;
-            this.checkBoxElephantSumo.Text = "Wrestle";
+            this.checkBoxElephantSumo.Text = "Sumo";
             this.checkBoxElephantSumo.UseVisualStyleBackColor = true;
+            this.checkBoxElephantSumo.Click += new System.EventHandler(this.checkBoxElephantSumo_Click);
+            // 
+            // pictureBox10
+            // 
+            this.pictureBox10.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox10.Image = global::VMSEditor.Properties.Resources.icon_zou;
+            this.pictureBox10.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox10.Name = "pictureBox10";
+            this.pictureBox10.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox10.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox10.TabIndex = 23;
+            this.pictureBox10.TabStop = false;
             // 
             // groupBox29
             // 
@@ -2420,6 +2676,28 @@ namespace VMSEditor
             this.groupBox29.TabStop = false;
             this.groupBox29.Text = "Random";
             // 
+            // pictureBox9
+            // 
+            this.pictureBox9.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox9.Image = global::VMSEditor.Properties.Resources.icon_suka;
+            this.pictureBox9.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox9.Name = "pictureBox9";
+            this.pictureBox9.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox9.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox9.TabIndex = 17;
+            this.pictureBox9.TabStop = false;
+            // 
+            // pictureBox7
+            // 
+            this.pictureBox7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox7.Image = global::VMSEditor.Properties.Resources.icon_mog;
+            this.pictureBox7.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox7.Name = "pictureBox7";
+            this.pictureBox7.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox7.TabIndex = 13;
+            this.pictureBox7.TabStop = false;
+            // 
             // checkBoxSkunkDraw
             // 
             this.checkBoxSkunkDraw.AutoSize = true;
@@ -2429,6 +2707,7 @@ namespace VMSEditor
             this.checkBoxSkunkDraw.TabIndex = 16;
             this.checkBoxSkunkDraw.Text = "Draw";
             this.checkBoxSkunkDraw.UseVisualStyleBackColor = true;
+            this.checkBoxSkunkDraw.Click += new System.EventHandler(this.checkBoxSkunkDraw_Click);
             // 
             // checkBoxMoleDig
             // 
@@ -2439,6 +2718,18 @@ namespace VMSEditor
             this.checkBoxMoleDig.TabIndex = 6;
             this.checkBoxMoleDig.Text = "Dig";
             this.checkBoxMoleDig.UseVisualStyleBackColor = true;
+            this.checkBoxMoleDig.Click += new System.EventHandler(this.checkBoxMoleDig_Click);
+            // 
+            // pictureBox8
+            // 
+            this.pictureBox8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox8.Image = global::VMSEditor.Properties.Resources.icon_koa;
+            this.pictureBox8.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox8.Name = "pictureBox8";
+            this.pictureBox8.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox8.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox8.TabIndex = 15;
+            this.pictureBox8.TabStop = false;
             // 
             // checkBoxKoalaTrumpet
             // 
@@ -2449,6 +2740,7 @@ namespace VMSEditor
             this.checkBoxKoalaTrumpet.TabIndex = 14;
             this.checkBoxKoalaTrumpet.Text = "Trumpet";
             this.checkBoxKoalaTrumpet.UseVisualStyleBackColor = true;
+            this.checkBoxKoalaTrumpet.Click += new System.EventHandler(this.checkBoxKoalaTrumpet_Click);
             // 
             // groupBox26
             // 
@@ -2465,6 +2757,17 @@ namespace VMSEditor
             this.groupBox26.TabStop = false;
             this.groupBox26.Text = "Swim";
             // 
+            // pictureBox4
+            // 
+            this.pictureBox4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox4.Image = global::VMSEditor.Properties.Resources.icon_goma;
+            this.pictureBox4.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox4.TabIndex = 10;
+            this.pictureBox4.TabStop = false;
+            // 
             // checkBoxSealDance
             // 
             this.checkBoxSealDance.AutoSize = true;
@@ -2474,6 +2777,29 @@ namespace VMSEditor
             this.checkBoxSealDance.TabIndex = 3;
             this.checkBoxSealDance.Text = "Dance";
             this.checkBoxSealDance.UseVisualStyleBackColor = true;
+            this.checkBoxSealDance.Click += new System.EventHandler(this.checkBoxSealDance_Click);
+            // 
+            // pictureBox5
+            // 
+            this.pictureBox5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox5.Image = global::VMSEditor.Properties.Resources.icon_rak;
+            this.pictureBox5.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox5.Name = "pictureBox5";
+            this.pictureBox5.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox5.TabIndex = 11;
+            this.pictureBox5.TabStop = false;
+            // 
+            // pictureBox6
+            // 
+            this.pictureBox6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox6.Image = global::VMSEditor.Properties.Resources.icon_pen;
+            this.pictureBox6.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox6.Name = "pictureBox6";
+            this.pictureBox6.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox6.TabIndex = 12;
+            this.pictureBox6.TabStop = false;
             // 
             // checkBoxOtterSwim
             // 
@@ -2484,16 +2810,18 @@ namespace VMSEditor
             this.checkBoxOtterSwim.TabIndex = 4;
             this.checkBoxOtterSwim.Text = "Backstroke";
             this.checkBoxOtterSwim.UseVisualStyleBackColor = true;
+            this.checkBoxOtterSwim.Click += new System.EventHandler(this.checkBoxOtterSwim_Click);
             // 
             // checkBoxPenguinSkate
             // 
             this.checkBoxPenguinSkate.AutoSize = true;
             this.checkBoxPenguinSkate.Location = new System.Drawing.Point(68, 148);
             this.checkBoxPenguinSkate.Name = "checkBoxPenguinSkate";
-            this.checkBoxPenguinSkate.Size = new System.Drawing.Size(77, 24);
+            this.checkBoxPenguinSkate.Size = new System.Drawing.Size(94, 24);
             this.checkBoxPenguinSkate.TabIndex = 5;
-            this.checkBoxPenguinSkate.Text = "Skate";
+            this.checkBoxPenguinSkate.Text = "Snuggle";
             this.checkBoxPenguinSkate.UseVisualStyleBackColor = true;
+            this.checkBoxPenguinSkate.Click += new System.EventHandler(this.checkBoxPenguinSkate_Click);
             // 
             // groupBox28
             // 
@@ -2510,15 +2838,38 @@ namespace VMSEditor
             this.groupBox28.TabStop = false;
             this.groupBox28.Text = "Run";
             // 
+            // pictureBox13
+            // 
+            this.pictureBox13.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox13.Image = global::VMSEditor.Properties.Resources.icon_wara;
+            this.pictureBox13.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox13.Name = "pictureBox13";
+            this.pictureBox13.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox13.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox13.TabIndex = 29;
+            this.pictureBox13.TabStop = false;
+            // 
+            // pictureBox15
+            // 
+            this.pictureBox15.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox15.Image = global::VMSEditor.Properties.Resources.icon_banb;
+            this.pictureBox15.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox15.Name = "pictureBox15";
+            this.pictureBox15.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox15.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox15.TabIndex = 25;
+            this.pictureBox15.TabStop = false;
+            // 
             // checkBoxWallabyPunch
             // 
             this.checkBoxWallabyPunch.AutoSize = true;
             this.checkBoxWallabyPunch.Location = new System.Drawing.Point(68, 148);
             this.checkBoxWallabyPunch.Name = "checkBoxWallabyPunch";
-            this.checkBoxWallabyPunch.Size = new System.Drawing.Size(80, 24);
+            this.checkBoxWallabyPunch.Size = new System.Drawing.Size(83, 24);
             this.checkBoxWallabyPunch.TabIndex = 28;
-            this.checkBoxWallabyPunch.Text = "Punch";
+            this.checkBoxWallabyPunch.Text = "Boxing";
             this.checkBoxWallabyPunch.UseVisualStyleBackColor = true;
+            this.checkBoxWallabyPunch.Click += new System.EventHandler(this.checkBoxWallabyPunch_Click);
             // 
             // checkBoxDeerBow
             // 
@@ -2529,6 +2880,18 @@ namespace VMSEditor
             this.checkBoxDeerBow.TabIndex = 24;
             this.checkBoxDeerBow.Text = "Bow";
             this.checkBoxDeerBow.UseVisualStyleBackColor = true;
+            this.checkBoxDeerBow.Click += new System.EventHandler(this.checkBoxDeerBow_Click);
+            // 
+            // pictureBox14
+            // 
+            this.pictureBox14.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox14.Image = global::VMSEditor.Properties.Resources.icon_usa;
+            this.pictureBox14.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox14.Name = "pictureBox14";
+            this.pictureBox14.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox14.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox14.TabIndex = 27;
+            this.pictureBox14.TabStop = false;
             // 
             // checkBoxRabbitSomersault
             // 
@@ -2539,6 +2902,7 @@ namespace VMSEditor
             this.checkBoxRabbitSomersault.TabIndex = 26;
             this.checkBoxRabbitSomersault.Text = "Somersault";
             this.checkBoxRabbitSomersault.UseVisualStyleBackColor = true;
+            this.checkBoxRabbitSomersault.Click += new System.EventHandler(this.checkBoxRabbitSomersault_Click);
             // 
             // groupBox27
             // 
@@ -2555,6 +2919,17 @@ namespace VMSEditor
             this.groupBox27.TabStop = false;
             this.groupBox27.Text = "Fly";
             // 
+            // pictureBox2
+            // 
+            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox2.Image = global::VMSEditor.Properties.Resources.icon_oum;
+            this.pictureBox2.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox2.TabIndex = 8;
+            this.pictureBox2.TabStop = false;
+            // 
             // checkBoxPeacockPose
             // 
             this.checkBoxPeacockPose.AutoSize = true;
@@ -2564,6 +2939,7 @@ namespace VMSEditor
             this.checkBoxPeacockPose.TabIndex = 0;
             this.checkBoxPeacockPose.Text = "Pose";
             this.checkBoxPeacockPose.UseVisualStyleBackColor = true;
+            this.checkBoxPeacockPose.Click += new System.EventHandler(this.checkBoxPeacockPose_Click);
             // 
             // checkBoxParrotSing
             // 
@@ -2574,6 +2950,7 @@ namespace VMSEditor
             this.checkBoxParrotSing.TabIndex = 1;
             this.checkBoxParrotSing.Text = "Sing";
             this.checkBoxParrotSing.UseVisualStyleBackColor = true;
+            this.checkBoxParrotSing.Click += new System.EventHandler(this.checkBoxParrotSing_Click);
             // 
             // checkBoxSwallowTwirl
             // 
@@ -2584,6 +2961,29 @@ namespace VMSEditor
             this.checkBoxSwallowTwirl.TabIndex = 2;
             this.checkBoxSwallowTwirl.Text = "Twirl";
             this.checkBoxSwallowTwirl.UseVisualStyleBackColor = true;
+            this.checkBoxSwallowTwirl.Click += new System.EventHandler(this.checkBoxSwallowTwirl_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox1.Image = global::VMSEditor.Properties.Resources.icon_kuj;
+            this.pictureBox1.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox3.Image = global::VMSEditor.Properties.Resources.icon_tuba;
+            this.pictureBox3.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox3.TabIndex = 9;
+            this.pictureBox3.TabStop = false;
             // 
             // groupBox4
             // 
@@ -2610,6 +3010,86 @@ namespace VMSEditor
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Fruits";
             // 
+            // pictureBoxFruit7
+            // 
+            this.pictureBoxFruit7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit7.Location = new System.Drawing.Point(153, 402);
+            this.pictureBoxFruit7.Name = "pictureBoxFruit7";
+            this.pictureBoxFruit7.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit7.TabIndex = 20;
+            this.pictureBoxFruit7.TabStop = false;
+            // 
+            // pictureBoxFruit6
+            // 
+            this.pictureBoxFruit6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit6.Location = new System.Drawing.Point(153, 346);
+            this.pictureBoxFruit6.Name = "pictureBoxFruit6";
+            this.pictureBoxFruit6.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit6.TabIndex = 19;
+            this.pictureBoxFruit6.TabStop = false;
+            // 
+            // pictureBoxFruit5
+            // 
+            this.pictureBoxFruit5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit5.Location = new System.Drawing.Point(153, 291);
+            this.pictureBoxFruit5.Name = "pictureBoxFruit5";
+            this.pictureBoxFruit5.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit5.TabIndex = 18;
+            this.pictureBoxFruit5.TabStop = false;
+            // 
+            // pictureBoxFruit4
+            // 
+            this.pictureBoxFruit4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit4.Location = new System.Drawing.Point(153, 235);
+            this.pictureBoxFruit4.Name = "pictureBoxFruit4";
+            this.pictureBoxFruit4.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit4.TabIndex = 17;
+            this.pictureBoxFruit4.TabStop = false;
+            // 
+            // pictureBoxFruit3
+            // 
+            this.pictureBoxFruit3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit3.Location = new System.Drawing.Point(153, 180);
+            this.pictureBoxFruit3.Name = "pictureBoxFruit3";
+            this.pictureBoxFruit3.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit3.TabIndex = 16;
+            this.pictureBoxFruit3.TabStop = false;
+            // 
+            // pictureBoxFruit2
+            // 
+            this.pictureBoxFruit2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit2.Location = new System.Drawing.Point(153, 125);
+            this.pictureBoxFruit2.Name = "pictureBoxFruit2";
+            this.pictureBoxFruit2.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit2.TabIndex = 15;
+            this.pictureBoxFruit2.TabStop = false;
+            // 
+            // pictureBoxFruit1
+            // 
+            this.pictureBoxFruit1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit1.Location = new System.Drawing.Point(153, 69);
+            this.pictureBoxFruit1.Name = "pictureBoxFruit1";
+            this.pictureBoxFruit1.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit1.TabIndex = 14;
+            this.pictureBoxFruit1.TabStop = false;
+            // 
+            // pictureBoxFruit0
+            // 
+            this.pictureBoxFruit0.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxFruit0.Location = new System.Drawing.Point(153, 14);
+            this.pictureBoxFruit0.Name = "pictureBoxFruit0";
+            this.pictureBoxFruit0.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxFruit0.TabIndex = 13;
+            this.pictureBoxFruit0.TabStop = false;
+            // 
             // comboBoxFruit0
             // 
             this.comboBoxFruit0.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -2631,6 +3111,7 @@ namespace VMSEditor
             this.comboBoxFruit0.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit0.TabIndex = 0;
             this.comboBoxFruit0.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit0.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit7
             // 
@@ -2653,6 +3134,7 @@ namespace VMSEditor
             this.comboBoxFruit7.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit7.TabIndex = 7;
             this.comboBoxFruit7.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit7.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit1
             // 
@@ -2675,6 +3157,7 @@ namespace VMSEditor
             this.comboBoxFruit1.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit1.TabIndex = 1;
             this.comboBoxFruit1.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit1.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit6
             // 
@@ -2697,6 +3180,7 @@ namespace VMSEditor
             this.comboBoxFruit6.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit6.TabIndex = 6;
             this.comboBoxFruit6.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit6.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit2
             // 
@@ -2719,6 +3203,7 @@ namespace VMSEditor
             this.comboBoxFruit2.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit2.TabIndex = 2;
             this.comboBoxFruit2.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit2.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit5
             // 
@@ -2741,6 +3226,7 @@ namespace VMSEditor
             this.comboBoxFruit5.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit5.TabIndex = 5;
             this.comboBoxFruit5.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit5.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit3
             // 
@@ -2763,6 +3249,7 @@ namespace VMSEditor
             this.comboBoxFruit3.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit3.TabIndex = 3;
             this.comboBoxFruit3.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit3.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // comboBoxFruit4
             // 
@@ -2785,6 +3272,7 @@ namespace VMSEditor
             this.comboBoxFruit4.Size = new System.Drawing.Size(121, 28);
             this.comboBoxFruit4.TabIndex = 4;
             this.comboBoxFruit4.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
+            this.comboBoxFruit4.Click += new System.EventHandler(this.comboBoxFruit0_Click);
             // 
             // tabPageCharacters
             // 
@@ -2825,7 +3313,19 @@ namespace VMSEditor
             this.trackBarBondBig.Size = new System.Drawing.Size(250, 69);
             this.trackBarBondBig.TabIndex = 33;
             this.trackBarBondBig.TickFrequency = 10;
+            this.trackBarBondBig.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
             this.trackBarBondBig.ValueChanged += new System.EventHandler(this.trackBarBondBig_ValueChanged);
+            // 
+            // pictureBox20
+            // 
+            this.pictureBox20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox20.Image = global::VMSEditor.Properties.Resources.r_big3;
+            this.pictureBox20.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox20.Name = "pictureBox20";
+            this.pictureBox20.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox20.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox20.TabIndex = 62;
+            this.pictureBox20.TabStop = false;
             // 
             // numericUpDownMeetBig
             // 
@@ -2838,6 +3338,7 @@ namespace VMSEditor
             this.numericUpDownMeetBig.Name = "numericUpDownMeetBig";
             this.numericUpDownMeetBig.Size = new System.Drawing.Size(96, 26);
             this.numericUpDownMeetBig.TabIndex = 53;
+            this.numericUpDownMeetBig.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // labelBondBig
             // 
@@ -2871,6 +3372,17 @@ namespace VMSEditor
             this.groupBox24.TabStop = false;
             this.groupBox24.Text = "Gamma";
             // 
+            // pictureBox21
+            // 
+            this.pictureBox21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox21.Image = global::VMSEditor.Properties.Resources.r_e102;
+            this.pictureBox21.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox21.Name = "pictureBox21";
+            this.pictureBox21.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox21.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox21.TabIndex = 63;
+            this.pictureBox21.TabStop = false;
+            // 
             // trackBarBondGamma
             // 
             this.trackBarBondGamma.LargeChange = 10;
@@ -2881,6 +3393,7 @@ namespace VMSEditor
             this.trackBarBondGamma.Size = new System.Drawing.Size(250, 69);
             this.trackBarBondGamma.TabIndex = 33;
             this.trackBarBondGamma.TickFrequency = 10;
+            this.trackBarBondGamma.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
             this.trackBarBondGamma.ValueChanged += new System.EventHandler(this.trackBarBondGamma_ValueChanged);
             // 
             // numericUpDownMeetGamma
@@ -2894,6 +3407,7 @@ namespace VMSEditor
             this.numericUpDownMeetGamma.Name = "numericUpDownMeetGamma";
             this.numericUpDownMeetGamma.Size = new System.Drawing.Size(96, 26);
             this.numericUpDownMeetGamma.TabIndex = 53;
+            this.numericUpDownMeetGamma.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // label42
             // 
@@ -2927,6 +3441,17 @@ namespace VMSEditor
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Knuckles";
             // 
+            // pictureBox18
+            // 
+            this.pictureBox18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox18.Image = global::VMSEditor.Properties.Resources.r_nuckles2;
+            this.pictureBox18.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox18.Name = "pictureBox18";
+            this.pictureBox18.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox18.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox18.TabIndex = 59;
+            this.pictureBox18.TabStop = false;
+            // 
             // numericUpDownMeetKnuckles
             // 
             this.numericUpDownMeetKnuckles.Location = new System.Drawing.Point(80, 97);
@@ -2938,6 +3463,7 @@ namespace VMSEditor
             this.numericUpDownMeetKnuckles.Name = "numericUpDownMeetKnuckles";
             this.numericUpDownMeetKnuckles.Size = new System.Drawing.Size(96, 26);
             this.numericUpDownMeetKnuckles.TabIndex = 53;
+            this.numericUpDownMeetKnuckles.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // label43
             // 
@@ -2958,6 +3484,7 @@ namespace VMSEditor
             this.trackBarBondKnuckles.Size = new System.Drawing.Size(250, 69);
             this.trackBarBondKnuckles.TabIndex = 33;
             this.trackBarBondKnuckles.TickFrequency = 10;
+            this.trackBarBondKnuckles.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
             this.trackBarBondKnuckles.ValueChanged += new System.EventHandler(this.trackBarBondKnuckles_ValueChanged);
             // 
             // labelBondKnuckles
@@ -2982,6 +3509,17 @@ namespace VMSEditor
             this.groupBox20.TabIndex = 65;
             this.groupBox20.TabStop = false;
             this.groupBox20.Text = "Tails";
+            // 
+            // pictureBox17
+            // 
+            this.pictureBox17.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox17.Image = global::VMSEditor.Properties.Resources.r_tailes2;
+            this.pictureBox17.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox17.Name = "pictureBox17";
+            this.pictureBox17.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox17.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox17.TabIndex = 57;
+            this.pictureBox17.TabStop = false;
             // 
             // labelBondTails
             // 
@@ -3012,6 +3550,7 @@ namespace VMSEditor
             this.numericUpDownMeetTails.Name = "numericUpDownMeetTails";
             this.numericUpDownMeetTails.Size = new System.Drawing.Size(96, 26);
             this.numericUpDownMeetTails.TabIndex = 53;
+            this.numericUpDownMeetTails.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // trackBarBondTails
             // 
@@ -3023,6 +3562,7 @@ namespace VMSEditor
             this.trackBarBondTails.Size = new System.Drawing.Size(250, 69);
             this.trackBarBondTails.TabIndex = 33;
             this.trackBarBondTails.TickFrequency = 10;
+            this.trackBarBondTails.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
             this.trackBarBondTails.ValueChanged += new System.EventHandler(this.trackBarBondTails_ValueChanged);
             // 
             // groupBox22
@@ -3039,6 +3579,17 @@ namespace VMSEditor
             this.groupBox22.TabStop = false;
             this.groupBox22.Text = "Amy";
             // 
+            // pictureBox19
+            // 
+            this.pictureBox19.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox19.Image = global::VMSEditor.Properties.Resources.r_amy;
+            this.pictureBox19.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox19.Name = "pictureBox19";
+            this.pictureBox19.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox19.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox19.TabIndex = 61;
+            this.pictureBox19.TabStop = false;
+            // 
             // trackBarBondAmy
             // 
             this.trackBarBondAmy.LargeChange = 10;
@@ -3049,6 +3600,7 @@ namespace VMSEditor
             this.trackBarBondAmy.Size = new System.Drawing.Size(250, 69);
             this.trackBarBondAmy.TabIndex = 33;
             this.trackBarBondAmy.TickFrequency = 10;
+            this.trackBarBondAmy.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
             this.trackBarBondAmy.ValueChanged += new System.EventHandler(this.trackBarBondAmy_ValueChanged);
             // 
             // numericUpDownMeetAmy
@@ -3062,6 +3614,7 @@ namespace VMSEditor
             this.numericUpDownMeetAmy.Name = "numericUpDownMeetAmy";
             this.numericUpDownMeetAmy.Size = new System.Drawing.Size(96, 26);
             this.numericUpDownMeetAmy.TabIndex = 53;
+            this.numericUpDownMeetAmy.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // label18
             // 
@@ -3106,6 +3659,7 @@ namespace VMSEditor
             this.numericUpDownMeetSonic.Name = "numericUpDownMeetSonic";
             this.numericUpDownMeetSonic.Size = new System.Drawing.Size(96, 26);
             this.numericUpDownMeetSonic.TabIndex = 47;
+            this.numericUpDownMeetSonic.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // labelBondSonic
             // 
@@ -3126,7 +3680,19 @@ namespace VMSEditor
             this.trackBarBondSonic.Size = new System.Drawing.Size(250, 69);
             this.trackBarBondSonic.TabIndex = 31;
             this.trackBarBondSonic.TickFrequency = 10;
+            this.trackBarBondSonic.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
             this.trackBarBondSonic.ValueChanged += new System.EventHandler(this.trackBarBondSonic_ValueChanged);
+            // 
+            // pictureBox16
+            // 
+            this.pictureBox16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox16.Image = global::VMSEditor.Properties.Resources.r_sonic2;
+            this.pictureBox16.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox16.Name = "pictureBox16";
+            this.pictureBox16.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox16.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox16.TabIndex = 56;
+            this.pictureBox16.TabStop = false;
             // 
             // label15
             // 
@@ -3187,6 +3753,7 @@ namespace VMSEditor
             0,
             0});
             this.numericUpDownMemoriesPage.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesPage_ValueChanged);
+            this.numericUpDownMemoriesPage.Click += new System.EventHandler(this.numericUpDownMemoriesPage_Click);
             // 
             // label97
             // 
@@ -3221,6 +3788,16 @@ namespace VMSEditor
             this.label94.TabIndex = 6;
             this.label94.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_7
+            // 
+            this.numericUpDownMemoriesID_7.Hexadecimal = true;
+            this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
+            this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_7.TabIndex = 1;
+            this.numericUpDownMemoriesID_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label95
             // 
             this.label95.AutoSize = true;
@@ -3242,6 +3819,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_7.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_7.TabIndex = 2;
             this.numericUpDownMemoriesMeet_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label96
             // 
@@ -3264,6 +3842,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_7.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_7.TabIndex = 3;
             this.numericUpDownMemoriesLike_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_6
             // 
@@ -3289,6 +3868,16 @@ namespace VMSEditor
             this.label91.TabIndex = 6;
             this.label91.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_6
+            // 
+            this.numericUpDownMemoriesID_6.Hexadecimal = true;
+            this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
+            this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_6.TabIndex = 1;
+            this.numericUpDownMemoriesID_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label92
             // 
             this.label92.AutoSize = true;
@@ -3310,6 +3899,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_6.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_6.TabIndex = 2;
             this.numericUpDownMemoriesMeet_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label93
             // 
@@ -3332,6 +3922,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_6.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_6.TabIndex = 3;
             this.numericUpDownMemoriesLike_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_5
             // 
@@ -3357,6 +3948,16 @@ namespace VMSEditor
             this.label88.TabIndex = 6;
             this.label88.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_5
+            // 
+            this.numericUpDownMemoriesID_5.Hexadecimal = true;
+            this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
+            this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_5.TabIndex = 1;
+            this.numericUpDownMemoriesID_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label89
             // 
             this.label89.AutoSize = true;
@@ -3378,6 +3979,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_5.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_5.TabIndex = 2;
             this.numericUpDownMemoriesMeet_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label90
             // 
@@ -3400,6 +4002,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_5.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_5.TabIndex = 3;
             this.numericUpDownMemoriesLike_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_4
             // 
@@ -3425,6 +4028,16 @@ namespace VMSEditor
             this.label85.TabIndex = 6;
             this.label85.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_4
+            // 
+            this.numericUpDownMemoriesID_4.Hexadecimal = true;
+            this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
+            this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_4.TabIndex = 1;
+            this.numericUpDownMemoriesID_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label86
             // 
             this.label86.AutoSize = true;
@@ -3446,6 +4059,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_4.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_4.TabIndex = 2;
             this.numericUpDownMemoriesMeet_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label87
             // 
@@ -3468,6 +4082,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_4.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_4.TabIndex = 3;
             this.numericUpDownMemoriesLike_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_3
             // 
@@ -3493,6 +4108,16 @@ namespace VMSEditor
             this.label82.TabIndex = 6;
             this.label82.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_3
+            // 
+            this.numericUpDownMemoriesID_3.Hexadecimal = true;
+            this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
+            this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_3.TabIndex = 1;
+            this.numericUpDownMemoriesID_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label83
             // 
             this.label83.AutoSize = true;
@@ -3514,6 +4139,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_3.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_3.TabIndex = 2;
             this.numericUpDownMemoriesMeet_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label84
             // 
@@ -3536,6 +4162,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_3.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_3.TabIndex = 3;
             this.numericUpDownMemoriesLike_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_2
             // 
@@ -3561,6 +4188,16 @@ namespace VMSEditor
             this.label79.TabIndex = 6;
             this.label79.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_2
+            // 
+            this.numericUpDownMemoriesID_2.Hexadecimal = true;
+            this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
+            this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_2.TabIndex = 1;
+            this.numericUpDownMemoriesID_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label80
             // 
             this.label80.AutoSize = true;
@@ -3582,6 +4219,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_2.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_2.TabIndex = 2;
             this.numericUpDownMemoriesMeet_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label81
             // 
@@ -3604,6 +4242,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_2.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_2.TabIndex = 3;
             this.numericUpDownMemoriesLike_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_1
             // 
@@ -3629,6 +4268,16 @@ namespace VMSEditor
             this.label76.TabIndex = 6;
             this.label76.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_1
+            // 
+            this.numericUpDownMemoriesID_1.Hexadecimal = true;
+            this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
+            this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_1.TabIndex = 1;
+            this.numericUpDownMemoriesID_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label77
             // 
             this.label77.AutoSize = true;
@@ -3650,6 +4299,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_1.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_1.TabIndex = 2;
             this.numericUpDownMemoriesMeet_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label78
             // 
@@ -3672,6 +4322,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_1.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_1.TabIndex = 3;
             this.numericUpDownMemoriesLike_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // groupBoxMemories_0
             // 
@@ -3697,6 +4348,16 @@ namespace VMSEditor
             this.label66.TabIndex = 6;
             this.label66.Text = "Meet:";
             // 
+            // numericUpDownMemoriesID_0
+            // 
+            this.numericUpDownMemoriesID_0.Hexadecimal = true;
+            this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(63, 29);
+            this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
+            this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesID_0.TabIndex = 1;
+            this.numericUpDownMemoriesID_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesID_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
             // label65
             // 
             this.label65.AutoSize = true;
@@ -3718,6 +4379,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_0.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesMeet_0.TabIndex = 2;
             this.numericUpDownMemoriesMeet_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label64
             // 
@@ -3740,6 +4402,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_0.Size = new System.Drawing.Size(108, 26);
             this.numericUpDownMemoriesLike_0.TabIndex = 3;
             this.numericUpDownMemoriesLike_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // tabPageRace
             // 
@@ -3758,7 +4421,7 @@ namespace VMSEditor
             this.groupBox16.Controls.Add(this.numericUpDownRaceTrack);
             this.groupBox16.Location = new System.Drawing.Point(312, 263);
             this.groupBox16.Name = "groupBox16";
-            this.groupBox16.Size = new System.Drawing.Size(184, 69);
+            this.groupBox16.Size = new System.Drawing.Size(188, 69);
             this.groupBox16.TabIndex = 45;
             this.groupBox16.TabStop = false;
             this.groupBox16.Text = "Flags";
@@ -3778,6 +4441,7 @@ namespace VMSEditor
             this.numericUpDownRaceTrack.Name = "numericUpDownRaceTrack";
             this.numericUpDownRaceTrack.Size = new System.Drawing.Size(74, 26);
             this.numericUpDownRaceTrack.TabIndex = 47;
+            this.numericUpDownRaceTrack.Click += new System.EventHandler(this.numericUpDownRaceTrack_Click);
             // 
             // groupBox17
             // 
@@ -4039,6 +4703,7 @@ namespace VMSEditor
             this.numericUpDownRace15.Name = "numericUpDownRace15";
             this.numericUpDownRace15.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace15.TabIndex = 15;
+            this.numericUpDownRace15.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace19
             // 
@@ -4051,6 +4716,7 @@ namespace VMSEditor
             this.numericUpDownRace19.Name = "numericUpDownRace19";
             this.numericUpDownRace19.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace19.TabIndex = 19;
+            this.numericUpDownRace19.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace0
             // 
@@ -4063,6 +4729,7 @@ namespace VMSEditor
             this.numericUpDownRace0.Name = "numericUpDownRace0";
             this.numericUpDownRace0.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace0.TabIndex = 0;
+            this.numericUpDownRace0.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace18
             // 
@@ -4075,6 +4742,7 @@ namespace VMSEditor
             this.numericUpDownRace18.Name = "numericUpDownRace18";
             this.numericUpDownRace18.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace18.TabIndex = 18;
+            this.numericUpDownRace18.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace1
             // 
@@ -4087,6 +4755,7 @@ namespace VMSEditor
             this.numericUpDownRace1.Name = "numericUpDownRace1";
             this.numericUpDownRace1.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace1.TabIndex = 1;
+            this.numericUpDownRace1.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace17
             // 
@@ -4099,6 +4768,7 @@ namespace VMSEditor
             this.numericUpDownRace17.Name = "numericUpDownRace17";
             this.numericUpDownRace17.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace17.TabIndex = 17;
+            this.numericUpDownRace17.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace2
             // 
@@ -4111,6 +4781,7 @@ namespace VMSEditor
             this.numericUpDownRace2.Name = "numericUpDownRace2";
             this.numericUpDownRace2.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace2.TabIndex = 2;
+            this.numericUpDownRace2.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace16
             // 
@@ -4123,6 +4794,7 @@ namespace VMSEditor
             this.numericUpDownRace16.Name = "numericUpDownRace16";
             this.numericUpDownRace16.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace16.TabIndex = 16;
+            this.numericUpDownRace16.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace3
             // 
@@ -4135,6 +4807,7 @@ namespace VMSEditor
             this.numericUpDownRace3.Name = "numericUpDownRace3";
             this.numericUpDownRace3.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace3.TabIndex = 3;
+            this.numericUpDownRace3.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace4
             // 
@@ -4147,6 +4820,7 @@ namespace VMSEditor
             this.numericUpDownRace4.Name = "numericUpDownRace4";
             this.numericUpDownRace4.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace4.TabIndex = 4;
+            this.numericUpDownRace4.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace14
             // 
@@ -4159,6 +4833,7 @@ namespace VMSEditor
             this.numericUpDownRace14.Name = "numericUpDownRace14";
             this.numericUpDownRace14.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace14.TabIndex = 14;
+            this.numericUpDownRace14.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace5
             // 
@@ -4171,6 +4846,7 @@ namespace VMSEditor
             this.numericUpDownRace5.Name = "numericUpDownRace5";
             this.numericUpDownRace5.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace5.TabIndex = 5;
+            this.numericUpDownRace5.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace13
             // 
@@ -4183,6 +4859,7 @@ namespace VMSEditor
             this.numericUpDownRace13.Name = "numericUpDownRace13";
             this.numericUpDownRace13.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace13.TabIndex = 13;
+            this.numericUpDownRace13.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace6
             // 
@@ -4195,6 +4872,7 @@ namespace VMSEditor
             this.numericUpDownRace6.Name = "numericUpDownRace6";
             this.numericUpDownRace6.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace6.TabIndex = 6;
+            this.numericUpDownRace6.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace12
             // 
@@ -4207,6 +4885,7 @@ namespace VMSEditor
             this.numericUpDownRace12.Name = "numericUpDownRace12";
             this.numericUpDownRace12.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace12.TabIndex = 12;
+            this.numericUpDownRace12.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace7
             // 
@@ -4219,6 +4898,7 @@ namespace VMSEditor
             this.numericUpDownRace7.Name = "numericUpDownRace7";
             this.numericUpDownRace7.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace7.TabIndex = 7;
+            this.numericUpDownRace7.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace11
             // 
@@ -4231,6 +4911,7 @@ namespace VMSEditor
             this.numericUpDownRace11.Name = "numericUpDownRace11";
             this.numericUpDownRace11.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace11.TabIndex = 11;
+            this.numericUpDownRace11.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace8
             // 
@@ -4243,6 +4924,7 @@ namespace VMSEditor
             this.numericUpDownRace8.Name = "numericUpDownRace8";
             this.numericUpDownRace8.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace8.TabIndex = 8;
+            this.numericUpDownRace8.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace10
             // 
@@ -4255,6 +4937,7 @@ namespace VMSEditor
             this.numericUpDownRace10.Name = "numericUpDownRace10";
             this.numericUpDownRace10.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace10.TabIndex = 10;
+            this.numericUpDownRace10.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace9
             // 
@@ -4267,6 +4950,7 @@ namespace VMSEditor
             this.numericUpDownRace9.Name = "numericUpDownRace9";
             this.numericUpDownRace9.Size = new System.Drawing.Size(84, 26);
             this.numericUpDownRace9.TabIndex = 9;
+            this.numericUpDownRace9.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // groupBox5
             // 
@@ -4286,566 +4970,6 @@ namespace VMSEditor
             this.groupBox5.TabIndex = 43;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Jewels";
-            // 
-            // checkBoxPearl
-            // 
-            this.checkBoxPearl.AutoSize = true;
-            this.checkBoxPearl.Location = new System.Drawing.Point(64, 34);
-            this.checkBoxPearl.Name = "checkBoxPearl";
-            this.checkBoxPearl.Size = new System.Drawing.Size(71, 24);
-            this.checkBoxPearl.TabIndex = 35;
-            this.checkBoxPearl.Text = "Pearl";
-            this.checkBoxPearl.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxEmerald
-            // 
-            this.checkBoxEmerald.AutoSize = true;
-            this.checkBoxEmerald.Location = new System.Drawing.Point(64, 206);
-            this.checkBoxEmerald.Name = "checkBoxEmerald";
-            this.checkBoxEmerald.Size = new System.Drawing.Size(94, 24);
-            this.checkBoxEmerald.TabIndex = 39;
-            this.checkBoxEmerald.Text = "Emerald";
-            this.checkBoxEmerald.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxRuby
-            // 
-            this.checkBoxRuby.AutoSize = true;
-            this.checkBoxRuby.Location = new System.Drawing.Point(64, 163);
-            this.checkBoxRuby.Name = "checkBoxRuby";
-            this.checkBoxRuby.Size = new System.Drawing.Size(72, 24);
-            this.checkBoxRuby.TabIndex = 38;
-            this.checkBoxRuby.Text = "Ruby";
-            this.checkBoxRuby.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxSapphire
-            // 
-            this.checkBoxSapphire.AutoSize = true;
-            this.checkBoxSapphire.Location = new System.Drawing.Point(64, 120);
-            this.checkBoxSapphire.Name = "checkBoxSapphire";
-            this.checkBoxSapphire.Size = new System.Drawing.Size(99, 24);
-            this.checkBoxSapphire.TabIndex = 37;
-            this.checkBoxSapphire.Text = "Sapphire";
-            this.checkBoxSapphire.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxAmethyst
-            // 
-            this.checkBoxAmethyst.AutoSize = true;
-            this.checkBoxAmethyst.Location = new System.Drawing.Point(64, 77);
-            this.checkBoxAmethyst.Name = "checkBoxAmethyst";
-            this.checkBoxAmethyst.Size = new System.Drawing.Size(102, 24);
-            this.checkBoxAmethyst.TabIndex = 36;
-            this.checkBoxAmethyst.Text = "Amethyst";
-            this.checkBoxAmethyst.UseVisualStyleBackColor = true;
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.BackColor = System.Drawing.Color.Transparent;
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(6, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1162, 36);
-            this.menuStrip1.TabIndex = 19;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openAVMSFileToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 32);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(257, 34);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.generateAVMIFileToolStripMenuItem,
-            this.japaneseHeaderToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 32);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // generateAVMIFileToolStripMenuItem
-            // 
-            this.generateAVMIFileToolStripMenuItem.Checked = true;
-            this.generateAVMIFileToolStripMenuItem.CheckOnClick = true;
-            this.generateAVMIFileToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.generateAVMIFileToolStripMenuItem.Name = "generateAVMIFileToolStripMenuItem";
-            this.generateAVMIFileToolStripMenuItem.Size = new System.Drawing.Size(289, 34);
-            this.generateAVMIFileToolStripMenuItem.Text = "Generate a VMI File";
-            this.generateAVMIFileToolStripMenuItem.ToolTipText = "Create a VMI file required by the Dreamcast browser and some emulators.";
-            // 
-            // japaneseHeaderToolStripMenuItem
-            // 
-            this.japaneseHeaderToolStripMenuItem.CheckOnClick = true;
-            this.japaneseHeaderToolStripMenuItem.Name = "japaneseHeaderToolStripMenuItem";
-            this.japaneseHeaderToolStripMenuItem.Size = new System.Drawing.Size(289, 34);
-            this.japaneseHeaderToolStripMenuItem.Text = "Use Japanese Headers";
-            this.japaneseHeaderToolStripMenuItem.ToolTipText = "Make output files compatible with the original Japanese version of SA1.";
-            // 
-            // statusStrip
-            // 
-            this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip.Location = new System.Drawing.Point(0, 553);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1162, 22);
-            this.statusStrip.SizingGrip = false;
-            this.statusStrip.TabIndex = 20;
-            // 
-            // listBoxDataSlots
-            // 
-            this.listBoxDataSlots.FormattingEnabled = true;
-            this.listBoxDataSlots.ItemHeight = 20;
-            this.listBoxDataSlots.Location = new System.Drawing.Point(12, 35);
-            this.listBoxDataSlots.Name = "listBoxDataSlots";
-            this.listBoxDataSlots.Size = new System.Drawing.Size(322, 504);
-            this.listBoxDataSlots.TabIndex = 21;
-            this.listBoxDataSlots.SelectedIndexChanged += new System.EventHandler(this.listBoxDataSlots_SelectedIndexChanged);
-            // 
-            // pictureBoxGarden
-            // 
-            this.pictureBoxGarden.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxGarden.Image = global::VMSEditor.Properties.Resources.ss_panel;
-            this.pictureBoxGarden.Location = new System.Drawing.Point(225, 52);
-            this.pictureBoxGarden.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBoxGarden.Name = "pictureBoxGarden";
-            this.pictureBoxGarden.Size = new System.Drawing.Size(94, 96);
-            this.pictureBoxGarden.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxGarden.TabIndex = 28;
-            this.pictureBoxGarden.TabStop = false;
-            // 
-            // pictureBoxMouth
-            // 
-            this.pictureBoxMouth.Location = new System.Drawing.Point(89, 207);
-            this.pictureBoxMouth.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBoxMouth.Name = "pictureBoxMouth";
-            this.pictureBoxMouth.Size = new System.Drawing.Size(96, 32);
-            this.pictureBoxMouth.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxMouth.TabIndex = 9;
-            this.pictureBoxMouth.TabStop = false;
-            // 
-            // pictureBoxEyeLeft
-            // 
-            this.pictureBoxEyeLeft.Location = new System.Drawing.Point(65, 133);
-            this.pictureBoxEyeLeft.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBoxEyeLeft.Name = "pictureBoxEyeLeft";
-            this.pictureBoxEyeLeft.Size = new System.Drawing.Size(48, 64);
-            this.pictureBoxEyeLeft.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxEyeLeft.TabIndex = 8;
-            this.pictureBoxEyeLeft.TabStop = false;
-            // 
-            // pictureBoxTail
-            // 
-            this.pictureBoxTail.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxTail.Location = new System.Drawing.Point(255, 392);
-            this.pictureBoxTail.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxTail.Name = "pictureBoxTail";
-            this.pictureBoxTail.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxTail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxTail.TabIndex = 79;
-            this.pictureBoxTail.TabStop = false;
-            // 
-            // pictureBoxFeet
-            // 
-            this.pictureBoxFeet.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFeet.Location = new System.Drawing.Point(255, 331);
-            this.pictureBoxFeet.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxFeet.Name = "pictureBoxFeet";
-            this.pictureBoxFeet.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFeet.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFeet.TabIndex = 78;
-            this.pictureBoxFeet.TabStop = false;
-            // 
-            // pictureBoxArms
-            // 
-            this.pictureBoxArms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxArms.Location = new System.Drawing.Point(255, 269);
-            this.pictureBoxArms.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxArms.Name = "pictureBoxArms";
-            this.pictureBoxArms.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxArms.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxArms.TabIndex = 77;
-            this.pictureBoxArms.TabStop = false;
-            // 
-            // pictureBoxWings
-            // 
-            this.pictureBoxWings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxWings.Location = new System.Drawing.Point(255, 208);
-            this.pictureBoxWings.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxWings.Name = "pictureBoxWings";
-            this.pictureBoxWings.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxWings.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxWings.TabIndex = 76;
-            this.pictureBoxWings.TabStop = false;
-            // 
-            // pictureBoxEars
-            // 
-            this.pictureBoxEars.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxEars.Location = new System.Drawing.Point(255, 146);
-            this.pictureBoxEars.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxEars.Name = "pictureBoxEars";
-            this.pictureBoxEars.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxEars.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxEars.TabIndex = 75;
-            this.pictureBoxEars.TabStop = false;
-            // 
-            // pictureBoxHeadBack
-            // 
-            this.pictureBoxHeadBack.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxHeadBack.Location = new System.Drawing.Point(255, 85);
-            this.pictureBoxHeadBack.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxHeadBack.Name = "pictureBoxHeadBack";
-            this.pictureBoxHeadBack.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxHeadBack.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxHeadBack.TabIndex = 74;
-            this.pictureBoxHeadBack.TabStop = false;
-            // 
-            // pictureBoxHeadFront
-            // 
-            this.pictureBoxHeadFront.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxHeadFront.Location = new System.Drawing.Point(255, 23);
-            this.pictureBoxHeadFront.Margin = new System.Windows.Forms.Padding(6);
-            this.pictureBoxHeadFront.Name = "pictureBoxHeadFront";
-            this.pictureBoxHeadFront.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxHeadFront.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxHeadFront.TabIndex = 73;
-            this.pictureBoxHeadFront.TabStop = false;
-            // 
-            // pictureBoxEvolution
-            // 
-            this.pictureBoxEvolution.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxEvolution.Location = new System.Drawing.Point(135, 43);
-            this.pictureBoxEvolution.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBoxEvolution.Name = "pictureBoxEvolution";
-            this.pictureBoxEvolution.Size = new System.Drawing.Size(224, 230);
-            this.pictureBoxEvolution.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxEvolution.TabIndex = 42;
-            this.pictureBoxEvolution.TabStop = false;
-            // 
-            // pictureBox12
-            // 
-            this.pictureBox12.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox12.Image = global::VMSEditor.Properties.Resources.icon_lion;
-            this.pictureBox12.Location = new System.Drawing.Point(9, 32);
-            this.pictureBox12.Name = "pictureBox12";
-            this.pictureBox12.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox12.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox12.TabIndex = 19;
-            this.pictureBox12.TabStop = false;
-            // 
-            // pictureBox11
-            // 
-            this.pictureBox11.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox11.Image = global::VMSEditor.Properties.Resources.icon_gori;
-            this.pictureBox11.Location = new System.Drawing.Point(9, 82);
-            this.pictureBox11.Name = "pictureBox11";
-            this.pictureBox11.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox11.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox11.TabIndex = 21;
-            this.pictureBox11.TabStop = false;
-            // 
-            // pictureBox10
-            // 
-            this.pictureBox10.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox10.Image = global::VMSEditor.Properties.Resources.icon_zou;
-            this.pictureBox10.Location = new System.Drawing.Point(9, 135);
-            this.pictureBox10.Name = "pictureBox10";
-            this.pictureBox10.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox10.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox10.TabIndex = 23;
-            this.pictureBox10.TabStop = false;
-            // 
-            // pictureBox9
-            // 
-            this.pictureBox9.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox9.Image = global::VMSEditor.Properties.Resources.icon_suka;
-            this.pictureBox9.Location = new System.Drawing.Point(15, 135);
-            this.pictureBox9.Name = "pictureBox9";
-            this.pictureBox9.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox9.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox9.TabIndex = 17;
-            this.pictureBox9.TabStop = false;
-            // 
-            // pictureBox7
-            // 
-            this.pictureBox7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox7.Image = global::VMSEditor.Properties.Resources.icon_mog;
-            this.pictureBox7.Location = new System.Drawing.Point(15, 25);
-            this.pictureBox7.Name = "pictureBox7";
-            this.pictureBox7.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox7.TabIndex = 13;
-            this.pictureBox7.TabStop = false;
-            // 
-            // pictureBox8
-            // 
-            this.pictureBox8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox8.Image = global::VMSEditor.Properties.Resources.icon_koa;
-            this.pictureBox8.Location = new System.Drawing.Point(15, 82);
-            this.pictureBox8.Name = "pictureBox8";
-            this.pictureBox8.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox8.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox8.TabIndex = 15;
-            this.pictureBox8.TabStop = false;
-            // 
-            // pictureBox4
-            // 
-            this.pictureBox4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox4.Image = global::VMSEditor.Properties.Resources.icon_goma;
-            this.pictureBox4.Location = new System.Drawing.Point(15, 25);
-            this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox4.TabIndex = 10;
-            this.pictureBox4.TabStop = false;
-            // 
-            // pictureBox5
-            // 
-            this.pictureBox5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox5.Image = global::VMSEditor.Properties.Resources.icon_rak;
-            this.pictureBox5.Location = new System.Drawing.Point(15, 80);
-            this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox5.TabIndex = 11;
-            this.pictureBox5.TabStop = false;
-            // 
-            // pictureBox6
-            // 
-            this.pictureBox6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox6.Image = global::VMSEditor.Properties.Resources.icon_pen;
-            this.pictureBox6.Location = new System.Drawing.Point(15, 135);
-            this.pictureBox6.Name = "pictureBox6";
-            this.pictureBox6.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox6.TabIndex = 12;
-            this.pictureBox6.TabStop = false;
-            // 
-            // pictureBox13
-            // 
-            this.pictureBox13.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox13.Image = global::VMSEditor.Properties.Resources.icon_wara;
-            this.pictureBox13.Location = new System.Drawing.Point(15, 135);
-            this.pictureBox13.Name = "pictureBox13";
-            this.pictureBox13.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox13.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox13.TabIndex = 29;
-            this.pictureBox13.TabStop = false;
-            // 
-            // pictureBox15
-            // 
-            this.pictureBox15.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox15.Image = global::VMSEditor.Properties.Resources.icon_banb;
-            this.pictureBox15.Location = new System.Drawing.Point(15, 25);
-            this.pictureBox15.Name = "pictureBox15";
-            this.pictureBox15.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox15.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox15.TabIndex = 25;
-            this.pictureBox15.TabStop = false;
-            // 
-            // pictureBox14
-            // 
-            this.pictureBox14.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox14.Image = global::VMSEditor.Properties.Resources.icon_usa;
-            this.pictureBox14.Location = new System.Drawing.Point(15, 80);
-            this.pictureBox14.Name = "pictureBox14";
-            this.pictureBox14.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox14.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox14.TabIndex = 27;
-            this.pictureBox14.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox2.Image = global::VMSEditor.Properties.Resources.icon_oum;
-            this.pictureBox2.Location = new System.Drawing.Point(15, 82);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 8;
-            this.pictureBox2.TabStop = false;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox1.Image = global::VMSEditor.Properties.Resources.icon_kuj;
-            this.pictureBox1.Location = new System.Drawing.Point(15, 25);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
-            // 
-            // pictureBox3
-            // 
-            this.pictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox3.Image = global::VMSEditor.Properties.Resources.icon_tuba;
-            this.pictureBox3.Location = new System.Drawing.Point(15, 135);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(46, 47);
-            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox3.TabIndex = 9;
-            this.pictureBox3.TabStop = false;
-            // 
-            // pictureBoxFruit7
-            // 
-            this.pictureBoxFruit7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit7.Location = new System.Drawing.Point(153, 402);
-            this.pictureBoxFruit7.Name = "pictureBoxFruit7";
-            this.pictureBoxFruit7.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit7.TabIndex = 20;
-            this.pictureBoxFruit7.TabStop = false;
-            // 
-            // pictureBoxFruit6
-            // 
-            this.pictureBoxFruit6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit6.Location = new System.Drawing.Point(153, 346);
-            this.pictureBoxFruit6.Name = "pictureBoxFruit6";
-            this.pictureBoxFruit6.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit6.TabIndex = 19;
-            this.pictureBoxFruit6.TabStop = false;
-            // 
-            // pictureBoxFruit5
-            // 
-            this.pictureBoxFruit5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit5.Location = new System.Drawing.Point(153, 291);
-            this.pictureBoxFruit5.Name = "pictureBoxFruit5";
-            this.pictureBoxFruit5.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit5.TabIndex = 18;
-            this.pictureBoxFruit5.TabStop = false;
-            // 
-            // pictureBoxFruit4
-            // 
-            this.pictureBoxFruit4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit4.Location = new System.Drawing.Point(153, 235);
-            this.pictureBoxFruit4.Name = "pictureBoxFruit4";
-            this.pictureBoxFruit4.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit4.TabIndex = 17;
-            this.pictureBoxFruit4.TabStop = false;
-            // 
-            // pictureBoxFruit3
-            // 
-            this.pictureBoxFruit3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit3.Location = new System.Drawing.Point(153, 180);
-            this.pictureBoxFruit3.Name = "pictureBoxFruit3";
-            this.pictureBoxFruit3.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit3.TabIndex = 16;
-            this.pictureBoxFruit3.TabStop = false;
-            // 
-            // pictureBoxFruit2
-            // 
-            this.pictureBoxFruit2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit2.Location = new System.Drawing.Point(153, 125);
-            this.pictureBoxFruit2.Name = "pictureBoxFruit2";
-            this.pictureBoxFruit2.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit2.TabIndex = 15;
-            this.pictureBoxFruit2.TabStop = false;
-            // 
-            // pictureBoxFruit1
-            // 
-            this.pictureBoxFruit1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit1.Location = new System.Drawing.Point(153, 69);
-            this.pictureBoxFruit1.Name = "pictureBoxFruit1";
-            this.pictureBoxFruit1.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit1.TabIndex = 14;
-            this.pictureBoxFruit1.TabStop = false;
-            // 
-            // pictureBoxFruit0
-            // 
-            this.pictureBoxFruit0.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit0.Location = new System.Drawing.Point(153, 14);
-            this.pictureBoxFruit0.Name = "pictureBoxFruit0";
-            this.pictureBoxFruit0.Size = new System.Drawing.Size(46, 47);
-            this.pictureBoxFruit0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxFruit0.TabIndex = 13;
-            this.pictureBoxFruit0.TabStop = false;
-            // 
-            // pictureBox20
-            // 
-            this.pictureBox20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox20.Image = global::VMSEditor.Properties.Resources.r_big3;
-            this.pictureBox20.Location = new System.Drawing.Point(8, 25);
-            this.pictureBox20.Name = "pictureBox20";
-            this.pictureBox20.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox20.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox20.TabIndex = 62;
-            this.pictureBox20.TabStop = false;
-            // 
-            // pictureBox21
-            // 
-            this.pictureBox21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox21.Image = global::VMSEditor.Properties.Resources.r_e102;
-            this.pictureBox21.Location = new System.Drawing.Point(8, 25);
-            this.pictureBox21.Name = "pictureBox21";
-            this.pictureBox21.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox21.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox21.TabIndex = 63;
-            this.pictureBox21.TabStop = false;
-            // 
-            // pictureBox18
-            // 
-            this.pictureBox18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox18.Image = global::VMSEditor.Properties.Resources.r_nuckles2;
-            this.pictureBox18.Location = new System.Drawing.Point(8, 25);
-            this.pictureBox18.Name = "pictureBox18";
-            this.pictureBox18.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox18.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox18.TabIndex = 59;
-            this.pictureBox18.TabStop = false;
-            // 
-            // pictureBox17
-            // 
-            this.pictureBox17.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox17.Image = global::VMSEditor.Properties.Resources.r_tailes2;
-            this.pictureBox17.Location = new System.Drawing.Point(8, 25);
-            this.pictureBox17.Name = "pictureBox17";
-            this.pictureBox17.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox17.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox17.TabIndex = 57;
-            this.pictureBox17.TabStop = false;
-            // 
-            // pictureBox19
-            // 
-            this.pictureBox19.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox19.Image = global::VMSEditor.Properties.Resources.r_amy;
-            this.pictureBox19.Location = new System.Drawing.Point(8, 25);
-            this.pictureBox19.Name = "pictureBox19";
-            this.pictureBox19.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox19.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox19.TabIndex = 61;
-            this.pictureBox19.TabStop = false;
-            // 
-            // pictureBox16
-            // 
-            this.pictureBox16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox16.Image = global::VMSEditor.Properties.Resources.r_sonic2;
-            this.pictureBox16.Location = new System.Drawing.Point(8, 25);
-            this.pictureBox16.Name = "pictureBox16";
-            this.pictureBox16.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox16.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox16.TabIndex = 56;
-            this.pictureBox16.TabStop = false;
             // 
             // pictureBox26
             // 
@@ -4868,6 +4992,61 @@ namespace VMSEditor
             this.pictureBox22.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox22.TabIndex = 40;
             this.pictureBox22.TabStop = false;
+            // 
+            // checkBoxPearl
+            // 
+            this.checkBoxPearl.AutoSize = true;
+            this.checkBoxPearl.Location = new System.Drawing.Point(64, 34);
+            this.checkBoxPearl.Name = "checkBoxPearl";
+            this.checkBoxPearl.Size = new System.Drawing.Size(71, 24);
+            this.checkBoxPearl.TabIndex = 35;
+            this.checkBoxPearl.Text = "Pearl";
+            this.checkBoxPearl.UseVisualStyleBackColor = true;
+            this.checkBoxPearl.Click += new System.EventHandler(this.checkBoxPearl_Click);
+            // 
+            // checkBoxEmerald
+            // 
+            this.checkBoxEmerald.AutoSize = true;
+            this.checkBoxEmerald.Location = new System.Drawing.Point(64, 206);
+            this.checkBoxEmerald.Name = "checkBoxEmerald";
+            this.checkBoxEmerald.Size = new System.Drawing.Size(94, 24);
+            this.checkBoxEmerald.TabIndex = 39;
+            this.checkBoxEmerald.Text = "Emerald";
+            this.checkBoxEmerald.UseVisualStyleBackColor = true;
+            this.checkBoxEmerald.Click += new System.EventHandler(this.checkBoxPearl_Click);
+            // 
+            // checkBoxRuby
+            // 
+            this.checkBoxRuby.AutoSize = true;
+            this.checkBoxRuby.Location = new System.Drawing.Point(64, 163);
+            this.checkBoxRuby.Name = "checkBoxRuby";
+            this.checkBoxRuby.Size = new System.Drawing.Size(72, 24);
+            this.checkBoxRuby.TabIndex = 38;
+            this.checkBoxRuby.Text = "Ruby";
+            this.checkBoxRuby.UseVisualStyleBackColor = true;
+            this.checkBoxRuby.Click += new System.EventHandler(this.checkBoxPearl_Click);
+            // 
+            // checkBoxSapphire
+            // 
+            this.checkBoxSapphire.AutoSize = true;
+            this.checkBoxSapphire.Location = new System.Drawing.Point(64, 120);
+            this.checkBoxSapphire.Name = "checkBoxSapphire";
+            this.checkBoxSapphire.Size = new System.Drawing.Size(99, 24);
+            this.checkBoxSapphire.TabIndex = 37;
+            this.checkBoxSapphire.Text = "Sapphire";
+            this.checkBoxSapphire.UseVisualStyleBackColor = true;
+            this.checkBoxSapphire.Click += new System.EventHandler(this.checkBoxPearl_Click);
+            // 
+            // checkBoxAmethyst
+            // 
+            this.checkBoxAmethyst.AutoSize = true;
+            this.checkBoxAmethyst.Location = new System.Drawing.Point(64, 77);
+            this.checkBoxAmethyst.Name = "checkBoxAmethyst";
+            this.checkBoxAmethyst.Size = new System.Drawing.Size(102, 24);
+            this.checkBoxAmethyst.TabIndex = 36;
+            this.checkBoxAmethyst.Text = "Amethyst";
+            this.checkBoxAmethyst.UseVisualStyleBackColor = true;
+            this.checkBoxAmethyst.Click += new System.EventHandler(this.checkBoxPearl_Click);
             // 
             // pictureBox25
             // 
@@ -4902,11 +5081,36 @@ namespace VMSEditor
             this.pictureBox24.TabIndex = 42;
             this.pictureBox24.TabStop = false;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.BackColor = System.Drawing.Color.Transparent;
+            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1162, 33);
+            this.menuStrip1.TabIndex = 19;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openAVMSFileToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
             // openAVMSFileToolStripMenuItem
             // 
             this.openAVMSFileToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.open;
             this.openAVMSFileToolStripMenuItem.Name = "openAVMSFileToolStripMenuItem";
-            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(257, 34);
+            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
             this.openAVMSFileToolStripMenuItem.Text = "Open a VMS File...";
             this.openAVMSFileToolStripMenuItem.Click += new System.EventHandler(this.openAVMSFileToolStripMenuItem_Click);
             // 
@@ -4919,7 +5123,7 @@ namespace VMSEditor
             this.chaoUploadDataToolStripMenuItem});
             this.saveAsToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(257, 34);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
             this.saveAsToolStripMenuItem.Text = "Save as";
             // 
             // chaoDownloadDataToolStripMenuItem
@@ -4961,105 +5165,100 @@ namespace VMSEditor
             this.chaoUploadDataToolStripMenuItem.ToolTipText = "Chao data that can be uploaded using the browser. Can only contain one Chao.";
             this.chaoUploadDataToolStripMenuItem.Visible = false;
             // 
-            // pictureBoxEyeRight
+            // exitToolStripMenuItem
             // 
-            this.pictureBoxEyeRight.Location = new System.Drawing.Point(160, 133);
-            this.pictureBoxEyeRight.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBoxEyeRight.Name = "pictureBoxEyeRight";
-            this.pictureBoxEyeRight.Size = new System.Drawing.Size(48, 64);
-            this.pictureBoxEyeRight.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxEyeRight.TabIndex = 10;
-            this.pictureBoxEyeRight.TabStop = false;
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // numericUpDownID
+            // editToolStripMenuItem
             // 
-            this.numericUpDownID.Hexadecimal = true;
-            this.numericUpDownID.Location = new System.Drawing.Point(88, 100);
-            this.numericUpDownID.Name = "numericUpDownID";
-            this.numericUpDownID.Size = new System.Drawing.Size(132, 26);
-            this.numericUpDownID.TabIndex = 55;
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.generateAVMIFileToolStripMenuItem,
+            this.japaneseHeaderToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
+            this.editToolStripMenuItem.Text = "Edit";
             // 
-            // numericUpDown_ColorFlags
+            // generateAVMIFileToolStripMenuItem
             // 
-            this.numericUpDown_ColorFlags.Enabled = false;
-            this.numericUpDown_ColorFlags.Hexadecimal = true;
-            this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(67, 147);
-            this.numericUpDown_ColorFlags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
-            this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 26);
-            this.numericUpDown_ColorFlags.TabIndex = 73;
+            this.generateAVMIFileToolStripMenuItem.Checked = true;
+            this.generateAVMIFileToolStripMenuItem.CheckOnClick = true;
+            this.generateAVMIFileToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.generateAVMIFileToolStripMenuItem.Name = "generateAVMIFileToolStripMenuItem";
+            this.generateAVMIFileToolStripMenuItem.Size = new System.Drawing.Size(289, 34);
+            this.generateAVMIFileToolStripMenuItem.Text = "Generate a VMI File";
+            this.generateAVMIFileToolStripMenuItem.ToolTipText = "Create a VMI file required by the Dreamcast browser and some emulators.";
             // 
-            // numericUpDownMemoriesID_7
+            // japaneseHeaderToolStripMenuItem
             // 
-            this.numericUpDownMemoriesID_7.Hexadecimal = true;
-            this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
-            this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_7.TabIndex = 1;
-            this.numericUpDownMemoriesID_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.japaneseHeaderToolStripMenuItem.CheckOnClick = true;
+            this.japaneseHeaderToolStripMenuItem.Name = "japaneseHeaderToolStripMenuItem";
+            this.japaneseHeaderToolStripMenuItem.Size = new System.Drawing.Size(289, 34);
+            this.japaneseHeaderToolStripMenuItem.Text = "Use Japanese Headers";
+            this.japaneseHeaderToolStripMenuItem.ToolTipText = "Make output files compatible with the original Japanese version of SA1.";
             // 
-            // numericUpDownMemoriesID_6
+            // statusStrip
             // 
-            this.numericUpDownMemoriesID_6.Hexadecimal = true;
-            this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
-            this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_6.TabIndex = 1;
-            this.numericUpDownMemoriesID_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabelFilename,
+            this.toolStripStatusLabelHint});
+            this.statusStrip.Location = new System.Drawing.Point(0, 543);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
+            this.statusStrip.Size = new System.Drawing.Size(1162, 32);
+            this.statusStrip.SizingGrip = false;
+            this.statusStrip.TabIndex = 20;
             // 
-            // numericUpDownMemoriesID_5
+            // toolStripStatusLabelFilename
             // 
-            this.numericUpDownMemoriesID_5.Hexadecimal = true;
-            this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
-            this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_5.TabIndex = 1;
-            this.numericUpDownMemoriesID_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.toolStripStatusLabelFilename.Name = "toolStripStatusLabelFilename";
+            this.toolStripStatusLabelFilename.Size = new System.Drawing.Size(124, 25);
+            this.toolStripStatusLabelFilename.Text = "No file loaded";
             // 
-            // numericUpDownMemoriesID_4
+            // toolStripStatusLabelHint
             // 
-            this.numericUpDownMemoriesID_4.Hexadecimal = true;
-            this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
-            this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_4.TabIndex = 1;
-            this.numericUpDownMemoriesID_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.toolStripStatusLabelHint.Name = "toolStripStatusLabelHint";
+            this.toolStripStatusLabelHint.Size = new System.Drawing.Size(285, 25);
+            this.toolStripStatusLabelHint.Text = "Click an item to see its description.";
             // 
-            // numericUpDownMemoriesID_3
+            // listBoxDataSlots
             // 
-            this.numericUpDownMemoriesID_3.Hexadecimal = true;
-            this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
-            this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_3.TabIndex = 1;
-            this.numericUpDownMemoriesID_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.listBoxDataSlots.FormattingEnabled = true;
+            this.listBoxDataSlots.ItemHeight = 20;
+            this.listBoxDataSlots.Location = new System.Drawing.Point(12, 35);
+            this.listBoxDataSlots.Name = "listBoxDataSlots";
+            this.listBoxDataSlots.Size = new System.Drawing.Size(322, 504);
+            this.listBoxDataSlots.TabIndex = 21;
+            this.listBoxDataSlots.Click += new System.EventHandler(this.listBoxDataSlots_Click);
+            this.listBoxDataSlots.SelectedIndexChanged += new System.EventHandler(this.listBoxDataSlots_SelectedIndexChanged);
             // 
-            // numericUpDownMemoriesID_2
+            // helpToolStripMenuItem
             // 
-            this.numericUpDownMemoriesID_2.Hexadecimal = true;
-            this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
-            this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_2.TabIndex = 1;
-            this.numericUpDownMemoriesID_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.chaoEditorHelpToolStripMenuItem,
+            this.reportABugToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
+            this.helpToolStripMenuItem.Text = "Help";
             // 
-            // numericUpDownMemoriesID_1
+            // chaoEditorHelpToolStripMenuItem
             // 
-            this.numericUpDownMemoriesID_1.Hexadecimal = true;
-            this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
-            this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_1.TabIndex = 1;
-            this.numericUpDownMemoriesID_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.chaoEditorHelpToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.help;
+            this.chaoEditorHelpToolStripMenuItem.Name = "chaoEditorHelpToolStripMenuItem";
+            this.chaoEditorHelpToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.chaoEditorHelpToolStripMenuItem.Text = "Chao Editor Help";
+            this.chaoEditorHelpToolStripMenuItem.Click += new System.EventHandler(this.chaoEditorHelpToolStripMenuItem_Click);
             // 
-            // numericUpDownMemoriesID_0
+            // reportABugToolStripMenuItem
             // 
-            this.numericUpDownMemoriesID_0.Hexadecimal = true;
-            this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
-            this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_0.TabIndex = 1;
-            this.numericUpDownMemoriesID_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.reportABugToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.bug;
+            this.reportABugToolStripMenuItem.Name = "reportABugToolStripMenuItem";
+            this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.reportABugToolStripMenuItem.Text = "Issue Tracker";
+            this.reportABugToolStripMenuItem.Click += new System.EventHandler(this.reportABugToolStripMenuItem_Click);
             // 
             // EditorChao
             // 
@@ -5100,21 +5299,34 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.trackBarHappy)).EndInit();
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGarden)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZ)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).EndInit();
             this.tabPageAppearance.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeRight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMouth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeLeft)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKindness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAggressive)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCurious)).EndInit();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFeet)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxArms)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWings)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEars)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadBack)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadFront)).EndInit();
             this.tabPageStats.ResumeLayout(false);
             this.groupBox19.ResumeLayout(false);
             this.groupBox19.PerformLayout();
@@ -5132,6 +5344,7 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPower)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEvolution)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarMagnitude)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarRunPower)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSwimFly)).EndInit();
@@ -5154,73 +5367,110 @@ namespace VMSEditor
             this.tabPageInventory.ResumeLayout(false);
             this.groupBox25.ResumeLayout(false);
             this.groupBox25.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox12)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).EndInit();
             this.groupBox29.ResumeLayout(false);
             this.groupBox29.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).EndInit();
             this.groupBox26.ResumeLayout(false);
             this.groupBox26.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
             this.groupBox28.ResumeLayout(false);
             this.groupBox28.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox13)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox15)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox14)).EndInit();
             this.groupBox27.ResumeLayout(false);
             this.groupBox27.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.groupBox4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit0)).EndInit();
             this.tabPageCharacters.ResumeLayout(false);
             this.groupBox23.ResumeLayout(false);
             this.groupBox23.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondBig)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox20)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetBig)).EndInit();
             this.groupBox24.ResumeLayout(false);
             this.groupBox24.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox21)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondGamma)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetGamma)).EndInit();
             this.groupBox21.ResumeLayout(false);
             this.groupBox21.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox18)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetKnuckles)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondKnuckles)).EndInit();
             this.groupBox20.ResumeLayout(false);
             this.groupBox20.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox17)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetTails)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondTails)).EndInit();
             this.groupBox22.ResumeLayout(false);
             this.groupBox22.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox19)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondAmy)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetAmy)).EndInit();
             this.groupBox14.ResumeLayout(false);
             this.groupBox14.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMeetSonic)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBondSonic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox16)).EndInit();
             this.tabPageChaoMemories.ResumeLayout(false);
             this.tabPageChaoMemories.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesPage)).EndInit();
             this.groupBoxMemories_7.ResumeLayout(false);
             this.groupBoxMemories_7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_7)).EndInit();
             this.groupBoxMemories_6.ResumeLayout(false);
             this.groupBoxMemories_6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_6)).EndInit();
             this.groupBoxMemories_5.ResumeLayout(false);
             this.groupBoxMemories_5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_5)).EndInit();
             this.groupBoxMemories_4.ResumeLayout(false);
             this.groupBoxMemories_4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_4)).EndInit();
             this.groupBoxMemories_3.ResumeLayout(false);
             this.groupBoxMemories_3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_3)).EndInit();
             this.groupBoxMemories_2.ResumeLayout(false);
             this.groupBoxMemories_2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_2)).EndInit();
             this.groupBoxMemories_1.ResumeLayout(false);
             this.groupBoxMemories_1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_1)).EndInit();
             this.groupBoxMemories_0.ResumeLayout(false);
             this.groupBoxMemories_0.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_0)).EndInit();
             this.tabPageRace.ResumeLayout(false);
@@ -5251,64 +5501,15 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRace9)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGarden)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMouth)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeLeft)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFeet)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxArms)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWings)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEars)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadBack)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeadFront)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEvolution)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox12)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox11)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox10)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox13)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox15)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox14)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxFruit0)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox20)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox21)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox18)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox17)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox19)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox16)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox26)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox22)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox25)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox23)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox24)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxEyeRight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5689,5 +5890,10 @@ namespace VMSEditor
 		private System.Windows.Forms.PictureBox pictureBoxGarden;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.PictureBox pictureBoxEyeRight;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFilename;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelHint;
+		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem chaoEditorHelpToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem reportABugToolStripMenuItem;
 	}
 }
