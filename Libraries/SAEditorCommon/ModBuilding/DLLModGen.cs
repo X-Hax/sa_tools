@@ -475,5 +475,64 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				writer.WriteLine("extern \"C\" __declspec(dllexport) const ModInfo {0}ModInfo = {{ ModLoaderVer }};", SA2 ? "SA2" : "SADX");
 			}
 		}
-	}
+
+        internal static List<string> GetLabels(this LandTable land)
+        {
+            List<string> labels = new List<string>() { land.Name };
+            if (land.COLName != null)
+            {
+                labels.Add(land.COLName);
+                foreach (COL col in land.COL)
+                    if (col.Model != null)
+                        labels.AddRange(col.Model.GetLabels());
+            }
+            if (land.AnimName != null)
+            {
+                labels.Add(land.AnimName);
+                foreach (GeoAnimData gan in land.Anim)
+                {
+                    if (gan.Model != null)
+                        labels.AddRange(gan.Model.GetLabels());
+                    if (gan.Animation != null)
+                        labels.Add(gan.Animation.Name);
+                }
+            }
+            return labels;
+        }
+
+        internal static List<string> GetLabels(this NJS_OBJECT obj)
+        {
+            List<string> labels = new List<string>() { obj.Name };
+            if (obj.Attach != null)
+                labels.AddRange(obj.Attach.GetLabels());
+            if (obj.Children != null)
+                foreach (NJS_OBJECT o in obj.Children)
+                    labels.AddRange(o.GetLabels());
+            return labels;
+        }
+
+        internal static List<string> GetLabels(this Attach att)
+        {
+            List<string> labels = new List<string>() { att.Name };
+            if (att is BasicAttach bas)
+            {
+                if (bas.VertexName != null)
+                    labels.Add(bas.VertexName);
+                if (bas.NormalName != null)
+                    labels.Add(bas.NormalName);
+                if (bas.MaterialName != null)
+                    labels.Add(bas.MaterialName);
+                if (bas.MeshName != null)
+                    labels.Add(bas.MeshName);
+            }
+            else if (att is ChunkAttach cnk)
+            {
+                if (cnk.VertexName != null)
+                    labels.Add(cnk.VertexName);
+                if (cnk.PolyName != null)
+                    labels.Add(cnk.PolyName);
+            }
+            return labels;
+        }
+    }
 }

@@ -294,9 +294,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 		}
 
 		public static SplitTools.IniData LoadMultiINI(List<string> filename,
-			ref Dictionary<string, bool> defaultExportState)
+			ref Dictionary<string, bool> defaultExportState, bool all)
 		{
-			defaultExportState.Clear();
 			SplitTools.IniData newiniData = new SplitTools.IniData();
 			Dictionary<string, SplitTools.FileInfo> curItems = new Dictionary<string, SplitTools.FileInfo>();
 
@@ -308,17 +307,24 @@ namespace SAModel.SAEditorCommon.StructConverter
 
 				foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 				{
-					CheckItems(item, iniData, ref defaultExportState);
-
-					curItems.Add(item.Key, item.Value);
+                    if (all)
+                    {
+                        if (defaultExportState.ContainsKey(item.Key) && defaultExportState[item.Key] == true)
+                            curItems.Add(item.Key, item.Value);
+                    }
+                    else
+                    {
+                        CheckItems(item, iniData, ref defaultExportState);
+                        curItems.Add(item.Key, item.Value);
+                    }
 				}
 			}
 			newiniData.Files = curItems;
 			return newiniData;
 		}
 
-		public static void ExportINI(SplitTools.IniData iniData,
-			Dictionary<string, bool> itemsToExport, string fileName)
+        public static void ExportINI(SplitTools.IniData iniData,
+            Dictionary<string, bool> itemsToExport, string fileName)
 		{
 			string dstfol = Path.GetDirectoryName(fileName);
 
@@ -790,7 +796,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 								for (int j = 0; j < list.Length; j++)
 								{
 									NJS_OBJECT obj = new ModelFile(Path.Combine(path,
-										j.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl")).Model;
+										list[j].Filename)).Model;
 									obj.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, objs);
 									writer.WriteLine();
 									mdls.Add(obj.Name);
@@ -1147,5 +1153,16 @@ namespace SAModel.SAEditorCommon.StructConverter
 			foreach (System.IO.FileInfo fil in src.GetFiles())
 				fil.CopyTo(Path.Combine(dst, fil.Name), true);
 		}
-	}
+
+        public static string MakeIdentifier(this string name)
+        {
+            StringBuilder result = new StringBuilder();
+            foreach (char item in name)
+                if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
+                    result.Append(item);
+            if (result[0] >= '0' & result[0] <= '9')
+                result.Insert(0, '_');
+            return result.ToString();
+        }
+    }
 }

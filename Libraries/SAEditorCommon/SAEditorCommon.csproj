@@ -49,9 +49,6 @@
       <HintPath>..\..\Dependencies\NvTriStripDotNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Ookii.Dialogs.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Ookii.Dialogs.Wpf.3.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -85,23 +82,11 @@
     <Compile Include="DataTypes\LevelItem.cs" />
     <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
-    <Compile Include="DLLModGenerator\DLLModGen.cs" />
-    <Compile Include="DLLModGenerator\DLLModGenUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DLLModGenerator\DLLModGenUI.Designer.cs">
-      <DependentUpon>DLLModGenUI.cs</DependentUpon>
-    </Compile>
+    <Compile Include="ModBuilding\DLLModGen.cs" />
     <Compile Include="FolderBrowser\FolderSelectDialog.cs" />
     <Compile Include="FolderBrowser\Reflector.cs" />
     <Compile Include="Import\AssimpStuff.cs" />
     <Compile Include="IniData.cs" />
-    <Compile Include="ManualBuildWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ManualBuildWindow.Designer.cs">
-      <DependentUpon>ManualBuildWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="ModelConversion.cs" />
     <Compile Include="ModManagement\LoaderInfo.cs" />
     <Compile Include="ModManagement\ModInfo.cs" />
@@ -117,13 +102,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="StructConverter\StructConverter.cs" />
-    <Compile Include="StructConverter\StructConverterUI.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StructConverter\StructConverterUI.Designer.cs">
-      <DependentUpon>StructConverterUI.cs</DependentUpon>
-    </Compile>
+    <Compile Include="ModBuilding\StructConverter.cs" />
     <Compile Include="UI\ActionInputCollector.cs" />
     <Compile Include="UI\ActionKeyMapping.cs" />
     <Compile Include="UI\ActionMappingList.cs" />
@@ -257,15 +236,6 @@
     <Compile Include="ProjectManagement\LevelManagement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DLLModGenerator\DLLModGenUI.resx">
-      <DependentUpon>DLLModGenUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ManualBuildWindow.resx">
-      <DependentUpon>ManualBuildWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="StructConverter\StructConverterUI.resx">
-      <DependentUpon>StructConverterUI.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UI\ActionMapTest.resx">
       <DependentUpon>ActionMapTest.cs</DependentUpon>
     </EmbeddedResource>
