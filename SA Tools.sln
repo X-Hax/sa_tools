@@ -115,6 +115,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraGag.Compression.Prs", "L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "buildSATools", "CommandLine\buildSATools\buildSATools.csproj", "{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLTool", "SA1Tools\PLTool\PLTool.csproj", "{22748C6D-2D50-483A-9878-A48C76CF8CD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -310,6 +312,8 @@ Global
 		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -359,6 +363,7 @@ Global
 		{27223DD0-71BC-4D77-90AB-6E6FBB475B34} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{EC8BB2B3-1975-41B9-8D59-3A6403271112} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
+		{22748C6D-2D50-483A-9878-A48C76CF8CD8} = {DDB073E1-1CF4-42AA-9E0D-0C7F27261291}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A67C9CC3-1711-423D-BF49-9228EB5E90B0}
