@@ -136,7 +136,7 @@ namespace SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			if (Environment.Is64BitOperatingSystem)
+			if (Environment.Is64BitProcess)
 				Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
 			else
 				Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
