@@ -242,7 +242,7 @@ namespace PLTool
 
         private void RefreshStatus()
         {
-            StatusPaletteIndices.Text = isSpecular ? "Specular " : "Diffuse " + selectedPaletteIndex.ToString() + " / Color " + selectedColorIndex.ToString();
+            StatusPaletteIndices.Text = (isSpecular ? "Specular " : "Diffuse ") + selectedPaletteIndex.ToString() + " / Color " + selectedColorIndex.ToString();
             StatusR.Text = "R" + currentPLFile[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0].R.ToString("D3");
             StatusG.Text = "G" + currentPLFile[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0].G.ToString("D3");
             StatusB.Text = "B" + currentPLFile[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0].B.ToString("D3");
