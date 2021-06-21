@@ -717,6 +717,7 @@ namespace SAToolsHub
 			{
 				openProject(ProjectFunctions.openProjectFileString(newProjFile));
 				projXML = newProjFile;
+				newProjFile = null;
 			}
 		}
 
