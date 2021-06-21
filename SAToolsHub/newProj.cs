@@ -448,6 +448,7 @@ namespace SAToolsHub
 			{
                 case "SA1":
                 case "SADXGCP":
+                case "SADXGCR":
                     progress.SetTask("Finalizing SALVL Supported Setup");
                     File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
                     File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);

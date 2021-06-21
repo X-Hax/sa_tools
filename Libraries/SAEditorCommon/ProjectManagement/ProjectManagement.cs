@@ -152,6 +152,9 @@ namespace SAEditorCommon.ProjectManagement
                 case "SADXGCP":
                     hashes.Add("9e13830a8b3d52d0131fc53767daa820");
                     break;
+                case "SADXGCR":
+                    hashes.Add("03360a73c58326c41bfcc0b720cbfa45");
+                    break;       
                 case "SADX360":
 					hashes.Add("e1f01f48442cf711e2206370c60b7218");
 					break;
