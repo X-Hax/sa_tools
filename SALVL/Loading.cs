@@ -165,7 +165,7 @@ namespace SAModel.SALVL
         /// Loads all of the textures specified into the scene.
         /// </summary>
         /// <param name="textureEntries">The texture entries to load.</param>
-        /// <param name="systemPath">The game's system path.</param>
+        /// <param name="systemPath">The mod's system path.</param>
         private void LoadTextureList(IEnumerable<TextureListEntry> textureEntries, string systemPath)
         {
             foreach (TextureListEntry entry in textureEntries)
@@ -178,17 +178,30 @@ namespace SAModel.SALVL
         }
 
         /// <summary>
-        /// Loads textures from a PVM into the scene.
+        /// Loads textures from a PVM, a GVM or a texture pack into the scene.
         /// </summary>
-        /// <param name="pvmName">The PVM name (name only; no path or extension).</param>
-        /// <param name="systemPath">The game's system path.</param>
+        /// <param name="pvmName">The PVM/PRS/GVM/texture pack name (name only; no path or extension).</param>
+        /// <param name="systemPath">The mod's system path.</param>
         void LoadPVM(string pvmName, string systemPath)
         {
             if (!LevelData.TextureBitmaps.ContainsKey(pvmName))
             {
-                string textureFallbackPath = Path.Combine(systemFallback, pvmName) + ".PVM";
-                string texturePath = Path.Combine(systemPath, pvmName) + ".PVM";
-
+                string texturePath;
+                string extension = ".PVM";
+                // Determine whether a custom texture pack exists
+                if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
+                    texturePath = Path.Combine(modFolder, "textures", pvmName, "index.txt");
+                else
+                {
+                    if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PVM"))
+                        extension = ".PVM";
+                    else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PRS"))
+                        extension = ".PRS";
+                    else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".GVM"))
+                        extension = ".GVM";
+                    texturePath = Path.Combine(systemPath, pvmName) + extension;
+                }
+                string  textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
                 BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
                 Texture[] d3dTextures;
                 if (textureBitmaps != null)
@@ -492,6 +505,7 @@ namespace SAModel.SALVL
                 {
                     LevelData.Clear();
                     selectedItems = new EditorItemSelection();
+                    sceneGraphControl1.InitSceneControl(selectedItems);
                     PointHelper.Instances.Clear();
                     LevelData.ClearTextures();
                 }
@@ -572,8 +586,11 @@ namespace SAModel.SALVL
                         pos = posini[levelact].Position;
                         rot = posini[levelact].YRotation;
                     }
-
-                    LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
+                    if (File.Exists(character.Model))
+                        LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
+                        character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+                    else
+                        LevelData.StartPositions[i] = new StartPosItem(new NJS_OBJECT(),
                         character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
                     if (File.Exists(character.TextureList))
                         LoadTextureList(character.TextureList, modSystemFolder);

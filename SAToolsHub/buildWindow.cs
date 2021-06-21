@@ -131,7 +131,7 @@ namespace SAToolsHub
 
 			if (iniEXEFiles.Count > 0)
 			{
-				EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(iniEXEFiles, ref itemsEXEToExport);
+				EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(iniEXEFiles, ref itemsEXEToExport, false);
 
 				SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
 					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
@@ -400,7 +400,7 @@ namespace SAToolsHub
 
 			setAssemblies();
 			manualBuildWindow.Initalize(game, modName, SAToolsHub.projectDirectory.ToString(),
-				Path.Combine(SAToolsHub.gameDirectory.ToString(), "mods"), assemblies);
+				Path.Combine(SAToolsHub.gameDirectory.ToString(), "mods"), assemblies, gameEXE);
 			manualBuildWindow.ShowDialog();
 		}
 

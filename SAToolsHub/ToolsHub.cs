@@ -391,7 +391,7 @@ namespace SAToolsHub
 									item.ToolTipText = "Double click to open Mod Info Editor";
 									break;
 								case "sadxlvl":
-									item.ToolTipText = "Double click to open SADXLVL2";
+									item.ToolTipText = "Double click to open SALVL";
 									break;
 								default:
 									item.ToolTipText = "Double click to open in the default text editor.";
@@ -765,6 +765,8 @@ namespace SAToolsHub
                 {
                     case "SADXPC":
                     case "SA1":
+                    case "SADXGCP":
+                    case "SADXGCR":
                         string projectArgumentsPath = $"\"{projXML}\"";
                         salvlStartInfo.Arguments = projectArgumentsPath;
                         break;
