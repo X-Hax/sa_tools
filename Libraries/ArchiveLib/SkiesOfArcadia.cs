@@ -62,12 +62,12 @@ namespace ArchiveLib
         public uint PointerMotion; // 0x1C
         public uint PointerTexlist; // 0x20
         public string Name; // 0x24 (32 bytes)
-        public float Float1; // 0x44
-        public float Float2; // 0x48
-        public float Float3; // 0x4C
-        public int Int1; // 0x50
-        public int Int2; // 0x54
-        public int Int3; // 0x58
+        public float PosX; // 0x44
+        public float PosY; // 0x48
+        public float PosZ; // 0x4C
+        public int RotX; // 0x50
+        public int RotY; // 0x54
+        public int RotZ; // 0x58
         public float ScaleX; // 0x5C
         public float ScaleY; // 0x60
         public float ScaleZ; // 0x64
@@ -94,12 +94,12 @@ namespace ArchiveLib
             byte[] namechunk = new byte[namesize];
             Array.Copy(data, start + 0x24, namechunk, 0, namesize);
             Name = System.Text.Encoding.ASCII.GetString(namechunk);
-            Float1 = ByteConverter.ToSingle(data, start + 0x44);
-            Float2 = ByteConverter.ToSingle(data, start + 0x48);
-            Float3 = ByteConverter.ToSingle(data, start + 0x4C);
-            Int1 = ByteConverter.ToInt32(data, start + 0x50);
-            Int2 = ByteConverter.ToInt32(data, start + 0x54);
-            Int3 = ByteConverter.ToInt32(data, start + 0x58);
+            PosX = ByteConverter.ToSingle(data, start + 0x44);
+            PosY = ByteConverter.ToSingle(data, start + 0x48);
+            PosZ = ByteConverter.ToSingle(data, start + 0x4C);
+            RotX = ByteConverter.ToInt32(data, start + 0x50);
+            RotY = ByteConverter.ToInt32(data, start + 0x54);
+            RotZ = ByteConverter.ToInt32(data, start + 0x58);
             ScaleX = ByteConverter.ToSingle(data, start + 0x5C);
             ScaleY = ByteConverter.ToSingle(data, start + 0x60);
             ScaleZ = ByteConverter.ToSingle(data, start + 0x64);
@@ -132,16 +132,20 @@ namespace ArchiveLib
         public MLDArchive(byte[] file)
         {
             List<NMLDEntry> nMLDEntries = new List<NMLDEntry>();
-            int count = BitConverter.ToInt32(file, 0);
-            uint nmlddatapointer = BitConverter.ToUInt32(file, 0x04);
-            uint flags = BitConverter.ToUInt32(file, 0x08);
-            uint realdatapointer = BitConverter.ToUInt32(file, 0x0C);
-            uint textablepointer = BitConverter.ToUInt32(file, 0x10);
+			ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0);
+
+			// Read MLD Header
+            int count = ByteConverter.ToInt32(file, 0);
+            uint nmlddatapointer = ByteConverter.ToUInt32(file, 0x04);
+            uint flags = ByteConverter.ToUInt32(file, 0x08);
+            uint realdatapointer = ByteConverter.ToUInt32(file, 0x0C);
+            uint textablepointer = ByteConverter.ToUInt32(file, 0x10);
             Console.WriteLine("Number of NMLD entries: {0}, NMLD data starts at {1}, real data starts at {2}", count, nmlddatapointer.ToString("X"), realdatapointer.ToString("X"));
             uint sizereal = textablepointer - realdatapointer;
             uint sizenmld = realdatapointer - nmlddatapointer;
             Console.WriteLine("First entry: {0} size {1}", realdatapointer.ToString("X"), sizereal);
-            // Extract NMLD stuff
+            
+			// Extract NMLD stuff
             for (int m = 0; m < count; m++)
             {
                 NMLDObject nmld = new NMLDObject(file, (int)nmlddatapointer + 104 * m);
@@ -151,6 +155,8 @@ namespace ArchiveLib
                     Console.WriteLine("Create NMLDEntry {0} at {1}", m, nmld.PointerEntry.ToString("X"));
                 }
             }
+
+
             for (int n = 0; n < nMLDEntries.Count; n++)
             {
                 // Find next entry that has data
@@ -167,7 +173,9 @@ namespace ArchiveLib
                     Entries.Add(new MLDArchiveEntry(nMLDEntries[n].GetBytes(file, end), Path.ChangeExtension(n.ToString("D3") + "_" + nMLDEntries[n].Name, ".nj")));
                 }
             }
-            int numtex = BitConverter.ToInt32(file, (int)textablepointer);
+
+
+            int numtex = ByteConverter.ToInt32(file, (int)textablepointer);
             // Extract textures
             Console.WriteLine("Number of textures: {0}, pointer: {1}", numtex, textablepointer.ToString("X"));
             if (numtex > 0)
@@ -185,16 +193,21 @@ namespace ArchiveLib
                 }
                 Console.WriteLine("Textures from {0}", texdataoffset.ToString("X"));
                 int currenttextureoffset = texdataoffset;
+				string ext = "";
+				if (ByteConverter.BigEndian == true)
+					ext = ".gvr";
+				else
+					ext = ".pvr";
                 for (int i = 0; i < numtex; i++)
                 {
                     byte[] namestring = new byte[36];
                     Array.Copy(file, textablepointer + 4 + i * 44, namestring, 0, 36);
                     string entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
-                    int size = BitConverter.ToInt32(file, (int)textablepointer + 4 + i * 44 + 40);
+                    int size = ByteConverter.ToInt32(file, (int)textablepointer + 4 + i * 44 + 40);
                     Console.WriteLine("Entry {0} name {1} size {2}", i, entryfn, size);
                     byte[] texture = new byte[size];
                     Array.Copy(file, currenttextureoffset, texture, 0, size);
-                    Entries.Add(new MLDArchiveEntry(texture, entryfn + ".pvr"));
+                    Entries.Add(new MLDArchiveEntry(texture, entryfn + ext));
                     currenttextureoffset += size;
                 }
             }

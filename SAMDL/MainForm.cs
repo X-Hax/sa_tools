@@ -554,8 +554,8 @@ namespace SAModel.SAMDL
 					case "GJTL":
 					case "NJTL":
 						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-						int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
-						int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
+						int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
+						int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
 						int texListOffset = POF0Offset + POF0Size + 0x8;
 						ninjaDataOffset = texListOffset + 0x8;
 						//Get Texture Listings for if SA Tools gets that implemented

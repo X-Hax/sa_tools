@@ -620,14 +620,17 @@ namespace SAToolsHub
 					case "mdl":
 						samdlStartInfo.Arguments = $"\"{itemPath}\"";
 						Process.Start(samdlStartInfo);
+						samdlStartInfo.Arguments = "";
 						break;
 					case "lvl":
 						salvlStartInfo.Arguments = $"\"{itemPath}\"";
 						Process.Start(salvlStartInfo);
+						salvlStartInfo.Arguments = "";
 						break;
 					case "tex":
 						texeditStartInfo.Arguments = $"\"{itemPath}\"";
 						Process.Start(texeditStartInfo);
+						texeditStartInfo.Arguments = "";
 						break;
 					case "txt":
 						switch (itemName)
@@ -636,6 +639,7 @@ namespace SAToolsHub
 								salvlStartInfo.Arguments = $"\"{projXML}\"";
 
 								Process.Start(salvlStartInfo);
+								salvlStartInfo.Arguments = "";
 								break;
 							case "mod.ini":
 								projectEditorDiag.ShowDialog();
@@ -645,6 +649,7 @@ namespace SAToolsHub
 								{
 									sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
 									Process.Start(sadxtweakerStartInfo);
+									sadxtweakerStartInfo.Arguments = "";
 								}
 								else
 									Process.Start($"\"{itemPath}\"");
@@ -659,6 +664,7 @@ namespace SAToolsHub
 						{
 							sadxsndsharpStartInfo.Arguments = $"\"{itemPath}\"";
 							Process.Start(sadxsndsharpStartInfo);
+							sadxsndsharpStartInfo.Arguments = "";
 						}
 						else
 							Process.Start($"\"{itemPath}\"");
@@ -717,6 +723,7 @@ namespace SAToolsHub
 			{
 				openProject(ProjectFunctions.openProjectFileString(newProjFile));
 				projXML = newProjFile;
+				newProjFile = null;
 			}
 		}
 
@@ -775,7 +782,7 @@ namespace SAToolsHub
                         break;
                 }
 			}
-			Process sadxlvl2Process = Process.Start(salvlStartInfo);
+			Process salvlProcess = Process.Start(salvlStartInfo);
 		}
 
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
