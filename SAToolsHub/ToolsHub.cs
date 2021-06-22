@@ -765,6 +765,7 @@ namespace SAToolsHub
                 {
                     case "SADXPC":
                     case "SA1":
+                    case "SADXGC":
                     case "SADXGCP":
                     case "SADXGCR":
                         string projectArgumentsPath = $"\"{projXML}\"";

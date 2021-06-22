@@ -447,6 +447,7 @@ namespace SAToolsHub
 			switch (game)
 			{
                 case "SA1":
+                case "SADXGC":
                 case "SADXGCP":
                 case "SADXGCR":
                     progress.SetTask("Finalizing SALVL Supported Setup");
