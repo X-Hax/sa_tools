@@ -14,6 +14,7 @@ using SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
+using SplitTools;
 
 namespace SAModel.SAMDL
 {
@@ -63,15 +64,15 @@ namespace SAModel.SAMDL
 		private void SAMDL_DragDrop(object sender, DragEventArgs e)
 		{
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-			LoadModelList(files);
+			LoadFileList(files);
 		}
 
-		public void LoadModelList(string[] files, bool cmdLoad = false)
+		public void LoadFileList(string[] files, bool cmdLoad = false)
 		{
-			bool modelLoaded = false; //We can only load one model at once for now. Set to true when user loads first file and ignore others.
-			bool modelLoadedWarning = false; //Flag so we can warn users that they should do one model at a time.
+			bool modelLoaded = false; // We can only load one model at once for now. Set to true when user loads first file and ignore others.
+			bool modelLoadedWarning = false; // Flag so we can warn users that they should do one model at a time.
 			
-			List<string> modelFiles = new List<string>(); //For multi support, if that happens
+			List<string> modelFiles = new List<string>(); // For multi support, if that happens
 			List<string> modelImportFiles = new List<string>();
 			List<string> animFiles = new List<string>();
 
@@ -125,9 +126,14 @@ namespace SAModel.SAMDL
                     case ".pak":
                     case ".prs":
                     case ".pvr":
+                        AddSingleTexture(file);
+                        break;
                     case ".gvr":
                     case ".txt":
                         LoadTextures(file);
+                        break;
+                    case ".tls":
+                        LoadTexlistFile(file);
                         break;
                     default:
 						break;
@@ -196,9 +202,11 @@ namespace SAModel.SAMDL
 		int animframe = 0;
 		Mesh[] meshes;
 		string TexturePackName;
-		BMPInfo[] TextureInfo;
-		Texture[] Textures;
-		ModelFileDialog modelinfo = new ModelFileDialog();
+        TexnameArray TexList; // Current texlist
+        BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
+        BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
+        Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
+        ModelFileDialog modelinfo = new ModelFileDialog();
 		NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
 		OnScreenDisplay osd;
@@ -287,7 +295,7 @@ namespace SAModel.SAMDL
 			modelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Red);
 			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
-				LoadModelList(Program.Arguments, true);
+				LoadFileList(Program.Arguments, true);
 		}
 
 		void ShowWelcomeScreen()
@@ -615,20 +623,22 @@ namespace SAModel.SAMDL
 						{
 							int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
 
-							//Read null terminated U8String
-							List<byte> u8String = new List<byte>();
-							byte u8Char = (file[textAddress]);
+							// Read null terminated string
+							List<byte> namestring = new List<byte>();
+							byte namechar = (file[textAddress]);
 							int j = 0;
-							while (u8Char != 0)
+							while (namechar != 0)
 							{
-								u8String.Add(u8Char);
+                                namestring.Add(namechar);
 								j++;
-								u8Char = (file[textAddress + j]);
+                                namechar = (file[textAddress + j]);
 							}
-							texNames.Add(System.Text.Encoding.UTF8.GetString(u8String.ToArray()));
+							texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
 
 							texOffset += 0xC;
 						}
+                        TexList = new TexnameArray(texNames.ToArray());
+
 						break;
 					case "GJCM":
 					case "NJCM":
@@ -809,7 +819,7 @@ namespace SAModel.SAMDL
             RebuildModelCache();
             loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animations != null && animations.Count > 0);
-			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			if (cmdLoad == false)
 			{
@@ -1016,9 +1026,9 @@ namespace SAModel.SAMDL
 						List<byte> njModel = new List<byte>();
 						List<string> texList = new List<string>();
 
-						if (TextureInfo != null)
+						if (TextureInfoCurrent != null)
 						{
-							foreach (BMPInfo tex in TextureInfo)
+							foreach (BMPInfo tex in TextureInfoCurrent)
 							{
 								if (tex != null)
 								{
@@ -1181,7 +1191,7 @@ namespace SAModel.SAMDL
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
-			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			SelectedItemChanged();
 
 			currentFileName = "";
@@ -1837,19 +1847,50 @@ namespace SAModel.SAMDL
 		{
 			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
 		}
-		#endregion
+        #endregion
+
+        private void UpdateTexlist()
+        {
+            if (TextureInfo == null)
+            {
+                unloadTextureToolStripMenuItem.Enabled = false;
+                return;
+            }
+            if (TexList != null)
+            {
+                List<Texture> textures = new List<Texture>();
+                List<BMPInfo> texinfo = new List<BMPInfo>();
+                for (int i = 0; i < TexList.TextureNames.Length; i++)
+                    for (int j = 0; j < TextureInfo.Length; j++)
+                        if (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() || TexList.TextureNames[i] == "empty")
+                        {
+                            texinfo.Add(TextureInfo[j]);
+                            textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
+                            continue;
+                        }
+                Textures = textures.ToArray();
+                TextureInfoCurrent = texinfo.ToArray();
+            }
+            else
+            {
+                TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+                for (int i = 0; i < TextureInfo.Length; i++)
+                    TextureInfoCurrent[i] = TextureInfo[i];
+                Textures = new Texture[TextureInfoCurrent.Length];
+                for (int j = 0; j < TextureInfoCurrent.Length; j++)
+                    Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
+            }
+            unloadTextureToolStripMenuItem.Enabled = true;
+        }
 
 		private void LoadTextures(string filename)
 		{
 			TextureInfo = TextureArchive.GetTextures(filename);
-
 			TexturePackName = Path.GetFileNameWithoutExtension(filename);
-			Textures = new Texture[TextureInfo.Length];
-			for (int j = 0; j < TextureInfo.Length; j++)
-				Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
-
+            UpdateTexlist();
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
-			if (loaded) DrawEntireModel();
+			if (loaded) 
+                DrawEntireModel();
 		}
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1921,9 +1962,9 @@ namespace SAModel.SAMDL
 						string[] texnames = null;
 						if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
 						{
-							texnames = new string[TextureInfo.Length];
-							for (int i = 0; i < TextureInfo.Length; i++)
-								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+							texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfoCurrent[i].Name);
 							sw.Write("enum {0}TexName", TexturePackName);
 							sw.WriteLine();
 							sw.WriteLine("{");
@@ -2107,7 +2148,7 @@ namespace SAModel.SAMDL
 					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 					break;
 			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfo))
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent))
 			{
 				dlg.FormUpdated += (s, ev) => DrawEntireModel();
 				dlg.ShowDialog(this);
@@ -2210,7 +2251,7 @@ namespace SAModel.SAMDL
 
 		private void textureRemappingToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (TextureRemappingDialog dlg = new TextureRemappingDialog(TextureInfo))
+			using (TextureRemappingDialog dlg = new TextureRemappingDialog(TextureInfoCurrent))
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					unsaved = true;
@@ -2319,9 +2360,9 @@ namespace SAModel.SAMDL
 						string[] texnames = null;
 						if (TexturePackName != null)
 						{
-							texnames = new string[TextureInfo.Length];
-							for (int i = 0; i < TextureInfo.Length; i++)
-								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+							texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfoCurrent[i].Name);
 							sw.Write("enum {0}TexName", TexturePackName);
 							sw.WriteLine();
 							sw.WriteLine("{");
@@ -2339,7 +2380,7 @@ namespace SAModel.SAMDL
 
 		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false)
 		{
-			if (TextureInfo == null)
+			if (TextureInfoCurrent == null)
 			{
 				using (OpenFileDialog a = new OpenFileDialog() { Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
 				{
@@ -2362,7 +2403,7 @@ namespace SAModel.SAMDL
             // Collada adds a root node, so use the first child node instead
             if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
                 importnode = scene.RootNode.Children[0];
-            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfoCurrent?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				modelFile = null;
@@ -2390,7 +2431,7 @@ namespace SAModel.SAMDL
             RebuildModelCache();
             unsaved = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
-			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			SelectedItemChanged();
 			DrawEntireModel();
@@ -2419,9 +2460,9 @@ namespace SAModel.SAMDL
 			scene.RootNode = n;
 			string rootPath = Path.GetDirectoryName(filename);
 			List<string> texturePaths = new List<string>();
-			if (TextureInfo != null)
+			if (TextureInfoCurrent != null)
 			{
-				foreach (BMPInfo bmp in TextureInfo)
+				foreach (BMPInfo bmp in TextureInfoCurrent)
 				{
 					texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
 					bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
@@ -2718,7 +2759,7 @@ namespace SAModel.SAMDL
 
 		private void UnloadTextures()
 		{
-			TextureInfo = null;
+			TextureInfoCurrent = null;
 			Textures = null;
 			unloadTextureToolStripMenuItem.Enabled = false;
 		}
@@ -3091,9 +3132,9 @@ namespace SAModel.SAMDL
 			string[] texnames = null;
 			if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
 			{
-				texnames = new string[TextureInfo.Length];
-				for (int i = 0; i < TextureInfo.Length; i++)
-					texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+				texnames = new string[TextureInfoCurrent.Length];
+				for (int i = 0; i < TextureInfoCurrent.Length; i++)
+					texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfoCurrent[i].Name);
 				text.export += "enum " + TexturePackName + "TexName";
 				text.export += System.Environment.NewLine;
 				text.export += "{";
@@ -3519,7 +3560,7 @@ namespace SAModel.SAMDL
 
         private void ImportOBJLegacy(NJS_OBJECT obj, string filename)
         {
-            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfo != null ? TextureInfo?.Select(a => a.Name).ToArray() : null);
+            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfoCurrent != null ? TextureInfoCurrent?.Select(a => a.Name).ToArray() : null);
             RebuildModelCache();
             DrawEntireModel();
         }
@@ -3596,6 +3637,61 @@ namespace SAModel.SAMDL
             RebuildModelCache();
             unsaved = true;
         }
+
+        private void LoadTexlistFile(string filename)
+        {
+            TexList = new TexnameArray(filename);
+            UpdateTexlist();
+        }
+
+        private void loadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Load Texlist", Filter = "Texlist Files (*.tls)|*.tls|All Files (*.*)|*.*", DefaultExt = "tls" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    LoadTexlistFile(ofd.FileName);
+                    unloadTexlistToolStripMenuItem.Enabled = true;
+                }
+            }
+        }
+
+        private void unloadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TexList = null;
+            UpdateTexlist();
+            unloadTexlistToolStripMenuItem.Enabled = false;
+        }
+
+        private void AddSingleTexture(string filename)
+        {
+            List<BMPInfo> result = new List<BMPInfo>();
+            if (TextureInfo != null && TextureInfo.Length > 0)
+            result.AddRange(TextureInfo);
+                result.AddRange(TextureArchive.GetTextures(filename));
+            TextureInfo = result.ToArray();
+            UpdateTexlist();
+        }
+
+        private void AddTextures(string[] filenames)
+        {
+            List<BMPInfo> result = new List<BMPInfo>();
+            if (TextureInfo != null && TextureInfo.Length > 0)
+                result.AddRange(TextureInfo);
+            for (int i = 0; i < filenames.Length; i++)
+                result.AddRange(TextureArchive.GetTextures(filenames[i]));
+            TextureInfo = result.ToArray();
+            UpdateTexlist();
+        }
+
+		private void addTexturestoolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    AddTextures(ofd.FileNames);
+            }
+		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{

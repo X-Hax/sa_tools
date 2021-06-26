@@ -612,36 +612,56 @@ namespace SplitTools
 		}
 	}
 
-	public class TexnameArray
-	{
-		[TypeConverter(typeof(UInt32HexConverter))]
-		public uint TexnameArrayAddr { get; set; }
-		public uint NumTextures { get; set; }
-		public string[] TextureNames { get; set; }
-		public TexnameArray(byte[] file, int address, uint imageBase)
-		{
-			uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
-			if (TexnameArrayAddr == 0)
-				return;
-			else
-				NumTextures = ByteConverter.ToUInt32(file, address + 4);
-			if (NumTextures <= 300 && NumTextures > 0)
-			{
-				TextureNames = new string[NumTextures];
-				for (int u = 0; u < NumTextures; u++)
-				{
-					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
-					if (TexnamePointer != 0)
-						TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase));
-					else
-						TextureNames[u] = "empty";
-				}
-			}
-		}
+    public class TexnameArray
+    {
+        public string[] TextureNames { get; set; }
+        public TexnameArray(byte[] file, int address, uint imageBase)
+        {
+            uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
+            uint NumTextures = ByteConverter.ToUInt32(file, address + 4);
+            TextureNames = new string[NumTextures];
+            if (TexnameArrayAddr == 0)
+                return;
+            if (NumTextures <= 300 && NumTextures > 0)
+            {
+                TextureNames = new string[NumTextures];
+                for (int u = 0; u < NumTextures; u++)
+                {
+                    uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
+                    if (TexnamePointer != 0)
+                        TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase));
+                    else
+                        TextureNames[u] = "empty";
+                }
+            }
+        }
+
+        public TexnameArray(string[] list)
+        {
+            TextureNames = list;
+        }
+
+        public TexnameArray(string textFile)
+        {
+            string[] texnames_raw = File.ReadAllLines(textFile);
+            TextureNames = new string[texnames_raw.Length];
+            for (int i = 0; i < texnames_raw.Length; i++)
+            {
+                if (texnames_raw[i] == "")
+                    break;
+                TextureNames[i] = texnames_raw[i].Replace(".pvr", "");
+            }
+        }
+
+        public int GetNumTextures()
+        {
+            return TextureNames.Length;
+        }
+
 		public void Save(string fileOutputPath)
 		{
 			StreamWriter sw = File.CreateText(fileOutputPath);
-			for (int u = 0; u < NumTextures; u++)
+			for (int u = 0; u < TextureNames.Length; u++)
 			{
 				sw.WriteLine(TextureNames[u] + ".pvr");
 			}

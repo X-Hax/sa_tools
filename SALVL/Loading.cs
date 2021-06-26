@@ -147,8 +147,8 @@ namespace SAModel.SALVL
 #else
 			backgroundWorker1_DoWork(null, null);
 			backgroundWorker1_RunWorkerCompleted(null, null);
-			unsaved = false;
 #endif
+            unsaved = false;
         }
 
         /// <summary>
@@ -178,9 +178,9 @@ namespace SAModel.SALVL
         }
 
         /// <summary>
-        /// Loads textures from a PVM, a GVM or a texture pack into the scene.
+        /// Loads textures from a PVM/GVM/PVMX or a texture pack into the scene.
         /// </summary>
-        /// <param name="pvmName">The PVM/PRS/GVM/texture pack name (name only; no path or extension).</param>
+        /// <param name="pvmName">The PVM/PRS/PVMX/GVM/texture pack name (name only; no path or extension).</param>
         /// <param name="systemPath">The mod's system path.</param>
         void LoadPVM(string pvmName, string systemPath)
         {
@@ -188,9 +188,11 @@ namespace SAModel.SALVL
             {
                 string texturePath;
                 string extension = ".PVM";
-                // Determine whether a custom texture pack exists
+                // Determine whether a custom texture pack or a PVMX exists
                 if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
                     texturePath = Path.Combine(modFolder, "textures", pvmName, "index.txt");
+                else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
+                    texturePath = Path.Combine(modFolder, "textures", pvmName + ".PVMX");
                 else
                 {
                     if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PVM"))

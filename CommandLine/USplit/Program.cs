@@ -1041,7 +1041,7 @@ public class UniversalSplit
 				case "texnamearray":
 					TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
 					StreamWriter sw = File.CreateText(fileOutputPath + "_texnames.txt");
-					for (int u = 0; u < texnames.NumTextures; u++)
+					for (int u = 0; u < texnames.GetNumTextures(); u++)
 					{
 						sw.WriteLine(texnames.TextureNames[u] + ".pvr");
 					}
