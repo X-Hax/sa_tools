@@ -64,6 +64,7 @@ namespace SAModel.SAMDL
             this.materialEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textureRemappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.swapUVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetLabelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.exportAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportTextureNamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -153,7 +154,10 @@ namespace SAModel.SAMDL
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetLabelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unloadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -192,6 +196,10 @@ namespace SAModel.SAMDL
             this.toolStripSeparator1,
             this.loadTexturesToolStripMenuItem,
             this.unloadTextureToolStripMenuItem,
+            this.toolStripSeparator14,
+            this.loadTexlistToolStripMenuItem,
+            this.unloadTexlistToolStripMenuItem,
+            this.toolStripSeparator15,
             this.loadAnimationToolStripMenuItem,
             this.toolStripSeparator2,
             this.saveMenuItem,
@@ -214,7 +222,7 @@ namespace SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem});
             this.newFileMenuitem.Image = global::SAModel.SAMDL.Properties.Resources._new;
             this.newFileMenuitem.Name = "newFileMenuitem";
-            this.newFileMenuitem.Size = new System.Drawing.Size(168, 22);
+            this.newFileMenuitem.Size = new System.Drawing.Size(188, 30);
             this.newFileMenuitem.Text = "&New";
             // 
             // basicModelToolStripMenuItem
@@ -242,19 +250,19 @@ namespace SAModel.SAMDL
             // 
             this.openToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(185, 6);
             // 
             // loadTexturesToolStripMenuItem
             // 
             this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
-            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
             this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
             // 
@@ -262,7 +270,7 @@ namespace SAModel.SAMDL
             // 
             this.unloadTextureToolStripMenuItem.Enabled = false;
             this.unloadTextureToolStripMenuItem.Name = "unloadTextureToolStripMenuItem";
-            this.unloadTextureToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.unloadTextureToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.unloadTextureToolStripMenuItem.Text = "Unload Textures";
             this.unloadTextureToolStripMenuItem.Click += new System.EventHandler(this.unloadTextureToolStripMenuItem_Click);
             // 
@@ -270,21 +278,21 @@ namespace SAModel.SAMDL
             // 
             this.loadAnimationToolStripMenuItem.Enabled = false;
             this.loadAnimationToolStripMenuItem.Name = "loadAnimationToolStripMenuItem";
-            this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.loadAnimationToolStripMenuItem.Text = "Load Animation...";
             this.loadAnimationToolStripMenuItem.Click += new System.EventHandler(this.loadAnimationToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
             // 
             // saveMenuItem
             // 
             this.saveMenuItem.Enabled = false;
             this.saveMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.save;
             this.saveMenuItem.Name = "saveMenuItem";
-            this.saveMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.saveMenuItem.Size = new System.Drawing.Size(188, 30);
             this.saveMenuItem.Text = "&Save Model";
             this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
             // 
@@ -293,7 +301,7 @@ namespace SAModel.SAMDL
             this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.saveAsToolStripMenuItem.Text = "Save Model &As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -301,14 +309,14 @@ namespace SAModel.SAMDL
             // 
             this.saveAnimationsToolStripMenuItem.Enabled = false;
             this.saveAnimationsToolStripMenuItem.Name = "saveAnimationsToolStripMenuItem";
-            this.saveAnimationsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.saveAnimationsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.saveAnimationsToolStripMenuItem.Text = "Save Ani&mation...";
             this.saveAnimationsToolStripMenuItem.Click += new System.EventHandler(this.saveAnimationsToolStripMenuItem1_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(185, 6);
             // 
             // importToolStripMenuItem
             // 
@@ -319,7 +327,7 @@ namespace SAModel.SAMDL
             this.importToolStripMenuItem.Enabled = false;
             this.importToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.importToolStripMenuItem.Text = "&Import...";
             // 
             // importAsModelToolStripMenuItem
@@ -354,7 +362,7 @@ namespace SAModel.SAMDL
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.export;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // cStructsToolStripMenuItem
@@ -381,12 +389,12 @@ namespace SAModel.SAMDL
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(165, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(185, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -411,7 +419,7 @@ namespace SAModel.SAMDL
             // 
             this.preferencesToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -421,7 +429,7 @@ namespace SAModel.SAMDL
             this.findToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.findToolStripMenuItem.Text = "&Find...";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
@@ -429,7 +437,7 @@ namespace SAModel.SAMDL
             // 
             this.materialEditorToolStripMenuItem.Enabled = false;
             this.materialEditorToolStripMenuItem.Name = "materialEditorToolStripMenuItem";
-            this.materialEditorToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.materialEditorToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.materialEditorToolStripMenuItem.Text = "Material Editor";
             this.materialEditorToolStripMenuItem.Click += new System.EventHandler(this.materialEditorToolStripMenuItem_Click);
             // 
@@ -437,7 +445,7 @@ namespace SAModel.SAMDL
             // 
             this.textureRemappingToolStripMenuItem.Enabled = false;
             this.textureRemappingToolStripMenuItem.Name = "textureRemappingToolStripMenuItem";
-            this.textureRemappingToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.textureRemappingToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.textureRemappingToolStripMenuItem.Text = "&Texture Remapping...";
             this.textureRemappingToolStripMenuItem.Click += new System.EventHandler(this.textureRemappingToolStripMenuItem_Click);
             // 
@@ -445,15 +453,24 @@ namespace SAModel.SAMDL
             // 
             this.swapUVToolStripMenuItem.Enabled = false;
             this.swapUVToolStripMenuItem.Name = "swapUVToolStripMenuItem";
-            this.swapUVToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.swapUVToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.swapUVToolStripMenuItem.Text = "Swap U/V";
             this.swapUVToolStripMenuItem.ToolTipText = "Switch Us and Vs around. For Basic models only.";
             this.swapUVToolStripMenuItem.Click += new System.EventHandler(this.swapUVToolStripMenuItem_Click);
             // 
+            // resetLabelsToolStripMenuItem
+            // 
+            this.resetLabelsToolStripMenuItem.Enabled = false;
+            this.resetLabelsToolStripMenuItem.Name = "resetLabelsToolStripMenuItem";
+            this.resetLabelsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.resetLabelsToolStripMenuItem.Text = "Reset Labels";
+            this.resetLabelsToolStripMenuItem.ToolTipText = "Generate random labels for all data structures in the model.";
+            this.resetLabelsToolStripMenuItem.Click += new System.EventHandler(this.resetLabelsToolStripMenuItem_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(193, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(185, 6);
             // 
             // exportAnimationsToolStripMenuItem
             // 
@@ -461,7 +478,7 @@ namespace SAModel.SAMDL
             this.exportAnimationsToolStripMenuItem.CheckOnClick = true;
             this.exportAnimationsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.exportAnimationsToolStripMenuItem.Name = "exportAnimationsToolStripMenuItem";
-            this.exportAnimationsToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.exportAnimationsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.exportAnimationsToolStripMenuItem.Text = "Export Motion Structs";
             this.exportAnimationsToolStripMenuItem.ToolTipText = "Export animations in C structs.";
             // 
@@ -469,7 +486,7 @@ namespace SAModel.SAMDL
             // 
             this.exportTextureNamesToolStripMenuItem.CheckOnClick = true;
             this.exportTextureNamesToolStripMenuItem.Name = "exportTextureNamesToolStripMenuItem";
-            this.exportTextureNamesToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.exportTextureNamesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.exportTextureNamesToolStripMenuItem.Text = "Export Texture Enums";
             this.exportTextureNamesToolStripMenuItem.ToolTipText = "Use texture names in materials instead of texture IDs when exporting C structs.";
             // 
@@ -477,7 +494,7 @@ namespace SAModel.SAMDL
             // 
             this.newModelUnloadsTexturesToolStripMenuItem.CheckOnClick = true;
             this.newModelUnloadsTexturesToolStripMenuItem.Name = "newModelUnloadsTexturesToolStripMenuItem";
-            this.newModelUnloadsTexturesToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.newModelUnloadsTexturesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.newModelUnloadsTexturesToolStripMenuItem.Text = "Auto Unload Textures";
             this.newModelUnloadsTexturesToolStripMenuItem.ToolTipText = "Unload textures when a new model is loaded or created.";
             // 
@@ -1295,14 +1312,33 @@ namespace SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem1.Text = "Gamecube Model";
             this.gamecubeModelToolStripMenuItem1.Click += new System.EventHandler(this.gamecubeModelToolStripMenuItem1_Click);
             // 
-            // resetLabelsToolStripMenuItem
+            // loadTexlistToolStripMenuItem
             // 
-            this.resetLabelsToolStripMenuItem.Enabled = false;
-            this.resetLabelsToolStripMenuItem.Name = "resetLabelsToolStripMenuItem";
-            this.resetLabelsToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
-            this.resetLabelsToolStripMenuItem.Text = "Reset Labels";
-            this.resetLabelsToolStripMenuItem.ToolTipText = "Generate random labels for all data structures in the model.";
-            this.resetLabelsToolStripMenuItem.Click += new System.EventHandler(this.resetLabelsToolStripMenuItem_Click);
+            this.loadTexlistToolStripMenuItem.Name = "loadTexlistToolStripMenuItem";
+            this.loadTexlistToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.loadTexlistToolStripMenuItem.Text = "Load Texture List...";
+            this.loadTexlistToolStripMenuItem.ToolTipText = "Load a texture list from a .TLS file. Useful for models that use partial texture " +
+    "lists.";
+            this.loadTexlistToolStripMenuItem.Click += new System.EventHandler(this.loadTexlistToolStripMenuItem_Click);
+            // 
+            // unloadTexlistToolStripMenuItem
+            // 
+            this.unloadTexlistToolStripMenuItem.Enabled = false;
+            this.unloadTexlistToolStripMenuItem.Name = "unloadTexlistToolStripMenuItem";
+            this.unloadTexlistToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.unloadTexlistToolStripMenuItem.Text = "Unload Texture List";
+            this.unloadTexlistToolStripMenuItem.ToolTipText = "Unloads the partial texture list.";
+            this.unloadTexlistToolStripMenuItem.Click += new System.EventHandler(this.unloadTexlistToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator14
+            // 
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(185, 6);
+            // 
+            // toolStripSeparator15
+            // 
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(185, 6);
             // 
             // MainForm
             // 
@@ -1470,5 +1506,9 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem legacyOBJImportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem selectedLegacyOBJImportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem resetLabelsToolStripMenuItem;
-	}
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
+        private System.Windows.Forms.ToolStripMenuItem loadTexlistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unloadTexlistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
+    }
 }
