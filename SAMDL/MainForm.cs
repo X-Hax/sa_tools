@@ -492,6 +492,54 @@ namespace SAModel.SAMDL
 			return -1;
 		}
 
+		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
+		{
+			List<int> positions = new List<int>();
+			int patternLength = pattern.Length;
+			int totalLength = bytes.Length;
+			byte firstMatchByte = pattern[0];
+			for (int i = 0; i < totalLength; i++)
+			{
+				if (firstMatchByte == bytes[i] && totalLength - i >= patternLength)
+				{
+					byte[] match = new byte[patternLength];
+					Array.Copy(bytes, i, match, 0, patternLength);
+					if (match.SequenceEqual<byte>(pattern))
+					{
+						positions.Add(i);
+						i += patternLength - 1;
+					}
+				}
+			}
+			return positions;
+		}
+
+		public List<NJS_MOTION> LoadNMDM(byte[] file)
+		{
+			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			byte[] nmdmByte = new byte[] { 0x4E, 0x4D, 0x44, 0x4D };
+			List<int> nmdmAddr = SearchBytePattern(nmdmByte, file);
+
+			if (nmdmAddr.Count != 0)
+			{
+				foreach (int addr in nmdmAddr)
+				{
+					int nmdmLength = ByteConverter.ToInt32(file, addr + 0x4);
+					byte[] newFile = new byte[nmdmLength];
+					Array.Copy(file, (addr + 8), newFile, 0, newFile.Length);
+
+					string njmName = ("motion_" + addr.ToString());
+					Dictionary<int, string> label = new Dictionary<int, string>();
+					label.Add(0, njmName);
+					NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
+
+					motions.Add(njm);
+				}
+			}
+			
+			return motions;
+		}
+
 		private void LoadFile(string filename, bool cmdLoad = false)
 		{
 			string extension = Path.GetExtension(filename).ToLowerInvariant();
@@ -625,7 +673,8 @@ namespace SAModel.SAMDL
 				Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 
 				LoadBinFile(newFile);
-				animations = new List<NJS_MOTION>();
+				animations = LoadNMDM(file);
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else
 			{
@@ -2426,8 +2475,8 @@ namespace SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim;*.action|" +
-																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
+			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm;*.motions|SA Tools Animation Files|*.saanim;*.action|" +
+																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|Ninja Motions TXT|*.motions|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
 					LoadAnimation(ofd.FileNames);
@@ -2584,6 +2633,43 @@ namespace SAModel.SAMDL
 										else
 											animations.Add(mot);
 									}
+								}
+							}
+						}
+						break;
+					case ".motions":
+						using (TextReader tr = File.OpenText(fn))
+						{
+							string path = Path.GetDirectoryName(fn);
+							int count = File.ReadLines(fn).Count();
+							string[] animationFiles = new string[count];
+							for (int u = 0; u < count; u++)
+							{
+								animationFiles[u] = tr.ReadLine();
+								if (File.Exists(Path.Combine(path, animationFiles[u])))
+								{
+									byte[] motFile = File.ReadAllBytes(Path.Combine(path, animationFiles[u]));
+									ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(motFile, 0xC);
+
+									byte[] newMotFile = new byte[motFile.Length - 0x8];
+									Array.Copy(motFile, 0x8, newMotFile, 0, newMotFile.Length);
+
+									string motName = Path.GetFileNameWithoutExtension(Path.Combine(path, animationFiles[u]));
+									Dictionary<int, string> motLabel = new Dictionary<int, string>();
+									motLabel.Add(0, motName);
+									NJS_MOTION mot = new NJS_MOTION(newMotFile, 0, 0, model.CountAnimated(), motLabel, false);
+									if (first)
+									{
+										first = false;
+										animframe = 0;
+										animnum = animations.Count;
+										animations.Add(mot);
+										animation = mot;
+										UpdateWeightedModel();
+										DrawEntireModel();
+									}
+									else
+										animations.Add(mot);
 								}
 							}
 						}
