@@ -126,6 +126,8 @@ namespace SAModel.SAMDL
                     case ".pak":
                     case ".prs":
                     case ".pvr":
+                        AddSingleTexture(file);
+                        break;
                     case ".gvr":
                     case ".txt":
                         LoadTextures(file);
@@ -573,20 +575,22 @@ namespace SAModel.SAMDL
 						{
 							int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
 
-							//Read null terminated U8String
-							List<byte> u8String = new List<byte>();
-							byte u8Char = (file[textAddress]);
+							// Read null terminated string
+							List<byte> namestring = new List<byte>();
+							byte namechar = (file[textAddress]);
 							int j = 0;
-							while (u8Char != 0)
+							while (namechar != 0)
 							{
-								u8String.Add(u8Char);
+                                namestring.Add(namechar);
 								j++;
-								u8Char = (file[textAddress + j]);
+                                namechar = (file[textAddress + j]);
 							}
-							texNames.Add(System.Text.Encoding.UTF8.GetString(u8String.ToArray()));
+							texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
 
 							texOffset += 0xC;
 						}
+                        TexList = new TexnameArray(texNames.ToArray());
+
 						break;
 					case "GJCM":
 					case "NJCM":
@@ -1799,7 +1803,10 @@ namespace SAModel.SAMDL
         private void UpdateTexlist()
         {
             if (TextureInfo == null)
+            {
+                unloadTextureToolStripMenuItem.Enabled = false;
                 return;
+            }
             if (TexList != null)
             {
                 List<Texture> textures = new List<Texture>();
@@ -1824,6 +1831,7 @@ namespace SAModel.SAMDL
                 for (int j = 0; j < TextureInfoCurrent.Length; j++)
                     Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
             }
+            unloadTextureToolStripMenuItem.Enabled = true;
         }
 
 		private void LoadTextures(string filename)
@@ -3569,7 +3577,37 @@ namespace SAModel.SAMDL
             unloadTexlistToolStripMenuItem.Enabled = false;
         }
 
-        private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AddSingleTexture(string filename)
+        {
+            List<BMPInfo> result = new List<BMPInfo>();
+            if (TextureInfo != null && TextureInfo.Length > 0)
+            result.AddRange(TextureInfo);
+                result.AddRange(TextureArchive.GetTextures(filename));
+            TextureInfo = result.ToArray();
+            UpdateTexlist();
+        }
+
+        private void AddTextures(string[] filenames)
+        {
+            List<BMPInfo> result = new List<BMPInfo>();
+            if (TextureInfo != null && TextureInfo.Length > 0)
+                result.AddRange(TextureInfo);
+            for (int i = 0; i < filenames.Length; i++)
+                result.AddRange(TextureArchive.GetTextures(filenames[i]));
+            TextureInfo = result.ToArray();
+            UpdateTexlist();
+        }
+
+		private void addTexturestoolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    AddTextures(ofd.FileNames);
+            }
+		}
+
+		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!(selectedObject.Attach is BasicAttach))
 			{

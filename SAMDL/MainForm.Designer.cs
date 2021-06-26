@@ -42,6 +42,10 @@ namespace SAModel.SAMDL
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+            this.loadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unloadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.loadAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -154,10 +158,7 @@ namespace SAModel.SAMDL
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.unloadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+            this.addTexturestoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -195,6 +196,7 @@ namespace SAModel.SAMDL
             this.openToolStripMenuItem,
             this.toolStripSeparator1,
             this.loadTexturesToolStripMenuItem,
+            this.addTexturestoolStripMenuItem,
             this.unloadTextureToolStripMenuItem,
             this.toolStripSeparator14,
             this.loadTexlistToolStripMenuItem,
@@ -264,6 +266,7 @@ namespace SAModel.SAMDL
             this.loadTexturesToolStripMenuItem.Name = "loadTexturesToolStripMenuItem";
             this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
+            this.loadTexturesToolStripMenuItem.ToolTipText = "Load a PVM/GVM, PRS, PAK etc. file.";
             this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
             // 
             // unloadTextureToolStripMenuItem
@@ -272,7 +275,36 @@ namespace SAModel.SAMDL
             this.unloadTextureToolStripMenuItem.Name = "unloadTextureToolStripMenuItem";
             this.unloadTextureToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.unloadTextureToolStripMenuItem.Text = "Unload Textures";
+            this.unloadTextureToolStripMenuItem.ToolTipText = "Clear all loaded textures.";
             this.unloadTextureToolStripMenuItem.Click += new System.EventHandler(this.unloadTextureToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator14
+            // 
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(185, 6);
+            // 
+            // loadTexlistToolStripMenuItem
+            // 
+            this.loadTexlistToolStripMenuItem.Name = "loadTexlistToolStripMenuItem";
+            this.loadTexlistToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.loadTexlistToolStripMenuItem.Text = "Load Texture List...";
+            this.loadTexlistToolStripMenuItem.ToolTipText = "Load a texture list from a .TLS file. Useful for models that use partial texture " +
+    "lists.";
+            this.loadTexlistToolStripMenuItem.Click += new System.EventHandler(this.loadTexlistToolStripMenuItem_Click);
+            // 
+            // unloadTexlistToolStripMenuItem
+            // 
+            this.unloadTexlistToolStripMenuItem.Enabled = false;
+            this.unloadTexlistToolStripMenuItem.Name = "unloadTexlistToolStripMenuItem";
+            this.unloadTexlistToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.unloadTexlistToolStripMenuItem.Text = "Unload Texture List";
+            this.unloadTexlistToolStripMenuItem.ToolTipText = "Unloads the partial texture list.";
+            this.unloadTexlistToolStripMenuItem.Click += new System.EventHandler(this.unloadTexlistToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator15
+            // 
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(185, 6);
             // 
             // loadAnimationToolStripMenuItem
             // 
@@ -1312,33 +1344,13 @@ namespace SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem1.Text = "Gamecube Model";
             this.gamecubeModelToolStripMenuItem1.Click += new System.EventHandler(this.gamecubeModelToolStripMenuItem1_Click);
             // 
-            // loadTexlistToolStripMenuItem
+            // addTexturestoolStripMenuItem
             // 
-            this.loadTexlistToolStripMenuItem.Name = "loadTexlistToolStripMenuItem";
-            this.loadTexlistToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
-            this.loadTexlistToolStripMenuItem.Text = "Load Texture List...";
-            this.loadTexlistToolStripMenuItem.ToolTipText = "Load a texture list from a .TLS file. Useful for models that use partial texture " +
-    "lists.";
-            this.loadTexlistToolStripMenuItem.Click += new System.EventHandler(this.loadTexlistToolStripMenuItem_Click);
-            // 
-            // unloadTexlistToolStripMenuItem
-            // 
-            this.unloadTexlistToolStripMenuItem.Enabled = false;
-            this.unloadTexlistToolStripMenuItem.Name = "unloadTexlistToolStripMenuItem";
-            this.unloadTexlistToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
-            this.unloadTexlistToolStripMenuItem.Text = "Unload Texture List";
-            this.unloadTexlistToolStripMenuItem.ToolTipText = "Unloads the partial texture list.";
-            this.unloadTexlistToolStripMenuItem.Click += new System.EventHandler(this.unloadTexlistToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator14
-            // 
-            this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(185, 6);
-            // 
-            // toolStripSeparator15
-            // 
-            this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(185, 6);
+            this.addTexturestoolStripMenuItem.Name = "addTexturestoolStripMenuItem";
+            this.addTexturestoolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.addTexturestoolStripMenuItem.Text = "Add Textures...";
+            this.addTexturestoolStripMenuItem.ToolTipText = "Add individual textures from PVR or GVR files.";
+            this.addTexturestoolStripMenuItem.Click += new System.EventHandler(this.addTexturestoolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1510,5 +1522,6 @@ namespace SAModel.SAMDL
         private System.Windows.Forms.ToolStripMenuItem loadTexlistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unloadTexlistToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
-    }
+		private System.Windows.Forms.ToolStripMenuItem addTexturestoolStripMenuItem;
+	}
 }
