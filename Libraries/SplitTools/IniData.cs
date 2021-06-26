@@ -636,6 +636,11 @@ namespace SplitTools
             }
         }
 
+        public TexnameArray(string[] list)
+        {
+            TextureNames = list;
+        }
+
         public TexnameArray(string textFile)
         {
             string[] texnames_raw = File.ReadAllLines(textFile);
