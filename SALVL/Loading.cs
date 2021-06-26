@@ -147,8 +147,8 @@ namespace SAModel.SALVL
 #else
 			backgroundWorker1_DoWork(null, null);
 			backgroundWorker1_RunWorkerCompleted(null, null);
-			unsaved = false;
 #endif
+            unsaved = false;
         }
 
         /// <summary>
