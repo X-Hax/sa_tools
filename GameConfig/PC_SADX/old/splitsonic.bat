@@ -1,1 +1,1 @@
-..\bin\split binary data/sonic.exe sonic.ini output/
+..\..\bin\split binary data/sonic.exe sonic.ini output/

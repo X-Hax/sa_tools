@@ -1,1 +1,1 @@
-..\bin\split binary data/SonicApp.exe SonicApp.ini output/
+..\..\bin\split binary data/SonicApp.exe SonicApp.ini output/
