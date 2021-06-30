@@ -16,10 +16,22 @@ namespace PLTool
         public Color clipboardColor;
         bool isGamecube = false;
         public string currentFilename = "";
+        Dictionary<string, string> LevelList;
+
+        private string GetLevelNameFromFilename(string name)
+        {
+            foreach (var item in LevelList)
+            {
+                if (item.Key == Path.GetFileNameWithoutExtension(name))
+                    return item.Value;
+            }
+            return "";
+        }
 
         public MainForm()
         {
             InitializeComponent();
+            BuildLevelList();
             if (Program.Arguments.Length > 0)
                 LoadPLFile(Program.Arguments[0]);
             else
@@ -50,23 +62,24 @@ namespace PLTool
             RefreshAllPalettes();
             RefreshPalettePreview();
             currentFilename = filename;
+            toolStripStatusLabelFilename.Text = Path.GetFileNameWithoutExtension(currentFilename) + "   " + GetLevelNameFromFilename(currentFilename);
             saveToolStripMenuItem.Enabled = true;
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Open PL File", Filter = "PL Files|PL*.BIN|All Files|*.*"} )
+            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Open PL File", Filter = "PL Files|PL*.BIN|All Files|*.*" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     LoadPLFile(ofd.FileName);
                 }
             }
-		}
+        }
 
         private Bitmap DrawGradient(PLPalette palette, bool specular)
         {
-            Bitmap image = new Bitmap(512, 32);
+            Bitmap image = new Bitmap(256, 32);
             using (Graphics gfx = Graphics.FromImage(image))
             {
                 gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -75,7 +88,7 @@ namespace PLTool
                 gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 for (int i = 0; i < 256; i++)
                 {
-                    gfx.FillRectangle(new SolidBrush(palette.Colors[i, specular ? 1 : 0]), i * 2, 0, 2, 32);
+                    gfx.FillRectangle(new SolidBrush(palette.Colors[i, specular ? 1 : 0]), i, 0, 1, 32);
                 }
             }
             return image;
@@ -83,66 +96,72 @@ namespace PLTool
 
         private void RefreshAllPalettes()
         {
-            DiffusePalette0.Image = DrawGradient(currentPLFile.Palettes[0], false);
-            DiffusePalette1.Image = DrawGradient(currentPLFile.Palettes[1], false);
-            DiffusePalette2.Image = DrawGradient(currentPLFile.Palettes[2], false);
-            DiffusePalette3.Image = DrawGradient(currentPLFile.Palettes[3], false);
-            DiffusePalette4.Image = DrawGradient(currentPLFile.Palettes[4], false);
-            DiffusePalette5.Image = DrawGradient(currentPLFile.Palettes[5], false);
-            DiffusePalette6.Image = DrawGradient(currentPLFile.Palettes[6], false);
-            DiffusePalette7.Image = DrawGradient(currentPLFile.Palettes[7], false);
-            SpecularPalette0.Image = DrawGradient(currentPLFile.Palettes[0], true);
-            SpecularPalette1.Image = DrawGradient(currentPLFile.Palettes[1], true);
-            SpecularPalette2.Image = DrawGradient(currentPLFile.Palettes[2], true);
-            SpecularPalette3.Image = DrawGradient(currentPLFile.Palettes[3], true);
-            SpecularPalette4.Image = DrawGradient(currentPLFile.Palettes[4], true);
-            SpecularPalette5.Image = DrawGradient(currentPLFile.Palettes[5], true);
-            SpecularPalette6.Image = DrawGradient(currentPLFile.Palettes[6], true);
-            SpecularPalette7.Image = DrawGradient(currentPLFile.Palettes[7], true);
+            // Set scaled width and height, same for all palette controls
+            int width = SpecularPalette0.Width;
+            int height = SpecularPalette0.Height;
+            DiffusePalette0.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[0], false), width, height);
+            DiffusePalette1.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[1], false), width, height);
+            DiffusePalette2.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[2], false), width, height);
+            DiffusePalette3.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[3], false), width, height);
+            DiffusePalette4.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[4], false), width, height);
+            DiffusePalette5.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[5], false), width, height);
+            DiffusePalette6.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[6], false), width, height);
+            DiffusePalette7.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[7], false), width, height);
+            SpecularPalette0.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[0], true), width, height);
+            SpecularPalette1.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[1], true), width, height);
+            SpecularPalette2.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[2], true), width, height);
+            SpecularPalette3.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[3], true), width, height);
+            SpecularPalette4.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[4], true), width, height);
+            SpecularPalette5.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[5], true), width, height);
+            SpecularPalette6.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[6], true), width, height);
+            SpecularPalette7.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[7], true), width, height);
             // Backup palettes
-            DiffusePaletteB.Image = DrawGradient(currentPLFile.Palettes[8], false);
-            SpecularPaletteB.Image = DrawGradient(currentPLFile.Palettes[8], true);
+            DiffusePaletteB.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[8], false), width, height);
+            SpecularPaletteB.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[8], true), width, height);
         }
 
         private void RefreshPalette(int index)
         {
+            // Set scaled width and height, same for all palette controls
+            int width = SpecularPalette0.Width;
+            int height = SpecularPalette0.Height;
             switch (index)
             {
                 case 0:
-                    DiffusePalette0.Image = DrawGradient(currentPLFile.Palettes[0], false);
-                    SpecularPalette0.Image = DrawGradient(currentPLFile.Palettes[0], true);
+                    DiffusePalette0.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[0], false), width, height);
+                    SpecularPalette0.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[0], true), width, height);
                     break;
                 case 1:
-                    DiffusePalette1.Image = DrawGradient(currentPLFile.Palettes[1], false);
-                    SpecularPalette1.Image = DrawGradient(currentPLFile.Palettes[1], true);
+                    DiffusePalette1.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[1], false), width, height);
+                    SpecularPalette1.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[1], true), width, height);
                     break;
                 case 2:
-                    DiffusePalette2.Image = DrawGradient(currentPLFile.Palettes[2], false);
-                    SpecularPalette2.Image = DrawGradient(currentPLFile.Palettes[2], true);
+                    DiffusePalette2.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[2], false), width, height);
+                    SpecularPalette2.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[2], true), width, height);
                     break;
                 case 3:
-                    DiffusePalette3.Image = DrawGradient(currentPLFile.Palettes[3], false);
-                    SpecularPalette3.Image = DrawGradient(currentPLFile.Palettes[3], true);
+                    DiffusePalette3.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[3], false), width, height);
+                    SpecularPalette3.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[3], true), width, height);
                     break;
                 case 4:
-                    DiffusePalette4.Image = DrawGradient(currentPLFile.Palettes[4], false);
-                    SpecularPalette4.Image = DrawGradient(currentPLFile.Palettes[4], true);
+                    DiffusePalette4.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[4], false), width, height);
+                    SpecularPalette4.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[4], true), width, height);
                     break;
                 case 5:
-                    DiffusePalette5.Image = DrawGradient(currentPLFile.Palettes[5], false);
-                    SpecularPalette5.Image = DrawGradient(currentPLFile.Palettes[5], true);
+                    DiffusePalette5.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[5], false), width, height);
+                    SpecularPalette5.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[5], true), width, height);
                     break;
                 case 6:
-                    DiffusePalette6.Image = DrawGradient(currentPLFile.Palettes[6], false);
-                    SpecularPalette6.Image = DrawGradient(currentPLFile.Palettes[6], true);
+                    DiffusePalette6.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[6], false), width, height);
+                    SpecularPalette6.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[6], true), width, height);
                     break;
                 case 7:
-                    DiffusePalette7.Image = DrawGradient(currentPLFile.Palettes[7], false);
-                    SpecularPalette7.Image = DrawGradient(currentPLFile.Palettes[7], true);
+                    DiffusePalette7.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[7], false), width, height);
+                    SpecularPalette7.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[7], true), width, height);
                     break;
                 case 8:
-                    DiffusePaletteB.Image = DrawGradient(currentPLFile.Palettes[8], false);
-                    SpecularPaletteB.Image = DrawGradient(currentPLFile.Palettes[8], true);
+                    DiffusePaletteB.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[8], false), width, height);
+                    SpecularPaletteB.Image = DrawStretchedBitmap(DrawGradient(currentPLFile.Palettes[8], true), width, height);
                     break;
             }
         }
@@ -154,86 +173,106 @@ namespace PLTool
             {
                 gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                 gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                gfx.DrawRectangle(new Pen(Color.Black, 3.0f), 1, 1, 511, 31);
-                gfx.DrawRectangle(new Pen(Color.Cyan, 2.0f), 0, 0, 512, 32);
+                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+                gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.AssumeLinear;
+                gfx.DrawRectangle(new Pen(Color.Black), 1, 1, bitmap.Width - 3, bitmap.Height - 3);
+                gfx.DrawRectangle(new Pen(Color.Cyan), 0, 0, bitmap.Width-1, bitmap.Height-1);
                 return result;
             }
         }
 
-        private void RefreshPalettePreview()
+        private Bitmap DrawStretchedBitmap(Bitmap bitmap, int width, int height)
         {
-            pictureBoxPalettePreview.Image = new Bitmap(1024, 64);
-            using (Graphics gfx = Graphics.FromImage(pictureBoxPalettePreview.Image))
+            Bitmap result = new Bitmap(width, height);
+            using (Graphics gfx = Graphics.FromImage(result))
             {
                 gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
                 gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                 gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                gfx.DrawImage(bitmap, 0, 0, width, height);
+            }
+            return result;
+        }
+
+        private void RefreshPalettePreview()
+        {
+            // Create preview bitmap
+            Bitmap preview = new Bitmap(256, 36);
+            using (Graphics gfx = Graphics.FromImage(preview))
+            {
+                gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                 for (int i = 0; i < 256; i++)
                 {
-                    gfx.FillRectangle(new SolidBrush(currentPLFile.Palettes[selectedPaletteIndex].Colors[i, isSpecular ? 1 : 0]), i * 4, 0, 4, 64);
+                    gfx.FillRectangle(new SolidBrush(currentPLFile.Palettes[selectedPaletteIndex].Colors[i, isSpecular ? 1 : 0]), i, 0, 1, 36);
                 }
-                gfx.FillRectangle(new SolidBrush(Color.Red), selectedColorIndex * 4, 0, 4, 32);
-                switch (selectedPaletteIndex)
-                {
-                    case 0:
-                    default:
-                        if (isSpecular)
-                            SpecularPalette0.Image = DrawPaletteSelectionRectangle(SpecularPalette0.Image);
-                        else
-                            DiffusePalette0.Image = DrawPaletteSelectionRectangle(DiffusePalette0.Image);
-                        break;
-                    case 1:
-                        if (isSpecular)
-                            SpecularPalette1.Image = DrawPaletteSelectionRectangle(SpecularPalette1.Image);
-                        else
-                            DiffusePalette1.Image = DrawPaletteSelectionRectangle(DiffusePalette1.Image);
-                        break;
-                    case 2:
-                        if (isSpecular)
-                            SpecularPalette2.Image = DrawPaletteSelectionRectangle(SpecularPalette2.Image);
-                        else
-                            DiffusePalette2.Image = DrawPaletteSelectionRectangle(DiffusePalette2.Image);
-                        break;
-                    case 3:
-                        if (isSpecular)
-                            SpecularPalette3.Image = DrawPaletteSelectionRectangle(SpecularPalette3.Image);
-                        else
-                            DiffusePalette3.Image = DrawPaletteSelectionRectangle(DiffusePalette3.Image);
-                        break;
-                    case 4:
-                        if (isSpecular)
-                            SpecularPalette4.Image = DrawPaletteSelectionRectangle(SpecularPalette4.Image);
-                        else
-                            DiffusePalette4.Image = DrawPaletteSelectionRectangle(DiffusePalette4.Image);
-                        break;
-                    case 5:
-                        if (isSpecular)
-                            SpecularPalette5.Image = DrawPaletteSelectionRectangle(SpecularPalette5.Image);
-                        else
-                            DiffusePalette5.Image = DrawPaletteSelectionRectangle(DiffusePalette5.Image);
-                        break;
-                    case 6:
-                        if (isSpecular)
-                            SpecularPalette6.Image = DrawPaletteSelectionRectangle(SpecularPalette6.Image);
-                        else
-                            DiffusePalette6.Image = DrawPaletteSelectionRectangle(DiffusePalette6.Image);
-                        break;
-                    case 7:
-                        if (isSpecular)
-                            SpecularPalette7.Image = DrawPaletteSelectionRectangle(SpecularPalette7.Image);
-                        else
-                            DiffusePalette7.Image = DrawPaletteSelectionRectangle(DiffusePalette7.Image);
-                        break;
-                    case 8:
-                        if (isSpecular)
-                            SpecularPaletteB.Image = DrawPaletteSelectionRectangle(SpecularPaletteB.Image);
-                        else
-                            DiffusePaletteB.Image = DrawPaletteSelectionRectangle(DiffusePaletteB.Image);
-                        break;
-                }
+                gfx.FillRectangle(new SolidBrush(Color.Red), selectedColorIndex, 0, 1, 9);
+                gfx.FillRectangle(new SolidBrush(Color.Black), selectedColorIndex, 27, 1, 9);
+
+            }
+            // Apply Bitmap to the scaled control
+            pictureBoxPalettePreview.Image = DrawStretchedBitmap(preview, pictureBoxPalettePreview.Width, pictureBoxPalettePreview.Height);
+            // Update selected palette
+            // Set scaled width and height, same for all palette controls
+            int width = SpecularPalette0.Width;
+            int height = SpecularPalette0.Height;
+            switch (selectedPaletteIndex)
+            {
+                case 0:
+                default:
+                    if (isSpecular)
+                        SpecularPalette0.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette0.Image), width, height);
+                    else
+                        DiffusePalette0.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette0.Image), width, height);
+                    break;
+                case 1:
+                    if (isSpecular)
+                        SpecularPalette1.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette1.Image), width, height);
+                    else
+                        DiffusePalette1.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette1.Image), width, height);
+                    break;
+                case 2:
+                    if (isSpecular)
+                        SpecularPalette2.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette2.Image), width, height);
+                    else
+                        DiffusePalette2.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette2.Image), width, height);
+                    break;
+                case 3:
+                    if (isSpecular)
+                        SpecularPalette3.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette3.Image), width, height);
+                    else
+                        DiffusePalette3.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette3.Image), width, height);
+                    break;
+                case 4:
+                    if (isSpecular)
+                        SpecularPalette4.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette4.Image), width, height);
+                    else
+                        DiffusePalette4.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette4.Image), width, height);
+                    break;
+                case 5:
+                    if (isSpecular)
+                        SpecularPalette5.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette5.Image), width, height);
+                    else
+                        DiffusePalette5.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette5.Image), width, height);
+                    break;
+                case 6:
+                    if (isSpecular)
+                        SpecularPalette6.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette6.Image), width, height);
+                    else
+                        DiffusePalette6.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette6.Image), width, height);
+                    break;
+                case 7:
+                    if (isSpecular)
+                        SpecularPalette7.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPalette7.Image), width, height);
+                    else
+                        DiffusePalette7.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePalette7.Image), width, height);
+                    break;
+                case 8:
+                    if (isSpecular)
+                        SpecularPaletteB.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(SpecularPaletteB.Image), width, height);
+                    else
+                        DiffusePaletteB.Image = DrawStretchedBitmap(DrawPaletteSelectionRectangle(DiffusePaletteB.Image), width, height);
+                    break;
             }
             RefreshStatus();
             RefreshColorPreview();
@@ -241,7 +280,7 @@ namespace PLTool
 
         private void RefreshColorPreview()
         {
-            toolStripSplitButtonColor.Image = new Bitmap(24, 24);
+            toolStripSplitButtonColor.Image = new Bitmap(16, 16);
             using (Graphics gfx = Graphics.FromImage(toolStripSplitButtonColor.Image))
             {
                 gfx.Clear(currentPLFile.Palettes[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0]);
@@ -249,8 +288,8 @@ namespace PLTool
             RefreshStatus();
         }
 
-		private void trackBar1_ValueChanged(object sender, EventArgs e)
-		{
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
             selectedColorIndex = trackBarColorIndex.Value;
             RefreshPalettePreview();
         }
@@ -276,106 +315,105 @@ namespace PLTool
                 contextMenuPalette.Show(sender, e.Location);
         }
 
-		private void DiffusePalette0_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette0_Click(object sender, EventArgs e)
+        {
             SelectPalette(0, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette1_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette1_Click(object sender, EventArgs e)
+        {
             SelectPalette(1, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette2_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette2_Click(object sender, EventArgs e)
+        {
             SelectPalette(2, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette3_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette3_Click(object sender, EventArgs e)
+        {
             SelectPalette(3, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette4_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette4_Click(object sender, EventArgs e)
+        {
             SelectPalette(4, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette5_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette5_Click(object sender, EventArgs e)
+        {
             SelectPalette(5, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette6_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette6_Click(object sender, EventArgs e)
+        {
             SelectPalette(6, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePalette7_Click(object sender, EventArgs e)
-		{
+        private void DiffusePalette7_Click(object sender, EventArgs e)
+        {
             SelectPalette(7, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void DiffusePaletteB_Click(object sender, EventArgs e)
-		{
+        private void DiffusePaletteB_Click(object sender, EventArgs e)
+        {
             SelectPalette(8, false, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette0_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette0_Click(object sender, EventArgs e)
+        {
             SelectPalette(0, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette1_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette1_Click(object sender, EventArgs e)
+        {
             SelectPalette(1, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette2_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette2_Click(object sender, EventArgs e)
+        {
             SelectPalette(2, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette3_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette3_Click(object sender, EventArgs e)
+        {
             SelectPalette(3, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette4_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette4_Click(object sender, EventArgs e)
+        {
             SelectPalette(4, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette5_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette5_Click(object sender, EventArgs e)
+        {
             SelectPalette(5, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette6_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette6_Click(object sender, EventArgs e)
+        {
             SelectPalette(6, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPalette7_Click(object sender, EventArgs e)
-		{
+        private void SpecularPalette7_Click(object sender, EventArgs e)
+        {
             SelectPalette(7, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void SpecularPaletteB_Click(object sender, EventArgs e)
-		{
+        private void SpecularPaletteB_Click(object sender, EventArgs e)
+        {
             SelectPalette(8, true, (Control)sender, (MouseEventArgs)e);
         }
 
-		private void paletteListBlankToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void paletteListBlankToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             CreateBlankPalettes();
-		}
+        }
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             Application.Exit();
-		}
-
+        }
 
         private void FillPaletteWithColor(Color color)
         {
@@ -385,24 +423,24 @@ namespace PLTool
             RefreshPalettePreview();
         }
 
-		private void toolStripFillWhite_Click(object sender, EventArgs e)
-		{
+        private void toolStripFillWhite_Click(object sender, EventArgs e)
+        {
             FillPaletteWithColor(Color.White);
         }
 
-		private void toolStripFillBlack_Click(object sender, EventArgs e)
-		{
+        private void toolStripFillBlack_Click(object sender, EventArgs e)
+        {
             FillPaletteWithColor(Color.Black);
         }
 
-		private void toolStripFillColor_Click(object sender, EventArgs e)
-		{
+        private void toolStripFillColor_Click(object sender, EventArgs e)
+        {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
                 FillPaletteWithColor(colorDialog1.Color);
         }
 
-		private void toolStripFillPattern_Click(object sender, EventArgs e)
-		{
+        private void toolStripFillPattern_Click(object sender, EventArgs e)
+        {
             using (ColorPattern cpn = new ColorPattern())
                 if (cpn.ShowDialog() == DialogResult.OK)
                 {
@@ -411,7 +449,7 @@ namespace PLTool
                     RefreshPalette(selectedPaletteIndex);
                     RefreshPalettePreview();
                 }
-		}
+        }
 
         private void SetPaletteAlpha(int alpha)
         {
@@ -421,23 +459,23 @@ namespace PLTool
             RefreshPalettePreview();
         }
 
-		private void toolStripAlpha255_Click(object sender, EventArgs e)
-		{
+        private void toolStripAlpha255_Click(object sender, EventArgs e)
+        {
             SetPaletteAlpha(255);
         }
 
-		private void toolStripAlpha0_Click(object sender, EventArgs e)
-		{
+        private void toolStripAlpha0_Click(object sender, EventArgs e)
+        {
             SetPaletteAlpha(0);
         }
 
-		private void toolStripAlpha127_Click(object sender, EventArgs e)
-		{
+        private void toolStripAlpha127_Click(object sender, EventArgs e)
+        {
             SetPaletteAlpha(127);
         }
 
-		private void toolStripFillBasicGradient_Click(object sender, EventArgs e)
-		{
+        private void toolStripFillBasicGradient_Click(object sender, EventArgs e)
+        {
             using (GradientBasic gb = new GradientBasic())
                 if (gb.ShowDialog() == DialogResult.OK)
                 {
@@ -462,15 +500,15 @@ namespace PLTool
                 labelB.BackColor = color;
         }
 
-		private void lightGreyToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void lightGreyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             SetLabelColor(Color.Black);
             SetBackgroundColor(Color.LightGray);
             lightGreyToolStripMenuItem.Checked = true;
             darkGreyDefaultToolStripMenuItem.Checked = whiteToolStripMenuItem.Checked = blackToolStripMenuItem.Checked = false;
         }
 
-		private void blackToolStripMenuItem_Click(object sender, EventArgs e)
+        private void blackToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetLabelColor(Color.White);
             SetBackgroundColor(Color.Black);
@@ -478,24 +516,24 @@ namespace PLTool
             darkGreyDefaultToolStripMenuItem.Checked = whiteToolStripMenuItem.Checked = lightGreyToolStripMenuItem.Checked = false;
         }
 
-		private void whiteToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void whiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             SetLabelColor(Color.Black);
             SetBackgroundColor(Color.White);
             whiteToolStripMenuItem.Checked = true;
             darkGreyDefaultToolStripMenuItem.Checked = blackToolStripMenuItem.Checked = lightGreyToolStripMenuItem.Checked = false;
         }
 
-		private void darkGreyDefaultToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void darkGreyDefaultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             SetLabelColor(Color.White);
-            SetBackgroundColor(Color.FromArgb(36,36,36));
+            SetBackgroundColor(Color.FromArgb(36, 36, 36));
             darkGreyDefaultToolStripMenuItem.Checked = true;
             lightGreyToolStripMenuItem.Checked = whiteToolStripMenuItem.Checked = blackToolStripMenuItem.Checked = false;
         }
 
-		private void paletteListEmeraldCoastToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void paletteListEmeraldCoastToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             CreateDefaultPalettes();
         }
 
@@ -517,41 +555,41 @@ namespace PLTool
             RefreshPalettePreview();
         }
 
-		private void toolStripCopyPalette_Click(object sender, EventArgs e)
-		{
+        private void toolStripCopyPalette_Click(object sender, EventArgs e)
+        {
             CopyPalette();
         }
 
-		private void toolStripPastePalette_Click(object sender, EventArgs e)
-		{
+        private void toolStripPastePalette_Click(object sender, EventArgs e)
+        {
             PastePalette();
         }
 
-		private void gamecubeToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void gamecubeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             gamecubeToolStripMenuItem.Checked = isGamecube = true;
             dreamcastToolStripMenuItem.Checked = false;
-		}
+        }
 
-		private void dreamcastToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void dreamcastToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             gamecubeToolStripMenuItem.Checked = isGamecube = false;
             dreamcastToolStripMenuItem.Checked = true;
         }
 
-		private void pLToolHelpToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void pLToolHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/PL-Tool");
         }
 
-		private void issueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void issueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
         }
 
-		private void toolStripSplitButtonColor_MouseUp(object sender, MouseEventArgs e)
-        { 
-                toolStripSplitButtonColor.ShowDropDown();
+        private void toolStripSplitButtonColor_MouseUp(object sender, MouseEventArgs e)
+        {
+            toolStripSplitButtonColor.ShowDropDown();
         }
 
         private void ReplaceCurrentColor(Color color)
@@ -561,60 +599,64 @@ namespace PLTool
             RefreshPalettePreview();
         }
 
-		private void toolStripColorReplace_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorReplace_Click(object sender, EventArgs e)
+        {
             if (colorDialog1.ShowDialog() == DialogResult.OK)
                 ReplaceCurrentColor(colorDialog1.Color);
         }
 
-		private void toolStripColorReplaceBlack_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorReplaceBlack_Click(object sender, EventArgs e)
+        {
             ReplaceCurrentColor(Color.Black);
         }
 
-		private void toolStripColorReplaceWhite_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorReplaceWhite_Click(object sender, EventArgs e)
+        {
             ReplaceCurrentColor(Color.White);
         }
 
-		private void toolStripColorAlpha255_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorAlpha255_Click(object sender, EventArgs e)
+        {
             ReplaceCurrentColor(Color.FromArgb(255, currentPLFile.Palettes[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0]));
         }
 
-		private void toolStripColorAlpha0_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorAlpha0_Click(object sender, EventArgs e)
+        {
             ReplaceCurrentColor(Color.FromArgb(0, currentPLFile.Palettes[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0]));
         }
 
-		private void toolStripColorAlpha127_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorAlpha127_Click(object sender, EventArgs e)
+        {
             ReplaceCurrentColor(Color.FromArgb(127, currentPLFile.Palettes[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0]));
         }
 
-		private void toolStripColorCopy_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorCopy_Click(object sender, EventArgs e)
+        {
             clipboardColor = currentPLFile.Palettes[selectedPaletteIndex].Colors[selectedColorIndex, isSpecular ? 1 : 0];
             toolStripColorPaste.Enabled = true;
         }
 
-		private void toolStripColorPaste_Click(object sender, EventArgs e)
-		{
+        private void toolStripColorPaste_Click(object sender, EventArgs e)
+        {
             ReplaceCurrentColor(clipboardColor);
-		}
+        }
 
-		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export PNG", Filter = "PNG Images|*.png", DefaultExt = "png", FileName = Path.GetFileNameWithoutExtension(currentFilename) })
                 if (sfd.ShowDialog() == DialogResult.OK)
                     currentPLFile.ToPNG().Save(sfd.FileName);
-		}
+        }
 
-		private void importToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Import PNG", Filter = "PNG Images|*.png|All Files|*.*", DefaultExt = "png", FileName = Path.GetFileNameWithoutExtension(currentFilename) })
                 if (ofd.ShowDialog() == DialogResult.OK)
-                    currentPLFile = new PLFile(new Bitmap(ofd.FileName));
+                {
+                    Bitmap import = new Bitmap(ofd.FileName);
+                    currentPLFile = new PLFile(import);
+                    import.Dispose();
+                }
             RefreshAllPalettes();
             RefreshPalettePreview();
         }
@@ -624,21 +666,26 @@ namespace PLTool
             File.WriteAllBytes(filename, currentPLFile.GetBytes(isGamecube));
         }
 
-		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             SavePLFile(currentFilename);
-		}
-
-		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Save PL File", Filter = "PL Files|PL*.BIN|All Files|*.*" })
-                if (sfd.ShowDialog() == DialogResult.OK)
-                    SavePLFile(sfd.FileName);
         }
 
-		private void toolStripCreateGradientDX_Click(object sender, EventArgs e)
-		{
-            using (GradientDX gdx = new GradientDX())
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Save PL File", Filter = "PL Files|PL*.BIN|All Files|*.*" })
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    SavePLFile(sfd.FileName);
+                    currentFilename = sfd.FileName;
+                    toolStripStatusLabelFilename.Text = Path.GetFileNameWithoutExtension(currentFilename);
+                }
+            
+        }
+
+        private void toolStripCreateGradientDX_Click(object sender, EventArgs e)
+        {
+            using (GradientDX gdx = new GradientDX(currentPLFile.Palettes[selectedPaletteIndex].GetColorList(isSpecular)))
                 if (gdx.ShowDialog() == DialogResult.OK)
                 {
                     for (int i = 0; i < 256; i++)
@@ -647,5 +694,141 @@ namespace PLTool
                     RefreshPalettePreview();
                 }
         }
-	}
+
+        private void toolStripExportPalettePNG_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog() { FileName = Path.GetFileNameWithoutExtension(currentFilename) + "_" + (isSpecular ? "s" : "d") + selectedPaletteIndex.ToString(), Title = "Export PNG", Filter = "PNG Images|*.png", DefaultExt = "png" })
+                if (sfd.ShowDialog() == DialogResult.OK)
+                    currentPLFile.Palettes[selectedPaletteIndex].ToPNG(isSpecular).Save(sfd.FileName);
+        }
+
+        private void toolStripImportPalettePNG_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog() { FileName = Path.GetFileNameWithoutExtension(currentFilename) + "_" + (isSpecular ? "s" : "d") + selectedPaletteIndex.ToString(), Title = "Import PNG", Filter = "PNG Images|*.png|All Files|*.*", DefaultExt = "png" })
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Bitmap import = new Bitmap(ofd.FileName);
+                    if (import.Width < 256)
+                    {
+                        MessageBox.Show(this, "Bitmap width must be 256 pixels.", "PL Tool Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    for (int i = 0; i < 256; i++)
+                    {
+                        Color orig = import.GetPixel(i, 0);
+                        currentPLFile.Palettes[selectedPaletteIndex].Colors[i, isSpecular ? 1 : 0] = Color.FromArgb(orig.A, orig.R, orig.G, orig.B);
+                    }
+                    import.Dispose();
+                    RefreshAllPalettes();
+                    RefreshPalettePreview();
+                }
+        }
+
+        private void BuildLevelList()
+        {
+            LevelList = new Dictionary<string, string>();
+
+            LevelList.Add("PL_10B", "Emerald Coast + Egg Carrier (sunk)");
+
+            LevelList.Add("PL_20B", "Windy Valley / Act 1 Windy Hill");
+            LevelList.Add("PL_21B", "Windy Valley / Act 1 Tornado");
+            LevelList.Add("PL_22B", "Windy Valley / Act 1 The Air");
+
+            LevelList.Add("PL_30B", "Twinkle Park / Act 1 Twinkle Kart");
+            LevelList.Add("PL_31B", "Twinkle Park / Act 2 Pleasure Castle");
+            LevelList.Add("PL_32B", "Twinkle Park / Act 3 Mirror Room");
+
+            LevelList.Add("PL_40B", "Speed Highway / Act 1");
+            LevelList.Add("PL_41B", "Speed Highway / Act 2 Goin' Down");
+            LevelList.Add("PL_42B", "Speed Highway / Act 3 At Down");
+
+            LevelList.Add("PL_50B", "Red Mountain / Act 1 Mt. Red");
+            LevelList.Add("PL_51B", "Red Mountain / Act 2 Red Hot Skull");
+            LevelList.Add("PL_52B", "Red Mountain / Act 3 (Knuckles)");
+
+            LevelList.Add("PL_60B", "Sky Deck (Light) + Character Select");
+            LevelList.Add("PL_61B", "Sky Deck (Dark)");
+
+            LevelList.Add("PL_70B", "Lost World / Act 1 Tricky Maze");
+            LevelList.Add("PL_71B", "Lost World / Act 2/3 Danger! Chased by Rock");
+
+            LevelList.Add("PL_80B", "Ice Cap / Act 1 Snowy Mountain");
+            LevelList.Add("PL_81B", "Ice Cap / Act 2 Limestone Cave");
+            LevelList.Add("PL_82B", "Ice Cap / Act 3 Snowboard");
+            LevelList.Add("PL_83B", "Ice Cap / Act 4 (Big)");
+
+            LevelList.Add("PL_90B", "Casinopolis / Act 1 Main Hall");
+            LevelList.Add("PL_91B", "Casinopolis / Act 2 Sewers");
+            LevelList.Add("PL_92B", "Casinopolis / Act 3 Sonic Pinball");
+            LevelList.Add("PL_93B", "Casinopolis / Act 4 NiGHTS Pinball");
+
+            LevelList.Add("PL_A0B", "Final Egg / Act 1 Mechanical Resonance");
+            LevelList.Add("PL_A1B", "Final Egg / Act 2 Crank the Heat Up");
+            LevelList.Add("PL_A2B", "Final Egg / Act 3 Gamma's Training Area");
+
+            LevelList.Add("PL_C0B", "Hot Shelter / Act 1 Bad Taste Aquarium");
+            LevelList.Add("PL_C1B", "Hot Shelter / Act 2 Red Barrage Area");
+            LevelList.Add("PL_C2B", "Hot Shelter / Act 3 Gamma's Hot Shelter");
+
+            LevelList.Add("PL_F0B", "Chaos 0");
+            LevelList.Add("PL_G0B", "Chaos 2");
+            LevelList.Add("PL_H0B", "Chaos 4");
+            LevelList.Add("PL_I0B", "Chaos 6");
+            LevelList.Add("PL_J0B", "Perfect Chaos / Act 1");
+            LevelList.Add("PL_J1B", "Perfect Chaos / Act 2");
+            LevelList.Add("PL_K0B", "Egg Hornet");
+            LevelList.Add("PL_M0B", "Egg Viper");
+            LevelList.Add("PL_N0B", "ZERO");
+            LevelList.Add("PL_O0B", "E-101");
+            LevelList.Add("PL_P0B", "E-101-R");
+
+            LevelList.Add("PL_Q1B", "Station Square (Evening)");
+            LevelList.Add("PL_Q3B", "Station Square (Night) + Egg Walker");
+            LevelList.Add("PL_Q4B", "Station Square (Day)");
+
+            LevelList.Add("PL_T0B", "Egg Carrier Outside (Airborne)");
+            LevelList.Add("PL_T1B", "Egg Carrier Outside (Unused)");
+            LevelList.Add("PL_T2B", "Egg Carrier Private Room");
+            LevelList.Add("PL_T3B", "Egg Carrier Captain's Room");
+            LevelList.Add("PL_T4B", "Egg Carrier Outsude (Unused)");
+            LevelList.Add("PL_T5B", "Egg Carrier Pool");
+
+            LevelList.Add("PL_W0B", "Egg Carrier Ammunition Room");
+            LevelList.Add("PL_W1B", "Egg Carrier Bridge");
+            LevelList.Add("PL_W2B", "Egg Carrier Hedgehog Hammer Room");
+            LevelList.Add("PL_W3B", "Egg Carrier Prison");
+            LevelList.Add("PL_W4B", "Egg Carrier Water Reservoir");
+            LevelList.Add("PL_W5B", "Egg Carrier Garden Teleporter Room");
+
+            LevelList.Add("PL_X0B", "Mystic Ruins (Day)");
+            LevelList.Add("PL_X1B", "Mystic Ruins (Evening)");
+            LevelList.Add("PL_X2B", "Mystic Ruins (Night)");
+            LevelList.Add("PL_X3B", "Mystic Ruins Base");
+
+            LevelList.Add("PL_Y0B", "The Past / Echidna City");
+            LevelList.Add("PL_Y1B", "The Past / Master Emerald Altar");
+            LevelList.Add("PL_Y2B", "The Past / Master Emerald on Fire");
+
+            LevelList.Add("PL_Z0B", "Twinkle Circuit");
+            LevelList.Add("PL1A0B", "Sky Chase / Act 1");
+            LevelList.Add("PL1B0B", "Sky Chase / Act 2");
+            LevelList.Add("PL1C0B", "Sand Hill");
+
+            LevelList.Add("PL1D0B", "Station Square Garden (Day)");
+            LevelList.Add("PL1D1B", "Station Square Garden (Unused)");
+            LevelList.Add("PL1E0B", "Egg Carrier Garden (Day)");
+            LevelList.Add("PL1E1B", "Egg Carrier Garden (Unused)");
+            LevelList.Add("PL1E2B", "Egg Carrier Garden (Unused)");
+            LevelList.Add("PL1F0B", "Mystic Ruins Garden (Day)");
+            LevelList.Add("PL1F1B", "Mystic Ruins Garden (Evening / Unused)");
+            LevelList.Add("PL1F2B", "Mystic Ruins Garden (Night / Unused)");
+            LevelList.Add("PL1G0B", "Chao Stadium");
+            LevelList.Add("PL1G1B", "Chao Race");
+
+            LevelList.Add("PL_9MB", "Casinopolis Sewers (Unused)");
+            LevelList.Add("PL_MRD", "Mystic Ruins Day alt. (Unused)");
+            LevelList.Add("PL_MRE", "Mystic Ruins Evening alt. (Unused)");
+            LevelList.Add("PL_MRN", "Mystic Ruins Night alt. (Unused)");
+        }
+    }
 }

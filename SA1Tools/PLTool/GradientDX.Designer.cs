@@ -30,19 +30,19 @@ namespace PLTool
 		private void InitializeComponent()
 		{
             this.groupBoxCO1 = new System.Windows.Forms.GroupBox();
-            this.trackBarCO1Pow = new System.Windows.Forms.TrackBar();
-            this.pictureBoxColor1 = new System.Windows.Forms.PictureBox();
-            this.numericUpDownCO1R = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownCO1G = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownCO1B = new System.Windows.Forms.NumericUpDown();
-            this.labelCO1R = new System.Windows.Forms.Label();
-            this.labelCO1G = new System.Windows.Forms.Label();
-            this.labelCO1B = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.labelCO1POW = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.labelCO1B = new System.Windows.Forms.Label();
+            this.labelCO1G = new System.Windows.Forms.Label();
+            this.labelCO1R = new System.Windows.Forms.Label();
+            this.numericUpDownCO1B = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO1G = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownCO1R = new System.Windows.Forms.NumericUpDown();
+            this.pictureBoxColor1 = new System.Windows.Forms.PictureBox();
+            this.trackBarCO1Pow = new System.Windows.Forms.TrackBar();
             this.groupBoxCO2 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -74,12 +74,13 @@ namespace PLTool
             this.label12 = new System.Windows.Forms.Label();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.groupBoxCO1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarCO1Pow)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColor1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1R)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1G)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1B)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1G)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1R)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColor1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarCO1Pow)).BeginInit();
             this.groupBoxCO2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO2B)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO2G)).BeginInit();
@@ -117,90 +118,32 @@ namespace PLTool
             this.groupBoxCO1.TabStop = false;
             this.groupBoxCO1.Text = "Color 1";
             // 
-            // trackBarCO1Pow
+            // label4
             // 
-            this.trackBarCO1Pow.Location = new System.Drawing.Point(6, 179);
-            this.trackBarCO1Pow.Maximum = 9900;
-            this.trackBarCO1Pow.Name = "trackBarCO1Pow";
-            this.trackBarCO1Pow.Size = new System.Drawing.Size(256, 69);
-            this.trackBarCO1Pow.TabIndex = 3;
-            this.trackBarCO1Pow.TickFrequency = 0;
-            this.trackBarCO1Pow.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(73, 251);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(57, 20);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "Power:";
             // 
-            // pictureBoxColor1
+            // label3
             // 
-            this.pictureBoxColor1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColor1.Location = new System.Drawing.Point(110, 25);
-            this.pictureBoxColor1.Name = "pictureBoxColor1";
-            this.pictureBoxColor1.Size = new System.Drawing.Size(41, 42);
-            this.pictureBoxColor1.TabIndex = 4;
-            this.pictureBoxColor1.TabStop = false;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(42, 149);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(45, 20);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Blue:";
             // 
-            // numericUpDownCO1R
+            // label2
             // 
-            this.numericUpDownCO1R.Location = new System.Drawing.Point(106, 83);
-            this.numericUpDownCO1R.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericUpDownCO1R.Name = "numericUpDownCO1R";
-            this.numericUpDownCO1R.Size = new System.Drawing.Size(79, 26);
-            this.numericUpDownCO1R.TabIndex = 5;
-            this.numericUpDownCO1R.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
-            // 
-            // numericUpDownCO1G
-            // 
-            this.numericUpDownCO1G.Location = new System.Drawing.Point(106, 115);
-            this.numericUpDownCO1G.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericUpDownCO1G.Name = "numericUpDownCO1G";
-            this.numericUpDownCO1G.Size = new System.Drawing.Size(79, 26);
-            this.numericUpDownCO1G.TabIndex = 6;
-            this.numericUpDownCO1G.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
-            // 
-            // numericUpDownCO1B
-            // 
-            this.numericUpDownCO1B.Location = new System.Drawing.Point(106, 147);
-            this.numericUpDownCO1B.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericUpDownCO1B.Name = "numericUpDownCO1B";
-            this.numericUpDownCO1B.Size = new System.Drawing.Size(79, 26);
-            this.numericUpDownCO1B.TabIndex = 7;
-            this.numericUpDownCO1B.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
-            // 
-            // labelCO1R
-            // 
-            this.labelCO1R.AutoSize = true;
-            this.labelCO1R.Location = new System.Drawing.Point(191, 85);
-            this.labelCO1R.Name = "labelCO1R";
-            this.labelCO1R.Size = new System.Drawing.Size(49, 20);
-            this.labelCO1R.TabIndex = 8;
-            this.labelCO1R.Text = "1.000";
-            // 
-            // labelCO1G
-            // 
-            this.labelCO1G.AutoSize = true;
-            this.labelCO1G.Location = new System.Drawing.Point(191, 117);
-            this.labelCO1G.Name = "labelCO1G";
-            this.labelCO1G.Size = new System.Drawing.Size(49, 20);
-            this.labelCO1G.TabIndex = 9;
-            this.labelCO1G.Text = "1.000";
-            // 
-            // labelCO1B
-            // 
-            this.labelCO1B.AutoSize = true;
-            this.labelCO1B.Location = new System.Drawing.Point(191, 149);
-            this.labelCO1B.Name = "labelCO1B";
-            this.labelCO1B.Size = new System.Drawing.Size(49, 20);
-            this.labelCO1B.TabIndex = 10;
-            this.labelCO1B.Text = "1.000";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(29, 117);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(58, 20);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Green:";
             // 
             // labelCO1POW
             // 
@@ -220,32 +163,92 @@ namespace PLTool
             this.label1.TabIndex = 12;
             this.label1.Text = "Red:";
             // 
-            // label2
+            // labelCO1B
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(29, 117);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 20);
-            this.label2.TabIndex = 13;
-            this.label2.Text = "Green:";
+            this.labelCO1B.AutoSize = true;
+            this.labelCO1B.Location = new System.Drawing.Point(191, 149);
+            this.labelCO1B.Name = "labelCO1B";
+            this.labelCO1B.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1B.TabIndex = 10;
+            this.labelCO1B.Text = "1.000";
             // 
-            // label3
+            // labelCO1G
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(42, 149);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 20);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "Blue:";
+            this.labelCO1G.AutoSize = true;
+            this.labelCO1G.Location = new System.Drawing.Point(191, 117);
+            this.labelCO1G.Name = "labelCO1G";
+            this.labelCO1G.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1G.TabIndex = 9;
+            this.labelCO1G.Text = "1.000";
             // 
-            // label4
+            // labelCO1R
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(73, 251);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(57, 20);
-            this.label4.TabIndex = 15;
-            this.label4.Text = "Power:";
+            this.labelCO1R.AutoSize = true;
+            this.labelCO1R.Location = new System.Drawing.Point(191, 85);
+            this.labelCO1R.Name = "labelCO1R";
+            this.labelCO1R.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1R.TabIndex = 8;
+            this.labelCO1R.Text = "1.000";
+            // 
+            // numericUpDownCO1B
+            // 
+            this.numericUpDownCO1B.Location = new System.Drawing.Point(106, 147);
+            this.numericUpDownCO1B.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownCO1B.Name = "numericUpDownCO1B";
+            this.numericUpDownCO1B.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO1B.TabIndex = 7;
+            this.numericUpDownCO1B.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
+            // 
+            // numericUpDownCO1G
+            // 
+            this.numericUpDownCO1G.Location = new System.Drawing.Point(106, 115);
+            this.numericUpDownCO1G.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownCO1G.Name = "numericUpDownCO1G";
+            this.numericUpDownCO1G.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO1G.TabIndex = 6;
+            this.numericUpDownCO1G.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
+            // 
+            // numericUpDownCO1R
+            // 
+            this.numericUpDownCO1R.Location = new System.Drawing.Point(106, 83);
+            this.numericUpDownCO1R.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownCO1R.Name = "numericUpDownCO1R";
+            this.numericUpDownCO1R.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO1R.TabIndex = 5;
+            this.numericUpDownCO1R.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
+            // 
+            // pictureBoxColor1
+            // 
+            this.pictureBoxColor1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxColor1.Location = new System.Drawing.Point(110, 25);
+            this.pictureBoxColor1.Name = "pictureBoxColor1";
+            this.pictureBoxColor1.Size = new System.Drawing.Size(41, 42);
+            this.pictureBoxColor1.TabIndex = 4;
+            this.pictureBoxColor1.TabStop = false;
+            this.pictureBoxColor1.Click += new System.EventHandler(this.pictureBoxColor1_Click);
+            // 
+            // trackBarCO1Pow
+            // 
+            this.trackBarCO1Pow.Location = new System.Drawing.Point(6, 179);
+            this.trackBarCO1Pow.Maximum = 9900;
+            this.trackBarCO1Pow.Name = "trackBarCO1Pow";
+            this.trackBarCO1Pow.Size = new System.Drawing.Size(256, 69);
+            this.trackBarCO1Pow.TabIndex = 3;
+            this.trackBarCO1Pow.TickFrequency = 0;
+            this.trackBarCO1Pow.Value = 100;
+            this.trackBarCO1Pow.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // groupBoxCO2
             // 
@@ -388,6 +391,7 @@ namespace PLTool
             this.pictureBoxColor2.Size = new System.Drawing.Size(41, 42);
             this.pictureBoxColor2.TabIndex = 4;
             this.pictureBoxColor2.TabStop = false;
+            this.pictureBoxColor2.Click += new System.EventHandler(this.pictureBoxColor2_Click);
             // 
             // trackBarCO2Pow
             // 
@@ -397,6 +401,7 @@ namespace PLTool
             this.trackBarCO2Pow.Size = new System.Drawing.Size(256, 69);
             this.trackBarCO2Pow.TabIndex = 3;
             this.trackBarCO2Pow.TickFrequency = 0;
+            this.trackBarCO2Pow.Value = 100;
             this.trackBarCO2Pow.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // groupBoxAmbient
@@ -519,6 +524,7 @@ namespace PLTool
             this.pictureBoxAmbient.Size = new System.Drawing.Size(41, 42);
             this.pictureBoxAmbient.TabIndex = 4;
             this.pictureBoxAmbient.TabStop = false;
+            this.pictureBoxAmbient.Click += new System.EventHandler(this.pictureBoxAmbient_Click);
             // 
             // pictureBoxOriginal
             // 
@@ -576,6 +582,11 @@ namespace PLTool
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
+            // colorDialog1
+            // 
+            this.colorDialog1.AnyColor = true;
+            this.colorDialog1.FullOpen = true;
+            // 
             // GradientDX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -601,11 +612,11 @@ namespace PLTool
             this.Text = "Generate Gradient";
             this.groupBoxCO1.ResumeLayout(false);
             this.groupBoxCO1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarCO1Pow)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColor1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1R)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1G)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1B)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1G)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO1R)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColor1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarCO1Pow)).EndInit();
             this.groupBoxCO2.ResumeLayout(false);
             this.groupBoxCO2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCO2B)).EndInit();
@@ -673,5 +684,6 @@ namespace PLTool
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Button buttonSave;
 		private System.Windows.Forms.Button buttonCancel;
+		private System.Windows.Forms.ColorDialog colorDialog1;
 	}
 }

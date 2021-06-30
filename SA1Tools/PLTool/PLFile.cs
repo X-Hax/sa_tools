@@ -1,10 +1,6 @@
 ﻿using SAModel;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PLTool
@@ -27,6 +23,27 @@ namespace PLTool
                 Colors[colorindex, 1] = Color.FromArgb(colorvalue_s);
                 colorindex++;
             }
+        }
+
+        public List<Color> GetColorList(bool specular)
+        {
+            List<Color> result = new List<Color>();
+            for (int i = 0; i < 256; i++)
+                result.Add(Colors[i, specular ? 1:0]);
+            return result;
+        }
+
+        public Bitmap ToPNG(bool specular)
+        {
+            Bitmap result = new Bitmap(256, 32);
+            for (int p = 0; p < 32; p++)
+            {
+                for (int i = 0; i < 256; i++)
+                {
+                    result.SetPixel(i, p, Colors[i, specular ? 1:0]);
+                }
+            }
+            return result;
         }
 
         public PLPalette(Color[,] colors)
