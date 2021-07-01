@@ -160,9 +160,11 @@
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\SSHADOWMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SSHADOWMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\SSONICMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SSONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TERIOSMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
