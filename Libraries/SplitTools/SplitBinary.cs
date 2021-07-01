@@ -93,9 +93,33 @@ namespace SplitTools.Split
 					switch (type)
 					{
 						case "landtable":
-							LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt_def;
-							new LandTable(datafile, address, imageBase, format, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt_def, nometa);
-							break;
+							{
+								LandTableFormat landfmt;
+								switch (type)
+								{
+									case "sa1landtable":
+										landfmt = LandTableFormat.SA1;
+										break;
+									case "sadxlandtable":
+										landfmt = LandTableFormat.SADX;
+										break;
+									case "sa2landtable":
+										landfmt = LandTableFormat.SA2;
+										break;
+									case "sa2blandtable":
+									case "battlelandtable":
+										landfmt = LandTableFormat.SA2B;
+										break;
+									case "landtable":
+									default:
+										landfmt = landfmt_def;
+										break;
+								}
+								if (data.CustomProperties.ContainsKey("format"))
+									landfmt_def = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
+								new LandTable(datafile, address, imageBase, landfmt_def, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt_def, nometa);
+							}
+								break;
 						case "model":
 						case "basicmodel":
 						case "basicdxmodel":
