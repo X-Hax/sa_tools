@@ -45,7 +45,7 @@ namespace SplitTools.Split
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				if (Path.GetExtension(datafilename).ToLowerInvariant() == ".prs" || (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin")) datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
-				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
+				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase) || (inifile.CompressedREL && Path.GetExtension(datafilename).ToLowerInvariant() == ".prs"))
 				{
 					datafile = HelperFunctions.DecompressREL(datafile);
 					HelperFunctions.FixRELPointers(datafile, imageBase);
