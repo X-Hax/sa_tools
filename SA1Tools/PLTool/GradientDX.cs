@@ -55,7 +55,7 @@ namespace PLTool
             labelCO1R.Text = ((float)numericUpDownCO1R.Value / 255.0f).ToString("0.000");
             labelCO1G.Text = ((float)numericUpDownCO1G.Value / 255.0f).ToString("0.000");
             labelCO1G.Text = ((float)numericUpDownCO1B.Value / 255.0f).ToString("0.000");
-            labelCO1POW.Text = ((float)trackBarCO1Pow.Value/100.0f).ToString("0.00");
+            labelCO1POW.Text = ((float)trackBarCO1Pow.Value / 100.0f).ToString("0.00");
 
             // CO2
             labelCO2R.Text = ((float)numericUpDownCO2R.Value / 255.0f).ToString("0.000");

@@ -7,7 +7,7 @@ namespace PLTool
     static class Program
     {
         static internal string[] Arguments { get; set; }
-        public static MainForm primaryForm;
+        public static Form primaryForm;
 
         /// <summary>
         /// The main entry point for the application.
@@ -19,7 +19,17 @@ namespace PLTool
             Arguments = args;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            primaryForm = new MainForm();
+            if (args.Length > 0 && File.Exists(args[0]))
+                switch (Path.GetFileNameWithoutExtension(args[0]).Substring(0, 2).ToUpperInvariant())
+                {
+                    case "SL":
+                        primaryForm = new SLEditor(args[0]);
+                        break;
+                    case "PL":
+                    default:
+                        primaryForm = new PLEditor();
+                        break;
+                }
             Application.Run(primaryForm);
         }
 

@@ -1,7 +1,7 @@
 ﻿
 namespace PLTool
 {
-    partial class MainForm
+    partial class PLEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@ namespace PLTool
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PLEditor));
             this.labelDiffusePalettes = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusA = new System.Windows.Forms.ToolStripStatusLabel();
@@ -77,6 +77,8 @@ namespace PLTool
             this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dreamcastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sLEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pLToolHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.issueTrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -133,6 +135,7 @@ namespace PLTool
             this.DiffusePalette0 = new System.Windows.Forms.PictureBox();
             this.pictureBoxPalettesBG = new System.Windows.Forms.PictureBox();
             this.pictureBoxPreviewBG = new System.Windows.Forms.PictureBox();
+            this.toolStripStatusLabelLevelName = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.contextMenuColor.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -165,9 +168,10 @@ namespace PLTool
             // 
             this.labelDiffusePalettes.AutoSize = true;
             this.labelDiffusePalettes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.labelDiffusePalettes.Location = new System.Drawing.Point(126, 49);
+            this.labelDiffusePalettes.Location = new System.Drawing.Point(84, 32);
+            this.labelDiffusePalettes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelDiffusePalettes.Name = "labelDiffusePalettes";
-            this.labelDiffusePalettes.Size = new System.Drawing.Size(165, 20);
+            this.labelDiffusePalettes.Size = new System.Drawing.Size(110, 13);
             this.labelDiffusePalettes.TabIndex = 1;
             this.labelDiffusePalettes.Text = "DIFFUSE PALETTES";
             // 
@@ -182,12 +186,13 @@ namespace PLTool
             this.StatusR,
             this.StatusPaletteIndices,
             this.toolStripSplitButtonColor,
+            this.toolStripStatusLabelLevelName,
             this.toolStripStatusLabelFilename});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 675);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 435);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(14, 0, 2, 0);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(9, 0, 1, 0);
             this.statusStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.statusStrip1.Size = new System.Drawing.Size(840, 28);
+            this.statusStrip1.Size = new System.Drawing.Size(560, 22);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
@@ -196,8 +201,9 @@ namespace PLTool
             // 
             this.StatusA.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.StatusA.Name = "StatusA";
-            this.StatusA.Size = new System.Drawing.Size(47, 21);
+            this.StatusA.Size = new System.Drawing.Size(32, 17);
             this.StatusA.Text = "A255";
+            this.StatusA.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusB
             // 
@@ -205,31 +211,35 @@ namespace PLTool
             this.StatusB.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.StatusB.ForeColor = System.Drawing.Color.Blue;
             this.StatusB.Name = "StatusB";
-            this.StatusB.Size = new System.Drawing.Size(46, 21);
+            this.StatusB.Size = new System.Drawing.Size(32, 17);
             this.StatusB.Text = "B255";
+            this.StatusB.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusG
             // 
             this.StatusG.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.StatusG.ForeColor = System.Drawing.Color.Lime;
             this.StatusG.Name = "StatusG";
-            this.StatusG.Size = new System.Drawing.Size(48, 21);
+            this.StatusG.Size = new System.Drawing.Size(33, 17);
             this.StatusG.Text = "G255";
+            this.StatusG.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusR
             // 
             this.StatusR.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.StatusR.ForeColor = System.Drawing.Color.Red;
             this.StatusR.Name = "StatusR";
-            this.StatusR.Size = new System.Drawing.Size(47, 21);
+            this.StatusR.Size = new System.Drawing.Size(32, 17);
             this.StatusR.Text = "R255";
+            this.StatusR.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusPaletteIndices
             // 
             this.StatusPaletteIndices.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.StatusPaletteIndices.Name = "StatusPaletteIndices";
-            this.StatusPaletteIndices.Size = new System.Drawing.Size(137, 21);
+            this.StatusPaletteIndices.Size = new System.Drawing.Size(100, 17);
             this.StatusPaletteIndices.Text = "Diffuse 0 / Color 0";
+            this.StatusPaletteIndices.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // toolStripSplitButtonColor
             // 
@@ -241,7 +251,8 @@ namespace PLTool
             this.toolStripSplitButtonColor.ImageTransparentColor = System.Drawing.Color.Black;
             this.toolStripSplitButtonColor.Name = "toolStripSplitButtonColor";
             this.toolStripSplitButtonColor.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.toolStripSplitButtonColor.Size = new System.Drawing.Size(21, 25);
+            this.toolStripSplitButtonColor.Size = new System.Drawing.Size(16, 20);
+            this.toolStripSplitButtonColor.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.toolStripSplitButtonColor.ToolTipText = "Current color in the palette.";
             this.toolStripSplitButtonColor.MouseUp += new System.Windows.Forms.MouseEventHandler(this.toolStripSplitButtonColor_MouseUp);
             // 
@@ -261,14 +272,13 @@ namespace PLTool
             this.toolStripColorCopy,
             this.toolStripColorPaste});
             this.contextMenuColor.Name = "contextMenuColor";
-            this.contextMenuColor.OwnerItem = this.toolStripSplitButtonColor;
-            this.contextMenuColor.Size = new System.Drawing.Size(242, 278);
+            this.contextMenuColor.Size = new System.Drawing.Size(184, 262);
             // 
             // toolStripColorReplace
             // 
             this.toolStripColorReplace.Image = global::PLTool.Properties.Resources.color;
             this.toolStripColorReplace.Name = "toolStripColorReplace";
-            this.toolStripColorReplace.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorReplace.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorReplace.Text = "Replace...";
             this.toolStripColorReplace.ToolTipText = "Replace the selected color.";
             this.toolStripColorReplace.Click += new System.EventHandler(this.toolStripColorReplace_Click);
@@ -276,13 +286,13 @@ namespace PLTool
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(238, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(180, 6);
             // 
             // toolStripColorReplaceBlack
             // 
             this.toolStripColorReplaceBlack.Image = global::PLTool.Properties.Resources.black;
             this.toolStripColorReplaceBlack.Name = "toolStripColorReplaceBlack";
-            this.toolStripColorReplaceBlack.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorReplaceBlack.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorReplaceBlack.Text = "Replace with Black";
             this.toolStripColorReplaceBlack.ToolTipText = "Replace the selected color with black.";
             this.toolStripColorReplaceBlack.Click += new System.EventHandler(this.toolStripColorReplaceBlack_Click);
@@ -291,7 +301,7 @@ namespace PLTool
             // 
             this.toolStripColorReplaceWhite.Image = global::PLTool.Properties.Resources.white;
             this.toolStripColorReplaceWhite.Name = "toolStripColorReplaceWhite";
-            this.toolStripColorReplaceWhite.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorReplaceWhite.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorReplaceWhite.Text = "Replace with White";
             this.toolStripColorReplaceWhite.ToolTipText = "Replace the selected color with white.";
             this.toolStripColorReplaceWhite.Click += new System.EventHandler(this.toolStripColorReplaceWhite_Click);
@@ -299,12 +309,12 @@ namespace PLTool
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(238, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(180, 6);
             // 
             // toolStripColorAlpha255
             // 
             this.toolStripColorAlpha255.Name = "toolStripColorAlpha255";
-            this.toolStripColorAlpha255.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorAlpha255.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorAlpha255.Text = "Set Alpha to 255";
             this.toolStripColorAlpha255.ToolTipText = "Make the selected color opaque.";
             this.toolStripColorAlpha255.Click += new System.EventHandler(this.toolStripColorAlpha255_Click);
@@ -312,7 +322,7 @@ namespace PLTool
             // toolStripColorAlpha0
             // 
             this.toolStripColorAlpha0.Name = "toolStripColorAlpha0";
-            this.toolStripColorAlpha0.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorAlpha0.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorAlpha0.Text = "Set Alpha to 0";
             this.toolStripColorAlpha0.ToolTipText = "Make the selected color transparent (no effect ingame).";
             this.toolStripColorAlpha0.Click += new System.EventHandler(this.toolStripColorAlpha0_Click);
@@ -320,7 +330,7 @@ namespace PLTool
             // toolStripColorAlpha127
             // 
             this.toolStripColorAlpha127.Name = "toolStripColorAlpha127";
-            this.toolStripColorAlpha127.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorAlpha127.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorAlpha127.Text = "Set Alpha to 127";
             this.toolStripColorAlpha127.ToolTipText = "Make the selected color semi-transparent (no effect ingame).";
             this.toolStripColorAlpha127.Click += new System.EventHandler(this.toolStripColorAlpha127_Click);
@@ -328,13 +338,13 @@ namespace PLTool
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(238, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(180, 6);
             // 
             // toolStripColorCopy
             // 
             this.toolStripColorCopy.Image = global::PLTool.Properties.Resources.copy;
             this.toolStripColorCopy.Name = "toolStripColorCopy";
-            this.toolStripColorCopy.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorCopy.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorCopy.Text = "Copy";
             this.toolStripColorCopy.ToolTipText = "Copy the selected color to the clipboard.";
             this.toolStripColorCopy.Click += new System.EventHandler(this.toolStripColorCopy_Click);
@@ -344,34 +354,35 @@ namespace PLTool
             this.toolStripColorPaste.Enabled = false;
             this.toolStripColorPaste.Image = global::PLTool.Properties.Resources.paste;
             this.toolStripColorPaste.Name = "toolStripColorPaste";
-            this.toolStripColorPaste.Size = new System.Drawing.Size(241, 32);
+            this.toolStripColorPaste.Size = new System.Drawing.Size(183, 30);
             this.toolStripColorPaste.Text = "Paste";
             this.toolStripColorPaste.ToolTipText = "Paste the clipboard color.";
             this.toolStripColorPaste.Click += new System.EventHandler(this.toolStripColorPaste_Click);
             // 
             // toolStripStatusLabelFilename
             // 
+            this.toolStripStatusLabelFilename.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripStatusLabelFilename.BorderStyle = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.toolStripStatusLabelFilename.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.toolStripStatusLabelFilename.Name = "toolStripStatusLabelFilename";
             this.toolStripStatusLabelFilename.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.toolStripStatusLabelFilename.Size = new System.Drawing.Size(478, 21);
-            this.toolStripStatusLabelFilename.Spring = true;
+            this.toolStripStatusLabelFilename.Size = new System.Drawing.Size(87, 17);
             this.toolStripStatusLabelFilename.Text = "No file loaded.";
-            this.toolStripStatusLabelFilename.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.toolStripStatusLabelFilename.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // menuStrip1
             // 
             this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fIleToolStripMenuItem,
             this.optionsToolStripMenuItem,
             this.formatToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(840, 36);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(6, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(560, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -392,7 +403,7 @@ namespace PLTool
             this.exitToolStripMenuItem});
             this.fIleToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.fIleToolStripMenuItem.Name = "fIleToolStripMenuItem";
-            this.fIleToolStripMenuItem.Size = new System.Drawing.Size(54, 32);
+            this.fIleToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
             this.fIleToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
@@ -402,13 +413,13 @@ namespace PLTool
             this.paletteListBlankToolStripMenuItem});
             this.newToolStripMenuItem.Image = global::PLTool.Properties.Resources._new;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.newToolStripMenuItem.Text = "New";
             // 
             // paletteListEmeraldCoastToolStripMenuItem
             // 
             this.paletteListEmeraldCoastToolStripMenuItem.Name = "paletteListEmeraldCoastToolStripMenuItem";
-            this.paletteListEmeraldCoastToolStripMenuItem.Size = new System.Drawing.Size(326, 34);
+            this.paletteListEmeraldCoastToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.paletteListEmeraldCoastToolStripMenuItem.Text = "Palette List (Emerald Coast)";
             this.paletteListEmeraldCoastToolStripMenuItem.ToolTipText = "Create a palette list based on Emerald Coast PL file.";
             this.paletteListEmeraldCoastToolStripMenuItem.Click += new System.EventHandler(this.paletteListEmeraldCoastToolStripMenuItem_Click);
@@ -416,7 +427,7 @@ namespace PLTool
             // paletteListBlankToolStripMenuItem
             // 
             this.paletteListBlankToolStripMenuItem.Name = "paletteListBlankToolStripMenuItem";
-            this.paletteListBlankToolStripMenuItem.Size = new System.Drawing.Size(326, 34);
+            this.paletteListBlankToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.paletteListBlankToolStripMenuItem.Text = "Palette List (Blank)";
             this.paletteListBlankToolStripMenuItem.ToolTipText = "Create a palette list with empty palettes.";
             this.paletteListBlankToolStripMenuItem.Click += new System.EventHandler(this.paletteListBlankToolStripMenuItem_Click);
@@ -425,35 +436,35 @@ namespace PLTool
             // 
             this.openToolStripMenuItem.Image = global::PLTool.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(182, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(119, 6);
             this.toolStripSeparator7.Visible = false;
             // 
             // levelListToolStripMenuItem
             // 
             this.levelListToolStripMenuItem.Enabled = false;
             this.levelListToolStripMenuItem.Name = "levelListToolStripMenuItem";
-            this.levelListToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.levelListToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.levelListToolStripMenuItem.Text = "Level List";
             this.levelListToolStripMenuItem.Visible = false;
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(182, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(119, 6);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Image = global::PLTool.Properties.Resources.save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.ToolTipText = "Save the currently opened file.";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
@@ -462,7 +473,7 @@ namespace PLTool
             // 
             this.saveAsToolStripMenuItem.Image = global::PLTool.Properties.Resources.save_advanced;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.ToolTipText = "Save the file with a different name.";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
@@ -470,13 +481,13 @@ namespace PLTool
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(182, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(119, 6);
             // 
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Image = global::PLTool.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.importToolStripMenuItem.Text = "Import...";
             this.importToolStripMenuItem.ToolTipText = "Import a PNG image as a palette list.";
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
@@ -485,7 +496,7 @@ namespace PLTool
             // 
             this.exportToolStripMenuItem.Image = global::PLTool.Properties.Resources.export;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.exportToolStripMenuItem.Text = "Export...";
             this.exportToolStripMenuItem.ToolTipText = "Export palettes as a PNG image.";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
@@ -493,12 +504,12 @@ namespace PLTool
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(182, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(119, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(185, 34);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -508,7 +519,7 @@ namespace PLTool
             this.backgroundToolStripMenuItem});
             this.optionsToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(92, 32);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 22);
             this.optionsToolStripMenuItem.Text = "Options";
             // 
             // backgroundToolStripMenuItem
@@ -519,7 +530,7 @@ namespace PLTool
             this.blackToolStripMenuItem,
             this.whiteToolStripMenuItem});
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(209, 34);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             // 
             // darkGreyDefaultToolStripMenuItem
@@ -527,28 +538,28 @@ namespace PLTool
             this.darkGreyDefaultToolStripMenuItem.Checked = true;
             this.darkGreyDefaultToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.darkGreyDefaultToolStripMenuItem.Name = "darkGreyDefaultToolStripMenuItem";
-            this.darkGreyDefaultToolStripMenuItem.Size = new System.Drawing.Size(264, 34);
+            this.darkGreyDefaultToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.darkGreyDefaultToolStripMenuItem.Text = "Dark Grey (Default)";
             this.darkGreyDefaultToolStripMenuItem.Click += new System.EventHandler(this.darkGreyDefaultToolStripMenuItem_Click);
             // 
             // lightGreyToolStripMenuItem
             // 
             this.lightGreyToolStripMenuItem.Name = "lightGreyToolStripMenuItem";
-            this.lightGreyToolStripMenuItem.Size = new System.Drawing.Size(264, 34);
+            this.lightGreyToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.lightGreyToolStripMenuItem.Text = "Light Grey";
             this.lightGreyToolStripMenuItem.Click += new System.EventHandler(this.lightGreyToolStripMenuItem_Click);
             // 
             // blackToolStripMenuItem
             // 
             this.blackToolStripMenuItem.Name = "blackToolStripMenuItem";
-            this.blackToolStripMenuItem.Size = new System.Drawing.Size(264, 34);
+            this.blackToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.blackToolStripMenuItem.Text = "Black";
             this.blackToolStripMenuItem.Click += new System.EventHandler(this.blackToolStripMenuItem_Click);
             // 
             // whiteToolStripMenuItem
             // 
             this.whiteToolStripMenuItem.Name = "whiteToolStripMenuItem";
-            this.whiteToolStripMenuItem.Size = new System.Drawing.Size(264, 34);
+            this.whiteToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.whiteToolStripMenuItem.Text = "White";
             this.whiteToolStripMenuItem.Click += new System.EventHandler(this.whiteToolStripMenuItem_Click);
             // 
@@ -559,7 +570,7 @@ namespace PLTool
             this.gamecubeToolStripMenuItem});
             this.formatToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
-            this.formatToolStripMenuItem.Size = new System.Drawing.Size(85, 32);
+            this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 22);
             this.formatToolStripMenuItem.Text = "Format";
             // 
             // dreamcastToolStripMenuItem
@@ -568,7 +579,7 @@ namespace PLTool
             this.dreamcastToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.dreamcastToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.dreamcastToolStripMenuItem.Name = "dreamcastToolStripMenuItem";
-            this.dreamcastToolStripMenuItem.Size = new System.Drawing.Size(198, 34);
+            this.dreamcastToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.dreamcastToolStripMenuItem.Text = "Dreamcast";
             this.dreamcastToolStripMenuItem.ToolTipText = "Use Little Endian byte order.";
             this.dreamcastToolStripMenuItem.Click += new System.EventHandler(this.dreamcastToolStripMenuItem_Click);
@@ -576,10 +587,27 @@ namespace PLTool
             // gamecubeToolStripMenuItem
             // 
             this.gamecubeToolStripMenuItem.Name = "gamecubeToolStripMenuItem";
-            this.gamecubeToolStripMenuItem.Size = new System.Drawing.Size(198, 34);
+            this.gamecubeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.gamecubeToolStripMenuItem.Text = "Gamecube";
             this.gamecubeToolStripMenuItem.ToolTipText = "Use Big Endian byte order.";
             this.gamecubeToolStripMenuItem.Click += new System.EventHandler(this.gamecubeToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sLEditorToolStripMenuItem});
+            this.toolsToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 22);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // sLEditorToolStripMenuItem
+            // 
+            this.sLEditorToolStripMenuItem.Image = global::PLTool.Properties.Resources.sllight;
+            this.sLEditorToolStripMenuItem.Name = "sLEditorToolStripMenuItem";
+            this.sLEditorToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.sLEditorToolStripMenuItem.Text = "SL Editor...";
+            this.sLEditorToolStripMenuItem.Click += new System.EventHandler(this.sLEditorToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -588,14 +616,14 @@ namespace PLTool
             this.issueTrackerToolStripMenuItem});
             this.helpToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 32);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // pLToolHelpToolStripMenuItem
             // 
             this.pLToolHelpToolStripMenuItem.Image = global::PLTool.Properties.Resources.help;
             this.pLToolHelpToolStripMenuItem.Name = "pLToolHelpToolStripMenuItem";
-            this.pLToolHelpToolStripMenuItem.Size = new System.Drawing.Size(213, 34);
+            this.pLToolHelpToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.pLToolHelpToolStripMenuItem.Text = "PL Tool Help";
             this.pLToolHelpToolStripMenuItem.Click += new System.EventHandler(this.pLToolHelpToolStripMenuItem_Click);
             // 
@@ -603,7 +631,7 @@ namespace PLTool
             // 
             this.issueTrackerToolStripMenuItem.Image = global::PLTool.Properties.Resources.bug;
             this.issueTrackerToolStripMenuItem.Name = "issueTrackerToolStripMenuItem";
-            this.issueTrackerToolStripMenuItem.Size = new System.Drawing.Size(213, 34);
+            this.issueTrackerToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.issueTrackerToolStripMenuItem.Text = "Issue Tracker";
             this.issueTrackerToolStripMenuItem.Click += new System.EventHandler(this.issueTrackerToolStripMenuItem_Click);
             // 
@@ -611,9 +639,10 @@ namespace PLTool
             // 
             this.labelSpecularPalettes.AutoSize = true;
             this.labelSpecularPalettes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.labelSpecularPalettes.Location = new System.Drawing.Point(537, 49);
+            this.labelSpecularPalettes.Location = new System.Drawing.Point(358, 32);
+            this.labelSpecularPalettes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelSpecularPalettes.Name = "labelSpecularPalettes";
-            this.labelSpecularPalettes.Size = new System.Drawing.Size(181, 20);
+            this.labelSpecularPalettes.Size = new System.Drawing.Size(122, 13);
             this.labelSpecularPalettes.TabIndex = 6;
             this.labelSpecularPalettes.Text = "SPECULAR PALETTES";
             // 
@@ -623,10 +652,10 @@ namespace PLTool
             this.label0.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label0.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label0.ForeColor = System.Drawing.Color.White;
-            this.label0.Location = new System.Drawing.Point(411, 78);
+            this.label0.Location = new System.Drawing.Point(274, 51);
             this.label0.Margin = new System.Windows.Forms.Padding(0);
             this.label0.Name = "label0";
-            this.label0.Size = new System.Drawing.Size(20, 22);
+            this.label0.Size = new System.Drawing.Size(14, 15);
             this.label0.TabIndex = 27;
             this.label0.Text = "0";
             this.label0.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -636,10 +665,10 @@ namespace PLTool
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(410, 128);
+            this.label1.Location = new System.Drawing.Point(273, 83);
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(20, 22);
+            this.label1.Size = new System.Drawing.Size(14, 15);
             this.label1.TabIndex = 28;
             this.label1.Text = "1";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -647,10 +676,11 @@ namespace PLTool
             // trackBarColorIndex
             // 
             this.trackBarColorIndex.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.trackBarColorIndex.Location = new System.Drawing.Point(20, 522);
+            this.trackBarColorIndex.Location = new System.Drawing.Point(13, 339);
+            this.trackBarColorIndex.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.trackBarColorIndex.Maximum = 255;
             this.trackBarColorIndex.Name = "trackBarColorIndex";
-            this.trackBarColorIndex.Size = new System.Drawing.Size(802, 69);
+            this.trackBarColorIndex.Size = new System.Drawing.Size(535, 45);
             this.trackBarColorIndex.TabIndex = 30;
             this.trackBarColorIndex.TickFrequency = 8;
             this.trackBarColorIndex.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
@@ -660,10 +690,10 @@ namespace PLTool
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(410, 175);
+            this.label2.Location = new System.Drawing.Point(273, 114);
             this.label2.Margin = new System.Windows.Forms.Padding(0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(20, 22);
+            this.label2.Size = new System.Drawing.Size(14, 15);
             this.label2.TabIndex = 31;
             this.label2.Text = "2";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -673,10 +703,10 @@ namespace PLTool
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(410, 225);
+            this.label3.Location = new System.Drawing.Point(273, 146);
             this.label3.Margin = new System.Windows.Forms.Padding(0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(20, 22);
+            this.label3.Size = new System.Drawing.Size(14, 15);
             this.label3.TabIndex = 32;
             this.label3.Text = "3";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -686,10 +716,10 @@ namespace PLTool
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(410, 271);
+            this.label4.Location = new System.Drawing.Point(273, 176);
             this.label4.Margin = new System.Windows.Forms.Padding(0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(20, 22);
+            this.label4.Size = new System.Drawing.Size(14, 15);
             this.label4.TabIndex = 33;
             this.label4.Text = "4";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -699,10 +729,10 @@ namespace PLTool
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label5.Location = new System.Drawing.Point(410, 318);
+            this.label5.Location = new System.Drawing.Point(273, 207);
             this.label5.Margin = new System.Windows.Forms.Padding(0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(20, 22);
+            this.label5.Size = new System.Drawing.Size(14, 15);
             this.label5.TabIndex = 34;
             this.label5.Text = "5";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -712,10 +742,10 @@ namespace PLTool
             this.label6.AutoSize = true;
             this.label6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(410, 368);
+            this.label6.Location = new System.Drawing.Point(273, 239);
             this.label6.Margin = new System.Windows.Forms.Padding(0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(20, 22);
+            this.label6.Size = new System.Drawing.Size(14, 15);
             this.label6.TabIndex = 35;
             this.label6.Text = "6";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -725,10 +755,10 @@ namespace PLTool
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.Location = new System.Drawing.Point(410, 415);
+            this.label7.Location = new System.Drawing.Point(273, 270);
             this.label7.Margin = new System.Windows.Forms.Padding(0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(20, 22);
+            this.label7.Size = new System.Drawing.Size(14, 15);
             this.label7.TabIndex = 36;
             this.label7.Text = "7";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -738,10 +768,10 @@ namespace PLTool
             this.labelB.AutoSize = true;
             this.labelB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.labelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelB.Location = new System.Drawing.Point(410, 463);
+            this.labelB.Location = new System.Drawing.Point(273, 301);
             this.labelB.Margin = new System.Windows.Forms.Padding(0);
             this.labelB.Name = "labelB";
-            this.labelB.Size = new System.Drawing.Size(22, 22);
+            this.labelB.Size = new System.Drawing.Size(15, 15);
             this.labelB.TabIndex = 37;
             this.labelB.Text = "B";
             this.labelB.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -762,13 +792,13 @@ namespace PLTool
             this.toolStripCopyPalette,
             this.toolStripPastePalette});
             this.contextMenuPalette.Name = "contextMenuPalette";
-            this.contextMenuPalette.Size = new System.Drawing.Size(300, 278);
+            this.contextMenuPalette.Size = new System.Drawing.Size(223, 262);
             // 
             // toolStripImportPalettePNG
             // 
             this.toolStripImportPalettePNG.Image = global::PLTool.Properties.Resources.import;
             this.toolStripImportPalettePNG.Name = "toolStripImportPalettePNG";
-            this.toolStripImportPalettePNG.Size = new System.Drawing.Size(299, 32);
+            this.toolStripImportPalettePNG.Size = new System.Drawing.Size(222, 30);
             this.toolStripImportPalettePNG.Text = "Import PNG...";
             this.toolStripImportPalettePNG.Click += new System.EventHandler(this.toolStripImportPalettePNG_Click);
             // 
@@ -776,20 +806,20 @@ namespace PLTool
             // 
             this.toolStripExportPalettePNG.Image = global::PLTool.Properties.Resources.export;
             this.toolStripExportPalettePNG.Name = "toolStripExportPalettePNG";
-            this.toolStripExportPalettePNG.Size = new System.Drawing.Size(299, 32);
+            this.toolStripExportPalettePNG.Size = new System.Drawing.Size(222, 30);
             this.toolStripExportPalettePNG.Text = "Export PNG...";
             this.toolStripExportPalettePNG.Click += new System.EventHandler(this.toolStripExportPalettePNG_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(296, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(219, 6);
             // 
             // toolStripCreateGradient
             // 
             this.toolStripCreateGradient.Enabled = false;
             this.toolStripCreateGradient.Name = "toolStripCreateGradient";
-            this.toolStripCreateGradient.Size = new System.Drawing.Size(299, 32);
+            this.toolStripCreateGradient.Size = new System.Drawing.Size(222, 30);
             this.toolStripCreateGradient.Text = "Create Gradient...";
             this.toolStripCreateGradient.ToolTipText = "Generate a palette from a gradient.";
             this.toolStripCreateGradient.Visible = false;
@@ -797,7 +827,7 @@ namespace PLTool
             // toolStripCreateGradientDX
             // 
             this.toolStripCreateGradientDX.Name = "toolStripCreateGradientDX";
-            this.toolStripCreateGradientDX.Size = new System.Drawing.Size(299, 32);
+            this.toolStripCreateGradientDX.Size = new System.Drawing.Size(222, 30);
             this.toolStripCreateGradientDX.Text = "Generate (SADX Preview)...";
             this.toolStripCreateGradientDX.ToolTipText = "Generate a palette from a set of parameters similar to the SADX Preview prototype" +
     ".";
@@ -806,7 +836,7 @@ namespace PLTool
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(296, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(219, 6);
             // 
             // toolStripMenuItem5
             // 
@@ -817,14 +847,14 @@ namespace PLTool
             this.toolStripFillBasicGradient,
             this.toolStripFillPattern});
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(299, 32);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(222, 30);
             this.toolStripMenuItem5.Text = "Fill";
             // 
             // toolStripFillBlack
             // 
             this.toolStripFillBlack.Image = global::PLTool.Properties.Resources.black;
             this.toolStripFillBlack.Name = "toolStripFillBlack";
-            this.toolStripFillBlack.Size = new System.Drawing.Size(237, 34);
+            this.toolStripFillBlack.Size = new System.Drawing.Size(158, 22);
             this.toolStripFillBlack.Text = "Black";
             this.toolStripFillBlack.ToolTipText = "Replace the entire palette with solid black.";
             this.toolStripFillBlack.Click += new System.EventHandler(this.toolStripFillBlack_Click);
@@ -833,7 +863,7 @@ namespace PLTool
             // 
             this.toolStripFillWhite.Image = global::PLTool.Properties.Resources.white;
             this.toolStripFillWhite.Name = "toolStripFillWhite";
-            this.toolStripFillWhite.Size = new System.Drawing.Size(237, 34);
+            this.toolStripFillWhite.Size = new System.Drawing.Size(158, 22);
             this.toolStripFillWhite.Text = "White";
             this.toolStripFillWhite.ToolTipText = "Replace the entire palette with solid white.";
             this.toolStripFillWhite.Click += new System.EventHandler(this.toolStripFillWhite_Click);
@@ -842,7 +872,7 @@ namespace PLTool
             // 
             this.toolStripFillColor.Image = global::PLTool.Properties.Resources.color;
             this.toolStripFillColor.Name = "toolStripFillColor";
-            this.toolStripFillColor.Size = new System.Drawing.Size(237, 34);
+            this.toolStripFillColor.Size = new System.Drawing.Size(158, 22);
             this.toolStripFillColor.Text = "Color...";
             this.toolStripFillColor.ToolTipText = "Replace the entire palette with a specified color.";
             this.toolStripFillColor.Click += new System.EventHandler(this.toolStripFillColor_Click);
@@ -851,7 +881,7 @@ namespace PLTool
             // 
             this.toolStripFillBasicGradient.Image = global::PLTool.Properties.Resources.grad;
             this.toolStripFillBasicGradient.Name = "toolStripFillBasicGradient";
-            this.toolStripFillBasicGradient.Size = new System.Drawing.Size(237, 34);
+            this.toolStripFillBasicGradient.Size = new System.Drawing.Size(158, 22);
             this.toolStripFillBasicGradient.Text = "Basic Gradient...";
             this.toolStripFillBasicGradient.ToolTipText = "Replace the entire palette with a simple linear gradient.";
             this.toolStripFillBasicGradient.Click += new System.EventHandler(this.toolStripFillBasicGradient_Click);
@@ -860,7 +890,7 @@ namespace PLTool
             // 
             this.toolStripFillPattern.Image = global::PLTool.Properties.Resources.material;
             this.toolStripFillPattern.Name = "toolStripFillPattern";
-            this.toolStripFillPattern.Size = new System.Drawing.Size(237, 34);
+            this.toolStripFillPattern.Size = new System.Drawing.Size(158, 22);
             this.toolStripFillPattern.Text = "Color Pattern...";
             this.toolStripFillPattern.ToolTipText = "Replace the entire palette with a repeating pattern of 8 colors.";
             this.toolStripFillPattern.Click += new System.EventHandler(this.toolStripFillPattern_Click);
@@ -872,13 +902,13 @@ namespace PLTool
             this.toolStripAlpha0,
             this.toolStripAlpha127});
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(299, 32);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(222, 30);
             this.toolStripMenuItem6.Text = "Alpha";
             // 
             // toolStripAlpha255
             // 
             this.toolStripAlpha255.Name = "toolStripAlpha255";
-            this.toolStripAlpha255.Size = new System.Drawing.Size(221, 34);
+            this.toolStripAlpha255.Size = new System.Drawing.Size(142, 22);
             this.toolStripAlpha255.Text = "Set All to 255";
             this.toolStripAlpha255.ToolTipText = "Make all colors in the palette opaque.";
             this.toolStripAlpha255.Click += new System.EventHandler(this.toolStripAlpha255_Click);
@@ -886,7 +916,7 @@ namespace PLTool
             // toolStripAlpha0
             // 
             this.toolStripAlpha0.Name = "toolStripAlpha0";
-            this.toolStripAlpha0.Size = new System.Drawing.Size(221, 34);
+            this.toolStripAlpha0.Size = new System.Drawing.Size(142, 22);
             this.toolStripAlpha0.Text = "Set All to 0";
             this.toolStripAlpha0.ToolTipText = "Make all colors in the palette transparent (no effect ingame).";
             this.toolStripAlpha0.Click += new System.EventHandler(this.toolStripAlpha0_Click);
@@ -894,7 +924,7 @@ namespace PLTool
             // toolStripAlpha127
             // 
             this.toolStripAlpha127.Name = "toolStripAlpha127";
-            this.toolStripAlpha127.Size = new System.Drawing.Size(221, 34);
+            this.toolStripAlpha127.Size = new System.Drawing.Size(142, 22);
             this.toolStripAlpha127.Text = "Set All to 127";
             this.toolStripAlpha127.ToolTipText = "Make all colors in the palette semi-transparent (no effect ingame).";
             this.toolStripAlpha127.Click += new System.EventHandler(this.toolStripAlpha127_Click);
@@ -902,13 +932,13 @@ namespace PLTool
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(296, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(219, 6);
             // 
             // toolStripCopyPalette
             // 
             this.toolStripCopyPalette.Image = global::PLTool.Properties.Resources.copy;
             this.toolStripCopyPalette.Name = "toolStripCopyPalette";
-            this.toolStripCopyPalette.Size = new System.Drawing.Size(299, 32);
+            this.toolStripCopyPalette.Size = new System.Drawing.Size(222, 30);
             this.toolStripCopyPalette.Text = "Copy";
             this.toolStripCopyPalette.Click += new System.EventHandler(this.toolStripCopyPalette_Click);
             // 
@@ -917,7 +947,7 @@ namespace PLTool
             this.toolStripPastePalette.Enabled = false;
             this.toolStripPastePalette.Image = global::PLTool.Properties.Resources.paste;
             this.toolStripPastePalette.Name = "toolStripPastePalette";
-            this.toolStripPastePalette.Size = new System.Drawing.Size(299, 32);
+            this.toolStripPastePalette.Size = new System.Drawing.Size(222, 30);
             this.toolStripPastePalette.Text = "Paste";
             this.toolStripPastePalette.Click += new System.EventHandler(this.toolStripPastePalette_Click);
             // 
@@ -928,10 +958,10 @@ namespace PLTool
             // SpecularPaletteB
             // 
             this.SpecularPaletteB.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPaletteB.Location = new System.Drawing.Point(435, 458);
-            this.SpecularPaletteB.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPaletteB.Location = new System.Drawing.Point(290, 298);
+            this.SpecularPaletteB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPaletteB.Name = "SpecularPaletteB";
-            this.SpecularPaletteB.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPaletteB.Size = new System.Drawing.Size(256, 21);
             this.SpecularPaletteB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPaletteB.TabIndex = 39;
             this.SpecularPaletteB.TabStop = false;
@@ -940,10 +970,10 @@ namespace PLTool
             // DiffusePaletteB
             // 
             this.DiffusePaletteB.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePaletteB.Location = new System.Drawing.Point(22, 458);
-            this.DiffusePaletteB.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePaletteB.Location = new System.Drawing.Point(15, 298);
+            this.DiffusePaletteB.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePaletteB.Name = "DiffusePaletteB";
-            this.DiffusePaletteB.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePaletteB.Size = new System.Drawing.Size(256, 21);
             this.DiffusePaletteB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePaletteB.TabIndex = 38;
             this.DiffusePaletteB.TabStop = false;
@@ -951,9 +981,10 @@ namespace PLTool
             // 
             // pictureBoxPalettePreview
             // 
-            this.pictureBoxPalettePreview.Location = new System.Drawing.Point(36, 597);
+            this.pictureBoxPalettePreview.Location = new System.Drawing.Point(24, 388);
+            this.pictureBoxPalettePreview.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxPalettePreview.Name = "pictureBoxPalettePreview";
-            this.pictureBoxPalettePreview.Size = new System.Drawing.Size(768, 55);
+            this.pictureBoxPalettePreview.Size = new System.Drawing.Size(512, 36);
             this.pictureBoxPalettePreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoxPalettePreview.TabIndex = 29;
             this.pictureBoxPalettePreview.TabStop = false;
@@ -961,10 +992,10 @@ namespace PLTool
             // SpecularPalette7
             // 
             this.SpecularPalette7.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette7.Location = new System.Drawing.Point(435, 411);
-            this.SpecularPalette7.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette7.Location = new System.Drawing.Point(290, 267);
+            this.SpecularPalette7.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette7.Name = "SpecularPalette7";
-            this.SpecularPalette7.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette7.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette7.TabIndex = 24;
             this.SpecularPalette7.TabStop = false;
@@ -973,10 +1004,10 @@ namespace PLTool
             // SpecularPalette6
             // 
             this.SpecularPalette6.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette6.Location = new System.Drawing.Point(435, 362);
-            this.SpecularPalette6.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette6.Location = new System.Drawing.Point(290, 235);
+            this.SpecularPalette6.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette6.Name = "SpecularPalette6";
-            this.SpecularPalette6.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette6.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette6.TabIndex = 23;
             this.SpecularPalette6.TabStop = false;
@@ -985,10 +1016,10 @@ namespace PLTool
             // SpecularPalette5
             // 
             this.SpecularPalette5.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette5.Location = new System.Drawing.Point(435, 314);
-            this.SpecularPalette5.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette5.Location = new System.Drawing.Point(290, 204);
+            this.SpecularPalette5.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette5.Name = "SpecularPalette5";
-            this.SpecularPalette5.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette5.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette5.TabIndex = 22;
             this.SpecularPalette5.TabStop = false;
@@ -997,10 +1028,10 @@ namespace PLTool
             // SpecularPalette4
             // 
             this.SpecularPalette4.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette4.Location = new System.Drawing.Point(435, 266);
-            this.SpecularPalette4.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette4.Location = new System.Drawing.Point(290, 173);
+            this.SpecularPalette4.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette4.Name = "SpecularPalette4";
-            this.SpecularPalette4.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette4.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette4.TabIndex = 21;
             this.SpecularPalette4.TabStop = false;
@@ -1009,10 +1040,10 @@ namespace PLTool
             // SpecularPalette3
             // 
             this.SpecularPalette3.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette3.Location = new System.Drawing.Point(435, 218);
-            this.SpecularPalette3.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette3.Location = new System.Drawing.Point(290, 142);
+            this.SpecularPalette3.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette3.Name = "SpecularPalette3";
-            this.SpecularPalette3.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette3.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette3.TabIndex = 20;
             this.SpecularPalette3.TabStop = false;
@@ -1021,10 +1052,10 @@ namespace PLTool
             // SpecularPalette2
             // 
             this.SpecularPalette2.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette2.Location = new System.Drawing.Point(435, 171);
-            this.SpecularPalette2.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette2.Location = new System.Drawing.Point(290, 111);
+            this.SpecularPalette2.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette2.Name = "SpecularPalette2";
-            this.SpecularPalette2.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette2.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette2.TabIndex = 19;
             this.SpecularPalette2.TabStop = false;
@@ -1033,10 +1064,10 @@ namespace PLTool
             // SpecularPalette1
             // 
             this.SpecularPalette1.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette1.Location = new System.Drawing.Point(435, 122);
-            this.SpecularPalette1.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette1.Location = new System.Drawing.Point(290, 79);
+            this.SpecularPalette1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette1.Name = "SpecularPalette1";
-            this.SpecularPalette1.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette1.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette1.TabIndex = 18;
             this.SpecularPalette1.TabStop = false;
@@ -1045,10 +1076,10 @@ namespace PLTool
             // SpecularPalette0
             // 
             this.SpecularPalette0.BackColor = System.Drawing.Color.Transparent;
-            this.SpecularPalette0.Location = new System.Drawing.Point(435, 74);
-            this.SpecularPalette0.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.SpecularPalette0.Location = new System.Drawing.Point(290, 48);
+            this.SpecularPalette0.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.SpecularPalette0.Name = "SpecularPalette0";
-            this.SpecularPalette0.Size = new System.Drawing.Size(384, 32);
+            this.SpecularPalette0.Size = new System.Drawing.Size(256, 21);
             this.SpecularPalette0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.SpecularPalette0.TabIndex = 17;
             this.SpecularPalette0.TabStop = false;
@@ -1057,10 +1088,10 @@ namespace PLTool
             // DiffusePalette7
             // 
             this.DiffusePalette7.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette7.Location = new System.Drawing.Point(22, 411);
-            this.DiffusePalette7.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette7.Location = new System.Drawing.Point(15, 267);
+            this.DiffusePalette7.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette7.Name = "DiffusePalette7";
-            this.DiffusePalette7.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette7.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette7.TabIndex = 14;
             this.DiffusePalette7.TabStop = false;
@@ -1069,10 +1100,10 @@ namespace PLTool
             // DiffusePalette6
             // 
             this.DiffusePalette6.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette6.Location = new System.Drawing.Point(22, 362);
-            this.DiffusePalette6.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette6.Location = new System.Drawing.Point(15, 235);
+            this.DiffusePalette6.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette6.Name = "DiffusePalette6";
-            this.DiffusePalette6.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette6.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette6.TabIndex = 13;
             this.DiffusePalette6.TabStop = false;
@@ -1081,10 +1112,10 @@ namespace PLTool
             // DiffusePalette5
             // 
             this.DiffusePalette5.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette5.Location = new System.Drawing.Point(22, 314);
-            this.DiffusePalette5.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette5.Location = new System.Drawing.Point(15, 204);
+            this.DiffusePalette5.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette5.Name = "DiffusePalette5";
-            this.DiffusePalette5.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette5.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette5.TabIndex = 12;
             this.DiffusePalette5.TabStop = false;
@@ -1093,10 +1124,10 @@ namespace PLTool
             // DiffusePalette4
             // 
             this.DiffusePalette4.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette4.Location = new System.Drawing.Point(22, 266);
-            this.DiffusePalette4.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette4.Location = new System.Drawing.Point(15, 173);
+            this.DiffusePalette4.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette4.Name = "DiffusePalette4";
-            this.DiffusePalette4.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette4.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette4.TabIndex = 11;
             this.DiffusePalette4.TabStop = false;
@@ -1105,10 +1136,10 @@ namespace PLTool
             // DiffusePalette3
             // 
             this.DiffusePalette3.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette3.Location = new System.Drawing.Point(22, 218);
-            this.DiffusePalette3.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette3.Location = new System.Drawing.Point(15, 142);
+            this.DiffusePalette3.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette3.Name = "DiffusePalette3";
-            this.DiffusePalette3.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette3.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette3.TabIndex = 10;
             this.DiffusePalette3.TabStop = false;
@@ -1117,10 +1148,10 @@ namespace PLTool
             // DiffusePalette2
             // 
             this.DiffusePalette2.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette2.Location = new System.Drawing.Point(22, 171);
-            this.DiffusePalette2.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette2.Location = new System.Drawing.Point(15, 111);
+            this.DiffusePalette2.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette2.Name = "DiffusePalette2";
-            this.DiffusePalette2.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette2.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette2.TabIndex = 9;
             this.DiffusePalette2.TabStop = false;
@@ -1129,10 +1160,10 @@ namespace PLTool
             // DiffusePalette1
             // 
             this.DiffusePalette1.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette1.Location = new System.Drawing.Point(22, 122);
-            this.DiffusePalette1.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette1.Location = new System.Drawing.Point(15, 79);
+            this.DiffusePalette1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette1.Name = "DiffusePalette1";
-            this.DiffusePalette1.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette1.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette1.TabIndex = 8;
             this.DiffusePalette1.TabStop = false;
@@ -1141,10 +1172,10 @@ namespace PLTool
             // DiffusePalette0
             // 
             this.DiffusePalette0.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette0.Location = new System.Drawing.Point(22, 74);
-            this.DiffusePalette0.Margin = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiffusePalette0.Location = new System.Drawing.Point(15, 48);
+            this.DiffusePalette0.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.DiffusePalette0.Name = "DiffusePalette0";
-            this.DiffusePalette0.Size = new System.Drawing.Size(384, 32);
+            this.DiffusePalette0.Size = new System.Drawing.Size(256, 21);
             this.DiffusePalette0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.DiffusePalette0.TabIndex = 7;
             this.DiffusePalette0.TabStop = false;
@@ -1153,27 +1184,37 @@ namespace PLTool
             // pictureBoxPalettesBG
             // 
             this.pictureBoxPalettesBG.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.pictureBoxPalettesBG.Location = new System.Drawing.Point(8, 45);
+            this.pictureBoxPalettesBG.Location = new System.Drawing.Point(5, 29);
+            this.pictureBoxPalettesBG.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxPalettesBG.Name = "pictureBoxPalettesBG";
-            this.pictureBoxPalettesBG.Size = new System.Drawing.Size(825, 455);
+            this.pictureBoxPalettesBG.Size = new System.Drawing.Size(550, 296);
             this.pictureBoxPalettesBG.TabIndex = 5;
             this.pictureBoxPalettesBG.TabStop = false;
             // 
             // pictureBoxPreviewBG
             // 
             this.pictureBoxPreviewBG.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.pictureBoxPreviewBG.Location = new System.Drawing.Point(8, 506);
+            this.pictureBoxPreviewBG.Location = new System.Drawing.Point(5, 329);
+            this.pictureBoxPreviewBG.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxPreviewBG.Name = "pictureBoxPreviewBG";
-            this.pictureBoxPreviewBG.Size = new System.Drawing.Size(825, 160);
+            this.pictureBoxPreviewBG.Size = new System.Drawing.Size(550, 104);
             this.pictureBoxPreviewBG.TabIndex = 4;
             this.pictureBoxPreviewBG.TabStop = false;
             // 
-            // MainForm
+            // toolStripStatusLabelLevelName
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.toolStripStatusLabelLevelName.Name = "toolStripStatusLabelLevelName";
+            this.toolStripStatusLabelLevelName.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.toolStripStatusLabelLevelName.Size = new System.Drawing.Size(187, 17);
+            this.toolStripStatusLabelLevelName.Spring = true;
+            this.toolStripStatusLabelLevelName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // PLEditor
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(840, 703);
+            this.ClientSize = new System.Drawing.Size(560, 457);
             this.Controls.Add(this.SpecularPaletteB);
             this.Controls.Add(this.DiffusePaletteB);
             this.Controls.Add(this.labelB);
@@ -1213,8 +1254,9 @@ namespace PLTool
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
-            this.Name = "MainForm";
+            this.Name = "PLEditor";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sonic Adventure PL Tool";
@@ -1354,6 +1396,9 @@ namespace PLTool
 		private System.Windows.Forms.ToolStripMenuItem pLToolHelpToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem issueTrackerToolStripMenuItem;
 		private System.Windows.Forms.ColorDialog colorDialog1;
+		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem sLEditorToolStripMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelLevelName;
 	}
 }
 

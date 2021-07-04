@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace PLTool
 {
-    public partial class MainForm : Form
+    public partial class PLEditor : Form
     {
         public PLFile currentPLFile;
         private int selectedColorIndex;
@@ -16,22 +16,10 @@ namespace PLTool
         public Color clipboardColor;
         bool isGamecube = false;
         public string currentFilename = "";
-        Dictionary<string, string> LevelList;
 
-        private string GetLevelNameFromFilename(string name)
-        {
-            foreach (var item in LevelList)
-            {
-                if (item.Key == Path.GetFileNameWithoutExtension(name))
-                    return item.Value;
-            }
-            return "";
-        }
-
-        public MainForm()
+        public PLEditor()
         {
             InitializeComponent();
-            BuildLevelList();
             if (Program.Arguments.Length > 0)
                 LoadPLFile(Program.Arguments[0]);
             else
@@ -62,7 +50,9 @@ namespace PLTool
             RefreshAllPalettes();
             RefreshPalettePreview();
             currentFilename = filename;
-            toolStripStatusLabelFilename.Text = Path.GetFileNameWithoutExtension(currentFilename) + "   " + GetLevelNameFromFilename(currentFilename);
+            this.Text = "Sonic Adventure PL Tool - " + currentFilename;
+            toolStripStatusLabelFilename.Text = Path.GetFileNameWithoutExtension(currentFilename) + " ";
+            toolStripStatusLabelLevelName.Text = LanternFilenames.GetLevelNameFromFilename(currentFilename);
             saveToolStripMenuItem.Enabled = true;
         }
 
@@ -724,111 +714,11 @@ namespace PLTool
                 }
         }
 
-        private void BuildLevelList()
-        {
-            LevelList = new Dictionary<string, string>();
-
-            LevelList.Add("PL_10B", "Emerald Coast + Egg Carrier (sunk)");
-
-            LevelList.Add("PL_20B", "Windy Valley / Act 1 Windy Hill");
-            LevelList.Add("PL_21B", "Windy Valley / Act 1 Tornado");
-            LevelList.Add("PL_22B", "Windy Valley / Act 1 The Air");
-
-            LevelList.Add("PL_30B", "Twinkle Park / Act 1 Twinkle Kart");
-            LevelList.Add("PL_31B", "Twinkle Park / Act 2 Pleasure Castle");
-            LevelList.Add("PL_32B", "Twinkle Park / Act 3 Mirror Room");
-
-            LevelList.Add("PL_40B", "Speed Highway / Act 1");
-            LevelList.Add("PL_41B", "Speed Highway / Act 2 Goin' Down");
-            LevelList.Add("PL_42B", "Speed Highway / Act 3 At Down");
-
-            LevelList.Add("PL_50B", "Red Mountain / Act 1 Mt. Red");
-            LevelList.Add("PL_51B", "Red Mountain / Act 2 Red Hot Skull");
-            LevelList.Add("PL_52B", "Red Mountain / Act 3 (Knuckles)");
-
-            LevelList.Add("PL_60B", "Sky Deck (Light) + Character Select");
-            LevelList.Add("PL_61B", "Sky Deck (Dark)");
-
-            LevelList.Add("PL_70B", "Lost World / Act 1 Tricky Maze");
-            LevelList.Add("PL_71B", "Lost World / Act 2/3 Danger! Chased by Rock");
-
-            LevelList.Add("PL_80B", "Ice Cap / Act 1 Snowy Mountain");
-            LevelList.Add("PL_81B", "Ice Cap / Act 2 Limestone Cave");
-            LevelList.Add("PL_82B", "Ice Cap / Act 3 Snowboard");
-            LevelList.Add("PL_83B", "Ice Cap / Act 4 (Big)");
-
-            LevelList.Add("PL_90B", "Casinopolis / Act 1 Main Hall");
-            LevelList.Add("PL_91B", "Casinopolis / Act 2 Sewers");
-            LevelList.Add("PL_92B", "Casinopolis / Act 3 Sonic Pinball");
-            LevelList.Add("PL_93B", "Casinopolis / Act 4 NiGHTS Pinball");
-
-            LevelList.Add("PL_A0B", "Final Egg / Act 1 Mechanical Resonance");
-            LevelList.Add("PL_A1B", "Final Egg / Act 2 Crank the Heat Up");
-            LevelList.Add("PL_A2B", "Final Egg / Act 3 Gamma's Training Area");
-
-            LevelList.Add("PL_C0B", "Hot Shelter / Act 1 Bad Taste Aquarium");
-            LevelList.Add("PL_C1B", "Hot Shelter / Act 2 Red Barrage Area");
-            LevelList.Add("PL_C2B", "Hot Shelter / Act 3 Gamma's Hot Shelter");
-
-            LevelList.Add("PL_F0B", "Chaos 0");
-            LevelList.Add("PL_G0B", "Chaos 2");
-            LevelList.Add("PL_H0B", "Chaos 4");
-            LevelList.Add("PL_I0B", "Chaos 6");
-            LevelList.Add("PL_J0B", "Perfect Chaos / Act 1");
-            LevelList.Add("PL_J1B", "Perfect Chaos / Act 2");
-            LevelList.Add("PL_K0B", "Egg Hornet");
-            LevelList.Add("PL_M0B", "Egg Viper");
-            LevelList.Add("PL_N0B", "ZERO");
-            LevelList.Add("PL_O0B", "E-101");
-            LevelList.Add("PL_P0B", "E-101-R");
-
-            LevelList.Add("PL_Q1B", "Station Square (Evening)");
-            LevelList.Add("PL_Q3B", "Station Square (Night) + Egg Walker");
-            LevelList.Add("PL_Q4B", "Station Square (Day)");
-
-            LevelList.Add("PL_T0B", "Egg Carrier Outside (Airborne)");
-            LevelList.Add("PL_T1B", "Egg Carrier Outside (Unused)");
-            LevelList.Add("PL_T2B", "Egg Carrier Private Room");
-            LevelList.Add("PL_T3B", "Egg Carrier Captain's Room");
-            LevelList.Add("PL_T4B", "Egg Carrier Outsude (Unused)");
-            LevelList.Add("PL_T5B", "Egg Carrier Pool");
-
-            LevelList.Add("PL_W0B", "Egg Carrier Ammunition Room");
-            LevelList.Add("PL_W1B", "Egg Carrier Bridge");
-            LevelList.Add("PL_W2B", "Egg Carrier Hedgehog Hammer Room");
-            LevelList.Add("PL_W3B", "Egg Carrier Prison");
-            LevelList.Add("PL_W4B", "Egg Carrier Water Reservoir");
-            LevelList.Add("PL_W5B", "Egg Carrier Garden Teleporter Room");
-
-            LevelList.Add("PL_X0B", "Mystic Ruins (Day)");
-            LevelList.Add("PL_X1B", "Mystic Ruins (Evening)");
-            LevelList.Add("PL_X2B", "Mystic Ruins (Night)");
-            LevelList.Add("PL_X3B", "Mystic Ruins Base");
-
-            LevelList.Add("PL_Y0B", "The Past / Echidna City");
-            LevelList.Add("PL_Y1B", "The Past / Master Emerald Altar");
-            LevelList.Add("PL_Y2B", "The Past / Master Emerald on Fire");
-
-            LevelList.Add("PL_Z0B", "Twinkle Circuit");
-            LevelList.Add("PL1A0B", "Sky Chase / Act 1");
-            LevelList.Add("PL1B0B", "Sky Chase / Act 2");
-            LevelList.Add("PL1C0B", "Sand Hill");
-
-            LevelList.Add("PL1D0B", "Station Square Garden (Day)");
-            LevelList.Add("PL1D1B", "Station Square Garden (Unused)");
-            LevelList.Add("PL1E0B", "Egg Carrier Garden (Day)");
-            LevelList.Add("PL1E1B", "Egg Carrier Garden (Unused)");
-            LevelList.Add("PL1E2B", "Egg Carrier Garden (Unused)");
-            LevelList.Add("PL1F0B", "Mystic Ruins Garden (Day)");
-            LevelList.Add("PL1F1B", "Mystic Ruins Garden (Evening / Unused)");
-            LevelList.Add("PL1F2B", "Mystic Ruins Garden (Night / Unused)");
-            LevelList.Add("PL1G0B", "Chao Stadium");
-            LevelList.Add("PL1G1B", "Chao Race");
-
-            LevelList.Add("PL_9MB", "Casinopolis Sewers (Unused)");
-            LevelList.Add("PL_MRD", "Mystic Ruins Day alt. (Unused)");
-            LevelList.Add("PL_MRE", "Mystic Ruins Evening alt. (Unused)");
-            LevelList.Add("PL_MRN", "Mystic Ruins Night alt. (Unused)");
-        }
-    }
+		private void sLEditorToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            string filepath = Path.GetFullPath(currentFilename).Replace("PL", "SL");
+            SLEditor sL = new SLEditor(filepath);
+            sL.Show();
+		}
+	}
 }
