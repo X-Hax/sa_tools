@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <GameInfo gameName="SA2GC" dataFolder="GC_SA2" checkFile="boot.dol" />
+  <SplitEntry SourceFile="boot.dol" IniFile="boot" />
+  <SplitEntry SourceFile="advertiseD.rel" IniFile="advertiseD" />
+  <SplitEntry SourceFile="CartD.rel" IniFile="CartD" />
+  <SplitEntry SourceFile="EmblemGetD.rel" IniFile="EmblemGetD" />
+  <SplitEntry SourceFile="stg00D.rel" IniFile="stg00D" />
+  <SplitEntry SourceFile="stg03D.rel" IniFile="stg03D" />
+  <SplitEntry SourceFile="stg04D.rel" IniFile="stg04D" />
+  <SplitEntry SourceFile="stg05D.rel" IniFile="stg05D" />
+  <SplitEntry SourceFile="stg06D.rel" IniFile="stg06D" />
+  <SplitEntry SourceFile="stg07D.rel" IniFile="stg07D" />
+  <SplitEntry SourceFile="stg08D.rel" IniFile="stg08D" />
+  <SplitEntry SourceFile="stg09D.rel" IniFile="stg09D" />
+  <SplitEntry SourceFile="stg10D.rel" IniFile="stg10D" />
+  <SplitEntry SourceFile="stg11D.rel" IniFile="stg11D" />
+  <SplitEntry SourceFile="stg12D.rel" IniFile="stg12D" />
+  <SplitEntry SourceFile="stg13D.rel" IniFile="stg13D" />
+  <SplitEntry SourceFile="stg14D.rel" IniFile="stg14D" />
+  <SplitEntry SourceFile="stg15D.rel" IniFile="stg15D" />
+  <SplitEntry SourceFile="stg16D.rel" IniFile="stg16D" />
+  <SplitEntry SourceFile="stg17D.rel" IniFile="stg17D" />
+  <SplitEntry SourceFile="stg18D.rel" IniFile="stg18D" />
+  <SplitEntry SourceFile="stg19D.rel" IniFile="stg19D" />
+  <SplitEntry SourceFile="stg20D.rel" IniFile="stg20D" />
+  <SplitEntry SourceFile="stg21D.rel" IniFile="stg21D" />
+  <SplitEntry SourceFile="stg22D.rel" IniFile="stg22D" />
+  <SplitEntry SourceFile="stg23D.rel" IniFile="stg23D" />
+  <SplitEntry SourceFile="stg24D.rel" IniFile="stg24D" />
+  <SplitEntry SourceFile="stg25D.rel" IniFile="stg25D" />
+  <SplitEntry SourceFile="stg26D.rel" IniFile="stg26D" />
+  <SplitEntry SourceFile="stg27D.rel" IniFile="stg27D" />
+  <SplitEntry SourceFile="stg28D.rel" IniFile="stg28D" />
+  <SplitEntry SourceFile="stg29D.rel" IniFile="stg29D" />
+  <SplitEntry SourceFile="stg30D.rel" IniFile="stg30D" />
+  <SplitEntry SourceFile="stg31D.rel" IniFile="stg31D" />
+  <SplitEntry SourceFile="stg32D.rel" IniFile="stg32D" />
+  <SplitEntry SourceFile="stg33D.rel" IniFile="stg33D" />
+  <SplitEntry SourceFile="stg34D.rel" IniFile="stg34D" />
+  <SplitEntry SourceFile="stg35D.rel" IniFile="stg35D" />
+  <SplitEntry SourceFile="stg36D.rel" IniFile="stg36D" />
+  <SplitEntry SourceFile="stg37D.rel" IniFile="stg37D" />
+  <SplitEntry SourceFile="stg38D.rel" IniFile="stg38D" />
+  <SplitEntry SourceFile="stg39D.rel" IniFile="stg39D" />
+  <SplitEntry SourceFile="stg40D.rel" IniFile="stg40D" />
+  <SplitEntry SourceFile="stg41D.rel" IniFile="stg41D" />
+  <SplitEntry SourceFile="stg42D.rel" IniFile="stg42D" />
+  <SplitEntry SourceFile="stg43D.rel" IniFile="stg43D" />
+  <SplitEntry SourceFile="stg44D.rel" IniFile="stg44D" />
+  <SplitEntry SourceFile="stg45D.rel" IniFile="stg45D" />
+  <SplitEntry SourceFile="stg46D.rel" IniFile="stg46D" />
+  <SplitEntry SourceFile="stg47D.rel" IniFile="stg47D" />
+  <SplitEntry SourceFile="stg48D.rel" IniFile="stg48D" />
+  <SplitEntry SourceFile="stg49D.rel" IniFile="stg49D" />
+  <SplitEntry SourceFile="stg50D.rel" IniFile="stg50D" />
+  <SplitEntry SourceFile="stg51D.rel" IniFile="stg51D" />
+  <SplitEntry SourceFile="stg52D.rel" IniFile="stg52D" />
+  <SplitEntry SourceFile="stg53D.rel" IniFile="stg53D" />
+  <SplitEntry SourceFile="stg54D.rel" IniFile="stg54D" />
+  <SplitEntry SourceFile="stg55D.rel" IniFile="stg55D" />
+  <SplitEntry SourceFile="stg56D.rel" IniFile="stg56D" />
+  <SplitEntry SourceFile="stg57D.rel" IniFile="stg57D" />
+  <SplitEntry SourceFile="stg58D.rel" IniFile="stg58D" />
+  <SplitEntry SourceFile="stg59D.rel" IniFile="stg59D" />
+  <SplitEntry SourceFile="boss_bigbogyD.rel" IniFile="boss_bigbogyD" />
+  <SplitEntry SourceFile="boss_bigfootD.rel" IniFile="boss_bigfootD" />
+  <SplitEntry SourceFile="boss_fdogD.rel" IniFile="boss_fdogD" />
+  <SplitEntry SourceFile="Boss_GolemD.rel" IniFile="Boss_GolemD" />
+  <SplitEntry SourceFile="Boss_GolemED.rel" IniFile="Boss_GolemED" />
+  <SplitEntry SourceFile="boss_hotshotD.rel" IniFile="boss_hotshotD" />
+  <SplitEntry SourceFile="boss_last1D.rel" IniFile="boss_last1D" />
+  <SplitEntry SourceFile="Boss_Last2D.rel" IniFile="Boss_Last2D" />
+  <SplitEntry SourceFile="ChaoMain.prs" IniFile="ChaoMain" />
+  <SplitEntry SourceFile="ChaoStgDark.prs" IniFile="ChaoStgDark" />
+  <SplitEntry SourceFile="ChaoStgEntrance.prs" IniFile="ChaoStgEntrance" />
+  <SplitEntry SourceFile="ChaoStgHero.prs" IniFile="ChaoStgHero" />
+  <SplitEntry SourceFile="ChaoStgKarate.prs" IniFile="ChaoStgKarate" />
+  <SplitEntry SourceFile="ChaoStgKinder.prs" IniFile="ChaoStgKinder" />
+  <SplitEntry SourceFile="ChaoStgLobby.prs" IniFile="ChaoStgLobby" />
+  <SplitEntry SourceFile="ChaoStgLobby.rel" IniFile="ChaoStgLobbyREL" />
+  <SplitEntry SourceFile="ChaoStgLobby000.prs" IniFile="ChaoStgLobby000" />
+  <SplitEntry SourceFile="ChaoStgLobby00K.prs" IniFile="ChaoStgLobby00K" />
+  <SplitEntry SourceFile="ChaoStgLobby0DK.prs" IniFile="ChaoStgLobby0DK" />
+  <SplitEntry SourceFile="ChaoStgLobbyH0K.prs" IniFile="ChaoStgLobbyH0K" />
+  <SplitEntry SourceFile="ChaoStgLobbyHDK.prs" IniFile="ChaoStgLobbyHDK" />
+  <SplitEntry SourceFile="ChaoStgNeut.prs" IniFile="ChaoStgNeut" />
+  <SplitEntry SourceFile="ChaoStgOdekake.prs" IniFile="ChaoStgOdekake" />
+  <SplitEntry SourceFile="ChaoStgRace.prs" IniFile="ChaoStgRace" />
+  <SplitEntry SourceFile="ChaoStgRaceDark.prs" IniFile="ChaoStgRaceDark" />
+  <SplitEntry SourceFile="ChaoStgRaceHero.prs" IniFile="ChaoStgRaceHero" />
+  <SplitEntry SourceFile="ChaoStgRaceNeut.prs" IniFile="ChaoStgRaceNeut" />
+  <SplitEntry SourceFile="ChaoStgStadium.prs" IniFile="ChaoStgStadium" />
+  <SplitEntryMDL BigEndian="true" ModelFile="amymdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>amymtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="bknuckmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>knuckmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="brougemdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>rougemtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="chaos0mdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>chaos0mtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="cwalkmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>cwalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="dwalkmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>dwalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="eggmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>eggmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="ewalk1mdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ewalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="ewalk2mdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ewalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="ewalkmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ewalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="knuckmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>knuckmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="metalsonicmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>metalsonicmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="milesmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>milesmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="rougemdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>rougemtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="shadow1mdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>teriosmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="sonic1mdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="sonicmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="sshadowmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sshadowmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="ssonicmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ssonicmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="teriosmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>teriosmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="ticalmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ticalmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="twalk1mdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>twalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL BigEndian="true" ModelFile="twalkmdl.prs">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>twalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+</SplitTemplate>

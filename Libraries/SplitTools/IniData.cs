@@ -18,6 +18,8 @@ namespace SplitTools
 		public uint? ImageBase { get; set; }
 		[IniName("compressed")]
 		public bool Compressed { get; set; }
+		[IniName("compressedrel")]
+		public bool CompressedREL { get; set; }
 		[IniName("bigendian")]
 		public bool BigEndian { get; set; }
 		[IniName("reverse")]

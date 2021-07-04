@@ -45,7 +45,7 @@ namespace SplitTools.Split
 				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(datafilename));
 				if (Path.GetExtension(datafilename).ToLowerInvariant() == ".prs" || (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin")) datafile = FraGag.Compression.Prs.Decompress(datafile);
 				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
-				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase))
+				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase) || (inifile.CompressedREL && Path.GetExtension(datafilename).ToLowerInvariant() == ".prs"))
 				{
 					datafile = HelperFunctions.DecompressREL(datafile);
 					HelperFunctions.FixRELPointers(datafile, imageBase);
@@ -93,8 +93,9 @@ namespace SplitTools.Split
 					switch (type)
 					{
 						case "landtable":
-							LandTableFormat format = data.CustomProperties.ContainsKey("format") ? (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]) : landfmt_def;
-							new LandTable(datafile, address, imageBase, format, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt_def, nometa);
+							if (data.CustomProperties.ContainsKey("format"))
+								landfmt_def = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
+							new LandTable(datafile, address, imageBase, landfmt_def, labels) { Description = item.Key }.SaveToFile(fileOutputPath, landfmt_def, nometa);
 							break;
 						case "model":
 						case "basicmodel":
