@@ -1,9 +1,8 @@
-﻿using SAModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace PLTool
+namespace SAModel.SAEditorCommon
 {
     public class PLPalette
     {

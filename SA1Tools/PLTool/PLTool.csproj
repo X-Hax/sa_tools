@@ -66,7 +66,6 @@
     <Compile Include="ColorPattern.Designer.cs">
       <DependentUpon>ColorPattern.cs</DependentUpon>
     </Compile>
-    <Compile Include="LanternFilenames.cs" />
     <Compile Include="GradientBasic.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,7 +84,6 @@
     <Compile Include="PLEditor.Designer.cs">
       <DependentUpon>PLEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="PLFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SLEditor.cs">
@@ -94,7 +92,6 @@
     <Compile Include="SLEditor.Designer.cs">
       <DependentUpon>SLEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="SLFile.cs" />
     <EmbeddedResource Include="ColorPattern.resx">
       <DependentUpon>ColorPattern.cs</DependentUpon>
     </EmbeddedResource>

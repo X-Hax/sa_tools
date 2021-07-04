@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using SAModel.SAEditorCommon;
 
 namespace PLTool
 {
@@ -52,7 +52,7 @@ namespace PLTool
             currentFilename = filename;
             this.Text = "Sonic Adventure PL Tool - " + currentFilename;
             toolStripStatusLabelFilename.Text = Path.GetFileNameWithoutExtension(currentFilename) + " ";
-            toolStripStatusLabelLevelName.Text = LanternFilenames.GetLevelNameFromFilename(currentFilename);
+            toolStripStatusLabelLevelName.Text = SAModel.SAEditorCommon.LanternFilenames.GetLevelNameFromFilename(currentFilename);
             saveToolStripMenuItem.Enabled = true;
         }
 

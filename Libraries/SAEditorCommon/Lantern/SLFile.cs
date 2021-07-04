@@ -1,15 +1,9 @@
-﻿using SAModel;
-using SAModel.Direct3D;
+﻿using SAModel.Direct3D;
 using SharpDX;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Color = System.Drawing.Color;
 
-namespace PLTool
+namespace SAModel.SAEditorCommon
 {
 	public class SLFile
 	{
