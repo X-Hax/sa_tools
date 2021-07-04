@@ -545,11 +545,11 @@ namespace PLTool
             this.groupBox1.Controls.Add(this.numericUpDownFreeR);
             this.groupBox1.Controls.Add(this.pictureBoxColorFree);
             this.groupBox1.Controls.Add(this.trackBarRD);
-            this.groupBox1.Location = new System.Drawing.Point(310, 87);
+            this.groupBox1.Location = new System.Drawing.Point(309, 86);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(273, 186);
+            this.groupBox1.Size = new System.Drawing.Size(273, 187);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Free/Slave Data";
@@ -739,7 +739,7 @@ namespace PLTool
             this.groupBox2.Controls.Add(this.numericUpDownAngleY);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(310, 27);
+            this.groupBox2.Location = new System.Drawing.Point(309, 26);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(273, 55);
             this.groupBox2.TabIndex = 20;
