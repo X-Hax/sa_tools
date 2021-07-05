@@ -27,10 +27,12 @@ namespace PLTool
                         break;
                     case "PL":
                     default:
-                        primaryForm = new PLEditor();
+                        primaryForm = new PLEditor(args[0]);
                         break;
                 }
-            Application.Run(primaryForm);
+			else
+				primaryForm = new PLEditor();
+			Application.Run(primaryForm);
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
