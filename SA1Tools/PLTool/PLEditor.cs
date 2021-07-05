@@ -17,14 +17,14 @@ namespace PLTool
         bool isGamecube = false;
         public string currentFilename = "";
 
-        public PLEditor()
-        {
-            InitializeComponent();
-            if (Program.Arguments.Length > 0)
-                LoadPLFile(Program.Arguments[0]);
-            else
-                CreateDefaultPalettes();
-        }
+		public PLEditor(string filepath = "")
+		{
+			InitializeComponent();
+			if (filepath != "" && File.Exists(filepath))
+				LoadPLFile(filepath);
+			else
+				CreateDefaultPalettes();
+		}
 
         private void CreateBlankPalettes()
         {
