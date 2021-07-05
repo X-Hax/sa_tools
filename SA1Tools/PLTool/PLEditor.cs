@@ -714,11 +714,14 @@ namespace PLTool
                 }
         }
 
-		private void sLEditorToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            string filepath = Path.GetFullPath(currentFilename).Replace("PL", "SL");
-            SLEditor sL = new SLEditor(filepath);
+        private void sLEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SLEditor sL;
+            if (currentFilename == "")
+                sL = new SLEditor();
+            else
+                sL = new SLEditor(Path.GetFullPath(currentFilename).Replace("PL", "SL"));
             sL.Show();
-		}
+        }
 	}
 }
