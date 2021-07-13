@@ -123,6 +123,7 @@ namespace ArchiveLib
 			List<nmldEntry> nmldEntries = new List<nmldEntry>();
 			List<nmldObjectTable> nmldObjectEntries = new List<nmldObjectTable>();
 			ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0);
+			string nmldInfo = "";
 
 			// Read MLD Header
 			int nmldCount = ByteConverter.ToInt32(file, 0);
@@ -209,8 +210,14 @@ namespace ArchiveLib
 						}
 						Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(mdlAction), (Path.GetFileNameWithoutExtension(mdlName) + ".motions")));
 					}
+
+					//Write NMLD Entry output
+					Console.WriteLine("Generate NMLD Entry List");
+					nmldInfo += "Entry " + (nmldEntries[e].idx.ToString() + ": " + mdlName + ", { " + nmldEntries[e].pos.ToString() + " }, { " + nmldEntries[e].rot.ToString() + " },  { " + nmldEntries[e].scl.ToString() + " }\n");
 				}
 			}
+
+			Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(nmldInfo), "nmldInfo.amld"));
 
 			//Scan file for all NMDM Chunks
 			Console.WriteLine("Scanning for NMDM Chunks");
