@@ -313,7 +313,9 @@ Global
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

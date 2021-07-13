@@ -10,11 +10,17 @@ namespace SplitTools
 {
 	public static class HelperFunctions
 	{
-		[DllImport("SACompGC.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-		private static extern uint GetDecompressedSize(IntPtr InputBuffer);
-		[DllImport("SACompGC.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-		private static extern void DecompressBuffer(IntPtr InputBuffer, IntPtr OutputBuffer);
-		public static uint? SetupEXE(ref byte[] exefile)
+        // X86 SACompGC
+		[DllImport("SACompGC_x86.dll", EntryPoint = "GetDecompressedSize", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+		private static extern uint GetDecompressedSizeX86(IntPtr InputBuffer);
+		[DllImport("SACompGC_x86.dll", EntryPoint = "DecompressBuffer", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+		private static extern void DecompressBufferX86(IntPtr InputBuffer, IntPtr OutputBuffer);
+        // X64 SACompGC
+        [DllImport("SACompGC_x64.dll", EntryPoint = "GetDecompressedSize", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        private static extern uint GetDecompressedSizeX64(IntPtr InputBuffer);
+        [DllImport("SACompGC_x64.dll", EntryPoint = "DecompressBuffer", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        private static extern void DecompressBufferX64(IntPtr InputBuffer, IntPtr OutputBuffer);
+        public static uint? SetupEXE(ref byte[] exefile)
 		{
 			if (ByteConverter.ToUInt16(exefile, 0) != 0x5A4D)
 				return null;
@@ -451,10 +457,17 @@ namespace SplitTools
 			// Process the new array
 			IntPtr pnt_input = Marshal.AllocHGlobal(input.Length);
 			Marshal.Copy(input, 0, pnt_input, input.Length);
-			int size_output = (int)GetDecompressedSize(pnt_input);
-			IntPtr pnt_output = Marshal.AllocHGlobal(size_output);
-			DecompressBuffer(pnt_input, pnt_output);
-			byte[] decompbuf = new byte[size_output];
+            int size_output;
+            if (Environment.Is64BitProcess)
+                size_output = (int)GetDecompressedSizeX64(pnt_input);
+            else
+                size_output = (int)GetDecompressedSizeX86(pnt_input);
+            IntPtr pnt_output = Marshal.AllocHGlobal(size_output);
+            if (Environment.Is64BitProcess)
+                DecompressBufferX64(pnt_input, pnt_output);
+            else
+                DecompressBufferX86(pnt_input, pnt_output);
+            byte[] decompbuf = new byte[size_output];
 			Marshal.Copy(pnt_output, decompbuf, 0, size_output);
 			Marshal.FreeHGlobal(pnt_output);
 			Marshal.FreeHGlobal(pnt_input);

@@ -1,1 +1,1 @@
-..\bin\split binary data/system/ADV03MODELS.DLL adv03models.ini output/
+..\..\bin\split binary data/system/ADV03MODELS.DLL adv03models.ini output/
