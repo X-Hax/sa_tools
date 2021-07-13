@@ -499,7 +499,7 @@ namespace SAModel.SAMDL
 
 			return -1;
 		}
-
+		/*
 		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
 		{
 			List<int> positions = new List<int>();
@@ -547,6 +547,7 @@ namespace SAModel.SAMDL
 			
 			return motions;
 		}
+		*/
 
 		private void LoadFile(string filename, bool cmdLoad = false)
 		{
@@ -683,7 +684,7 @@ namespace SAModel.SAMDL
 				Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 
 				LoadBinFile(newFile);
-				animations = LoadNMDM(file);
+				animations = new List<NJS_MOTION>();
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else
