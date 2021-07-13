@@ -499,6 +499,7 @@ namespace SAModel.SAMDL
 
 			return -1;
 		}
+		
 		/*
 		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
 		{
@@ -2518,7 +2519,7 @@ namespace SAModel.SAMDL
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm;*.motions|SA Tools Animation Files|*.saanim;*.action|" +
-																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|Ninja Motions TXT|*.motions|All Files|*.*", Multiselect = true })
+																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
 					LoadAnimation(ofd.FileNames);
@@ -2636,15 +2637,46 @@ namespace SAModel.SAMDL
 							for (int u = 0; u < count; u++)
 							{
 								animationFiles[u] = tr.ReadLine();
+
 								if (File.Exists(Path.Combine(path, animationFiles[u])))
 								{
-									if (Path.GetExtension(animationFiles[u]).ToLowerInvariant() == ".json")
+									string filePath = Path.Combine(path, animationFiles[u]);
+									string animExt = Path.GetExtension(filePath).ToLowerInvariant();
+									NJS_MOTION mot;
+									switch (animExt)
 									{
-										JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
-										using (TextReader tr2 = File.OpenText(Path.Combine(path, animationFiles[u])))
-										{
-											JsonTextReader jtr = new JsonTextReader(tr2);
-											NJS_MOTION mot = js.Deserialize<NJS_MOTION>(jtr);
+										case ".json":
+											JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+											using (TextReader tr2 = File.OpenText(filePath))
+											{
+												JsonTextReader jtr = new JsonTextReader(tr2);
+												mot = js.Deserialize<NJS_MOTION>(jtr);
+												if (first)
+												{
+													first = false;
+													animframe = 0;
+													animnum = animations.Count;
+													animations.Add(mot);
+													animation = mot;
+													UpdateWeightedModel();
+													DrawEntireModel();
+												}
+												else
+													animations.Add(mot);
+											}
+											break;
+
+										case ".njm":
+											byte[] motFile = File.ReadAllBytes(filePath);
+											ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(motFile, 0xC);
+
+											byte[] newMotFile = new byte[motFile.Length - 0x8];
+											Array.Copy(motFile, 0x8, newMotFile, 0, newMotFile.Length);
+
+											string motName = Path.GetFileNameWithoutExtension(filePath);
+											Dictionary<int, string> motLabel = new Dictionary<int, string>();
+											motLabel.Add(0, motName);
+											mot = new NJS_MOTION(newMotFile, 0, 0, model.CountAnimated(), motLabel, false);
 											if (first)
 											{
 												first = false;
@@ -2657,61 +2689,25 @@ namespace SAModel.SAMDL
 											}
 											else
 												animations.Add(mot);
-										}
-									}
-									else
-									{
-										NJS_MOTION mot = NJS_MOTION.Load(Path.Combine(path, animationFiles[u]));
-										if (first)
-										{
-											first = false;
-											animframe = 0;
-											animnum = animations.Count;
-											animations.Add(mot);
-											animation = mot;
-											UpdateWeightedModel();
-											DrawEntireModel();
-										}
-										else
-											animations.Add(mot);
-									}
-								}
-							}
-						}
-						break;
-					case ".motions":
-						using (TextReader tr = File.OpenText(fn))
-						{
-							string path = Path.GetDirectoryName(fn);
-							int count = File.ReadLines(fn).Count();
-							string[] animationFiles = new string[count];
-							for (int u = 0; u < count; u++)
-							{
-								animationFiles[u] = tr.ReadLine();
-								if (File.Exists(Path.Combine(path, animationFiles[u])))
-								{
-									byte[] motFile = File.ReadAllBytes(Path.Combine(path, animationFiles[u]));
-									ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(motFile, 0xC);
+											break;
 
-									byte[] newMotFile = new byte[motFile.Length - 0x8];
-									Array.Copy(motFile, 0x8, newMotFile, 0, newMotFile.Length);
-
-									string motName = Path.GetFileNameWithoutExtension(Path.Combine(path, animationFiles[u]));
-									Dictionary<int, string> motLabel = new Dictionary<int, string>();
-									motLabel.Add(0, motName);
-									NJS_MOTION mot = new NJS_MOTION(newMotFile, 0, 0, model.CountAnimated(), motLabel, false);
-									if (first)
-									{
-										first = false;
-										animframe = 0;
-										animnum = animations.Count;
-										animations.Add(mot);
-										animation = mot;
-										UpdateWeightedModel();
-										DrawEntireModel();
+										case ".saanim":
+										default:
+											mot = NJS_MOTION.Load(filePath);
+											if (first)
+											{
+												first = false;
+												animframe = 0;
+												animnum = animations.Count;
+												animations.Add(mot);
+												animation = mot;
+												UpdateWeightedModel();
+												DrawEntireModel();
+											}
+											else
+												animations.Add(mot);
+											break;
 									}
-									else
-										animations.Add(mot);
 								}
 							}
 						}

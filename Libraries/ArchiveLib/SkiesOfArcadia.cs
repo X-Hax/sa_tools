@@ -208,7 +208,7 @@ namespace ArchiveLib
 						{
 							mdlAction += (motion);
 						}
-						Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(mdlAction), (Path.GetFileNameWithoutExtension(mdlName) + ".motions")));
+						Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(mdlAction), (Path.GetFileNameWithoutExtension(mdlName) + ".action")));
 					}
 
 					//Write NMLD Entry output
