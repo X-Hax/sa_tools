@@ -557,12 +557,14 @@ namespace TextureEditor
                         foreach (PvrTextureInfo tex in textures)
                             puyo.Entries.Add(new PVMEntry(EncodePVR(tex).ToArray(), tex.Name));
                         data = puyo.GetBytes();
+                        unsaved = false;
                         break;
                     case TextureFormat.GVM:
                         PuyoFile puyog = new PuyoFile(true);
                         foreach (GvrTextureInfo tex in textures)
                             puyog.Entries.Add(new GVMEntry(EncodeGVR(tex).ToArray(), tex.Name));
                         data = puyog.GetBytes();
+                        unsaved = false;
                         break;
                     case TextureFormat.PVMX:
                         PVMXFile pvmx = new PVMXFile();
@@ -573,9 +575,10 @@ namespace TextureEditor
                                 size = new Size(tex.Dimensions.Value.Width, tex.Dimensions.Value.Height);
                             MemoryStream ds = new MemoryStream();
                             tex.Image.Save(ds, System.Drawing.Imaging.ImageFormat.Png);
-                            pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name, tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
+                            pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name+".png", tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
                         }
                         File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
+                        unsaved = false;
                         return;
                     case TextureFormat.PAK:
                         PAKFile pak = new PAKFile();
@@ -613,6 +616,7 @@ namespace TextureEditor
                         }
                         pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
                         pak.Save(archiveFilename);
+                        unsaved = false;
                         return;
                     default:
                         return;
