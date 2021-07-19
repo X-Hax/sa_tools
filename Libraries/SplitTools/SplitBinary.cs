@@ -402,6 +402,34 @@ namespace SplitTools.Split
 								nohash = true;
 							}
 							break;
+						case "kartmenu":
+							{
+								List<KartMenuElements> result = new List<KartMenuElements>();
+								List<string> hashes = new List<string>();
+								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								Dictionary<int, string> mtns = new Dictionary<int, string>();
+								for (int i = 0; i < Length; i++)
+								{
+									KartMenuElements menu = new KartMenuElements();
+									menu.CharacterID = (SA2Characters)ByteConverter.ToUInt32(datafile, address);
+									menu.PortraitID = ByteConverter.ToUInt32(datafile, address + 4);
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 8) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									menu.KartModel = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									menu.SPD = datafile[address + 0xC];
+									menu.ACL = datafile[address + 0xD];
+									menu.BRK = datafile[address + 0xE];
+									menu.GRP = datafile[address + 0xF];
+									result.Add(menu);
+									address += 0x10;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
 						case "levelpathlist":
 							{
 								List<string> hashes = new List<string>();

@@ -54,6 +54,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "creditstextlist", "Credits Text List" },
 			{ "animindexlist", "Animation Index List" },
 			{ "storysequence", "Story Sequence" },
+			{ "kartmenu", "Kart Menu Elements" },
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },

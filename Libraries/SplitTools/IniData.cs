@@ -208,7 +208,7 @@ namespace SplitTools
 
 		public static ObjectListEntry[] Load(byte[] file, int address, uint imageBase, bool SA2)
 		{
-			int numobjs = ByteConverter.ToInt16(file, address);
+			int numobjs = ByteConverter.ToInt32(file, address);
 			address = file.GetPointer(address + 4, imageBase);
 			if (SA2)
 			{
@@ -1928,7 +1928,7 @@ namespace SplitTools
 		public static Dictionary<SA2LevelIDs, LevelRankScores> Load(byte[] file, int address)
 		{
 			Dictionary<SA2LevelIDs, LevelRankScores> result = new Dictionary<SA2LevelIDs, LevelRankScores>();
-			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2LevelIDs.Invalid)
+			while (ByteConverter.ToUInt16(file, address) < (ushort)SA2LevelIDs.Invalid)
 			{
 				LevelRankScores objgrp = new LevelRankScores(file, address + 2);
 				result.Add((SA2LevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
@@ -3326,6 +3326,32 @@ namespace SplitTools
 			}
 			else
 				sb.Append("NULL");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class KartMenuElements
+	{
+		[IniAlwaysInclude]
+		public SA2Characters CharacterID { get; set; }
+		public uint PortraitID { get; set; }
+		public string KartModel { get; set; }
+		public byte SPD { get; set; }
+		public byte ACL { get; set; }
+		public byte BRK { get; set; }
+		public byte GRP { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", CharacterID.ToC());
+			sb.AppendFormat("{0}, ", PortraitID.ToCHex());
+			sb.AppendFormat("{0}, ", KartModel.ToC());
+			sb.AppendFormat("{0}, ", SPD.ToString());
+			sb.AppendFormat("{0}, ", ACL.ToString());
+			sb.AppendFormat("{0}, ", BRK.ToString());
+			sb.AppendFormat("{0}, ", GRP.ToString());
 			sb.Append(" }");
 			return sb.ToString();
 		}
