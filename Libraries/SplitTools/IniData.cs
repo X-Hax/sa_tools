@@ -208,7 +208,7 @@ namespace SplitTools
 
 		public static ObjectListEntry[] Load(byte[] file, int address, uint imageBase, bool SA2)
 		{
-			int numobjs = ByteConverter.ToInt32(file, address);
+			int numobjs = ByteConverter.ToInt16(file, address);
 			address = file.GetPointer(address + 4, imageBase);
 			if (SA2)
 			{
