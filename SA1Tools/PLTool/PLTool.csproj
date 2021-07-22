@@ -66,6 +66,12 @@
     <Compile Include="ColorPattern.Designer.cs">
       <DependentUpon>ColorPattern.cs</DependentUpon>
     </Compile>
+    <Compile Include="GradientPS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GradientPS.Designer.cs">
+      <DependentUpon>GradientPS.cs</DependentUpon>
+    </Compile>
     <Compile Include="GradientBasic.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +106,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GradientDX.resx">
       <DependentUpon>GradientDX.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GradientPS.resx">
+      <DependentUpon>GradientPS.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PLEditor.resx">
       <DependentUpon>PLEditor.cs</DependentUpon>

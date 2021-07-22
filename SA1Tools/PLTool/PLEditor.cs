@@ -723,5 +723,17 @@ namespace PLTool
                 sL = new SLEditor(Path.GetFullPath(currentFilename).Replace("PL", "SL"));
             sL.Show();
         }
-	}
+
+		private void toolStripCreateGradient_Click(object sender, EventArgs e)
+		{
+            using (GradientPS gps = new GradientPS(currentPLFile.Palettes[selectedPaletteIndex].GetColorList(isSpecular)))
+                if (gps.ShowDialog() == DialogResult.OK)
+                {
+                    for (int i = 0; i < 256; i++)
+                        currentPLFile.Palettes[selectedPaletteIndex].Colors[i, isSpecular ? 1 : 0] = gps.result[i];
+                    RefreshPalette(selectedPaletteIndex);
+                    RefreshPalettePreview();
+                }
+        }
+    }
 }
