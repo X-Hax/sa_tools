@@ -42,10 +42,6 @@
     <ApplicationIcon>icon_TexEdit.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FraGag.Compression.Prs">
-      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Pfim, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
       <Private>False</Private>
@@ -115,6 +111,11 @@
       <Name>ArchiveLib</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
+      <Name>FraGag.Compression.Prs</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
       <Project>{0D72870C-29A2-4B16-B016-2F2E266A0E64}</Project>
       <Name>SAEditorCommon</Name>
@@ -156,8 +157,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\VrSharp.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\FraGag.Compression.Prs.dll" "$(SolutionDir)build\tools\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\VrSharp.dll" "$(SolutionDir)build\tools\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
