@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraGag.Compression.Prs", "Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj", "{EC8BB2B3-1975-41B9-8D59-3A6403271112}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitTools", "Libraries\SplitTools\SplitTools.csproj", "{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SADXTweaker2", "SA1Tools\SADXTweaker2\SADXTweaker2.csproj", "{2A43E17A-5BE4-40FE-8C3A-0C0C79240AD3}"
@@ -111,8 +113,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAToolsHub", "SAToolsHub\SA
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E} = {50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FraGag.Compression.Prs", "Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj", "{EC8BB2B3-1975-41B9-8D59-3A6403271112}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "buildSATools", "CommandLine\buildSATools\buildSATools.csproj", "{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLTool", "SA1Tools\PLTool\PLTool.csproj", "{22748C6D-2D50-483A-9878-A48C76CF8CD8}"
@@ -123,6 +123,10 @@ Global
 		Release|Mixed Platforms = Release|Mixed Platforms
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Debug|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Debug|Mixed Platforms.Build.0 = Release|Any CPU
+		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -308,8 +312,6 @@ Global
 		{D2033BDD-7B02-4F32-832D-B32A33722080}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{D2033BDD-7B02-4F32-832D-B32A33722080}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D2033BDD-7B02-4F32-832D-B32A33722080}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{EC8BB2B3-1975-41B9-8D59-3A6403271112}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{22748C6D-2D50-483A-9878-A48C76CF8CD8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -321,6 +323,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{EC8BB2B3-1975-41B9-8D59-3A6403271112} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
 		{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
 		{2A43E17A-5BE4-40FE-8C3A-0C0C79240AD3} = {DDB073E1-1CF4-42AA-9E0D-0C7F27261291}
 		{397FCC67-9C8A-43E7-BA1D-2003AABDD366} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
@@ -363,7 +366,6 @@ Global
 		{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6} = {485AB560-BEA5-4CC1-9324-43B12A687E57}
 		{45799202-AFC0-4EC0-AE8E-974DBFA19A0C} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{27223DD0-71BC-4D77-90AB-6E6FBB475B34} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
-		{EC8BB2B3-1975-41B9-8D59-3A6403271112} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{22748C6D-2D50-483A-9878-A48C76CF8CD8} = {DDB073E1-1CF4-42AA-9E0D-0C7F27261291}
 	EndGlobalSection
