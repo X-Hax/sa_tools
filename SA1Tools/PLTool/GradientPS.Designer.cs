@@ -360,7 +360,7 @@ namespace PLTool
             this.Name = "GradientPS";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Generate Gradient";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNewPalette)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCurrentPalette)).EndInit();
