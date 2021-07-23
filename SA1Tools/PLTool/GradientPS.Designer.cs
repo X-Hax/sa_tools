@@ -75,7 +75,7 @@ namespace PLTool
             // pictureBoxNewPalette
             // 
             this.pictureBoxNewPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxNewPalette.Location = new System.Drawing.Point(49, 102);
+            this.pictureBoxNewPalette.Location = new System.Drawing.Point(51, 102);
             this.pictureBoxNewPalette.Name = "pictureBoxNewPalette";
             this.pictureBoxNewPalette.Size = new System.Drawing.Size(256, 32);
             this.pictureBoxNewPalette.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -85,7 +85,7 @@ namespace PLTool
             // pictureBoxCurrentPalette
             // 
             this.pictureBoxCurrentPalette.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxCurrentPalette.Location = new System.Drawing.Point(49, 31);
+            this.pictureBoxCurrentPalette.Location = new System.Drawing.Point(51, 31);
             this.pictureBoxCurrentPalette.Name = "pictureBoxCurrentPalette";
             this.pictureBoxCurrentPalette.Size = new System.Drawing.Size(256, 32);
             this.pictureBoxCurrentPalette.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -95,7 +95,7 @@ namespace PLTool
             // pictureBox1
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(31, 159);
+            this.pictureBox1.Location = new System.Drawing.Point(32, 159);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(32, 32);
             this.pictureBox1.TabIndex = 2;
@@ -105,7 +105,7 @@ namespace PLTool
             // pictureBox2
             // 
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox2.Location = new System.Drawing.Point(31, 210);
+            this.pictureBox2.Location = new System.Drawing.Point(32, 210);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(32, 32);
             this.pictureBox2.TabIndex = 3;
@@ -114,7 +114,7 @@ namespace PLTool
             // 
             // trackBarColor1
             // 
-            this.trackBarColor1.Location = new System.Drawing.Point(69, 159);
+            this.trackBarColor1.Location = new System.Drawing.Point(70, 159);
             this.trackBarColor1.Maximum = 255;
             this.trackBarColor1.Name = "trackBarColor1";
             this.trackBarColor1.Size = new System.Drawing.Size(236, 45);
@@ -125,7 +125,7 @@ namespace PLTool
             // 
             // trackBarColor2
             // 
-            this.trackBarColor2.Location = new System.Drawing.Point(69, 210);
+            this.trackBarColor2.Location = new System.Drawing.Point(70, 210);
             this.trackBarColor2.Maximum = 255;
             this.trackBarColor2.Name = "trackBarColor2";
             this.trackBarColor2.Size = new System.Drawing.Size(236, 45);
@@ -137,7 +137,7 @@ namespace PLTool
             // pictureBoxLeftColor
             // 
             this.pictureBoxLeftColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxLeftColor.Location = new System.Drawing.Point(31, 280);
+            this.pictureBoxLeftColor.Location = new System.Drawing.Point(43, 275);
             this.pictureBoxLeftColor.Name = "pictureBoxLeftColor";
             this.pictureBoxLeftColor.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxLeftColor.TabIndex = 6;
@@ -147,7 +147,7 @@ namespace PLTool
             // pictureBoxAmbientColor
             // 
             this.pictureBoxAmbientColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxAmbientColor.Location = new System.Drawing.Point(156, 280);
+            this.pictureBoxAmbientColor.Location = new System.Drawing.Point(163, 275);
             this.pictureBoxAmbientColor.Name = "pictureBoxAmbientColor";
             this.pictureBoxAmbientColor.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxAmbientColor.TabIndex = 7;
@@ -157,7 +157,7 @@ namespace PLTool
             // pictureBoxRightColor
             // 
             this.pictureBoxRightColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxRightColor.Location = new System.Drawing.Point(295, 280);
+            this.pictureBoxRightColor.Location = new System.Drawing.Point(282, 275);
             this.pictureBoxRightColor.Name = "pictureBoxRightColor";
             this.pictureBoxRightColor.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxRightColor.TabIndex = 8;
@@ -167,7 +167,7 @@ namespace PLTool
             // pictureBoxLeftPreview
             // 
             this.pictureBoxLeftPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxLeftPreview.Location = new System.Drawing.Point(27, 102);
+            this.pictureBoxLeftPreview.Location = new System.Drawing.Point(29, 102);
             this.pictureBoxLeftPreview.Name = "pictureBoxLeftPreview";
             this.pictureBoxLeftPreview.Size = new System.Drawing.Size(16, 16);
             this.pictureBoxLeftPreview.TabIndex = 9;
@@ -177,7 +177,7 @@ namespace PLTool
             // pictureBoxRightPreview
             // 
             this.pictureBoxRightPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxRightPreview.Location = new System.Drawing.Point(311, 102);
+            this.pictureBoxRightPreview.Location = new System.Drawing.Point(313, 102);
             this.pictureBoxRightPreview.Name = "pictureBoxRightPreview";
             this.pictureBoxRightPreview.Size = new System.Drawing.Size(16, 16);
             this.pictureBoxRightPreview.TabIndex = 10;
@@ -187,7 +187,7 @@ namespace PLTool
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(46, 15);
+            this.label1.Location = new System.Drawing.Point(48, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 13);
             this.label1.TabIndex = 11;
@@ -196,7 +196,7 @@ namespace PLTool
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(48, 85);
+            this.label2.Location = new System.Drawing.Point(50, 85);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(68, 13);
             this.label2.TabIndex = 12;
@@ -205,7 +205,7 @@ namespace PLTool
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 264);
+            this.label3.Location = new System.Drawing.Point(33, 259);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(55, 13);
             this.label3.TabIndex = 13;
@@ -214,7 +214,7 @@ namespace PLTool
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(137, 264);
+            this.label4.Location = new System.Drawing.Point(143, 259);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(75, 13);
             this.label4.TabIndex = 14;
@@ -223,7 +223,7 @@ namespace PLTool
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(278, 264);
+            this.label5.Location = new System.Drawing.Point(267, 259);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(62, 13);
             this.label5.TabIndex = 15;
@@ -232,7 +232,7 @@ namespace PLTool
             // labelColor1
             // 
             this.labelColor1.AutoSize = true;
-            this.labelColor1.Location = new System.Drawing.Point(311, 163);
+            this.labelColor1.Location = new System.Drawing.Point(312, 163);
             this.labelColor1.Name = "labelColor1";
             this.labelColor1.Size = new System.Drawing.Size(19, 13);
             this.labelColor1.TabIndex = 16;
@@ -241,7 +241,7 @@ namespace PLTool
             // labelColor2
             // 
             this.labelColor2.AutoSize = true;
-            this.labelColor2.Location = new System.Drawing.Point(311, 216);
+            this.labelColor2.Location = new System.Drawing.Point(312, 216);
             this.labelColor2.Name = "labelColor2";
             this.labelColor2.Size = new System.Drawing.Size(25, 13);
             this.labelColor2.TabIndex = 17;
@@ -249,7 +249,7 @@ namespace PLTool
             // 
             // buttonPresets
             // 
-            this.buttonPresets.Location = new System.Drawing.Point(22, 337);
+            this.buttonPresets.Location = new System.Drawing.Point(22, 327);
             this.buttonPresets.Name = "buttonPresets";
             this.buttonPresets.Size = new System.Drawing.Size(75, 23);
             this.buttonPresets.TabIndex = 18;
@@ -260,7 +260,7 @@ namespace PLTool
             // buttonSave
             // 
             this.buttonSave.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonSave.Location = new System.Drawing.Point(137, 337);
+            this.buttonSave.Location = new System.Drawing.Point(142, 327);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 19;
@@ -270,7 +270,7 @@ namespace PLTool
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(261, 337);
+            this.buttonCancel.Location = new System.Drawing.Point(261, 327);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 20;
@@ -332,7 +332,7 @@ namespace PLTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 377);
+            this.ClientSize = new System.Drawing.Size(359, 362);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonPresets);
