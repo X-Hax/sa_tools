@@ -18,15 +18,34 @@ namespace SAModel.DataToolbox
 			InitializeComponent();
 		}
 
+        string[] SortTemplateList(string[] originalList)
+        {
+            var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
+            List<string> result = new List<string>();
+            // Put SADXPC first and SA2PC second
+            foreach (string file in ordered)
+            {
+                if (file.Contains("DX") && file.Contains("PC"))
+                    result.Insert(0, file);
+                else if (file.Contains("SA2") && file.Contains("PC"))
+                    result.Add(file);
+            }
+            // Add other items
+            foreach (string file in ordered)
+            {
+                if (!result.Contains(file))
+                    result.Add(file);
+            }
+            return result.ToArray();
+        }
+
         private void loadTemplateList(string folder)
         {
             templateList = new Dictionary<string, string>();
-            string[] templateNames = Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly);
-            var ordered = templateNames.OrderByDescending(f => f);
-
-            foreach (string file in ordered)
+            string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
+            for (int i = 0; i < templateNames.Length; i++)
             {
-                templateList.Add(Path.GetFileNameWithoutExtension(file), file);
+                templateList.Add(Path.GetFileNameWithoutExtension(templateNames[i]), templateNames[i]);
             }
         }
 
