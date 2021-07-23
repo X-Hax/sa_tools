@@ -13,6 +13,10 @@ build:
   verbosity: minimal
 after_build:
 - cmd: >-
+    rmdir C:\projects\sa-tools\tools\runtimes /s /q
+    
+    rmdir C:\projects\sa-tools\tools\lib\runtimes /s /q
+    
     C:\projects\sa-tools\buildSATools.exe
 
     cd C:\projects\sa-tools\output
