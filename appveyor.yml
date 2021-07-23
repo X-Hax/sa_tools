@@ -15,7 +15,7 @@ after_build:
 - cmd: >-
     C:\projects\sa-tools\buildSATools.exe
 
-    cd C:\projects\sa-tools\build
+    cd C:\projects\sa-tools\output
 
     7z a "C:\projects\sa-tools\SA Tools.7z" *
 artifacts:
