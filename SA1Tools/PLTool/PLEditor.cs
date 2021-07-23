@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -17,14 +18,15 @@ namespace PLTool
         bool isGamecube = false;
         public string currentFilename = "";
 
-		public PLEditor(string filepath = "")
-		{
-			InitializeComponent();
-			if (filepath != "" && File.Exists(filepath))
-				LoadPLFile(filepath);
-			else
-				CreateDefaultPalettes();
-		}
+        public PLEditor(string filepath = "")
+        {
+            InitializeComponent();
+            if (filepath != "" && File.Exists(filepath))
+                LoadPLFile(filepath);
+            else
+                CreateDefaultPalettes();
+            FillLevelSelectMenu();
+        }
 
         private void CreateBlankPalettes()
         {
@@ -166,7 +168,7 @@ namespace PLTool
                 gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
                 gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.AssumeLinear;
                 gfx.DrawRectangle(new Pen(Color.Black), 1, 1, bitmap.Width - 3, bitmap.Height - 3);
-                gfx.DrawRectangle(new Pen(Color.Cyan), 0, 0, bitmap.Width-1, bitmap.Height-1);
+                gfx.DrawRectangle(new Pen(Color.Cyan), 0, 0, bitmap.Width - 1, bitmap.Height - 1);
                 return result;
             }
         }
@@ -670,7 +672,7 @@ namespace PLTool
                     currentFilename = sfd.FileName;
                     toolStripStatusLabelFilename.Text = Path.GetFileNameWithoutExtension(currentFilename);
                 }
-            
+
         }
 
         private void toolStripCreateGradientDX_Click(object sender, EventArgs e)
@@ -720,12 +722,12 @@ namespace PLTool
             if (currentFilename == "")
                 sL = new SLEditor();
             else
-                sL = new SLEditor(Path.GetFullPath(currentFilename).Replace("PL", "SL"));
+                sL = new SLEditor(Path.GetFullPath(currentFilename).Replace("PL", "SL"), isGamecube);
             sL.Show();
         }
 
-		private void toolStripCreateGradient_Click(object sender, EventArgs e)
-		{
+        private void toolStripCreateGradient_Click(object sender, EventArgs e)
+        {
             using (GradientPS gps = new GradientPS(currentPLFile.Palettes[selectedPaletteIndex].GetColorList(isSpecular)))
                 if (gps.ShowDialog() == DialogResult.OK)
                 {
@@ -734,6 +736,83 @@ namespace PLTool
                     RefreshPalette(selectedPaletteIndex);
                     RefreshPalettePreview();
                 }
+        }
+
+        private void FillLevelSelectMenu()
+        {
+            List<LanternFilenames.LanternLevelEntry> levelList = LanternFilenames.GetLevelList();
+            // Add levels
+            string levelPrevious = "";
+            foreach (LanternFilenames.LanternLevelEntry entry in levelList)
+            {
+                string level = entry.Level;
+                if (entry.Level == "")
+                    levelSelectToolStripMenuItem.DropDownItems.Add(new ToolStripSeparator());
+                else if (levelPrevious != entry.Level)
+                {
+                    levelPrevious = entry.Level;
+                    ToolStripMenuItem i = new ToolStripMenuItem(entry.Level);
+                    i.Click += selectLevel;
+                    i.ToolTipText = "PL" + entry.FileID + ".BIN";
+                    levelSelectToolStripMenuItem.DropDownItems.Add(i); 
+                }
+            }
+            // Add acts
+            foreach (LanternFilenames.LanternLevelEntry entry in levelList)
+            {
+                if (entry.Act != "")
+                    for (int i = 0; i < levelSelectToolStripMenuItem.DropDownItems.Count; i++)
+                        if (levelSelectToolStripMenuItem.DropDownItems[i] is ToolStripSeparator)
+                            continue;
+                        else if (levelSelectToolStripMenuItem.DropDownItems[i].Text == entry.Level)
+                        {
+                            ToolStripMenuItem item = (ToolStripMenuItem)levelSelectToolStripMenuItem.DropDownItems[i];
+                            ToolStripMenuItem u = new ToolStripMenuItem(entry.Act);
+                            u.Click += selectLevel;
+                            u.ToolTipText = "PL" + entry.FileID + ".BIN";
+                            item.ToolTipText = "";
+                            item.DropDownItems.Add(u);
+                        }
+            }
+        }
+
+        private void selectLevel(object sender, EventArgs e)
+        {
+            ToolStripMenuItem send = (ToolStripMenuItem)sender;
+            List<LanternFilenames.LanternLevelEntry> levelList = LanternFilenames.GetLevelList();
+            // Stop if it has dropdowns
+            if (send.DropDownItems.Count > 0)
+                return;
+            // Search by level first
+            foreach (LanternFilenames.LanternLevelEntry entry in levelList)
+                if (entry.Level == send.Text)
+                    OpenPLFileFromLevelSelect(entry.FileID);
+            // Search by act
+            foreach (LanternFilenames.LanternLevelEntry entry in levelList)
+                if (entry.Act == send.Text)
+                    OpenPLFileFromLevelSelect(entry.FileID);
+        }
+
+
+        private void OpenPLFileFromLevelSelect(string plID)
+        {
+            if (currentFilename != "")
+            {
+                string currentDir = Path.GetDirectoryName(currentFilename);
+                string path = Path.Combine(currentDir, "PL" + plID + ".BIN");
+                if (File.Exists(path))
+                {
+                    LoadPLFile(path);
+                    return;
+                }
+            }
+            using (OpenFileDialog ofd = new OpenFileDialog() { FileName= "PL" + plID + ".BIN", Title = "Open PL File", Filter = "PL Files|PL*.BIN|All Files|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    LoadPLFile(ofd.FileName);
+                }
+            }
         }
     }
 }

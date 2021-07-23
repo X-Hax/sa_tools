@@ -12,9 +12,10 @@ namespace PLTool
         bool isGamecube;
         string currentFile;
 
-        public SLEditor(string filepath = "")
+        public SLEditor(string filepath = "", bool isGC=false)
         {
             InitializeComponent();
+            isGamecube = isGC;
             if (filepath != "" && File.Exists(filepath))
                 LoadSLFile(filepath);
             else

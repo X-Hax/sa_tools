@@ -136,6 +136,7 @@ namespace PLTool
             this.DiffusePalette0 = new System.Windows.Forms.PictureBox();
             this.pictureBoxPalettesBG = new System.Windows.Forms.PictureBox();
             this.pictureBoxPreviewBG = new System.Windows.Forms.PictureBox();
+            this.levelSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.contextMenuColor.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -385,6 +386,7 @@ namespace PLTool
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fIleToolStripMenuItem,
             this.optionsToolStripMenuItem,
+            this.levelSelectToolStripMenuItem,
             this.formatToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -394,6 +396,7 @@ namespace PLTool
             this.menuStrip1.Size = new System.Drawing.Size(560, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ShowItemToolTips = true;
             // 
             // fIleToolStripMenuItem
             // 
@@ -801,7 +804,7 @@ namespace PLTool
             this.toolStripCopyPalette,
             this.toolStripPastePalette});
             this.contextMenuPalette.Name = "contextMenuPalette";
-            this.contextMenuPalette.Size = new System.Drawing.Size(223, 276);
+            this.contextMenuPalette.Size = new System.Drawing.Size(223, 262);
             // 
             // toolStripImportPalettePNG
             // 
@@ -1209,6 +1212,13 @@ namespace PLTool
             this.pictureBoxPreviewBG.TabIndex = 4;
             this.pictureBoxPreviewBG.TabStop = false;
             // 
+            // levelSelectToolStripMenuItem
+            // 
+            this.levelSelectToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
+            this.levelSelectToolStripMenuItem.Name = "levelSelectToolStripMenuItem";
+            this.levelSelectToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
+            this.levelSelectToolStripMenuItem.Text = "Level Select";
+            // 
             // PLEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1399,6 +1409,7 @@ namespace PLTool
 		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sLEditorToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelLevelName;
+		private System.Windows.Forms.ToolStripMenuItem levelSelectToolStripMenuItem;
 	}
 }
 
