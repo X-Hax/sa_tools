@@ -247,7 +247,10 @@ namespace SplitTools.Split
 							}
 							break;
 						case "soundlist":
-							SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
+							if (SA2)
+								SA2SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
+							else
+								SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
 							break;
 						case "stringarray":
 							{

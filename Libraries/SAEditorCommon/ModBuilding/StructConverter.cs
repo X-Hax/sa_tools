@@ -589,16 +589,32 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "soundlist":
 							{
-								SoundListEntry[] list = SoundList.Load(data.Filename);
-								writer.WriteLine("SoundFileInfo {0}_list[] = {{", name);
-								List<string> objs = new List<string>(list.Length);
-								foreach (SoundListEntry obj in list)
-									objs.Add(obj.ToStruct());
-								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
-								writer.WriteLine("};");
-								writer.WriteLine();
-								writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
-								initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
+								if (SA2)
+								{
+									SA2SoundListEntry[] list = SA2SoundList.Load(data.Filename);
+									writer.WriteLine("SoundFileInfo {0}_list[] = {{", name);
+									List<string> objs = new List<string>(list.Length);
+									foreach (SA2SoundListEntry obj in list)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+									writer.WriteLine();
+									writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
+									initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
+								}
+								else
+								{
+									SoundListEntry[] list = SoundList.Load(data.Filename);
+									writer.WriteLine("SoundFileInfo {0}_list[] = {{", name);
+									List<string> objs = new List<string>(list.Length);
+									foreach (SoundListEntry obj in list)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+									writer.WriteLine();
+									writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
+									initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
+								}
 							}
 							break;
 						case "stringarray":

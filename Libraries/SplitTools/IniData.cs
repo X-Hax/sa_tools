@@ -1172,6 +1172,84 @@ namespace SplitTools
 		}
 	}
 
+
+	public static class SA2SoundList
+	{
+		public static SA2SoundListEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2SoundListEntry[]>(filename);
+		}
+
+		public static SA2SoundListEntry[] Load(byte[] file, int address, uint imageBase)
+		{
+			byte numobjs = file[address];
+			address = file.GetPointer(address + 4, imageBase);
+			List<SA2SoundListEntry> objini = new List<SA2SoundListEntry>(numobjs);
+			for (int i = 0; i < numobjs; i++)
+			{
+				objini.Add(new SA2SoundListEntry(file, address, imageBase));
+				address += SA2SoundListEntry.Size;
+			}
+			return objini.ToArray();
+		}
+
+		public static void Save(this SA2SoundListEntry[] soundlist, string filename)
+		{
+			IniSerializer.Serialize(soundlist, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2SoundListEntry
+	{
+		[IniAlwaysInclude]
+		public byte Bank { get; set; }
+		public byte ID { get; set; }
+		public byte SecondaryBank { get; set; }
+		public byte DefaultFlags { get; set; }
+		public uint Unknown { get; set; }
+		public int DefaultDistance { get; set; }
+
+		public static int Size { get { return 8; } }
+
+		public SA2SoundListEntry() { }
+
+		public SA2SoundListEntry(byte[] file, int address, uint imageBase)
+		{
+			Bank = file[address++];
+			ID = file[address++];
+			SecondaryBank = file[address++];
+			DefaultFlags = file[address++];
+			Unknown = ByteConverter.ToUInt16(file, address);
+			address += sizeof(uint);
+			DefaultDistance = ByteConverter.ToInt16(file, address);
+			address += sizeof(int);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Bank);
+			result.Append(", ");
+			result.Append(ID);
+			result.Append(", ");
+			result.Append(SecondaryBank);
+			result.Append(", ");
+			result.Append(DefaultFlags);
+			result.Append(", ");
+			result.Append(Unknown);
+			result.Append(", ");
+			result.Append(DefaultDistance);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
 	public static class StringArray
 	{
 		public static string[] Load(string filename)
