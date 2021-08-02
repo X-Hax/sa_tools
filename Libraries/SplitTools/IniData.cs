@@ -1204,8 +1204,10 @@ namespace SplitTools
 	{
 		[IniAlwaysInclude]
 		public byte Bank { get; set; }
+		[IniAlwaysInclude]
 		public byte ID { get; set; }
 		public byte SecondaryBank { get; set; }
+		[IniAlwaysInclude]
 		public byte DefaultFlags { get; set; }
 		public uint Unknown { get; set; }
 		public int DefaultDistance { get; set; }
