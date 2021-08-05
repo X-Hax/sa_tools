@@ -1870,46 +1870,46 @@ namespace SplitTools
 		}
 	}
 
-	public static class SA2DeathZoneFlagsList
-	{
-		public static SA2DeathZoneFlags[] Load(string filename)
-		{
-			return IniSerializer.Deserialize<SA2DeathZoneFlags[]>(filename);
-		}
+	//public static class SA2DeathZoneFlagsList
+	//{
+	//	public static SA2DeathZoneFlags[] Load(string filename)
+	//	{
+	//		return IniSerializer.Deserialize<SA2DeathZoneFlags[]>(filename);
+	//	}
 
-		public static void Save(this SA2DeathZoneFlags[] flags, string filename)
-		{
-			IniSerializer.Serialize(flags, filename);
-		}
-	}
+	//	public static void Save(this SA2DeathZoneFlags[] flags, string filename)
+	//	{
+	//		IniSerializer.Serialize(flags, filename);
+	//	}
+	//}
 
-	[Serializable]
-	public class SA2DeathZoneFlags
-	{
-		public SA2DeathZoneFlags() { }
+	//[Serializable]
+	//public class SA2DeathZoneFlags
+	//{
+	//	public SA2DeathZoneFlags() { }
 
-		public SA2DeathZoneFlags(byte[] file, int address)
-		{
-			Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
-		}
+	//	public SA2DeathZoneFlags(byte[] file, int address)
+	//	{
+	//		Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+	//	}
 
-		public SA2DeathZoneFlags(byte[] file, int address, string filename)
-		{
-			Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
-			Filename = filename;
-		}
+	//	public SA2DeathZoneFlags(byte[] file, int address, string filename)
+	//	{
+	//		Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+	//		Filename = filename;
+	//	}
 
-		[IniAlwaysInclude]
-		public SA2CharacterFlags Flags { get; set; }
-		public byte DeathFlag { get; set; } 
-		public string Filename { get; set; }
-		public static int Size { get { return 4; } }
+	//	[IniAlwaysInclude]
+	//	public SA2CharacterFlags Flags { get; set; }
+	//	public byte DeathFlag { get; set; } 
+	//	public string Filename { get; set; }
+	//	public static int Size { get { return 4; } }
 
-		public byte[] GetBytes()
-		{
-			return ByteConverter.GetBytes((int)Flags);
-		}
-	}
+	//	public byte[] GetBytes()
+	//	{
+	//		return ByteConverter.GetBytes((int)Flags);
+	//	}
+	//}
 
 	public static class SkyboxScaleList
 	{
