@@ -301,28 +301,59 @@ namespace SplitTools.Split
 							break;
 						case "deathzone":
 							{
-								List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
-								string path = Path.GetDirectoryName(fileOutputPath);
-								List<string> hashes = new List<string>();
-								int num = 0;
-								while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+								if (SA2)
 								{
-									string file_tosave;
-									if (customProperties.ContainsKey("filename" + num.ToString()))
-										file_tosave = customProperties["filename" + num++.ToString()];
-									else
-										file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
-									string file = Path.Combine(path, file_tosave);
-									flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
-									ModelFormat modelfmt_death = inifile.Game == Game.SADX ? ModelFormat.BasicDX : ModelFormat.Basic; // Death zones in all games except SADXPC use Basic non-DX models
-									ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
-									hashes.Add(HelperFunctions.FileHash(file));
-									address += 8;
+									{
+										List<SA2DeathZoneFlags> flags = new List<SA2DeathZoneFlags>();
+										string path = Path.GetDirectoryName(fileOutputPath);
+										List<string> hashes = new List<string>();
+										int num = 0;
+										while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+										{
+											string file_tosave;
+											if (customProperties.ContainsKey("filename" + num.ToString()))
+												file_tosave = customProperties["filename" + num++.ToString()];
+											else
+												file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+											string file = Path.Combine(path, file_tosave);
+											flags.Add(new SA2DeathZoneFlags(datafile, address, file_tosave));
+											ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+											hashes.Add(HelperFunctions.FileHash(file));
+											address += 8;
+
+										}
+										flags.ToArray().Save(fileOutputPath);
+										hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+										data.MD5Hash = string.Join(",", hashes.ToArray());
+										nohash = true;
+									}
 								}
-								flags.ToArray().Save(fileOutputPath);
-								hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
-								data.MD5Hash = string.Join(",", hashes.ToArray());
-								nohash = true;
+								else
+								{
+									List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
+									string path = Path.GetDirectoryName(fileOutputPath);
+									List<string> hashes = new List<string>();
+									int num = 0;
+									while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+									{
+										string file_tosave;
+										if (customProperties.ContainsKey("filename" + num.ToString()))
+											file_tosave = customProperties["filename" + num++.ToString()];
+										else
+											file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+										string file = Path.Combine(path, file_tosave);
+										flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
+										ModelFormat modelfmt_death = inifile.Game == Game.SADX ? ModelFormat.BasicDX : ModelFormat.Basic; // Death zones in all games except SADXPC use Basic non-DX models
+										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
+										hashes.Add(HelperFunctions.FileHash(file));
+										address += 8;
+
+									}
+									flags.ToArray().Save(fileOutputPath);
+									hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+									data.MD5Hash = string.Join(",", hashes.ToArray());
+									nohash = true;
+								}
 							}
 							break;
 						case "skyboxscale":
@@ -410,7 +441,6 @@ namespace SplitTools.Split
 								List<KartMenuElements> result = new List<KartMenuElements>();
 								List<string> hashes = new List<string>();
 								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								for (int i = 0; i < Length; i++)
 								{
 									KartMenuElements menu = new KartMenuElements();
@@ -426,6 +456,32 @@ namespace SplitTools.Split
 									menu.GRP = datafile[address + 0xF];
 									result.Add(menu);
 									address += 0x10;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
+						case "kartparameters":
+							{
+								List<KartParameters> result = new List<KartParameters>();
+								List<string> hashes = new List<string>();
+								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+								for (int i = 0; i < Length; i++)
+								{
+									KartParameters para = new KartParameters();
+									para.Unknown = ByteConverter.ToUInt32(datafile, address);
+									para.Unknown2 = ByteConverter.ToUInt32(datafile, address + 4);
+									para.Unknown3 = ByteConverter.ToUInt32(datafile, address + 8);
+									para.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0xC);
+									para.Unknown5 = ByteConverter.ToUInt32(datafile, address + 0x10);
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									para.ShadowModel = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									result.Add(para);
+									address += 0x18;
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));

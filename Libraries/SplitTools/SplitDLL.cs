@@ -795,6 +795,55 @@ namespace SplitTools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
+						case "kartmenu":
+							{
+								List<KartMenuElements> result = new List<KartMenuElements>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartMenuElements menu = new KartMenuElements();
+									menu.CharacterID = (SA2Characters)ByteConverter.ToUInt32(datafile, address);
+									menu.PortraitID = ByteConverter.ToUInt32(datafile, address + 4);
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 8) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									menu.KartModel = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									menu.SPD = datafile[address + 0xC];
+									menu.ACL = datafile[address + 0xD];
+									menu.BRK = datafile[address + 0xE];
+									menu.GRP = datafile[address + 0xF];
+									result.Add(menu);
+									address += 0x10;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
+						case "kartparameters":
+							{
+								List<KartParameters> result = new List<KartParameters>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartParameters para = new KartParameters();
+									para.Unknown = ByteConverter.ToUInt32(datafile, address);
+									para.Unknown2 = ByteConverter.ToUInt32(datafile, address + 4);
+									para.Unknown3 = ByteConverter.ToUInt32(datafile, address + 8);
+									para.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0xC);
+									para.Unknown5 = ByteConverter.ToUInt32(datafile, address + 0x10);
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									para.ShadowModel = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									result.Add(para);
+									address += 0x18;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
 						case "motiontable":
 							{
 								Directory.CreateDirectory(fileOutputPath);
@@ -873,7 +922,14 @@ namespace SplitTools.SplitDLL
 								}
 							}
 							break;
-					}
+						default: // raw binary
+							{
+								byte[] bin = new byte[int.Parse(data.CustomProperties["size"], NumberStyles.HexNumber)];
+								Array.Copy(datafile, address, bin, 0, bin.Length);
+								File.WriteAllBytes(fileOutputPath, bin);
+							}
+							break;
+				}
 					itemcount++;
 				}
 				//Remove models that are included in other models split after them

@@ -1223,9 +1223,9 @@ namespace SplitTools
 			SecondaryBank = file[address++];
 			DefaultFlags = file[address++];
 			Unknown = ByteConverter.ToUInt16(file, address);
-			address += sizeof(uint);
+			address += sizeof(short);
 			DefaultDistance = ByteConverter.ToInt16(file, address);
-			address += sizeof(int);
+			address += sizeof(short);
 		}
 
 		public void Save(string filename)
@@ -1861,6 +1861,47 @@ namespace SplitTools
 
 		[IniAlwaysInclude]
 		public SA1CharacterFlags Flags { get; set; }
+		public string Filename { get; set; }
+		public static int Size { get { return 4; } }
+
+		public byte[] GetBytes()
+		{
+			return ByteConverter.GetBytes((int)Flags);
+		}
+	}
+
+	public static class SA2DeathZoneFlagsList
+	{
+		public static SA2DeathZoneFlags[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2DeathZoneFlags[]>(filename);
+		}
+
+		public static void Save(this SA2DeathZoneFlags[] flags, string filename)
+		{
+			IniSerializer.Serialize(flags, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2DeathZoneFlags
+	{
+		public SA2DeathZoneFlags() { }
+
+		public SA2DeathZoneFlags(byte[] file, int address)
+		{
+			Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+		}
+
+		public SA2DeathZoneFlags(byte[] file, int address, string filename)
+		{
+			Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+			Filename = filename;
+		}
+
+		[IniAlwaysInclude]
+		public SA2CharacterFlags Flags { get; set; }
+		public byte DeathFlag { get; set; } 
 		public string Filename { get; set; }
 		public static int Size { get { return 4; } }
 
@@ -3432,6 +3473,30 @@ namespace SplitTools
 			sb.AppendFormat("{0}, ", ACL.ToString());
 			sb.AppendFormat("{0}, ", BRK.ToString());
 			sb.AppendFormat("{0}, ", GRP.ToString());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class KartParameters
+	{
+		[IniAlwaysInclude]
+		public uint Unknown { get; set; }
+		public uint Unknown2 { get; set; }
+		public uint Unknown3 { get; set; }
+		public uint Unknown4 { get; set; }
+		public uint Unknown5 { get; set; }
+		public string ShadowModel { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", Unknown.ToCHex());
+			sb.AppendFormat("{0}, ", Unknown2.ToCHex());
+			sb.AppendFormat("{0}, ", Unknown3.ToString());
+			sb.AppendFormat("{0}, ", Unknown4.ToString());
+			sb.AppendFormat("{0}, ", Unknown5.ToString());
+			sb.AppendFormat("{0}, ", ShadowModel.ToC());
 			sb.Append(" }");
 			return sb.ToString();
 		}
