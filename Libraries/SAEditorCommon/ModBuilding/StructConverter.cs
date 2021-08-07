@@ -55,7 +55,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "animindexlist", "Animation Index List" },
 			{ "storysequence", "Story Sequence" },
 			{ "kartmenu", "Kart Menu Elements" },
-			{ "kartparameters", "Kart Racing Parameters" },
+			{ "kartsoundparameters", "Kart Sound Parameters" },
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },
