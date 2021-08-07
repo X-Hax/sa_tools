@@ -463,19 +463,19 @@ namespace SplitTools.Split
 								nohash = true;
 							}
 							break;
-						case "kartparameters":
+						case "kartsoundparameters":
 							{
-								List<KartParameters> result = new List<KartParameters>();
+								List<KartSoundParameters> result = new List<KartSoundParameters>();
 								List<string> hashes = new List<string>();
 								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 								for (int i = 0; i < Length; i++)
 								{
-									KartParameters para = new KartParameters();
-									para.Unknown = ByteConverter.ToUInt32(datafile, address);
-									para.Unknown2 = ByteConverter.ToUInt32(datafile, address + 4);
-									para.Unknown3 = ByteConverter.ToUInt32(datafile, address + 8);
-									para.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0xC);
-									para.Unknown5 = ByteConverter.ToUInt32(datafile, address + 0x10);
+									KartSoundParameters para = new KartSoundParameters();
+									para.EngineSFXID = ByteConverter.ToUInt32(datafile, address);
+									para.BrakeSFXID = ByteConverter.ToUInt32(datafile, address + 4);
+									para.FinishVoice = ByteConverter.ToUInt32(datafile, address + 8);
+									para.FirstVoice = ByteConverter.ToUInt32(datafile, address + 0xC);
+									para.LastVoice = ByteConverter.ToUInt32(datafile, address + 0x10);
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									para.ShadowModel = model.Name;
 									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);

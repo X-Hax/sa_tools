@@ -3468,7 +3468,7 @@ namespace SplitTools
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", CharacterID.ToC());
 			sb.AppendFormat("{0}, ", PortraitID.ToCHex());
-			sb.AppendFormat("{0}, ", KartModel.ToC());
+			sb.AppendFormat("{0}, ", KartModel);
 			sb.AppendFormat("{0}, ", SPD.ToString());
 			sb.AppendFormat("{0}, ", ACL.ToString());
 			sb.AppendFormat("{0}, ", BRK.ToString());
@@ -3478,25 +3478,25 @@ namespace SplitTools
 		}
 	}
 
-	public class KartParameters
+	public class KartSoundParameters
 	{
 		[IniAlwaysInclude]
-		public uint Unknown { get; set; }
-		public uint Unknown2 { get; set; }
-		public uint Unknown3 { get; set; }
-		public uint Unknown4 { get; set; }
-		public uint Unknown5 { get; set; }
+		public uint EngineSFXID { get; set; }
+		public uint BrakeSFXID { get; set; }
+		public uint FinishVoice { get; set; }
+		public uint FirstVoice { get; set; }
+		public uint LastVoice { get; set; }
 		public string ShadowModel { get; set; }
 
 		public string ToStruct()
 		{
 			StringBuilder sb = new StringBuilder("{ ");
-			sb.AppendFormat("{0}, ", Unknown.ToCHex());
-			sb.AppendFormat("{0}, ", Unknown2.ToCHex());
-			sb.AppendFormat("{0}, ", Unknown3.ToString());
-			sb.AppendFormat("{0}, ", Unknown4.ToString());
-			sb.AppendFormat("{0}, ", Unknown5.ToString());
-			sb.AppendFormat("{0}, ", ShadowModel.ToC());
+			sb.AppendFormat("{0}, ", EngineSFXID.ToCHex());
+			sb.AppendFormat("{0}, ", BrakeSFXID.ToCHex());
+			sb.AppendFormat("{0}, ", FinishVoice.ToString());
+			sb.AppendFormat("{0}, ", FirstVoice.ToString());
+			sb.AppendFormat("{0}, ", LastVoice.ToString());
+			sb.AppendFormat("{0}, ", ShadowModel);
 			sb.Append(" }");
 			return sb.ToString();
 		}

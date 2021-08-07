@@ -86,6 +86,8 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					break;
 				case "kartspecialinfolist":
+				case "kartmenu":
+				case "kartsoundparameters":
 					{
 						Dictionary<string, string> hashes = new Dictionary<string, string>();
 						foreach (var hash in item.MD5Hash.Split('|').Select(a =>
@@ -412,6 +414,38 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
+						case "kartmenu":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartMenu {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "kartsoundparameters":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartSoundParameters {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
 						case "motiontable":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
@@ -447,6 +481,8 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 						case "charaobjectdatalist":
 						case "kartspecialinfolist":
 						case "kartmodelsarray":
+						case "kartmenu":
+						case "kartsoundparameters":
 							writer.WriteLine("\tHookExport(handle, \"{0}\", {0});", item.Export);
 							break;
 						default:
