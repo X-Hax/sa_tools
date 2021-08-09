@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using SplitTools;
 using SAModel;
+using SAModel.GC;
+
 
 namespace SplitTools.Split
 {
@@ -135,6 +137,174 @@ namespace SplitTools.Split
 								ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, item.Key, null, mdlformat, nometa);
 							}
 							break;
+						case "morph":
+						case "attach":
+						case "basicattach":
+						case "basicdxattach":
+						case "chunkattach":
+						case "gcattach":
+							{
+								Attach dum;
+								ModelFormat modelfmt_att;
+								switch (type)
+								{
+									case "basicattach":
+										modelfmt_att = ModelFormat.Basic;
+										dum = new BasicAttach(datafile, address, imageBase, false);
+										break;
+									case "basicdxattach":
+										modelfmt_att = ModelFormat.BasicDX;
+										dum = new BasicAttach(datafile, address, imageBase, true);
+										break;
+									case "chunkattach":
+										modelfmt_att = ModelFormat.Chunk;
+										dum = new ChunkAttach(datafile, address, imageBase);
+										break;
+									case "gcattach":
+										modelfmt_att = ModelFormat.GC;
+										dum = new GCAttach(datafile, address, imageBase);
+										break;
+									default:
+										modelfmt_att = modelfmt_def;
+										dum = new BasicAttach(datafile, address, imageBase, true);
+										break;
+								}
+								NJS_OBJECT mdl = new NJS_OBJECT()
+								{
+									Attach = dum
+								};
+							string[] attanis = new string[0];
+							if (customProperties.ContainsKey("animations"))
+								attanis = customProperties["animations"].Split(',');
+							string[] attmorphs = new string[0];
+							if (customProperties.ContainsKey("morphs"))
+								attmorphs = customProperties["morphs"].Split(',');
+							ModelFile.CreateFile(fileOutputPath, mdl, attanis, null, item.Key, null, modelfmt_att, nometa);
+							}
+							break;
+						case "modelarray":
+						case "basicmodelarray":
+						case "basicdxmodelarray":
+						case "chunkmodelarray":
+						case "gcmodelarray":
+							{
+								ModelFormat modelfmt_arr;
+								string modelext_arr;
+								string modelext_def = null;
+								switch (type)
+								{
+									case "basicmodelarray":
+										modelfmt_arr = ModelFormat.Basic;
+										modelext_arr = ".sa1mdl";
+										break;
+									case "basicdxmodelarray":
+										modelfmt_arr = ModelFormat.BasicDX;
+										modelext_arr = ".sa1mdl";
+										break;
+									case "chunkmodelarray":
+										modelfmt_arr = ModelFormat.Chunk;
+										modelext_arr = ".sa2mdl";
+										break;
+									case "gcmodelarray":
+										modelfmt_arr = ModelFormat.GC;
+										modelext_arr = ".sa2bmdl";
+										break;
+									default:
+										modelfmt_arr = modelfmt_def;
+										modelext_arr = modelext_def;
+										break;
+								}
+								if (data.CustomProperties.ContainsKey("format"))
+									modelfmt_arr = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
+								for (int i = 0; i < data.Length; i++)
+								{
+									int ptr = ByteConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										ptr = (int)(ptr - imageBase);
+										NJS_OBJECT mdl = new NJS_OBJECT(datafile, ptr, imageBase, modelfmt_arr, new Dictionary<int, Attach>());
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
+											if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+											{
+												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
+											}
+											if (!Directory.Exists(Path.GetDirectoryName(fn)))
+												Directory.CreateDirectory(Path.GetDirectoryName(fn));
+											ModelFile.CreateFile(fileOutputPath, mdl, null, null, item.Key, null, modelfmt_arr, nometa);
+										}
+									}
+									address += 4;
+								}
+								nohash = true;
+							}
+							break;
+						case "attacharray":
+						case "basicattacharray":
+						case "basicdxattacharray":
+						case "chunkattacharray":
+						case "gcattacharray":
+							{ 
+							Attach dummy;
+							ModelFormat modelfmt_att;
+							string attachext_arr;
+							string attachext_def = null;
+							int ptr = ByteConverter.ToInt32(datafile, address);
+							if (ptr != 0)
+							{
+								ptr = (int)(ptr - imageBase);
+							switch (type)
+							{
+								case "basicattacharray":
+									modelfmt_att = ModelFormat.Basic;
+									dummy = new BasicAttach(datafile, ptr, imageBase, false);
+									attachext_arr = ".sa1mdl";
+									break;
+								case "basicdxattacharray":
+									modelfmt_att = ModelFormat.BasicDX;
+									dummy = new BasicAttach(datafile, ptr, imageBase, true);
+									attachext_arr = ".sa1mdl";
+									break;
+								case "chunkattacharray":
+									modelfmt_att = ModelFormat.Chunk;
+									dummy = new ChunkAttach(datafile, ptr, imageBase);
+									attachext_arr = ".sa2mdl";
+									break;
+								case "gcattacharray":
+									modelfmt_att = ModelFormat.GC;
+									dummy = new GCAttach(datafile, ptr, imageBase);
+									attachext_arr = ".sa2bmdl";
+									break;
+								default:
+									modelfmt_att = modelfmt_def;
+									dummy = new BasicAttach(datafile, ptr, imageBase, true);
+									attachext_arr = attachext_def;
+									break;
+							}
+									for (int i = 0; i < data.Length; i++)
+								{
+										NJS_OBJECT mdl = new NJS_OBJECT()
+										{
+											Attach = dummy
+										};
+										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+										{
+											string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + attachext_def);
+											if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+											{
+												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + attachext_def);
+											}
+											if (!Directory.Exists(Path.GetDirectoryName(fn)))
+												Directory.CreateDirectory(Path.GetDirectoryName(fn));
+											ModelFile.CreateFile(fileOutputPath, mdl, null, null, item.Key, null, modelfmt_att, nometa);
+										}
+									}
+									address += 4;
+								}
+								nohash = true;
+							}
+							break;
 						case "action":
 							{
 								ModelFormat modelfmt_act = data.CustomProperties.ContainsKey("format") ? (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]) : modelfmt_def;
@@ -203,10 +373,9 @@ namespace SplitTools.Split
 							break;
 						case "texlistarray":
 							{
-								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								for (int i = 0; i < cnt; i++)
+								for (int i = 0; i < data.Length; i++)
 								{
-									uint ptr = BitConverter.ToUInt32(datafile, address);
+									uint ptr = ByteConverter.ToUInt32(datafile, address);
 									if (data.Filename != null && ptr != 0)
 									{
 										ptr -= imageBase;
@@ -440,8 +609,7 @@ namespace SplitTools.Split
 							{
 								List<KartMenuElements> result = new List<KartMenuElements>();
 								List<string> hashes = new List<string>();
-								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								for (int i = 0; i < Length; i++)
+								for (int i = 0; i < data.Length; i++)
 								{
 									KartMenuElements menu = new KartMenuElements();
 									menu.CharacterID = (SA2Characters)ByteConverter.ToUInt32(datafile, address);
@@ -467,8 +635,7 @@ namespace SplitTools.Split
 							{
 								List<KartSoundParameters> result = new List<KartSoundParameters>();
 								List<string> hashes = new List<string>();
-								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								for (int i = 0; i < Length; i++)
+								for (int i = 0; i < data.Length; i++)
 								{
 									KartSoundParameters para = new KartSoundParameters();
 									para.EngineSFXID = ByteConverter.ToUInt32(datafile, address);

@@ -76,6 +76,8 @@ namespace SplitTools
 		public int Address { get; set; }
 		[IniName("filename")]
 		public string Filename { get; set; }
+		[IniName("length")]
+		public int Length { get; set; }
 		[IniName("md5")]
 		public string MD5Hash { get; set; }
 		[IniName("pointer")]
@@ -3447,6 +3449,23 @@ namespace SplitTools
 			}
 			else
 				sb.Append("NULL");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class KartObjectArray
+	{
+		public string Model { get; set; }
+		public uint Property { get; set; }
+		public string Unknown1 { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", Model);
+			sb.AppendFormat("{0}, ", Property.ToString());
+			sb.AppendFormat("{0}, ", Unknown1);
 			sb.Append(" }");
 			return sb.ToString();
 		}

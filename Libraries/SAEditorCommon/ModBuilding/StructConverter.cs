@@ -18,6 +18,21 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "basicdxmodel", "Basic Model (SADX)" },
 			{ "chunkmodel", "Chunk Model" },
 			{ "gcmodel", "SA2B Model" },
+			{ "attach", "Attach Model" },
+			{ "basicattach", "Basic Attach Model" },
+			{ "basicdxattach", "Basic Attach Model (SADX)" },
+			{ "chunkattach", "Chunk Attach Model" },
+			{ "gcattach", "SA2B Attach Model" },
+			{ "modelarray", "Model Array" },
+			{ "basicmodelarray", "Basic Model Array" },
+			{ "basicdxmodelarray", "Basic Model Array (SADX)" },
+			{ "chunkmodelarray", "Chunk Model Array" },
+			{ "gcmodelarray", "SA2B Model Array" },
+			{ "attacharray", "Attach Model Array" },
+			{ "basicattacharray", "Basic Attach Model Array" },
+			{ "basicdxattacharray", "Basic Attach Model Array (SADX)" },
+			{ "chunkattacharray", "Chunk Attach Model Array" },
+			{ "gcattacharray", "SA2B Attach Model Array" },
 			{ "action", "Action (animation+model)" },
 			{ "animation", "Animation" },
 			{ "objlist", "Object List" },
@@ -427,24 +442,28 @@ namespace SAModel.SAEditorCommon.StructConverter
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "basicmodel":
+						case "basicattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "basicdxmodel":
+						case "basicdxattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, true, new List<string>());
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "chunkmodel":
+						case "chunkattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "gcmodel":
+						case "gcattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());

@@ -639,6 +639,17 @@ namespace SplitTools.SplitDLL
 							break;
 
 						// Other data
+						case "soundlist":
+							{
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Label = item.Key
+								};
+								output.Items.Add(info);
+								SA2SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
+							}
+							break;
 						case "animindexlist":
 							{
 								Directory.CreateDirectory(fileOutputPath);
@@ -795,6 +806,36 @@ namespace SplitTools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
 							}
 							break;
+						case "kartobjectarray":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<KartObjectArray> result = new List<KartObjectArray>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartObjectArray kartset = new KartObjectArray();
+									int ptr = BitConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										kartset.Model = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+										hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									}
+									kartset.Property = ByteConverter.ToUInt32(datafile, address + 4);
+									ptr = BitConverter.ToInt32(datafile, address + 8);
+									if (ptr != 0)
+									{
+										kartset.Unknown1 = ((uint)ptr - imageBase).ToCHex();
+									}
+									result.Add(kartset);
+									address += 0xC;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+							}
+							break;
 						case "kartmenu":
 							{
 								Directory.CreateDirectory(fileOutputPath);
@@ -925,7 +966,7 @@ namespace SplitTools.SplitDLL
 							}
 							break;
 						default: // raw binary
-							{
+							{ 
 								byte[] bin = new byte[int.Parse(data.CustomProperties["size"], NumberStyles.HexNumber)];
 								Array.Copy(datafile, address, bin, 0, bin.Length);
 								File.WriteAllBytes(fileOutputPath, bin);
