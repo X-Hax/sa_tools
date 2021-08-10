@@ -53,6 +53,8 @@ namespace SplitTools.Split
 					HelperFunctions.FixRELPointers(datafile, imageBase);
 				}
 				bool SA2 = inifile.Game == Game.SA2 | inifile.Game == Game.SA2B;
+				bool SA2B = inifile.Game == Game.SA2B;
+				bool SA2DC = inifile.Game == Game.SA2;
 				ModelFormat modelfmt_def = 0;
 				LandTableFormat landfmt_def = 0;
 				switch (inifile.Game)
@@ -359,7 +361,9 @@ namespace SplitTools.Split
 							}
 							break;
 						case "startpos":
-							if (SA2)
+							if (SA2DC)
+								SA2DCStartPosList.Load(datafile, address).Save(fileOutputPath);
+							if (SA2B)	
 								SA2StartPosList.Load(datafile, address).Save(fileOutputPath);
 							else
 								SA1StartPosList.Load(datafile, address).Save(fileOutputPath);
@@ -541,7 +545,10 @@ namespace SplitTools.Split
 							LevelRankScoresList.Load(datafile, address).Save(fileOutputPath);
 							break;
 						case "levelranktimes":
-							LevelRankTimesList.Load(datafile, address).Save(fileOutputPath);
+								LevelRankTimesList.Load(datafile, address).Save(fileOutputPath);
+							break;
+						case "kartranktimes":
+								KartRankTimesList.Load(datafile, address, data.Length).Save(fileOutputPath);
 							break;
 						case "endpos":
 							SA2EndPosList.Load(datafile, address).Save(fileOutputPath);

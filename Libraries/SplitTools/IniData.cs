@@ -616,7 +616,118 @@ namespace SplitTools
 		}
 	}
 
-    public class TexnameArray
+	public static class SA2DCStartPosList
+	{
+		public static int Size { get { return SA2DCStartPosInfo.Size + 2; } }
+
+		public static Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> Load(string filename)
+		{
+			return IniSerializer.Deserialize<Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo>>(filename);
+		}
+
+		public static Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> Load(byte[] file, int address)
+		{
+			Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> result = new Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo>();
+			while (ByteConverter.ToUInt16(file, address) != (ushort)SA2DCLevelIDs.Invalid)
+			{
+				SA2DCStartPosInfo objgrp = new SA2DCStartPosInfo(file, address + 2);
+				result.Add((SA2DCLevelIDs)ByteConverter.ToUInt16(file, address), objgrp);
+				address += Size;
+			}
+			return result;
+		}
+
+		public static void Save(this Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
+
+		public static byte[] GetBytes(this Dictionary<SA2DCLevelIDs, SA2DCStartPosInfo> startpos)
+		{
+			List<byte> result = new List<byte>(Size * (startpos.Count + 1));
+			foreach (KeyValuePair<SA2DCLevelIDs, SA2DCStartPosInfo> item in startpos)
+			{
+				result.AddRange(ByteConverter.GetBytes((ushort)item.Key));
+				result.AddRange(item.Value.GetBytes());
+			}
+			result.AddRange(ByteConverter.GetBytes((ushort)SA2DCLevelIDs.Invalid));
+			result.AddRange(new byte[SA2DCStartPosInfo.Size]);
+			return result.ToArray();
+		}
+
+		public static string ToStruct(this KeyValuePair<SA2DCLevelIDs, SA2DCStartPosInfo> startpos)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(startpos.Key.ToC("LevelIDs"));
+			result.Append(", ");
+			result.Append(startpos.Value.YRotation.ToCHex());
+			result.Append(", ");
+			result.Append(startpos.Value.P1YRotation.ToCHex());
+			result.Append(", ");
+			result.Append(startpos.Value.P2YRotation.ToCHex());
+			result.Append(", ");
+			result.Append(startpos.Value.Position.ToStruct());
+			result.Append(", ");
+			result.Append(startpos.Value.P1Position.ToStruct());
+			result.Append(", ");
+			result.Append(startpos.Value.P2Position.ToStruct());
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2DCStartPosInfo
+	{
+		public SA2DCStartPosInfo()
+		{
+			Position = new Vertex();
+			P1Position = new Vertex();
+			P2Position = new Vertex();
+		}
+
+		public SA2DCStartPosInfo(byte[] file, int address)
+		{
+			YRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			P1YRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			P2YRotation = ByteConverter.ToUInt16(file, address);
+			address += sizeof(ushort);
+			Position = new Vertex(file, address);
+			address += Vertex.Size;
+			P1Position = new Vertex(file, address);
+			address += Vertex.Size;
+			P2Position = new Vertex(file, address);
+			address += Vertex.Size;
+		}
+
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort YRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort P1YRotation { get; set; }
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort P2YRotation { get; set; }
+		public Vertex Position { get; set; }
+		public Vertex P1Position { get; set; }
+		public Vertex P2Position { get; set; }
+
+		public static int Size { get { return (Vertex.Size + sizeof(ushort)) * 3; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(YRotation));
+			result.AddRange(ByteConverter.GetBytes(P1YRotation));
+			result.AddRange(ByteConverter.GetBytes(P2YRotation));
+			result.AddRange(Position.GetBytes());
+			result.AddRange(P1Position.GetBytes());
+			result.AddRange(P2Position.GetBytes());
+			return result.ToArray();
+		}
+	}
+
+	public class TexnameArray
     {
         public string[] TextureNames { get; set; }
         public TexnameArray(byte[] file, int address, uint imageBase)
@@ -2241,7 +2352,79 @@ namespace SplitTools
 		}
 	}
 
-	public static class SA2EndPosList
+	public static class KartRankTimesList
+	{
+		public static KartRankTimes[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<KartRankTimes[]>(filename);
+		}
+
+		public static KartRankTimes[] Load(byte[] file, int address, int count)
+		{
+			KartRankTimes[] result = new KartRankTimes[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new KartRankTimes(file, address);
+				address += KartRankTimes.Size;
+			}
+			return result;
+		}
+
+	public static void Save(this KartRankTimes[] startpos, string filename)
+	{
+		IniSerializer.Serialize(startpos, filename);
+	}
+}
+	[Serializable]
+	public class KartRankTimes
+	{
+		public SA2LevelIDs Level { get; set; }
+		public MinSec DRank { get; set; }
+		public MinSec CRank { get; set; }
+		public MinSec BRank { get; set; }
+		public MinSec ARank { get; set; }
+
+		public static int Size
+		{
+			get { return 0x9; }
+		}
+		public KartRankTimes() { }
+
+		public KartRankTimes(byte[] file, int address)
+		{
+			Level = (SA2LevelIDs)file[address++];
+			DRank = new MinSec(file, address);
+			address += MinSec.Size;
+			CRank = new MinSec(file, address);
+			address += MinSec.Size;
+			BRank = new MinSec(file, address);
+			address += MinSec.Size;
+			ARank = new MinSec(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Level.ToC("LevelIDs"));
+			sb.Append(", ");
+			sb.Append(DRank.ToStruct());
+			sb.Append(", ");
+			sb.Append(CRank.ToStruct());
+			sb.Append(", ");
+			sb.Append(BRank.ToStruct());
+			sb.Append(", ");
+			sb.Append(ARank.ToStruct());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+		public static class SA2EndPosList
 	{
 		public static int Size { get { return SA2EndPosInfo.Size + 2; } }
 

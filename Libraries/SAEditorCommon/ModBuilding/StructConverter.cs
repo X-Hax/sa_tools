@@ -56,6 +56,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "stageselectlist", "Stage Select List" },
 			{ "levelrankscores", "Level Rank Scores" },
 			{ "levelranktimes", "Level Rank Times" },
+			{ "kartranktimes", "Kart Rank Times" },
 			{ "endpos", "End Positions" },
 			{ "animationlist", "Animation List" },
 			{ "enemyanimationlist", "Enemy Animation List" },
@@ -393,6 +394,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 			using (TextWriter writer = File.CreateText(fileName))
 			{
 				bool SA2 = iniData.Game == Game.SA2 || iniData.Game == Game.SA2B;
+				bool SA2B = iniData.Game == Game.SA2B;
+				bool SA2DC = iniData.Game == Game.SA2;
 				Dictionary<uint, string> pointers = new Dictionary<uint, string>();
 				List<string> initlines = new List<string>();
 				uint imagebase = iniData.ImageBase ?? 0x400000;
@@ -891,6 +894,17 @@ namespace SAModel.SAEditorCommon.StructConverter
 								foreach (KeyValuePair<SA2LevelIDs, LevelRankTimes> obj in list)
 									objs.Add(obj.ToStruct());
 								objs.Add("{ LevelIDs_Invalid }");
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "kartranktimes":
+							{
+								KartRankTimes[] list = KartRankTimesList.Load(data.Filename);
+								writer.WriteLine("KartRankTimes {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (KartRankTimes obj in list)
+									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
 							}
