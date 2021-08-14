@@ -1365,6 +1365,142 @@ namespace SplitTools
 		}
 	}
 
+	public static class CharaSoundArray
+	{
+		public static CharaSoundArrayEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<CharaSoundArrayEntry[]>(filename);
+		}
+
+		public static CharaSoundArrayEntry[] Load(byte[] file, int address, uint imageBase, int count)
+		{
+			CharaSoundArrayEntry[] result = new CharaSoundArrayEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new CharaSoundArrayEntry(file, address, imageBase);
+				address += CharaSoundArrayEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this CharaSoundArrayEntry[] soundlist, string filename)
+		{
+			IniSerializer.Serialize(soundlist, filename);
+		}
+	}
+
+	[Serializable]
+	public class CharaSoundArrayEntry
+	{
+		[IniAlwaysInclude]
+		public SA2Characters Character { get; set; }
+		public string Filename { get; set; }
+		public string SoundList { get; set; }
+
+		public static int Size { get { return 0xC; } }
+
+		public CharaSoundArrayEntry() { }
+
+		public CharaSoundArrayEntry(byte[] file, int address, uint imageBase)
+		{
+			Character = (SA2Characters)file[address++];
+			Filename = file.GetCString(file.GetPointer(address + 3, imageBase));
+			address += sizeof(int);
+			int ptr = ByteConverter.ToInt32(file, address + 3);
+			address += sizeof(int);
+			SoundList = ((uint)ptr - imageBase).ToString("X8");
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Character);
+			sb.Append(", ");
+			sb.Append(Filename);
+			sb.Append(", ");
+			sb.Append(SoundList);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public static class CharaVoiceArray
+	{
+		public static CharaVoiceArrayEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<CharaVoiceArrayEntry[]>(filename);
+		}
+
+		public static CharaVoiceArrayEntry[] Load(byte[] file, int address, uint imageBase, int count)
+		{
+			CharaVoiceArrayEntry[] result = new CharaVoiceArrayEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new CharaVoiceArrayEntry(file, address, imageBase);
+				address += CharaVoiceArrayEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this CharaVoiceArrayEntry[] soundlist, string filename)
+		{
+			IniSerializer.Serialize(soundlist, filename);
+		}
+	}
+
+	[Serializable]
+	public class CharaVoiceArrayEntry
+	{
+		[IniAlwaysInclude]
+		public byte Mode { get; set; }
+		[IniAlwaysInclude]
+		public SA2Characters Character { get; set; }
+		public string JPFilename { get; set; }
+		public string ENFilename { get; set; }
+		public string SoundList { get; set; }
+
+		public static int Size { get { return 0x10; } }
+
+		public CharaVoiceArrayEntry() { }
+
+		public CharaVoiceArrayEntry(byte[] file, int address, uint imageBase)
+		{
+			Mode = file[address++];
+			Character = (SA2Characters)file[address++];
+			JPFilename = file.GetCString(file.GetPointer(address + 2, imageBase));
+			ENFilename = file.GetCString(file.GetPointer(address + 6, imageBase));
+			int ptr = ByteConverter.ToInt32(file, address + 10);
+			address += sizeof(int);
+			SoundList = ((uint)ptr - imageBase).ToString("X8");
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Mode);
+			sb.Append(", ");
+			sb.Append(Character);
+			sb.Append(", ");
+			sb.Append(JPFilename);
+			sb.Append(", ");
+			sb.Append(ENFilename);
+			sb.Append(", ");
+			sb.Append(SoundList);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public static class StringArray
 	{
 		public static string[] Load(string filename)
@@ -1983,6 +2119,53 @@ namespace SplitTools
 		}
 	}
 
+	//public static class SA2BDeathZoneFlagsList
+	//{
+	//	public static SA2BDeathZoneFlags[] Load(string filename)
+	//	{
+	//		return IniSerializer.Deserialize<SA2BDeathZoneFlags[]>(filename);
+	//	}
+
+	//	public static void Save(this SA2BDeathZoneFlags[] flags, string filename)
+	//	{
+	//		IniSerializer.Serialize(flags, filename);
+	//	}
+	//}
+
+	//[Serializable]
+	//public class SA2BDeathZoneFlags
+	//{
+	//	public SA2BDeathZoneFlags() { }
+
+	//	public SA2BDeathZoneFlags(byte[] file, int address)
+	//	{
+	//		Flags = (SA2CharacterFlags)file[address++];
+	//		Constant1 = file[address++];
+	//		Constant2 = file[address++];
+	//		DeathFlag = file[address++];
+	//	}
+
+	//	public SA2BDeathZoneFlags(byte[] file, int address, string filename)
+	//	{
+	//		Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+	//		Filename = filename;
+	//	}
+
+	//	[IniAlwaysInclude]
+	//	public SA2CharacterFlags Flags { get; set; }
+	//	public byte Constant1 { get; set; }
+	//	public byte Constant2 { get; set; }
+	//	public byte DeathFlag { get; set; } 
+	//	public string Filename { get; set; }
+
+	//	public static int Size { get { return 4; } }
+
+	//	public byte[] GetBytes()
+	//	{
+	//		return ByteConverter.GetBytes((int)Flags);
+	//	}
+	//}
+
 	//public static class SA2DeathZoneFlagsList
 	//{
 	//	public static SA2DeathZoneFlags[] Load(string filename)
@@ -2003,12 +2186,14 @@ namespace SplitTools
 
 	//	public SA2DeathZoneFlags(byte[] file, int address)
 	//	{
-	//		Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+	//		Flags = (SA2CharacterFlags)file[address++];
+	//		DeathFlag = file[address++];
 	//	}
 
 	//	public SA2DeathZoneFlags(byte[] file, int address, string filename)
 	//	{
-	//		Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+	//		Flags = (SA2CharacterFlags)byte[address++];
+	//		DeathFlag = file[address++];
 	//		Filename = filename;
 	//	}
 
@@ -2016,6 +2201,7 @@ namespace SplitTools
 	//	public SA2CharacterFlags Flags { get; set; }
 	//	public byte DeathFlag { get; set; } 
 	//	public string Filename { get; set; }
+
 	//	public static int Size { get { return 4; } }
 
 	//	public byte[] GetBytes()

@@ -703,7 +703,9 @@ namespace SplitTools
 		Knuckles = 4,
 		Rouge = 5,
 		MechTails = 6,
-		MechEggman = 7
+		MechEggman = 7,
+		SuperSonic = 9,
+		SuperShadow = 0xA
 	}
 
 	[Flags()]

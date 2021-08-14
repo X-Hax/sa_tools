@@ -45,6 +45,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "soundtestlist", "Sound Test List" },
 			{ "musiclist", "Music List" },
 			{ "soundlist", "Sound List" },
+			{ "charactersoundarray", "Character Sound Array" },
 			{ "stringarray", "String Array" },
 			{ "nextlevellist", "Next Level List" },
 			{ "cutscenetext", "Cutscene Text" },

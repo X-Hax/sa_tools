@@ -361,12 +361,22 @@ namespace SplitTools.Split
 							}
 							break;
 						case "startpos":
-							if (SA2DC)
-								SA2DCStartPosList.Load(datafile, address).Save(fileOutputPath);
-							if (SA2B)	
-								SA2StartPosList.Load(datafile, address).Save(fileOutputPath);
-							else
-								SA1StartPosList.Load(datafile, address).Save(fileOutputPath);
+							{
+								switch (inifile.Game)
+								{
+									case Game.SA2:
+										SA2DCStartPosList.Load(datafile, address).Save(fileOutputPath);
+										break;
+									case Game.SA2B:
+										SA2StartPosList.Load(datafile, address).Save(fileOutputPath);
+										break;
+									case Game.SA1:
+									case Game.SADX:
+									default:
+										SA1StartPosList.Load(datafile, address).Save(fileOutputPath);
+										break;
+								}
+							}
 							break;
 						case "texlist":
 							TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
@@ -414,10 +424,7 @@ namespace SplitTools.Split
 							SoundTestList.Load(datafile, address, imageBase).Save(fileOutputPath);
 							break;
 						case "musiclist":
-							{
-								int muscnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								MusicList.Load(datafile, address, imageBase, muscnt).Save(fileOutputPath);
-							}
+							MusicList.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
 							break;
 						case "soundlist":
 							if (SA2)
@@ -425,13 +432,18 @@ namespace SplitTools.Split
 							else
 								SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
 							break;
+						case "charactersoundarray":
+							if (data.CustomProperties.ContainsKey("voice"))
+								CharaVoiceArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath); 
+							else
+								CharaSoundArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
+							break;
 						case "stringarray":
 							{
-								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 								Languages lang = Languages.Japanese;
 								if (data.CustomProperties.ContainsKey("language"))
 									lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
-								StringArray.Load(datafile, address, imageBase, cnt, lang).Save(fileOutputPath);
+								StringArray.Load(datafile, address, imageBase, data.Length, lang).Save(fileOutputPath);
 							}
 							break;
 						case "nextlevellist":
@@ -439,16 +451,14 @@ namespace SplitTools.Split
 							break;
 						case "cutscenetext":
 							{
-								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								new CutsceneText(datafile, address, imageBase, cnt).Save(fileOutputPath, out string[] hashes);
+								new CutsceneText(datafile, address, imageBase, data.Length).Save(fileOutputPath, out string[] hashes);
 								data.MD5Hash = string.Join(",", hashes);
 								nohash = true;
 							}
 							break;
 						case "recapscreen":
 							{
-								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								RecapScreenList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath, out string[][] hashes);
+								RecapScreenList.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath, out string[][] hashes);
 								string[] hash2 = new string[hashes.Length];
 								for (int i = 0; i < hashes.Length; i++)
 								{
@@ -460,8 +470,7 @@ namespace SplitTools.Split
 							break;
 						case "npctext":
 							{
-								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								NPCTextList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath, out string[][] hashes);
+								NPCTextList.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath, out string[][] hashes);
 								string[] hash2 = new string[hashes.Length];
 								for (int i = 0; i < hashes.Length; i++)
 									hash2[i] = string.Join(",", hashes[i]);
@@ -580,9 +589,8 @@ namespace SplitTools.Split
 								if (customProperties.ContainsKey("shortrot"))
 									shortrot = bool.Parse(customProperties["shortrot"]);
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-								int Length = int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
-								for (int i = 0; i < Length; i++)
+								for (int i = 0; i < data.Length; i++)
 								{
 									MotionTableEntry bmte = new MotionTableEntry();
 									int mtnaddr = (int)(ByteConverter.ToUInt32(datafile, address) - imageBase);
@@ -726,7 +734,6 @@ namespace SplitTools.Split
 							break;
 						case "masterstringlist":
 							{
-								int cnt = int.Parse(customProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 								for (int l = 0; l < 5; l++)
 								{
 									Languages lng = (Languages)l;
@@ -734,7 +741,7 @@ namespace SplitTools.Split
 									string ld = Path.Combine(fileOutputPath, lng.ToString());
 									Directory.CreateDirectory(ld);
 									int ptr = datafile.GetPointer(address, imageBase);
-									for (int i = 0; i < cnt; i++)
+									for (int i = 0; i < data.Length; i++)
 									{
 										int ptr2 = datafile.GetPointer(ptr, imageBase);
 										if (ptr2 != 0)
