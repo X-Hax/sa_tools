@@ -106,7 +106,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			if (!Directory.Exists(Path.Combine(SAToolsHub.gameDirectory, "\\mods\\", modName)))
+			if (!Directory.Exists(Path.Combine(SAToolsHub.gameDirectory, "mods", modName)))
 			{
 				DialogResult buildCheckWindow = MessageBox.Show("No folder for this mod exists in " + SAToolsHub.setGame + "'s mod directory.\n\nWould you like to build a mod?", "Build Mod", MessageBoxButtons.YesNo);
 				if (buildCheckWindow == DialogResult.Yes)
