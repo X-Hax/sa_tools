@@ -8,6 +8,7 @@ using ArchiveLib;
 using SplitTools;
 using static ArchiveLib.DATFile;
 using static ArchiveLib.PVMXFile;
+using static ArchiveLib.MLTFile;
 
 namespace ArchiveTool
 {
@@ -71,6 +72,16 @@ namespace ArchiveTool
                         folderMode = ArchiveFromFolderMode.DAT;
                         arc = new DATFile();
                         break;
+                   /* 
+                    case ".mlt":
+                    case ".mpb":
+                    case ".msb":
+                    case ".fpb":
+                    case ".fob":
+                        folderMode = ArchiveFromFolderMode.MLT;
+                        arc = new MLTFile();
+                        break;
+                   */
                     case ".png":
                     case ".jpg":
                     case ".bmp":
@@ -89,6 +100,10 @@ namespace ArchiveTool
                     string filename = split[0];
                     switch (folderMode)
                     {
+                        /* case ArchiveFromFolderMode.MLT:
+                            arc.Entries.Add(new MLTEntry(Path.Combine(filePath, filename)));
+                            extension = ".mlt";
+                            break; */
                         case ArchiveFromFolderMode.DAT:
                             arc.Entries.Add(new DATEntry(Path.Combine(filePath, filename)));
                             extension = ".dat";
@@ -265,7 +280,8 @@ namespace ArchiveTool
             GVM = 1,
             DAT = 2,
             PVMX = 3,
-            PB = 4
+            PB = 4,
+            MLT = 5,
         }
     }
 }
