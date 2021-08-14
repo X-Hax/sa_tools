@@ -56,7 +56,7 @@ namespace SAModel.SAEditorCommon
             LevelList.Add(new LanternLevelEntry("_32B", "Twinkle Park", "Act 3 Mirror Room"));
             LevelList.Add(new LanternLevelEntry("_40B", "Speed Highway", "Act 1"));
             LevelList.Add(new LanternLevelEntry("_41B", "Speed Highway", "Act 2 Goin' Down"));
-            LevelList.Add(new LanternLevelEntry("_42B", "Speed Highway", "Act 3 At Down"));
+            LevelList.Add(new LanternLevelEntry("_42B", "Speed Highway", "Act 3 At Dawn"));
             LevelList.Add(new LanternLevelEntry("_50B", "Red Mountain", "Act 1 Mt. Red"));
             LevelList.Add(new LanternLevelEntry("_51B", "Red Mountain", "Act 2 Red Hot Skull"));
             LevelList.Add(new LanternLevelEntry("_52B", "Red Mountain", "Act 3 (Knuckles)"));
