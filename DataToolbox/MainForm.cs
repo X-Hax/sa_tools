@@ -78,6 +78,9 @@ namespace SAModel.DataToolbox
                 comboBoxSplitGameSelect.SelectedIndex = 0;
             else
                 MessageBox.Show(this, "Game templates not found.", "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            // Split screen defaults
+            comboBoxLabels.SelectedIndex = 0;
         }
 
 
@@ -204,7 +207,7 @@ namespace SAModel.DataToolbox
 			SaveFileDialog sd = new SaveFileDialog();
 			switch (comboBoxBinaryItemType.SelectedIndex)
 			{
-				//Level
+				// Level
 				case 0:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -215,7 +218,7 @@ namespace SAModel.DataToolbox
 						success = true;
 					}
 					break;
-				//Model
+				// Model
 				case 1:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -227,19 +230,19 @@ namespace SAModel.DataToolbox
 						success = true;
 					}
 					break;
-				//Action
+				// Action
 				case 2:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 					{
-						//Model
+						// Model
 						NJS_ACTION tempaction = new NJS_ACTION(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
 						NJS_OBJECT tempmodel = tempaction.Model;
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
 						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
 						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
 
-						//Action
+						// Action
 						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
 
 						tempaction.Animation.Save(saanimPath);
@@ -487,7 +490,7 @@ namespace SAModel.DataToolbox
                 else return;
             }
             Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateList[comboBoxSplitGameSelect.Text], true);
-            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir);
+            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir, 0, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 
@@ -567,7 +570,7 @@ namespace SAModel.DataToolbox
 			List<string> files = new List<string>();
 			files.Add(textBoxMDLFilename.Text);
 			files.AddRange(listBoxMDLAnimationFiles.Items.Cast<String>().ToList());
-			SplitProgress spl = new SplitProgress(null, files, null, outdir, checkBoxMDLBigEndian.Checked ? 2 : 1);
+			SplitProgress spl = new SplitProgress(null, files, null, outdir, checkBoxMDLBigEndian.Checked ? 2 : 1, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 
