@@ -3917,6 +3917,21 @@ namespace SplitTools
 		}
 	}
 
+	public class ModelIndex
+	{
+		public string Model { get; set; }
+		public uint ID { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", Model);
+			sb.AppendFormat("{0}, ", ID.ToCHex());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public class KartObjectArray
 	{
 		public string Model { get; set; }

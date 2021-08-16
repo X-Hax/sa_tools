@@ -247,45 +247,46 @@ namespace SplitTools.Split
 						case "basicdxattacharray":
 						case "chunkattacharray":
 						case "gcattacharray":
-							{ 
-							Attach dummy;
-							ModelFormat modelfmt_att;
-							string attachext_arr;
-							string attachext_def = null;
-							int ptr = ByteConverter.ToInt32(datafile, address);
-							if (ptr != 0)
 							{
-								ptr = (int)(ptr - imageBase);
-							switch (type)
-							{
-								case "basicattacharray":
-									modelfmt_att = ModelFormat.Basic;
-									dummy = new BasicAttach(datafile, ptr, imageBase, false);
-									attachext_arr = ".sa1mdl";
-									break;
-								case "basicdxattacharray":
-									modelfmt_att = ModelFormat.BasicDX;
-									dummy = new BasicAttach(datafile, ptr, imageBase, true);
-									attachext_arr = ".sa1mdl";
-									break;
-								case "chunkattacharray":
-									modelfmt_att = ModelFormat.Chunk;
-									dummy = new ChunkAttach(datafile, ptr, imageBase);
-									attachext_arr = ".sa2mdl";
-									break;
-								case "gcattacharray":
-									modelfmt_att = ModelFormat.GC;
-									dummy = new GCAttach(datafile, ptr, imageBase);
-									attachext_arr = ".sa2bmdl";
-									break;
-								default:
-									modelfmt_att = modelfmt_def;
-									dummy = new BasicAttach(datafile, ptr, imageBase, true);
-									attachext_arr = attachext_def;
-									break;
-							}
-									for (int i = 0; i < data.Length; i++)
+								Attach dummy;
+								ModelFormat modelfmt_att;
+								string attachext_arr;
+								string attachext_def = null;
+								for (int i = 0; i < data.Length; i++)
 								{
+									int ptr = ByteConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										ptr = (int)(ptr - imageBase);
+										switch (type)
+										{
+											case "basicattacharray":
+												modelfmt_att = ModelFormat.Basic;
+												dummy = new BasicAttach(datafile, ptr, imageBase, false);
+												attachext_arr = ".sa1mdl";
+												break;
+											case "basicdxattacharray":
+												modelfmt_att = ModelFormat.BasicDX;
+												dummy = new BasicAttach(datafile, ptr, imageBase, true);
+												attachext_arr = ".sa1mdl";
+												break;
+											case "chunkattacharray":
+												modelfmt_att = ModelFormat.Chunk;
+												dummy = new ChunkAttach(datafile, ptr, imageBase);
+												attachext_arr = ".sa2mdl";
+												break;
+											case "gcattacharray":
+												modelfmt_att = ModelFormat.GC;
+												dummy = new GCAttach(datafile, ptr, imageBase);
+												attachext_arr = ".sa2bmdl";
+												break;
+											case "attacharray":
+											default:
+												modelfmt_att = modelfmt_def;
+												dummy = new BasicAttach(datafile, ptr, imageBase, true);
+												attachext_arr = attachext_def;
+												break;
+										}
 										NJS_OBJECT mdl = new NJS_OBJECT()
 										{
 											Attach = dummy

@@ -28,7 +28,10 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{ "actionarray", "NJS_ACTION **" },
 			{ "motionarray", "NJS_MOTION **" },
 			{ "morph", "NJS_MODEL_SADX *" },
+			{ "basicattacharray", "NJS_MODEL **" },
 			{ "modelsarray", "NJS_MODEL_SADX **" },
+			{ "chunkattacharray", "NJS_CNK_MODEL **" },
+			{ "gcattacharray", "SA2B_MODEL **" },
 			{ "texlist", "NJS_TEXLIST *" },
 			{ "texlistarray", "NJS_TEXLIST **" },
 			{ "animindexlist", "AnimationIndex *" }
@@ -85,6 +88,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 							modified = true;
 					}
 					break;
+				case "modelindex":
 				case "kartspecialinfolist":
 				case "kartmenu":
 				case "kartsoundparameters":
@@ -398,6 +402,22 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
+						case "modelindex":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("ModelIndex {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
 						case "kartspecialinfolist":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
@@ -519,6 +539,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					switch (item.Type)
 					{
 						case "animindexlist":
+						case "modelindex":
 						case "charaobjectdatalist":
 						case "kartspecialinfolist":
 						case "kartmodelsarray":
