@@ -326,22 +326,19 @@ namespace SplitTools.Split
 						case "animation":
 						case "motion":
 							int numparts = 0;
-                            int numverts = 0;
 							if (customProperties.ContainsKey("numparts"))
 								numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-                            else
-                                Console.WriteLine("Number of parts not specified for {0}", filedesc);
-                            if (customProperties.ContainsKey("numverts"))
-                                numverts = int.Parse(customProperties["numverts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+							else
+								Console.WriteLine("Number of parts not specified for {0}", filedesc);
 							if (customProperties.ContainsKey("shortrot"))
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]), numverts);
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));
 								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels, false, numverts);
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
 								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
