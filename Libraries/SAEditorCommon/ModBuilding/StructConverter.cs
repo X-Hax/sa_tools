@@ -46,6 +46,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "musiclist", "Music List" },
 			{ "soundlist", "Sound List" },
 			{ "charactersoundarray", "Character Sound Array" },
+			{ "charactervoicearray", "Character Voice Array" },
 			{ "stringarray", "String Array" },
 			{ "nextlevellist", "Next Level List" },
 			{ "cutscenetext", "Cutscene Text" },
@@ -639,6 +640,30 @@ namespace SAModel.SAEditorCommon.StructConverter
 									writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
 									initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
 								}
+							}
+							break;
+						case "charactervoicearray":
+							{
+								CharaVoiceArrayEntry[] list = CharaVoiceArray.Load(data.Filename);
+								writer.WriteLine("CharaVoiceInfo {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (CharaVoiceArrayEntry obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+								initlines.Add(string.Format("memcpy((CharaVoiceInfo*)0x{0:X}, arrayptrandsize({1}));", data.Address + imagebase, name));
+							}
+							break;
+						case "charactersoundarray":
+							{
+								CharaSoundArrayEntry[] list = CharaSoundArray.Load(data.Filename);
+								writer.WriteLine("CharaSoundInfo {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (CharaSoundArrayEntry obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+								initlines.Add(string.Format("memcpy((CharaSoundInfo*)0x{0:X}, arrayptrandsize({1}));", data.Address + imagebase, name));
 							}
 							break;
 						case "stringarray":

@@ -247,45 +247,46 @@ namespace SplitTools.Split
 						case "basicdxattacharray":
 						case "chunkattacharray":
 						case "gcattacharray":
-							{ 
-							Attach dummy;
-							ModelFormat modelfmt_att;
-							string attachext_arr;
-							string attachext_def = null;
-							int ptr = ByteConverter.ToInt32(datafile, address);
-							if (ptr != 0)
 							{
-								ptr = (int)(ptr - imageBase);
-							switch (type)
-							{
-								case "basicattacharray":
-									modelfmt_att = ModelFormat.Basic;
-									dummy = new BasicAttach(datafile, ptr, imageBase, false);
-									attachext_arr = ".sa1mdl";
-									break;
-								case "basicdxattacharray":
-									modelfmt_att = ModelFormat.BasicDX;
-									dummy = new BasicAttach(datafile, ptr, imageBase, true);
-									attachext_arr = ".sa1mdl";
-									break;
-								case "chunkattacharray":
-									modelfmt_att = ModelFormat.Chunk;
-									dummy = new ChunkAttach(datafile, ptr, imageBase);
-									attachext_arr = ".sa2mdl";
-									break;
-								case "gcattacharray":
-									modelfmt_att = ModelFormat.GC;
-									dummy = new GCAttach(datafile, ptr, imageBase);
-									attachext_arr = ".sa2bmdl";
-									break;
-								default:
-									modelfmt_att = modelfmt_def;
-									dummy = new BasicAttach(datafile, ptr, imageBase, true);
-									attachext_arr = attachext_def;
-									break;
-							}
-									for (int i = 0; i < data.Length; i++)
+								Attach dummy;
+								ModelFormat modelfmt_att;
+								string attachext_arr;
+								string attachext_def = null;
+								for (int i = 0; i < data.Length; i++)
 								{
+									int ptr = ByteConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										ptr = (int)(ptr - imageBase);
+										switch (type)
+										{
+											case "basicattacharray":
+												modelfmt_att = ModelFormat.Basic;
+												dummy = new BasicAttach(datafile, ptr, imageBase, false);
+												attachext_arr = ".sa1mdl";
+												break;
+											case "basicdxattacharray":
+												modelfmt_att = ModelFormat.BasicDX;
+												dummy = new BasicAttach(datafile, ptr, imageBase, true);
+												attachext_arr = ".sa1mdl";
+												break;
+											case "chunkattacharray":
+												modelfmt_att = ModelFormat.Chunk;
+												dummy = new ChunkAttach(datafile, ptr, imageBase);
+												attachext_arr = ".sa2mdl";
+												break;
+											case "gcattacharray":
+												modelfmt_att = ModelFormat.GC;
+												dummy = new GCAttach(datafile, ptr, imageBase);
+												attachext_arr = ".sa2bmdl";
+												break;
+											case "attacharray":
+											default:
+												modelfmt_att = modelfmt_def;
+												dummy = new BasicAttach(datafile, ptr, imageBase, true);
+												attachext_arr = attachext_def;
+												break;
+										}
 										NJS_OBJECT mdl = new NJS_OBJECT()
 										{
 											Attach = dummy
@@ -436,10 +437,10 @@ namespace SplitTools.Split
 								SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
 							break;
 						case "charactersoundarray":
-							if (data.CustomProperties.ContainsKey("voice"))
-								CharaVoiceArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath); 
-							else
-								CharaSoundArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
+							CharaSoundArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
+							break;
+						case "charactervoicearray":
+							CharaVoiceArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
 							break;
 						case "stringarray":
 							{
@@ -486,58 +487,117 @@ namespace SplitTools.Split
 							break;
 						case "deathzone":
 							{
-								//if (SA2)
-								//{
-								//	{
-								//		List<SA2DeathZoneFlags> flags = new List<SA2DeathZoneFlags>();
-								//		string path = Path.GetDirectoryName(fileOutputPath);
-								//		List<string> hashes = new List<string>();
-								//		int num = 0;
-								//		while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
-								//		{
-								//			string file_tosave;
-								//			if (customProperties.ContainsKey("filename" + num.ToString()))
-								//				file_tosave = customProperties["filename" + num++.ToString()];
-								//			else
-								//				file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
-								//			string file = Path.Combine(path, file_tosave);
-								//			flags.Add(new SA2DeathZoneFlags(datafile, address, file_tosave));
-								//			ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
-								//			hashes.Add(HelperFunctions.FileHash(file));
-								//			address += 8;
-
-								//		}
-								//		flags.ToArray().Save(fileOutputPath);
-								//		hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
-								//		data.MD5Hash = string.Join(",", hashes.ToArray());
-								//		nohash = true;
-								//	}
-								//}
-								//else
+								switch (inifile.Game)
 								{
-									List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
-									string path = Path.GetDirectoryName(fileOutputPath);
-									List<string> hashes = new List<string>();
-									int num = 0;
-									while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
-									{
-										string file_tosave;
-										if (customProperties.ContainsKey("filename" + num.ToString()))
-											file_tosave = customProperties["filename" + num++.ToString()];
-										else
-											file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
-										string file = Path.Combine(path, file_tosave);
-										flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
-										ModelFormat modelfmt_death = inifile.Game == Game.SADX ? ModelFormat.BasicDX : ModelFormat.Basic; // Death zones in all games except SADXPC use Basic non-DX models
-										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
-										hashes.Add(HelperFunctions.FileHash(file));
-										address += 8;
+									case Game.SA2:
+										{
+											List<SA2DeathZoneFlags> flags = new List<SA2DeathZoneFlags>();
+											string path = Path.GetDirectoryName(fileOutputPath);
+											List<string> hashes = new List<string>();
+											int num = 0;
+											while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+											{
+												string file_tosave;
+												if (customProperties.ContainsKey("filename" + num.ToString()))
+													file_tosave = customProperties["filename" + num++.ToString()];
+												else
+													file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+												string file = Path.Combine(path, file_tosave);
+												flags.Add(new SA2DeathZoneFlags(datafile, address, file_tosave));
+												ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+												hashes.Add(HelperFunctions.FileHash(file));
+												address += 8;
 
-									}
-									flags.ToArray().Save(fileOutputPath);
-									hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
-									data.MD5Hash = string.Join(",", hashes.ToArray());
-									nohash = true;
+											}
+											flags.ToArray().Save(fileOutputPath);
+											hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+											data.MD5Hash = string.Join(",", hashes.ToArray());
+											nohash = true;
+										}
+										break;
+									case Game.SA2B:
+										{
+											if (!inifile.BigEndian)
+											{
+												List<SA2BDeathZoneFlags> flags = new List<SA2BDeathZoneFlags>();
+												string path = Path.GetDirectoryName(fileOutputPath);
+												List<string> hashes = new List<string>();
+												int num = 0;
+												while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+												{
+													string file_tosave;
+													if (customProperties.ContainsKey("filename" + num.ToString()))
+														file_tosave = customProperties["filename" + num++.ToString()];
+													else
+														file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+													string file = Path.Combine(path, file_tosave);
+													flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
+													ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+													hashes.Add(HelperFunctions.FileHash(file));
+													address += 8;
+
+												}
+												flags.ToArray().Save(fileOutputPath);
+												hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+												data.MD5Hash = string.Join(",", hashes.ToArray());
+												nohash = true;
+											}
+											else
+											{
+												List<SA2BBigDeathZoneFlags> flags = new List<SA2BBigDeathZoneFlags>();
+												string path = Path.GetDirectoryName(fileOutputPath);
+												List<string> hashes = new List<string>();
+												int num = 0;
+												while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+												{
+													string file_tosave;
+													if (customProperties.ContainsKey("filename" + num.ToString()))
+														file_tosave = customProperties["filename" + num++.ToString()];
+													else
+														file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+													string file = Path.Combine(path, file_tosave);
+													flags.Add(new SA2BBigDeathZoneFlags(datafile, address, file_tosave));
+													ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+													hashes.Add(HelperFunctions.FileHash(file));
+													address += 8;
+
+												}
+												flags.ToArray().Save(fileOutputPath);
+												hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+												data.MD5Hash = string.Join(",", hashes.ToArray());
+												nohash = true;
+											}
+										}
+										break;
+									case Game.SADX:
+									case Game.SA1:
+									default:
+										{
+											List<DeathZoneFlags> flags = new List<DeathZoneFlags>();
+											string path = Path.GetDirectoryName(fileOutputPath);
+											List<string> hashes = new List<string>();
+											int num = 0;
+											while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+											{
+												string file_tosave;
+												if (customProperties.ContainsKey("filename" + num.ToString()))
+													file_tosave = customProperties["filename" + num++.ToString()];
+												else
+													file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+												string file = Path.Combine(path, file_tosave);
+												flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
+												ModelFormat modelfmt_death = inifile.Game == Game.SADX ? ModelFormat.BasicDX : ModelFormat.Basic; // Death zones in all games except SADXPC use Basic non-DX models
+												ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
+												hashes.Add(HelperFunctions.FileHash(file));
+												address += 8;
+
+											}
+											flags.ToArray().Save(fileOutputPath);
+											hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+											data.MD5Hash = string.Join(",", hashes.ToArray());
+											nohash = true;
+										}
+										break;
 								}
 							}
 							break;
