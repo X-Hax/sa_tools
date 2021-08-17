@@ -163,7 +163,7 @@ namespace SAModel
 			return mdatas;
 		}
 
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false)
+		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int numverts = 0)
 		{
 			if (nummodels == 0) nummodels = CalculateModelParts(file, address, imageBase);
 			if (labels != null && labels.ContainsKey(address))
@@ -405,13 +405,19 @@ namespace SAModel
 							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString() + "_" + itemaddr.ToString("X8");
 							tmpaddr += 8;
 						}
-						if (ptrs.Count > 1)
-						{
-							ptrs.Sort();
-							vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
-						}
-						else
-							vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
+                        // If vertex count is specified, use it as-is
+                        if (numverts != 0)
+                            vtxcount = numverts;
+                        else
+                        {
+                            if (ptrs.Count > 1)
+                            {
+                                ptrs.Sort();
+                                vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+                            }
+                            else
+                                vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
+                        }  
 						tmpaddr = (int)vertoff;
 						for (int j = 0; j < frames; j++)
 						{
@@ -435,23 +441,29 @@ namespace SAModel
 					{
 						hasdata = true;
 						data.NormalItemName = new string[frames];
-						if (vtxcount < 0)
-						{
-							tmpaddr = (int)normoff;
-							List<int> ptrs = new List<int>();
-							for (int j = 0; j < frames; j++)
-							{
-								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-								tmpaddr += 8;
-							}
-							if (ptrs.Count > 1)
-							{
-								ptrs.Sort();
-								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
-							}
-							else
-								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
-						}
+                        // If vertex count is specified, use it as-is
+                        if (numverts != 0)
+                            vtxcount = numverts;
+                        else
+                        {
+                            if (vtxcount < 0)
+                            {
+                                tmpaddr = (int)normoff;
+                                List<int> ptrs = new List<int>();
+                                for (int j = 0; j < frames; j++)
+                                {
+                                    ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+                                    tmpaddr += 8;
+                                }
+                                if (ptrs.Count > 1)
+                                {
+                                    ptrs.Sort();
+                                    vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+                                }
+                                else
+                                    vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
+                            }
+                        }
 						tmpaddr = (int)normoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.NormalName = labels[tmpaddr];
@@ -621,15 +633,15 @@ namespace SAModel
 				Model.CountAnimated(), labels);
 		}
 
-		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, Attach> attaches, bool shortrot = false)
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, Attach> attaches, bool shortrot = false, int numverts = 0)
 		{
-			return ReadDirect(file, count, motionaddress, imageBase, new Dictionary<int, string>(), attaches, shortrot);
+			return ReadDirect(file, count, motionaddress, imageBase, new Dictionary<int, string>(), attaches, shortrot, numverts);
 		}
 
-		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool shortrot = false)
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool shortrot = false, int numverts = 0)
 		{
 			return new NJS_MOTION(file, motionaddress, imageBase,
-				count, labels, shortrot);
+				count, labels, shortrot, numverts);
 		}
 
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
