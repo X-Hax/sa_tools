@@ -365,8 +365,8 @@ namespace SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
-			}
+                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
+            }
 			if (NJA)
 			{
 				outext = ".nja";
@@ -432,15 +432,40 @@ namespace SAModel.DataToolbox
 			buttonStructConvConvertBatch.Enabled = false;
 		}
 
-		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+        private void AddDirectoryForStructConverter(string dirname)
 		{
-			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-			for (int u = 0; u < fileList.Length; u++)
-			{
-				if (!listBoxStructConverter.Items.Contains(fileList[u])) listBoxStructConverter.Items.Add(fileList[u]);
-			}
-			UpdateConvertButton();
-		}
+			string[] files = Directory.GetFiles(dirname, "*.*", SearchOption.AllDirectories);
+			for (int i = 0; i < files.Length; i++)
+                if (!listBoxStructConverter.Items.Contains(files[i]))
+                {
+                    switch (Path.GetExtension(files[i]).ToLowerInvariant())
+                    {
+                        case ".sa1mdl":
+                        case ".sa2mdl":
+                        case ".sa1lvl":
+                        case ".sa2lvl":
+                        case ".saanim":
+                            if (!listBoxStructConverter.Items.Contains(files[i]))
+                                listBoxStructConverter.Items.Add(files[i]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+        }
+
+        private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            for (int u = 0; u < fileList.Length; u++)
+            {
+                if (Directory.Exists(fileList[u]))
+                    AddDirectoryForStructConverter(fileList[u]);
+                else if (!listBoxStructConverter.Items.Contains(fileList[u])) 
+                    listBoxStructConverter.Items.Add(fileList[u]);
+            }
+            UpdateConvertButton();
+        }
 
 		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
 		{
