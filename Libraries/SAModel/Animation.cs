@@ -187,7 +187,7 @@ namespace SAModel
 					break;
 			}
 			ShortRot = shortrot;
-			int framesize = (tmp & 0xF) * 8;
+            int framesize = (tmp & 0xF) * 8;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
 			if (labels != null && labels.ContainsKey(address))
 				MdataName = labels[address];
@@ -333,14 +333,16 @@ namespace SAModel
 						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
-							if (shortrot)
+							if (ShortRot)
 							{
-								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, tmpaddr))) data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, tmpaddr))) 
+                                    data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
 								tmpaddr += 8;
 							}
 							else
 							{
-								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) 
+                                    data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
 								tmpaddr += 16;
 							}
 						}
@@ -722,13 +724,12 @@ namespace SAModel
 			return false;
 		}
 
-		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address, bool useNMDM = false, bool useShortRot = false)
+		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address, bool useNMDM = false)
 		{
 			List<byte> result = new List<byte>();
 			List<byte> pof0 = new List<byte>();
 			List<int> pof0Real = new List<int>();
 			List<byte> parameterData = new List<byte>();
-			ShortRot = useShortRot;
 
 			uint[] posoffs = new uint[ModelParts];
 			int[] posframes = new int[ModelParts];
@@ -1556,8 +1557,13 @@ namespace SAModel
 					writer.Write(model.Value.RotationName);
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Rotation.Count);
-					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
+                    foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
+                    {
+                        if (ShortRot)
+                            lines.Add("\t{ " + item.Key + ", " + ((short)item.Value.X).ToCHex() + ", " + ((short)item.Value.Y).ToCHex() + ", " + ((short)item.Value.Z).ToCHex() + " }");
+                        else
+                            lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
+                    }
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();

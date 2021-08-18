@@ -1012,7 +1012,7 @@ namespace SAModel.SAMDL
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".njm";
-							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}
@@ -3071,7 +3071,7 @@ namespace SAModel.SAMDL
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + ".njm";
-							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}
