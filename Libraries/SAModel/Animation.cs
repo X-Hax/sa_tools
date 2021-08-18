@@ -46,7 +46,7 @@ namespace SAModel
 			}
 			else
 				Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
-					Model.CountAnimated(), labels);
+					Model.CountAnimated(), labels, false, Model.GetVertexCounts());
 		}
 		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
 		{
@@ -163,7 +163,7 @@ namespace SAModel
 			return mdatas;
 		}
 
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false)
+		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null)
 		{
 			if (nummodels == 0) nummodels = CalculateModelParts(file, address, imageBase);
 			if (labels != null && labels.ContainsKey(address))
@@ -405,13 +405,19 @@ namespace SAModel
 							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString() + "_" + itemaddr.ToString("X8");
 							tmpaddr += 8;
 						}
-						if (ptrs.Count > 1)
-						{
-							ptrs.Sort();
-							vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
-						}
-						else
-							vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
+                        // Use vertex counts specified in split if available
+                        if (numverts != null && numverts.Length > 0)
+                            vtxcount = numverts[i];
+                        else
+                        {
+                            if (ptrs.Count > 1)
+                            {
+                                ptrs.Sort();
+                                vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+                            }
+                            else
+                                vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
+                        }
 						tmpaddr = (int)vertoff;
 						for (int j = 0; j < frames; j++)
 						{
@@ -431,27 +437,30 @@ namespace SAModel
 				if (animtype.HasFlag(AnimFlags.Normal))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-					if (normoff != 0 && frames > 0)
-					{
-						hasdata = true;
-						data.NormalItemName = new string[frames];
-						if (vtxcount < 0)
-						{
-							tmpaddr = (int)normoff;
-							List<int> ptrs = new List<int>();
-							for (int j = 0; j < frames; j++)
-							{
-								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-								tmpaddr += 8;
-							}
-							if (ptrs.Count > 1)
-							{
-								ptrs.Sort();
-								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
-							}
-							else
-								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
-						}
+                    if (normoff != 0 && frames > 0)
+                    {
+                        hasdata = true;
+                        data.NormalItemName = new string[frames];
+                        // Use vertex counts specified in split if available
+                        if (numverts != null && numverts.Length > 0)
+                            vtxcount = numverts[i];
+                        else if (vtxcount < 0)
+                        {
+                            tmpaddr = (int)normoff;
+                            List<int> ptrs = new List<int>();
+                            for (int j = 0; j < frames; j++)
+                            {
+                                ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+                                tmpaddr += 8;
+                            }
+                            if (ptrs.Count > 1)
+                            {
+                                ptrs.Sort();
+                                vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+                            }
+                            else
+                                vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
+                        }
 						tmpaddr = (int)normoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.NormalName = labels[tmpaddr];

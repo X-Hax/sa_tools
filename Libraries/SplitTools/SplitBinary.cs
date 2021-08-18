@@ -314,7 +314,7 @@ namespace SplitTools.Split
 								NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt_act, labels, new Dictionary<int, Attach>());
 								if (!labels.ContainsValue(ani.Name) && !nolabel) ani.Name = filedesc;
 								if (customProperties.ContainsKey("numparts"))
-									ani.Animation.ModelParts = int.Parse(customProperties["numparts"]);
+									ani.Animation.ModelParts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
 								if (ani.Animation.ModelParts == 0)
 								{
 									Console.WriteLine("Action {0} has no model data!", ani.Name);
@@ -325,20 +325,30 @@ namespace SplitTools.Split
 							break;
 						case "animation":
 						case "motion":
-							int numparts = 0;
-							if (customProperties.ContainsKey("numparts"))
-								numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
-							else
-								Console.WriteLine("Number of parts not specified for {0}", filedesc);
+                            int[] numverts = null;
+                            int numparts = 0;
+                            if (customProperties.ContainsKey("refmodel"))
+                            {
+                                NJS_OBJECT refmdl = new ModelFile(Path.Combine(projectFolderName, customProperties["refmodel"])).Model;
+                                numverts = refmdl.GetVertexCounts();
+                                numparts = refmdl.CountAnimated();
+                            }
+                            else
+                            {
+                                if (customProperties.ContainsKey("numparts"))
+                                    numparts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+                                else
+                                    Console.WriteLine("Number of parts not specified for {0}", filedesc);
+                            }
 							if (customProperties.ContainsKey("shortrot"))
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]));
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts , labels, bool.Parse(customProperties["shortrot"]), numverts);
 								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
 							else
 							{
-								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
+								NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels, false, numverts);
 								if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
 								mot.Save(fileOutputPath, nometa);
 							}
