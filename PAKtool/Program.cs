@@ -27,6 +27,7 @@ namespace PAKtool
                         Console.WriteLine("Extracting PAK file: {0}", Path.GetFullPath(fn));
                         string outputPath = Path.Combine(Path.GetDirectoryName(fn), Path.GetFileNameWithoutExtension(fn));
                         Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
+						Directory.CreateDirectory(outputPath);
                         PAKFile pak = new PAKFile(fn);
                         foreach (PAKFile.PAKEntry entry in pak.Entries)
                         {
