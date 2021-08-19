@@ -119,6 +119,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLTool", "SA1Tools\PLTool\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "njConvert", "CommandLine\njConvert\njConvert.csproj", "{2362E895-04A1-4784-844D-C20685666518}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabelTool", "CommandLine\LabelTool\LabelTool.csproj", "{AEBA4D95-D4E8-4ECB-AA78-1D962CC6E185}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -484,6 +486,10 @@ Global
 		{2362E895-04A1-4784-844D-C20685666518}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2362E895-04A1-4784-844D-C20685666518}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2362E895-04A1-4784-844D-C20685666518}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AEBA4D95-D4E8-4ECB-AA78-1D962CC6E185}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{AEBA4D95-D4E8-4ECB-AA78-1D962CC6E185}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{AEBA4D95-D4E8-4ECB-AA78-1D962CC6E185}.Release|Any CPU.ActiveCfg = Release|x86
+		{AEBA4D95-D4E8-4ECB-AA78-1D962CC6E185}.Release|Mixed Platforms.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -535,6 +541,7 @@ Global
 		{F11394F4-0DE0-4B93-A28A-AAC8F1A4FA6C} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 		{22748C6D-2D50-483A-9878-A48C76CF8CD8} = {DDB073E1-1CF4-42AA-9E0D-0C7F27261291}
 		{2362E895-04A1-4784-844D-C20685666518} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
+		{AEBA4D95-D4E8-4ECB-AA78-1D962CC6E185} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A67C9CC3-1711-423D-BF49-9228EB5E90B0}
