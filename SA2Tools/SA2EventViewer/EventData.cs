@@ -25,9 +25,17 @@ namespace SA2EventViewer
 			uint key;
 			if (fc[0] == 0x81)
 			{
-				ByteConverter.BigEndian = true;
-				key = 0x8125FE60;
-				battle = true;
+				if (fc[0x2B] <= 0x01 && fc[0x2A] == 0)
+				{
+					ByteConverter.BigEndian = true;
+					key = 0x8125FE60;
+					battle = true;
+				}
+				else
+				{
+					ByteConverter.BigEndian = true;
+					key = 0x812FFE60;
+				}
 			}
 			else
 			{

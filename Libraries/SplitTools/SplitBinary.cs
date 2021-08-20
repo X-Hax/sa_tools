@@ -633,21 +633,28 @@ namespace SplitTools.Split
 							SA2EndPosList.Load(datafile, address).Save(fileOutputPath);
 							break;
 						case "animationlist":
-							{
-								int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath);
-							}
-							break;
 						case "enemyanimationlist":
-							{
-								int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								SA2EnemyAnimInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
-							}
-							break;
 						case "sa1actionlist":
 							{
 								int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-								SA1ActionInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+								switch (inifile.Game)
+								{
+									case Game.SADX:
+									case Game.SA1:
+										SA1ActionInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+										break;
+									case Game.SA2B:
+									case Game.SA2:
+									default:
+										bool enemy = false;
+										if (customProperties.ContainsKey("enemy"))
+											enemy = bool.Parse(customProperties["enemy"]);
+										if (!enemy)
+											SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath);
+										else
+											SA2EnemyAnimInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+										break;
+								}
 							}
 							break;
 						case "motiontable":
@@ -683,6 +690,122 @@ namespace SplitTools.Split
 									bmte.PlaySpeed = ByteConverter.ToSingle(datafile, address + 0x18);
 									result.Add(bmte);
 									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
+						case "charaobjectdatalist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<CharaObjectData> result = new List<CharaObjectData>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									string chnm = null;
+									switch (i)
+									{
+										case 0:
+											chnm = "Sonic";
+											break;
+										case 1:
+											chnm = "Shadow";
+											break;
+										case 2:
+											chnm = "Mech Tails";
+											break;
+										case 3:
+											chnm = "Mech Eggman";
+											break;
+										case 4:
+											chnm = "Knuckles";
+											break;
+										case 5:
+											chnm = "Rouge";
+											break;
+										case 6:
+											chnm = "Amy";
+											break;
+										case 7:
+											chnm = "Metal Sonic";
+											break;
+										case 8:
+											chnm = "Tikal";
+											break;
+										case 9:
+											chnm = "Chaos";
+											break;
+										case 10:
+											chnm = "Chao Walker";
+											break;
+										case 11:
+											chnm = "Dark Chao Walker";
+											break;
+										case 12:
+											chnm = "Neutral Chao";
+											break;
+										case 13:
+											chnm = "Hero Chao";
+											break;
+										case 14:
+											chnm = "Dark Chao";
+											break;
+									}
+									CharaObjectData chara = new CharaObjectData();
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									chara.MainModel = model.Name;
+									NJS_MOTION anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation1 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim"), nometa);
+									hashes.Add($"{chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim")));
+									anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 8) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation2 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim"), nometa);
+									hashes.Add($"{chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim")));
+									anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 12) - imageBase), imageBase, model.CountAnimated());
+									chara.Animation3 = anim.Name;
+									anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim"), nometa);
+									hashes.Add($"{chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim")));
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add($"{chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl")));
+									int ptr = ByteConverter.ToInt32(datafile, address + 16);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										chara.AccessoryModel = model.Name;
+										chara.AccessoryAttachNode = "object_" + (ByteConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+										hashes.Add($"{chnm} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl")));
+									}
+									ptr = ByteConverter.ToInt32(datafile, address + 24);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										chara.SuperModel = model.Name;
+										anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation1 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim"), nometa);
+										hashes.Add($"Super {chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim")));
+										anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 32) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation2 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim"), nometa);
+										hashes.Add($"Super {chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim")));
+										anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 36) - imageBase), imageBase, model.CountAnimated());
+										chara.SuperAnimation3 = anim.Name;
+										anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim"), nometa);
+										hashes.Add($"Super {chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim")));
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
+										hashes.Add($"Super {chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl")));
+									}
+									chara.Unknown1 = ByteConverter.ToInt32(datafile, address + 40);
+									chara.Rating = ByteConverter.ToInt32(datafile, address + 44);
+									chara.DescriptionID = ByteConverter.ToInt32(datafile, address + 48);
+									chara.TextBackTexture = ByteConverter.ToInt32(datafile, address + 52);
+									chara.SelectionSize = ByteConverter.ToSingle(datafile, address + 56);
+									result.Add(chara);
+									address += 60;
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
@@ -734,6 +857,92 @@ namespace SplitTools.Split
 									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
 									result.Add(para);
 									address += 0x18;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
+						case "kartspecialinfolist":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<KartSpecialInfo> result = new List<KartSpecialInfo>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartSpecialInfo kart = new KartSpecialInfo
+									{
+										ID = ByteConverter.ToInt32(datafile, address)
+									};
+									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+									kart.Model = model.Name;
+									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									int ptr = ByteConverter.ToInt32(datafile, address + 8);
+									if (ptr != 0)
+									{
+										model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
+										kart.LowModel = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
+										hashes.Add($"{i} Low.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl")));
+									}
+									kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
+									kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
+									kart.Unknown2 = ByteConverter.ToInt32(datafile, address + 20);
+									kart.Unknown3 = ByteConverter.ToInt32(datafile, address + 24);
+									result.Add(kart);
+									address += 0x1C;
+								}
+								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								data.MD5Hash = string.Join("|", hashes.ToArray());
+								nohash = true;
+							}
+							break;
+						case "kartmodelsarray":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<KartModelsArray> result = new List<KartModelsArray>();
+								List<string> hashes = new List<string>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									KartModelsArray kartobj = new KartModelsArray();
+									int ptr = ByteConverter.ToInt32(datafile, address);
+									if (ptr != 0)
+									{
+										string modelext_krt;
+										switch (inifile.Game)
+										{
+											case Game.SA2:
+												modelext_krt = ".sa2mdl";
+												break;
+											case Game.SA2B:
+											default:
+												modelext_krt = ".sa2bmdl";
+												break;
+										}
+										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, modelfmt_def, new Dictionary<int, Attach>());
+										kartobj.Model = model.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}{modelext_krt}"), model, null, null, null, null, modelfmt_def, nometa);
+										hashes.Add($"{i}{modelext_krt}:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}{modelext_krt}")));
+										NJS_OBJECT collision = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
+										kartobj.Collision = collision.Name;
+										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa1mdl"), collision, null, null, null, null, ModelFormat.Basic, nometa);
+										hashes.Add($"{i}.sa1mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa1mdl")));
+									}
+									kartobj.Unknown1 = ByteConverter.ToUInt32(datafile, address + 8);
+									kartobj.Unknown2 = ByteConverter.ToUInt32(datafile, address + 0xC);
+									kartobj.Unknown3 = ByteConverter.ToUInt32(datafile, address + 0x10);
+									kartobj.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0x14);
+									ptr = ByteConverter.ToInt32(datafile, address + 0x64);
+									if (ptr != 0)
+									{
+										kartobj.Unknown5 = ((uint)ptr - imageBase).ToCHex();
+										kartobj.Unknown6 = ByteConverter.ToInt32(datafile, address + 0x68);
+									}
+									result.Add(kartobj);
+									address += 0x6C;
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
