@@ -3920,6 +3920,7 @@ namespace SplitTools
 	public class ModelIndex
 	{
 		public string Model { get; set; }
+		[IniAlwaysInclude]
 		public uint ID { get; set; }
 
 		public string ToStruct()
