@@ -8,7 +8,7 @@ using ArchiveLib;
 using SplitTools;
 using static ArchiveLib.DATFile;
 using static ArchiveLib.PVMXFile;
-using static ArchiveLib.MLTFile;
+//using static ArchiveLib.MLTFile;
 
 namespace ArchiveTool
 {
@@ -72,16 +72,16 @@ namespace ArchiveTool
                         folderMode = ArchiveFromFolderMode.DAT;
                         arc = new DATFile();
                         break;
-                   /* 
-                    case ".mlt":
-                    case ".mpb":
-                    case ".msb":
-                    case ".fpb":
-                    case ".fob":
-                        folderMode = ArchiveFromFolderMode.MLT;
-                        arc = new MLTFile();
-                        break;
-                   */
+                    /* 
+               case ".mlt":
+               case ".mpb":
+               case ".msb":
+               case ".fpb":
+               case ".fob":
+                   folderMode = ArchiveFromFolderMode.MLT;
+                   arc = new MLTFile();
+                   break;
+                    */
                     case ".png":
                     case ".jpg":
                     case ".bmp":
@@ -100,10 +100,12 @@ namespace ArchiveTool
                     string filename = split[0];
                     switch (folderMode)
                     {
-                        /* case ArchiveFromFolderMode.MLT:
+                        /*
+                        case ArchiveFromFolderMode.MLT:
                             arc.Entries.Add(new MLTEntry(Path.Combine(filePath, filename)));
                             extension = ".mlt";
-                            break; */
+                            break;
+                        */
                         case ArchiveFromFolderMode.DAT:
                             arc.Entries.Add(new DATEntry(Path.Combine(filePath, filename)));
                             extension = ".dat";
@@ -162,12 +164,12 @@ namespace ArchiveTool
             Console.WriteLine("Building PAK from folder: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Environment.CurrentDirectory, filePath);
             Environment.CurrentDirectory = Path.GetDirectoryName(outputPath);
-            Dictionary<string, PAKFile.PAKIniItem> list = IniSerializer.Deserialize<Dictionary<string, PAKFile.PAKIniItem>>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
-            PAKFile pak = new PAKFile();
-            foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list)
+            PAKFile.PAKIniData list = IniSerializer.Deserialize<PAKFile.PAKIniData>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
+            PAKFile pak = new PAKFile() { FolderName = list.FolderName };
+            foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list.Items)
             {
                 Console.WriteLine("Adding file: {0}", item.Key);
-                pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(item.Key)));
+                pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), item.Key))));
             }
             Console.WriteLine("Output file: {0}", Path.ChangeExtension(outputPath, "pak"));
             pak.Save(Path.ChangeExtension(outputPath, "pak"));

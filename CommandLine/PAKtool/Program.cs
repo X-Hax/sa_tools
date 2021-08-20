@@ -27,6 +27,7 @@ namespace PAKtool
                         Console.WriteLine("Extracting PAK file: {0}", Path.GetFullPath(fn));
                         string outputPath = Path.Combine(Path.GetDirectoryName(fn), Path.GetFileNameWithoutExtension(fn));
                         Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
+						Directory.CreateDirectory(outputPath);
                         PAKFile pak = new PAKFile(fn);
                         foreach (PAKFile.PAKEntry entry in pak.Entries)
                         {
@@ -44,12 +45,12 @@ namespace PAKtool
                         Console.WriteLine("Building PAK from folder: {0}", Path.GetFullPath(args[1]));
                         string outputPath = Path.Combine(Environment.CurrentDirectory, args[1]);
                         Environment.CurrentDirectory = Path.GetDirectoryName(outputPath);
-                        Dictionary<string, PAKFile.PAKIniItem> list = IniSerializer.Deserialize<Dictionary<string, PAKFile.PAKIniItem>>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
-                        PAKFile pak = new PAKFile();
-                        foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list)
+                        PAKFile.PAKIniData list = IniSerializer.Deserialize<PAKFile.PAKIniData>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
+                        PAKFile pak = new PAKFile() { FolderName = list.FolderName };
+                        foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list.Items)
                         {
                             Console.WriteLine("Adding file: {0}", item.Key);
-                            pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(item.Key)));
+                            pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), item.Key))));
                         }
                         Console.WriteLine("Output file: {0}", Path.ChangeExtension(outputPath, "pak"));
                         pak.Save(Path.ChangeExtension(outputPath, "pak"));

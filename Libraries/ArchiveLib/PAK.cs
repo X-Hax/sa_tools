@@ -60,6 +60,13 @@ namespace ArchiveLib
 
         public PAKFile() { }
 
+		public class PAKIniData
+		{
+			public string FolderName { get; set; }
+			[IniCollection(IniCollectionMode.IndexOnly)]
+			public Dictionary<string, PAKIniItem> Items { get; set; }
+		}
+
         public class PAKIniItem
         {
             public string LongPath { get; set; }
@@ -124,9 +131,9 @@ namespace ArchiveLib
             Dictionary<string, PAKIniItem> list = new Dictionary<string, PAKIniItem>(Entries.Count);
             foreach (PAKEntry item in Entries)
             {
-                list.Add(FolderName + "\\" + item.Name, new PAKIniItem(item.LongPath));
+                list.Add(item.Name, new PAKIniItem(item.LongPath));
             }
-            IniSerializer.Serialize(list, Path.Combine(Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
+            IniSerializer.Serialize(new PAKIniData() { FolderName = FolderName, Items = list }, Path.Combine(Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
         }
 
         public PAKFile(string filename)
