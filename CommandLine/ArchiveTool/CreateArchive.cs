@@ -20,7 +20,7 @@ namespace ArchiveTool
         /// Compress a binary to PRS.
         /// </summary>
         static void CompressPRS(string[] args)
-		{
+        {
             filePath = args[1];
             Console.WriteLine("Compressing file to PRS: {0}", Path.GetFullPath(filePath));
             Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".prs")));
@@ -47,6 +47,11 @@ namespace ArchiveTool
             {
                 GenericArchive arc;
                 string indexfilename = Path.Combine(filePath, "index.txt");
+                if (!File.Exists(indexfilename))
+                {
+                    BuildPAK(filePath);
+                    return;
+                }
                 List<string> filenames = new List<string>(File.ReadAllLines(indexfilename).Where(a => !string.IsNullOrEmpty(a)));
                 string ext = Path.GetExtension(filenames[0]).ToLowerInvariant();
                 switch (ext)
@@ -158,13 +163,20 @@ namespace ArchiveTool
         /// <summary>
         /// Create a PAK archive from a folder produced by ArchiveTool or PAKTool.
         /// </summary>
-        static void BuildPAK(string[] args)
+        static void BuildPAK(string filePath)
         {
-            filePath = args[1];
             Console.WriteLine("Building PAK from folder: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Environment.CurrentDirectory, filePath);
             Environment.CurrentDirectory = Path.GetDirectoryName(outputPath);
-            PAKFile.PAKIniData list = IniSerializer.Deserialize<PAKFile.PAKIniData>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
+            string inipath = Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini");
+            if (!File.Exists(inipath))
+            {
+                Console.WriteLine("PAK INI file not found: {0}", inipath);
+                Console.WriteLine("The folder must contain either index.txt or an INI file to be recognized as a buildable archive folder.");
+                Console.ReadLine();
+                return;
+            }
+            PAKFile.PAKIniData list = IniSerializer.Deserialize<PAKFile.PAKIniData>(inipath);
             PAKFile pak = new PAKFile() { FolderName = list.FolderName };
             foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list.Items)
             {
@@ -173,6 +185,7 @@ namespace ArchiveTool
             }
             Console.WriteLine("Output file: {0}", Path.ChangeExtension(outputPath, "pak"));
             pak.Save(Path.ChangeExtension(outputPath, "pak"));
+            Console.WriteLine("Done!");
         }
         /// <summary>
 		/// Convert a GBIX indexed texture pack to PVM.
