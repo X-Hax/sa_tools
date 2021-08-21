@@ -553,7 +553,7 @@ namespace SAToolsHub
 				subItems = new ListViewItem.ListViewSubItem[] {
 					new ListViewItem.ListViewSubItem(item, subItemType),
 					new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
-					new ListViewItem.ListViewSubItem(item, getFileSize(file.Length))
+					new ListViewItem.ListViewSubItem(item, SizeSuffix.GetSizeSuffix(file.Length))
 				};
 				itemTags itemTag = new itemTags();
 				itemTag.Type = tagType;

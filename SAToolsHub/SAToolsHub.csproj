@@ -122,6 +122,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SizeSuffix.cs" />
     <Compile Include="templateWriter.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -136,6 +137,31 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Updater\LoaderDownloadDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updater\LoaderManifestDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updater\ModDownload.cs" />
+    <Compile Include="Updater\ModInfo.cs" />
+    <Compile Include="Updater\ModManifest.cs" />
+    <Compile Include="Updater\NativeMethods.cs" />
+    <Compile Include="Updater\ProgressDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updater\ProgressDialog.designer.cs">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Updater\UpdateMessageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updater\UpdateMessageDialog.designer.cs">
+      <DependentUpon>UpdateMessageDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Updater\UpdaterWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="buildWindow.resx">
       <DependentUpon>buildWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -164,6 +190,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Updater\ProgressDialog.resx">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Updater\UpdateMessageDialog.resx">
+      <DependentUpon>UpdateMessageDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -300,6 +332,7 @@
   <ItemGroup>
     <None Include="Resources\tsDLCtool.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
