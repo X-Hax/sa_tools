@@ -11,6 +11,7 @@ namespace SplitTools.SAArc
 	public static class sa2Event
 	{
 		static readonly string[] upgradenames = { "Sonic's Light Shoes", "Sonic's Flame Ring", "Sonic's Bounce Bracelet", "Sonic's Magic Gloves", "Shadow's Air Shoes", "Shadow's Flame Ring", "Knuckles' Shovel Claw L", "Knuckles' Shovel Claw R", "Knuckles' Hammer Glove L", "Knuckles' Hammer Glove R", "Knuckles' Sunglasses", "Knuckles' Air Necklace", "Rouge's Pick Nails", "Rouge's Treasure Scope", "Rouge's Iron Boots", "Rouge's Heart Plates", "Mech Tails' Window", "Mech Eggman's Window" };
+		static readonly string[] upgradebetanames = { "Sonic's Light Shoes", "Sonic's Flame Ring", "Sonic's Bounce Bracelet", "Sonic's Magic Gloves", "Shadow's Air Shoes", "Shadow's Flame Ring", "Knuckles' Shovel Claws", "Knuckles' Hammer Gloves", "Knuckles' Sunglasses", "Knuckles' Air Necklace", "Rouge's Pick Nails", "Rouge's Treasure Scope", "Rouge's Iron Boots", "Rouge's Heart Plates"};
 		static List<string> nodenames = new List<string>();
 		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
@@ -60,24 +61,25 @@ namespace SplitTools.SAArc
 			}
 			else
 			{
-				//if (fc[0x25] != 0x25 || fc[0x27] != 1 || (fc[0] == 0x18 && fc[1] == 0x25))
-				//{
+				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+				{
+					Console.WriteLine("File is in DC Beta format.");
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+					ini.Game = Game.SA2;
+					battle = false;
+					dcbeta = true;
+				}
+				else
+				{
 					Console.WriteLine("File is in DC format.");
 					ByteConverter.BigEndian = false;
 					key = 0xC600000;
 					ini.Game = Game.SA2;
 					battle = false;
 					dcbeta = false;
-				//}
-				//else
-				//{
-					//Console.WriteLine("File is in DC Beta format.");
-					//ByteConverter.BigEndian = false;
-					//key = 0xC600000;
-					//ini.Game = Game.SA2;
-					//battle = false;
-					//dcbeta = true;
-				//}
+				}
+
 			}
 			int ptr = fc.GetPointer(0x20, key);
 			if (ptr != 0)
@@ -133,7 +135,7 @@ namespace SplitTools.SAArc
 			{
 				for (int i = 0; i < 14; i++)
 				{
-					string upnam = upgradenames[i];
+					string upnam = upgradebetanames[i];
 					string chnam = upnam;
 					switch (i)
 					{
@@ -329,22 +331,21 @@ namespace SplitTools.SAArc
 				{
 					ByteConverter.BigEndian = true;
 					key = 0x812FFE60;
-					battle = false;
 					battlebeta = true;
 				}
 			}
 			else
 			{
-				if (fc[29] == 0x25 || (fc[0] == 0x18 && fc[1] == 0x25))
+				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
 				{
 					ByteConverter.BigEndian = false;
 					key = 0xC600000;
+					dcbeta = true;
 				}
 				else
 				{
 					ByteConverter.BigEndian = false;
 					key = 0xC600000;
-					dcbeta = true;
 				}
 			}
 			List<byte> modelbytes = new List<byte>(fc);

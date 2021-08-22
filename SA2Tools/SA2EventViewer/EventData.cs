@@ -22,6 +22,7 @@ namespace SA2EventViewer
 			else
 				fc = File.ReadAllBytes(filename);
 			bool battle = false;
+			bool dcbeta = false;
 			uint key;
 			if (fc[0] == 0x81)
 			{
@@ -39,8 +40,17 @@ namespace SA2EventViewer
 			}
 			else
 			{
-				ByteConverter.BigEndian = false;
-				key = 0xC600000;
+				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+				{
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+					dcbeta = true;
+				}
+				else
+				{
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+				}
 			}
 			List<NJS_MOTION> motions = null;
 			if (battle)
@@ -49,12 +59,25 @@ namespace SA2EventViewer
 			int ptr = fc.GetPointer(0x20, key);
 			if (ptr != 0)
 			{
-				int cnt = battle ? 18 : 16;
-				Upgrades = new EventUpgrade[cnt];
-				for (int i = 0; i < cnt; i++)
+				if (!dcbeta)
 				{
-					Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
-					ptr += EventUpgrade.Size;
+					int cnt = battle ? 18 : 16;
+					Upgrades = new EventUpgrade[cnt];
+					for (int i = 0; i < cnt; i++)
+					{
+						Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
+						ptr += EventUpgrade.Size;
+					}
+				}
+				else
+				{
+					int cnt = 14;
+					Upgrades = new EventUpgrade[cnt];
+					for (int i = 0; i < cnt; i++)
+					{
+						Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
+						ptr += EventUpgrade.Size;
+					}
 				}
 			}
 			int gcnt = ByteConverter.ToInt32(fc, 8);
