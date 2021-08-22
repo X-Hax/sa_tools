@@ -15,6 +15,7 @@ namespace SAModel.DataToolbox
 
         public bool pauseLog = false;
 		public int splitMDL = 0; // 0 - not MDL, 1 - Little Endian, 2 - Big Endian
+        public int labelMode = 0; // 0 - Address labels, 1 - Full labels, 2 - Strip labels
 		public TextBoxWriter writer;
 		public List<SplitData> splitDataList;
 		public struct SplitData
@@ -27,7 +28,7 @@ namespace SAModel.DataToolbox
 		public List<string> files;
 		public string out_path;
 
-		public SplitProgress(List<string> log, List <string> files_a, Templates.SplitTemplate template, string output_folder, int splitMdl = 0)
+		public SplitProgress(List<string> log, List <string> files_a, Templates.SplitTemplate template, string output_folder, int splitMdl = 0, int labelmode = 1)
 		{
 			InitializeComponent();
 			logger = log;
@@ -35,6 +36,7 @@ namespace SAModel.DataToolbox
             splitTemplate = template;
             out_path = output_folder;
 			splitMDL = splitMdl;
+            labelMode = labelmode;
 		}
 
 		private void buttonCloseSplitProgress_Click(object sender, EventArgs e)
@@ -128,16 +130,20 @@ namespace SAModel.DataToolbox
 					}
 					if (inifilename != null)
 						Console.WriteLine("Using split data: " + inifilename);
-					switch (Path.GetExtension(datafilename).ToLowerInvariant())
+                    bool nmeta = labelMode == 2; // If labels are stripped, run split with the nometa parameter
+                    bool nlabels = labelMode != 1; // If labels are address-based or stripped, prevent split from loading the labels file if it exists
+                    Console.WriteLine("Skip full labels: " + nlabels.ToString());
+                    Console.WriteLine("Strip labels: " + nmeta.ToString());
+                    switch (Path.GetExtension(datafilename).ToLowerInvariant())
 					{
 						case ".dll":
-							SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+							SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, nmeta, nlabels);
 							break;
 						case ".nb":
 							SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
 							break;
 						default:
-							SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName);
+							SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, nmeta, nlabels);
 							break;
 					}
 				}

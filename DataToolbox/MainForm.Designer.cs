@@ -46,9 +46,6 @@
             this.labelFile = new System.Windows.Forms.Label();
             this.groupBoxBinary = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.hexNumericBinaryOffset = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownBinaryKey = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownBinaryAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageBinaryData = new System.Windows.Forms.TabPage();
             this.buttonBinaryBrowse = new System.Windows.Forms.Button();
@@ -91,24 +88,28 @@
             this.buttonAnimFilesAdd = new System.Windows.Forms.Button();
             this.animationFilesLabel = new System.Windows.Forms.Label();
             this.listBoxMDLAnimationFiles = new System.Windows.Forms.ListBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.comboBoxLabels = new System.Windows.Forms.ComboBox();
+            this.hexNumericBinaryOffset = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownBinaryKey = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownBinaryAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.groupBoxBinary.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.hexNumericBinaryOffset)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryAddress)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPageBinaryData.SuspendLayout();
             this.tabPageStructConverter.SuspendLayout();
             this.tabPageSplit.SuspendLayout();
             this.tabPageSplitMDL.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hexNumericBinaryOffset)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryAddress)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonBinaryExtract
             // 
             this.buttonBinaryExtract.Enabled = false;
-            this.buttonBinaryExtract.Location = new System.Drawing.Point(530, 549);
-            this.buttonBinaryExtract.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonBinaryExtract.Location = new System.Drawing.Point(353, 357);
             this.buttonBinaryExtract.Name = "buttonBinaryExtract";
-            this.buttonBinaryExtract.Size = new System.Drawing.Size(100, 35);
+            this.buttonBinaryExtract.Size = new System.Drawing.Size(67, 23);
             this.buttonBinaryExtract.TabIndex = 18;
             this.buttonBinaryExtract.Text = "&Start";
             this.buttonBinaryExtract.Click += new System.EventHandler(this.button1_Click);
@@ -122,19 +123,17 @@
             "BasicDX (SADX PC)",
             "Chunk (SA2)",
             "GC (SA2B/SA2PC)"});
-            this.comboBoxBinaryFormat.Location = new System.Drawing.Point(96, 206);
-            this.comboBoxBinaryFormat.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxBinaryFormat.Location = new System.Drawing.Point(64, 134);
             this.comboBoxBinaryFormat.Name = "comboBoxBinaryFormat";
-            this.comboBoxBinaryFormat.Size = new System.Drawing.Size(180, 28);
+            this.comboBoxBinaryFormat.Size = new System.Drawing.Size(121, 21);
             this.comboBoxBinaryFormat.TabIndex = 26;
             // 
             // labelFormat
             // 
             this.labelFormat.AutoSize = true;
-            this.labelFormat.Location = new System.Drawing.Point(24, 206);
-            this.labelFormat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelFormat.Location = new System.Drawing.Point(16, 134);
             this.labelFormat.Name = "labelFormat";
-            this.labelFormat.Size = new System.Drawing.Size(64, 20);
+            this.labelFormat.Size = new System.Drawing.Size(42, 13);
             this.labelFormat.TabIndex = 25;
             this.labelFormat.Text = "Format:";
             // 
@@ -143,10 +142,9 @@
             this.checkBoxBinaryHex.AutoSize = true;
             this.checkBoxBinaryHex.Checked = true;
             this.checkBoxBinaryHex.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBinaryHex.Location = new System.Drawing.Point(266, 77);
-            this.checkBoxBinaryHex.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinaryHex.Location = new System.Drawing.Point(177, 50);
             this.checkBoxBinaryHex.Name = "checkBoxBinaryHex";
-            this.checkBoxBinaryHex.Size = new System.Drawing.Size(63, 24);
+            this.checkBoxBinaryHex.Size = new System.Drawing.Size(45, 17);
             this.checkBoxBinaryHex.TabIndex = 23;
             this.checkBoxBinaryHex.Text = "Hex";
             this.checkBoxBinaryHex.UseVisualStyleBackColor = true;
@@ -155,10 +153,9 @@
             // labelAddress
             // 
             this.labelAddress.AutoSize = true;
-            this.labelAddress.Location = new System.Drawing.Point(15, 74);
-            this.labelAddress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelAddress.Location = new System.Drawing.Point(10, 48);
             this.labelAddress.Name = "labelAddress";
-            this.labelAddress.Size = new System.Drawing.Size(72, 20);
+            this.labelAddress.Size = new System.Drawing.Size(48, 13);
             this.labelAddress.TabIndex = 22;
             this.labelAddress.Text = "Address:";
             // 
@@ -176,48 +173,43 @@
             "SA2 Event File",
             "SA2PC Event File",
             "Model File"});
-            this.ComboBoxBinaryType.Location = new System.Drawing.Point(266, 31);
-            this.ComboBoxBinaryType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ComboBoxBinaryType.Location = new System.Drawing.Point(177, 20);
             this.ComboBoxBinaryType.Name = "ComboBoxBinaryType";
-            this.ComboBoxBinaryType.Size = new System.Drawing.Size(182, 28);
+            this.ComboBoxBinaryType.Size = new System.Drawing.Size(123, 21);
             this.ComboBoxBinaryType.TabIndex = 20;
             this.ComboBoxBinaryType.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
             // 
             // labelKey
             // 
             this.labelKey.AutoSize = true;
-            this.labelKey.Location = new System.Drawing.Point(45, 34);
-            this.labelKey.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelKey.Location = new System.Drawing.Point(30, 22);
             this.labelKey.Name = "labelKey";
-            this.labelKey.Size = new System.Drawing.Size(39, 20);
+            this.labelKey.Size = new System.Drawing.Size(28, 13);
             this.labelKey.TabIndex = 19;
             this.labelKey.Text = "Key:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(40, 386);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(27, 251);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(61, 20);
+            this.label4.Size = new System.Drawing.Size(41, 13);
             this.label4.TabIndex = 28;
             this.label4.Text = "Author:";
             // 
             // textBoxBinaryAuthor
             // 
-            this.textBoxBinaryAuthor.Location = new System.Drawing.Point(111, 382);
-            this.textBoxBinaryAuthor.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxBinaryAuthor.Location = new System.Drawing.Point(74, 248);
             this.textBoxBinaryAuthor.Name = "textBoxBinaryAuthor";
-            this.textBoxBinaryAuthor.Size = new System.Drawing.Size(517, 26);
+            this.textBoxBinaryAuthor.Size = new System.Drawing.Size(346, 20);
             this.textBoxBinaryAuthor.TabIndex = 29;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 428);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(5, 278);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(93, 20);
+            this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 30;
             this.label5.Text = "Description:";
             // 
@@ -225,20 +217,18 @@
             // 
             this.textBoxBinaryDescription.AcceptsReturn = true;
             this.textBoxBinaryDescription.AcceptsTab = true;
-            this.textBoxBinaryDescription.Location = new System.Drawing.Point(112, 428);
-            this.textBoxBinaryDescription.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxBinaryDescription.Location = new System.Drawing.Point(75, 278);
             this.textBoxBinaryDescription.Multiline = true;
             this.textBoxBinaryDescription.Name = "textBoxBinaryDescription";
-            this.textBoxBinaryDescription.Size = new System.Drawing.Size(516, 84);
+            this.textBoxBinaryDescription.Size = new System.Drawing.Size(345, 56);
             this.textBoxBinaryDescription.TabIndex = 31;
             // 
             // checkBoxBinaryBigEndian
             // 
             this.checkBoxBinaryBigEndian.AutoSize = true;
-            this.checkBoxBinaryBigEndian.Location = new System.Drawing.Point(266, 112);
-            this.checkBoxBinaryBigEndian.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinaryBigEndian.Location = new System.Drawing.Point(177, 73);
             this.checkBoxBinaryBigEndian.Name = "checkBoxBinaryBigEndian";
-            this.checkBoxBinaryBigEndian.Size = new System.Drawing.Size(112, 24);
+            this.checkBoxBinaryBigEndian.Size = new System.Drawing.Size(77, 17);
             this.checkBoxBinaryBigEndian.TabIndex = 32;
             this.checkBoxBinaryBigEndian.Text = "Big Endian";
             this.checkBoxBinaryBigEndian.UseVisualStyleBackColor = true;
@@ -251,29 +241,26 @@
             "Level",
             "Model",
             "Action"});
-            this.comboBoxBinaryItemType.Location = new System.Drawing.Point(96, 158);
-            this.comboBoxBinaryItemType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxBinaryItemType.Location = new System.Drawing.Point(64, 103);
             this.comboBoxBinaryItemType.Name = "comboBoxBinaryItemType";
-            this.comboBoxBinaryItemType.Size = new System.Drawing.Size(180, 28);
+            this.comboBoxBinaryItemType.Size = new System.Drawing.Size(121, 21);
             this.comboBoxBinaryItemType.TabIndex = 33;
             // 
             // labelType
             // 
             this.labelType.AutoSize = true;
-            this.labelType.Location = new System.Drawing.Point(3, 163);
-            this.labelType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelType.Location = new System.Drawing.Point(2, 106);
             this.labelType.Name = "labelType";
-            this.labelType.Size = new System.Drawing.Size(82, 20);
+            this.labelType.Size = new System.Drawing.Size(56, 13);
             this.labelType.TabIndex = 34;
             this.labelType.Text = "Data type:";
             // 
             // checkBoxBinaryMemory
             // 
             this.checkBoxBinaryMemory.AutoSize = true;
-            this.checkBoxBinaryMemory.Location = new System.Drawing.Point(342, 77);
-            this.checkBoxBinaryMemory.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinaryMemory.Location = new System.Drawing.Point(228, 50);
             this.checkBoxBinaryMemory.Name = "checkBoxBinaryMemory";
-            this.checkBoxBinaryMemory.Size = new System.Drawing.Size(152, 24);
+            this.checkBoxBinaryMemory.Size = new System.Drawing.Size(103, 17);
             this.checkBoxBinaryMemory.TabIndex = 35;
             this.checkBoxBinaryMemory.Text = "Memory address";
             this.checkBoxBinaryMemory.UseVisualStyleBackColor = true;
@@ -281,10 +268,9 @@
             // labelFile
             // 
             this.labelFile.AutoSize = true;
-            this.labelFile.Location = new System.Drawing.Point(18, 66);
-            this.labelFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelFile.Location = new System.Drawing.Point(12, 43);
             this.labelFile.Name = "labelFile";
-            this.labelFile.Size = new System.Drawing.Size(38, 20);
+            this.labelFile.Size = new System.Drawing.Size(26, 13);
             this.labelFile.TabIndex = 36;
             this.labelFile.Text = "File:";
             // 
@@ -304,11 +290,9 @@
             this.groupBoxBinary.Controls.Add(this.comboBoxBinaryItemType);
             this.groupBoxBinary.Controls.Add(this.checkBoxBinaryHex);
             this.groupBoxBinary.Controls.Add(this.labelFormat);
-            this.groupBoxBinary.Location = new System.Drawing.Point(16, 112);
-            this.groupBoxBinary.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBoxBinary.Location = new System.Drawing.Point(11, 73);
             this.groupBoxBinary.Name = "groupBoxBinary";
-            this.groupBoxBinary.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBoxBinary.Size = new System.Drawing.Size(614, 254);
+            this.groupBoxBinary.Size = new System.Drawing.Size(409, 165);
             this.groupBoxBinary.TabIndex = 39;
             this.groupBoxBinary.TabStop = false;
             this.groupBoxBinary.Text = "Binary Data";
@@ -316,39 +300,11 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(30, 114);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(20, 74);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(57, 20);
+            this.label6.Size = new System.Drawing.Size(38, 13);
             this.label6.TabIndex = 37;
             this.label6.Text = "Offset:";
-            // 
-            // hexNumericBinaryOffset
-            // 
-            this.hexNumericBinaryOffset.Hexadecimal = true;
-            this.hexNumericBinaryOffset.Location = new System.Drawing.Point(98, 111);
-            this.hexNumericBinaryOffset.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.hexNumericBinaryOffset.Name = "hexNumericBinaryOffset";
-            this.hexNumericBinaryOffset.Size = new System.Drawing.Size(147, 26);
-            this.hexNumericBinaryOffset.TabIndex = 36;
-            // 
-            // numericUpDownBinaryKey
-            // 
-            this.numericUpDownBinaryKey.Hexadecimal = true;
-            this.numericUpDownBinaryKey.Location = new System.Drawing.Point(96, 31);
-            this.numericUpDownBinaryKey.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.numericUpDownBinaryKey.Name = "numericUpDownBinaryKey";
-            this.numericUpDownBinaryKey.Size = new System.Drawing.Size(147, 26);
-            this.numericUpDownBinaryKey.TabIndex = 24;
-            // 
-            // numericUpDownBinaryAddress
-            // 
-            this.numericUpDownBinaryAddress.Hexadecimal = true;
-            this.numericUpDownBinaryAddress.Location = new System.Drawing.Point(96, 71);
-            this.numericUpDownBinaryAddress.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.numericUpDownBinaryAddress.Name = "numericUpDownBinaryAddress";
-            this.numericUpDownBinaryAddress.Size = new System.Drawing.Size(147, 26);
-            this.numericUpDownBinaryAddress.TabIndex = 21;
             // 
             // tabControl1
             // 
@@ -358,9 +314,10 @@
             this.tabControl1.Controls.Add(this.tabPageSplitMDL);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(656, 638);
+            this.tabControl1.Size = new System.Drawing.Size(437, 415);
             this.tabControl1.TabIndex = 40;
             // 
             // tabPageBinaryData
@@ -379,19 +336,19 @@
             this.tabPageBinaryData.Controls.Add(this.textBoxBinaryAuthor);
             this.tabPageBinaryData.Controls.Add(this.label5);
             this.tabPageBinaryData.Controls.Add(this.buttonBinaryExtract);
-            this.tabPageBinaryData.Location = new System.Drawing.Point(4, 29);
+            this.tabPageBinaryData.Location = new System.Drawing.Point(4, 22);
+            this.tabPageBinaryData.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPageBinaryData.Name = "tabPageBinaryData";
-            this.tabPageBinaryData.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageBinaryData.Size = new System.Drawing.Size(648, 605);
+            this.tabPageBinaryData.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPageBinaryData.Size = new System.Drawing.Size(429, 389);
             this.tabPageBinaryData.TabIndex = 0;
             this.tabPageBinaryData.Text = "Binary Data Extractor";
             // 
             // buttonBinaryBrowse
             // 
-            this.buttonBinaryBrowse.Location = new System.Drawing.Point(522, 58);
-            this.buttonBinaryBrowse.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonBinaryBrowse.Location = new System.Drawing.Point(348, 38);
             this.buttonBinaryBrowse.Name = "buttonBinaryBrowse";
-            this.buttonBinaryBrowse.Size = new System.Drawing.Size(112, 35);
+            this.buttonBinaryBrowse.Size = new System.Drawing.Size(75, 23);
             this.buttonBinaryBrowse.TabIndex = 46;
             this.buttonBinaryBrowse.Text = "Browse...";
             this.buttonBinaryBrowse.UseVisualStyleBackColor = true;
@@ -400,10 +357,9 @@
             // textBoxBinaryFilename
             // 
             this.textBoxBinaryFilename.AllowDrop = true;
-            this.textBoxBinaryFilename.Location = new System.Drawing.Point(66, 62);
-            this.textBoxBinaryFilename.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxBinaryFilename.Location = new System.Drawing.Point(44, 40);
             this.textBoxBinaryFilename.Name = "textBoxBinaryFilename";
-            this.textBoxBinaryFilename.Size = new System.Drawing.Size(445, 26);
+            this.textBoxBinaryFilename.Size = new System.Drawing.Size(298, 20);
             this.textBoxBinaryFilename.TabIndex = 45;
             this.textBoxBinaryFilename.TextChanged += new System.EventHandler(this.textBoxBinaryFilename_TextChanged);
             this.textBoxBinaryFilename.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxBinaryFilename_DragDrop);
@@ -412,10 +368,9 @@
             // checkBoxBinaryJSON
             // 
             this.checkBoxBinaryJSON.AutoSize = true;
-            this.checkBoxBinaryJSON.Location = new System.Drawing.Point(237, 558);
-            this.checkBoxBinaryJSON.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinaryJSON.Location = new System.Drawing.Point(158, 363);
             this.checkBoxBinaryJSON.Name = "checkBoxBinaryJSON";
-            this.checkBoxBinaryJSON.Size = new System.Drawing.Size(235, 24);
+            this.checkBoxBinaryJSON.Size = new System.Drawing.Size(159, 17);
             this.checkBoxBinaryJSON.TabIndex = 44;
             this.checkBoxBinaryJSON.Text = "Convert animations to JSON";
             this.checkBoxBinaryJSON.UseVisualStyleBackColor = true;
@@ -424,10 +379,9 @@
             // checkBoxBinaryNJA
             // 
             this.checkBoxBinaryNJA.AutoSize = true;
-            this.checkBoxBinaryNJA.Location = new System.Drawing.Point(12, 558);
-            this.checkBoxBinaryNJA.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinaryNJA.Location = new System.Drawing.Point(8, 363);
             this.checkBoxBinaryNJA.Name = "checkBoxBinaryNJA";
-            this.checkBoxBinaryNJA.Size = new System.Drawing.Size(197, 24);
+            this.checkBoxBinaryNJA.Size = new System.Drawing.Size(134, 17);
             this.checkBoxBinaryNJA.TabIndex = 43;
             this.checkBoxBinaryNJA.Text = "Convert models to NJA";
             this.checkBoxBinaryNJA.UseVisualStyleBackColor = true;
@@ -436,10 +390,9 @@
             // checkBoxBinaryStructs
             // 
             this.checkBoxBinaryStructs.AutoSize = true;
-            this.checkBoxBinaryStructs.Location = new System.Drawing.Point(237, 523);
-            this.checkBoxBinaryStructs.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinaryStructs.Location = new System.Drawing.Point(158, 340);
             this.checkBoxBinaryStructs.Name = "checkBoxBinaryStructs";
-            this.checkBoxBinaryStructs.Size = new System.Drawing.Size(148, 24);
+            this.checkBoxBinaryStructs.Size = new System.Drawing.Size(100, 17);
             this.checkBoxBinaryStructs.TabIndex = 42;
             this.checkBoxBinaryStructs.Text = "Export C structs";
             this.checkBoxBinaryStructs.UseVisualStyleBackColor = true;
@@ -450,10 +403,9 @@
             this.checkBoxBinarySAModel.AutoSize = true;
             this.checkBoxBinarySAModel.Checked = true;
             this.checkBoxBinarySAModel.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBinarySAModel.Location = new System.Drawing.Point(12, 523);
-            this.checkBoxBinarySAModel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxBinarySAModel.Location = new System.Drawing.Point(8, 340);
             this.checkBoxBinarySAModel.Name = "checkBoxBinarySAModel";
-            this.checkBoxBinarySAModel.Size = new System.Drawing.Size(182, 24);
+            this.checkBoxBinarySAModel.Size = new System.Drawing.Size(123, 17);
             this.checkBoxBinarySAModel.TabIndex = 41;
             this.checkBoxBinarySAModel.Text = "Export SAModel files";
             this.checkBoxBinarySAModel.UseVisualStyleBackColor = true;
@@ -462,9 +414,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 18);
+            this.label1.Location = new System.Drawing.Point(5, 12);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(546, 20);
+            this.label1.Size = new System.Drawing.Size(364, 13);
             this.label1.TabIndex = 40;
             this.label1.Text = "Extract data from binary files and export it as C structs, Ninja ASCII or JSON.";
             // 
@@ -480,10 +433,11 @@
             this.tabPageStructConverter.Controls.Add(this.label2);
             this.tabPageStructConverter.Controls.Add(this.buttonStructConvAddBatch);
             this.tabPageStructConverter.Controls.Add(this.listBoxStructConverter);
-            this.tabPageStructConverter.Location = new System.Drawing.Point(4, 29);
+            this.tabPageStructConverter.Location = new System.Drawing.Point(4, 22);
+            this.tabPageStructConverter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPageStructConverter.Name = "tabPageStructConverter";
-            this.tabPageStructConverter.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageStructConverter.Size = new System.Drawing.Size(648, 605);
+            this.tabPageStructConverter.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPageStructConverter.Size = new System.Drawing.Size(429, 389);
             this.tabPageStructConverter.TabIndex = 1;
             this.tabPageStructConverter.Text = "Struct Converter";
             // 
@@ -492,9 +446,10 @@
             this.checkBoxStructConvStructs.AutoSize = true;
             this.checkBoxStructConvStructs.Checked = true;
             this.checkBoxStructConvStructs.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxStructConvStructs.Location = new System.Drawing.Point(237, 523);
+            this.checkBoxStructConvStructs.Location = new System.Drawing.Point(158, 340);
+            this.checkBoxStructConvStructs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxStructConvStructs.Name = "checkBoxStructConvStructs";
-            this.checkBoxStructConvStructs.Size = new System.Drawing.Size(148, 24);
+            this.checkBoxStructConvStructs.Size = new System.Drawing.Size(100, 17);
             this.checkBoxStructConvStructs.TabIndex = 48;
             this.checkBoxStructConvStructs.Text = "Export C structs";
             this.checkBoxStructConvStructs.UseVisualStyleBackColor = true;
@@ -503,9 +458,10 @@
             // checkBoxStructConvJSON
             // 
             this.checkBoxStructConvJSON.AutoSize = true;
-            this.checkBoxStructConvJSON.Location = new System.Drawing.Point(237, 558);
+            this.checkBoxStructConvJSON.Location = new System.Drawing.Point(158, 363);
+            this.checkBoxStructConvJSON.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxStructConvJSON.Name = "checkBoxStructConvJSON";
-            this.checkBoxStructConvJSON.Size = new System.Drawing.Size(235, 24);
+            this.checkBoxStructConvJSON.Size = new System.Drawing.Size(159, 17);
             this.checkBoxStructConvJSON.TabIndex = 47;
             this.checkBoxStructConvJSON.Text = "Convert animations to JSON";
             this.checkBoxStructConvJSON.UseVisualStyleBackColor = true;
@@ -514,9 +470,10 @@
             // checkBoxStructConvNJA
             // 
             this.checkBoxStructConvNJA.AutoSize = true;
-            this.checkBoxStructConvNJA.Location = new System.Drawing.Point(12, 558);
+            this.checkBoxStructConvNJA.Location = new System.Drawing.Point(8, 363);
+            this.checkBoxStructConvNJA.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxStructConvNJA.Name = "checkBoxStructConvNJA";
-            this.checkBoxStructConvNJA.Size = new System.Drawing.Size(197, 24);
+            this.checkBoxStructConvNJA.Size = new System.Drawing.Size(134, 17);
             this.checkBoxStructConvNJA.TabIndex = 46;
             this.checkBoxStructConvNJA.Text = "Convert models to NJA";
             this.checkBoxStructConvNJA.UseVisualStyleBackColor = true;
@@ -524,10 +481,9 @@
             // 
             // buttonStructConvRemoveAllBatch
             // 
-            this.buttonStructConvRemoveAllBatch.Location = new System.Drawing.Point(513, 146);
-            this.buttonStructConvRemoveAllBatch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonStructConvRemoveAllBatch.Location = new System.Drawing.Point(342, 95);
             this.buttonStructConvRemoveAllBatch.Name = "buttonStructConvRemoveAllBatch";
-            this.buttonStructConvRemoveAllBatch.Size = new System.Drawing.Size(120, 35);
+            this.buttonStructConvRemoveAllBatch.Size = new System.Drawing.Size(80, 23);
             this.buttonStructConvRemoveAllBatch.TabIndex = 45;
             this.buttonStructConvRemoveAllBatch.Text = "Clear all";
             this.buttonStructConvRemoveAllBatch.UseVisualStyleBackColor = true;
@@ -536,10 +492,9 @@
             // buttonStructConvRemoveSelBatch
             // 
             this.buttonStructConvRemoveSelBatch.Enabled = false;
-            this.buttonStructConvRemoveSelBatch.Location = new System.Drawing.Point(513, 102);
-            this.buttonStructConvRemoveSelBatch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonStructConvRemoveSelBatch.Location = new System.Drawing.Point(342, 66);
             this.buttonStructConvRemoveSelBatch.Name = "buttonStructConvRemoveSelBatch";
-            this.buttonStructConvRemoveSelBatch.Size = new System.Drawing.Size(120, 35);
+            this.buttonStructConvRemoveSelBatch.Size = new System.Drawing.Size(80, 23);
             this.buttonStructConvRemoveSelBatch.TabIndex = 44;
             this.buttonStructConvRemoveSelBatch.Text = "&Remove";
             this.buttonStructConvRemoveSelBatch.UseVisualStyleBackColor = true;
@@ -548,9 +503,10 @@
             // buttonStructConvConvertBatch
             // 
             this.buttonStructConvConvertBatch.Enabled = false;
-            this.buttonStructConvConvertBatch.Location = new System.Drawing.Point(530, 549);
+            this.buttonStructConvConvertBatch.Location = new System.Drawing.Point(353, 357);
+            this.buttonStructConvConvertBatch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonStructConvConvertBatch.Name = "buttonStructConvConvertBatch";
-            this.buttonStructConvConvertBatch.Size = new System.Drawing.Size(100, 35);
+            this.buttonStructConvConvertBatch.Size = new System.Drawing.Size(67, 23);
             this.buttonStructConvConvertBatch.TabIndex = 43;
             this.buttonStructConvConvertBatch.Text = "&Start";
             this.buttonStructConvConvertBatch.UseVisualStyleBackColor = true;
@@ -559,9 +515,10 @@
             // checkBoxStructConvSameOutputFolderBatch
             // 
             this.checkBoxStructConvSameOutputFolderBatch.AutoSize = true;
-            this.checkBoxStructConvSameOutputFolderBatch.Location = new System.Drawing.Point(12, 523);
+            this.checkBoxStructConvSameOutputFolderBatch.Location = new System.Drawing.Point(8, 340);
+            this.checkBoxStructConvSameOutputFolderBatch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxStructConvSameOutputFolderBatch.Name = "checkBoxStructConvSameOutputFolderBatch";
-            this.checkBoxStructConvSameOutputFolderBatch.Size = new System.Drawing.Size(189, 24);
+            this.checkBoxStructConvSameOutputFolderBatch.Size = new System.Drawing.Size(126, 17);
             this.checkBoxStructConvSameOutputFolderBatch.TabIndex = 42;
             this.checkBoxStructConvSameOutputFolderBatch.Text = "Same output folder(s)";
             this.checkBoxStructConvSameOutputFolderBatch.UseVisualStyleBackColor = true;
@@ -569,17 +526,19 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 18);
+            this.label2.Location = new System.Drawing.Point(5, 12);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(564, 20);
+            this.label2.Size = new System.Drawing.Size(378, 13);
             this.label2.TabIndex = 41;
             this.label2.Text = "Batch export level, model and animation files to C structs, Ninja ASCII or JSON.";
             // 
             // buttonStructConvAddBatch
             // 
-            this.buttonStructConvAddBatch.Location = new System.Drawing.Point(513, 55);
+            this.buttonStructConvAddBatch.Location = new System.Drawing.Point(342, 36);
+            this.buttonStructConvAddBatch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonStructConvAddBatch.Name = "buttonStructConvAddBatch";
-            this.buttonStructConvAddBatch.Size = new System.Drawing.Size(120, 38);
+            this.buttonStructConvAddBatch.Size = new System.Drawing.Size(80, 25);
             this.buttonStructConvAddBatch.TabIndex = 1;
             this.buttonStructConvAddBatch.Text = "&Add...";
             this.buttonStructConvAddBatch.UseVisualStyleBackColor = true;
@@ -590,11 +549,11 @@
             this.listBoxStructConverter.AllowDrop = true;
             this.listBoxStructConverter.FormattingEnabled = true;
             this.listBoxStructConverter.HorizontalScrollbar = true;
-            this.listBoxStructConverter.ItemHeight = 20;
-            this.listBoxStructConverter.Location = new System.Drawing.Point(12, 55);
+            this.listBoxStructConverter.Location = new System.Drawing.Point(8, 36);
+            this.listBoxStructConverter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listBoxStructConverter.Name = "listBoxStructConverter";
             this.listBoxStructConverter.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxStructConverter.Size = new System.Drawing.Size(493, 444);
+            this.listBoxStructConverter.Size = new System.Drawing.Size(330, 290);
             this.listBoxStructConverter.TabIndex = 0;
             this.listBoxStructConverter.SelectedIndexChanged += new System.EventHandler(this.listBoxStructConverter_SelectedIndexChanged);
             this.listBoxStructConverter.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxStructConverter_DragDrop);
@@ -602,6 +561,8 @@
             // 
             // tabPageSplit
             // 
+            this.tabPageSplit.Controls.Add(this.comboBoxLabels);
+            this.tabPageSplit.Controls.Add(this.label9);
             this.tabPageSplit.Controls.Add(this.buttonClearAllSplit);
             this.tabPageSplit.Controls.Add(this.buttonRemoveSplit);
             this.tabPageSplit.Controls.Add(this.comboBoxSplitGameSelect);
@@ -610,18 +571,18 @@
             this.tabPageSplit.Controls.Add(this.label3);
             this.tabPageSplit.Controls.Add(this.buttonAddFilesSplit);
             this.tabPageSplit.Controls.Add(this.listBoxSplitFiles);
-            this.tabPageSplit.Location = new System.Drawing.Point(4, 29);
-            this.tabPageSplit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabPageSplit.Location = new System.Drawing.Point(4, 22);
             this.tabPageSplit.Name = "tabPageSplit";
-            this.tabPageSplit.Size = new System.Drawing.Size(648, 605);
+            this.tabPageSplit.Size = new System.Drawing.Size(429, 389);
             this.tabPageSplit.TabIndex = 2;
             this.tabPageSplit.Text = "Split";
             // 
             // buttonClearAllSplit
             // 
-            this.buttonClearAllSplit.Location = new System.Drawing.Point(516, 185);
+            this.buttonClearAllSplit.Location = new System.Drawing.Point(344, 120);
+            this.buttonClearAllSplit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonClearAllSplit.Name = "buttonClearAllSplit";
-            this.buttonClearAllSplit.Size = new System.Drawing.Size(120, 38);
+            this.buttonClearAllSplit.Size = new System.Drawing.Size(80, 25);
             this.buttonClearAllSplit.TabIndex = 51;
             this.buttonClearAllSplit.Text = "Clear &all";
             this.buttonClearAllSplit.UseVisualStyleBackColor = true;
@@ -630,9 +591,10 @@
             // buttonRemoveSplit
             // 
             this.buttonRemoveSplit.Enabled = false;
-            this.buttonRemoveSplit.Location = new System.Drawing.Point(516, 140);
+            this.buttonRemoveSplit.Location = new System.Drawing.Point(344, 91);
+            this.buttonRemoveSplit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonRemoveSplit.Name = "buttonRemoveSplit";
-            this.buttonRemoveSplit.Size = new System.Drawing.Size(120, 38);
+            this.buttonRemoveSplit.Size = new System.Drawing.Size(80, 25);
             this.buttonRemoveSplit.TabIndex = 50;
             this.buttonRemoveSplit.Text = "&Remove";
             this.buttonRemoveSplit.UseVisualStyleBackColor = true;
@@ -642,18 +604,18 @@
             // 
             this.comboBoxSplitGameSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSplitGameSelect.FormattingEnabled = true;
-            this.comboBoxSplitGameSelect.Location = new System.Drawing.Point(10, 49);
-            this.comboBoxSplitGameSelect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBoxSplitGameSelect.Location = new System.Drawing.Point(7, 32);
             this.comboBoxSplitGameSelect.Name = "comboBoxSplitGameSelect";
-            this.comboBoxSplitGameSelect.Size = new System.Drawing.Size(272, 28);
+            this.comboBoxSplitGameSelect.Size = new System.Drawing.Size(183, 21);
             this.comboBoxSplitGameSelect.TabIndex = 49;
             // 
             // buttonSplitStart
             // 
             this.buttonSplitStart.Enabled = false;
-            this.buttonSplitStart.Location = new System.Drawing.Point(530, 549);
+            this.buttonSplitStart.Location = new System.Drawing.Point(353, 357);
+            this.buttonSplitStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonSplitStart.Name = "buttonSplitStart";
-            this.buttonSplitStart.Size = new System.Drawing.Size(100, 35);
+            this.buttonSplitStart.Size = new System.Drawing.Size(67, 23);
             this.buttonSplitStart.TabIndex = 48;
             this.buttonSplitStart.Text = "&Start";
             this.buttonSplitStart.UseVisualStyleBackColor = true;
@@ -662,9 +624,10 @@
             // checkBoxSameFolderSplit
             // 
             this.checkBoxSameFolderSplit.AutoSize = true;
-            this.checkBoxSameFolderSplit.Location = new System.Drawing.Point(12, 551);
+            this.checkBoxSameFolderSplit.Location = new System.Drawing.Point(8, 361);
+            this.checkBoxSameFolderSplit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxSameFolderSplit.Name = "checkBoxSameFolderSplit";
-            this.checkBoxSameFolderSplit.Size = new System.Drawing.Size(286, 24);
+            this.checkBoxSameFolderSplit.Size = new System.Drawing.Size(191, 17);
             this.checkBoxSameFolderSplit.TabIndex = 47;
             this.checkBoxSameFolderSplit.Text = "Same output folder as source file(s)";
             this.checkBoxSameFolderSplit.UseVisualStyleBackColor = true;
@@ -672,17 +635,19 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 18);
+            this.label3.Location = new System.Drawing.Point(5, 12);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(399, 20);
+            this.label3.Size = new System.Drawing.Size(366, 13);
             this.label3.TabIndex = 46;
-            this.label3.Text = "Split binary files using a template for a supported game.";
+            this.label3.Text = "Split binary files using a template for a supported game with or without labels.";
             // 
             // buttonAddFilesSplit
             // 
-            this.buttonAddFilesSplit.Location = new System.Drawing.Point(516, 95);
+            this.buttonAddFilesSplit.Location = new System.Drawing.Point(344, 62);
+            this.buttonAddFilesSplit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonAddFilesSplit.Name = "buttonAddFilesSplit";
-            this.buttonAddFilesSplit.Size = new System.Drawing.Size(120, 38);
+            this.buttonAddFilesSplit.Size = new System.Drawing.Size(80, 25);
             this.buttonAddFilesSplit.TabIndex = 45;
             this.buttonAddFilesSplit.Text = "&Add...";
             this.buttonAddFilesSplit.UseVisualStyleBackColor = true;
@@ -693,11 +658,11 @@
             this.listBoxSplitFiles.AllowDrop = true;
             this.listBoxSplitFiles.FormattingEnabled = true;
             this.listBoxSplitFiles.HorizontalScrollbar = true;
-            this.listBoxSplitFiles.ItemHeight = 20;
-            this.listBoxSplitFiles.Location = new System.Drawing.Point(12, 95);
+            this.listBoxSplitFiles.Location = new System.Drawing.Point(8, 62);
+            this.listBoxSplitFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listBoxSplitFiles.Name = "listBoxSplitFiles";
             this.listBoxSplitFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxSplitFiles.Size = new System.Drawing.Size(493, 444);
+            this.listBoxSplitFiles.Size = new System.Drawing.Size(330, 290);
             this.listBoxSplitFiles.TabIndex = 44;
             this.listBoxSplitFiles.SelectedIndexChanged += new System.EventHandler(this.listBox_SplitFiles_SelectedIndexChanged);
             this.listBoxSplitFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragDrop);
@@ -717,20 +682,18 @@
             this.tabPageSplitMDL.Controls.Add(this.buttonAnimFilesAdd);
             this.tabPageSplitMDL.Controls.Add(this.animationFilesLabel);
             this.tabPageSplitMDL.Controls.Add(this.listBoxMDLAnimationFiles);
-            this.tabPageSplitMDL.Location = new System.Drawing.Point(4, 29);
-            this.tabPageSplitMDL.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabPageSplitMDL.Location = new System.Drawing.Point(4, 22);
             this.tabPageSplitMDL.Name = "tabPageSplitMDL";
-            this.tabPageSplitMDL.Size = new System.Drawing.Size(648, 605);
+            this.tabPageSplitMDL.Size = new System.Drawing.Size(429, 389);
             this.tabPageSplitMDL.TabIndex = 3;
             this.tabPageSplitMDL.Text = "SplitMDL";
             // 
             // buttonMDLBrowse
             // 
             this.buttonMDLBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonMDLBrowse.Location = new System.Drawing.Point(516, 57);
-            this.buttonMDLBrowse.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonMDLBrowse.Location = new System.Drawing.Point(344, 37);
             this.buttonMDLBrowse.Name = "buttonMDLBrowse";
-            this.buttonMDLBrowse.Size = new System.Drawing.Size(120, 38);
+            this.buttonMDLBrowse.Size = new System.Drawing.Size(80, 25);
             this.buttonMDLBrowse.TabIndex = 52;
             this.buttonMDLBrowse.Text = "Browse...";
             this.buttonMDLBrowse.UseVisualStyleBackColor = true;
@@ -739,10 +702,9 @@
             // textBoxMDLFilename
             // 
             this.textBoxMDLFilename.AllowDrop = true;
-            this.textBoxMDLFilename.Location = new System.Drawing.Point(63, 62);
-            this.textBoxMDLFilename.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMDLFilename.Location = new System.Drawing.Point(42, 40);
             this.textBoxMDLFilename.Name = "textBoxMDLFilename";
-            this.textBoxMDLFilename.Size = new System.Drawing.Size(438, 26);
+            this.textBoxMDLFilename.Size = new System.Drawing.Size(293, 20);
             this.textBoxMDLFilename.TabIndex = 51;
             this.textBoxMDLFilename.TextChanged += new System.EventHandler(this.textBoxMDLFilename_TextChanged);
             this.textBoxMDLFilename.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxMDLFilename_DragDrop);
@@ -751,9 +713,10 @@
             // checkBoxMDLSameFolder
             // 
             this.checkBoxMDLSameFolder.AutoSize = true;
-            this.checkBoxMDLSameFolder.Location = new System.Drawing.Point(12, 558);
+            this.checkBoxMDLSameFolder.Location = new System.Drawing.Point(8, 363);
+            this.checkBoxMDLSameFolder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxMDLSameFolder.Name = "checkBoxMDLSameFolder";
-            this.checkBoxMDLSameFolder.Size = new System.Drawing.Size(281, 24);
+            this.checkBoxMDLSameFolder.Size = new System.Drawing.Size(189, 17);
             this.checkBoxMDLSameFolder.TabIndex = 50;
             this.checkBoxMDLSameFolder.Text = "Same output folder as the MDL file";
             this.checkBoxMDLSameFolder.UseVisualStyleBackColor = true;
@@ -761,19 +724,19 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(18, 66);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Location = new System.Drawing.Point(12, 43);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(38, 20);
+            this.label8.Size = new System.Drawing.Size(26, 13);
             this.label8.TabIndex = 48;
             this.label8.Text = "File:";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 18);
+            this.label7.Location = new System.Drawing.Point(5, 12);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(195, 20);
+            this.label7.Size = new System.Drawing.Size(132, 13);
             this.label7.TabIndex = 47;
             this.label7.Text = "Split SA2/SA2B MDL files.";
             // 
@@ -781,10 +744,9 @@
             // 
             this.buttonMDLAnimFilesRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonMDLAnimFilesRemove.Enabled = false;
-            this.buttonMDLAnimFilesRemove.Location = new System.Drawing.Point(516, 178);
-            this.buttonMDLAnimFilesRemove.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonMDLAnimFilesRemove.Location = new System.Drawing.Point(344, 116);
             this.buttonMDLAnimFilesRemove.Name = "buttonMDLAnimFilesRemove";
-            this.buttonMDLAnimFilesRemove.Size = new System.Drawing.Size(120, 38);
+            this.buttonMDLAnimFilesRemove.Size = new System.Drawing.Size(80, 25);
             this.buttonMDLAnimFilesRemove.TabIndex = 23;
             this.buttonMDLAnimFilesRemove.Text = "Remove";
             this.buttonMDLAnimFilesRemove.UseVisualStyleBackColor = true;
@@ -793,10 +755,9 @@
             // buttonAnimFilesClear
             // 
             this.buttonAnimFilesClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAnimFilesClear.Location = new System.Drawing.Point(516, 226);
-            this.buttonAnimFilesClear.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonAnimFilesClear.Location = new System.Drawing.Point(344, 147);
             this.buttonAnimFilesClear.Name = "buttonAnimFilesClear";
-            this.buttonAnimFilesClear.Size = new System.Drawing.Size(120, 38);
+            this.buttonAnimFilesClear.Size = new System.Drawing.Size(80, 25);
             this.buttonAnimFilesClear.TabIndex = 23;
             this.buttonAnimFilesClear.Text = "Clear all";
             this.buttonAnimFilesClear.UseVisualStyleBackColor = true;
@@ -807,10 +768,9 @@
             this.checkBoxMDLBigEndian.AutoSize = true;
             this.checkBoxMDLBigEndian.Checked = true;
             this.checkBoxMDLBigEndian.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxMDLBigEndian.Location = new System.Drawing.Point(460, 100);
-            this.checkBoxMDLBigEndian.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxMDLBigEndian.Location = new System.Drawing.Point(307, 65);
             this.checkBoxMDLBigEndian.Name = "checkBoxMDLBigEndian";
-            this.checkBoxMDLBigEndian.Size = new System.Drawing.Size(175, 24);
+            this.checkBoxMDLBigEndian.Size = new System.Drawing.Size(120, 17);
             this.checkBoxMDLBigEndian.TabIndex = 22;
             this.checkBoxMDLBigEndian.Text = "Big Endian (GC/PC)";
             this.checkBoxMDLBigEndian.UseVisualStyleBackColor = true;
@@ -818,10 +778,9 @@
             // buttonSplitMDL
             // 
             this.buttonSplitMDL.Enabled = false;
-            this.buttonSplitMDL.Location = new System.Drawing.Point(530, 549);
-            this.buttonSplitMDL.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonSplitMDL.Location = new System.Drawing.Point(353, 357);
             this.buttonSplitMDL.Name = "buttonSplitMDL";
-            this.buttonSplitMDL.Size = new System.Drawing.Size(100, 35);
+            this.buttonSplitMDL.Size = new System.Drawing.Size(67, 23);
             this.buttonSplitMDL.TabIndex = 18;
             this.buttonSplitMDL.Text = "&Start";
             this.buttonSplitMDL.UseVisualStyleBackColor = true;
@@ -830,10 +789,9 @@
             // buttonAnimFilesAdd
             // 
             this.buttonAnimFilesAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAnimFilesAdd.Location = new System.Drawing.Point(516, 131);
-            this.buttonAnimFilesAdd.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonAnimFilesAdd.Location = new System.Drawing.Point(344, 85);
             this.buttonAnimFilesAdd.Name = "buttonAnimFilesAdd";
-            this.buttonAnimFilesAdd.Size = new System.Drawing.Size(120, 38);
+            this.buttonAnimFilesAdd.Size = new System.Drawing.Size(80, 25);
             this.buttonAnimFilesAdd.TabIndex = 17;
             this.buttonAnimFilesAdd.Text = "Add...";
             this.buttonAnimFilesAdd.UseVisualStyleBackColor = true;
@@ -844,10 +802,9 @@
             this.animationFilesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.animationFilesLabel.AutoSize = true;
-            this.animationFilesLabel.Location = new System.Drawing.Point(12, 106);
-            this.animationFilesLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.animationFilesLabel.Location = new System.Drawing.Point(8, 69);
             this.animationFilesLabel.Name = "animationFilesLabel";
-            this.animationFilesLabel.Size = new System.Drawing.Size(117, 20);
+            this.animationFilesLabel.Size = new System.Drawing.Size(77, 13);
             this.animationFilesLabel.TabIndex = 16;
             this.animationFilesLabel.Text = "Animation Files";
             // 
@@ -858,24 +815,67 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBoxMDLAnimationFiles.FormattingEnabled = true;
-            this.listBoxMDLAnimationFiles.ItemHeight = 20;
-            this.listBoxMDLAnimationFiles.Location = new System.Drawing.Point(12, 131);
-            this.listBoxMDLAnimationFiles.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.listBoxMDLAnimationFiles.Location = new System.Drawing.Point(8, 85);
             this.listBoxMDLAnimationFiles.Name = "listBoxMDLAnimationFiles";
-            this.listBoxMDLAnimationFiles.Size = new System.Drawing.Size(493, 404);
+            this.listBoxMDLAnimationFiles.Size = new System.Drawing.Size(330, 264);
             this.listBoxMDLAnimationFiles.TabIndex = 15;
             this.listBoxMDLAnimationFiles.SelectedIndexChanged += new System.EventHandler(this.listBoxMDLAnimationFiles_SelectedIndexChanged);
             this.listBoxMDLAnimationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxMDLAnimationFiles_DragDrop);
             this.listBoxMDLAnimationFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBoxMDLAnimationFiles_DragEnter);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(194, 35);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(41, 13);
+            this.label9.TabIndex = 52;
+            this.label9.Text = "Labels:";
+            // 
+            // comboBoxLabels
+            // 
+            this.comboBoxLabels.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLabels.FormattingEnabled = true;
+            this.comboBoxLabels.Items.AddRange(new object[] {
+            "Address-based (object_0000...)",
+            "Full labels from debug symbols",
+            "No labels"});
+            this.comboBoxLabels.Location = new System.Drawing.Point(241, 32);
+            this.comboBoxLabels.Name = "comboBoxLabels";
+            this.comboBoxLabels.Size = new System.Drawing.Size(183, 21);
+            this.comboBoxLabels.TabIndex = 53;
+            // 
+            // hexNumericBinaryOffset
+            // 
+            this.hexNumericBinaryOffset.Hexadecimal = true;
+            this.hexNumericBinaryOffset.Location = new System.Drawing.Point(65, 72);
+            this.hexNumericBinaryOffset.Name = "hexNumericBinaryOffset";
+            this.hexNumericBinaryOffset.Size = new System.Drawing.Size(98, 20);
+            this.hexNumericBinaryOffset.TabIndex = 36;
+            // 
+            // numericUpDownBinaryKey
+            // 
+            this.numericUpDownBinaryKey.Hexadecimal = true;
+            this.numericUpDownBinaryKey.Location = new System.Drawing.Point(64, 20);
+            this.numericUpDownBinaryKey.Name = "numericUpDownBinaryKey";
+            this.numericUpDownBinaryKey.Size = new System.Drawing.Size(98, 20);
+            this.numericUpDownBinaryKey.TabIndex = 24;
+            // 
+            // numericUpDownBinaryAddress
+            // 
+            this.numericUpDownBinaryAddress.Hexadecimal = true;
+            this.numericUpDownBinaryAddress.Location = new System.Drawing.Point(64, 46);
+            this.numericUpDownBinaryAddress.Name = "numericUpDownBinaryAddress";
+            this.numericUpDownBinaryAddress.Size = new System.Drawing.Size(98, 20);
+            this.numericUpDownBinaryAddress.TabIndex = 21;
+            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(656, 638);
+            this.ClientSize = new System.Drawing.Size(437, 415);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.ShowIcon = false;
@@ -884,9 +884,6 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBoxBinary.ResumeLayout(false);
             this.groupBoxBinary.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.hexNumericBinaryOffset)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryAddress)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPageBinaryData.ResumeLayout(false);
             this.tabPageBinaryData.PerformLayout();
@@ -896,6 +893,9 @@
             this.tabPageSplit.PerformLayout();
             this.tabPageSplitMDL.ResumeLayout(false);
             this.tabPageSplitMDL.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.hexNumericBinaryOffset)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryAddress)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -965,6 +965,8 @@
 		private System.Windows.Forms.Button buttonMDLAnimFilesRemove;
 		private System.Windows.Forms.Button buttonBinaryBrowse;
 		private System.Windows.Forms.TextBox textBoxBinaryFilename;
+		private System.Windows.Forms.ComboBox comboBoxLabels;
+		private System.Windows.Forms.Label label9;
 	}
 }
 

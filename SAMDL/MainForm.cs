@@ -499,6 +499,56 @@ namespace SAModel.SAMDL
 
 			return -1;
 		}
+		
+		/*
+		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
+		{
+			List<int> positions = new List<int>();
+			int patternLength = pattern.Length;
+			int totalLength = bytes.Length;
+			byte firstMatchByte = pattern[0];
+			for (int i = 0; i < totalLength; i++)
+			{
+				if (firstMatchByte == bytes[i] && totalLength - i >= patternLength)
+				{
+					byte[] match = new byte[patternLength];
+					Array.Copy(bytes, i, match, 0, patternLength);
+					if (match.SequenceEqual<byte>(pattern))
+					{
+						positions.Add(i);
+						i += patternLength - 1;
+					}
+				}
+			}
+			return positions;
+		}
+
+		public List<NJS_MOTION> LoadNMDM(byte[] file)
+		{
+			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			byte[] nmdmByte = new byte[] { 0x4E, 0x4D, 0x44, 0x4D };
+			List<int> nmdmAddr = SearchBytePattern(nmdmByte, file);
+
+			if (nmdmAddr.Count != 0)
+			{
+				foreach (int addr in nmdmAddr)
+				{
+					int nmdmLength = ByteConverter.ToInt32(file, addr + 0x4);
+					byte[] newFile = new byte[nmdmLength];
+					Array.Copy(file, (addr + 8), newFile, 0, newFile.Length);
+
+					string njmName = ("motion_" + addr.ToString());
+					Dictionary<int, string> label = new Dictionary<int, string>();
+					label.Add(0, njmName);
+					NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
+
+					motions.Add(njm);
+				}
+			}
+			
+			return motions;
+		}
+		*/
 
 		private void LoadFile(string filename, bool cmdLoad = false)
 		{
@@ -636,6 +686,7 @@ namespace SAModel.SAMDL
 
 				LoadBinFile(newFile);
 				animations = new List<NJS_MOTION>();
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else
 			{
@@ -961,7 +1012,7 @@ namespace SAModel.SAMDL
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".njm";
-							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}
@@ -2467,7 +2518,7 @@ namespace SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim;*.action|" +
+			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm;*.motions|SA Tools Animation Files|*.saanim;*.action|" +
 																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
@@ -2586,15 +2637,46 @@ namespace SAModel.SAMDL
 							for (int u = 0; u < count; u++)
 							{
 								animationFiles[u] = tr.ReadLine();
+
 								if (File.Exists(Path.Combine(path, animationFiles[u])))
 								{
-									if (Path.GetExtension(animationFiles[u]).ToLowerInvariant() == ".json")
+									string filePath = Path.Combine(path, animationFiles[u]);
+									string animExt = Path.GetExtension(filePath).ToLowerInvariant();
+									NJS_MOTION mot;
+									switch (animExt)
 									{
-										JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
-										using (TextReader tr2 = File.OpenText(Path.Combine(path, animationFiles[u])))
-										{
-											JsonTextReader jtr = new JsonTextReader(tr2);
-											NJS_MOTION mot = js.Deserialize<NJS_MOTION>(jtr);
+										case ".json":
+											JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+											using (TextReader tr2 = File.OpenText(filePath))
+											{
+												JsonTextReader jtr = new JsonTextReader(tr2);
+												mot = js.Deserialize<NJS_MOTION>(jtr);
+												if (first)
+												{
+													first = false;
+													animframe = 0;
+													animnum = animations.Count;
+													animations.Add(mot);
+													animation = mot;
+													UpdateWeightedModel();
+													DrawEntireModel();
+												}
+												else
+													animations.Add(mot);
+											}
+											break;
+
+										case ".njm":
+											byte[] motFile = File.ReadAllBytes(filePath);
+											ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(motFile, 0xC);
+
+											byte[] newMotFile = new byte[motFile.Length - 0x8];
+											Array.Copy(motFile, 0x8, newMotFile, 0, newMotFile.Length);
+
+											string motName = Path.GetFileNameWithoutExtension(filePath);
+											Dictionary<int, string> motLabel = new Dictionary<int, string>();
+											motLabel.Add(0, motName);
+											mot = new NJS_MOTION(newMotFile, 0, 0, model.CountAnimated(), motLabel, false);
 											if (first)
 											{
 												first = false;
@@ -2607,23 +2689,24 @@ namespace SAModel.SAMDL
 											}
 											else
 												animations.Add(mot);
-										}
-									}
-									else
-									{
-										NJS_MOTION mot = NJS_MOTION.Load(Path.Combine(path, animationFiles[u]));
-										if (first)
-										{
-											first = false;
-											animframe = 0;
-											animnum = animations.Count;
-											animations.Add(mot);
-											animation = mot;
-											UpdateWeightedModel();
-											DrawEntireModel();
-										}
-										else
-											animations.Add(mot);
+											break;
+
+										case ".saanim":
+										default:
+											mot = NJS_MOTION.Load(filePath);
+											if (first)
+											{
+												first = false;
+												animframe = 0;
+												animnum = animations.Count;
+												animations.Add(mot);
+												animation = mot;
+												UpdateWeightedModel();
+												DrawEntireModel();
+											}
+											else
+												animations.Add(mot);
+											break;
 									}
 								}
 							}
@@ -2988,7 +3071,7 @@ namespace SAModel.SAMDL
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + ".njm";
-							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}

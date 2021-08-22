@@ -82,6 +82,9 @@
     <Compile Include="DataTypes\LevelItem.cs" />
     <Compile Include="DataTypes\MissionSETItem.cs" />
     <Compile Include="DataTypes\SplineData.cs" />
+    <Compile Include="Lantern\LanternFilenames.cs" />
+    <Compile Include="Lantern\PLFile.cs" />
+    <Compile Include="Lantern\SLFile.cs" />
     <Compile Include="ModBuilding\DLLModGen.cs" />
     <Compile Include="FolderBrowser\FolderSelectDialog.cs" />
     <Compile Include="FolderBrowser\Reflector.cs" />

@@ -38,9 +38,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FraGag.Compression.Prs">
-      <HintPath>..\..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -66,6 +63,11 @@
     <Compile Include="SplitNB.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
+      <Name>FraGag.Compression.Prs</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>

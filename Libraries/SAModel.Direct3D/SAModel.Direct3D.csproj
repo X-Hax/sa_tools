@@ -33,13 +33,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FraGag.Compression.Prs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
-    </Reference>
-    <Reference Include="Pfim, Version=0.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Pfim.0.10.0\lib\netstandard2.0\Pfim.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -78,6 +71,11 @@
     <ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj">
       <Project>{29bd5a4f-1400-471c-bcfc-f1ee2a0ec73a}</Project>
       <Name>ArchiveLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
+      <Name>FraGag.Compression.Prs</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>

@@ -187,15 +187,15 @@ namespace SAToolsHub
 					SADXModInfo sadxModInfo = SplitTools.IniSerializer.Deserialize<SADXModInfo>(baseModIniPath);
 
 					// set all of our assemblies properly
-					string ADV00MODELS = "ADV00MODELS";
-					string ADV01CMODELS = "ADV01CMODELS";
-					string ADV01MODELS = "ADV01MODELS";
-					string ADV02MODELS = "ADV02MODELS";
-					string ADV03MODELS = "ADV03MODELS";
-					string BOSSCHAOS0MODELS = "BOSSCHAOS0MODELS";
-					string CHAOSTGGARDEN02MR_DAYTIME = "CHAOSTGGARDEN02MR_DAYTIME";
-					string CHAOSTGGARDEN02MR_EVENING = "CHAOSTGGARDEN02MR_EVENING";
-					string CHAOSTGGARDEN02MR_NIGHT = "CHAOSTGGARDEN02MR_NIGHT";
+					string ADV00MODELS = "adv00_dll";
+					string ADV01CMODELS = "adv0130_dll";
+					string ADV01MODELS = "adv0100_dll";
+					string ADV02MODELS = "adv02_dll";
+					string ADV03MODELS = "adv03_dll";
+					string BOSSCHAOS0MODELS = "b_chaos0_dll";
+					string CHAOSTGGARDEN02MR_DAYTIME = "chaostggarden02mr_daytime";
+					string CHAOSTGGARDEN02MR_EVENING = "chaostggarden02mr_evening";
+					string CHAOSTGGARDEN02MR_NIGHT = "chaostggarden02mr_night";
 
 					if (assemblies.ContainsKey(ADV00MODELS)) sadxModInfo.ADV00MODELSData = ADV00MODELS + dataSuffix;
 					if (assemblies.ContainsKey(ADV01CMODELS)) sadxModInfo.ADV01CMODELSData = ADV01CMODELS + dataSuffix;
@@ -207,14 +207,7 @@ namespace SAToolsHub
 					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_EVENING)) sadxModInfo.CHAOSTGGARDEN02MR_EVENINGData = CHAOSTGGARDEN02MR_EVENING + dataSuffix;
 					if (assemblies.ContainsKey(CHAOSTGGARDEN02MR_NIGHT)) sadxModInfo.CHAOSTGGARDEN02MR_NIGHTData = CHAOSTGGARDEN02MR_NIGHT + dataSuffix;
 					if (iniEXEFiles.Count > 0) sadxModInfo.EXEData = "sonic_data.ini";
-					if (File.Exists(Path.Combine(SAToolsHub.projectDirectory, "chrmodels_orig_data.ini")))
-					{
-						if (assemblies.ContainsKey("CHRMODELS_Orig")) sadxModInfo.CHRMODELSData = "chrmodels_orig_data.ini";
-					}
-					else
-					{
-						if (assemblies.ContainsKey("CHRMODELS")) sadxModInfo.CHRMODELSData = "chrmodels_data.ini";
-					}
+					if (assemblies.ContainsKey("chrmodels")) sadxModInfo.CHRMODELSData = "chrmodels_data.ini";
 
 					SplitTools.IniSerializer.Serialize(sadxModInfo, outputModIniPath);
 					break;

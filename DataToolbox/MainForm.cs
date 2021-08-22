@@ -18,15 +18,34 @@ namespace SAModel.DataToolbox
 			InitializeComponent();
 		}
 
+        string[] SortTemplateList(string[] originalList)
+        {
+            var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
+            List<string> result = new List<string>();
+            // Put SADXPC first and SA2PC second
+            foreach (string file in ordered)
+            {
+                if (file.Contains("DX") && file.Contains("PC"))
+                    result.Insert(0, file);
+                else if (file.Contains("SA2") && file.Contains("PC"))
+                    result.Add(file);
+            }
+            // Add other items
+            foreach (string file in ordered)
+            {
+                if (!result.Contains(file))
+                    result.Add(file);
+            }
+            return result.ToArray();
+        }
+
         private void loadTemplateList(string folder)
         {
             templateList = new Dictionary<string, string>();
-            string[] templateNames = Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly);
-            var ordered = templateNames.OrderByDescending(f => f);
-
-            foreach (string file in ordered)
+            string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
+            for (int i = 0; i < templateNames.Length; i++)
             {
-                templateList.Add(Path.GetFileNameWithoutExtension(file), file);
+                templateList.Add(Path.GetFileNameWithoutExtension(templateNames[i]), templateNames[i]);
             }
         }
 
@@ -59,6 +78,9 @@ namespace SAModel.DataToolbox
                 comboBoxSplitGameSelect.SelectedIndex = 0;
             else
                 MessageBox.Show(this, "Game templates not found.", "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            // Split screen defaults
+            comboBoxLabels.SelectedIndex = 0;
         }
 
 
@@ -185,7 +207,7 @@ namespace SAModel.DataToolbox
 			SaveFileDialog sd = new SaveFileDialog();
 			switch (comboBoxBinaryItemType.SelectedIndex)
 			{
-				//Level
+				// Level
 				case 0:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -196,7 +218,7 @@ namespace SAModel.DataToolbox
 						success = true;
 					}
 					break;
-				//Model
+				// Model
 				case 1:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -208,19 +230,19 @@ namespace SAModel.DataToolbox
 						success = true;
 					}
 					break;
-				//Action
+				// Action
 				case 2:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 					{
-						//Model
+						// Model
 						NJS_ACTION tempaction = new NJS_ACTION(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
 						NJS_OBJECT tempmodel = tempaction.Model;
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
 						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
 						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
 
-						//Action
+						// Action
 						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
 
 						tempaction.Animation.Save(saanimPath);
@@ -343,8 +365,8 @@ namespace SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
-			}
+                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
+            }
 			if (NJA)
 			{
 				outext = ".nja";
@@ -410,15 +432,40 @@ namespace SAModel.DataToolbox
 			buttonStructConvConvertBatch.Enabled = false;
 		}
 
-		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+        private void AddDirectoryForStructConverter(string dirname)
 		{
-			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-			for (int u = 0; u < fileList.Length; u++)
-			{
-				if (!listBoxStructConverter.Items.Contains(fileList[u])) listBoxStructConverter.Items.Add(fileList[u]);
-			}
-			UpdateConvertButton();
-		}
+			string[] files = Directory.GetFiles(dirname, "*.*", SearchOption.AllDirectories);
+			for (int i = 0; i < files.Length; i++)
+                if (!listBoxStructConverter.Items.Contains(files[i]))
+                {
+                    switch (Path.GetExtension(files[i]).ToLowerInvariant())
+                    {
+                        case ".sa1mdl":
+                        case ".sa2mdl":
+                        case ".sa1lvl":
+                        case ".sa2lvl":
+                        case ".saanim":
+                            if (!listBoxStructConverter.Items.Contains(files[i]))
+                                listBoxStructConverter.Items.Add(files[i]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+        }
+
+        private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            for (int u = 0; u < fileList.Length; u++)
+            {
+                if (Directory.Exists(fileList[u]))
+                    AddDirectoryForStructConverter(fileList[u]);
+                else if (!listBoxStructConverter.Items.Contains(fileList[u])) 
+                    listBoxStructConverter.Items.Add(fileList[u]);
+            }
+            UpdateConvertButton();
+        }
 
 		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
 		{
@@ -468,7 +515,7 @@ namespace SAModel.DataToolbox
                 else return;
             }
             Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateList[comboBoxSplitGameSelect.Text], true);
-            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir);
+            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir, 0, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 
@@ -548,7 +595,7 @@ namespace SAModel.DataToolbox
 			List<string> files = new List<string>();
 			files.Add(textBoxMDLFilename.Text);
 			files.AddRange(listBoxMDLAnimationFiles.Items.Cast<String>().ToList());
-			SplitProgress spl = new SplitProgress(null, files, null, outdir, checkBoxMDLBigEndian.Checked ? 2 : 1);
+			SplitProgress spl = new SplitProgress(null, files, null, outdir, checkBoxMDLBigEndian.Checked ? 2 : 1, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 

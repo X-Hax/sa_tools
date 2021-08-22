@@ -268,10 +268,23 @@ namespace TextureEditor
                 PAKFile pak = new PAKFile(fname);
                 string filenoext = Path.GetFileNameWithoutExtension(fname).ToLowerInvariant();
                 bool hasIndex = false;
+                string indexName = "";
                 foreach (PAKFile.PAKEntry fl in pak.Entries)
                 {
+                    // Search for the correct index file
                     if (fl.Name.Equals(filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
+                    {
                         hasIndex = true;
+                        indexName = filenoext + ".inf";
+                        break;
+                    }
+                    // Search for an incorrectly named index file
+                    else if (Path.GetExtension(fl.Name).ToLowerInvariant() == ".inf")
+                    {
+                        MessageBox.Show(this, "The index file name must match the PAK file name for the game to recognize it. Please resave the archive with the desired filename.", "Texture Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        hasIndex = true;
+                        indexName = fl.Name;
+                    }
                 }
                 if (!hasIndex)
                 {
@@ -283,7 +296,7 @@ namespace TextureEditor
                     UpdateTextureCount();
                     return new List<TextureInfo>();
                 }
-                byte[] inf = pak.Entries.Single((file) => file.Name.Equals(filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
                 newtextures = new List<TextureInfo>(inf.Length / 0x3C);
                 for (int i = 0; i < inf.Length; i += 0x3C)
                 {
@@ -557,12 +570,14 @@ namespace TextureEditor
                         foreach (PvrTextureInfo tex in textures)
                             puyo.Entries.Add(new PVMEntry(EncodePVR(tex).ToArray(), tex.Name));
                         data = puyo.GetBytes();
+                        unsaved = false;
                         break;
                     case TextureFormat.GVM:
                         PuyoFile puyog = new PuyoFile(true);
                         foreach (GvrTextureInfo tex in textures)
                             puyog.Entries.Add(new GVMEntry(EncodeGVR(tex).ToArray(), tex.Name));
                         data = puyog.GetBytes();
+                        unsaved = false;
                         break;
                     case TextureFormat.PVMX:
                         PVMXFile pvmx = new PVMXFile();
@@ -573,9 +588,10 @@ namespace TextureEditor
                                 size = new Size(tex.Dimensions.Value.Width, tex.Dimensions.Value.Height);
                             MemoryStream ds = new MemoryStream();
                             tex.Image.Save(ds, System.Drawing.Imaging.ImageFormat.Png);
-                            pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name, tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
+                            pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name+".png", tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
                         }
                         File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
+                        unsaved = false;
                         return;
                     case TextureFormat.PAK:
                         PAKFile pak = new PAKFile();
@@ -613,6 +629,7 @@ namespace TextureEditor
                         }
                         pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
                         pak.Save(archiveFilename);
+                        unsaved = false;
                         return;
                     default:
                         return;
@@ -1245,8 +1262,20 @@ namespace TextureEditor
                         case Pfim.ImageFormat.Rgba32:
                             pxformat = PixelFormat.Format32bppArgb;
                             break;
+                        case Pfim.ImageFormat.Rgb24:
+                            pxformat = PixelFormat.Format24bppRgb;
+                            break;
+                        case Pfim.ImageFormat.R5g5b5:
+                            pxformat = PixelFormat.Format16bppRgb555;
+                            break;
+                        case Pfim.ImageFormat.R5g5b5a1:
+                            pxformat = PixelFormat.Format16bppArgb1555;
+                            break;
+                        case Pfim.ImageFormat.R5g6b5:
+                            pxformat = PixelFormat.Format16bppRgb565;
+                            break;
                         default:
-                            MessageBox.Show("Unsupported image format.");
+                           MessageBox.Show("Unsupported image format: " + image.Format.ToString());
                             throw new NotImplementedException();
                     }
                     bitmap_temp = new Bitmap(image.Width, image.Height, pxformat);

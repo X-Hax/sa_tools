@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PLTool
@@ -15,7 +10,7 @@ namespace PLTool
         public List<Color> result;
         bool freeze = true; // Prevent controls from overwriting the colors at start
 
-        public GradientDX()
+        public GradientDX(List<Color> original)
 		{
 			InitializeComponent();
             pictureBoxColor1.BackColor = Color.Red;
@@ -23,6 +18,7 @@ namespace PLTool
             pictureBoxAmbient.BackColor = Color.Black;
             UpdateNumerics();
             RefreshAllLabels();
+            pictureBoxOriginal.Image = DrawGradientFromList(original);
             freeze = false;
         }
 
@@ -59,7 +55,7 @@ namespace PLTool
             labelCO1R.Text = ((float)numericUpDownCO1R.Value / 255.0f).ToString("0.000");
             labelCO1G.Text = ((float)numericUpDownCO1G.Value / 255.0f).ToString("0.000");
             labelCO1G.Text = ((float)numericUpDownCO1B.Value / 255.0f).ToString("0.000");
-            labelCO1POW.Text = ((float)trackBarCO1Pow.Value/100.0f).ToString("0.00");
+            labelCO1POW.Text = ((float)trackBarCO1Pow.Value / 100.0f).ToString("0.00");
 
             // CO2
             labelCO2R.Text = ((float)numericUpDownCO2R.Value / 255.0f).ToString("0.000");
@@ -73,10 +69,90 @@ namespace PLTool
             labelAmbientB.Text = ((float)numericUpDownAmbientB.Value / 255.0f).ToString("0.000");
         }
 
+        private Bitmap DrawGradientFromList(List<Color> list)
+        {
+            Bitmap image = new Bitmap(256, 32);
+            using (Graphics gfx = Graphics.FromImage(image))
+            {
+                gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                for (int i = 0; i < 256; i++)
+                {
+                    gfx.FillRectangle(new SolidBrush(list[i]), i, 0, 1, 32);
+                }
+            }
+            return image;
+        }
+
+        private void ApplyPalette()
+        {
+            result = new List<Color>();
+            for (int f = 0; f < 256; f++)
+            {
+                // CO1
+                double r1 = (float)numericUpDownCO1R.Value * Math.Pow((1 - f / 256.0f), (float)trackBarCO1Pow.Value / 100.0f);
+                double g1 = (float)numericUpDownCO1G.Value* Math.Pow((1 - f / 256.0f), (float)trackBarCO1Pow.Value / 100.0f);
+                double b1 = (float)numericUpDownCO1B.Value* Math.Pow((1 - f / 256.0f), (float)trackBarCO1Pow.Value / 100.0f);
+                //colors1.Add(Color.FromArgb((int)r1, (int)g1, (int)b1));
+                // CO2
+                double r2 = (float)numericUpDownCO2R.Value * Math.Pow((f / 256.0f), (float)trackBarCO2Pow.Value / 100.0f);
+                double g2 = (float)numericUpDownCO2G.Value * Math.Pow((f / 256.0f), (float)trackBarCO2Pow.Value / 100.0f);
+                double b2 = (float)numericUpDownCO2B.Value * Math.Pow((f / 256.0f), (float)trackBarCO2Pow.Value / 100.0f);
+                // Final
+                double r = Math.Min(255, r1 + r2 + (float)numericUpDownAmbientR.Value);
+                double g = Math.Min(255, g1 + g2 + (float)numericUpDownAmbientG.Value);
+                double b = Math.Min(255, b1 + b2 + (float)numericUpDownAmbientB.Value);
+                result.Add(Color.FromArgb(255, (int)r, (int)g, (int)b));
+            }
+            pictureBoxResult.Image = DrawGradientFromList(result);
+        }
+
 		private void numericUpDownCO1R_ValueChanged(object sender, EventArgs e)
 		{
             RefreshAllLabels();
             UpdateColors();
+            ApplyPalette();
+        }
+
+		private void pictureBoxColor1_Click(object sender, EventArgs e)
+		{
+            using (colorDialog1 = new ColorDialog())
+            {
+                if (colorDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    numericUpDownCO1R.Value = colorDialog1.Color.R;
+                    numericUpDownCO1G.Value = colorDialog1.Color.G;
+                    numericUpDownCO1B.Value = colorDialog1.Color.B;
+                }
+            }
+		}
+
+		private void pictureBoxColor2_Click(object sender, EventArgs e)
+		{
+            using (colorDialog1 = new ColorDialog())
+            {
+                if (colorDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    numericUpDownCO2R.Value = colorDialog1.Color.R;
+                    numericUpDownCO2G.Value = colorDialog1.Color.G;
+                    numericUpDownCO2B.Value = colorDialog1.Color.B;
+                }
+            }
+        }
+
+		private void pictureBoxAmbient_Click(object sender, EventArgs e)
+		{
+            using (colorDialog1 = new ColorDialog())
+            {
+                if (colorDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    numericUpDownAmbientR.Value = colorDialog1.Color.R;
+                    numericUpDownAmbientG.Value = colorDialog1.Color.G;
+                    numericUpDownAmbientB.Value = colorDialog1.Color.B;
+                }
+            }
         }
 	}
 }

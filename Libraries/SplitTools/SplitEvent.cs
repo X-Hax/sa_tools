@@ -11,6 +11,7 @@ namespace SplitTools.SAArc
 	public static class sa2Event
 	{
 		static readonly string[] upgradenames = { "Sonic's Light Shoes", "Sonic's Flame Ring", "Sonic's Bounce Bracelet", "Sonic's Magic Gloves", "Shadow's Air Shoes", "Shadow's Flame Ring", "Knuckles' Shovel Claw L", "Knuckles' Shovel Claw R", "Knuckles' Hammer Glove L", "Knuckles' Hammer Glove R", "Knuckles' Sunglasses", "Knuckles' Air Necklace", "Rouge's Pick Nails", "Rouge's Treasure Scope", "Rouge's Iron Boots", "Rouge's Heart Plates", "Mech Tails' Window", "Mech Eggman's Window" };
+		static readonly string[] upgradebetanames = { "Sonic's Light Shoes", "Sonic's Flame Ring", "Sonic's Bounce Bracelet", "Sonic's Magic Gloves", "Shadow's Air Shoes", "Shadow's Flame Ring", "Knuckles' Shovel Claws", "Knuckles' Hammer Gloves", "Knuckles' Sunglasses", "Knuckles' Air Necklace", "Rouge's Pick Nails", "Rouge's Treasure Scope", "Rouge's Iron Boots", "Rouge's Heart Plates"};
 		static List<string> nodenames = new List<string>();
 		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
@@ -32,31 +33,109 @@ namespace SplitTools.SAArc
 			uint key;
 			List<NJS_MOTION> motions = null;
 			bool battle;
+			bool dcbeta;
 			if (fc[0] == 0x81)
 			{
-				Console.WriteLine("File is in GC/PC format.");
-				ByteConverter.BigEndian = true;
-				key = 0x8125FE60;
-				ini.Game = Game.SA2B;
-				battle = true;
-				motions = ReadMotionFile(Path.ChangeExtension(filename, null) + "motion.bin");
-				ini.Motions = motions.Select(a => a?.Name).ToList();
-				foreach (var mtn in motions.Where(a => a != null))
-					motionfiles[mtn.Name] = new MotionInfo(null, mtn);
+				if (fc[0x2B] <= 0x01 && fc[0x2A] == 0)
+				{
+					Console.WriteLine("File is in GC/PC format.");
+					ByteConverter.BigEndian = true;
+					key = 0x8125FE60;
+					ini.Game = Game.SA2B;
+					battle = true;
+					dcbeta = false;
+					motions = ReadMotionFile(Path.ChangeExtension(filename, null) + "motion.bin");
+					ini.Motions = motions.Select(a => a?.Name).ToList();
+					foreach (var mtn in motions.Where(a => a != null))
+						motionfiles[mtn.Name] = new MotionInfo(null, mtn);
+				}
+				else
+				{
+					Console.WriteLine("File is in GC/PC Beta format.");
+					ByteConverter.BigEndian = true;
+					key = 0x812FFE60;
+					ini.Game = Game.SA2B;
+					battle = false;
+					dcbeta = false;
+				}
 			}
 			else
 			{
-				Console.WriteLine("File is in DC format.");
-				ByteConverter.BigEndian = false;
-				key = 0xC600000;
-				ini.Game = Game.SA2;
-				battle = false;
+				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+				{
+					Console.WriteLine("File is in DC Beta format.");
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+					ini.Game = Game.SA2;
+					battle = false;
+					dcbeta = true;
+				}
+				else
+				{
+					Console.WriteLine("File is in DC format.");
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+					ini.Game = Game.SA2;
+					battle = false;
+					dcbeta = false;
+				}
+
 			}
 			int ptr = fc.GetPointer(0x20, key);
 			if (ptr != 0)
-				for (int i = 0; i < (battle ? 18 : 16); i++)
+				if (!dcbeta)
 				{
-					string upnam = upgradenames[i];
+					for (int i = 0; i < (battle ? 18 : 16); i++)
+					{
+						string upnam = upgradenames[i];
+						string chnam = upnam;
+						switch (i)
+						{
+							case 0:
+								chnam = "Sonic";
+								break;
+							case 4:
+								chnam = "Shadow";
+								break;
+							case 6:
+								chnam = "Knuckles";
+								break;
+							case 12:
+								chnam = "Rouge";
+								break;
+							case 16:
+								chnam = "Mech Tails";
+								break;
+							case 17:
+								chnam = "Mech Eggman";
+								break;
+						}
+						UpgradeInfo info = new UpgradeInfo();
+						info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl");
+						if (info.RootNode != null)
+						{
+							int ptr2 = fc.GetPointer(ptr + 4, key);
+							if (ptr2 != 0)
+								info.AttachNode1 = $"object_{ptr2:X8}";
+							int ptr3 = fc.GetPointer(ptr + 8, key);
+							if (ptr3 != 0)
+								info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl");
+							ptr2 = fc.GetPointer(ptr + 0xC, key);
+							if (ptr2 != 0)
+								info.AttachNode2 = $"object_{ptr2:X8}";
+							ptr3 = fc.GetPointer(ptr + 0x10, key);
+							if (ptr3 != 0)
+								info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
+						}
+						ini.Upgrades.Add(info);
+						ptr += 0x14;
+					}
+				}
+			else
+			{
+				for (int i = 0; i < 14; i++)
+				{
+					string upnam = upgradebetanames[i];
 					string chnam = upnam;
 					switch (i)
 					{
@@ -69,14 +148,8 @@ namespace SplitTools.SAArc
 						case 6:
 							chnam = "Knuckles";
 							break;
-						case 12:
+						case 10:
 							chnam = "Rouge";
-							break;
-						case 16:
-							chnam = "Mech Tails";
-							break;
-						case 17:
-							chnam = "Mech Eggman";
 							break;
 					}
 					UpgradeInfo info = new UpgradeInfo();
@@ -86,15 +159,20 @@ namespace SplitTools.SAArc
 						int ptr2 = fc.GetPointer(ptr + 4, key);
 						if (ptr2 != 0)
 							info.AttachNode1 = $"object_{ptr2:X8}";
-						info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl");
+						int ptr3 = fc.GetPointer(ptr + 8, key);
+						if (ptr3 != 0)
+							info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl");
 						ptr2 = fc.GetPointer(ptr + 0xC, key);
 						if (ptr2 != 0)
 							info.AttachNode2 = $"object_{ptr2:X8}";
-						info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
+						ptr3 = fc.GetPointer(ptr + 0x10, key);
+						if (ptr3 != 0)
+							info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
 					}
 					ini.Upgrades.Add(info);
 					ptr += 0x14;
 				}
+			}
 			else
 				Console.WriteLine("Event contains no character upgrades.");
 			ptr = fc.GetPointer(0x18, key);
@@ -149,7 +227,7 @@ namespace SplitTools.SAArc
 								ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 28);
 							}
 							scn.Entities.Add(ent);
-							ptr2 += ini.Game == Game.SA2B ? 0x2C : 0x20;
+							ptr2 += battle ? 0x2C : 0x20;
 						}
 					}
 					else
@@ -238,17 +316,38 @@ namespace SplitTools.SAArc
 			using (JsonTextReader jtr = new JsonTextReader(tr))
 				ini = js.Deserialize<EventIniData>(jtr);
 			uint key;
+			bool battle = ini.Game == Game.SA2B;
+			bool battlebeta = ini.Game == Game.SA2B;
+			bool dcbeta = ini.Game == Game.SA2;
 			if (fc[0] == 0x81)
 			{
-				ByteConverter.BigEndian = true;
-				key = 0x8125FE60;
+				if (fc[0x2B] <= 1 && fc[0x2A] == 0)
+				{
+					ByteConverter.BigEndian = true;
+					key = 0x8125FE60;
+					battle = true;
+				}
+				else
+				{
+					ByteConverter.BigEndian = true;
+					key = 0x812FFE60;
+					battlebeta = true;
+				}
 			}
 			else
 			{
-				ByteConverter.BigEndian = false;
-				key = 0xC600000;
+				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+				{
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+					dcbeta = true;
+				}
+				else
+				{
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+				}
 			}
-			bool battle = ini.Game == Game.SA2B;
 			List<byte> modelbytes = new List<byte>(fc);
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".sa2mdl", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
@@ -284,7 +383,30 @@ namespace SplitTools.SAArc
 			fc = modelbytes.ToArray();
 			int ptr = fc.GetPointer(0x20, key);
 			if (ptr != 0)
-				for (int i = 0; i < (battle ? 18 : 16); i++)
+				if (!dcbeta)
+				{
+					for (int i = 0; i < (battle ? 18 : 16); i++)
+					{
+						UpgradeInfo info = ini.Upgrades[i];
+						if (info.RootNode != null)
+						{
+							if (labels.ContainsKeySafe(info.RootNode))
+								ByteConverter.GetBytes(labels[info.RootNode]).CopyTo(fc, ptr);
+							if (labels.ContainsKeySafe(info.AttachNode1))
+								ByteConverter.GetBytes(labels[info.AttachNode1]).CopyTo(fc, ptr + 4);
+							if (labels.ContainsKeySafe(info.Model1))
+								ByteConverter.GetBytes(labels[info.Model1]).CopyTo(fc, ptr + 8);
+							if (labels.ContainsKeySafe(info.AttachNode2))
+								ByteConverter.GetBytes(labels[info.AttachNode2]).CopyTo(fc, ptr + 12);
+							if (labels.ContainsKeySafe(info.Model2))
+								ByteConverter.GetBytes(labels[info.Model2]).CopyTo(fc, ptr + 16);
+						}
+						ptr += 0x14;
+					}
+				}
+			else
+			{
+				for (int i = 0; i < 14; i++)
 				{
 					UpgradeInfo info = ini.Upgrades[i];
 					if (info.RootNode != null)
@@ -302,6 +424,7 @@ namespace SplitTools.SAArc
 					}
 					ptr += 0x14;
 				}
+			}
 			int gcnt = ByteConverter.ToInt32(fc, 8);
 			ptr = fc.GetPointer(0, key);
 			if (ptr != 0)

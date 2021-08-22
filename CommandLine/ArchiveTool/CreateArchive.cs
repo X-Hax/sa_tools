@@ -8,6 +8,7 @@ using ArchiveLib;
 using SplitTools;
 using static ArchiveLib.DATFile;
 using static ArchiveLib.PVMXFile;
+//using static ArchiveLib.MLTFile;
 
 namespace ArchiveTool
 {
@@ -19,7 +20,7 @@ namespace ArchiveTool
         /// Compress a binary to PRS.
         /// </summary>
         static void CompressPRS(string[] args)
-		{
+        {
             filePath = args[1];
             Console.WriteLine("Compressing file to PRS: {0}", Path.GetFullPath(filePath));
             Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".prs")));
@@ -46,6 +47,11 @@ namespace ArchiveTool
             {
                 GenericArchive arc;
                 string indexfilename = Path.Combine(filePath, "index.txt");
+                if (!File.Exists(indexfilename))
+                {
+                    BuildPAK(filePath);
+                    return;
+                }
                 List<string> filenames = new List<string>(File.ReadAllLines(indexfilename).Where(a => !string.IsNullOrEmpty(a)));
                 string ext = Path.GetExtension(filenames[0]).ToLowerInvariant();
                 switch (ext)
@@ -71,6 +77,16 @@ namespace ArchiveTool
                         folderMode = ArchiveFromFolderMode.DAT;
                         arc = new DATFile();
                         break;
+                    /* 
+               case ".mlt":
+               case ".mpb":
+               case ".msb":
+               case ".fpb":
+               case ".fob":
+                   folderMode = ArchiveFromFolderMode.MLT;
+                   arc = new MLTFile();
+                   break;
+                    */
                     case ".png":
                     case ".jpg":
                     case ".bmp":
@@ -89,6 +105,12 @@ namespace ArchiveTool
                     string filename = split[0];
                     switch (folderMode)
                     {
+                        /*
+                        case ArchiveFromFolderMode.MLT:
+                            arc.Entries.Add(new MLTEntry(Path.Combine(filePath, filename)));
+                            extension = ".mlt";
+                            break;
+                        */
                         case ArchiveFromFolderMode.DAT:
                             arc.Entries.Add(new DATEntry(Path.Combine(filePath, filename)));
                             extension = ".dat";
@@ -141,21 +163,29 @@ namespace ArchiveTool
         /// <summary>
         /// Create a PAK archive from a folder produced by ArchiveTool or PAKTool.
         /// </summary>
-        static void BuildPAK(string[] args)
+        static void BuildPAK(string filePath)
         {
-            filePath = args[1];
             Console.WriteLine("Building PAK from folder: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Environment.CurrentDirectory, filePath);
             Environment.CurrentDirectory = Path.GetDirectoryName(outputPath);
-            Dictionary<string, PAKFile.PAKIniItem> list = IniSerializer.Deserialize<Dictionary<string, PAKFile.PAKIniItem>>(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini"));
-            PAKFile pak = new PAKFile();
-            foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list)
+            string inipath = Path.Combine(Path.GetFileNameWithoutExtension(outputPath), Path.GetFileNameWithoutExtension(outputPath) + ".ini");
+            if (!File.Exists(inipath))
+            {
+                Console.WriteLine("PAK INI file not found: {0}", inipath);
+                Console.WriteLine("The folder must contain either index.txt or an INI file to be recognized as a buildable archive folder.");
+                Console.ReadLine();
+                return;
+            }
+            PAKFile.PAKIniData list = IniSerializer.Deserialize<PAKFile.PAKIniData>(inipath);
+            PAKFile pak = new PAKFile() { FolderName = list.FolderName };
+            foreach (KeyValuePair<string, PAKFile.PAKIniItem> item in list.Items)
             {
                 Console.WriteLine("Adding file: {0}", item.Key);
-                pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(item.Key)));
+                pak.Entries.Add(new PAKFile.PAKEntry(item.Key, item.Value.LongPath, File.ReadAllBytes(Path.Combine(Path.GetFileNameWithoutExtension(outputPath), item.Key))));
             }
             Console.WriteLine("Output file: {0}", Path.ChangeExtension(outputPath, "pak"));
             pak.Save(Path.ChangeExtension(outputPath, "pak"));
+            Console.WriteLine("Done!");
         }
         /// <summary>
 		/// Convert a GBIX indexed texture pack to PVM.
@@ -265,7 +295,8 @@ namespace ArchiveTool
             GVM = 1,
             DAT = 2,
             PVMX = 3,
-            PB = 4
+            PB = 4,
+            MLT = 5,
         }
     }
 }

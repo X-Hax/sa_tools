@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 // Manatee-related formats (MLT, MPB etc. soundbanks used by some KATANA games)
 // WIP
@@ -9,14 +10,22 @@ using System.Drawing;
 namespace ArchiveLib
 {
     #region MLT
-    public class MLTArchive : GenericArchive
+    public class MLTFile : GenericArchive
     {
         public override void CreateIndexFile(string path)
         {
-            return;
+            using (System.IO.TextWriter texList = File.CreateText(Path.Combine(path, "index.txt")))
+            {
+                foreach (GenericArchiveEntry pvmentry in Entries)
+                {
+                    texList.WriteLine(pvmentry.Name);
+                }
+                texList.Flush();
+                texList.Close();
+            }
         }
 
-        public class MLTArchiveEntry : GenericArchiveEntry
+        public class MLTEntry : GenericArchiveEntry
         {
             public MLTEntryType Type;
             public int BankID;
@@ -27,10 +36,16 @@ namespace ArchiveLib
                 throw new NotImplementedException();
             }
 
-            public MLTArchiveEntry(byte[] data, string name)
+            public MLTEntry(byte[] data, string name)
             {
                 Name = name;
                 Data = data;
+            }
+
+            public MLTEntry(string file)
+            {
+                Name = Path.GetFileName(file);
+                Data = File.ReadAllBytes(file);
             }
 
             public MLTEntryType GetEntryType()
@@ -78,14 +93,14 @@ namespace ArchiveLib
             }
 		}
 
-        public MLTArchive(byte[] file)
+        public MLTFile(byte[] file)
         {
             List<string> bankfiles = new List<string>();
             int numfiles = BitConverter.ToInt32(file, 8) + 1;
             int mltsize = numfiles * 0x20;
             byte[] mlt = new byte[mltsize];
             Array.Copy(file, mlt, mltsize);
-            Entries.Add(new MLTArchiveEntry(mlt, "filemap.mlt"));
+            Entries.Add(new MLTEntry(mlt, "filemap.mlt"));
             for (int u = 0; u < numfiles; u++)
             {
                 int tempoff = 0x20 * u;
@@ -102,16 +117,18 @@ namespace ArchiveLib
                 {
                     byte[] arr = new byte[size];
                     Array.Copy(file, pointer, arr, 0, size);
-                    Entries.Add(new MLTArchiveEntry(arr, "BANK" + bank.ToString("D3") + GetMLTItemExtension(arr)));
+                    Entries.Add(new MLTEntry(arr, "BANK" + bank.ToString("D3") + GetMLTItemExtension(arr)));
                 }
             }
         }
 
+        public MLTFile() { }
+
         public override byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
-            /*
             // Filemap header
+            /*
             result.AddRange(BitConverter.GetBytes((uint)MLTEntryType.MLT));
             result.Add(1); // Version
             result.Add(1); // Whatever
@@ -122,9 +139,10 @@ namespace ArchiveLib
             result.AddRange(BitConverter.GetBytes(0xFFFFFFFF));
             result.AddRange(BitConverter.GetBytes(0xFFFFFFFF));
             result.AddRange(BitConverter.GetBytes(0xFFFFFFFF));
+            */
             // Headers
             int PreviousDataSize = 0;
-            foreach (MLTArchiveEntry mltentry in Entries)
+            foreach (MLTEntry mltentry in Entries)
             {
                 result.AddRange(BitConverter.GetBytes((uint)mltentry.GetEntryType()));
                 result.AddRange(BitConverter.GetBytes(mltentry.BankID));
@@ -134,7 +152,12 @@ namespace ArchiveLib
                 PreviousDataSize += mltentry.Data.Length;
                 result.AddRange(BitConverter.GetBytes(FileOffset));
             }
-            */
+            // Entries
+            foreach (MLTEntry mltentry in Entries)
+            {
+                if (mltentry.Type != MLTEntryType.MLT)
+                    result.AddRange(mltentry.Data);
+            }
             return result.ToArray();
         }
     }

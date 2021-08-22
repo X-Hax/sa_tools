@@ -39,6 +39,14 @@
     <ApplicationIcon>PLTool_100.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +66,12 @@
     <Compile Include="ColorPattern.Designer.cs">
       <DependentUpon>ColorPattern.cs</DependentUpon>
     </Compile>
+    <Compile Include="GradientPS.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GradientPS.Designer.cs">
+      <DependentUpon>GradientPS.cs</DependentUpon>
+    </Compile>
     <Compile Include="GradientBasic.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,15 +84,20 @@
     <Compile Include="GradientDX.Designer.cs">
       <DependentUpon>GradientDX.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="PLEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="PLEditor.Designer.cs">
+      <DependentUpon>PLEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="PLFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SLEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SLEditor.Designer.cs">
+      <DependentUpon>SLEditor.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ColorPattern.resx">
       <DependentUpon>ColorPattern.cs</DependentUpon>
     </EmbeddedResource>
@@ -88,8 +107,11 @@
     <EmbeddedResource Include="GradientDX.resx">
       <DependentUpon>GradientDX.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="GradientPS.resx">
+      <DependentUpon>GradientPS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PLEditor.resx">
+      <DependentUpon>PLEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -101,7 +123,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SLEditor.resx">
+      <DependentUpon>SLEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.manifest" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -121,13 +147,20 @@
       <Name>SAEditorCommon</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
+      <Project>{E81631CC-8721-425B-87A3-CB6199DECAF4}</Project>
+      <Name>SAModel.Direct3D</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="PLTool_100.ico" />
+    <None Include="Resources\sllight.png" />
     <None Include="Resources\color.png" />
     <None Include="Resources\black.png" />
     <None Include="Resources\defpalette.bin" />

@@ -18,6 +18,21 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "basicdxmodel", "Basic Model (SADX)" },
 			{ "chunkmodel", "Chunk Model" },
 			{ "gcmodel", "SA2B Model" },
+			{ "attach", "Attach Model" },
+			{ "basicattach", "Basic Attach Model" },
+			{ "basicdxattach", "Basic Attach Model (SADX)" },
+			{ "chunkattach", "Chunk Attach Model" },
+			{ "gcattach", "SA2B Attach Model" },
+			{ "modelarray", "Model Array" },
+			{ "basicmodelarray", "Basic Model Array" },
+			{ "basicdxmodelarray", "Basic Model Array (SADX)" },
+			{ "chunkmodelarray", "Chunk Model Array" },
+			{ "gcmodelarray", "SA2B Model Array" },
+			{ "attacharray", "Attach Model Array" },
+			{ "basicattacharray", "Basic Attach Model Array" },
+			{ "basicdxattacharray", "Basic Attach Model Array (SADX)" },
+			{ "chunkattacharray", "Chunk Attach Model Array" },
+			{ "gcattacharray", "SA2B Attach Model Array" },
 			{ "action", "Action (animation+model)" },
 			{ "animation", "Animation" },
 			{ "objlist", "Object List" },
@@ -30,6 +45,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "soundtestlist", "Sound Test List" },
 			{ "musiclist", "Music List" },
 			{ "soundlist", "Sound List" },
+			{ "charactersoundarray", "Character Sound Array" },
+			{ "charactervoicearray", "Character Voice Array" },
 			{ "stringarray", "String Array" },
 			{ "nextlevellist", "Next Level List" },
 			{ "cutscenetext", "Cutscene Text" },
@@ -41,6 +58,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "stageselectlist", "Stage Select List" },
 			{ "levelrankscores", "Level Rank Scores" },
 			{ "levelranktimes", "Level Rank Times" },
+			{ "kartranktimes", "Kart Rank Times" },
 			{ "endpos", "End Positions" },
 			{ "animationlist", "Animation List" },
 			{ "enemyanimationlist", "Enemy Animation List" },
@@ -54,6 +72,11 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "creditstextlist", "Credits Text List" },
 			{ "animindexlist", "Animation Index List" },
 			{ "storysequence", "Story Sequence" },
+			{ "charaobjectdatalist", "2P Battle Screen Character Data" },
+			{ "kartmenu", "Kart Menu Elements" },
+			{ "kartmodelsarray", "Kart Terrain Model Array" },
+			{ "kartsoundparameters", "Kart Sound Parameters" },
+			{ "kartspecialinfolist", "Kart Special Info" },
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },
@@ -376,6 +399,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 			using (TextWriter writer = File.CreateText(fileName))
 			{
 				bool SA2 = iniData.Game == Game.SA2 || iniData.Game == Game.SA2B;
+				bool SA2B = iniData.Game == Game.SA2B;
+				bool SA2DC = iniData.Game == Game.SA2;
 				Dictionary<uint, string> pointers = new Dictionary<uint, string>();
 				List<string> initlines = new List<string>();
 				uint imagebase = iniData.ImageBase ?? 0x400000;
@@ -425,24 +450,28 @@ namespace SAModel.SAEditorCommon.StructConverter
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "basicmodel":
+						case "basicattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "basicdxmodel":
+						case "basicdxattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, true, new List<string>());
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "chunkmodel":
+						case "chunkattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
 							models.Add(item.Key, mdl.Name);
 							break;
 						case "gcmodel":
+						case "gcattach":
 							mdl = new ModelFile(data.Filename).Model;
 							name = mdl.Name;
 							mdl.ToStructVariables(writer, false, new List<string>());
@@ -588,16 +617,56 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "soundlist":
 							{
-								SoundListEntry[] list = SoundList.Load(data.Filename);
-								writer.WriteLine("SoundFileInfo {0}_list[] = {{", name);
+								if (SA2)
+								{
+									SA2SoundListEntry[] list = SA2SoundList.Load(data.Filename);
+									writer.WriteLine("SoundFileInfo {0}_list[] = {{", name);
+									List<string> objs = new List<string>(list.Length);
+									foreach (SA2SoundListEntry obj in list)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+									writer.WriteLine();
+									writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
+									initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
+								}
+								else
+								{
+									SoundListEntry[] list = SoundList.Load(data.Filename);
+									writer.WriteLine("SoundFileInfo {0}_list[] = {{", name);
+									List<string> objs = new List<string>(list.Length);
+									foreach (SoundListEntry obj in list)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+									writer.WriteLine();
+									writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
+									initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
+								}
+							}
+							break;
+						case "charactervoicearray":
+							{
+								CharaVoiceArrayEntry[] list = CharaVoiceArray.Load(data.Filename);
+								writer.WriteLine("CharaVoiceInfo {0}[] = {{", name);
 								List<string> objs = new List<string>(list.Length);
-								foreach (SoundListEntry obj in list)
+								foreach (CharaVoiceArrayEntry obj in list)
 									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
-								writer.WriteLine();
-								writer.WriteLine("SoundList {0} = {{ arraylengthandptrT({0}_list, int) }};", name);
-								initlines.Add(string.Format("*(SoundList*)0x{0:X} = {1};", data.Address + imagebase, name));
+								initlines.Add(string.Format("memcpy((CharaVoiceInfo*)0x{0:X}, arrayptrandsize({1}));", data.Address + imagebase, name));
+							}
+							break;
+						case "charactersoundarray":
+							{
+								CharaSoundArrayEntry[] list = CharaSoundArray.Load(data.Filename);
+								writer.WriteLine("CharaSoundInfo {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (CharaSoundArrayEntry obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+								initlines.Add(string.Format("memcpy((CharaSoundInfo*)0x{0:X}, arrayptrandsize({1}));", data.Address + imagebase, name));
 							}
 							break;
 						case "stringarray":
@@ -854,6 +923,17 @@ namespace SAModel.SAEditorCommon.StructConverter
 								foreach (KeyValuePair<SA2LevelIDs, LevelRankTimes> obj in list)
 									objs.Add(obj.ToStruct());
 								objs.Add("{ LevelIDs_Invalid }");
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "kartranktimes":
+							{
+								KartRankTimes[] list = KartRankTimesList.Load(data.Filename);
+								writer.WriteLine("KartRankTimes {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (KartRankTimes obj in list)
+									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
 							}

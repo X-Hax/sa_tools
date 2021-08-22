@@ -631,6 +631,69 @@ namespace SplitTools
 		Invalid = 91
 	}
 
+	public enum SA2DCLevelIDs : byte
+	{
+		BasicTest = 0,
+		KnucklesTest = 1,
+		SonicTest = 2,
+		GreenForest = 3,
+		WhiteJungle = 4,
+		PumpkinHill = 5,
+		SkyRail = 6,
+		AquaticMine = 7,
+		SecurityHall = 8,
+		PrisonLane = 9,
+		MetalHarbor = 0xA,
+		IronGate = 0xB,
+		WeaponsBed = 0xC,
+		CityEscape = 0xD,
+		RadicalHighway = 0xE,
+		WeaponsBed2P = 0xF,
+		WildCanyon = 0x10,
+		MissionStreet = 0x11,
+		DryLagoon = 0x12,
+		SonicVsShadow1 = 0x13,
+		TailsVsEggman1 = 0x14,
+		SandOcean = 0x15,
+		CrazyGadget = 0x16,
+		HiddenBase = 0x17,
+		EternalEngine = 0x18,
+		DeathChamber = 0x19,
+		EggQuarters = 0x1A,
+		LostColony = 0x1B,
+		PyramidCave = 0x1C,
+		TailsVsEggman2 = 0x1D,
+		FinalRush = 0x1E,
+		GreenHill = 0x1F,
+		MeteorHerd = 0x20,
+		KnucklesVsRouge = 0x21,
+		CannonsCoreS = 0x22,
+		CannonsCoreE = 0x23,
+		CannonsCoreT = 0x24,
+		CannonsCoreR = 0x25,
+		CannonsCoreK = 0x26,
+		MissionStreet2P = 0x27,
+		FinalChase = 0x28,
+		WildCanyon2P = 0x29,
+		SonicVsShadow2 = 0x2A,
+		CosmicWall = 0x2B,
+		MadSpace = 0x2C,
+		SandOcean2P = 0x2D,
+		BigFoot = 0x32,
+		HotShot = 0x33,
+		FlyingDog = 0x34,
+		KingBoomBoo = 0x35,
+		EggGolemS = 0x36,
+		Biolizard = 0x37,
+		FinalHazard = 0x38,
+		EggGolemE = 0x39,
+		Route101280 = 70,
+		KartRace = 71,
+		ChaoWorld = 90,
+		Invalid = 91
+	}
+
+
 	public enum SA2Characters
 	{
 		Sonic = 0,
@@ -640,7 +703,22 @@ namespace SplitTools
 		Knuckles = 4,
 		Rouge = 5,
 		MechTails = 6,
-		MechEggman = 7
+		MechEggman = 7,
+		SuperSonic = 9,
+		SuperShadow = 0xA
+	}
+
+	[Flags()]
+	public enum SA2CharacterFlags
+	{
+		Sonic = 1 << SA2Characters.Sonic,
+		Shadow = 1 << SA2Characters.Shadow,
+		Tails = 1 << SA2Characters.Tails,
+		Eggman = 1 << SA2Characters.Eggman,
+		Knuckles = 1 << SA2Characters.Knuckles,
+		Rouge = 1 << SA2Characters.Rouge,
+		MechTails = 1 << SA2Characters.MechTails,
+		MechEggman = 1 << SA2Characters.MechEggman
 	}
 
 	public enum Languages
@@ -649,7 +727,8 @@ namespace SplitTools
 		English = 1,
 		French = 2,
 		Spanish = 3,
-		German = 4
+		German = 4,
+		Italian = 5
 	}
 
 	public enum ChaoItemCategory

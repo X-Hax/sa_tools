@@ -24,11 +24,14 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{ "chunkattach", "NJS_CNK_MODEL **" },
 			{ "gcmodel", "NJS_OBJECT *" },
 			{ "gcmodelarray", "NJS_OBJECT **" },
-			{ "gcattach", "SA2B_MODEL **" },
+			{ "gcattach", "SA2B_Model **" },
 			{ "actionarray", "NJS_ACTION **" },
 			{ "motionarray", "NJS_MOTION **" },
 			{ "morph", "NJS_MODEL_SADX *" },
+			{ "basicattacharray", "NJS_MODEL **" },
 			{ "modelsarray", "NJS_MODEL_SADX **" },
+			{ "chunkattacharray", "NJS_CNK_MODEL **" },
+			{ "gcattacharray", "SA2B_Model **" },
 			{ "texlist", "NJS_TEXLIST *" },
 			{ "texlistarray", "NJS_TEXLIST **" },
 			{ "animindexlist", "AnimationIndex *" }
@@ -85,7 +88,11 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 							modified = true;
 					}
 					break;
+				case "modelindex":
 				case "kartspecialinfolist":
+				case "kartmenu":
+				case "kartsoundparameters":
+				case "kartobjectarray":
 					{
 						Dictionary<string, string> hashes = new Dictionary<string, string>();
 						foreach (var hash in item.MD5Hash.Split('|').Select(a =>
@@ -330,6 +337,30 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
 					switch (item.Type)
 					{
+						case "soundlist":
+							{
+								if (SA2)
+								{
+									var data = IniSerializer.Deserialize<SA2SoundListEntry[]>(Path.Combine(item.Filename, "*.ini"));
+									writer.WriteLine("MotionTableEntry {0}[] = {{", item.Export);
+									List<string> objs = new List<string>(data.Length);
+									foreach (var obj in data)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+								}
+								else
+								{
+									var data = IniSerializer.Deserialize<SoundListEntry[]>(Path.Combine(item.Filename, "*.ini"));
+									writer.WriteLine("MotionTableEntry {0}[] = {{", item.Export);
+									List<string> objs = new List<string>(data.Length);
+									foreach (var obj in data)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+								}
+							}
+							break;
 						case "animindexlist":
 							{
 								SortedDictionary<short, NJS_MOTION> anims = new SortedDictionary<short, NJS_MOTION>();
@@ -364,6 +395,22 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								}
 								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
 								writer.WriteLine("CharaObjectData {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "modelindex":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("ModelIndex {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
 								foreach (var obj in data)
 									objs.Add(obj.ToStruct());
@@ -412,6 +459,54 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
+						case "kartobjectarray":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartObjectArray {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "kartmenu":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartMenuElements {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
+						case "kartsoundparameters":
+							{
+								foreach (string file in Directory.GetFiles(item.Filename, "*.sa2mdl"))
+								{
+									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
+									writer.WriteLine();
+								}
+								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								writer.WriteLine("KartSoundParameters {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								foreach (var obj in data)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
 						case "motiontable":
 							{
 								foreach (string file in Directory.GetFiles(item.Filename, "*.saanim"))
@@ -444,9 +539,13 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					switch (item.Type)
 					{
 						case "animindexlist":
+						case "modelindex":
 						case "charaobjectdatalist":
 						case "kartspecialinfolist":
 						case "kartmodelsarray":
+						case "kartmenu":
+						case "kartsoundparameters":
+						case "kartobjectarray":
 							writer.WriteLine("\tHookExport(handle, \"{0}\", {0});", item.Export);
 							break;
 						default:

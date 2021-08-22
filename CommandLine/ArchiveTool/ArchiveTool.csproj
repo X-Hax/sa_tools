@@ -36,10 +36,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FraGag.Compression.Prs">
-      <HintPath>..\..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -64,6 +60,11 @@
       <Name>ArchiveLib</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
+      <Name>FraGag.Compression.Prs</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
       <Name>SplitTools</Name>
@@ -77,8 +78,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\VrSharp.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\FraGag.Compression.Prs.dll" "$(SolutionDir)build\tools\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\VrSharp.dll" "$(SolutionDir)build\tools\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

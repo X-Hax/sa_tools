@@ -44,8 +44,20 @@ namespace ArchiveLib
                         case Pfim.ImageFormat.Rgba32:
                             pxformat = PixelFormat.Format32bppArgb;
                             break;
+                        case Pfim.ImageFormat.Rgb24:
+                            pxformat = PixelFormat.Format24bppRgb;
+                            break;
+                        case Pfim.ImageFormat.R5g5b5:
+                            pxformat = PixelFormat.Format16bppRgb555;
+                            break;
+                        case Pfim.ImageFormat.R5g5b5a1:
+                            pxformat = PixelFormat.Format16bppArgb1555;
+                            break;
+                        case Pfim.ImageFormat.R5g6b5:
+                            pxformat = PixelFormat.Format16bppRgb565;
+                            break;
                         default:
-                            throw new Exception("Error: Unknown image format");
+                            throw new Exception("Unsupported image format: " + image.Format.ToString());
                     }
                     var bitmap = new Bitmap(image.Width, image.Height, pxformat);
                     BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
@@ -59,6 +71,13 @@ namespace ArchiveLib
         }
 
         public PAKFile() { }
+
+		public class PAKIniData
+		{
+			public string FolderName { get; set; }
+			[IniCollection(IniCollectionMode.IndexOnly)]
+			public Dictionary<string, PAKIniItem> Items { get; set; }
+		}
 
         public class PAKIniItem
         {
@@ -124,9 +143,9 @@ namespace ArchiveLib
             Dictionary<string, PAKIniItem> list = new Dictionary<string, PAKIniItem>(Entries.Count);
             foreach (PAKEntry item in Entries)
             {
-                list.Add(FolderName + "\\" + item.Name, new PAKIniItem(item.LongPath));
+                list.Add(item.Name, new PAKIniItem(item.LongPath));
             }
-            IniSerializer.Serialize(list, Path.Combine(Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
+            IniSerializer.Serialize(new PAKIniData() { FolderName = FolderName, Items = list }, Path.Combine(Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
         }
 
         public PAKFile(string filename)

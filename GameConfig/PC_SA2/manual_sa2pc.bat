@@ -80,6 +80,7 @@
 ..\..\bin\split binary data/sonic2app.exe CHAOSTGRACE.ini output/
 ..\..\bin\split binary data/sonic2app.exe CHAOSTGKARATE.ini output/
 ..\..\bin\split binary data/sonic2app.exe ObjectLists.ini output/
+..\..\bin\split binary data/sonic2app.exe Misc.ini output/
 @echo Data_DLL split
 ..\..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll ADVERTISE_DLL.ini output/
 ..\..\bin\split binary data/resource/gd_PC/DLL/Win32/Data_DLL_Orig.dll BOSS_GOLEM_DLL.ini output/
