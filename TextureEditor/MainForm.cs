@@ -268,10 +268,23 @@ namespace TextureEditor
                 PAKFile pak = new PAKFile(fname);
                 string filenoext = Path.GetFileNameWithoutExtension(fname).ToLowerInvariant();
                 bool hasIndex = false;
+                string indexName = "";
                 foreach (PAKFile.PAKEntry fl in pak.Entries)
                 {
+                    // Search for the correct index file
                     if (fl.Name.Equals(filenoext + ".inf", StringComparison.OrdinalIgnoreCase))
+                    {
                         hasIndex = true;
+                        indexName = filenoext + ".inf";
+                        break;
+                    }
+                    // Search for an incorrectly named index file
+                    else if (Path.GetExtension(fl.Name).ToLowerInvariant() == ".inf")
+                    {
+                        MessageBox.Show(this, "The index file name must match the PAK file name for the game to recognize it. Please resave the archive with the desired filename.", "Texture Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        hasIndex = true;
+                        indexName = fl.Name;
+                    }
                 }
                 if (!hasIndex)
                 {
@@ -283,7 +296,7 @@ namespace TextureEditor
                     UpdateTextureCount();
                     return new List<TextureInfo>();
                 }
-                byte[] inf = pak.Entries.Single((file) => file.Name.Equals(filenoext + ".inf", StringComparison.OrdinalIgnoreCase)).Data;
+                byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
                 newtextures = new List<TextureInfo>(inf.Length / 0x3C);
                 for (int i = 0; i < inf.Length; i += 0x3C)
                 {
