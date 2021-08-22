@@ -1249,8 +1249,20 @@ namespace TextureEditor
                         case Pfim.ImageFormat.Rgba32:
                             pxformat = PixelFormat.Format32bppArgb;
                             break;
+                        case Pfim.ImageFormat.Rgb24:
+                            pxformat = PixelFormat.Format24bppRgb;
+                            break;
+                        case Pfim.ImageFormat.R5g5b5:
+                            pxformat = PixelFormat.Format16bppRgb555;
+                            break;
+                        case Pfim.ImageFormat.R5g5b5a1:
+                            pxformat = PixelFormat.Format16bppArgb1555;
+                            break;
+                        case Pfim.ImageFormat.R5g6b5:
+                            pxformat = PixelFormat.Format16bppRgb565;
+                            break;
                         default:
-                            MessageBox.Show("Unsupported image format.");
+                           MessageBox.Show("Unsupported image format: " + image.Format.ToString());
                             throw new NotImplementedException();
                     }
                     bitmap_temp = new Bitmap(image.Width, image.Height, pxformat);

@@ -108,9 +108,20 @@ namespace SA2StageSelEdit
                     case Pfim.ImageFormat.Rgba32:
                         pxformat = PixelFormat.Format32bppArgb;
                         break;
+                    case Pfim.ImageFormat.Rgb24:
+                        pxformat = PixelFormat.Format24bppRgb;
+                        break;
+                    case Pfim.ImageFormat.R5g5b5:
+                        pxformat = PixelFormat.Format16bppRgb555;
+                        break;
+                    case Pfim.ImageFormat.R5g5b5a1:
+                        pxformat = PixelFormat.Format16bppArgb1555;
+                        break;
+                    case Pfim.ImageFormat.R5g6b5:
+                        pxformat = PixelFormat.Format16bppRgb565;
+                        break;
                     default:
-                        MessageBox.Show("Unsupported image format.");
-                        throw new NotImplementedException();
+                        throw new Exception("Unsupported image format: " + image.Format.ToString());
                 }
                 var bitmap = new Bitmap(image.Width, image.Height, pxformat);
                 BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
