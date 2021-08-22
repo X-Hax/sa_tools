@@ -2269,133 +2269,97 @@ namespace SAModel.Direct3D
 		/// <returns>The sine of the angle.</returns>
 		public static float NJSin(int angle)
 		{
-			int a1 = angle;
-			float v8 = a1;
-			var v4 = (byte)a1;
-			int v3 = (a1 >> 4) & 0xFFF;
-			int v2 = v4 & 0xF;
-			int v1 = v3 & 0xC00;
+			int v3 = (angle >> 4) & 0xFFF;
+			int v2 = angle & 0xF;
 			if (v2 != 0)
 			{
 				double v6;
 				double v7;
-				if (v1 > 0x800)
+				switch (v3 & 0xC00)
 				{
-					if (v1 == 0xC00)
-					{
-						v7 = -sineTable[4096 - v3];
-						v6 = -sineTable[4096 + -v3 - 1];
-						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
-				}
-				else
-				{
-					if (v1 == 0x800)
-					{
-						v7 = -sineTable[-2048 + v3];
-						v6 = -sineTable[-2047 + v3];
-						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
-					if ((v3 & 0xC00) == 0)
-					{
+					case 0:
 						v7 = sineTable[v3];
 						v6 = sineTable[1 + v3];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
-					if (v1 == 0x400)
-					{
+					case 0x400:
 						v7 = sineTable[2048 - v3];
 						v6 = sineTable[2048 + -v3 - 1];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
+					case 0x800:
+						v7 = -sineTable[-2048 + v3];
+						v6 = -sineTable[-2047 + v3];
+						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
+					case 0xC00:
+						v7 = -sineTable[4096 - v3];
+						v6 = -sineTable[4096 + -v3 - 1];
+						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
+					default:
+						return angle;
 				}
-				v7 = v8;
-				v6 = v8;
-				return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 			}
-			if (v1 > 0x800)
+			switch (v3 & 0xC00)
 			{
-				if (v1 == 0xC00)
-					return -sineTable[4096 - v3];
-			}
-			else
-			{
-				if (v1 == 0x800)
-					return -sineTable[-2048 + v3];
-				if ((v3 & 0xC00) == 0)
+				case 0:
 					return sineTable[v3];
-				if (v1 == 0x400)
+				case 0x400:
 					return sineTable[2048 - v3];
+				case 0x800:
+					return -sineTable[-2048 + v3];
+				case 0xC00:
+					return -sineTable[4096 - v3];
+				default:
+					return angle;
 			}
-			return v8;
 		}
 
 		/// <summary>
-		/// Get the inverse sine of an angle in BAMS.
+		/// Get the cosine of an angle in BAMS.
 		/// </summary>
 		/// <param name="angle">The angle in BAMS.</param>
-		/// <returns>The inverse sine of the angle.</returns>
+		/// <returns>The cosine of the angle.</returns>
 		public static float NJCos(int angle)
 		{
-			int a1 = angle;
-			float v8 = a1;
-			var v4 = (byte)a1;
-			int v3 = (a1 >> 4) & 0xFFF;
-			int v2 = v4 & 0xF;
-			int v1 = v3 & 0xC00;
+			int v3 = (angle >> 4) & 0xFFF;
+			int v2 = angle & 0xF;
 			if (v2 != 0)
 			{
 				double v6;
 				double v7;
-				if (v1 > 0x800)
+				switch (v3 & 0xC00)
 				{
-					if (v1 == 0xC00)
-					{
-						v7 = sineTable[-3072 + v3];
-						v6 = sineTable[-3071 + v3];
+					case 0:
+						v7 = sineTable[1024 + -v3];
+						v6 = sineTable[1024 + -v3 - 1];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
-				}
-				else
-				{
-					if (v1 == 0x800)
-					{
-						v7 = -sineTable[3072 - v3];
-						v6 = -sineTable[3072 + -v3 - 1];
-						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
-					if ((v3 & 0xC00) == 0)
-					{
-						v7 = sineTable[(sineTable.Length - 1) + -v3];
-						v6 = sineTable[(sineTable.Length - 1) + -v3 - 1];
-						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
-					if (v1 == 0x400)
-					{
+					case 0x400:
 						v7 = -sineTable[-1024 + v3];
 						v6 = -sineTable[-1023 + v3];
 						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
-					}
+					case 0x800:
+						v7 = -sineTable[3072 - v3];
+						v6 = -sineTable[3072 + -v3 - 1];
+						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
+					case 0xC00:
+						v7 = sineTable[-3072 + v3];
+						v6 = sineTable[-3071 + v3];
+						return (float)(v7 + (v6 - v7) * v2 * 0.0625);
+					default:
+						return angle;
 				}
-				v7 = v8;
-				v6 = v8;
-				return (float)(v7 + (v6 - v7) * v2 * 0.0625);
 			}
-			if (v1 > 0x800)
+			switch (v3 & 0xC00)
 			{
-				if (v1 == 0xC00)
-					return sineTable[-3072 + v3];
-			}
-			else
-			{
-				if (v1 == 0x800)
-					return -sineTable[3072 - v3];
-				if ((v3 & 0xC00) == 0)
-					return sineTable[(sineTable.Length - 1) - v3];
-				if (v1 == 0x400)
+				case 0:
+					return sineTable[1024 - v3];
+				case 0x400:
 					return -sineTable[-1024 + v3];
+				case 0x800:
+					return -sineTable[3072 - v3];
+				case 0xC00:
+					return sineTable[-3072 + v3];
+				default:
+					return angle;
 			}
-			return v8;
 		}
 	}
 
