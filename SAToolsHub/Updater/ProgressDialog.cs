@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace ModManagerCommon.Forms
+namespace SAToolsHub.Updater
 {
 	public partial class ProgressDialog : Form
 	{

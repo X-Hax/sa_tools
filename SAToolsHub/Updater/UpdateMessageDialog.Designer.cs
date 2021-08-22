@@ -1,4 +1,4 @@
-﻿namespace ModManagerCommon.Forms
+﻿namespace SAToolsHub.Updater
 {
 	partial class UpdateMessageDialog
 	{

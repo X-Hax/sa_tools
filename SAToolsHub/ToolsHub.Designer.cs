@@ -76,9 +76,9 @@
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.frequencyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.alwaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.dailyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.weeklyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.monthlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.resourcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.sAToolsWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -584,18 +584,25 @@
 			// frequencyToolStripMenuItem
 			// 
 			this.frequencyToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.alwaysToolStripMenuItem,
             this.dailyToolStripMenuItem,
-            this.weeklyToolStripMenuItem,
-            this.monthlyToolStripMenuItem});
+            this.weeklyToolStripMenuItem});
 			this.frequencyToolStripMenuItem.Name = "frequencyToolStripMenuItem";
 			this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(216, 54);
 			this.frequencyToolStripMenuItem.Text = "Update Frequency";
 			this.frequencyToolStripMenuItem.ToolTipText = "Choose the frequency at which the program checks for updates.";
 			// 
+			// alwaysToolStripMenuItem
+			// 
+			this.alwaysToolStripMenuItem.Name = "alwaysToolStripMenuItem";
+			this.alwaysToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+			this.alwaysToolStripMenuItem.Text = "Always";
+			this.alwaysToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolStripMenuItem_Click);
+			// 
 			// dailyToolStripMenuItem
 			// 
 			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
-			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.dailyToolStripMenuItem.Text = "Daily";
 			this.dailyToolStripMenuItem.ToolTipText = "Checks daily for updates.";
 			this.dailyToolStripMenuItem.Click += new System.EventHandler(this.dailyToolStripMenuItem_Click);
@@ -603,18 +610,10 @@
 			// weeklyToolStripMenuItem
 			// 
 			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
-			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.weeklyToolStripMenuItem.Text = "Weekly";
 			this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
 			this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);
-			// 
-			// monthlyToolStripMenuItem
-			// 
-			this.monthlyToolStripMenuItem.Name = "monthlyToolStripMenuItem";
-			this.monthlyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
-			this.monthlyToolStripMenuItem.Text = "Monthly";
-			this.monthlyToolStripMenuItem.ToolTipText = "Checks monthly for updates.";
-			this.monthlyToolStripMenuItem.Click += new System.EventHandler(this.monthlyToolStripMenuItem_Click);
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -1001,8 +1000,6 @@
 			this.listView1.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
 			this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
 			this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
-			lvwColumnSorter = new ListViewColumnSorter();
-			this.listView1.ListViewItemSorter = lvwColumnSorter;
 			// 
 			// columnHeader1
 			// 
@@ -1201,6 +1198,7 @@
 			this.Name = "SAToolsHub";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "SA Tools Hub";
+			this.Shown += new System.EventHandler(this.SAToolsHub_Shown);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.rightToolStrip.ResumeLayout(false);
@@ -1295,7 +1293,6 @@
 		private System.Windows.Forms.ToolStripMenuItem frequencyToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem dailyToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem weeklyToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem monthlyToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem autoUpdateToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -1323,5 +1320,6 @@
 		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.ToolStripMenuItem sADLCToolToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripMenuItem alwaysToolStripMenuItem;
 	}
 }

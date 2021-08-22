@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace ModManagerCommon
+namespace SAToolsHub.Updater
 {
 	public class ModInfo
 	{

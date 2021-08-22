@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ModManagerCommon.Forms
+namespace SAToolsHub.Updater
 {
 	public class LoaderManifestDialog : ProgressDialog
 	{

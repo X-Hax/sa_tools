@@ -332,10 +332,12 @@
   <ItemGroup>
     <None Include="Resources\tsDLCtool.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="7z\7z.dll" />
+    <Content Include="7z\7z.exe" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(ProjectDir)7z" "$(SolutionDir)build\tools\lib"</PostBuildEvent>
   </PropertyGroup>
 </Project>

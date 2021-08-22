@@ -5,6 +5,8 @@ using System.Collections;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Net;
+using System.ComponentModel;
 using SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
@@ -90,7 +92,7 @@ namespace SAToolsHub
 
 			SetProgramPaths();
 
-			switch (hubSettings.AutoUpdate)
+			switch (hubSettings.UpdateCheck)
 			{
 				case true:
 					autoUpdateToolStripMenuItem.Checked = true;
@@ -102,22 +104,20 @@ namespace SAToolsHub
 					break;
 			}
 
-			switch (hubSettings.UpdateFrequency)
+			switch (hubSettings.UpdateUnit)
 			{
-				case ProjectSettings.Frequency.daily:
+				case ProjectSettings.UpdateUnits.Always:
+					alwaysToolStripMenuItem.Checked = true;
+					dailyToolStripMenuItem.Checked = false;
+					weeklyToolStripMenuItem.Checked = false;
+					break;
+				case ProjectSettings.UpdateUnits.Days:
 					dailyToolStripMenuItem.Checked = true;
 					weeklyToolStripMenuItem.Checked = false;
-					monthlyToolStripMenuItem.Checked = false;
 					break;
-				case ProjectSettings.Frequency.weekly:
+				case ProjectSettings.UpdateUnits.Weeks:
 					dailyToolStripMenuItem.Checked = false;
 					weeklyToolStripMenuItem.Checked = true;
-					monthlyToolStripMenuItem.Checked = false;
-					break;
-				case ProjectSettings.Frequency.monthly:
-					dailyToolStripMenuItem.Checked = false;
-					weeklyToolStripMenuItem.Checked = false;
-					monthlyToolStripMenuItem.Checked = true;
 					break;
 			}
 		}
@@ -682,6 +682,13 @@ namespace SAToolsHub
 		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			// TODO: Implement proper update system.
+			checkForUpdatesToolStripMenuItem.Enabled = false;
+
+			if (CheckForUpdates(true))
+			{
+				return;
+			}
+			/*
 			DialogResult diagUpdates = MessageBox.Show(("This feature has not been implemented yet.\n\nWould you like to manually download the latest build?" +
 				"\n\n(Pressing yes will open a link to the latest SA Tools.7z.)"), "SA Tools Update", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (diagUpdates == DialogResult.Yes)
@@ -695,6 +702,7 @@ namespace SAToolsHub
 					MessageBox.Show("Something went wrong, could not open link in browser.");
 				}
 			}
+			*/
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1311,47 +1319,146 @@ namespace SAToolsHub
 				autoUpdateToolStripMenuItem.Checked = true;
 				frequencyToolStripMenuItem.Enabled = true;
 
-				hubSettings.AutoUpdate = true;
+				hubSettings.UpdateCheck = true;
 			}
 			else
 			{
 				autoUpdateToolStripMenuItem.Checked = false;
 				frequencyToolStripMenuItem.Enabled = false;
 
-				hubSettings.AutoUpdate = false;
+				hubSettings.UpdateCheck = false;
 			}
 
 			hubSettings.Save();
 		}
 
+		private void alwaysToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			alwaysToolStripMenuItem.Checked = true;
+			dailyToolStripMenuItem.Checked = false;
+			weeklyToolStripMenuItem.Checked = false;
+
+			hubSettings.UpdateUnit = ProjectSettings.UpdateUnits.Always;
+			hubSettings.Save();
+		}
+
 		private void dailyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			alwaysToolStripMenuItem.Checked = false;
 			dailyToolStripMenuItem.Checked = true;
 			weeklyToolStripMenuItem.Checked = false;
-			monthlyToolStripMenuItem.Checked = false;
 
-			hubSettings.UpdateFrequency = ProjectSettings.Frequency.daily;
+			hubSettings.UpdateUnit = ProjectSettings.UpdateUnits.Days;
 			hubSettings.Save();
 		}
 
 		private void weeklyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			alwaysToolStripMenuItem.Checked = false;
 			dailyToolStripMenuItem.Checked = false;
 			weeklyToolStripMenuItem.Checked = true;
-			monthlyToolStripMenuItem.Checked = false;
 
-			hubSettings.UpdateFrequency = ProjectSettings.Frequency.weekly;
+			hubSettings.UpdateUnit = ProjectSettings.UpdateUnits.Weeks;
 			hubSettings.Save();
 		}
+		#endregion
 
-		private void monthlyToolStripMenuItem_Click(object sender, EventArgs e)
+		#region Update Code
+		private bool checkedForUpdates;
+		const string updatePath = ".updates";
+
+		private static bool UpdateTimeElapsed(ProjectSettings.UpdateUnits unit, int amount, DateTime start)
 		{
-			dailyToolStripMenuItem.Checked = false;
-			weeklyToolStripMenuItem.Checked = false;
-			monthlyToolStripMenuItem.Checked = true;
+			if (unit == ProjectSettings.UpdateUnits.Always)
+			{
+				return true;
+			}
 
-			hubSettings.UpdateFrequency = ProjectSettings.Frequency.monthly;
-			hubSettings.Save();
+			TimeSpan span = DateTime.UtcNow - start;
+
+			switch (unit)
+			{
+				case ProjectSettings.UpdateUnits.Hours:
+					return span.TotalHours >= amount;
+
+				case ProjectSettings.UpdateUnits.Days:
+					return span.TotalDays >= amount;
+
+				case ProjectSettings.UpdateUnits.Weeks:
+					return span.TotalDays / 7.0 >= amount;
+
+				default:
+					throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+			}
+		}
+
+		private bool CheckForUpdates(bool force = false)
+		{
+			if (!force && !hubSettings.UpdateCheck)
+			{
+				return false;
+			}
+
+			if (!force && !UpdateTimeElapsed(hubSettings.UpdateUnit, hubSettings.UpdateFrequency, DateTime.FromFileTimeUtc(hubSettings.UpdateTime)))
+			{
+				return false;
+			}
+
+			checkedForUpdates = true;
+			hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
+
+			if (!File.Exists("satoolsver.txt"))
+			{
+				return false;
+			}
+
+			using (var wc = new WebClient())
+			{
+				try
+				{
+					string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + File.ReadAllText("satoolsver.txt"));
+
+					if (msg.Length > 0)
+					{
+						using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))
+						{
+							if (dlg.ShowDialog(this) == DialogResult.Yes)
+							{
+								DialogResult result = DialogResult.OK;
+								do
+								{
+									try
+									{
+										if (!Directory.Exists(updatePath))
+										{
+											Directory.CreateDirectory(updatePath);
+										}
+									}
+									catch (Exception ex)
+									{
+										result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
+																	   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel);
+										if (result == DialogResult.Cancel) return false;
+									}
+								} while (result == DialogResult.Retry);
+
+								using (var dlg2 = new Updater.LoaderDownloadDialog("http://mm.reimuhakurei.net/SA%20Tools.7z", updatePath))
+									if (dlg2.ShowDialog(this) == DialogResult.OK)
+									{
+										Close();
+										return true;
+									}
+							}
+						}
+					}
+				}
+				catch
+				{
+					MessageBox.Show(this, "Unable to retrieve update information.", "SADX Mod Manager");
+				}
+			}
+
+			return false;
 		}
 		#endregion
 
@@ -1361,5 +1468,11 @@ namespace SAToolsHub
 			templateWriter.ShowDialog();
 		}
 		#endregion
+
+		private void SAToolsHub_Shown(object sender, EventArgs e)
+		{
+			if (CheckForUpdates())
+				return;
+		}
 	}
 }

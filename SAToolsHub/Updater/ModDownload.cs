@@ -9,7 +9,7 @@ using System.Net;
 using System.Threading;
 using SAToolsHub;
 
-namespace ModManagerCommon
+namespace SAToolsHub.Updater
 {
 	public enum ModDownloadType
 	{

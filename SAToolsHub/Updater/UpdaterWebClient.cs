@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace ModManagerCommon
+namespace SAToolsHub.Updater
 {
 	public class UpdaterWebClient : WebClient
 	{

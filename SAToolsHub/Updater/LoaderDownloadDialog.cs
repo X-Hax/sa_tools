@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SAToolsHub;
 
-namespace ModManagerCommon.Forms
+namespace SAToolsHub.Updater
 {
 	public class LoaderDownloadDialog : ProgressDialog
 	{
@@ -129,7 +129,7 @@ namespace ModManagerCommon.Forms
 								return;
 							}
 
-							Process.Start(new ProcessStartInfo("7z.exe", $"x -aoa -o\"{dataDir}\" \"{filePath}\"") { UseShellExecute = false, CreateNoWindow = true }).WaitForExit();
+							Process.Start(new ProcessStartInfo("tools\\lib\\7z.exe", $"x -aoa -o\"{dataDir}\" \"{filePath}\"") { UseShellExecute = false, CreateNoWindow = true }).WaitForExit();
 
 							Process.Start(Path.Combine(dataDir, Path.GetFileName(Application.ExecutablePath)), $"doupdate \"{dataDir}\"");
 						}, token))
