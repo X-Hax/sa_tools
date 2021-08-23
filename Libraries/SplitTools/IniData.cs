@@ -1285,7 +1285,6 @@ namespace SplitTools
 		}
 	}
 
-
 	public static class SA2SoundList
 	{
 		public static SA2SoundListEntry[] Load(string filename)
@@ -1428,9 +1427,19 @@ namespace SplitTools
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(Character);
 			sb.Append(", ");
-			sb.Append(Filename ?? "nullptr");
+			if (!string.IsNullOrEmpty(Filename))
+			{
+				sb.Append(Filename ?? "nullptr");
+			}
+			else
+				sb.Append("NULL");
 			sb.Append(", ");
-			sb.Append(SoundList ?? "nullptr");
+			if (!string.IsNullOrEmpty(SoundList))
+			{
+				sb.Append(SoundList ?? "nullptr");
+			}
+			else
+				sb.Append("NULL");
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -1507,14 +1516,29 @@ namespace SplitTools
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(Mode);
-			sb.Append(", ");
+			sb.AppendFormat(", ");
 			sb.Append(Character);
+			sb.AppendFormat(", ");
+			if (!string.IsNullOrEmpty(JPFilename))
+			{
+				sb.AppendFormat(JPFilename ?? "nullptr");
+			}
+			else
+				sb.Append("NULL");
 			sb.Append(", ");
-			sb.Append(JPFilename ?? "nullptr");
+			if (!string.IsNullOrEmpty(ENFilename))
+			{
+				sb.AppendFormat(ENFilename ?? "nullptr");
+			}
+			else
+				sb.Append("NULL");
 			sb.Append(", ");
-			sb.Append(ENFilename ?? "nullptr");
-			sb.Append(", ");
-			sb.Append(SoundList ?? "nullptr");
+			if (!string.IsNullOrEmpty(SoundList))
+			{
+				sb.AppendFormat(SoundList ?? "nullptr");
+			}
+			else
+				sb.Append("NULL");
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -3851,7 +3875,8 @@ namespace SplitTools
 
 	public class KartSpecialInfo
 	{
-		public int ID { get; set; }
+		[IniAlwaysInclude]
+		public SA2KartCharacters ID { get; set; }
 		public string Model { get; set; }
 		public string LowModel { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
@@ -3875,6 +3900,37 @@ namespace SplitTools
 			sb.AppendFormat("{0}, ", Unknown1);
 			sb.AppendFormat("{0}, ", Unknown2);
 			sb.AppendFormat("{0}", Unknown3);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class DCKartSpecialInfo
+	{
+		[IniAlwaysInclude]
+		public SA2KartCharacters ID { get; set; }
+		public string Model { get; set; }
+		public string LowModel { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint TexList { get; set; }
+		public int Unknown1 { get; set; }
+		public int Unknown2 { get; set; }
+		public int Unknown3 { get; set; }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", ID);
+			sb.AppendFormat("{0}, ", Model);
+			if (!string.IsNullOrEmpty(LowModel))
+			{
+				sb.AppendFormat("{0}, ", LowModel);
+			}
+			else
+				sb.Append("NULL, ");
+			sb.AppendFormat("{0}, ", TexList.ToCHex());
+			sb.AppendFormat("{0}, ", Unknown1);
+			sb.AppendFormat("{0}, ", Unknown2);
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -3991,9 +4047,14 @@ namespace SplitTools
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.AppendFormat("{0}, ", EngineSFXID.ToCHex());
 			sb.AppendFormat("{0}, ", BrakeSFXID.ToCHex());
-			sb.AppendFormat("{0}, ", FinishVoice.ToString());
-			sb.AppendFormat("{0}, ", FirstVoice.ToString());
-			sb.AppendFormat("{0}, ", LastVoice.ToString());
+			if (FinishVoice != 0xFFFFFFFF)
+			{
+				sb.AppendFormat("{0}, ", FinishVoice.ToString());
+				sb.AppendFormat("{0}, ", FirstVoice.ToString());
+				sb.AppendFormat("{0}, ", LastVoice.ToString());
+			}
+			else
+				sb.Append("NULL, NULL, NULL");
 			sb.AppendFormat("{0}, ", ShadowModel);
 			sb.Append(" }");
 			return sb.ToString();

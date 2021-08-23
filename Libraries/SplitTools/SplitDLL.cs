@@ -799,10 +799,8 @@ namespace SplitTools.SplitDLL
 								List<string> hashes = new List<string>();
 								for (int i = 0; i < data.Length; i++)
 								{
-									KartSpecialInfo kart = new KartSpecialInfo
-									{
-										ID = ByteConverter.ToInt32(datafile, address)
-									};
+									KartSpecialInfo kart = new KartSpecialInfo();
+									kart.ID = (SA2KartCharacters)BitConverter.ToInt32(datafile, address);
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									kart.Model = model.Name;
 									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
@@ -931,9 +929,13 @@ namespace SplitTools.SplitDLL
 									KartSoundParameters para = new KartSoundParameters();
 									para.EngineSFXID = ByteConverter.ToUInt32(datafile, address);
 									para.BrakeSFXID = ByteConverter.ToUInt32(datafile, address + 4);
-									para.FinishVoice = ByteConverter.ToUInt32(datafile, address + 8);
-									para.FirstVoice = ByteConverter.ToUInt32(datafile, address + 0xC);
-									para.LastVoice = ByteConverter.ToUInt32(datafile, address + 0x10);
+									uint voice = ByteConverter.ToUInt32(datafile, address + 8);
+									if (voice != 0xFFFFFFFF)
+									{
+										para.FinishVoice = ByteConverter.ToUInt32(datafile, address + 8);
+										para.FirstVoice = ByteConverter.ToUInt32(datafile, address + 0xC);
+										para.LastVoice = ByteConverter.ToUInt32(datafile, address + 0x10);
+									}
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									para.ShadowModel = model.Name;
 									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
@@ -972,7 +974,11 @@ namespace SplitTools.SplitDLL
 										bmte.Motion = mtns[mtnaddr];
 									bmte.LoopProperty = ByteConverter.ToUInt16(datafile, address + 4);
 									bmte.Pose = ByteConverter.ToUInt16(datafile, address + 6);
-									bmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
+									int ptr = ByteConverter.ToInt32(datafile, address + 8);
+									if (ptr != -1)
+									{
+										bmte.NextAnimation = ByteConverter.ToInt32(datafile, address + 8);
+									}
 									bmte.TransitionSpeed = ByteConverter.ToUInt32(datafile, address + 12);
 									bmte.StartFrame = ByteConverter.ToSingle(datafile, address + 16);
 									bmte.EndFrame = ByteConverter.ToSingle(datafile, address + 20);
