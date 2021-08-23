@@ -717,8 +717,7 @@ namespace SplitTools
 		Tails = 4,
 		Eggman = 5,
 		Shadow = 6,
-		Rouge = 7,
-		SuperSonic = 9,
+		Rouge = 7
 	}
 
 	[Flags()]
