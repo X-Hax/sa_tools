@@ -55,7 +55,6 @@ namespace SA2EventViewer
 		EditorOptionsEditor optionsEditor;
 
 		bool loaded;
-		Event dcbeta;
 		string currentFileName = "";
 		Event @event;
 		int scenenum = 0;
