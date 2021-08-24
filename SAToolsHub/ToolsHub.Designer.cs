@@ -577,8 +577,8 @@
 			// 
 			this.autoUpdateToolStripMenuItem.Name = "autoUpdateToolStripMenuItem";
 			this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(216, 54);
-			this.autoUpdateToolStripMenuItem.Text = "Auto Update";
-			this.autoUpdateToolStripMenuItem.ToolTipText = "Enables Automatic Update checks";
+			this.autoUpdateToolStripMenuItem.Text = "Check on Statup";
+			this.autoUpdateToolStripMenuItem.ToolTipText = "Enables update checks every time you start the program.";
 			this.autoUpdateToolStripMenuItem.Click += new System.EventHandler(this.autoUpdateToolStripMenuItem_Click);
 			// 
 			// frequencyToolStripMenuItem
@@ -595,14 +595,14 @@
 			// alwaysToolStripMenuItem
 			// 
 			this.alwaysToolStripMenuItem.Name = "alwaysToolStripMenuItem";
-			this.alwaysToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+			this.alwaysToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.alwaysToolStripMenuItem.Text = "Always";
 			this.alwaysToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolStripMenuItem_Click);
 			// 
 			// dailyToolStripMenuItem
 			// 
 			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
-			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.dailyToolStripMenuItem.Text = "Daily";
 			this.dailyToolStripMenuItem.ToolTipText = "Checks daily for updates.";
 			this.dailyToolStripMenuItem.Click += new System.EventHandler(this.dailyToolStripMenuItem_Click);
@@ -610,7 +610,7 @@
 			// weeklyToolStripMenuItem
 			// 
 			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
-			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.weeklyToolStripMenuItem.Text = "Weekly";
 			this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
 			this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);

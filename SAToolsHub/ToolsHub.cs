@@ -681,28 +681,18 @@ namespace SAToolsHub
 		//Settings
 		private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			// TODO: Implement proper update system.
 			checkForUpdatesToolStripMenuItem.Enabled = false;
+			tsUpdate.Enabled = false;
 
 			if (CheckForUpdates(true))
 			{
 				return;
 			}
-			/*
-			DialogResult diagUpdates = MessageBox.Show(("This feature has not been implemented yet.\n\nWould you like to manually download the latest build?" +
-				"\n\n(Pressing yes will open a link to the latest SA Tools.7z.)"), "SA Tools Update", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-			if (diagUpdates == DialogResult.Yes)
+			else
 			{
-				try
-				{
-					Process.Start("https://mm.reimuhakurei.net/SA%20Tools.7z");
-				}
-				catch
-				{
-					MessageBox.Show("Something went wrong, could not open link in browser.");
-				}
+				tsUpdate.Enabled = true;
+				checkForUpdatesToolStripMenuItem.Enabled = true;
 			}
-			*/
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1417,7 +1407,7 @@ namespace SAToolsHub
 				try
 				{
 					string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + File.ReadAllText("satoolsver.txt"));
-
+					//string msg = File.ReadAllText("satoolsver.txt");
 					if (msg.Length > 0)
 					{
 						using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))
@@ -1451,10 +1441,12 @@ namespace SAToolsHub
 							}
 						}
 					}
+					tsUpdate.Enabled = true;
+					checkForUpdatesToolStripMenuItem.Enabled = true;
 				}
 				catch
 				{
-					MessageBox.Show(this, "Unable to retrieve update information.", "SADX Mod Manager");
+					MessageBox.Show(this, "Unable to retrieve update information.", "SA Tools");
 				}
 			}
 

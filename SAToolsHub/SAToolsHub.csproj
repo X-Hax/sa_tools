@@ -80,41 +80,41 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="buildWindow.cs">
+    <Compile Include="Forms\buildWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="buildWindow.Designer.cs">
+    <Compile Include="Forms\buildWindow.Designer.cs">
       <DependentUpon>buildWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="editProj.cs">
+    <Compile Include="Forms\editProj.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="editProj.Designer.cs">
+    <Compile Include="Forms\editProj.Designer.cs">
       <DependentUpon>editProj.cs</DependentUpon>
     </Compile>
-    <Compile Include="gameOptions.cs">
+    <Compile Include="Forms\gameOptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="gameOptions.Designer.cs">
+    <Compile Include="Forms\gameOptions.Designer.cs">
       <DependentUpon>gameOptions.cs</DependentUpon>
     </Compile>
     <Compile Include="ListViewSortingcs.cs" />
-    <Compile Include="ManualBuildWindow.cs">
+    <Compile Include="Forms\ManualBuildWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ManualBuildWindow.Designer.cs">
+    <Compile Include="Forms\ManualBuildWindow.Designer.cs">
       <DependentUpon>ManualBuildWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="newProj.cs">
+    <Compile Include="Forms\newProj.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="newProj.Designer.cs">
+    <Compile Include="Forms\newProj.Designer.cs">
       <DependentUpon>newProj.cs</DependentUpon>
     </Compile>
-    <Compile Include="projConv.cs">
+    <Compile Include="Forms\projConv.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="projConv.Designer.cs">
+    <Compile Include="Forms\projConv.Designer.cs">
       <DependentUpon>projConv.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -123,10 +123,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SizeSuffix.cs" />
-    <Compile Include="templateWriter.cs">
+    <Compile Include="Forms\templateWriter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="templateWriter.Designer.cs">
+    <Compile Include="Forms\templateWriter.Designer.cs">
       <DependentUpon>templateWriter.cs</DependentUpon>
     </Compile>
     <Compile Include="ToolsHub.cs">
@@ -162,25 +162,25 @@
     <Compile Include="Updater\UpdaterWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
-    <EmbeddedResource Include="buildWindow.resx">
+    <EmbeddedResource Include="Forms\buildWindow.resx">
       <DependentUpon>buildWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="editProj.resx">
+    <EmbeddedResource Include="Forms\editProj.resx">
       <DependentUpon>editProj.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="gameOptions.resx">
+    <EmbeddedResource Include="Forms\gameOptions.resx">
       <DependentUpon>gameOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ManualBuildWindow.resx">
+    <EmbeddedResource Include="Forms\ManualBuildWindow.resx">
       <DependentUpon>ManualBuildWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="newProj.resx">
+    <EmbeddedResource Include="Forms\newProj.resx">
       <DependentUpon>newProj.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="projConv.resx">
+    <EmbeddedResource Include="Forms\projConv.resx">
       <DependentUpon>projConv.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="templateWriter.resx">
+    <EmbeddedResource Include="Forms\templateWriter.resx">
       <DependentUpon>templateWriter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolsHub.resx">
