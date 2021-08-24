@@ -708,6 +708,18 @@ namespace SplitTools
 		SuperShadow = 0xA
 	}
 
+	public enum SA2KartCharacters
+	{
+		TailsStory = 0,
+		RougeStory = 1,
+		Sonic = 2,
+		Knuckles = 3,
+		Tails = 4,
+		Eggman = 5,
+		Shadow = 6,
+		Rouge = 7
+	}
+
 	[Flags()]
 	public enum SA2CharacterFlags
 	{

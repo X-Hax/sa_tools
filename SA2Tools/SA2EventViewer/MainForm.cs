@@ -127,7 +127,7 @@ namespace SA2EventViewer
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Event Files|e????.prs|All Files|*.*"
+				Filter = "Event Files|e????.prs;e????.bin|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
@@ -200,8 +200,9 @@ namespace SA2EventViewer
 				else
 					bigmeshes.Add(null);
 			}
-
 			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.prs";
+			if (!File.Exists(TexturePackName))
+				TexturePackName = Path.GetFileNameWithoutExtension(filename) + ".pvm";
 			TextureInfo = TextureArchive.GetTextures(TexturePackName);
 
 			Textures = new Texture[TextureInfo.Length];
