@@ -128,7 +128,7 @@ namespace SA2EventViewer
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "Event Files|e????.prs|All Files|*.*"
+				Filter = "Event Files|e????.prs;e????.bin|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
