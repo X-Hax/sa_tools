@@ -55,6 +55,7 @@ namespace SA2EventViewer
 		EditorOptionsEditor optionsEditor;
 
 		bool loaded;
+		Event dcbeta;
 		string currentFileName = "";
 		Event @event;
 		int scenenum = 0;
@@ -200,8 +201,9 @@ namespace SA2EventViewer
 				else
 					bigmeshes.Add(null);
 			}
-
 			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.prs";
+			if (!File.Exists(TexturePackName))
+				TexturePackName = Path.GetFileNameWithoutExtension(filename) + ".pvm";
 			TextureInfo = TextureArchive.GetTextures(TexturePackName);
 
 			Textures = new Texture[TextureInfo.Length];
