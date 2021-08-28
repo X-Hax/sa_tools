@@ -107,6 +107,7 @@
 			this.Name = "UpdateMessageDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Mod Manager";
 			this.Load += new System.EventHandler(this.UpdateMessageDialog_Load);
 			this.ResumeLayout(false);

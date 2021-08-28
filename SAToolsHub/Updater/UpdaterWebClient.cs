@@ -11,7 +11,7 @@ namespace SAToolsHub.Updater
 
 			if (request != null)
 			{
-				request.UserAgent = "mod-manager";
+				request.UserAgent = "sa-tools";
 				request.Timeout = 5000;
 			}
 

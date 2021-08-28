@@ -77,11 +77,13 @@ namespace SAToolsHub
 		public SAToolsHub()
 		{
 			InitializeComponent();
+			lvwColumnSorter = new ListViewColumnSorter();
+			this.listView1.ListViewItemSorter = lvwColumnSorter;
 
 			hubSettings = ProjectSettings.Load();
 
-			if (Program.Arguments.Length > 0)
-				openProject(ProjectFunctions.openProjectFileString(Program.Arguments[0]));
+			//if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
+				//openProject(ProjectFunctions.openProjectFileString(Program.Arguments[0]));
 
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
@@ -112,10 +114,12 @@ namespace SAToolsHub
 					weeklyToolStripMenuItem.Checked = false;
 					break;
 				case ProjectSettings.UpdateUnits.Days:
+					alwaysToolStripMenuItem.Checked = false;
 					dailyToolStripMenuItem.Checked = true;
 					weeklyToolStripMenuItem.Checked = false;
 					break;
 				case ProjectSettings.UpdateUnits.Weeks:
+					alwaysToolStripMenuItem.Checked = false;
 					dailyToolStripMenuItem.Checked = false;
 					weeklyToolStripMenuItem.Checked = true;
 					break;
@@ -124,6 +128,31 @@ namespace SAToolsHub
 
 		// TODO: ToolsHub - Migrate some Additional Functions out.
 		#region Additional Functions
+		private string getGameFile(string game)
+		{
+			switch (game)
+			{
+				case "SA1":
+				case "SA1AD":
+				case "SA2":
+				case "SA2TT":
+				case "SA2P":
+					return "1ST_READ.BIN";
+				case "SADXGC":
+				case "SADXGCP":
+				case "SADXGCR":
+					return "_Main.rel";
+				case "SADX360":
+					return "SonicPackage.xlast";
+				case "SADXPC":
+					return "sonic.exe";
+				case "SA2PC":
+					return "sonic2app.exe";
+				default:
+					return "";
+			}
+		}
+
 		private void initProject()
 		{
 			Templates.ProjectTemplate projectFile;
@@ -143,52 +172,126 @@ namespace SAToolsHub
 		private void openProject(Templates.ProjectTemplate projFile)
 		{
 			string rootFolder;
+			string gameFile = getGameFile(projFile.GameInfo.GameName);
+			bool validFolders = true;
+			bool sapChanged = false;
 
 			setGame = projFile.GameInfo.GameName;
+			
 			projectDirectory = (projFile.GameInfo.ModSystemFolder);
-			gameDirectory = (projFile.GameInfo.GameSystemFolder);			
+			gameDirectory = (projFile.GameInfo.GameSystemFolder);
 
-			switch (setGame)
+			// Check for valid paths just in case the user moved folders.
+			if (!Directory.Exists(projectDirectory))
 			{
-				case "SADXPC":
-					gameDir = gameDirectory + "\\system\\";
-					rootFolder = "SADX Game Files";
-					break;
-				case "SA2PC":
-					gameDir = gameDirectory + "\\resource\\gd_PC\\";
-					rootFolder = "SA2PC Game Files";
-					break;
-				default:
-					gameDir = gameDirectory;
-					rootFolder = setGame + " Game Directory";
-					break;
+			MissingProjectFolder:
+				DialogResult projDirMissing = MessageBox.Show(("Project Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (projDirMissing == DialogResult.OK)
+				{
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select the correct project folder";
+					if (fsd.ShowDialog(IntPtr.Zero))
+					{
+						projectDirectory = fsd.FileName;
+						projFile.GameInfo.ModSystemFolder = projectDirectory;
+						sapChanged = true;
+					}
+					else
+					{
+						DialogResult noProjFolder = MessageBox.Show(("No folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						if (noProjFolder == DialogResult.Retry)
+							goto MissingProjectFolder;
+						else
+							validFolders = false;
+					}
+				}
 			}
 
-			PopulateTreeView(projectDirectory);
-			PopulateTreeView(gameDir);
-			treeView1.Nodes[1].Text = rootFolder;
-			this.treeView1.NodeMouseClick +=
-				new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
-
-			projSplitEntries = projFile.SplitEntries;
-			if (setGame.Contains("SA2"))
+			if (!Directory.Exists(gameDirectory))
 			{
-				projSplitMDLEntries = projFile.SplitMDLEntries;
-				
+			MissingGameFolder:
+				DialogResult gameDirMissing = MessageBox.Show(("Game Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gameDirMissing == DialogResult.OK)
+				{
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select the correct game folder";
+					if (fsd.ShowDialog(IntPtr.Zero))
+					{
+						if (File.Exists(Path.Combine(fsd.FileName, gameFile)))
+						{
+							gameDirectory = fsd.FileName;
+							projFile.GameInfo.GameSystemFolder = gameDirectory;
+							sapChanged = true;
+						}
+						else
+						{
+							DialogResult invalidGameFolder = MessageBox.Show(("Invalid folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							if (invalidGameFolder == DialogResult.Retry)
+								goto MissingGameFolder;
+							else
+								validFolders = false;
+						}
+					}
+					else
+					{
+						DialogResult noGameFolder = MessageBox.Show(("No folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						if (noGameFolder == DialogResult.Retry)
+							goto MissingGameFolder;
+						else
+							validFolders = false;
+					}
+				}
 			}
 
-			toggleButtons(setGame);
-			closeProjectToolStripMenuItem.Enabled = true;
-			if (projFile.GameInfo.CanBuild)
+			if (sapChanged)
 			{
-				buildToolStripMenuItem.Enabled = true;
-				editProjectInfoToolStripMenuItem.Enabled = true;
-				tsBuild.Enabled = true;
-				tsGameRun.Enabled = true;
-				tsEditProj.Enabled = true;
+				// If new Paths provided, update sap file
 			}
 
-			editToolStripMenuItem.Enabled = true;
+			if (validFolders)
+			{
+				switch (setGame)
+				{
+					case "SADXPC":
+						gameDir = gameDirectory + "\\system\\";
+						rootFolder = "SADX Game Files";
+						break;
+					case "SA2PC":
+						gameDir = gameDirectory + "\\resource\\gd_PC\\";
+						rootFolder = "SA2PC Game Files";
+						break;
+					default:
+						gameDir = gameDirectory;
+						rootFolder = setGame + " Game Directory";
+						break;
+				}
+
+				PopulateTreeView(projectDirectory);
+				PopulateTreeView(gameDir);
+				treeView1.Nodes[1].Text = rootFolder;
+				this.treeView1.NodeMouseClick +=
+					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+
+				projSplitEntries = projFile.SplitEntries;
+				if (setGame.Contains("SA2"))
+				{
+					projSplitMDLEntries = projFile.SplitMDLEntries;
+
+				}
+
+				toggleButtons(setGame);
+				closeProjectToolStripMenuItem.Enabled = true;
+				if (projFile.GameInfo.CanBuild)
+				{
+					buildToolStripMenuItem.Enabled = true;
+					editProjectInfoToolStripMenuItem.Enabled = true;
+					tsBuild.Enabled = true;
+					tsGameRun.Enabled = true;
+					tsEditProj.Enabled = true;
+				}
+
+				editToolStripMenuItem.Enabled = true;
+			}
 		}
 
 		public void resetOpenProject()
@@ -1407,7 +1510,6 @@ namespace SAToolsHub
 				try
 				{
 					string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + File.ReadAllText("satoolsver.txt"));
-					//string msg = File.ReadAllText("satoolsver.txt");
 					if (msg.Length > 0)
 					{
 						using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))

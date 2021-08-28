@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using System.Diagnostics;
 using SAToolsHub.Updater;
 
 namespace SAToolsHub
@@ -53,16 +55,15 @@ namespace SAToolsHub
 				}
 				catch { }
 			}
-
+			
 			if (alreadyRunning)
 			{
 				return;
 			}
 
 			Arguments = args;
-            toolsHub = new SAToolsHub();
-            //Application.ThreadException += Application_ThreadException;
-            Application.Run(toolsHub);
+
+			Application.Run(new SAToolsHub());
 		}
     }
 }
