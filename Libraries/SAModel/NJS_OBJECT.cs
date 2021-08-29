@@ -286,6 +286,11 @@ namespace SAModel
 			return result.ToArray();
 		}
 
+        public NJS_OBJECT[] GetObjectsAnimated()
+        {
+            return GetObjects().Where(a => a.Animate).ToArray();
+        }
+
         public int[] GetVertexCounts()
         {
             switch (GetModelFormat())
