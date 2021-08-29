@@ -13,9 +13,17 @@ namespace LabelTool
         {
             switch (args[args.Length - 1])
             {
+                // Generate labels
+                case "-g":
+                    LabelGen_Main(args);
+                    return;
                 // Create match list
                 case "-cm":
                     LabelMatchList(args);
+                    return;
+                // Create an address range list
+                case "-ad":
+                    LabelAddressList(args);
                     return;
                 // Find duplicate addresses in split INI files
                 case "-di":
@@ -75,6 +83,22 @@ namespace LabelTool
                     }
                 }
             }
+        }
+
+        // Scans a folder with unlabelled (address-based) assets and outputs a list of address ranges occupied by each asset
+        static void LabelAddressList(string[] args)
+        {
+            string folder = args[0];
+            string[] files = Directory.GetFiles(Path.GetFullPath(folder), "*.sa*", SearchOption.AllDirectories);
+            TextWriter writer_list = File.CreateText("transfer_address.txt");
+            for (int i = 0; i < files.Length; i++)
+            {
+                string filePath_rel = MakeRelativePath(Path.GetFullPath(folder), files[i]);
+                Console.WriteLine("Processing file {0} of {1}: {2}", i + 1, files.Length, filePath_rel);
+                AddressesFromLabels(files[i], filePath_rel, writer_list);
+            }
+            writer_list.Flush();
+            writer_list.Close();
         }
     }
 }
