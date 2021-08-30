@@ -56,9 +56,9 @@ namespace SAToolsHub.Updater
 
 		public ModManifestDiff(ModManifestState state, ModManifestEntry current, ModManifestEntry last)
 		{
-			State   = state;
+			State = state;
 			Current = current;
-			Last    = last;
+			Last = last;
 		}
 	}
 
@@ -76,23 +76,23 @@ namespace SAToolsHub.Updater
 	{
 		public FileHashEventArgs(string fileName, int fileIndex, int fileCount)
 		{
-			FileName  = fileName;
+			FileName = fileName;
 			FileIndex = fileIndex;
 			FileCount = fileCount;
-			Cancel    = false;
+			Cancel = false;
 		}
 
-		public string FileName  { get; }
-		public int    FileIndex { get; }
-		public int    FileCount { get; }
-		public bool   Cancel    { get; set; }
+		public string FileName { get; }
+		public int FileIndex { get; }
+		public int FileCount { get; }
+		public bool Cancel { get; set; }
 	}
 
 	public class ModManifestGenerator
 	{
 		public event EventHandler<FilesIndexedEventArgs> FilesIndexed;
-		public event EventHandler<FileHashEventArgs>     FileHashStart;
-		public event EventHandler<FileHashEventArgs>     FileHashEnd;
+		public event EventHandler<FileHashEventArgs> FileHashStart;
+		public event EventHandler<FileHashEventArgs> FileHashEnd;
 
 		/// <summary>
 		/// Generates a manifest for a given mod.
@@ -110,8 +110,8 @@ namespace SAToolsHub.Updater
 
 			List<string> fileIndex = Directory.EnumerateFiles(modPath, "*", SearchOption.AllDirectories)
 				.Where(x => !string.IsNullOrEmpty(x) &&
-				            !Path.GetFileName(x).Equals("mod.manifest") &&
-				            !Path.GetFileName(x).Equals("mod.version"))
+							!Path.GetFileName(x).Equals("mod.manifest") &&
+							!Path.GetFileName(x).Equals("mod.version"))
 				.ToList();
 
 			if (fileIndex.Count < 1)
@@ -411,6 +411,49 @@ namespace SAToolsHub.Updater
 		{
 			File.WriteAllLines(filePath, manifest.Select(x => x.ToString()));
 		}
+
+		/// <summary>
+		/// Get all distinct directories from an old manifest which no longer exist in a new manifest.
+		/// </summary>
+		/// <param name="oldManifest">The old manifest.</param>
+		/// <param name="newManifest">The new manifest.</param>
+		/// <returns>
+		/// All distinct directories exclusive to <paramref name="oldManifest"/> in descending order
+		/// sorted by number of directory separators, with platform-agnostic directory separators
+		/// replaced with <see cref="Path.DirectorySeparatorChar"/>.
+		/// </returns>
+		public static IEnumerable<string> GetOldDirectories(IEnumerable<ModManifestEntry> oldManifest, IEnumerable<ModManifestEntry> newManifest)
+		{
+			IEnumerable<string> GetDistinctPaths(IEnumerable<ModManifestEntry> manifest)
+			{
+				return manifest.Select(x => Path.GetDirectoryName(x.FilePath))
+							   .Where(s => !string.IsNullOrEmpty(s))
+							   .Select(s => s.Replace('/', Path.DirectorySeparatorChar))
+							   .Distinct(StringComparer.OrdinalIgnoreCase);
+			}
+
+			var newDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			// Collect all directories (and their parent directories) from the new manifest.
+			foreach (string newPath in GetDistinctPaths(newManifest))
+			{
+				string path = newPath;
+
+				do
+				{
+					// FIXME: We could probably bail out of this loop early if Add returns false.
+					// Very minor performance optimization; don't have time to test.
+					newDirectories.Add(path);
+
+					// Keep asking for and adding the parent directory until there isn't one.
+					path = Path.GetDirectoryName(path);
+				} while (!string.IsNullOrEmpty(path));
+			}
+
+			// Return all directories that exist only in the old manifest.
+			return GetDistinctPaths(oldManifest).Where(s => !newDirectories.Contains(s))
+												.OrderByDescending(s => s.Count(c => c == Path.DirectorySeparatorChar));
+		}
 	}
 
 	/// <summary>
@@ -489,8 +532,8 @@ namespace SAToolsHub.Updater
 			}
 
 			return FileSize == m.FileSize &&
-			       FilePath.Equals(m.FilePath, StringComparison.OrdinalIgnoreCase) &&
-			       Checksum.Equals(m.Checksum, StringComparison.OrdinalIgnoreCase);
+				   FilePath.Equals(m.FilePath, StringComparison.OrdinalIgnoreCase) &&
+				   Checksum.Equals(m.Checksum, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public override int GetHashCode()

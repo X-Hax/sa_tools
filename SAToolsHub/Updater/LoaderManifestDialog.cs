@@ -47,8 +47,8 @@ namespace SAToolsHub.Updater
 					// poor man's await Task.Run (not available in .net 4.0)
 					using (var task = new Task(() =>
 					{
-						string newManPath = Path.Combine(updatePath, "tools.manifest");
-						string oldManPath = "tools.manifest";
+						string newManPath = Path.Combine(updatePath, "satools.manifest");
+						string oldManPath = "satools.manifest";
 
 						SetTaskAndStep("Parsing manifest...");
 						if (token.IsCancellationRequested)
@@ -135,21 +135,14 @@ namespace SAToolsHub.Updater
 
 		private void RemoveEmptyDirectories(IEnumerable<ModManifestEntry> oldManifest, IEnumerable<ModManifestEntry> newManifest)
 		{
-			// Grab all directories that exist only in the old manifest.
-			var directories = new HashSet<string>
-			(
-				oldManifest.Select(x => Path.GetDirectoryName(x.FilePath))
-					.Except(newManifest.Select(x => Path.GetDirectoryName(x.FilePath)))
-					.Where(x => !string.IsNullOrEmpty(x))
-					.Select(x => x.Replace("/", "\\"))
-					.OrderByDescending(x => x.Count(c => c == '\\'))
-			);
-
-			// ok delete them thx
-			foreach (string dir in directories)
+			foreach (string dir in ModManifest.GetOldDirectories(oldManifest, newManifest))
 			{
 				if (Directory.Exists(dir))
 				{
+					// Note that this is very intentionally not recursive. If there are
+					// any files left over somehow, this SHOULD be considered an error,
+					// as the goal is to exclusively remove empty directories.
+					// - SF94
 					Directory.Delete(dir);
 				}
 			}

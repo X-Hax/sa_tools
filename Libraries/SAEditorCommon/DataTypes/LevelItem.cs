@@ -238,7 +238,6 @@ namespace SAModel.SAEditorCommon.DataTypes
 
             using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
             {
-                DefaultExt = "dae",
                 FileName = Name + defaultex,
 				Filter = "SAModel Files|*.sa?mdl|Collada|*.dae|Wavefront|*.obj"
 			})
