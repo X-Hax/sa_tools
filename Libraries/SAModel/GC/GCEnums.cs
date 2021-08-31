@@ -350,11 +350,11 @@ namespace SAModel.GC
 	[Flags]
 	public enum GCTileMode
 	{
-		WrapU = 1 << 0,
-		MirrorU = 1 << 1,
-		WrapV = 1 << 2,
-		MirrorV = 1 << 3,
-		Unk_1 = 1 << 4,
+		WrapV = 1 << 0,		// Enables Tile Wrapping/Repeating on V axis
+		MirrorV = 1 << 1,	// Enables Tile Mirror on V axis (overrides clamping)
+		WrapU = 1 << 2,		// Enables Tile Wrapping/Repeating on U axis
+		MirrorU = 1 << 3,	// Enables Tile Mirror on U axis (overrides clamping)
+		Unk_1 = 1 << 4,		
 		Mask = (1 << 5) - 1
 	}
 
