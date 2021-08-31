@@ -105,7 +105,6 @@ namespace SA2EventViewer
 			settingsfile = SettingsFile.Load();
 
 			EditorOptions.Initialize(d3ddevice);
-			EditorOptions.OverrideLighting = true;
 			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.SA2EventViewer.DrawDistance_General;
 			cam.ModifierKey = settingsfile.SA2EventViewer.CameraModifier;
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini"),
@@ -347,7 +346,6 @@ namespace SA2EventViewer
 					transform.Pop();
 				}
 			}
-
 			RenderInfo.Draw(renderList, d3ddevice, cam, true);
 			osd.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
