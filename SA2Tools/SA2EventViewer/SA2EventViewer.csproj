@@ -122,6 +122,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon_sa2EvView.ico" />
+    <None Include="Resources\nextframe.png" />
+    <None Include="Resources\playanim.png" />
+    <None Include="Resources\prevframe.png" />
+    <None Include="Resources\nextanim.png" />
+    <None Include="Resources\prevanim.png" />
+    <None Include="Resources\wireframe.png" />
+    <None Include="Resources\point.png" />
+    <None Include="Resources\solid.png" />
+    <None Include="Resources\settings.png" />
+    <None Include="Resources\messages.png" />
+    <None Include="Resources\material.png" />
+    <None Include="Resources\lighting.png" />
+    <None Include="Resources\open.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
