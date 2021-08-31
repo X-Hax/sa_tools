@@ -19,6 +19,11 @@ namespace SA2EventViewer
 {
 	public partial class MainForm : Form
 	{
+		SettingsFile settingsfile; //For user editable settings
+		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SA2EventViewer.config
+		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SA2EventViewer.log");
+		bool FormResizing;
+		FormWindowState LastWindowState = FormWindowState.Minimized;
 		public MainForm()
 		{
 			InitializeComponent();
@@ -51,10 +56,11 @@ namespace SA2EventViewer
 		}
 
 		internal Device d3ddevice;
-		EditorCamera cam = new EditorCamera(100000);
+		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorOptionsEditor optionsEditor;
 
 		bool loaded;
+		bool DeviceResizing;
 		string currentFileName = "";
 		Event @event;
 		int scenenum = 0;
@@ -70,7 +76,7 @@ namespace SA2EventViewer
 		Texture[] Textures;
 		EventEntity selectedObject;
 		bool eventcamera = true;
-		SettingsFile settingsfile; //For user editable settings
+		OnScreenDisplay osd;
 
 		#region UI
 		bool lookKeyDown;
@@ -86,8 +92,8 @@ namespace SA2EventViewer
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
-			Direct3D d3d = new Direct3D();
-			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, panel1.Handle, CreateFlags.HardwareVertexProcessing,
+			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
+			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 				new PresentParameters
 				{
 					Windowed = true,
@@ -95,11 +101,10 @@ namespace SA2EventViewer
 					EnableAutoDepthStencil = true,
 					AutoDepthStencilFormat = Format.D24X8
 				});
-
+			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			settingsfile = SettingsFile.Load();
 
 			EditorOptions.Initialize(d3ddevice);
-			EditorOptions.OverrideLighting = true;
 			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.SA2EventViewer.DrawDistance_General;
 			cam.ModifierKey = settingsfile.SA2EventViewer.CameraModifier;
 			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini"),
@@ -147,6 +152,7 @@ namespace SA2EventViewer
 			@event = new Event(filename);
 			meshes = new List<List<Mesh[]>>();
 			bigmeshes = new List<Mesh[]>();
+			buttonNextFrame.Enabled = buttonPreviousFrame.Enabled = buttonNextScene.Enabled = buttonPrevScene.Enabled = buttonPlayScene.Enabled = true;
 			foreach (EventScene scene in @event.Scenes)
 			{
 				List<Mesh[]> scenemeshes = new List<Mesh[]>();
@@ -223,19 +229,31 @@ namespace SA2EventViewer
 
 		private void UpdateStatusString()
 		{
+			string cameramode = "Move";
+			string look = "Look";
+			string zoom = "Zoom";
 			Text = "SA2 Event Viewer: " + currentFileName;
 			camModeLabel.Text = eventcamera ? "Event Cam" : "Free Cam";
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
 			cameraFOVLabel.Text = $"FOV: {cam.FOV}";
 			sceneNumLabel.Text = $"Scene: {scenenum}";
 			animFrameLabel.Text = $"Frame: {animframe}";
+			if (showAdvancedCameraInfoToolStripMenuItem.Checked)
+			{
+				if (lookKeyDown) cameramode = look;
+				if (zoomKeyDown) cameramode = zoom;
+				cameraAngleLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+				camModeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+				cameraAngleLabel.Text = $"Pitch: " + cam.Pitch.ToString("X5") + " Yaw: " + cam.Yaw.ToString("X5") + (cam.mode == 1 ? " Distance: " + cam.Distance : "");
+				camModeLabel.Text = $"Mode: " + cameramode + ", Speed: " + cam.MoveSpeed;
+			}
 		}
 
 		#region Rendering Methods
 		internal void DrawEntireModel()
 		{
-			if (!loaded) return;
-			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(cam.FOV, panel1.Width / (float)panel1.Height, 1, cam.DrawDistance));
+			if (!loaded || DeviceResizing) return;
+			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH(cam.FOV, RenderPanel.Width / (float)RenderPanel.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
 			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
@@ -328,8 +346,8 @@ namespace SA2EventViewer
 					transform.Pop();
 				}
 			}
-
 			RenderInfo.Draw(renderList, d3ddevice, cam, true);
+			osd.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
 			d3ddevice.Present();
 		}
@@ -478,6 +496,97 @@ namespace SA2EventViewer
 
 		#region Keyboard/Mouse Methods
 
+		private void NextAnimation()
+		{
+			scenenum++;
+			animframe = (timer1.Enabled ? 0 : -1);
+			decframe = animframe;
+			if (scenenum == @event.Scenes.Count)
+			{
+				if (timer1.Enabled)
+					scenenum = 1;
+				else
+					scenenum = 0;
+			}
+			osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			buttonPlayScene.Enabled = true;
+			UpdateWeightedModels();
+			DrawEntireModel();
+		}
+
+		private void PreviousAnimation()
+		{
+			scenenum--;
+			animframe = (timer1.Enabled ? 0 : -1);
+			decframe = animframe;
+			if (scenenum == -1 || (timer1.Enabled && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
+			osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			buttonPlayScene.Enabled = true;
+			UpdateWeightedModels();
+			DrawEntireModel();
+		}
+
+		private void PreviousFrame()
+		{
+			if (scenenum > 0 && !timer1.Enabled)
+			{
+				animframe--;
+				if (animframe < -1)
+				{
+					scenenum--;
+					if (scenenum == 0)
+						scenenum = @event.Scenes.Count - 1;
+					animframe = @event.Scenes[scenenum].FrameCount - 1;
+				}
+				decframe = animframe;
+				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				UpdateWeightedModels();
+				DrawEntireModel();
+			}
+		}
+
+		private void NextFrame()
+		{
+			if (scenenum > 0 && !timer1.Enabled)
+			{
+				animframe++;
+				if (animframe == @event.Scenes[scenenum].FrameCount)
+				{
+					scenenum++;
+					if (scenenum == @event.Scenes.Count)
+						scenenum = 1;
+					animframe = -1;
+				}
+				decframe = animframe;
+				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				UpdateWeightedModels();
+				DrawEntireModel();
+			}
+		}
+
+		private void PlayPause()
+		{
+			if (!timer1.Enabled)
+			{
+				if (scenenum == 0)
+					scenenum = 1;
+				if (animframe == -1)
+					decframe = animframe = 0;
+			}
+			timer1.Enabled = !timer1.Enabled;
+			if (timer1.Enabled)
+			{
+				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayScene.Checked = true;
+			}
+			else
+			{
+				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayScene.Checked = false;
+			}
+			UpdateWeightedModels();
+			DrawEntireModel();
+		}
 		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
 		{
 			if (!loaded)
@@ -489,7 +598,9 @@ namespace SA2EventViewer
 			{
 				case ("Camera Mode"):
 					eventcamera = !eventcamera;
-
+					string cammode = "Event Cam";
+					if (!eventcamera) cammode = "Free Cam";
+					osd.UpdateOSDItem("Camera mode: " + cammode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
@@ -502,38 +613,53 @@ namespace SA2EventViewer
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
-
+					osd.UpdateOSDItem("Camera zoomed to target", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Change Render Mode"):
+					string rendermode = "Solid";
 					if (EditorOptions.RenderFillMode == FillMode.Solid)
+					{
 						EditorOptions.RenderFillMode = FillMode.Point;
+						rendermode = "Point";
+					}
 					else
+					{
 						EditorOptions.RenderFillMode += 1;
-
+						if (EditorOptions.RenderFillMode == FillMode.Solid) rendermode = "Solid";
+						else rendermode = "Wireframe";
+					}
+					osd.UpdateOSDItem("Render mode: " + rendermode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					draw = true;
 					break;
 
 				case ("Increase camera move speed"):
 					cam.MoveSpeed += 0.0625f;
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
+					UpdateStatusString();
 					break;
 
 				case ("Decrease camera move speed"):
-					cam.MoveSpeed -= 0.0625f;
+					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
+					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
+					UpdateStatusString();
 					break;
 
 				case ("Reset camera move speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
+					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
+					UpdateStatusString();
 					break;
 
 				case ("Reset Camera Position"):
 					if (!eventcamera)
 					{
 						cam.Position = new Vector3();
+						osd.UpdateOSDItem("Reset camera position", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -543,6 +669,7 @@ namespace SA2EventViewer
 					{
 						cam.Pitch = 0;
 						cam.Yaw = 0;
+						osd.UpdateOSDItem("Reset camera rotation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 						draw = true;
 					}
 					break;
@@ -560,73 +687,23 @@ namespace SA2EventViewer
 					break;
 
 				case ("Next Scene"):
-					scenenum++;
-					animframe = (timer1.Enabled ? 0 : -1);
-					decframe = animframe;
-					if (scenenum == @event.Scenes.Count)
-					{
-						if (timer1.Enabled)
-							scenenum = 1;
-						else
-							scenenum = 0;
-					}
-
-					draw = true;
+					NextAnimation();
 					break;
 
 				case ("Previous Scene"):
-					scenenum--;
-					animframe = (timer1.Enabled ? 0 : -1);
-					decframe = animframe;
-					if (scenenum == -1 || (timer1.Enabled && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
-
-					draw = true;
+					PreviousAnimation();
 					break;
 
 				case ("Previous Frame"):
-					if (scenenum > 0 && !timer1.Enabled)
-					{
-						animframe--;
-						if (animframe < -1)
-						{
-							scenenum--;
-							if (scenenum == 0)
-								scenenum = @event.Scenes.Count - 1;
-							animframe = @event.Scenes[scenenum].FrameCount - 1;
-						}
-						decframe = animframe;
-
-						draw = true;
-					}
+					PreviousFrame();
 					break;
 
 				case ("Next Frame"):
-					if (scenenum > 0 && !timer1.Enabled)
-					{
-						animframe++;
-						if (animframe == @event.Scenes[scenenum].FrameCount)
-						{
-							scenenum++;
-							if (scenenum == @event.Scenes.Count)
-								scenenum = 1;
-							animframe = -1;
-						}
-						decframe = animframe;
-
-						draw = true;
-					}
+					NextFrame();
 					break;
 
 				case ("Play/Pause Animation"):
-					if (!timer1.Enabled)
-					{
-						if (scenenum == 0)
-							scenenum = 1;
-						if (animframe == -1)
-							decframe = animframe = 0;
-					}
-					timer1.Enabled = !timer1.Enabled;
-					draw = true;
+					PlayPause();
 					break;
 
 				default:
@@ -679,7 +756,7 @@ namespace SA2EventViewer
 			int camresult = 0;
 			if (!eventcamera || animframe == -1)
 			{
-				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : panel1.RectangleToScreen(panel1.Bounds);
+				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
 			}
 			if (camresult >= 2 && selectedObject != null) propertyGrid1.Refresh();
@@ -790,7 +867,7 @@ namespace SA2EventViewer
 			}
 
 			if (e.Button == MouseButtons.Right)
-				contextMenuStrip1.Show(panel1, e.Location);
+				contextMenuStrip1.Show(RenderPanel, e.Location);
 		}
 
 		internal void SelectedItemChanged()
@@ -846,6 +923,111 @@ namespace SA2EventViewer
 			DrawEntireModel();
 		}
 
+		private void buttonSolid_Click(object sender, EventArgs e)
+		{
+			EditorOptions.RenderFillMode = FillMode.Solid;
+			buttonSolid.Checked = true;
+			buttonVertices.Checked = false;
+			buttonWireframe.Checked = false;
+			osd.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonVertices_Click(object sender, EventArgs e)
+		{
+			EditorOptions.RenderFillMode = FillMode.Point;
+			buttonSolid.Checked = false;
+			buttonVertices.Checked = true;
+			buttonWireframe.Checked = false;
+			osd.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonWireframe_Click(object sender, EventArgs e)
+		{
+			EditorOptions.RenderFillMode = FillMode.Wireframe;
+			buttonSolid.Checked = false;
+			buttonVertices.Checked = false;
+			buttonWireframe.Checked = true;
+			osd.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonOpen_Click(object sender, EventArgs e)
+		{
+			openToolStripMenuItem_Click(sender, e);
+		}
+
+		private void DeviceReset()
+		{
+			if (d3ddevice == null) return;
+			DeviceResizing = true;
+			PresentParameters pp = new PresentParameters
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8
+			};
+			d3ddevice.Reset(pp);
+			DeviceResizing = false;
+			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			DrawEntireModel();
+		}
+
+		private void buttonPrevScene_Click(object sender, EventArgs e)
+		{
+			PreviousAnimation();
+		}
+
+		private void buttonNextScene_Click(object sender, EventArgs e)
+		{
+			NextAnimation();
+		}
+
+		private void buttonPrevFrame_Click(object sender, EventArgs e)
+		{
+			PreviousFrame();
+		}
+
+		private void buttonPlayScene_Click(object sender, EventArgs e)
+		{
+			PlayPause();
+		}
+
+		private void buttonNextFrame_Click(object sender, EventArgs e)
+		{
+			NextFrame();
+		}
+
+		private void buttonMaterialColors_CheckedChanged(object sender, EventArgs e)
+		{
+			string showmatcolors = "On";
+			EditorOptions.IgnoreMaterialColors = !buttonMaterialColors.Checked;
+			if (EditorOptions.IgnoreMaterialColors) showmatcolors = "Off";
+			osd.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			UpdateWeightedModels();
+			DrawEntireModel();
+		}
+
+		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			osd.show_osd = !osd.show_osd;
+			buttonShowHints.Checked = showHintsToolStripMenuItem.Checked;
+			DrawEntireModel();
+		}
+
+		private void buttonLighting_Click(object sender, EventArgs e)
+		{
+			string lighting = "On";
+			EditorOptions.OverrideLighting = !EditorOptions.OverrideLighting;
+			buttonLighting.Checked = !EditorOptions.OverrideLighting;
+			if (EditorOptions.OverrideLighting) lighting = "Off";
+			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			UpdateWeightedModels();
+			DrawEntireModel();
+		}
+
 		private void exportSA2MDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" })
@@ -867,7 +1049,26 @@ namespace SA2EventViewer
 					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims.ToArray(), null, null, null, ModelFormat.Chunk);
 				}
 		}
+		private void MainForm_ResizeEnd(object sender, EventArgs e)
+		{
+			FormResizing = false;
+			DeviceReset();
+		}
 
+		private void RenderPanel_SizeChanged(object sender, EventArgs e)
+		{
+			if (WindowState != LastWindowState)
+			{
+				LastWindowState = WindowState;
+				DeviceReset();
+			}
+			else if (!FormResizing) DeviceReset();
+		}
+
+		private void MainForm_ResizeBegin(object sender, EventArgs e)
+		{
+			FormResizing = true;
+		}
 		private void MainForm_Deactivate(object sender, EventArgs e)
 		{
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
@@ -882,5 +1083,14 @@ namespace SA2EventViewer
 			catch { };
 		}
 
+		private void buttonShowHints_Click(object sender, EventArgs e)
+		{
+			showHintsToolStripMenuItem.Checked = !showHintsToolStripMenuItem.Checked;
+		}
+
+		private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+		{
+
+		}
 	}
 }
