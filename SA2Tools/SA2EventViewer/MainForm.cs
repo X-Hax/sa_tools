@@ -1123,9 +1123,11 @@ namespace SA2EventViewer
 			showHintsToolStripMenuItem.Checked = !showHintsToolStripMenuItem.Checked;
 		}
 
-		private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+		private void buttonPreferences_Click(object sender, EventArgs e)
 		{
-
-		}
+            optionsEditor.Show();
+            optionsEditor.BringToFront();
+            optionsEditor.Focus();
+        }
 	}
 }

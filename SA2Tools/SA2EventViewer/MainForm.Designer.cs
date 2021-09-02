@@ -464,6 +464,7 @@ namespace SA2EventViewer
             this.buttonPreferences.Name = "buttonPreferences";
             this.buttonPreferences.Size = new System.Drawing.Size(40, 40);
             this.buttonPreferences.Text = "Preferences";
+            this.buttonPreferences.Click += new System.EventHandler(this.buttonPreferences_Click);
             // 
             // toolStripSeparator2
             // 
