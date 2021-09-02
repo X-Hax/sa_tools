@@ -508,8 +508,16 @@ namespace SA2EventViewer
 				else
 					scenenum = 0;
 			}
-			osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			buttonPlayScene.Enabled = true;
+			if (scenenum == 0)
+			{
+				osd.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayScene.Enabled = false;
+			}
+			else
+			{
+				osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayScene.Enabled = true;
+			}
 			UpdateWeightedModels();
 			DrawEntireModel();
 		}
@@ -520,8 +528,16 @@ namespace SA2EventViewer
 			animframe = (timer1.Enabled ? 0 : -1);
 			decframe = animframe;
 			if (scenenum == -1 || (timer1.Enabled && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
-			osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			buttonPlayScene.Enabled = true;
+			if (scenenum == 0)
+			{
+				osd.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayScene.Enabled = false;
+			}
+			else
+			{
+				osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonPlayScene.Enabled = true;
+			}
 			UpdateWeightedModels();
 			DrawEntireModel();
 		}
@@ -834,6 +850,16 @@ namespace SA2EventViewer
 							entity = @event.Scenes[0].Entities[i];
 						}
 					}
+					if (@event.Scenes[0].Entities[i].GCModel != null)
+					{
+						HitResult hit;
+						hit = @event.Scenes[0].Entities[i].GCModel.CheckHit(Near, Far, viewport, proj, view, new MatrixStack(), meshes[0][i]);
+						if (hit < dist)
+						{
+							dist = hit;
+							entity = @event.Scenes[0].Entities[i];
+						}
+					}
 				}
 				if (scenenum > 0)
 					for (int i = 0; i < @event.Scenes[scenenum].Entities.Count; i++)
@@ -876,11 +902,13 @@ namespace SA2EventViewer
 			{
 				propertyGrid1.SelectedObject = selectedObject;
 				exportSA2MDLToolStripMenuItem.Enabled = selectedObject.Model != null;
+				exportSA2BMDLToolStripMenuItem.Enabled = selectedObject.GCModel != null;
 			}
 			else
 			{
 				propertyGrid1.SelectedObject = null;
 				exportSA2MDLToolStripMenuItem.Enabled = false;
+				exportSA2BMDLToolStripMenuItem.Enabled = false;
 			}
 
 			DrawEntireModel();
@@ -1030,25 +1058,32 @@ namespace SA2EventViewer
 
 		private void exportSA2MDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" })
-				if (dlg.ShowDialog(this) == DialogResult.OK)
-				{
-					List<string> anims = new List<string>();
-					if (selectedObject.Motion != null)
+				using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2mdl", Filter = "SA2MDL files|*.sa2mdl" })
+					if (dlg.ShowDialog(this) == DialogResult.OK)
 					{
-						string animname = Path.GetFileNameWithoutExtension(dlg.FileName) + "_sklmtn.saanim";
-						selectedObject.Motion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
-						anims.Add(animname);
+						List<string> anims = new List<string>();
+						if (selectedObject.Motion != null)
+						{
+							string animname = Path.GetFileNameWithoutExtension(dlg.FileName) + "_sklmtn.saanim";
+							selectedObject.Motion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
+							anims.Add(animname);
+						}
+						if (selectedObject.ShapeMotion != null)
+						{
+							string animname = Path.GetFileNameWithoutExtension(dlg.FileName) + "_shpmtn.saanim";
+							selectedObject.ShapeMotion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
+							anims.Add(animname);
+						}
+						ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims.ToArray(), null, null, null, ModelFormat.Chunk);
 					}
-					if (selectedObject.ShapeMotion != null)
-					{
-						string animname = Path.GetFileNameWithoutExtension(dlg.FileName) + "_shpmtn.saanim";
-						selectedObject.ShapeMotion.Save(Path.Combine(Path.GetDirectoryName(dlg.FileName), animname));
-						anims.Add(animname);
-					}
-					ModelFile.CreateFile(dlg.FileName, selectedObject.Model, anims.ToArray(), null, null, null, ModelFormat.Chunk);
-				}
 		}
+		private void exportSA2BMDLToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+				using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "sa2bmdl", Filter = "SA2BMDL files|*.sa2bmdl" })
+					if (dlg.ShowDialog(this) == DialogResult.OK)
+						ModelFile.CreateFile(dlg.FileName, selectedObject.GCModel, null, null, null, null, ModelFormat.GC);
+		}
+
 		private void MainForm_ResizeEnd(object sender, EventArgs e)
 		{
 			FormResizing = false;
