@@ -124,13 +124,13 @@ namespace SAModel.SAEditorCommon
 
 		public class Settings_SA2EventViewer
 		{
-			[DefaultValue(45000.0f)]
+			[DefaultValue(55000.0f)]
 			public float DrawDistance_General { get; set; }
 			[DefaultValue(1)]
 			public int CameraModifier { get; set; }
 			public Settings_SA2EventViewer()
 			{
-				DrawDistance_General = 45000.0f;
+				DrawDistance_General = 55000.0f;
 				CameraModifier = 1;
 			}
 		}
