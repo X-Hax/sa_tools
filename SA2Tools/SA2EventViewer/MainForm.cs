@@ -511,12 +511,14 @@ namespace SA2EventViewer
 			if (scenenum == 0)
 			{
 				osd.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayScene.Enabled = false;
+				buttonNextFrame.Enabled = false;
+				buttonPreviousFrame.Enabled = false;
 			}
 			else
 			{
 				osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayScene.Enabled = true;
+				buttonNextFrame.Enabled = true;
+				buttonPreviousFrame.Enabled = true;
 			}
 			UpdateWeightedModels();
 			DrawEntireModel();
@@ -531,12 +533,14 @@ namespace SA2EventViewer
 			if (scenenum == 0)
 			{
 				osd.UpdateOSDItem("Default Scene", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayScene.Enabled = false;
+				buttonNextFrame.Enabled = false;
+				buttonPreviousFrame.Enabled = false;
 			}
 			else
 			{
 				osd.UpdateOSDItem("Scene " + scenenum.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayScene.Enabled = true;
+				buttonNextFrame.Enabled = true;
+				buttonPreviousFrame.Enabled = true;
 			}
 			UpdateWeightedModels();
 			DrawEntireModel();
