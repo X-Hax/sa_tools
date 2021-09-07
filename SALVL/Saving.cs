@@ -42,9 +42,15 @@ namespace SAModel.SALVL
 
             progress.Step = "Start positions...";
             Application.DoEvents();
-
+  
             for (int i = 0; i < LevelData.StartPositions.Length; i++)
             {
+                if (!File.Exists(sadxlvlini.Characters[LevelData.Characters[i]].StartPositions))
+                {
+                    log.Add("Error saving start positions for character " + i.ToString());
+                    osd.AddMessage("Error saving start positions for character " + i.ToString(), 180);
+                    break;
+                }
                 Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
                     SA1StartPosList.Load(sadxlvlini.Characters[LevelData.Characters[i]].StartPositions);
 
