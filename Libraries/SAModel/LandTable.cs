@@ -20,7 +20,7 @@ namespace SAModel
 		public string COLName { get; set; }
 		public List<GeoAnimData> Anim { get; set; }
 		public string AnimName { get; set; }
-		public short Attributes { get; set; }
+		public SA1LandtableAttributes Attributes { get; set; }
 		public short Flags { get; set; }
 		public float FarClipping { get; set; }
 		public string TextureFileName { get; set; }
@@ -76,7 +76,7 @@ namespace SAModel
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
 					short anicnt = ByteConverter.ToInt16(file, address + 2);
-					Attributes = ByteConverter.ToInt16(file, address + 4);
+					Attributes = (SA1LandtableAttributes)ByteConverter.ToInt16(file, address + 4);
 					Flags = ByteConverter.ToInt16(file, address + 6);
 					FarClipping = ByteConverter.ToSingle(file, address + 8);
 					COL = new List<COL>();
@@ -425,7 +425,7 @@ namespace SAModel
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
 					result.AddRange(ByteConverter.GetBytes((ushort)Anim.Count));
-					result.AddRange(ByteConverter.GetBytes(Attributes));
+					result.AddRange(ByteConverter.GetBytes((short)Attributes));
 					result.AddRange(ByteConverter.GetBytes(Flags));
 					result.AddRange(ByteConverter.GetBytes(FarClipping));
 					result.AddRange(ByteConverter.GetBytes(coladdr));
