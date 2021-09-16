@@ -77,6 +77,7 @@ namespace SA2EventViewer
             this.buttonPreviousFrame = new System.Windows.Forms.ToolStripButton();
             this.buttonPlayScene = new System.Windows.Forms.ToolStripButton();
             this.buttonNextFrame = new System.Windows.Forms.ToolStripButton();
+            this.exportSA2BMDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -118,7 +119,7 @@ namespace SA2EventViewer
             // 
             this.openToolStripMenuItem.Image = global::SA2EventViewer.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -126,13 +127,13 @@ namespace SA2EventViewer
             // 
             this.exportToolStripMenuItem.Enabled = false;
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exportToolStripMenuItem.Text = "&Export";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -150,7 +151,7 @@ namespace SA2EventViewer
             // 
             this.preferencesToolStripMenuItem.Image = global::SA2EventViewer.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -170,7 +171,7 @@ namespace SA2EventViewer
             this.showCameraToolStripMenuItem.CheckOnClick = true;
             this.showCameraToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showCameraToolStripMenuItem.Name = "showCameraToolStripMenuItem";
-            this.showCameraToolStripMenuItem.Size = new System.Drawing.Size(203, 30);
+            this.showCameraToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.showCameraToolStripMenuItem.Text = "Show &Camera";
             this.showCameraToolStripMenuItem.Click += new System.EventHandler(this.showCameraToolStripMenuItem_Click);
             // 
@@ -181,7 +182,7 @@ namespace SA2EventViewer
             this.showHintsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showHintsToolStripMenuItem.Image = global::SA2EventViewer.Properties.Resources.messages;
             this.showHintsToolStripMenuItem.Name = "showHintsToolStripMenuItem";
-            this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(203, 30);
+            this.showHintsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.showHintsToolStripMenuItem.Text = "Show Hints";
             this.showHintsToolStripMenuItem.ToolTipText = "Show Hints";
             this.showHintsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showHintsToolStripMenuItem_CheckedChanged);
@@ -190,7 +191,7 @@ namespace SA2EventViewer
             // 
             this.showAdvancedCameraInfoToolStripMenuItem.CheckOnClick = true;
             this.showAdvancedCameraInfoToolStripMenuItem.Name = "showAdvancedCameraInfoToolStripMenuItem";
-            this.showAdvancedCameraInfoToolStripMenuItem.Size = new System.Drawing.Size(203, 30);
+            this.showAdvancedCameraInfoToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.showAdvancedCameraInfoToolStripMenuItem.Text = "Show Camera Rotation";
             this.showAdvancedCameraInfoToolStripMenuItem.ToolTipText = "Show more details on camera mode, rotation etc.";
             // 
@@ -302,15 +303,16 @@ namespace SA2EventViewer
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportSA2MDLToolStripMenuItem});
+            this.exportSA2MDLToolStripMenuItem,
+            this.exportSA2BMDLToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(157, 26);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
             // 
             // exportSA2MDLToolStripMenuItem
             // 
             this.exportSA2MDLToolStripMenuItem.Enabled = false;
             this.exportSA2MDLToolStripMenuItem.Name = "exportSA2MDLToolStripMenuItem";
-            this.exportSA2MDLToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.exportSA2MDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportSA2MDLToolStripMenuItem.Text = "Export &SA2MDL";
             this.exportSA2MDLToolStripMenuItem.Click += new System.EventHandler(this.exportSA2MDLToolStripMenuItem_Click);
             // 
@@ -462,6 +464,7 @@ namespace SA2EventViewer
             this.buttonPreferences.Name = "buttonPreferences";
             this.buttonPreferences.Size = new System.Drawing.Size(40, 40);
             this.buttonPreferences.Text = "Preferences";
+            this.buttonPreferences.Click += new System.EventHandler(this.buttonPreferences_Click);
             // 
             // toolStripSeparator2
             // 
@@ -560,9 +563,18 @@ namespace SA2EventViewer
             this.buttonNextFrame.Text = "Next Frame";
             this.buttonNextFrame.Click += new System.EventHandler(this.buttonNextFrame_Click);
             // 
-            // MainForm
+            // exportSA2BMDLToolStripMenuItem
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.exportSA2BMDLToolStripMenuItem.Enabled = false;
+            this.exportSA2BMDLToolStripMenuItem.Name = "exportSA2BMDLToolStripMenuItem";
+            this.exportSA2BMDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportSA2BMDLToolStripMenuItem.Text = "Export SA2BMDL";
+			this.exportSA2BMDLToolStripMenuItem.Click += new System.EventHandler(this.exportSA2BMDLToolStripMenuItem_Click);
+
+			// 
+			// MainForm
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(949, 612);
             this.Controls.Add(this.splitContainer1);
@@ -647,6 +659,7 @@ namespace SA2EventViewer
 		private System.Windows.Forms.ToolStripMenuItem showHintsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem showAdvancedCameraInfoToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel cameraAngleLabel;
+		private System.Windows.Forms.ToolStripMenuItem exportSA2BMDLToolStripMenuItem;
 	}
 }
 

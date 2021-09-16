@@ -2020,5 +2020,13 @@ namespace SAModel.SALVL
 		{
             OpenAnyFile(AppConfig.MRUList[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
         }
+
+		private void forceClipLevelToAllToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            List<SETItem> itemsToChange = LevelData.SETItems(LevelData.Character).ToList();
+            foreach (SETItem item in itemsToChange)
+                item.ClipLevel = 0;
+            UpdatePropertyGrid();
+        }
 	}
 }

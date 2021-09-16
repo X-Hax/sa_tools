@@ -56,6 +56,7 @@
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>

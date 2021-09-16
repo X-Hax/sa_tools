@@ -46,8 +46,10 @@ namespace SAEditorCommon.ProjectManagement
 			[XmlAttribute("gameName")]
 			public string GameName { get; set; }
 			[XmlAttribute("gameSystemFolder")]
-			public string GameSystemFolder { get; set; }
-			[XmlAttribute("modSystemFolder")]
+			public string GameSystemFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
+            [XmlAttribute("dataFolderName")]
+            public string DataFolderName { get; set; } // The game's 'system' folder, e.g. SONICADV or system
+            [XmlAttribute("modSystemFolder")]
 			public string ModSystemFolder { get; set; }
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }

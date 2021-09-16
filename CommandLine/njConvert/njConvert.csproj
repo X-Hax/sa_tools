@@ -58,10 +58,12 @@
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj">
       <Project>{0ee5d36f-cacf-41e9-8c9a-76ffd946b22d}</Project>
       <Name>SAModel</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj">
       <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
       <Name>SplitTools</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
