@@ -51,43 +51,21 @@ namespace SAToolsHub
 			{
 				foreach (string chrFile in chkBoxMDL.CheckedItems)
 				{
-                    sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "figure", "bin"), chrFile));
-                }
+					sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "figure", "bin"), chrFile));
+				}
 			}
 
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
 			{
-				switch (SAToolsHub.setGame)
+				if (splitEntry.SourceFile.ToLower().Contains("exe"))
 				{
-					case ("SADXPC"):
-                        if (splitEntry.SourceFile.Contains("exe"))
-                        {
-                            assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-                        }
-                        else
-                        {
-                            assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-                        }
-						break;
-
-					case ("SA2PC"):
-						if (splitEntry.SourceFile.Contains("exe"))
-						{
-							assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-						}
-						else
-						{
-							if (splitEntry.IniFile == "data_dll")
-							{
-								assemblies.Add((splitEntry.IniFile + "_orig"), SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-							}
-							else
-							{
-								assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-							}
-						}
-						break;
+					assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
 				}
+				else
+				{
+					assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
+				}
+				break;
 			}
 		}
 
@@ -140,6 +118,9 @@ namespace SAToolsHub
 			if (iniDLLFiles.Count > 0)
 			{
 				DLLiniData = SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadMultiINI(iniDLLFiles, ref itemsDLLToExport);
+
+				DLLiniData.Name = "Data_DLL_orig.dll";
+				DLLiniData.Game = SplitTools.SplitDLL.Game.SA2B;
 
 				SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(DLLiniData,
 					itemsDLLToExport, Path.Combine(modFolder, "Data_DLL_orig_data.ini"));
