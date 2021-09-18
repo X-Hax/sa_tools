@@ -1511,7 +1511,6 @@ namespace SAToolsHub
 				try
 				{
 					string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + File.ReadAllText("satoolsver.txt"));
-					//string msg = File.ReadAllText("satoolsver.txt");
 					if (msg.Length > 0)
 					{
 						using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))
@@ -1537,7 +1536,6 @@ namespace SAToolsHub
 								} while (result == DialogResult.Retry);
 
 								using (var dlg2 = new Updater.LoaderDownloadDialog("http://mm.reimuhakurei.net/SA%20Tools.7z", updatePath))
-								//using (var dlg2 = new Updater.LoaderDownloadDialog("https://cdn.discordapp.com/attachments/370369792206569472/888220822907527259/output1.7z", updatePath))
 									if (dlg2.ShowDialog(this) == DialogResult.OK)
 									{
 										Close();
