@@ -193,28 +193,70 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 		{
 			defaultExportState.Clear();
 			DllIniData newIniData = new DllIniData();
-			List<DllDataItemInfo> curItems = new List<DllDataItemInfo>();
+			newIniData.TexLists = new TexListContainer();
 
 			foreach (string arrFile in fileName)
 			{
-				DllIniData IniData = IniSerializer.Deserialize<DllIniData>(arrFile);
+				
+				DllIniData iniData = IniSerializer.Deserialize<DllIniData>(arrFile);
 
-				Environment.CurrentDirectory = Path.GetDirectoryName(arrFile);
+				// Add Exports to merged Ini
+				if (iniData.Exports != null)
+					foreach (KeyValuePair<string, string> exports in iniData.Exports)
+					{
+						newIniData.Exports.Items.Add(exports.Key, exports.Value);
+					}
 
-				foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
-				{
-					bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
-					defaultExportState.Add(item.Key, modified);
-				}
+				// Add Data Items to merged Ini
+				if (iniData.DataItems != null)
+					foreach (DllDataItemInfo ditem in iniData.DataItems)
+					{
+						newIniData.DataItems.Add(ditem);
+					}
 
-				foreach (DllDataItemInfo item in IniData.DataItems)
-				{
-					CheckItems(item, IniData, ref defaultExportState);
+				// Add Files to merged Ini
+				if (iniData.Files != null)
+					foreach (KeyValuePair<string, FileTypeHash> file in iniData.Files)
+					{
+						newIniData.Files.Add(file.Key, file.Value);
+					}
 
-					curItems.Add(item);
-				}
+				// Add Hidden Files to merged Ini
+				if (iniData.HiddenFiles != null)
+					foreach (KeyValuePair<string, FileTypeHash> hfiles in iniData.HiddenFiles)
+					{
+						newIniData.HiddenFiles.Add(hfiles.Key, hfiles.Value);
+					}
+
+				// Add Texlists to merged Ini
+				if (iniData.TexLists != null)
+					foreach (KeyValuePair<uint, DllTexListInfo> texlist in iniData.TexLists)
+					{
+						newIniData.TexLists.Add(texlist.Key, texlist.Value);
+					}
+
+				// Add Items to merged Ini
+				if (iniData.Items != null)
+					foreach (DllItemInfo item in iniData.Items)
+					{
+						newIniData.Items.Add(item);
+					}
 			}
-			newIniData.DataItems = curItems;
+			newIniData.Name = "Data_DLL_orig.dll";
+			newIniData.Game = SplitTools.SplitDLL.Game.SA2B;
+
+			Environment.CurrentDirectory = Path.GetDirectoryName(fileName[0]);
+
+			foreach (KeyValuePair<string, FileTypeHash> item in newIniData.Files)
+			{
+				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
+				defaultExportState.Add(item.Key, modified);
+			}
+
+			foreach (DllDataItemInfo item in newIniData.DataItems)
+			{
+				CheckItems(item, newIniData, ref defaultExportState);
+			}
 
 			return newIniData;
 		}

@@ -65,7 +65,6 @@ namespace SAToolsHub
 				{
 					assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 				}
-				break;
 			}
 		}
 
@@ -119,9 +118,6 @@ namespace SAToolsHub
 			{
 				DLLiniData = SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadMultiINI(iniDLLFiles, ref itemsDLLToExport);
 
-				DLLiniData.Name = "Data_DLL_orig.dll";
-				DLLiniData.Game = SplitTools.SplitDLL.Game.SA2B;
-
 				SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(DLLiniData,
 					itemsDLLToExport, Path.Combine(modFolder, "Data_DLL_orig_data.ini"));
 			}
@@ -152,7 +148,7 @@ namespace SAToolsHub
 			string[] charFiles = Directory.GetFiles(charPath, "*.prs");
 			foreach (string file in charFiles)
 			{
-				File.Copy(file, Path.Combine(sysFolder, Path.GetFileName(file)));
+				File.Copy(file, Path.Combine(sysFolder, Path.GetFileName(file)), true);
 			}
 		}
 
@@ -196,15 +192,7 @@ namespace SAToolsHub
 				case "SA2PC":
 					SA2ModInfo sa2ModInfo = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
-					if (File.Exists(Path.Combine(SAToolsHub.projectDirectory, "Data_DLL_orig.ini")))
-					{
-						if (assemblies.ContainsKey("Data_DLL_orig")) sa2ModInfo.DLLData = "Data_DLL_orig.ini";
-					}
-					else
-					{
-						if (assemblies.ContainsKey("Data_DLL")) sa2ModInfo.DLLData = "Data_DLL.ini";
-					}
-
+					if (iniDLLFiles.Count > 0) sa2ModInfo.DLLData = "Data_DLL_orig.ini";
 					if (iniEXEFiles.Count > 0) sa2ModInfo.EXEData = "sonic2app_data.ini";
 
 					SplitTools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);

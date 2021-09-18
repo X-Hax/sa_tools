@@ -432,27 +432,35 @@ namespace SAToolsHub.Updater
 							   .Distinct(StringComparer.OrdinalIgnoreCase);
 			}
 
-			var newDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-			// Collect all directories (and their parent directories) from the new manifest.
-			foreach (string newPath in GetDistinctPaths(newManifest))
+			HashSet<string> GetAllDirectoriesRecursively(IEnumerable<ModManifestEntry> manifest)
 			{
-				string path = newPath;
+				var directories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-				do
+				foreach (string newPath in GetDistinctPaths(manifest))
 				{
-					// FIXME: We could probably bail out of this loop early if Add returns false.
-					// Very minor performance optimization; don't have time to test.
-					newDirectories.Add(path);
+					string path = newPath;
 
-					// Keep asking for and adding the parent directory until there isn't one.
-					path = Path.GetDirectoryName(path);
-				} while (!string.IsNullOrEmpty(path));
+					do
+					{
+						// FIXME: We could probably bail out of this loop early if Add returns false.
+						// Very minor performance optimization; don't have time to test.
+						directories.Add(path);
+
+						// Keep asking for and adding the parent directory until there isn't one.
+						path = Path.GetDirectoryName(path);
+					} while (!string.IsNullOrEmpty(path));
+				}
+
+				return directories;
 			}
 
+			// Collect all directories and their parent directories 
+			HashSet<string> newDirectories = GetAllDirectoriesRecursively(newManifest);
+			HashSet<string> oldDirectories = GetAllDirectoriesRecursively(oldManifest);
+
 			// Return all directories that exist only in the old manifest.
-			return GetDistinctPaths(oldManifest).Where(s => !newDirectories.Contains(s))
-												.OrderByDescending(s => s.Count(c => c == Path.DirectorySeparatorChar));
+			return oldDirectories.Where(s => !newDirectories.Contains(s))
+								 .OrderByDescending(s => s.Count(c => c == Path.DirectorySeparatorChar));
 		}
 	}
 
