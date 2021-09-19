@@ -243,6 +243,7 @@ namespace SAToolsHub
 				}
 			}
 
+			// TODO: Add Paths update function for sap file here.
 			if (sapChanged)
 			{
 				// If new Paths provided, update sap file

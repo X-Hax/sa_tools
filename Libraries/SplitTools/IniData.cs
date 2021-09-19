@@ -1408,15 +1408,11 @@ namespace SplitTools
 			int ptr = ByteConverter.ToInt32(file, address + 3);
 			if (ptr != 0)
 				Filename = file.GetCString(file.GetPointer(address + 3, imageBase));
-			else
-				Filename = ptr.ToCHex();
 			address += sizeof(int);
 			ptr = ByteConverter.ToInt32(file, address + 3);
 			address += sizeof(int);
 			if (ptr != 0)
 				SoundList = ((uint)ptr - imageBase).ToString("X8");
-			else
-				SoundList = ptr.ToCHex();
 		}
 
 		public void Save(string filename)
@@ -1493,20 +1489,14 @@ namespace SplitTools
 			int ptr = ByteConverter.ToInt32(file, address + 2);
 			if (ptr != 0)
 				JPFilename = file.GetCString(file.GetPointer(address + 2, imageBase));
-			else
-				JPFilename = ptr.ToCHex();
 			address += sizeof(int);
 			ptr = ByteConverter.ToInt32(file, address + 2);
 			if (ptr != 0)
 				ENFilename = file.GetCString(file.GetPointer(address + 2, imageBase));
-			else
-				ENFilename = ptr.ToCHex();
 			ptr = ByteConverter.ToInt32(file, address + 2);
 			address += sizeof(int);
 			if (ptr != 0)
 				SoundList = ((uint)ptr - imageBase).ToString("X8");
-			else
-				SoundList = ptr.ToCHex();
 		}
 
 		public void Save(string filename)
@@ -3673,6 +3663,111 @@ namespace SplitTools
 		public SA2Characters Character { get; set; }
 		[IniAlwaysInclude]
 		public SA2LevelIDs Level { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
+		public List<int> Events { get; set; }
+
+		public static int Size { get { return 0xC; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size)
+			{
+				(byte)Type,
+				(byte)Character
+			};
+			result.AddRange(ByteConverter.GetBytes((short)Level));
+			if (Events != null)
+				for (int i = 0; i < 4; i++)
+					result.AddRange(ByteConverter.GetBytes((short)(i < Events.Count ? Events[i] : -1)));
+			else
+				result.AddRange(System.Linq.Enumerable.Repeat((byte)0xFF, 8));
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Type.ToC("StoryEntryType"));
+			result.Append(", ");
+			result.Append(Character.ToC("Characters"));
+			result.Append(", ");
+			result.Append(Level.ToC("LevelIDs"));
+			if (Events != null)
+				for (int i = 0; i < 4; i++)
+				{
+					result.Append(", ");
+					result.Append(i < Events.Count ? Events[i] : -1);
+				}
+			else
+				result.Append(", -1, -1, -1, -1");
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	public static class SA2DCStoryList
+	{
+		public static List<SA2DCStoryEntry> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2DCStoryEntry>>(filename);
+		}
+
+		public static List<SA2DCStoryEntry> Load(byte[] file, int address)
+		{
+			List<SA2DCStoryEntry> result = new List<SA2DCStoryEntry>();
+			while (file[address] != 2)
+			{
+				result.Add(new SA2DCStoryEntry(file, address));
+				address += SA2DCStoryEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA2DCStoryEntry> startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
+
+		public static byte[] GetBytes(this List<SA2DCStoryEntry> startpos)
+		{
+			List<byte> result = new List<byte>(SA2DCStoryEntry.Size * (startpos.Count + 1));
+			foreach (SA2DCStoryEntry item in startpos)
+				result.AddRange(item.GetBytes());
+			result.Add(2);
+			result.AddRange(new byte[SA2DCStoryEntry.Size - 1]);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
+	public class SA2DCStoryEntry
+	{
+		public SA2DCStoryEntry() { }
+
+		public SA2DCStoryEntry(byte[] file, int address)
+		{
+			Type = (SA2StoryEntryType)file[address++];
+			Character = (SA2Characters)file[address++];
+			Level = (SA2DCLevelIDs)ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Events = new List<int>();
+			for (int i = 0; i < 4; i++)
+			{
+				int tmp = ByteConverter.ToInt16(file, address);
+				address += sizeof(short);
+				if (tmp == -1)
+					break;
+				Events.Add(tmp);
+			}
+			if (Events.Count == 0) Events = null;
+		}
+
+		[IniAlwaysInclude]
+		public SA2StoryEntryType Type { get; set; }
+		[IniAlwaysInclude]
+		public SA2Characters Character { get; set; }
+		[IniAlwaysInclude]
+		public SA2DCLevelIDs Level { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<int> Events { get; set; }
 

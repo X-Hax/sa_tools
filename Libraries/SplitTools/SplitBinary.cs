@@ -1046,7 +1046,10 @@ namespace SplitTools.Split
 							}
 							break;
 						case "storysequence":
-							SA2StoryList.Load(datafile, address).Save(fileOutputPath);
+							if (inifile.Game == Game.SA2B)
+								SA2StoryList.Load(datafile, address).Save(fileOutputPath);
+							else
+								SA2DCStoryList.Load(datafile, address).Save(fileOutputPath);
 							break;
 						case "masterstringlist":
 							{

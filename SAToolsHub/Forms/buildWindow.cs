@@ -51,42 +51,19 @@ namespace SAToolsHub
 			{
 				foreach (string chrFile in chkBoxMDL.CheckedItems)
 				{
-                    sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "figure", "bin"), chrFile));
-                }
+					sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "figure", "bin"), chrFile));
+				}
 			}
 
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
 			{
-				switch (SAToolsHub.setGame)
+				if (splitEntry.SourceFile.ToLower().Contains("exe"))
 				{
-					case ("SADXPC"):
-                        if (splitEntry.SourceFile.Contains("exe"))
-                        {
-                            assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-                        }
-                        else
-                        {
-                            assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-                        }
-						break;
-
-					case ("SA2PC"):
-						if (splitEntry.SourceFile.Contains("exe"))
-						{
-							assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
-						}
-						else
-						{
-							if (splitEntry.IniFile == "data_dll")
-							{
-								assemblies.Add((splitEntry.IniFile + "_orig"), SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-							}
-							else
-							{
-								assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
-							}
-						}
-						break;
+					assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.Exe);
+				}
+				else
+				{
+					assemblies.Add(splitEntry.IniFile, SAModel.SAEditorCommon.ManualBuildWindow.AssemblyType.DLL);
 				}
 			}
 		}
@@ -171,7 +148,7 @@ namespace SAToolsHub
 			string[] charFiles = Directory.GetFiles(charPath, "*.prs");
 			foreach (string file in charFiles)
 			{
-				File.Copy(file, Path.Combine(sysFolder, Path.GetFileName(file)));
+				File.Copy(file, Path.Combine(sysFolder, Path.GetFileName(file)), true);
 			}
 		}
 
@@ -215,15 +192,7 @@ namespace SAToolsHub
 				case "SA2PC":
 					SA2ModInfo sa2ModInfo = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
-					if (File.Exists(Path.Combine(SAToolsHub.projectDirectory, "Data_DLL_orig.ini")))
-					{
-						if (assemblies.ContainsKey("Data_DLL_orig")) sa2ModInfo.DLLData = "Data_DLL_orig.ini";
-					}
-					else
-					{
-						if (assemblies.ContainsKey("Data_DLL")) sa2ModInfo.DLLData = "Data_DLL.ini";
-					}
-
+					if (iniDLLFiles.Count > 0) sa2ModInfo.DLLData = "Data_DLL_orig.ini";
 					if (iniEXEFiles.Count > 0) sa2ModInfo.EXEData = "sonic2app_data.ini";
 
 					SplitTools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
