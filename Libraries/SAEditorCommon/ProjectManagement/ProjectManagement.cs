@@ -11,66 +11,172 @@ namespace SAEditorCommon.ProjectManagement
 {
 	public class Templates
 	{
+		/// <summary>
+		/// Full schema for the Sonic Adventure templates used when creating Project files.
+		/// </summary>
 		public class SplitTemplate
 		{
+			/// <summary>
+			/// Stores the game information for splitting data.
+			/// </summary>
 			[XmlElement("GameInfo", typeof(SplitInfo))]
 			public SplitInfo GameInfo { get; set; }
+			/// <summary>
+			/// Ini data map files used for splitting data from the games.
+			/// </summary>
 			[XmlElement("SplitEntry", typeof(SplitEntry))]
 			public List<SplitEntry> SplitEntries { get; set; }
+			/// <summary>
+			/// Model and Motion archive entries, only in SA2 formatted templates.
+			/// </summary>
 			[XmlElement("SplitEntryMDL", typeof(SplitEntryMDL))]
 			public List<SplitEntryMDL> SplitMDLEntries { get; set; }
 		}
 
+		/// <summary>
+		/// Full schema for the Sonic Adventure Project (*.sap) files.
+		/// </summary>
 		public class ProjectTemplate
 		{
+			/// <summary>
+			/// Stores the project information.
+			/// </summary>
 			[XmlElement("GameInfo", typeof(ProjectInfo))]
 			public ProjectInfo GameInfo { get; set; }
+			/// <summary>
+			/// Data map files used in the creation of the Project file.
+			/// </summary>
 			[XmlElement("SplitEntry", typeof(SplitEntry))]
 			public List<SplitEntry> SplitEntries { get; set; }
+			/// <summary>
+			/// Model and Motion archive entries, only in SA2 formatted projects.
+			/// </summary>
 			[XmlElement("SplitEntryMDL", typeof(SplitEntryMDL))]
 			public List<SplitEntryMDL> SplitMDLEntries { get; set; }
 		}
 
+		/// <summary>
+		/// <para>
+		/// Sonic Adventure Template Information class. Stores the: 
+		/// </para>
+		/// <para>
+		/// The game's name.
+		/// </para>
+		/// <para>
+		/// The directory for the split ini files in the SA Tools;
+		/// </para>
+		/// <para>
+		/// A file to compare to known hashes to verify the game;
+		/// </para>
+		/// </summary>
 		public class SplitInfo
 		{
+			/// <summary>
+			/// Name of the game the template is for.
+			/// </summary>
 			[XmlAttribute("gameName")]
 			public string GameName { get; set; }
+			/// <summary>
+			/// Data folder containing the Ini Data Mapping files within SA Tools.
+			/// </summary>
 			[XmlAttribute("dataFolder")]
 			public string DataFolder { get; set; }
+			/// <summary>
+			/// The filename to be checked against verified hashes to verify the game being used.
+			/// </summary>
 			[XmlAttribute("checkFile")]
 			public string CheckFile { get; set; }
 		}
 
+		/// <summary>
+		/// <para>
+		/// Sonic Adventure Project (*.sap) Information class. Stores the:
+		/// </para>
+		/// <para>
+		/// Game's name;
+		/// </para>
+		/// <para>
+		/// Directory of the game installation;
+		/// </para>
+		/// <para>
+		/// Folder used by the game for its files;
+		/// </para>
+		/// <para>
+		/// Directory of the project;
+		/// </para>
+		/// <para>
+		/// Bool for if the game can be built;
+		/// </para>
+		/// </summary>
 		public class ProjectInfo
 		{
+			/// <summary>
+			/// Game name for the project stored in the *.sap file.
+			/// </summary>
 			[XmlAttribute("gameName")]
 			public string GameName { get; set; }
-			[XmlAttribute("gameSystemFolder")]
-			public string GameSystemFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
-            [XmlAttribute("dataFolderName")]
-            public string DataFolderName { get; set; } // The game's 'system' folder, e.g. SONICADV or system
-            [XmlAttribute("modSystemFolder")]
-			public string ModSystemFolder { get; set; }
+			/// <summary>
+			/// The directory for the main game stored in the *.sap file.
+			/// </summary>
+			[XmlAttribute("gameFolder")]
+			public string GameFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
+			/// <summary>
+			/// The file folder used by the game stored in the *.sap file. e.g. system, gd_PC, etc
+			/// </summary>
+            [XmlAttribute("gameDataFolder")]
+            public string GameDataFolder { get; set; } // The game's 'system' folder, e.g. SONICADV or system
+			/// <summary>
+			/// The directory of the files for the project stored in the *.sap file.
+			/// </summary>
+            [XmlAttribute("projectFolder")]
+			public string ProjectFolder { get; set; }
+			/// <summary>
+			/// Bool for if the project can be built or not stored in the *.sap file.
+			/// </summary>
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
 		}
 
+		/// <summary>
+		/// Stores names for the source file, data file, and a common name for processing data to be split.
+		/// </summary>
 		public class SplitEntry
 		{
+			/// <summary>
+			/// Input file to be split from.
+			/// </summary>
 			[XmlAttribute("SourceFile")]
 			public string SourceFile { get; set; }
+			/// <summary>
+			/// Ini Data Mapping file to be used on the source file.
+			/// </summary>
 			[XmlAttribute("IniFile")]
 			public string IniFile { get; set; }
+			/// <summary>
+			/// Common name to be referenced for the general contents of what will be split.
+			/// </summary>
 			[XmlAttribute("CmnName")]
 			public string CmnName { get; set; }
 		}
 
+		/// <summary>
+		/// Stores information on SA2 Model and Motion archives for splitting.
+		/// </summary>
 		public class SplitEntryMDL
 		{
+			/// <summary>
+			/// Sets if files are big endian or little endian.
+			/// </summary>
 			[XmlAttribute("BigEndian")]
 			public bool BigEndian { get; set; }
+			/// <summary>
+			/// Model Archive filename.
+			/// </summary>
 			[XmlAttribute("ModelFile")]
 			public string ModelFile { get; set; }
+			/// <summary>
+			/// List of Motion files uses by the Model File.
+			/// </summary>
 			[XmlElement("MotionFile")]
 			public List<string> MotionFiles { get; set; }
 		}

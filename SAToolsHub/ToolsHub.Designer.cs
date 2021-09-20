@@ -132,6 +132,7 @@
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
+			this.replitFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
@@ -166,6 +167,7 @@
             this.newProjectToolStripMenuItem,
             this.openProjectToolStripMenuItem1,
             this.editProjectInfoToolStripMenuItem,
+            this.replitFileToolStripMenuItem,
             this.toolStripSeparator1,
             this.closeProjectToolStripMenuItem,
             this.exitToolStripMenuItem1});
@@ -278,7 +280,7 @@
 			// 
 			this.editOpen.Enabled = false;
 			this.editOpen.Name = "editOpen";
-			this.editOpen.Size = new System.Drawing.Size(152, 22);
+			this.editOpen.Size = new System.Drawing.Size(180, 22);
 			this.editOpen.Text = "Open";
 			this.editOpen.ToolTipText = "Open Directory or File";
 			this.editOpen.Click += new System.EventHandler(this.editOpen_Click);
@@ -290,7 +292,7 @@
             this.editToJson});
 			this.editConvert.Enabled = false;
 			this.editConvert.Name = "editConvert";
-			this.editConvert.Size = new System.Drawing.Size(152, 22);
+			this.editConvert.Size = new System.Drawing.Size(180, 22);
 			this.editConvert.Text = "Convert File";
 			// 
 			// editToData
@@ -314,14 +316,14 @@
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(177, 6);
 			// 
 			// editCopy
 			// 
 			this.editCopy.Enabled = false;
 			this.editCopy.Name = "editCopy";
 			this.editCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.editCopy.Size = new System.Drawing.Size(152, 22);
+			this.editCopy.Size = new System.Drawing.Size(180, 22);
 			this.editCopy.Text = "Copy";
 			this.editCopy.ToolTipText = "Copy selected files.";
 			this.editCopy.Click += new System.EventHandler(this.editCopy_Click);
@@ -331,7 +333,7 @@
 			this.editPaste.Enabled = false;
 			this.editPaste.Name = "editPaste";
 			this.editPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.editPaste.Size = new System.Drawing.Size(152, 22);
+			this.editPaste.Size = new System.Drawing.Size(180, 22);
 			this.editPaste.Text = "Paste";
 			this.editPaste.ToolTipText = "Paste selected files";
 			this.editPaste.Click += new System.EventHandler(this.editPaste_Click);
@@ -341,7 +343,7 @@
 			this.editDel.Enabled = false;
 			this.editDel.Name = "editDel";
 			this.editDel.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.editDel.Size = new System.Drawing.Size(152, 22);
+			this.editDel.Size = new System.Drawing.Size(180, 22);
 			this.editDel.Text = "Delete";
 			this.editDel.ToolTipText = "Delete selected files";
 			this.editDel.Click += new System.EventHandler(this.editDel_Click);
@@ -367,7 +369,7 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
 			this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.generalToolsToolStripMenuItem.Text = "General Tools";
 			// 
 			// sAMDLToolStripMenuItem
@@ -410,7 +412,7 @@
             this.sASaveToolStripMenuItem,
             this.sADLCToolToolStripMenuItem});
 			this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sADXToolsToolStripMenuItem.Text = "SA1/DX Tools";
 			// 
 			// sADXTweakerToolStripMenuItem
@@ -475,7 +477,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
 			this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
 			// 
 			// sA2EventViewerToolStripMenuItem
@@ -521,12 +523,12 @@
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(174, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
 			// 
 			// splitToolStripMenuItem
 			// 
 			this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-			this.splitToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.splitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.splitToolStripMenuItem.Text = "Data Toolbox";
 			this.splitToolStripMenuItem.ToolTipText = "Opens the Data Toolbox tool.";
 			this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
@@ -534,7 +536,7 @@
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
 			this.toolStripMenuItem1.Text = "Template Writer";
 			this.toolStripMenuItem1.ToolTipText = "Open Template Writer";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
@@ -542,7 +544,7 @@
 			// projectConverterToolStripMenuItem
 			// 
 			this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
-			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.projectConverterToolStripMenuItem.Text = "Project Converter";
 			this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
 			this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
@@ -595,14 +597,14 @@
 			// alwaysToolStripMenuItem
 			// 
 			this.alwaysToolStripMenuItem.Name = "alwaysToolStripMenuItem";
-			this.alwaysToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.alwaysToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.alwaysToolStripMenuItem.Text = "Always";
 			this.alwaysToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolStripMenuItem_Click);
 			// 
 			// dailyToolStripMenuItem
 			// 
 			this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
-			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.dailyToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.dailyToolStripMenuItem.Text = "Daily";
 			this.dailyToolStripMenuItem.ToolTipText = "Checks daily for updates.";
 			this.dailyToolStripMenuItem.Click += new System.EventHandler(this.dailyToolStripMenuItem_Click);
@@ -610,7 +612,7 @@
 			// weeklyToolStripMenuItem
 			// 
 			this.weeklyToolStripMenuItem.Name = "weeklyToolStripMenuItem";
-			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.weeklyToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.weeklyToolStripMenuItem.Text = "Weekly";
 			this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
 			this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);
@@ -1182,6 +1184,15 @@
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
 			// 
+			// replitFileToolStripMenuItem
+			// 
+			this.replitFileToolStripMenuItem.Enabled = false;
+			this.replitFileToolStripMenuItem.Name = "replitFileToolStripMenuItem";
+			this.replitFileToolStripMenuItem.Size = new System.Drawing.Size(244, 54);
+			this.replitFileToolStripMenuItem.Text = "Resplit";
+			this.replitFileToolStripMenuItem.Visible = false;
+			this.replitFileToolStripMenuItem.Click += new System.EventHandler(this.replitFileToolStripMenuItem_Click);
+			// 
 			// SAToolsHub
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1321,5 +1332,6 @@
 		private System.Windows.Forms.ToolStripMenuItem sADLCToolToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem alwaysToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem replitFileToolStripMenuItem;
 	}
 }

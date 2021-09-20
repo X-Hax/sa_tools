@@ -106,8 +106,8 @@ namespace SAToolsHub
 						case "sadx":
 							projInfo.GameName = "SADXPC";
 							projInfo.CanBuild = true;
-							projInfo.GameSystemFolder = gamePath;
-							projInfo.ModSystemFolder = projPath;
+							projInfo.GameFolder = gamePath;
+							projInfo.ProjectFolder = projPath;
 
 							List<Templates.SplitEntry> dxsplitEntries = new List<Templates.SplitEntry>()
 							{
@@ -131,8 +131,8 @@ namespace SAToolsHub
 						case "sa2":
 							projInfo.GameName = "SA2PC";
 							projInfo.CanBuild = true;
-							projInfo.GameSystemFolder = gamePath;
-							projInfo.ModSystemFolder = projPath;
+							projInfo.GameFolder = gamePath;
+							projInfo.ProjectFolder = projPath;
 
 							List<Templates.SplitEntry> sa2splitEntries = new List<Templates.SplitEntry>()
 							{

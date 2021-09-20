@@ -118,8 +118,8 @@ namespace SAToolsHub
 						projInfo.CanBuild = true;
 					else
 						projInfo.CanBuild = false;
-					projInfo.GameSystemFolder = gamePath;
-					projInfo.ModSystemFolder = projFolder;
+					projInfo.GameFolder = gamePath;
+					projInfo.ProjectFolder = projFolder;
 
 					projectFile.GameInfo = projInfo;
 					projectFile.SplitEntries = splitEntries;

@@ -121,9 +121,9 @@ namespace SAModel.SALVL
 
         private void LoadTemplate(Templates.ProjectTemplate projFile)
         {
-            sadxlvlini = SAEditorCommon.IniData.Load(Path.Combine(projFile.GameInfo.ModSystemFolder, "sadxlvl.ini"));
-            systemFallback = Path.Combine(projFile.GameInfo.GameSystemFolder, sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
-            modFolder = projFile.GameInfo.ModSystemFolder;
+            sadxlvlini = SAEditorCommon.IniData.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
+            systemFallback = Path.Combine(projFile.GameInfo.GameFolder, sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
+            modFolder = projFile.GameInfo.ProjectFolder;
             modSystemFolder = Path.Combine(modFolder, sadxlvlini.SystemPath);
             //MessageBox.Show("Fallback: " + systemFallback + "\n Mod: " + modFolder);
             LoadSadxlvlIni(sadxlvlini);

@@ -178,8 +178,8 @@ namespace SAToolsHub
 
 			setGame = projFile.GameInfo.GameName;
 			
-			projectDirectory = (projFile.GameInfo.ModSystemFolder);
-			gameDirectory = (projFile.GameInfo.GameSystemFolder);
+			projectDirectory = (projFile.GameInfo.ProjectFolder);
+			gameDirectory = (projFile.GameInfo.GameFolder);
 
 			// Check for valid paths just in case the user moved folders.
 			if (!Directory.Exists(projectDirectory))
@@ -193,7 +193,7 @@ namespace SAToolsHub
 					if (fsd.ShowDialog(IntPtr.Zero))
 					{
 						projectDirectory = fsd.FileName;
-						projFile.GameInfo.ModSystemFolder = projectDirectory;
+						projFile.GameInfo.ProjectFolder = projectDirectory;
 						sapChanged = true;
 					}
 					else
@@ -220,7 +220,7 @@ namespace SAToolsHub
 						if (File.Exists(Path.Combine(fsd.FileName, gameFile)))
 						{
 							gameDirectory = fsd.FileName;
-							projFile.GameInfo.GameSystemFolder = gameDirectory;
+							projFile.GameInfo.GameFolder = gameDirectory;
 							sapChanged = true;
 						}
 						else
@@ -1568,6 +1568,11 @@ namespace SAToolsHub
 		{
 			if (CheckForUpdates())
 				return;
+		}
+
+		private void replitFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
