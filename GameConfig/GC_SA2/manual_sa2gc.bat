@@ -2,6 +2,7 @@
 ..\bin\split binary data\boot.dol boot.ini output\
 ..\bin\split binary data\advertiseD.rel advertiseD.ini output\
 ..\bin\split binary data\EmblemGetD.rel EmblemGetD.ini output\
+..\bin\split binary data\eventD.rel eventD.ini output\
 ..\bin\split binary data\stg00D.rel stg00D.ini output\
 ..\bin\split binary data\stg03D.rel stg03D.ini output\
 ..\bin\split binary data\stg04D.rel stg04D.ini output\

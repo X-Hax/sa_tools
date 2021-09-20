@@ -20,8 +20,8 @@
 ..\..\bin\split mdl data\SONIC2\PSOSONICMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\SONICMTN.PRS
 ..\..\bin\split mdl data\SONIC2\ROUGEMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\ROUGEMTN.PRS
 ..\..\bin\split mdl data\SONIC2\SONICMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\SONICMTN.PRS
-..\..\bin\split mdl data\SONIC2\SSHADOWMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS
-..\..\bin\split mdl data\SONIC2\SSONICMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS
+..\..\bin\split mdl data\SONIC2\SSHADOWMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\SSHADOWMTN.PRS
+..\..\bin\split mdl data\SONIC2\SSONICMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\SSONICMTN.PRS
 ..\..\bin\split mdl data\SONIC2\TERIOSMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\TERIOSMTN.PRS
 ..\..\bin\split mdl data\SONIC2\TICALMDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\TICALMTN.PRS
 ..\..\bin\split mdl data\SONIC2\TWALK1MDL.PRS output\Characters\ data\SONIC2\PLCOMMTN.PRS data\SONIC2\TWALKMTN.PRS
