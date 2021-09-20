@@ -276,12 +276,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\AForge.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Imaging.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Math.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\AForge.xml" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Imaging.xml" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\AForge.Math.xml" "$(SolutionDir)build\tools\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(ProjectDir)..\..\Dependencies\AForge.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\AForge.Imaging.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\AForge.Math.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\AForge.xml" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\AForge.Imaging.xml" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\AForge.Math.xml" "$(ProjectDir)..\..\build\tools\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
