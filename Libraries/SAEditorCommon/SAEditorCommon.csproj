@@ -347,10 +347,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\assimp_x86.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\assimp_x64.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\NvTriStripDotNet.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)build\tools\lib\*.*" "$(SolutionDir)build\bin\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(ProjectDir)..\..\Dependencies\assimp_x86.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\assimp_x64.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\NvTriStripDotNet.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\build\tools\lib\*.*" "$(ProjectDir)..\..\build\bin\lib\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

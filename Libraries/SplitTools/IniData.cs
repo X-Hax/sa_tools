@@ -3600,6 +3600,89 @@ namespace SplitTools
 		}
 	}
 
+	public static class SA2CreditsTextList
+	{
+		public static SA2CreditsTextListEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2CreditsTextListEntry[]>(filename);
+		}
+
+		public static SA2CreditsTextListEntry[] Load(byte[] file, int address, uint imageBase, int count)
+		{
+			SA2CreditsTextListEntry[] result = new SA2CreditsTextListEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new SA2CreditsTextListEntry(file, address, imageBase);
+				address += SA2CreditsTextListEntry.Size;
+			}
+			return result;
+		}
+
+	public static void Save(this SA2CreditsTextListEntry[] list, string filename)
+		{
+			IniSerializer.Serialize(list, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2CreditsTextListEntry
+	{
+		public SA2CreditsTextListEntry() { Text = string.Empty; }
+		public SA2CreditsTextListEntry(byte[] file, int address, uint imageBase)
+		{
+			Type = ByteConverter.ToUInt32(file, address);
+			address += sizeof(int);
+			TextColorA = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			TextColorR = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			TextColorG = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			TextColorB = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			int ptr = ByteConverter.ToInt32(file, address);
+			if (ptr != 0)
+				Text = file.GetCString(file.GetPointer(address, imageBase));
+		}
+
+		[IniAlwaysInclude]
+		public uint Type { get; set; }
+		[IniAlwaysInclude]
+		public float TextColorA { get; set; }
+		[IniAlwaysInclude]
+		public float TextColorR { get; set; }
+		[IniAlwaysInclude]
+		public float TextColorG { get; set; }
+		[IniAlwaysInclude]
+		public float TextColorB { get; set; }
+		public string Text { get; set; }
+
+		public static int Size { get { return 0x18; } }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Type);
+			sb.AppendFormat(", ");
+			sb.Append(TextColorA);
+			sb.AppendFormat(", ");
+			sb.Append(TextColorR);
+			sb.Append(", ");
+			sb.Append(TextColorG);
+			sb.AppendFormat(", ");
+			sb.Append(TextColorB);
+			sb.Append(", ");
+			if (!string.IsNullOrEmpty(Text))
+			{
+				sb.AppendFormat(Text ?? "nullptr");
+			}
+			else
+				sb.Append("NULL");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public static class SA2StoryList
 	{
 		public static List<SA2StoryEntry> Load(string filename)

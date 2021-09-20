@@ -340,6 +340,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(ProjectDir)7z" "$(SolutionDir)build\tools\lib"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(ProjectDir)7z" "$(ProjectDir)..\build\tools\lib"</PostBuildEvent>
   </PropertyGroup>
 </Project>

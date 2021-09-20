@@ -83,9 +83,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)Dependencies\assimp_x86.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)Dependencies\assimp_x64.dll" "$(SolutionDir)build\tools\lib\"
-xcopy /D /Y "$(SolutionDir)build\tools\lib\*.*" "$(SolutionDir)build\bin\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(ProjectDir)..\..\Dependencies\assimp_x86.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\Dependencies\assimp_x64.dll" "$(ProjectDir)..\..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\..\build\tools\lib\*.*" "$(ProjectDir)..\..\build\bin\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

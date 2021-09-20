@@ -36,7 +36,7 @@
   <ItemGroup>
     <Reference Include="Pfim, Version=0.10.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Pfim.0.10.1\lib\netstandard2.0\Pfim.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -80,7 +80,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(SolutionDir)build\tools\lib\*.*" "$(SolutionDir)build\bin\lib\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /D /Y "$(ProjectDir)..\..\build\tools\lib\*.*" "$(ProjectDir)..\..\build\bin\lib\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

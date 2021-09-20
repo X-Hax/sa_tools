@@ -5,6 +5,7 @@
   <SplitEntry SourceFile="advertiseD.rel" IniFile="advertiseD" />
   <SplitEntry SourceFile="CartD.rel" IniFile="CartD" />
   <SplitEntry SourceFile="EmblemGetD.rel" IniFile="EmblemGetD" />
+    <SplitEntry SourceFile="eventD.rel" IniFile="eventD" />
   <SplitEntry SourceFile="stg00D.rel" IniFile="stg00D" />
   <SplitEntry SourceFile="stg03D.rel" IniFile="stg03D" />
   <SplitEntry SourceFile="stg04D.rel" IniFile="stg04D" />
