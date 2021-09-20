@@ -57,6 +57,7 @@ namespace SplitTools.Split
 				bool SA2DC = inifile.Game == Game.SA2;
 				ModelFormat modelfmt_def = 0;
 				LandTableFormat landfmt_def = 0;
+				Attach dummy;
 				switch (inifile.Game)
 				{
 					case Game.SA1:
@@ -146,34 +147,52 @@ namespace SplitTools.Split
 						case "chunkattach":
 						case "gcattach":
 							{
-								Attach dum;
 								ModelFormat modelfmt_att;
+								Attach attachfmt_def;
 								switch (type)
 								{
 									case "basicattach":
 										modelfmt_att = ModelFormat.Basic;
-										dum = new BasicAttach(datafile, address, imageBase, false);
+										dummy = new BasicAttach(datafile, address, imageBase, false);
 										break;
 									case "basicdxattach":
 										modelfmt_att = ModelFormat.BasicDX;
-										dum = new BasicAttach(datafile, address, imageBase, true);
+										dummy = new BasicAttach(datafile, address, imageBase, true);
 										break;
 									case "chunkattach":
 										modelfmt_att = ModelFormat.Chunk;
-										dum = new ChunkAttach(datafile, address, imageBase);
+										dummy = new ChunkAttach(datafile, address, imageBase);
 										break;
 									case "gcattach":
 										modelfmt_att = ModelFormat.GC;
-										dum = new GCAttach(datafile, address, imageBase);
+										dummy = new GCAttach(datafile, address, imageBase);
 										break;
+									case "morph":
+									case "attach":
 									default:
 										modelfmt_att = modelfmt_def;
-										dum = new BasicAttach(datafile, address, imageBase, true);
+										switch (inifile.Game)
+										{
+											case Game.SA1:
+												attachfmt_def = new BasicAttach(datafile, address, imageBase, false);
+												break;
+											case Game.SA2:
+												attachfmt_def = new ChunkAttach(datafile, address, imageBase);
+												break;
+											case Game.SA2B:
+												attachfmt_def = new GCAttach(datafile, address, imageBase);
+												break;
+											case Game.SADX:
+											default:
+												attachfmt_def = new BasicAttach(datafile, address, imageBase, true);
+												break;
+										}
+										dummy = attachfmt_def;
 										break;
 								}
 								NJS_OBJECT mdl = new NJS_OBJECT()
 								{
-									Attach = dum
+									Attach = dummy
 								};
 								string[] attanis = new string[0];
 								if (customProperties.ContainsKey("animations"))
@@ -212,6 +231,7 @@ namespace SplitTools.Split
 										modelfmt_arr = ModelFormat.GC;
 										modelext_arr = ".sa2bmdl";
 										break;
+									case "modelarray":
 									default:
 										modelfmt_arr = modelfmt_def;
 										modelext_arr = modelext_def;
@@ -243,7 +263,7 @@ namespace SplitTools.Split
 						case "chunkattacharray":
 						case "gcattacharray":
 							{
-								Attach dummy;
+								Attach attachfmt_def;
 								ModelFormat modelfmt_att;
 								string attachext_arr;
 								string attachext_def = null;
@@ -279,8 +299,24 @@ namespace SplitTools.Split
 											case "attacharray":
 											default:
 												modelfmt_att = modelfmt_def;
-												dummy = new BasicAttach(datafile, ptr, imageBase, true);
-												attachext_arr = attachext_def;
+												switch (inifile.Game)
+												{
+													case Game.SA1:
+														attachfmt_def = new BasicAttach(datafile, ptr, imageBase, false);
+														break;
+													case Game.SA2:
+														attachfmt_def = new ChunkAttach(datafile, ptr, imageBase);
+														break;
+													case Game.SA2B:
+														attachfmt_def = new GCAttach(datafile, ptr, imageBase);
+														break;
+													case Game.SADX:
+													default:
+														attachfmt_def = new BasicAttach(datafile, ptr, imageBase, true);
+														break;
+												}
+												dummy = attachfmt_def;
+                                                attachext_arr = attachext_def;
 												break;
 										}
 										NJS_OBJECT mdl = new NJS_OBJECT()
@@ -1026,7 +1062,18 @@ namespace SplitTools.Split
 							BlackMarketItemAttributesList.Load(datafile, address, imageBase).Save(fileOutputPath);
 							break;
 						case "creditstextlist":
-							CreditsTextList.Load(datafile, address, imageBase).Save(fileOutputPath);
+							switch (inifile.Game)
+							{
+								case Game.SA1:
+								case Game.SADX:
+								default:
+									CreditsTextList.Load(datafile, address, imageBase).Save(fileOutputPath);
+									break;
+								case Game.SA2:
+								case Game.SA2B:
+									SA2CreditsTextList.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
+									break;
+							}
 							break;
 						case "animindexlist":
 							{
