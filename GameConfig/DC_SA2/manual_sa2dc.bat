@@ -3,6 +3,7 @@ call manual_sa2dcmdl.bat
 ..\..\bin\split binary data/1ST_READ.bin 1ST_READ.ini output/
 ..\..\bin\split binary data/SONIC2/ADVERTISE.prs ADVERTISE.ini output/
 ..\..\bin\split binary data/SONIC2/EMBLEMGET.prs EMBLEMGET.ini output/
+..\..\bin\split binary data/SONIC2/EVENT.prs EVENT.ini output/
 ..\..\bin\split binary data/SONIC2/STG03.prs STG03.ini output/
 ..\..\bin\split binary data/SONIC2/STG04.prs STG04.ini output/
 ..\..\bin\split binary data/SONIC2/STG05.prs STG05.ini output/

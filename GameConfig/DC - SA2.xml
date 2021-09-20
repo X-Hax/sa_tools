@@ -5,6 +5,7 @@
   <SplitEntry SourceFile="SONIC2\ADVERTISE.PRS" IniFile="ADVERTISE" />
   <SplitEntry SourceFile="SONIC2\CART.PRS" IniFile="CART" />
   <SplitEntry SourceFile="SONIC2\EMBLEMGET.PRS" IniFile="EMBLEMGET" />
+    <SplitEntry SourceFile="SONIC2\EVENT.PRS" IniFile="EVENT" />
   <SplitEntry SourceFile="SONIC2\STG03.PRS" IniFile="STG03" />
   <SplitEntry SourceFile="SONIC2\STG04.PRS" IniFile="STG04" />
   <SplitEntry SourceFile="SONIC2\STG05.PRS" IniFile="STG05" />
