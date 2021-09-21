@@ -136,6 +136,9 @@ namespace SAModel.SAMDL
                     case ".tls":
                         LoadTexlistFile(file);
                         break;
+                    case ".sap":
+                        LoadFile(file);
+                        break;
                     default:
 						break;
 				}
