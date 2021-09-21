@@ -87,11 +87,6 @@ namespace SplitTools
         public int[] PointerList { get; set; }
         [IniCollection(IniCollectionMode.IndexOnly)]
         public Dictionary<string, string> CustomProperties { get; set; }
-
-        public FileInfo()
-        {
-            CustomProperties = new Dictionary<string, string>();
-        }
 	}
 
 	[Serializable]
