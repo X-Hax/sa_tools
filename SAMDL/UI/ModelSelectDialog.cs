@@ -38,7 +38,8 @@ namespace SAModel.SAMDL
                     {
                         // If this section exists in the file, it's a DLL split
                         if (key.Key == "SAMDLData")
-                            return true;
+                            if (key.Value.Count > 0)
+                                return true;
                         // Regular binary split
                         if (key.Value.ContainsKey("type"))
                             switch (key.Value["type"])
