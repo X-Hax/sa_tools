@@ -41,6 +41,7 @@ namespace SAModel.SAMDL
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.loadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addTexturestoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.loadTexlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -158,7 +159,7 @@ namespace SAModel.SAMDL
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.addTexturestoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -194,6 +195,7 @@ namespace SAModel.SAMDL
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newFileMenuitem,
             this.openToolStripMenuItem,
+            this.modelListToolStripMenuItem,
             this.toolStripSeparator1,
             this.loadTexturesToolStripMenuItem,
             this.addTexturestoolStripMenuItem,
@@ -268,6 +270,14 @@ namespace SAModel.SAMDL
             this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
             this.loadTexturesToolStripMenuItem.ToolTipText = "Load a PVM/GVM, PRS, PAK etc. file.";
             this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
+            // 
+            // addTexturestoolStripMenuItem
+            // 
+            this.addTexturestoolStripMenuItem.Name = "addTexturestoolStripMenuItem";
+            this.addTexturestoolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.addTexturestoolStripMenuItem.Text = "Add Textures...";
+            this.addTexturestoolStripMenuItem.ToolTipText = "Add individual textures from PVR or GVR files.";
+            this.addTexturestoolStripMenuItem.Click += new System.EventHandler(this.addTexturestoolStripMenuItem_Click);
             // 
             // unloadTextureToolStripMenuItem
             // 
@@ -1344,13 +1354,13 @@ namespace SAModel.SAMDL
             this.gamecubeModelToolStripMenuItem1.Text = "Gamecube Model";
             this.gamecubeModelToolStripMenuItem1.Click += new System.EventHandler(this.gamecubeModelToolStripMenuItem1_Click);
             // 
-            // addTexturestoolStripMenuItem
+            // modelListToolStripMenuItem
             // 
-            this.addTexturestoolStripMenuItem.Name = "addTexturestoolStripMenuItem";
-            this.addTexturestoolStripMenuItem.Size = new System.Drawing.Size(188, 30);
-            this.addTexturestoolStripMenuItem.Text = "Add Textures...";
-            this.addTexturestoolStripMenuItem.ToolTipText = "Add individual textures from PVR or GVR files.";
-            this.addTexturestoolStripMenuItem.Click += new System.EventHandler(this.addTexturestoolStripMenuItem_Click);
+            this.modelListToolStripMenuItem.Enabled = false;
+            this.modelListToolStripMenuItem.Name = "modelListToolStripMenuItem";
+            this.modelListToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.modelListToolStripMenuItem.Text = "Model List...";
+            this.modelListToolStripMenuItem.Click += new System.EventHandler(this.modelListToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1523,5 +1533,6 @@ namespace SAModel.SAMDL
         private System.Windows.Forms.ToolStripMenuItem unloadTexlistToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
 		private System.Windows.Forms.ToolStripMenuItem addTexturestoolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem modelListToolStripMenuItem;
 	}
 }

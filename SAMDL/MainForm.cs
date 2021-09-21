@@ -28,6 +28,7 @@ namespace SAModel.SAMDL
 		bool mouseWrapScreen = false;
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
+        string currentProject;
 
 		public MainForm()
 		{
@@ -699,15 +700,7 @@ namespace SAModel.SAMDL
             // Project file
             else if (extension.Equals(".sap"))
             {
-                ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename));
-                DialogResult result = mdldialog.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    if (mdldialog.ModelFilename != "" && File.Exists(mdldialog.ModelFilename))
-                        LoadFile(mdldialog.ModelFilename);
-                    if (mdldialog.TextureFilename != "" && File.Exists(mdldialog.TextureFilename))
-                        LoadTextures(mdldialog.TextureFilename);
-                }
+                LoadProject(filename);
                 return;
             }
             // Generic binary
@@ -3713,6 +3706,11 @@ namespace SAModel.SAMDL
             }
 		}
 
+		private void modelListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            LoadProject(currentProject);
+		}
+
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (!(selectedObject.Attach is BasicAttach))
@@ -3888,5 +3886,20 @@ namespace SAModel.SAMDL
 		{
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
+
+        private void LoadProject(string filename)
+        {
+            currentProject = filename;
+            ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename));
+            DialogResult result = mdldialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                if (mdldialog.ModelFilename != "" && File.Exists(mdldialog.ModelFilename))
+                    LoadFile(mdldialog.ModelFilename);
+                if (mdldialog.TextureFilename != "" && File.Exists(mdldialog.TextureFilename))
+                    LoadTextures(mdldialog.TextureFilename);
+            }
+            modelListToolStripMenuItem.Enabled = true;
+        }
 	}
 }
