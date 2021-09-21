@@ -45,6 +45,7 @@ namespace SAModel.SAMDL
                             switch (key.Value["type"])
                             {
                                 case "model":
+                                case "basicmodel":
                                 case "basicdxmodel":
                                 case "chunkmodel":
                                 case "gcmodel":
@@ -71,7 +72,11 @@ namespace SAModel.SAMDL
                 if (CheckIfIniFileHasModels(split))
                 {
                     Categories.Add(split);
-                    comboCategories.Items.Add(split.CmnName);
+                    string categoryName = split.IniFile;
+                    // To prevent a crash when category names aren't defined
+                    if (split.CmnName != null && split.CmnName != "")
+                        categoryName = split.CmnName;
+                    comboCategories.Items.Add(categoryName);
                 }
             }
         }
@@ -110,6 +115,7 @@ namespace SAModel.SAMDL
                         switch (item.Value.Type)
                         {
                             case "model":
+                            case "basicmodel":
                             case "basicdxmodel":
                             case "chunkmodel":
                             case "gcmodel":
