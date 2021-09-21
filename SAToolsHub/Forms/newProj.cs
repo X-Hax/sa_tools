@@ -26,6 +26,7 @@ namespace SAToolsHub
         string gameDataFolder;
         string checkFile;
         string projName;
+        int selectedTemplateIndex = -1;
         bool canUseSALVL;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
@@ -117,10 +118,7 @@ namespace SAToolsHub
 					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
 
 					projInfo.GameName = gameName;
-					if (gameName == "SADXPC" || gameName == "SA2PC")
-						projInfo.CanBuild = true;
-					else
-						projInfo.CanBuild = false;
+                    projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
                     projInfo.CanUseSALVL = canUseSALVL;
                     projInfo.CheckFile = checkFile;
                     projInfo.GameDataFolder = gameDataFolder;
@@ -129,7 +127,7 @@ namespace SAToolsHub
 
 					projectFile.GameInfo = projInfo;
 					projectFile.SplitEntries = splitEntries;
-					if (gameName == "SA2" || gameName == "SA2GC" || gameName == "SA2PC")
+                    if (splitMdlEntries != null)
 						projectFile.SplitMDLEntries = splitMdlEntries;
 
 					serializer.Serialize(writer, projectFile);
@@ -148,7 +146,13 @@ namespace SAToolsHub
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			string templateFile = "";
+            // This is needed to prevent opening the template file twice.
+			// SelectedIndexChanged fires after a dialog closes even if the selection didn't change.
+            if (selectedTemplateIndex == comboBox1.SelectedIndex)
+                return;
+
+            selectedTemplateIndex = comboBox1.SelectedIndex;
+            string templateFile = "";
 			if (comboBox1.SelectedIndex > -1)
 			{
 				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value.ToString());
@@ -166,19 +170,21 @@ namespace SAToolsHub
 		#region Additional Functions
 		private int setProgressMaxStep()
 		{
-			switch (gameName)
+            int result = splitEntries.Count;
+            if (splitMdlEntries != null)
+                result += splitMdlEntries.Count;
+            switch (gameName)
 			{
 				case "SADXPC":
-					return (splitEntries.Count + 4);
+                    result += 4;
+                    break;
 				case "SA2PC":
-					return (splitEntries.Count + splitMdlEntries.Count + 2);
-				case "SA2":
-				case "SA2TT":
-				case "SA2P":
-					return(splitEntries.Count + splitMdlEntries.Count);
-				default:
-					return (splitEntries.Count);
+                    result += 3;
+                    break;
+                default:
+                    break;
 			}
+            return result;
 		}
 
         string[] SortTemplateList(string[] originalList)
@@ -469,58 +475,34 @@ namespace SAToolsHub
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
-			{
 				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
-			}
-
-			switch (game)
-			{
-                case "SA1":
-                case "SADXGC":
-                case "SADXGCP":
-                case "SADXGCR":
-                    progress.SetTask("Finalizing SALVL Supported Setup");
-                    File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
-                    File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
-                    break;
-                case "SADXPC":
-					progress.SetTask("Finalizing Moddable Project Setup");
-					makeProjectFolders(projFolder, progress, gameName);
-					progress.StepProgress();
-					progress.SetStep("Copying Object Definitions");
-					string objdefsPath = GetObjDefsDirectory();
-					string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
-					if (Directory.Exists(objdefsPath))
-					{
-						CopyFolder(objdefsPath, outputObjdefsPath);
-						File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
-						File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
-					}
-					else
-					{
-						MessageBox.Show(("Path to objdefs is missing\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-						throw new Exception(SplitERRORVALUE.UnhandledException.ToString());
-					}
-					break;
-				case "SA2PC":
-					if (splitMdlEntries.Count > 0)
-					{
-						progress.SetTask("Splitting Character Models");
-						foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
-						{
-							splitMdlFiles(splitMDL, progress, gamePath, projFolder);
-						}
-					}
-					
-					break;
-			}
+            // SALVL stuff
+            if (canUseSALVL)
+            {
+                progress.SetStep("Copying Object Definitions");
+                string objdefsPath = GetObjDefsDirectory();
+                string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+                if (Directory.Exists(objdefsPath))
+                    CopyFolder(objdefsPath, outputObjdefsPath);
+                progress.SetTask("Finalizing SALVL Supported Setup");
+                File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
+                File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
+            }
+            // Split MDL files for SA2
+            if (splitMdlEntries.Count > 0)
+            {
+                progress.SetTask("Splitting Character Models");
+                foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
+                    splitMdlFiles(splitMDL, progress, gamePath, projFolder);
+            }
+            // Project folders for buildable PC games
 			if (game == "SADXPC" || game == "SA2PC")
 			{
 				progress.SetTask("Finalizing Project Setup");
 				makeProjectFolders(projFolder, progress, game);
 				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
-			}
+                progress.StepProgress();
+            }
 		}
 		#endregion
 

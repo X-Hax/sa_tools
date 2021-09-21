@@ -234,11 +234,8 @@ namespace SAToolsHub
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
 				projSplitEntries = projFile.SplitEntries;
-				if (setGame.Contains("SA2"))
-				{
-					projSplitMDLEntries = projFile.SplitMDLEntries;
-
-				}
+                if (projFile.SplitMDLEntries != null)
+                    projSplitMDLEntries = projFile.SplitMDLEntries;
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
