@@ -49,5 +49,7 @@
   <SplitEntry SourceFile="SONICADV\ADVERTISE.PRS" IniFile="ADVERTISE" />
   <SplitEntry SourceFile="SONICADV\SUMMARY.PRS" IniFile="SUMMARY" />
   <SplitEntry SourceFile="SONICADV\B_ROBO.PRS" IniFile="B_ROBO" />
+  <SplitEntry SourceFile="SONICADV\EROBO.NB" IniFile="B_ROBO_NB" />
   <SplitEntry SourceFile="SONICADV\B_E101_R.PRS" IniFile="B_E101_R" />
+  <SplitEntry SourceFile="SONICADV\E101R.NB" IniFile="B_E101_R_NB" />
 </SplitTemplate>
