@@ -117,6 +117,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\ModelSelectDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ModelSelectDialog.Designer.cs">
+      <DependentUpon>ModelSelectDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\SA2MDLDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +191,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ModelSelectDialog.resx">
+      <DependentUpon>ModelSelectDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SA2MDLDialog.resx">
       <DependentUpon>SA2MDLDialog.cs</DependentUpon>
