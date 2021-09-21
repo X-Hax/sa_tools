@@ -699,7 +699,6 @@ namespace SAToolsHub
 						{
 							case "sadxlvl.ini":
 								salvlStartInfo.Arguments = $"\"{projXML}\"";
-
 								Process.Start(salvlStartInfo);
 								salvlStartInfo.Arguments = "";
 								break;
@@ -820,7 +819,9 @@ namespace SAToolsHub
 		//General Tools Initializers
 		private void sAMDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process samdlProcess = Process.Start(samdlStartInfo);
+            if (projectDirectory != null)
+                samdlStartInfo.Arguments = $"\"{projXML}\"";
+            Process samdlProcess = Process.Start(samdlStartInfo);
 		}
 
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
