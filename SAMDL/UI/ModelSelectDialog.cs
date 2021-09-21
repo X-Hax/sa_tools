@@ -30,7 +30,25 @@ namespace SAModel.SAMDL
             switch (Path.GetExtension(split.SourceFile).ToLowerInvariant())
             {
                 case ".nb":
-                    // NB split not implemented
+                    Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
+                    foreach (var nbitem in nbFilenames)
+                    {
+                        string entryFilename = nbitem.Value;
+                        if (nbitem.Value.Contains("|"))
+                        {
+                            string[] nbMeta = nbitem.Value.Split('|');
+                            entryFilename = nbMeta[0];
+                        }
+                        switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+                        {
+                            case ".sa1mdl":
+                            case ".sa2mdl":
+                            case ".sa2bmdl":
+                                return true;
+                            default:
+                                break;
+                        }
+                    }
                     break;
                 default:
                     IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
@@ -96,7 +114,6 @@ namespace SAModel.SAMDL
             {
                 case ".dll":
                     IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
-                    int counter = 0;
                     foreach (var dllItem in iniFile["SAMDLData"])
 					{
                         //MessageBox.Show(counter.ToString() + dllItem.Key + dllItem.Value);
@@ -107,7 +124,40 @@ namespace SAModel.SAMDL
                         if (nameAndTexture.Length > 1)
                             fakeFileInfo.CustomProperties["texture"] = nameAndTexture[1];
                         Models.Add(nameAndTexture[0], fakeFileInfo);
-                        counter++;
+                    }
+                    break;
+                case ".nb":
+                    Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
+                    foreach (var nbitem in nbFilenames)
+                    {
+                        string entryFilename = nbitem.Value;
+                        string entryDescription = "";
+                        string entryTexture = "";
+                        if (nbitem.Value.Contains("|"))
+                        {
+                            string[] nbMeta = nbitem.Value.Split('|');
+                            entryFilename = nbMeta[0];
+                            if (nbMeta.Length > 1)
+                                entryDescription = nbMeta[1];
+                            if (nbMeta.Length > 2)
+                                entryTexture = nbMeta[2];
+                        }
+                        else
+                            entryDescription = Path.GetFileNameWithoutExtension(nbitem.Value);
+                        switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+                        {
+                            case ".sa1mdl":
+                            case ".sa2mdl":
+                            case ".sa2bmdl":
+                                SplitTools.FileInfo fakeFileInfo = new SplitTools.FileInfo();
+                                fakeFileInfo.Filename = entryFilename;
+                                if (entryTexture != "")
+                                    fakeFileInfo.CustomProperties["texture"] = entryTexture;
+                                Models.Add(entryDescription, fakeFileInfo);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     break;
                 default:
@@ -187,6 +237,11 @@ namespace SAModel.SAMDL
                                 extension = ".PAK";
                                 modHasTexture = true;
                             }
+                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PB"))
+                            {
+                                extension = ".PB";
+                                modHasTexture = true;
+                            }
                             // Fallback on the game's system folder
                             if (!modHasTexture)
                             {
@@ -198,6 +253,8 @@ namespace SAModel.SAMDL
                                     extension = ".GVM";
                                 else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PAK"))
                                     extension = ".PAK";
+                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PB"))
+                                    extension = ".PB";
                             }
                             TextureFilename = Path.Combine(modHasTexture ? modSystemFolder : gameSystemFolder, pvmName) + extension;
                             //MessageBox.Show(TextureFilename);
