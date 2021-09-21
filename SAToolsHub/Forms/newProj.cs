@@ -23,7 +23,10 @@ namespace SAToolsHub
 		string gamePath;
 		string projFolder;
 		string dataFolder;
-		string projName;
+        string gameDataFolder;
+        string checkFile;
+        string projName;
+        bool canUseSALVL;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
 
@@ -118,6 +121,9 @@ namespace SAToolsHub
 						projInfo.CanBuild = true;
 					else
 						projInfo.CanBuild = false;
+                    projInfo.CanUseSALVL = canUseSALVL;
+                    projInfo.CheckFile = checkFile;
+                    projInfo.GameDataFolder = gameDataFolder;
 					projInfo.GameFolder = gamePath;
 					projInfo.ProjectFolder = projFolder;
 
@@ -217,10 +223,13 @@ namespace SAToolsHub
 			{
 				gameName = template.GameInfo.GameName;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
+                canUseSALVL = template.GameInfo.CanUseSALVL;
                 // This should never happen under normal circumstances
                 if (gamePath == "")
                     throw new Exception("Game path not set");
-				dataFolder = template.GameInfo.DataFolder;
+                dataFolder = template.GameInfo.DataFolder;
+                gameDataFolder = template.GameInfo.GameDataFolderName;
+                checkFile = template.GameInfo.CheckFile;
 				splitEntries = template.SplitEntries;
 				splitMdlEntries = template.SplitMDLEntries;
 			}

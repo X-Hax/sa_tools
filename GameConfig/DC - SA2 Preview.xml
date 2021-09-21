@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2PRE" dataFolder="DC_SA2Preview" checkFile="1STREAD.BIN" />
-  <SplitEntry SourceFile="1STREAD.BIN" IniFile="1STREAD" />
-  <SplitEntry SourceFile="SONIC2\ADVERTISE.PRS" IniFile="ADVERTISE" />
-  <SplitEntry SourceFile="SONIC2\STG03.PRS" IniFile="STG03" />
-  <SplitEntry SourceFile="SONIC2\STG09.PRS" IniFile="STG09" />
-  <SplitEntry SourceFile="SONIC2\STG13.PRS" IniFile="STG13" />
-  <SplitEntry SourceFile="SONIC2\STG14.PRS" IniFile="STG14" />
-  <SplitEntry SourceFile="SONIC2\STG15.PRS" IniFile="STG15" />
-  <SplitEntry SourceFile="SONIC2\STG16.PRS" IniFile="STG16" />
-  <SplitEntry SourceFile="SONIC2\STG18.PRS" IniFile="STG18" />
-  <SplitEntry SourceFile="SONIC2\STG21.PRS" IniFile="STG21" />
-  <SplitEntry SourceFile="SONIC2\STG41.PRS" IniFile="STG41" />
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\EWALKMDL.PRS">
+  <GameInfo gameName="SA2PRE" dataFolder="DC_SA2Preview" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="32e3542d1623d8cecbba80de688770e7" canUseSALVL="false" />
+  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
+  <SplitEntry SourceFile="ADVERTISE.PRS" IniFile="ADVERTISE" />
+  <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" />
+  <SplitEntry SourceFile="STG09.PRS" IniFile="STG09" />
+  <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" />
+  <SplitEntry SourceFile="STG14.PRS" IniFile="STG14" />
+  <SplitEntry SourceFile="STG15.PRS" IniFile="STG15" />
+  <SplitEntry SourceFile="STG16.PRS" IniFile="STG16" />
+  <SplitEntry SourceFile="STG18.PRS" IniFile="STG18" />
+  <SplitEntry SourceFile="STG21.PRS" IniFile="STG21" />
+  <SplitEntry SourceFile="STG41.PRS" IniFile="STG41" />
+  <SplitEntryMDL BigEndian="false" ModelFile="EWALKMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\KNUCKMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="KNUCKMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>KNUCKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\ROUGEMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="ROUGEMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\SONICMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="SONICMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TERIOSMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="TERIOSMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TWALKMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="TWALKMDL.PRS">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>

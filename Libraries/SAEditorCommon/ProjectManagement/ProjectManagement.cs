@@ -81,12 +81,27 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("dataFolder")]
 			public string DataFolder { get; set; }
-			/// <summary>
-			/// The filename to be checked against verified hashes to verify the game being used.
+            /// <summary>
+			/// Game data folder name, e.g. 'SONICADV', 'resource/gd_PC' or 'system'.
 			/// </summary>
-			[XmlAttribute("checkFile")]
+			[XmlAttribute("gameDataFolderName")]
+            public string GameDataFolderName { get; set; }
+            /// <summary>
+            /// The filename to be checked against verified hashes to verify the game being used.
+            /// </summary>
+            [XmlAttribute("checkFile")]
 			public string CheckFile { get; set; }
-		}
+            /// <summary>
+			/// MD5 hashes (comma-separated) to be checked against to verify the game being used.
+			/// </summary>
+			[XmlAttribute("checkHashes")]
+            public string CheckHashes { get; set; }
+            /// <summary>
+            /// Bool to check if the levels in the project can be opened in SALVL project mode.
+            /// </summary>
+            [XmlAttribute("canUseSALVL")]
+            public bool CanUseSALVL { get; set; }
+        }
 
 		/// <summary>
 		/// <para>
@@ -115,10 +130,15 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("gameName")]
 			public string GameName { get; set; }
-			/// <summary>
-			/// The directory for the main game stored in the *.sap file.
+            /// <summary>
+			/// Game main executable (same as checkFile in game template)
 			/// </summary>
-			[XmlAttribute("gameFolder")]
+			[XmlAttribute("checkFile")]
+            public string CheckFile { get; set; }
+            /// <summary>
+            /// The directory for the main game stored in the *.sap file.
+            /// </summary>
+            [XmlAttribute("gameFolder")]
 			public string GameFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
 			/// <summary>
 			/// The file folder used by the game stored in the *.sap file. e.g. system, gd_PC, etc
@@ -135,7 +155,12 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
-		}
+            /// <summary>
+            /// Bool to check if the levels in the project can be opened in SALVL project mode.
+            /// </summary>
+            [XmlAttribute("canUseSALVL")]
+            public bool CanUseSALVL { get; set; }
+        }
 
 		/// <summary>
 		/// Stores names for the source file, data file, and a common name for processing data to be split.
@@ -242,55 +267,16 @@ namespace SAEditorCommon.ProjectManagement
 
 	public class ProjectFunctions
 	{
-		private static bool checkFileHashes(string game, string checkFileHash)
+        /// <summary>
+		/// Checks a file's MD5 hash against a comma-separated list of known hashes.
+		/// </summary>
+		/// <returns>True if a match is found</returns>
+		private static bool checkFileHashes(string gameHashes, string checkFileHash)
 		{
-			List<string> hashes = new List<string>();
-			switch (game)
-			{
-				case "SA1":
-					hashes.Add("060cad2ceefc07c7429085f30a356046");
-					break;
-				case "SA2":
-					hashes.Add("1c1b63fcb551187e7c7b456b4e28a022");
-					hashes.Add("ef0138133ff61fca7075fd520abb7618");
-					break;
-				case "SA2TT":
-					hashes.Add("f3d6cf600af7d8daf156eee220225379");
-					break;
-				case "SA1AD":
-					hashes.Add("fcb1da8942278871136e41e127ce979b");
-					break;
-				case "SADXGC":
-					hashes.Add("036e39da11f19e6e3598ae6384dcae14");
-					break;
-                case "SADXGCP":
-                    hashes.Add("8c66b7889400adde9903c7a53b5cc94d");
-                    break;
-                case "SADXGCR":
-                    hashes.Add("03360a73c58326c41bfcc0b720cbfa45");
-                    break;       
-                case "SADX360":
-					hashes.Add("e1f01f48442cf711e2206370c60b7218");
-					break;
-				case "SADXPC":
-					hashes.Add("c6d65712475602252bfce53d0d8b7d6f");
-					hashes.Add("4d9b59aea4ee361e4f25475df1447bfd");
-					hashes.Add("3cd8ce57f5e1946762e7526a429e572f");
-					hashes.Add("e46580fc390285174acae895a90c5c84");
-					hashes.Add("b215d5dfc16514c0cc354449c101c7d0");
-					hashes.Add("f8c0b356519d7c459f7b726d63462791");
-					hashes.Add("a35eb183684e3eb964351de391db82e8");
-					break;
-				case "SA2PC":
-					hashes.Add("4f03dff9b720986cd922ab461d2a6c69");
-					hashes.Add("1c28ae7958300273484a32923788a060");
-					break;
-			}
-
+            string[] hashes = gameHashes.Split(',');
+			
 			if (!hashes.Any(h => h.Equals(checkFileHash, StringComparison.OrdinalIgnoreCase)))
-			{
 				return false;
-			}
 			else
 				return true;
 		}
@@ -363,7 +349,7 @@ namespace SAEditorCommon.ProjectManagement
                             if (File.Exists(checkFile))
                             {
                                 string checkFileHash = HelperFunctions.FileHash(checkFile);
-                                if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
+                                if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                                 {
                                     TextWriter splitsWriter = File.CreateText(templateFilePath);
                                     SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
@@ -423,7 +409,7 @@ namespace SAEditorCommon.ProjectManagement
                             if (File.Exists(checkFile))
                             {
                                 string checkFileHash = HelperFunctions.FileHash(checkFile);
-                                if (checkFileHashes(templateFile.GameInfo.GameName, checkFileHash) == true)
+                                if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                                 {
                                     SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
                                     return templateFile;

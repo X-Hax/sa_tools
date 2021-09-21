@@ -42,10 +42,11 @@ namespace SAToolsHub
 		//Variables
 		public static string newProjFile { get; set; }
 		string projXML = "";
-		public static string projectDirectory { get; set; }
+        public bool canUseSALVL { get; set; }
+        public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameDirectory { get; set; }
-		string gameDir;
+        public static string gameSystemDirectory { get; set; }
 		public static List<Templates.SplitEntry> projSplitEntries { get; set; }
 		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
@@ -128,31 +129,6 @@ namespace SAToolsHub
 
 		// TODO: ToolsHub - Migrate some Additional Functions out.
 		#region Additional Functions
-		private string getGameFile(string game)
-		{
-			switch (game)
-			{
-				case "SA1":
-				case "SA1AD":
-				case "SA2":
-				case "SA2TT":
-				case "SA2P":
-					return "1ST_READ.BIN";
-				case "SADXGC":
-				case "SADXGCP":
-				case "SADXGCR":
-					return "_Main.rel";
-				case "SADX360":
-					return "SonicPackage.xlast";
-				case "SADXPC":
-					return "sonic.exe";
-				case "SA2PC":
-					return "sonic2app.exe";
-				default:
-					return "";
-			}
-		}
-
 		private void initProject()
 		{
 			Templates.ProjectTemplate projectFile;
@@ -172,15 +148,14 @@ namespace SAToolsHub
 		private void openProject(Templates.ProjectTemplate projFile)
 		{
 			string rootFolder;
-			string gameFile = getGameFile(projFile.GameInfo.GameName);
 			bool validFolders = true;
 			bool sapChanged = false;
 
 			setGame = projFile.GameInfo.GameName;
 			
-			projectDirectory = (projFile.GameInfo.ProjectFolder);
-			gameDirectory = (projFile.GameInfo.GameFolder);
-
+			projectDirectory = projFile.GameInfo.ProjectFolder;
+			gameDirectory = projFile.GameInfo.GameFolder;
+            gameSystemDirectory = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
 			// Check for valid paths just in case the user moved folders.
 			if (!Directory.Exists(projectDirectory))
 			{
@@ -217,7 +192,7 @@ namespace SAToolsHub
 					fsd.Title = "Please select the correct game folder";
 					if (fsd.ShowDialog(IntPtr.Zero))
 					{
-						if (File.Exists(Path.Combine(fsd.FileName, gameFile)))
+						if (File.Exists(Path.Combine(fsd.FileName, projFile.GameInfo.CheckFile)))
 						{
 							gameDirectory = fsd.FileName;
 							projFile.GameInfo.GameFolder = gameDirectory;
@@ -251,24 +226,9 @@ namespace SAToolsHub
 
 			if (validFolders)
 			{
-				switch (setGame)
-				{
-					case "SADXPC":
-						gameDir = gameDirectory + "\\system\\";
-						rootFolder = "SADX Game Files";
-						break;
-					case "SA2PC":
-						gameDir = gameDirectory + "\\resource\\gd_PC\\";
-						rootFolder = "SA2PC Game Files";
-						break;
-					default:
-						gameDir = gameDirectory;
-						rootFolder = setGame + " Game Directory";
-						break;
-				}
-
+                rootFolder = setGame + " Game Files";
 				PopulateTreeView(projectDirectory);
-				PopulateTreeView(gameDir);
+				PopulateTreeView(gameSystemDirectory);
 				treeView1.Nodes[1].Text = rootFolder;
 				this.treeView1.NodeMouseClick +=
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
@@ -282,6 +242,7 @@ namespace SAToolsHub
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
+                canUseSALVL = projFile.GameInfo.CanUseSALVL;
 				if (projFile.GameInfo.CanBuild)
 				{
 					buildToolStripMenuItem.Enabled = true;
@@ -865,27 +826,13 @@ namespace SAToolsHub
 			Process samdlProcess = Process.Start(samdlStartInfo);
 		}
 
-		private void toolStripMenuItem3_Click(object sender, EventArgs e)
-		{
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            string projectArgumentsPath = canUseSALVL ? $"\"{projXML}\"" : "";
             if (projectDirectory != null)
-            {
-                // Check if the game supports SALVL project mode
-                switch (setGame)
-                {
-                    case "SADXPC":
-                    case "SA1":
-                    case "SADXGC":
-                    case "SADXGCP":
-                    case "SADXGCR":
-                        string projectArgumentsPath = $"\"{projXML}\"";
-                        salvlStartInfo.Arguments = projectArgumentsPath;
-                        break;
-                    default:
-                        break;
-                }
-			}
-			Process salvlProcess = Process.Start(salvlStartInfo);
-		}
+                salvlStartInfo.Arguments = projectArgumentsPath;
+            Process salvlProcess = Process.Start(salvlStartInfo);
+        }
 
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
