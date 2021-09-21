@@ -227,7 +227,7 @@ namespace SplitTools.SplitDLL
 									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_obj));
 									labels.AddRange(mdl.GetLabels());
 								}
-							}
+                            }
 							break;
 
 						// NJS_MODEL
@@ -366,13 +366,21 @@ namespace SplitTools.SplitDLL
 										Label = mdl.Name
 									};
 									output.Items.Add(info);
-									if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
-									{
-										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
-										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
-										{
-											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
-										}
+                                    if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
+                                    {
+                                        string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
+                                        if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
+                                        {
+                                            fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
+                                        }
+                                        // Metadata for SAMDL project mode (formatted as "Description|TextureFilename")
+                                        if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+                                        {
+                                            string[] metadata = data.CustomProperties["meta" + i.ToString()].Split('|');
+                                            SAMDLMetadata mdlmeta = new SAMDLMetadata(metadata[0], "");
+                                            if (metadata.Length > 1) mdlmeta.Texture = metadata[1];
+                                            output.SAMDLData.Add(fn, mdlmeta);
+                                        }
 										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_arr));
 										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
@@ -448,7 +456,15 @@ namespace SplitTools.SplitDLL
 											{
 												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + attachext_arr);
 											}
-											models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_att));
+                                            // Metadata for SAMDL project mode
+                                            if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+                                            {
+                                                string[] metadata = data.CustomProperties["meta" + i.ToString()].Split('|');
+                                                SAMDLMetadata mdlmeta = new SAMDLMetadata(metadata[0], "");
+                                                if (metadata.Length > 1) mdlmeta.Texture = metadata[1];
+                                                output.SAMDLData.Add(fn, mdlmeta);
+                                            }
+                                            models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_att));
 											if (!labels.Contains(mdl.Name))
 												labels.AddRange(mdl.GetLabels());
 										}
@@ -1040,7 +1056,7 @@ namespace SplitTools.SplitDLL
 				}
 					itemcount++;
 				}
-				//Remove models that are included in other models split after them
+				// Remove models that are included in other models split after them
 				ModelAnimations[] arr = models.ToArray();
 				List<ModelAnimations> modelanimsnew = new List<ModelAnimations>();
 				foreach (ModelAnimations newitem in models)
@@ -1062,8 +1078,8 @@ namespace SplitTools.SplitDLL
 				foreach (ModelAnimations item in models)
 				{
 					string modelOutputPath = Path.Combine(projectFolderName, item.Filename);
-					//string modelOutputPath = item.Filename;
-					if (!Directory.Exists(Path.GetDirectoryName(modelOutputPath)))
+                    //string modelOutputPath = item.Filename;
+                    if (!Directory.Exists(Path.GetDirectoryName(modelOutputPath)))
 						Directory.CreateDirectory(Path.GetDirectoryName(modelOutputPath));
 					ModelFile.CreateFile(modelOutputPath, item.Model, item.Animations.ToArray(), null, item.Name, null, item.Format, nometa);
 					string type = "model";
@@ -1181,7 +1197,7 @@ namespace SplitTools.SplitDLL
 	{
 		public string Filename { get; private set; }
 		public string Name { get; private set; }
-		public NJS_OBJECT Model { get; private set; }
+        public NJS_OBJECT Model { get; private set; }
 		public ModelFormat Format { get; private set; }
 		public List<string> Animations { get; private set; }
 

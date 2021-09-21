@@ -43,7 +43,8 @@ namespace SplitTools.SplitDLL
 		public Game Game { get; set; }
 		public DictionaryContainer<string> Exports { get; set; }
 		public DictionaryContainer<FileTypeHash> Files { get; set; }
-		public DictionaryContainer<FileTypeHash> HiddenFiles { get; set; }
+        public DictionaryContainer<SAMDLMetadata> SAMDLData { get; set; }
+        public DictionaryContainer<FileTypeHash> HiddenFiles { get; set; }
 		public TexListContainer TexLists { get; set; }
 		[IniName("Item")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
@@ -56,6 +57,7 @@ namespace SplitTools.SplitDLL
 		{
 			Exports = new DictionaryContainer<string>();
 			Files = new DictionaryContainer<FileTypeHash>();
+            SAMDLData = new DictionaryContainer<SAMDLMetadata>();
 			HiddenFiles = new DictionaryContainer<FileTypeHash>();
 			Items = new List<DllItemInfo>();
 			DataItems = new List<DllDataItemInfo>();
@@ -151,7 +153,32 @@ namespace SplitTools.SplitDLL
 		}
 	}
 
-	public class TexListContainer : IEnumerable<KeyValuePair<uint, DllTexListInfo>>
+    [TypeConverter(typeof(StringConverter<SAMDLMetadata>))]
+    public class SAMDLMetadata
+    {
+        public string Name { get; set; }
+        public string Texture { get; set; }
+
+        public SAMDLMetadata(string name, string texture)
+        {
+            Name = name;
+            Texture = texture;
+        }
+
+        public SAMDLMetadata(string data)
+        {
+            string[] split = data.Split('|');
+            Name = split[0];
+            Texture = split[1];
+        }
+
+        public override string ToString()
+        {
+            return Name + "|" + Texture;
+        }
+    }
+
+    public class TexListContainer : IEnumerable<KeyValuePair<uint, DllTexListInfo>>
 	{
 		[IniCollection(IniCollectionMode.IndexOnly, KeyConverter = typeof(UInt32HexConverter))]
 		public Dictionary<uint, DllTexListInfo> Items { get; set; }

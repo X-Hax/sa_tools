@@ -67,26 +67,31 @@ namespace SplitTools
 		SA2B
 	}
 
-	public class FileInfo
-	{
-		[IniName("type")]
-		public string Type { get; set; }
+    public class FileInfo
+    {
+        [IniName("type")]
+        public string Type { get; set; }
         [IniName("description")]
         public string Description { get; set; }
         [IniName("address")]
-		[TypeConverter(typeof(Int32HexConverter))]
-		public int Address { get; set; }
-		[IniName("filename")]
-		public string Filename { get; set; }
-		[IniName("length")]
-		public int Length { get; set; }
-		[IniName("md5")]
-		public string MD5Hash { get; set; }
-		[IniName("pointer")]
-		[IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
-		public int[] PointerList { get; set; }
-		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<string, string> CustomProperties { get; set; }
+        [TypeConverter(typeof(Int32HexConverter))]
+        public int Address { get; set; }
+        [IniName("filename")]
+        public string Filename { get; set; }
+        [IniName("length")]
+        public int Length { get; set; }
+        [IniName("md5")]
+        public string MD5Hash { get; set; }
+        [IniName("pointer")]
+        [IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
+        public int[] PointerList { get; set; }
+        [IniCollection(IniCollectionMode.IndexOnly)]
+        public Dictionary<string, string> CustomProperties { get; set; }
+
+        public FileInfo()
+        {
+            CustomProperties = new Dictionary<string, string>();
+        }
 	}
 
 	[Serializable]
