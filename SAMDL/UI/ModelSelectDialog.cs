@@ -79,6 +79,8 @@ namespace SAModel.SAMDL
                     comboCategories.Items.Add(categoryName);
                 }
             }
+            if (comboCategories.Items.Count > 0)
+                comboCategories.SelectedIndex = 0;
         }
 
         private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
