@@ -3898,6 +3898,8 @@ namespace SAModel.SAMDL
                     LoadFile(mdldialog.ModelFilename);
                 if (mdldialog.TextureFilename != "" && File.Exists(mdldialog.TextureFilename))
                     LoadTextures(mdldialog.TextureFilename);
+                else
+                    UnloadTextures();
             }
             modelListToolStripMenuItem.Enabled = true;
         }
