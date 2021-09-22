@@ -71,8 +71,6 @@ namespace SplitTools
     {
         [IniName("type")]
         public string Type { get; set; }
-        [IniName("description")]
-        public string Description { get; set; }
         [IniName("address")]
         [TypeConverter(typeof(Int32HexConverter))]
         public int Address { get; set; }

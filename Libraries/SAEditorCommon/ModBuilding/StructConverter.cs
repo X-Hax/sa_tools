@@ -109,7 +109,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 				case "recapscreen":
 					{
 						modified = false;
-						int count = int.Parse(item.Value.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+						int count = item.Value.Length;
 						string[] hash2 = item.Value.MD5Hash.Split(':');
 						string[][] hashes = new string[hash2.Length][];
 						for (int i = 0; i < hash2.Length; i++)
@@ -129,7 +129,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 				case "npctext":
 					{
 						modified = false;
-						int count = int.Parse(item.Value.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+						int count = item.Value.Length;
 						string[] hash2 = item.Value.MD5Hash.Split(':');
 						string[][] hashes = new string[hash2.Length][];
 						for (int i = 0; i < hash2.Length; i++)
@@ -716,7 +716,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 						case "recapscreen":
 							{
 								uint addr = (uint)(data.Address + imagebase);
-								RecapScreen[][] texts = RecapScreenList.Load(data.Filename, int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
+								RecapScreen[][] texts = RecapScreenList.Load(data.Filename, data.Length);
 								for (int l = 0; l < 5; l++)
 									for (int j = 0; j < texts.Length; j++)
 									{
@@ -745,7 +745,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "npctext":
 							{
-								NPCText[][] texts = NPCTextList.Load(data.Filename, int.Parse(data.CustomProperties["length"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
+								NPCText[][] texts = NPCTextList.Load(data.Filename, data.Length);
 								uint headaddr = (uint)(data.Address + imagebase);
 								for (int l = 0; l < 5; l++)
 								{
