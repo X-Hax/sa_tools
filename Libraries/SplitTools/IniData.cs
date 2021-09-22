@@ -71,8 +71,6 @@ namespace SplitTools
     {
         [IniName("type")]
         public string Type { get; set; }
-        [IniName("description")]
-        public string Description { get; set; }
         [IniName("address")]
         [TypeConverter(typeof(Int32HexConverter))]
         public int Address { get; set; }
@@ -87,11 +85,6 @@ namespace SplitTools
         public int[] PointerList { get; set; }
         [IniCollection(IniCollectionMode.IndexOnly)]
         public Dictionary<string, string> CustomProperties { get; set; }
-
-        public FileInfo()
-        {
-            CustomProperties = new Dictionary<string, string>();
-        }
 	}
 
 	[Serializable]

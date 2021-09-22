@@ -32,7 +32,7 @@ namespace SADXTweaker2
 			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
 				if (item.Value.Type.Equals("recapscreen", StringComparison.OrdinalIgnoreCase))
 				{
-					objectLists.Add(new KeyValuePair<string, RecapScreen[][]>(item.Value.Filename, RecapScreenList.Load(item.Value.Filename, int.Parse(item.Value.CustomProperties["length"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo))));
+					objectLists.Add(new KeyValuePair<string, RecapScreen[][]>(item.Value.Filename, RecapScreenList.Load(item.Value.Filename, item.Value.Length)));
 					levelList.Items.Add(item.Key);
 				}
 			levelList.EndUpdate();

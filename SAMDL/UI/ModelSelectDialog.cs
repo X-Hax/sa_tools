@@ -119,6 +119,7 @@ namespace SAModel.SAMDL
                         //MessageBox.Show(counter.ToString() + dllItem.Key + dllItem.Value);
                         string[] nameAndTexture = dllItem.Value.Split('|');
                         SplitTools.FileInfo fakeFileInfo = new SplitTools.FileInfo();
+                        fakeFileInfo.CustomProperties = new Dictionary<string, string>();
                         fakeFileInfo.Filename = dllItem.Key;
                         //MessageBox.Show(nameAndTexture[0]);
                         if (nameAndTexture.Length > 1)
@@ -150,6 +151,7 @@ namespace SAModel.SAMDL
                             case ".sa2mdl":
                             case ".sa2bmdl":
                                 SplitTools.FileInfo fakeFileInfo = new SplitTools.FileInfo();
+                                fakeFileInfo.CustomProperties = new Dictionary<string, string>();
                                 fakeFileInfo.Filename = entryFilename;
                                 if (entryTexture != "")
                                     fakeFileInfo.CustomProperties["texture"] = entryTexture;
