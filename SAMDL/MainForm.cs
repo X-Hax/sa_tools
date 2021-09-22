@@ -3801,7 +3801,7 @@ namespace SAModel.SAMDL
 				unsaved = true;
 			}
 		}
-
+        
 		// Meshset sorting
 		private void SortModel(NJS_OBJECT mdl, bool withchildren)
 		{
@@ -3888,6 +3888,11 @@ namespace SAModel.SAMDL
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
 
+        private void buttonModelList_Click(object sender, EventArgs e)
+        {
+            LoadProject(currentProject);
+        }
+
         private void LoadProject(string filename)
         {
             currentProject = filename;
@@ -3903,7 +3908,7 @@ namespace SAModel.SAMDL
                 else
                     UnloadTextures();
             }
-            modelListToolStripMenuItem.Enabled = true;
+            modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
         }
 	}
 }
