@@ -28,7 +28,8 @@ namespace SAModel.SAMDL
 		bool mouseWrapScreen = false;
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
-        string currentProject;
+        string currentProject; // Path to currently loaded project, if it exists
+        int lastProjectModeCategory = 0; // Last selected category in the model list
 
 		public MainForm()
 		{
@@ -3890,10 +3891,11 @@ namespace SAModel.SAMDL
         private void LoadProject(string filename)
         {
             currentProject = filename;
-            ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename));
+            ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename), lastProjectModeCategory);
             DialogResult result = mdldialog.ShowDialog();
             if (result == DialogResult.OK)
             {
+                lastProjectModeCategory = mdldialog.CategoryIndex;
                 if (mdldialog.ModelFilename != "" && File.Exists(mdldialog.ModelFilename))
                     LoadFile(mdldialog.ModelFilename);
                 if (mdldialog.TextureFilename != "" && File.Exists(mdldialog.TextureFilename))

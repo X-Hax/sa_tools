@@ -13,7 +13,7 @@ namespace SAModel.SAMDL
     {
         public string ModelFilename;
         public string TextureFilename;
-        private int CategoryIndex = -1;
+        public int CategoryIndex = -1;
         List<SplitEntry> Categories = new List<SplitEntry>();
         Dictionary<string, SplitTools.FileInfo> Models = new Dictionary<string, SplitTools.FileInfo>();
         public string modFolder;
@@ -77,7 +77,7 @@ namespace SAModel.SAMDL
             return false;
         }
 
-        public ModelSelectDialog(ProjectTemplate projFile)
+        public ModelSelectDialog(ProjectTemplate projFile, int index)
         {
             modFolder = projFile.GameInfo.ProjectFolder;
             modSystemFolder = Path.Combine(modFolder, projFile.GameInfo.GameDataFolder);
@@ -97,8 +97,12 @@ namespace SAModel.SAMDL
                     comboCategories.Items.Add(categoryName);
                 }
             }
-            if (comboCategories.Items.Count > 0)
+            if (comboCategories.Items.Count - 1 >= index)
+                comboCategories.SelectedIndex = index;
+            else if (comboCategories.Items.Count > 0)
                 comboCategories.SelectedIndex = 0;
+            else 
+                comboCategories.SelectedIndex = -1;
         }
 
         private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
