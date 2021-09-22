@@ -227,6 +227,14 @@ namespace SplitTools.SplitDLL
 									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_obj));
 									labels.AddRange(mdl.GetLabels());
 								}
+                                // Metadata for SAMDL project mode (formatted as "Description|TextureFilename")
+                                if (data.CustomProperties.ContainsKey("meta"))
+                                {
+                                    string[] metadata = data.CustomProperties["meta"].Split('|');
+                                    SAMDLMetadata mdlmeta = new SAMDLMetadata(metadata[0], "");
+                                    if (metadata.Length > 1) mdlmeta.Texture = metadata[1];
+                                    output.SAMDLData.Add(data.Filename, mdlmeta);
+                                }
                             }
 							break;
 
@@ -278,7 +286,15 @@ namespace SplitTools.SplitDLL
 									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_att));
 									labels.AddRange(mdl.GetLabels());
 								}
-							}
+                                // Metadata for SAMDL project mode
+                                if (data.CustomProperties.ContainsKey("meta"))
+                                {
+                                    string[] metadata = data.CustomProperties["meta"].Split('|');
+                                    SAMDLMetadata mdlmeta = new SAMDLMetadata(metadata[0], "");
+                                    if (metadata.Length > 1) mdlmeta.Texture = metadata[1];
+                                    output.SAMDLData.Add(data.Filename, mdlmeta);
+                                }
+                            }
 							break;
 						
 						// NJS_OBJECT arrays
@@ -549,7 +565,15 @@ namespace SplitTools.SplitDLL
 										{
                                             outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
                                             mfn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
-										}
+                                            // Metadata for SAMDL project mode
+                                            if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_m"))
+                                            {
+                                                string[] metadata = data.CustomProperties["meta" + i.ToString() + "_m"].Split('|');
+                                                SAMDLMetadata mdlmeta = new SAMDLMetadata(metadata[0], "");
+                                                if (metadata.Length > 1) mdlmeta.Texture = metadata[1];
+                                                output.SAMDLData.Add(mfn, mdlmeta);
+                                            }
+                                        }
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
 
