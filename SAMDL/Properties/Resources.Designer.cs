@@ -183,6 +183,16 @@ namespace SAModel.SAMDL.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap modellist {
+            get {
+                object obj = ResourceManager.GetObject("modellist", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap nextanim {
             get {
                 object obj = ResourceManager.GetObject("nextanim", resourceCulture);

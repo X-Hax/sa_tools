@@ -332,9 +332,9 @@ namespace SplitTools.Split
 										ModelFile.CreateFile(file, mdl, null, null, null, null, modelfmt_att, nometa);
 									}
 								address += 4;
-							}
+								}
 							nohash = true;
-					}
+							}
 							break;
 						case "action":
 							{
@@ -695,6 +695,7 @@ namespace SplitTools.Split
 									shortrot = bool.Parse(customProperties["shortrot"]);
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
+								string path = Path.GetDirectoryName(fileOutputPath);
 								for (int i = 0; i < data.Length; i++)
 								{
 									MotionTableEntry bmte = new MotionTableEntry();
@@ -704,8 +705,14 @@ namespace SplitTools.Split
 										NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);
 										bmte.Motion = motion.Name;
 										mtns.Add(mtnaddr, motion.Name);
-										motion.Save(Path.Combine(fileOutputPath, $"{i}.saanim"), nometa);
-										hashes.Add($"{i}.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.saanim")));
+										string file_tosave;
+										if (customProperties.ContainsKey("filename" + i.ToString()))
+											file_tosave = customProperties["filename" + i.ToString()];
+										else
+											file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim";
+										string file = Path.Combine(path, file_tosave);
+										motion.Save(file, nometa);
+										hashes.Add(HelperFunctions.FileHash(file));
 									}
 									else
 									bmte.Motion = mtns[mtnaddr];
@@ -849,6 +856,7 @@ namespace SplitTools.Split
 							{
 								List<KartMenuElements> result = new List<KartMenuElements>();
 								List<string> hashes = new List<string>();
+								string path = Path.GetDirectoryName(fileOutputPath);
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartMenuElements menu = new KartMenuElements();
@@ -856,8 +864,14 @@ namespace SplitTools.Split
 									menu.PortraitID = ByteConverter.ToUInt32(datafile, address + 4);
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 8) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									menu.KartModel = model.Name;
-									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
-									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									string file_tosave;
+									if (customProperties.ContainsKey("filename" + i.ToString()))
+										file_tosave = customProperties["filename" + i.ToString()];
+									else
+										file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2mdl";
+									string file = Path.Combine(path, file_tosave);
+									ModelFile.CreateFile(file, model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add(HelperFunctions.FileHash(file));
 									menu.SPD = datafile[address + 0xC];
 									menu.ACL = datafile[address + 0xD];
 									menu.BRK = datafile[address + 0xE];
@@ -875,6 +889,7 @@ namespace SplitTools.Split
 							{
 								List<KartSoundParameters> result = new List<KartSoundParameters>();
 								List<string> hashes = new List<string>();
+								string path = Path.GetDirectoryName(fileOutputPath);
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartSoundParameters para = new KartSoundParameters();
@@ -889,8 +904,14 @@ namespace SplitTools.Split
 									}
 									NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToUInt32(datafile, address + 0x14) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 									para.ShadowModel = model.Name;
-									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
-									hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+									string file_tosave;
+									if (customProperties.ContainsKey("filename" + i.ToString()))
+										file_tosave = customProperties["filename" + i.ToString()];
+									else
+										file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2mdl";
+									string file = Path.Combine(path, file_tosave);
+									ModelFile.CreateFile(file, model, null, null, null, null, ModelFormat.Chunk, nometa);
+									hashes.Add(HelperFunctions.FileHash(file));
 									result.Add(para);
 									address += 0x18;
 								}
@@ -904,6 +925,7 @@ namespace SplitTools.Split
 							{
 								Directory.CreateDirectory(fileOutputPath);
 								List<string> hashes = new List<string>();
+								string path = Path.GetDirectoryName(fileOutputPath);
 								switch (inifile.Game)
 								{
 								case Game.SA2:
@@ -915,15 +937,27 @@ namespace SplitTools.Split
 												kart.ID = (SA2KartCharacters)ByteConverter.ToInt32(datafile, address);
 												NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 												kart.Model = model.Name;
-												ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
-												hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
+												string file_tosave;
+												if (customProperties.ContainsKey("filename" + i.ToString()))
+													file_tosave = customProperties["filename" + i.ToString()];
+												else
+													file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2mdl";
+												string file = Path.Combine(path, file_tosave);
+												ModelFile.CreateFile(file, model, null, null, null, null, ModelFormat.Chunk, nometa);
+												hashes.Add(HelperFunctions.FileHash(file));
 												int ptr = ByteConverter.ToInt32(datafile, address + 8);
 												if (ptr != 0)
 												{
 													model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 													kart.LowModel = model.Name;
-													ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
-													hashes.Add($"{i} Low.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl")));
+													string file_tosave_l;
+													if (customProperties.ContainsKey("filename" + i.ToString()))
+														file_tosave_l = customProperties["filename" + i.ToString()];
+													else
+														file_tosave_l = i.ToString("D3", NumberFormatInfo.InvariantInfo) + " Low.sa2mdl";
+													string file_l = Path.Combine(path, file_tosave_l);
+													ModelFile.CreateFile(file_l, model, null, null, null, null, ModelFormat.Chunk, nometa);
+													hashes.Add(HelperFunctions.FileHash(file_l));
 												}
 												kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
 												kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
@@ -947,15 +981,27 @@ namespace SplitTools.Split
 											kart.ID = (SA2KartCharacters)ByteConverter.ToInt32(datafile, address);
 											NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 											kart.Model = model.Name;
-											ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
-											hashes.Add($"{i}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa2mdl")));
-											int ptr = ByteConverter.ToInt32(datafile, address + 8);
+												string file_tosave;
+												if (customProperties.ContainsKey("filename" + i.ToString()))
+													file_tosave = customProperties["filename" + i.ToString()];
+												else
+													file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa2mdl";
+												string file = Path.Combine(path, file_tosave);
+												ModelFile.CreateFile(file, model, null, null, null, null, ModelFormat.Chunk, nometa);
+												hashes.Add(HelperFunctions.FileHash(file));
+												int ptr = ByteConverter.ToInt32(datafile, address + 8);
 											if (ptr != 0)
 											{
 												model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, ModelFormat.Chunk, new Dictionary<int, Attach>());
 												kart.LowModel = model.Name;
-												ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
-												hashes.Add($"{i} Low.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i} Low.sa2mdl")));
+													string file_tosave_l;
+													if (customProperties.ContainsKey("filename" + i.ToString()))
+														file_tosave_l = customProperties["filename" + i.ToString()];
+													else
+														file_tosave_l = i.ToString("D3", NumberFormatInfo.InvariantInfo) + " Low.sa2mdl";
+													string file_l = Path.Combine(path, file_tosave_l);
+													ModelFile.CreateFile(file_l, model, null, null, null, null, ModelFormat.Chunk, nometa);
+													hashes.Add(HelperFunctions.FileHash(file_l));
 											}
 											kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
 											kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
@@ -978,6 +1024,7 @@ namespace SplitTools.Split
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartModelsArray> result = new List<KartModelsArray>();
 								List<string> hashes = new List<string>();
+								string path = Path.GetDirectoryName(fileOutputPath);
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartModelsArray kartobj = new KartModelsArray();
@@ -997,12 +1044,24 @@ namespace SplitTools.Split
 										}
 										NJS_OBJECT model = new NJS_OBJECT(datafile, (int)(ptr - imageBase), imageBase, modelfmt_def, new Dictionary<int, Attach>());
 										kartobj.Model = model.Name;
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}{modelext_krt}"), model, null, null, null, null, modelfmt_def, nometa);
-										hashes.Add($"{i}{modelext_krt}:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}{modelext_krt}")));
+										string file_tosave;
+										if (customProperties.ContainsKey("filename" + i.ToString()))
+											file_tosave = customProperties["filename" + i.ToString()];
+										else
+											file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_krt;
+										string file = Path.Combine(path, file_tosave);
+										ModelFile.CreateFile(file, model, null, null, null, null, modelfmt_def, nometa);
+										hashes.Add(HelperFunctions.FileHash(file));
 										NJS_OBJECT collision = new NJS_OBJECT(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 										kartobj.Collision = collision.Name;
-										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{i}.sa1mdl"), collision, null, null, null, null, ModelFormat.Basic, nometa);
-										hashes.Add($"{i}.sa1mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{i}.sa1mdl")));
+										string file_tosave_col;
+										if (customProperties.ContainsKey("filename" + i.ToString()))
+											file_tosave_col = customProperties["filename" + i.ToString()];
+										else
+											file_tosave_col = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+										string file_col = Path.Combine(path, file_tosave_col);
+										ModelFile.CreateFile(file_col, collision, null, null, null, null, ModelFormat.Basic, nometa);
+										hashes.Add(HelperFunctions.FileHash(file_col));
 									}
 									kartobj.Unknown1 = ByteConverter.ToUInt32(datafile, address + 8);
 									kartobj.Unknown2 = ByteConverter.ToUInt32(datafile, address + 0xC);
