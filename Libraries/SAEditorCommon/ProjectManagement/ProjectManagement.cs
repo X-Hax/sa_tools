@@ -96,11 +96,6 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("checkHashes")]
             public string CheckHashes { get; set; }
-            /// <summary>
-            /// Bool to check if the levels in the project can be opened in SALVL project mode.
-            /// </summary>
-            [XmlAttribute("canUseSALVL")]
-            public bool CanUseSALVL { get; set; }
         }
 
 		/// <summary>
@@ -155,11 +150,6 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
-            /// <summary>
-            /// Bool to check if the levels in the project can be opened in SALVL project mode.
-            /// </summary>
-            [XmlAttribute("canUseSALVL")]
-            public bool CanUseSALVL { get; set; }
         }
 
 		/// <summary>

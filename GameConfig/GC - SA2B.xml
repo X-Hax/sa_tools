@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2GC" dataFolder="GC_SA2B" gameDataFolderName="files" checkFile="sys/main.dol" checkHashes="efb19690749bcb262ed468ceafcb3e5b" canUseSALVL="false" />
+  <GameInfo gameName="SA2GC" dataFolder="GC_SA2B" gameDataFolderName="files" checkFile="sys/main.dol" checkHashes="efb19690749bcb262ed468ceafcb3e5b" />
   <SplitEntry SourceFile="sys/main.dol" IniFile="boot" />
   <SplitEntry SourceFile="files/advertiseD.rel" IniFile="advertiseD" />
   <SplitEntry SourceFile="files/CartD.rel" IniFile="CartD" />

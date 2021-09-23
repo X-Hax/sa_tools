@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SADXPC" dataFolder="PC_SADX" gameDataFolderName="system" checkFile="sonic.exe" checkHashes="c6d65712475602252bfce53d0d8b7d6f,4d9b59aea4ee361e4f25475df1447bfd,3cd8ce57f5e1946762e7526a429e572f,e46580fc390285174acae895a90c5c84,b215d5dfc16514c0cc354449c101c7d0,f8c0b356519d7c459f7b726d63462791,a35eb183684e3eb964351de391db82e8" canUseSALVL="true" />
+  <GameInfo gameName="SADXPC" dataFolder="PC_SADX" gameDataFolderName="system" checkFile="sonic.exe" checkHashes="c6d65712475602252bfce53d0d8b7d6f,4d9b59aea4ee361e4f25475df1447bfd,3cd8ce57f5e1946762e7526a429e572f,e46580fc390285174acae895a90c5c84,b215d5dfc16514c0cc354449c101c7d0,f8c0b356519d7c459f7b726d63462791,a35eb183684e3eb964351de391db82e8" />
   <SplitEntry SourceFile="sonic.exe" IniFile="characters" CmnName="Characters (EXE)" />
   <SplitEntry SourceFile="system/chrmodels.dll" IniFile="chrmodels" CmnName="Characters (DLL)" />
   <SplitEntry SourceFile="sonic.exe" IniFile="commonobjects" CmnName="Common Objects" />

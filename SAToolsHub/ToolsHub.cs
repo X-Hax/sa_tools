@@ -42,7 +42,6 @@ namespace SAToolsHub
 		//Variables
 		public static string newProjFile { get; set; }
 		string projXML = "";
-        public bool canUseSALVL { get; set; }
         public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameDirectory { get; set; }
@@ -239,7 +238,6 @@ namespace SAToolsHub
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
-                canUseSALVL = projFile.GameInfo.CanUseSALVL;
 				if (projFile.GameInfo.CanBuild)
 				{
 					buildToolStripMenuItem.Enabled = true;
@@ -826,9 +824,11 @@ namespace SAToolsHub
 
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
-            string projectArgumentsPath = canUseSALVL ? $"\"{projXML}\"" : "";
             if (projectDirectory != null)
+            {
+                string projectArgumentsPath = File.Exists(Path.Combine(projectDirectory, "sadxlvl.ini")) ? $"\"{projXML}\"" : "";
                 salvlStartInfo.Arguments = projectArgumentsPath;
+            }
             Process salvlProcess = Process.Start(salvlStartInfo);
         }
 

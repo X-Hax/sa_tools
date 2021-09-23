@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2PRE" dataFolder="DC_SA2Preview" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="32e3542d1623d8cecbba80de688770e7" canUseSALVL="false" />
+  <GameInfo gameName="SA2PRE" dataFolder="DC_SA2Preview" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="32e3542d1623d8cecbba80de688770e7" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
   <SplitEntry SourceFile="ADVERTISE.PRS" IniFile="ADVERTISE" />
   <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" />

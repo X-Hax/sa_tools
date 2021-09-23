@@ -27,7 +27,6 @@ namespace SAToolsHub
         string checkFile;
         string projName;
         int selectedTemplateIndex = -1;
-        bool canUseSALVL;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
 
@@ -119,7 +118,6 @@ namespace SAToolsHub
 
 					projInfo.GameName = gameName;
                     projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
-                    projInfo.CanUseSALVL = canUseSALVL;
                     projInfo.CheckFile = checkFile;
                     projInfo.GameDataFolder = gameDataFolder;
 					projInfo.GameFolder = gamePath;
@@ -229,7 +227,6 @@ namespace SAToolsHub
 			{
 				gameName = template.GameInfo.GameName;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
-                canUseSALVL = template.GameInfo.CanUseSALVL;
                 // This should never happen under normal circumstances
                 if (gamePath == "")
                     throw new Exception("Game path not set");
@@ -477,7 +474,7 @@ namespace SAToolsHub
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
 				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
             // SALVL stuff
-            if (canUseSALVL)
+            if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
             {
                 progress.SetStep("Copying Object Definitions");
                 string objdefsPath = GetObjDefsDirectory();
