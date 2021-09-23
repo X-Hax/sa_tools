@@ -13,6 +13,7 @@ namespace SAModel.SAMDL
     {
         public string ModelFilename;
         public string TextureFilename;
+        public int[] TextureIDs;
         public int CategoryIndex = -1;
         List<SplitEntry> Categories = new List<SplitEntry>();
         Dictionary<string, SplitTools.FileInfo> Models = new Dictionary<string, SplitTools.FileInfo>();
@@ -128,6 +129,8 @@ namespace SAModel.SAMDL
                         //MessageBox.Show(nameAndTexture[0]);
                         if (nameAndTexture.Length > 1)
                             fakeFileInfo.CustomProperties["texture"] = nameAndTexture[1];
+                        if (nameAndTexture.Length > 2)
+                            fakeFileInfo.CustomProperties["texids"] = nameAndTexture[2];
                         Models.Add(nameAndTexture[0], fakeFileInfo);
                     }
                     break;
@@ -214,6 +217,26 @@ namespace SAModel.SAMDL
                     {
                         string extension = ".PVM";
                         string pvmName = model.Value.CustomProperties["texture"];
+                        if (model.Value.CustomProperties.ContainsKey("texids"))
+                        {
+                            // Multiple textures
+                            if (model.Value.CustomProperties["texids"].Contains(","))
+                            {
+                                string[] textureIDs_string = model.Value.CustomProperties["texids"].Split(',');
+                                List<int> texids = new List<int>();
+                                for (int i = 0; i < textureIDs_string.Length; i++)
+                                    texids.Add(int.Parse(textureIDs_string[i], System.Globalization.NumberStyles.Integer));
+                                TextureIDs = texids.ToArray();
+                            }
+                            // Single texture
+                            else
+                            {
+                                TextureIDs = new int[1];
+                                TextureIDs[0] = int.Parse(model.Value.CustomProperties["texids"], System.Globalization.NumberStyles.Integer);
+                            }
+                        }
+                        else
+                            TextureIDs = null;
                         // Determine whether a custom texture pack or a PVMX exists
                         if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
                             TextureFilename = Path.Combine(modFolder, "textures", pvmName, "index.txt");
