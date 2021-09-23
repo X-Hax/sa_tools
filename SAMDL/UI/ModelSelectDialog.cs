@@ -248,6 +248,11 @@ namespace SAModel.SAMDL
                                 extension = ".PB";
                                 modHasTexture = true;
                             }
+                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVR"))
+                            {
+                                extension = ".PVR";
+                                modHasTexture = true;
+                            }
                             // Fallback on the game's system folder
                             if (!modHasTexture)
                             {
@@ -261,6 +266,8 @@ namespace SAModel.SAMDL
                                     extension = ".PAK";
                                 else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PB"))
                                     extension = ".PB";
+                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVR"))
+                                    extension = ".PVR";
                             }
                             TextureFilename = Path.Combine(modHasTexture ? modSystemFolder : gameSystemFolder, pvmName) + extension;
                             //MessageBox.Show(TextureFilename);
