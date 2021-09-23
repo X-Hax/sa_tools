@@ -158,8 +158,9 @@ namespace SplitTools.SplitDLL
     {
         public string Name { get; set; }
         public string Texture { get; set; }
+        public int[] TextureIDs { get; set; }
 
-        public SAMDLMetadata(string name, string texture)
+        public SAMDLMetadata(string name, string texture, int[] textureIDs = null)
         {
             Name = name;
             Texture = texture;
@@ -170,11 +171,31 @@ namespace SplitTools.SplitDLL
             string[] split = data.Split('|');
             Name = split[0];
             Texture = split[1];
+            if (split.Length > 2)
+            {
+                string[] texids_s = split[2].Split(',');
+                List<int> texid_list = new List<int>();
+                for (int i = 0; i < texids_s.Length; i++)
+                    texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+                TextureIDs = texid_list.ToArray();
+            }
         }
 
         public override string ToString()
         {
-            return Name + "|" + Texture;
+            string result = Name + "|" + Texture;
+            if (TextureIDs != null)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int t = 0; t < TextureIDs.Length; t++)
+                {
+                    sb.Append(TextureIDs[t].ToString());
+                    if (t < TextureIDs.Length - 1)
+                        sb.Append(",");
+				}
+				result += "|" + sb.ToString();
+			}
+			return result;
         }
     }
 

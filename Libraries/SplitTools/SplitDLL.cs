@@ -389,12 +389,25 @@ namespace SplitTools.SplitDLL
                                         {
                                             fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
                                         }
-                                        // Metadata for SAMDL project mode (formatted as "Description|TextureFilename")
+                                        // Metadata for SAMDL project mode (formatted as "Description|TextureFilename|Texture IDs (optional)")
                                         if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
                                         {
                                             string[] metadata = data.CustomProperties["meta" + i.ToString()].Split('|');
                                             SAMDLMetadata mdlmeta = new SAMDLMetadata(metadata[0], "");
                                             if (metadata.Length > 1) mdlmeta.Texture = metadata[1];
+                                            if (metadata.Length > 2)
+                                            {
+                                                List<int> texids = new List<int>();
+                                                if (metadata[2].Contains(","))
+                                                {
+                                                    string[] textureIDs_string = metadata[2].Split(',');
+                                                    for (int m = 0; m < textureIDs_string.Length; m++)
+                                                        texids.Add(int.Parse(textureIDs_string[m], System.Globalization.NumberStyles.Integer));
+                                                }
+                                                else
+                                                    texids.Add(int.Parse(metadata[2], System.Globalization.NumberStyles.Integer));
+                                                mdlmeta.TextureIDs = texids.ToArray();
+                                            }
                                             output.SAMDLData.Add(fn, mdlmeta);
                                         }
 										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_arr));
