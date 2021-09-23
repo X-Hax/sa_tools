@@ -1906,6 +1906,7 @@ namespace SAModel.SAMDL
 		{
 			TextureInfo = TextureArchive.GetTextures(filename);
 			TexturePackName = Path.GetFileNameWithoutExtension(filename);
+            TexList = null;
             UpdateTexlist();
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
 			if (loaded) 
@@ -2773,9 +2774,11 @@ namespace SAModel.SAMDL
 
 		private void UnloadTextures()
 		{
-			TextureInfoCurrent = null;
+            TextureInfo = null;
+            TextureInfoCurrent = null;
 			Textures = null;
-			unloadTextureToolStripMenuItem.Enabled = false;
+            TexList = null;
+            unloadTextureToolStripMenuItem.Enabled = false;
 		}
 
 		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3893,6 +3896,22 @@ namespace SAModel.SAMDL
             LoadProject(currentProject);
         }
 
+        private void SetPartialTexlist(int[] texIDs)
+        {
+            // If a partial texlist isn't set, remove all of it
+            if (texIDs == null)
+                TexList = null;
+            // If a partial texlist exists, trim the texlist
+            else
+            {
+                List<string> texnames = new List<string>();
+                for (int i = texIDs[0]; i <= texIDs[texIDs.Length - 1]; i++)
+                    texnames.Add(TextureInfo[i].Name);
+                TexList = new TexnameArray(texnames.ToArray());
+            }
+            UpdateTexlist();
+        }
+
         private void LoadProject(string filename)
         {
             currentProject = filename;
@@ -3904,7 +3923,10 @@ namespace SAModel.SAMDL
                 if (mdldialog.ModelFilename != "" && File.Exists(mdldialog.ModelFilename))
                     LoadFile(mdldialog.ModelFilename);
                 if (mdldialog.TextureFilename != "" && File.Exists(mdldialog.TextureFilename))
+                {
                     LoadTextures(mdldialog.TextureFilename);
+                    SetPartialTexlist(mdldialog.TextureIDs);
+                }
                 else
                     UnloadTextures();
             }
