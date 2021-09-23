@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace buildSATools
 {
@@ -21,6 +22,7 @@ namespace buildSATools
                 }
                 catch (Exception ex)
                 {
+                    Thread.Sleep(1000);
                     if (retries < 1000)
                     {
                         retries++;
