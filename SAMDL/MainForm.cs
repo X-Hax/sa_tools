@@ -2773,9 +2773,11 @@ namespace SAModel.SAMDL
 
 		private void UnloadTextures()
 		{
-			TextureInfoCurrent = null;
+            TextureInfo = null;
+            TextureInfoCurrent = null;
 			Textures = null;
-			unloadTextureToolStripMenuItem.Enabled = false;
+            TexList = null;
+            unloadTextureToolStripMenuItem.Enabled = false;
 		}
 
 		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
