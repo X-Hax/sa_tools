@@ -727,7 +727,7 @@ namespace SplitTools
 		}
 	}
 
-	public class TexnameArray
+    public class TexnameArray
     {
         public string[] TextureNames { get; set; }
         public TexnameArray(byte[] file, int address, uint imageBase)
@@ -744,7 +744,7 @@ namespace SplitTools
                 {
                     uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
                     if (TexnamePointer != 0)
-                        TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase));
+                        TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
                     else
                         TextureNames[u] = "empty";
                 }
@@ -758,13 +758,29 @@ namespace SplitTools
 
         public TexnameArray(string textFile)
         {
+            string extension = "pvr";
             string[] texnames_raw = File.ReadAllLines(textFile);
+            if (texnames_raw.Length > 0)
+            {
+                switch (Path.GetExtension(texnames_raw[0]))
+                {
+                    case ".gvr":
+                        extension = "gvr";
+                        break;
+                    case ".dds":
+                        extension = "dds";
+                        break;
+                    case ".pvr":
+                    default:
+                        break;
+                }
+            }
             TextureNames = new string[texnames_raw.Length];
             for (int i = 0; i < texnames_raw.Length; i++)
             {
                 if (texnames_raw[i] == "")
                     break;
-                TextureNames[i] = texnames_raw[i].Replace(".pvr", "");
+                TextureNames[i] = texnames_raw[i].Replace("." + extension, "");
             }
         }
 
@@ -773,17 +789,18 @@ namespace SplitTools
             return TextureNames.Length;
         }
 
-		public void Save(string fileOutputPath)
-		{
-			StreamWriter sw = File.CreateText(fileOutputPath);
-			for (int u = 0; u < TextureNames.Length; u++)
-			{
-				sw.WriteLine(TextureNames[u] + ".pvr");
-			}
-			sw.Flush();
-			sw.Close();
-		}
-	}
+        public void Save(string fileOutputPath, string extension = "pvr")
+        {
+            StreamWriter sw = File.CreateText(fileOutputPath);
+            for (int u = 0; u < TextureNames.Length; u++)
+            {
+                sw.WriteLine(TextureNames[u] + "." + extension);
+            }
+            sw.Flush();
+            sw.Close();
+        }
+    }
+
 	public static class TextureList
 	{
 		public static TextureListEntry[] Load(string filename)

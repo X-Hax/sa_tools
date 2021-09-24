@@ -11,12 +11,10 @@ namespace SAModel.SAMDL
 {
     public partial class ModelSelectDialog : Form
     {
-        public string ModelFilename;
-        public string TextureFilename;
-        public int[] TextureIDs;
+        public ModelLoadInfo ModelInfo;
         public int CategoryIndex = -1;
         List<SplitEntry> Categories = new List<SplitEntry>();
-        Dictionary<string, SplitTools.FileInfo> Models = new Dictionary<string, SplitTools.FileInfo>();
+        List <ModelLoadInfo> Models = new List<ModelLoadInfo>();
         public string modFolder;
         public string modSystemFolder;
         public string gameSystemFolder;
@@ -121,17 +119,8 @@ namespace SAModel.SAMDL
                     IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
                     foreach (var dllItem in iniFile["SAMDLData"])
 					{
-                        //MessageBox.Show(counter.ToString() + dllItem.Key + dllItem.Value);
-                        string[] nameAndTexture = dllItem.Value.Split('|');
-                        SplitTools.FileInfo fakeFileInfo = new SplitTools.FileInfo();
-                        fakeFileInfo.CustomProperties = new Dictionary<string, string>();
-                        fakeFileInfo.Filename = dllItem.Key;
-                        //MessageBox.Show(nameAndTexture[0]);
-                        if (nameAndTexture.Length > 1)
-                            fakeFileInfo.CustomProperties["texture"] = nameAndTexture[1];
-                        if (nameAndTexture.Length > 2)
-                            fakeFileInfo.CustomProperties["texids"] = nameAndTexture[2];
-                        Models.Add(nameAndTexture[0], fakeFileInfo);
+                        SAMDLMetadata meta = new SAMDLMetadata(dllItem.Value);
+                        Models.Add(new ModelLoadInfo(dllItem.Key, meta, modFolder));
                     }
                     break;
                 case ".nb":
@@ -157,12 +146,9 @@ namespace SAModel.SAMDL
                             case ".sa1mdl":
                             case ".sa2mdl":
                             case ".sa2bmdl":
-                                SplitTools.FileInfo fakeFileInfo = new SplitTools.FileInfo();
-                                fakeFileInfo.CustomProperties = new Dictionary<string, string>();
-                                fakeFileInfo.Filename = entryFilename;
-                                if (entryTexture != "")
-                                    fakeFileInfo.CustomProperties["texture"] = entryTexture;
-                                Models.Add(entryDescription, fakeFileInfo);
+                                string[] textures = new string[1];
+                                textures[0] = entryTexture;
+                                Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null));
                                 break;
                             default:
                                 break;
@@ -180,7 +166,7 @@ namespace SAModel.SAMDL
                             case "basicdxmodel":
                             case "chunkmodel":
                             case "gcmodel":
-                                Models.Add(item.Key, item.Value);
+                                Models.Add(new ModelLoadInfo(item.Key, item.Value, modFolder));
                                 break;
                             default:
                                 break;
@@ -191,118 +177,134 @@ namespace SAModel.SAMDL
             // Fill in models
             foreach (var item in Models)
             {
-                listModels.Items.Add(item.Key);
+                listModels.Items.Add(item.ModelName);
             }
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            ModelFilename = "";
-            TextureFilename = "";
+            ModelInfo = null;
             Close();
         }
 
-        private void LoadModelIndex(int index)
+        // Get the exact filename for a PVM/GVM/PRS/whatever (i.e. OBJ_REGULAR will return the full path to OBJ_REGULAR.PVM or OBJ_REGULAR.GVM or OBJ_REGULAR.PRS etc.)
+        private string GetTextureFilename(string pvmName)
         {
-            TextureFilename = "";
-            if (index == -1)
-                return;
-            string modelName = listModels.Items[listModels.SelectedIndex].ToString();
-            foreach (var model in Models)
+            string extension = ".PVM";
+            // Determine whether a custom texture pack or a PVMX exists
+            if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
+                return Path.Combine(modFolder, "textures", pvmName, "index.txt");
+            else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
+                return Path.Combine(modFolder, "textures", pvmName + ".PVMX");
+            else
             {
-                if (model.Key == modelName)
+                bool modHasTexture = false;
+                // Check if PVM/GVM/PRS/PAK exists in the mod's system folder
+                if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVM"))
                 {
-                    ModelFilename = Path.Combine(modFolder, model.Value.Filename);
-                    if (model.Value.CustomProperties.ContainsKey("texture"))
-                    {
-                        string extension = ".PVM";
-                        string pvmName = model.Value.CustomProperties["texture"];
-                        if (model.Value.CustomProperties.ContainsKey("texids"))
-                        {
-                            // Multiple textures
-                            if (model.Value.CustomProperties["texids"].Contains(","))
-                            {
-                                string[] textureIDs_string = model.Value.CustomProperties["texids"].Split(',');
-                                List<int> texids = new List<int>();
-                                for (int i = 0; i < textureIDs_string.Length; i++)
-                                    texids.Add(int.Parse(textureIDs_string[i], System.Globalization.NumberStyles.Integer));
-                                TextureIDs = texids.ToArray();
-                            }
-                            // Single texture
-                            else
-                            {
-                                TextureIDs = new int[1];
-                                TextureIDs[0] = int.Parse(model.Value.CustomProperties["texids"], System.Globalization.NumberStyles.Integer);
-                            }
-                        }
-                        else
-                            TextureIDs = null;
-                        // Determine whether a custom texture pack or a PVMX exists
-                        if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
-                            TextureFilename = Path.Combine(modFolder, "textures", pvmName, "index.txt");
-                        else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
-                            TextureFilename = Path.Combine(modFolder, "textures", pvmName + ".PVMX");
-                        else
-                        {
-                            bool modHasTexture = false;
-                            // Check if PVM/GVM/PRS/PAK exists in the mod's system folder
-                            if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVM"))
-                            {
-                                extension = ".PVM";
-                                modHasTexture = true;
-                            }
-                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PRS"))
-                            {
-                                extension = ".PRS";
-                                modHasTexture = true;
-                            }
-                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".GVM"))
-                            {
-                                extension = ".GVM";
-                                modHasTexture = true;
-                            }
-                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PAK"))
-                            {
-                                extension = ".PAK";
-                                modHasTexture = true;
-                            }
-                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PB"))
-                            {
-                                extension = ".PB";
-                                modHasTexture = true;
-                            }
-                            else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVR"))
-                            {
-                                extension = ".PVR";
-                                modHasTexture = true;
-                            }
-                            // Fallback on the game's system folder
-                            if (!modHasTexture)
-                            {
-                                if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVM"))
-                                    extension = ".PVM";
-                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PRS"))
-                                    extension = ".PRS";
-                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".GVM"))
-                                    extension = ".GVM";
-                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PAK"))
-                                    extension = ".PAK";
-                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PB"))
-                                    extension = ".PB";
-                                else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVR"))
-                                    extension = ".PVR";
-                            }
-                            TextureFilename = Path.Combine(modHasTexture ? modSystemFolder : gameSystemFolder, pvmName) + extension;
-                            //MessageBox.Show(TextureFilename);
-                        }
-                    }
-                    break;
+                    extension = ".PVM";
+                    modHasTexture = true;
                 }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PRS"))
+                {
+                    extension = ".PRS";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".GVM"))
+                {
+                    extension = ".GVM";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PAK"))
+                {
+                    extension = ".PAK";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PB"))
+                {
+                    extension = ".PB";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVR"))
+                {
+                    extension = ".PVR";
+                    modHasTexture = true;
+                }
+                // Fallback on the game's system folder
+                if (!modHasTexture)
+                {
+                    if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVM"))
+                        extension = ".PVM";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PRS"))
+                        extension = ".PRS";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".GVM"))
+                        extension = ".GVM";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PAK"))
+                        extension = ".PAK";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PB"))
+                        extension = ".PB";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVR"))
+                        extension = ".PVR";
+                }
+                return Path.Combine(modHasTexture ? modSystemFolder : gameSystemFolder, pvmName) + extension;
             }
         }
+
+        private ModelLoadInfo LoadModelIndex(int index)
+        {
+            if (index == -1)
+                return null;
+
+            string modelFilePath;
+            string[] textureArchives;
+            List<string> textureArchiveList = new List<string>();
+            string modelName = listModels.Items[listModels.SelectedIndex].ToString();
+            // Loop through the model list to find the selected model
+            foreach (var model in Models)
+            {
+                if (model.ModelName == modelName)
+                {
+                    // Set model filename
+                    modelFilePath = Path.Combine(modFolder, model.ModelFilePath);
+                    // Get PVM name(s) or texlist INI file
+                    if (model.TextureArchives != null)
+                    {
+                        // Check if there are multiple entries
+                        if (model.TextureArchives.Length > 1)
+                        {
+                            for (int p = 0; p < model.TextureArchives.Length; p++)
+                                textureArchiveList.Add(GetTextureFilename(model.TextureArchives[p]));
+                        }
+                        // If not, use the whole field as texlist INI or PVM name + optional texture IDs
+                        else
+                        {
+                            // If this is an INI texlist, get PVM filenames from it
+                            string tspath = Path.Combine(modFolder, model.TextureArchives[0]);
+                            if (Path.GetExtension(tspath).ToLowerInvariant() == ".ini")
+                            {
+                                TextureListEntry[] ts = TextureList.Load(tspath);
+                                for (int t = 0; t < ts.Length; t++)
+                                {
+                                    if (ts[t].Name != null && ts[t].Name != "")
+                                        textureArchiveList.Add(GetTextureFilename(ts[t].Name));
+                                }
+                            }
+                            // If not, use it as a single texture archive
+                            else
+                                textureArchiveList.Add(GetTextureFilename(model.TextureArchives[0]));
+                        }
+                    }
+                    // Set the list of texture archive names
+                    textureArchives = textureArchiveList.ToArray();
+                    return new ModelLoadInfo(model.ModelName, modelFilePath, textureArchives, model.TextureNames, model.TextureIDs);
+                }
+            }
+            return null;
+        }
+
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            LoadModelIndex(listModels.SelectedIndex);
+            ModelInfo = LoadModelIndex(listModels.SelectedIndex);
         }
 
         private void listModels_SelectedIndexChanged(object sender, EventArgs e)
@@ -314,10 +316,61 @@ namespace SAModel.SAMDL
         {
             if (listModels.SelectedIndex != -1)
             {
-                LoadModelIndex(listModels.SelectedIndex);
+                ModelInfo = LoadModelIndex(listModels.SelectedIndex);
             }
             this.DialogResult = DialogResult.OK;
             Close();
+        }
+    }
+    public class ModelLoadInfo
+    {
+        public string ModelName;
+        public string ModelFilePath;
+        public string[] TextureArchives;
+        public TexnameArray TextureNames;
+        public int[] TextureIDs;
+
+        public ModelLoadInfo(string name, string modelFile, string[] textures, TexnameArray texnames, int[] texids)
+        {
+            ModelName = name;
+            ModelFilePath = modelFile;
+            TextureArchives = textures;
+            TextureNames = texnames;
+            TextureIDs = texids;
+        }
+
+        public ModelLoadInfo(string name, SplitTools.FileInfo split, string modFolder)
+        {
+            ModelName = name;
+            ModelFilePath = split.Filename;
+            if (split.CustomProperties.ContainsKey("texture"))
+                TextureArchives = split.CustomProperties["texture"].Split(',');
+            if (split.CustomProperties.ContainsKey("texids"))
+            {
+                string[] texids_s = split.CustomProperties["texids"].Split(',');
+                List<int> texid_list = new List<int>();
+                for (int i = 0; i < texids_s.Length; i++)
+                    texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+                TextureIDs = texid_list.ToArray();
+            }
+            else if (split.CustomProperties.ContainsKey("texnames"))
+            {
+                string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
+                TextureNames = new TexnameArray(texnamefile);
+            }
+        }
+
+        public ModelLoadInfo(string modelFilePath, SAMDLMetadata meta, string modFolder)
+        {
+            ModelFilePath = modelFilePath;
+            ModelName = meta.ModelName;
+            TextureArchives = meta.TextureArchives;
+            TextureIDs = meta.TextureIDs;
+            if (meta.TextureNameFile != null && meta.TextureNameFile != "")
+            {
+                string texnamefile = Path.Combine(modFolder, meta.TextureNameFile);
+                TextureNames = new TexnameArray(texnamefile);
+            }
         }
     }
 }

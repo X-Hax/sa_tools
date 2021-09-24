@@ -377,7 +377,7 @@ namespace SAToolsHub
 					else
 						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
 					break;
-				case ("DLL"):
+				case ("Data_DLL.dll"):
 					if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
 						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll");
 					else

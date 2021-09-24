@@ -156,21 +156,25 @@ namespace SplitTools.SplitDLL
     [TypeConverter(typeof(StringConverter<SAMDLMetadata>))]
     public class SAMDLMetadata
     {
-        public string Name { get; set; }
-        public string Texture { get; set; }
+        public string ModelName { get; set; }
+        public string[] TextureArchives { get; set; }
+        public string TextureNameFile { get; set; }
         public int[] TextureIDs { get; set; }
 
-        public SAMDLMetadata(string name, string texture, int[] textureIDs = null)
+        public SAMDLMetadata(string name, string[] textures, int[] textureIDs = null, string texnameFile = null)
         {
-            Name = name;
-            Texture = texture;
+            ModelName = name;
+            TextureArchives = textures;
+            TextureIDs = textureIDs;
+            TextureNameFile = texnameFile;
         }
 
         public SAMDLMetadata(string data)
         {
             string[] split = data.Split('|');
-            Name = split[0];
-            Texture = split[1];
+            ModelName = split[0];
+            if (split.Length > 1)
+                TextureArchives = split[1].Split(',');
             if (split.Length > 2)
             {
                 string[] texids_s = split[2].Split(',');
@@ -179,12 +183,29 @@ namespace SplitTools.SplitDLL
                     texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
                 TextureIDs = texid_list.ToArray();
             }
+            if (split.Length > 3)
+            {
+                TextureIDs = null;
+                TextureNameFile = split[3];
+            }
         }
 
         public override string ToString()
         {
-            string result = Name + "|" + Texture;
-            if (TextureIDs != null)
+            string result = ModelName;
+            if (TextureArchives != null)
+            {
+                result += "|";
+                for (int t = 0; t < TextureArchives.Length; t++)
+                {
+                    result += TextureArchives[t];
+                    if (t < TextureArchives.Length - 1)
+                        result += ",";
+                }
+            }
+            if (TextureNameFile != null && TextureNameFile!="")
+                result += "|0|" + TextureNameFile;
+            else if (TextureIDs != null)
             {
                 StringBuilder sb = new StringBuilder();
                 for (int t = 0; t < TextureIDs.Length; t++)
