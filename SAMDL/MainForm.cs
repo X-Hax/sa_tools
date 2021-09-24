@@ -3917,6 +3917,28 @@ namespace SAModel.SAMDL
             UpdateTexlist();
         }
 
+        private void LoadModelInfo(ModelLoadInfo info)
+        {
+            if (info == null)
+                return;
+            // Load model file
+            if (info.ModelFilePath != "" && File.Exists(info.ModelFilePath))
+                LoadFile(info.ModelFilePath);
+            // Load textures
+            if (info.TextureArchives != null)
+            {
+                // Load texture archives
+                AddTextures(info.TextureArchives);
+                // Set texture IDs for partial texlist if defined
+                if (info.TextureIDs != null)
+                    SetPartialTexlist(info.TextureIDs);
+                // Set texture names for partial texlist if defined
+                else if (info.TextureNames != null)
+                    TexList = info.TextureNames;
+                UpdateTexlist();
+            }
+        }
+
         private void LoadProject(string filename)
         {
             currentProject = filename;
@@ -3926,22 +3948,7 @@ namespace SAModel.SAMDL
             {
                 UnloadTextures();
                 lastProjectModeCategory = mdldialog.CategoryIndex;
-                // Load the model
-                if (mdldialog.ModelFilename != "" && File.Exists(mdldialog.ModelFilename))
-                    LoadFile(mdldialog.ModelFilename);
-                // Load textures
-                if (mdldialog.TextureArchiveNames != null)
-                {
-                    // Load texture archives
-                    AddTextures(mdldialog.TextureArchiveNames);
-                    // Set texture IDs for partial texlist if defined
-                    if (mdldialog.TextureIDs != null)
-                        SetPartialTexlist(mdldialog.TextureIDs);
-                    // Set texture names for partial texlist if defined
-                    else if (mdldialog.TextureNames != null)
-                        TexList = mdldialog.TextureNames;
-                    UpdateTexlist();
-                }
+                LoadModelInfo(mdldialog.ModelInfo);
             }
             modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
         }
