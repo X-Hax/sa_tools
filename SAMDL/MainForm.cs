@@ -3696,7 +3696,12 @@ namespace SAModel.SAMDL
             if (TextureInfo != null && TextureInfo.Length > 0)
                 result.AddRange(TextureInfo);
             for (int i = 0; i < filenames.Length; i++)
-                result.AddRange(TextureArchive.GetTextures(filenames[i]));
+            {
+                if (File.Exists(filenames[i]))
+                    result.AddRange(TextureArchive.GetTextures(filenames[i]));
+                else
+                    MessageBox.Show(this, "Texture file " + filenames[i] + " doesn't exist.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             TextureInfo = result.ToArray();
             UpdateTexlist();
         }
@@ -3919,16 +3924,24 @@ namespace SAModel.SAMDL
             DialogResult result = mdldialog.ShowDialog();
             if (result == DialogResult.OK)
             {
+                UnloadTextures();
                 lastProjectModeCategory = mdldialog.CategoryIndex;
+                // Load the model
                 if (mdldialog.ModelFilename != "" && File.Exists(mdldialog.ModelFilename))
                     LoadFile(mdldialog.ModelFilename);
-                if (mdldialog.TextureFilename != "" && File.Exists(mdldialog.TextureFilename))
+                // Load textures
+                if (mdldialog.TextureArchiveNames != null)
                 {
-                    LoadTextures(mdldialog.TextureFilename);
-                    SetPartialTexlist(mdldialog.TextureIDs);
+                    // Load texture archives
+                    AddTextures(mdldialog.TextureArchiveNames);
+                    // Set texture IDs for partial texlist if defined
+                    if (mdldialog.TextureIDs != null)
+                        SetPartialTexlist(mdldialog.TextureIDs);
+                    // Set texture names for partial texlist if defined
+                    else if (mdldialog.TextureNames != null)
+                        TexList = mdldialog.TextureNames;
+                    UpdateTexlist();
                 }
-                else
-                    UnloadTextures();
             }
             modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
         }
