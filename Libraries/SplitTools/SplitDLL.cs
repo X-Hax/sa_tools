@@ -696,10 +696,13 @@ namespace SplitTools.SplitDLL
 							output.TexLists.Add((uint)(address + imageBase), new DllTexListInfo(name, null));
 							if (data.Filename != null)
 							{
-								TexnameArray texarrs = new TexnameArray(datafile, address, imageBase);
-								if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+                                string ext = "pvr";
+                                if (data.CustomProperties.ContainsKey("extension"))
+                                    ext = data.CustomProperties["extension"];
+                                TexnameArray texarrs = new TexnameArray(datafile, address, imageBase);
+                                if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 									Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-								texarrs.Save(fileOutputPath + ".txt");
+								texarrs.Save(fileOutputPath + ".tls", ext);
 							}
 							break;
 

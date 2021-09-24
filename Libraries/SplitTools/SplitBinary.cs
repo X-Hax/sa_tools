@@ -422,7 +422,10 @@ namespace SplitTools.Split
 							break;
 						case "texnamearray":
 							TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
-							texnames.Save(fileOutputPath);
+                            string ext = "pvr";
+                            if (data.CustomProperties.ContainsKey("extension"))
+                                ext = data.CustomProperties["extension"];
+                                texnames.Save(fileOutputPath, ext);
 							break;
 						case "texlistarray":
 							{
@@ -431,16 +434,19 @@ namespace SplitTools.Split
 									uint ptr = ByteConverter.ToUInt32(datafile, address);
 									if (data.Filename != null && ptr != 0)
 									{
-										ptr -= imageBase;
+                                        string exta = "pvr";
+                                        if (data.CustomProperties.ContainsKey("extension"))
+                                            exta = data.CustomProperties["extension"];
+                                        ptr -= imageBase;
 										TexnameArray texarr = new TexnameArray(datafile, (int)ptr, imageBase);
-										string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".txt");
+										string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".tls");
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
 										{
-											fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".txt");
+											fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".tls");
 										}
 										if (!Directory.Exists(Path.GetDirectoryName(fn)))
 											Directory.CreateDirectory(Path.GetDirectoryName(fn));
-										texarr.Save(fn);
+										texarr.Save(fn, exta);
 									}
 									address += 4;
 								}
