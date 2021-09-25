@@ -1267,7 +1267,7 @@ namespace SAModel.SAMDL
 			string look = "Look";
 			string zoom = "Zoom";
 			if (!string.IsNullOrEmpty(currentFileName))
-				Text = "SAMDL: " + currentFileName;
+				Text = "SAMDL: " + Path.GetFullPath(currentFileName);
 			else
 				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera X: " + cam.Position.X.ToString("0.000") + " Y: " + cam.Position.Y.ToString("0.000") + " Z: " + cam.Position.Z.ToString("0.000");
