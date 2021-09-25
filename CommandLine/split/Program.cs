@@ -35,10 +35,6 @@ namespace Split
 				Console.ReadLine();
 				return;
 			}
-#if DEBUG
-			if (SplitExtensions(args) == true)
-				return;
-#endif
 			for (int u = 2; u < args.Length; u++)
 			{
 				if (args[u] == "-nometa") nometa = true;
