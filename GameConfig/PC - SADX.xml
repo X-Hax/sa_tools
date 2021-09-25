@@ -21,8 +21,8 @@
   <SplitEntry SourceFile="sonic.exe" IniFile="stg12" CmnName="Hot Shelter" />
   <SplitEntry SourceFile="sonic.exe" IniFile="adv00" CmnName="Station Square (EXE)" />
   <SplitEntry SourceFile="system/adv00models.dll" IniFile="adv00_dll" CmnName="Station Square (DLL)" />
-  <SplitEntry SourceFile="system/adv02models.dll" IniFile="adv02_dll" CmnName="Mystic Ruins" />
   <SplitEntry SourceFile="sonic.exe" IniFile="adv02" CmnName="Mystic Ruins (EXE)" />
+  <SplitEntry SourceFile="system/adv02models.dll" IniFile="adv02_dll" CmnName="Mystic Ruins (DLL)" />
   <SplitEntry SourceFile="sonic.exe" IniFile="adv0100" CmnName="Egg Carrier Exterior (EXE)" />
   <SplitEntry SourceFile="system/adv01models.dll" IniFile="adv0100_dll" CmnName="Egg Carrier Exterior (DLL)" />
   <SplitEntry SourceFile="sonic.exe" IniFile="adv0130" CmnName="Egg Carrier Interior (EXE)" />
@@ -36,8 +36,8 @@
   <SplitEntry SourceFile="sonic.exe" IniFile="b_chaos6" CmnName="Chaos 6" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_chaos7" CmnName="Perfect Chaos" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_e101" CmnName="E-101" />
-  <SplitEntry SourceFile="sonic.exe" IniFile="b_e101_r" CmnName="E-101 r (EXE)" />
-  <SplitEntry SourceFile="system/E101R_GC.NB" IniFile="b_e101_r_nb" CmnName="E-101 r (NB)" />
+  <SplitEntry SourceFile="sonic.exe" IniFile="b_e101_r" CmnName="E-101 R (EXE)" />
+  <SplitEntry SourceFile="system/E101R_GC.NB" IniFile="b_e101_r_nb" CmnName="E-101 R (NB)" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_egm1" CmnName="Egg Hornet" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_egm2" CmnName="Egg Walker" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_egm3" CmnName="Egg Viper" />
@@ -54,7 +54,7 @@
   <SplitEntry SourceFile="system/chaostggarden02mr_night.dll" IniFile="chaostggarden02mr_night" CmnName="Mystic Ruins Chao Garden (Nighttime)" />
   <SplitEntry SourceFile="sonic.exe" IniFile="debug" CmnName="Debug Models" />
   <SplitEntry SourceFile="sonic.exe" IniFile="mission" CmnName="Mission Mode" />
-  <SplitEntry SourceFile="sonic.exe" IniFile="sounds" CmnName="Sound data" />
+  <SplitEntry SourceFile="sonic.exe" IniFile="sounds" CmnName="Sound Data" />
   <SplitEntry SourceFile="sonic.exe" IniFile="texlists" CmnName="Texture Lists" />
   <SplitEntry SourceFile="sonic.exe" IniFile="misc" CmnName="Event Dialogue, Recap Text, Level Flags, etc" />
 </SplitTemplate>
