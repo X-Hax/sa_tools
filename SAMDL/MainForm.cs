@@ -1654,17 +1654,17 @@ namespace SAModel.SAMDL
 				case ("Zoom to target"):
 					if (selectedObject != null)
 					{
-						BoundingSphere bounds = (selectedObject.Attach != null) ? selectedObject.Attach.Bounds :
+						BoundingSphere bounds = (selectedObject.Attach != null) ? 
+                            new BoundingSphere(selectedObject.Attach.Bounds.Center, selectedObject.Attach.Bounds.Radius) :
 							new BoundingSphere(selectedObject.Position.X, selectedObject.Position.Y, selectedObject.Position.Z, 10);
-
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
 					else
 					{
-						BoundingSphere bounds = (model.Attach != null) ? model.Attach.Bounds :
+						BoundingSphere bounds = (model.Attach != null) ? 
+                            new BoundingSphere(model.Attach.Bounds.Center, model.Attach.Bounds.Radius) :
 							new BoundingSphere(model.Position.X, model.Position.Y, model.Position.Z, 10);
-
 						bounds.Center += model.Position;
 						cam.MoveToShowBounds(bounds);
 					}
