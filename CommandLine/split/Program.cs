@@ -98,11 +98,16 @@ namespace Split
                         else fullpath_out = args[i];
                     }
                     Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(Path.GetFullPath(args[1]));
-                    string iniFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "..\\GameConfig", template.GameInfo.DataFolder));
-                    Console.WriteLine("Splitting using template for {0} located at {1}", template.GameInfo.GameName, Path.GetFullPath(args[1]));
+                    if (template == null)
+                    {
+                        Console.WriteLine("Failed to open template: {0}", Path.GetFullPath(args[1]));
+                        return;
+                    }
                     if (dataFolder == "")
                         dataFolder = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
                     Console.WriteLine("Data folder: {0}", dataFolder);
+                    string iniFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "..\\GameConfig", template.GameInfo.DataFolder));
+                    Console.WriteLine("Splitting using template for {0} located at {1}", template.GameInfo.GameName, Path.GetFullPath(args[1]));
                     if (!Directory.Exists(dataFolder))
                     {
                         Console.WriteLine("\nData folder does not exist: {0}", Path.GetFullPath(dataFolder));
