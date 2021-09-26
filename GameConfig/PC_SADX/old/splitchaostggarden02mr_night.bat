@@ -1,1 +1,0 @@
-..\..\bin\split binary data/system/CHAOSTGGARDEN02MR_NIGHT.DLL chaostggarden02mr_night.ini output/
