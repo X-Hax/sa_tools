@@ -82,8 +82,11 @@ namespace SAToolsHub
 
 			hubSettings = ProjectSettings.Load();
 
-			if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
-				openProject(ProjectFunctions.openProjectFileString(Program.Arguments[0]));
+            if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
+            {
+                projXML = Program.Arguments[0];
+                openProject(ProjectFunctions.openProjectFileString(projXML));
+            }
 
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
