@@ -17,28 +17,28 @@ namespace Split
 			string fullpath_out;
 			bool bigendian = false;
 			List<string> mdlanimfiles;
-			if (args.Length == 0)
-			{
-				Console.WriteLine("Split any binary files supported by SA Tools.\n");
-				Console.WriteLine("Usage:\n");
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Split any binary files supported by SA Tools.\n");
                 Console.WriteLine("-Splitting using an XML template-");
-                Console.WriteLine("split template <xmlfile> [-data sourcepath] [output path] [-nometa] [-nolabel]\n");
-                Console.WriteLine("-Splitting binary files with INI data-");
-				Console.WriteLine("split binary <file> <inifile> [output path] [-nometa] [-nolabel]\n");
+                Console.WriteLine("split template <xmlfile> [-data sourcepath] [output path]\n");
+                Console.WriteLine("-Splitting a binary file with INI data-");
+                Console.WriteLine("split binary <file> <inifile> [output path]\n");
                 Console.WriteLine("-Splitting a single item from a binary file without INI data-");
-                Console.WriteLine("split single <game> <file> <key> <address> <type> [output filename] [-p custom properties] [-name entryName] [-nometa] [-nolabel]\n");
-                Console.WriteLine("-Splitting SA1/SADX NB files-");
-				Console.WriteLine("split nb <file> [output path] -ini [split INI file]\n");
-				Console.WriteLine("-Splitting SA2 MDL files-");
-				Console.WriteLine("split mdl <file> [output path] -anim [animation files]\n");
-				Console.WriteLine("-Splitting SA2B MDL files-");
-				Console.WriteLine("split mdl_b <file> [output path] -anim [animation files]\n");
+                Console.WriteLine("split single <game> <file> <key> <address> <type> [output filename] [-p custom properties] [-name entryName]\n");
+                Console.WriteLine("-Splitting an NB file-");
+                Console.WriteLine("split nb <file> [output path] [-ini split ini file]\n");
+                Console.WriteLine("-Splitting SA2 MDL files-");
+                Console.WriteLine("split mdl <file> [output path] [-anim animation files]\n");
+                Console.WriteLine("-Splitting SA2B MDL files-");
+                Console.WriteLine("split mdl_b <file> [output path] [-anim animation files]\n");
                 Console.WriteLine("-Splitting dllexport entries from DLL files-");
-                Console.WriteLine("split dllexport <file> <type> <name> [output path] [-p numparts]\n");
+                Console.WriteLine("split dllexport <file> <type> <name> [-id array ID] [output path] [-p numparts]\n");
+                Console.WriteLine("Common switches: [-nometa], [-nolabel]");
                 Console.WriteLine("Press ENTER to exit.");
-				Console.ReadLine();
-				return;
-			}
+                Console.ReadLine();
+                return;
+            }
 			for (int u = 2; u < args.Length; u++)
 			{
 				if (args[u] == "-nometa") nometa = true;
@@ -156,12 +156,6 @@ namespace Split
                         for (int a = 6; a < args.Length; a++)
                             switch (args[a])
                             {
-                                case "-nolabel":
-                                    nolabel = true;
-                                    break;
-                                case "-nometa":
-                                    nometa = true;
-                                    break;
                                 case "-name":
                                     entryName = args[a + 1];
                                     a++;
@@ -257,16 +251,22 @@ namespace Split
 						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
 					break;
                 case "dllexport":
+                    int arrayid = -1;
                     string fullpath_dllex = Path.GetFullPath(args[1]);
                     string type = args[2];
                     string name = args[3];
                     string fileOutputPath = "";
                     if (args.Length > 4)
-                    {
-                        for (int i = 4; i < args.Length; i++)
-                            if (args[i].Substring(0, 1) != "-" && args[i-1].Substring(0, 1) != "-")
-                        fileOutputPath = args[i];
-                    }
+                        for (int u = 4; u < args.Length; u++)
+                        {
+                            if (args[u] == "-id")
+                            {
+                                arrayid = int.Parse(args[u + 1]);
+                                u++;
+                            }
+                            else
+                                fileOutputPath = args[u];
+                        }
                     if (!File.Exists(fullpath_dllex))
                     {
                         Console.WriteLine("File {0} doesn't exist.", fullpath_dllex);
@@ -305,9 +305,15 @@ namespace Split
                         return;
                     }
                     int address = exports[name];
+                    // If an array ID is specified, jump to the pointer needed and use it as the address to split
+                    if (arrayid != -1)
+                    {
+                        uint newpointer = ByteConverter.ToUInt32(datafile, address + arrayid * 4);
+                        address = (int)(newpointer - imageBase);
+                    }
                     Console.WriteLine("{0} {1}:{2}", type, name, address.ToString("X8"));
                     switch (type)
-                    {   
+                    {
                         // Landtables
                         case "landtable":
                         case "sa1landtable":
@@ -343,8 +349,7 @@ namespace Split
                                     break;
                             }
                             LandTable land = new LandTable(datafile, address, imageBase, landfmt_cur, labels);
-                            if (fileOutputPath == "") 
-                                fileOutputPath = land.Name + landext;
+                            fileOutputPath = MakePathThatExists(fileOutputPath, land.Name + landext);
                             if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
                                 Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
                             land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
@@ -383,8 +388,7 @@ namespace Split
                                         break;
                                 }
                                 NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt_obj, labels, new Dictionary<int, Attach>());
-                                if (fileOutputPath == "")
-                                    fileOutputPath = mdl.Name + modelext;
+                                fileOutputPath = MakePathThatExists(fileOutputPath, mdl.Name + modelext);
                                 if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
                                     Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
                                 ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_obj, nometa);
@@ -400,8 +404,7 @@ namespace Split
                                     numparts = int.Parse(args[a + 1], System.Globalization.NumberStyles.Integer);
                             }
                             NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
-                            if (fileOutputPath == "")
-                                fileOutputPath = ani.Name + ".saanim";
+                            fileOutputPath = MakePathThatExists(fileOutputPath, ani.Name + "saanim");
                             string outpath = Path.GetDirectoryName(Path.GetFullPath(fileOutputPath));
                             Console.WriteLine("Output file: {0}", Path.GetFullPath(fileOutputPath));
                             if (!Directory.Exists(outpath))
@@ -413,12 +416,27 @@ namespace Split
                             break;
                     }
                     break;
-				default:
-					Console.WriteLine("Incorrect mode specified. Press ENTER to exit.");
-					Console.ReadLine();
-					return;
-			}
-		}
+                default:
+                    Console.WriteLine("Incorrect mode specified. Press ENTER to exit.");
+                    Console.ReadLine();
+                    return;
+            }
+        }
+
+        static string MakePathThatExists(string originalPath, string objectName)
+        {
+            string result = originalPath;
+            // If no output filename/path is specified
+            if (originalPath == "")
+                result = Path.Combine(Environment.CurrentDirectory, objectName);
+            // If output filename is specified without a path
+            else if (Path.GetDirectoryName(originalPath) == "")
+                result = Path.Combine(Environment.CurrentDirectory, originalPath);
+            // If output path is specified without a filename
+            else if (Path.GetFileName(originalPath) == "")
+                result = Path.Combine(originalPath, objectName);
+            return result;
+        }
 
         struct IMAGE_EXPORT_DIRECTORY
         {
