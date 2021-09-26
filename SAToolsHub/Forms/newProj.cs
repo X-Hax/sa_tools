@@ -366,98 +366,6 @@ namespace SAToolsHub
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
-		private void splitFiles(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
-		{
-			string datafilename; 
-			switch (splitData.SourceFile)
-			{
-				case ("system/chrmodels.dll"):
-					if (File.Exists(Path.Combine(gameFolder, "system/chrmodels_orig.dll")))
-						datafilename = Path.Combine(gameFolder, "system/chrmodels_orig.dll");
-					else
-						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
-					break;
-				case ("Data_DLL.dll"):
-					if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
-						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll");
-					else
-						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL.dll");
-					break;
-				default:
-					datafilename = Path.Combine(gameFolder, splitData.SourceFile);
-					break;
-			}
-			string inifilename = Path.Combine(iniFolder, (splitData.IniFile.ToLower() + ".ini"));
-			string projectFolderName = (outputFolder + "\\");
-
-			string splitItem;
-
-			if (splitData.CmnName != null)
-				splitItem = splitData.CmnName;
-			else
-				splitItem = splitData.IniFile;
-
-			progress.StepProgress();
-			progress.SetStep("Splitting " + splitItem + " from " + splitData.SourceFile);
-
-			#region Validating Inputs
-			if (!File.Exists(datafilename))
-			{
-				MessageBox.Show((datafilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-				throw new Exception(SplitTools.Split.SplitERRORVALUE.NoSourceFile.ToString());
-				//return (int)ERRORVALUE.NoSourceFile;
-			}
-
-			if (!File.Exists(inifilename))
-			{
-				MessageBox.Show((inifilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-				throw new Exception(SplitTools.Split.SplitERRORVALUE.NoDataMapping.ToString());
-				//return (int)ERRORVALUE.NoDataMapping;
-			}
-			#endregion
-
-			// switch on file extension - if dll, use dll splitter
-			System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
-			string ext = fileInfo.Extension;
-
-			switch (ext.ToLower())
-			{
-				case ".dll":
-					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
-					break;
-				case ".nb":
-					SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
-					break;
-				default:
-					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName);
-					break;
-			}
-		}
-
-		private void splitMdlFiles(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
-		{
-			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
-
-			progress.StepProgress();
-			progress.SetStep("Splitting models from " + splitMDL.ModelFile);
-
-			#region Validating Inputs
-			if (!File.Exists(filePath))
-			{
-				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-				throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
-				//return (int)ERRORVALUE.NoSourceFile;
-			}
-			#endregion
-
-			sa2MDL.Split(splitMDL.BigEndian, filePath,
-				fileOutputFolder, splitMDL.MotionFiles.ToArray());
-		}
-
 		void splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress)
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
@@ -472,7 +380,7 @@ namespace SAToolsHub
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
-				splitFiles(splitEntry, progress, gamePath, iniFolder, projFolder);
+				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder);
             // SALVL stuff
             if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
             {
@@ -490,7 +398,7 @@ namespace SAToolsHub
             {
                 progress.SetTask("Splitting Character Models");
                 foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
-                    splitMdlFiles(splitMDL, progress, gamePath, projFolder);
+                    ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder);
             }
             // Project folders for buildable PC games
 			if (game == "SADXPC" || game == "SA2PC")
