@@ -1,0 +1,1 @@
+..\..\bin\split template "..\GC - SADX Preview.xml"
