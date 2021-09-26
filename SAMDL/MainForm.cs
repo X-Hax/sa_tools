@@ -233,10 +233,6 @@ namespace SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-            if (Environment.Is64BitProcess)
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
-            else
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
             log.DeleteLogFile();
             log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
             log.Add("Build Date: ");
