@@ -1362,7 +1362,7 @@ namespace SAModel.SAMDL
 			if (showNodesToolStripMenuItem.Checked)
 				DrawNodes(model, transform);
 
-			if (showNodeConnectionsToolStripMenuItem.Checked)
+			if (showNodeConnectionsToolStripMenuItem.Checked && model.CountAnimated() > 1)
 				DrawNodeConnections(model, transform);
 			osd.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
