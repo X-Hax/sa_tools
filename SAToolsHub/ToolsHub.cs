@@ -79,8 +79,9 @@ namespace SAToolsHub
 			InitializeComponent();
 			lvwColumnSorter = new ListViewColumnSorter();
 			this.listView1.ListViewItemSorter = lvwColumnSorter;
+            Application.ThreadException += Application_ThreadException;
 
-			hubSettings = ProjectSettings.Load();
+            hubSettings = ProjectSettings.Load();
 
             if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
             {
@@ -1510,9 +1511,26 @@ namespace SAToolsHub
 		{
 			templateWriter.ShowDialog();
 		}
-		#endregion
+        #endregion
 
-		private void SAToolsHub_Shown(object sender, EventArgs e)
+        #region Error Handling
+        void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
+            string errDesc = "SA Tools Hub has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
+                 "If you wish to report a bug, please include the following in your report:";
+            SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, e.Exception.ToString());
+            DialogResult dgresult = report.ShowDialog();
+            switch (dgresult)
+            {
+                case DialogResult.Abort:
+                case DialogResult.OK:
+                    Application.Exit();
+                    break;
+            }
+        }
+        #endregion
+
+        private void SAToolsHub_Shown(object sender, EventArgs e)
 		{
 			if (CheckForUpdates())
 				return;
