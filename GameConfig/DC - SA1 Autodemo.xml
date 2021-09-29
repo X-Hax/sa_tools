@@ -33,4 +33,10 @@
   <SplitEntry SourceFile="MINICART.PRS" IniFile="MINICART" />
   <SplitEntry SourceFile="SBOARD.PRS" IniFile="SBOARD" />
   <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" />
+  <SplitEntry SourceFile="EVF0800.BIN" IniFile="EVF0800" />
+  <SplitEntry SourceFile="EVF0801.BIN" IniFile="EVF0801" />
+  <SplitEntry SourceFile="EVF0802.BIN" IniFile="EVF0802" />
+  <SplitEntry SourceFile="EVF0804.BIN" IniFile="EVF0804" />
+  <SplitEntry SourceFile="EVF0805.BIN" IniFile="EVF0805" />
+  <SplitEntry SourceFile="EVF0806.BIN" IniFile="EVF0806" />
 </SplitTemplate>
