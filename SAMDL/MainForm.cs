@@ -233,10 +233,6 @@ namespace SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-            if (Environment.Is64BitProcess)
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
-            else
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
             log.DeleteLogFile();
             log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
             log.Add("Build Date: ");
@@ -1267,7 +1263,7 @@ namespace SAModel.SAMDL
 			string look = "Look";
 			string zoom = "Zoom";
 			if (!string.IsNullOrEmpty(currentFileName))
-				Text = "SAMDL: " + currentFileName;
+				Text = "SAMDL: " + Path.GetFullPath(currentFileName);
 			else
 				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera X: " + cam.Position.X.ToString("0.000") + " Y: " + cam.Position.Y.ToString("0.000") + " Z: " + cam.Position.Z.ToString("0.000");
@@ -1366,7 +1362,7 @@ namespace SAModel.SAMDL
 			if (showNodesToolStripMenuItem.Checked)
 				DrawNodes(model, transform);
 
-			if (showNodeConnectionsToolStripMenuItem.Checked)
+			if (showNodeConnectionsToolStripMenuItem.Checked && model.CountAnimated() > 1)
 				DrawNodeConnections(model, transform);
 			osd.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
@@ -1654,17 +1650,17 @@ namespace SAModel.SAMDL
 				case ("Zoom to target"):
 					if (selectedObject != null)
 					{
-						BoundingSphere bounds = (selectedObject.Attach != null) ? selectedObject.Attach.Bounds :
+						BoundingSphere bounds = (selectedObject.Attach != null) ? 
+                            new BoundingSphere(selectedObject.Attach.Bounds.Center, selectedObject.Attach.Bounds.Radius) :
 							new BoundingSphere(selectedObject.Position.X, selectedObject.Position.Y, selectedObject.Position.Z, 10);
-
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
 					else
 					{
-						BoundingSphere bounds = (model.Attach != null) ? model.Attach.Bounds :
+						BoundingSphere bounds = (model.Attach != null) ? 
+                            new BoundingSphere(model.Attach.Bounds.Center, model.Attach.Bounds.Radius) :
 							new BoundingSphere(model.Position.X, model.Position.Y, model.Position.Z, 10);
-
 						bounds.Center += model.Position;
 						cam.MoveToShowBounds(bounds);
 					}

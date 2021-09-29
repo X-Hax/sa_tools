@@ -2,6 +2,8 @@
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SADXGC" dataFolder="GC_SADX" checkFile="_Main.rel" gameDataFolderName="" checkHashes="036e39da11f19e6e3598ae6384dcae14" />
   <SplitEntry SourceFile="_Main.rel" IniFile="_Main" />
+  <SplitEntry SourceFile="ModelsMiles.rel" IniFile="ModelsMiles" />
+  <SplitEntry SourceFile="ModelsKnuckles.rel" IniFile="ModelsKnuckles" />
   <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" />
   <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" />
   <SplitEntry SourceFile="_Stg02.rel" IniFile="_Stg02" />

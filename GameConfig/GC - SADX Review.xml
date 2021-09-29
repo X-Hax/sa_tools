@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SADXGCR" dataFolder="GC_SADXReview" gameDataFolderName="" checkFile="AdvMain.rel" checkHashes="03360a73c58326c41bfcc0b720cbfa45" />
-  <SplitEntry SourceFile="_Main.rel" IniFile="_Main" />
   <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" />
   <SplitEntry SourceFile="Stg00d.rel" IniFile="Stg00d" />
   <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" />

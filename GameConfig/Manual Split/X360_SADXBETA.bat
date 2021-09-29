@@ -1,0 +1,1 @@
+..\..\bin\split template "..\X360 - SADX Debug Prototype.xml"

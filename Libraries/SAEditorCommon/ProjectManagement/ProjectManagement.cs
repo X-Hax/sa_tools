@@ -6,6 +6,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.ComponentModel;
 using SplitTools;
+using SplitTools.SAArc;
+using SplitTools.Split;
 
 namespace SAEditorCommon.ProjectManagement
 {
@@ -500,5 +502,110 @@ namespace SAEditorCommon.ProjectManagement
         {
             return (File.Exists(path)) ? path : fallbackPath;
         }
+
+        /// <summary>
+        /// Splits data from a SplitEntry.
+        /// </summary>
+        public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+        {
+            string datafilename;
+            switch (splitData.SourceFile)
+            {
+                case ("system/chrmodels.dll"):
+                    if (File.Exists(Path.Combine(gameFolder, "system/chrmodels_orig.dll")))
+                        datafilename = Path.Combine(gameFolder, "system/chrmodels_orig.dll");
+                    else
+                        datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+                    break;
+                case ("Data_DLL.dll"):
+                    if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
+                        datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll");
+                    else
+                        datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL.dll");
+                    break;
+                default:
+                    datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+                    break;
+            }
+            string inifilename = Path.Combine(iniFolder, (splitData.IniFile.ToLower() + ".ini"));
+            string projectFolderName = (outputFolder + "\\");
+
+            string splitItem;
+
+            if (splitData.CmnName != null)
+                splitItem = splitData.CmnName;
+            else
+                splitItem = splitData.IniFile;
+
+            if (progress != null)
+            {
+                progress.StepProgress();
+                progress.SetStep("Splitting " + splitItem + " from " + splitData.SourceFile);
+            }
+
+            #region Validating Inputs
+            if (!File.Exists(datafilename))
+            {
+                MessageBox.Show((datafilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                throw new Exception(SplitTools.Split.SplitERRORVALUE.NoSourceFile.ToString());
+                //return (int)ERRORVALUE.NoSourceFile;
+            }
+
+            if (!File.Exists(inifilename))
+            {
+                MessageBox.Show((inifilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                throw new Exception(SplitTools.Split.SplitERRORVALUE.NoDataMapping.ToString());
+                //return (int)ERRORVALUE.NoDataMapping;
+            }
+            #endregion
+
+            // switch on file extension - if dll, use dll splitter
+            System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
+            string ext = fileInfo.Extension;
+
+            switch (ext.ToLower())
+            {
+                case ".dll":
+                    SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+                    break;
+                case ".nb":
+                    SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
+                    break;
+                default:
+                    SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Splits data from a SplitEntryMDL.
+        /// </summary>
+        public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
+        {
+            string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+            string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
+
+            if (progress != null)
+            {
+                progress.StepProgress();
+                progress.SetStep("Splitting models from " + splitMDL.ModelFile);
+            }
+
+            #region Validating Inputs
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
+                //return (int)ERRORVALUE.NoSourceFile;
+            }
+            #endregion
+
+            sa2MDL.Split(splitMDL.BigEndian, filePath,
+                fileOutputFolder, splitMDL.MotionFiles.ToArray());
+        }
     }
+
 }
