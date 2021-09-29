@@ -33,6 +33,11 @@
   <SplitEntry SourceFile="MINICART.PRS" IniFile="MINICART" />
   <SplitEntry SourceFile="SBOARD.PRS" IniFile="SBOARD" />
   <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" />
+  <SplitEntry SourceFile="A_MOT.PRS" IniFile="A_MOT" />
+  <SplitEntry SourceFile="B_MOT.PRS" IniFile="B_MOT" />
+  <SplitEntry SourceFile="K_MOT.PRS" IniFile="K_MOT" />
+  <SplitEntry SourceFile="S_SBMOT.PRS" IniFile="S_SBMOT" />
+  <SplitEntry SourceFile="M_SBMOT.PRS" IniFile="M_SBMOT" />
   <SplitEntry SourceFile="EVF0800.BIN" IniFile="EVF0800" />
   <SplitEntry SourceFile="EVF0801.BIN" IniFile="EVF0801" />
   <SplitEntry SourceFile="EVF0802.BIN" IniFile="EVF0802" />
