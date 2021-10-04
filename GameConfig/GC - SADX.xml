@@ -4,6 +4,13 @@
   <SplitEntry SourceFile="_Main.rel" IniFile="_Main" />
   <SplitEntry SourceFile="ModelsMiles.rel" IniFile="ModelsMiles" />
   <SplitEntry SourceFile="ModelsKnuckles.rel" IniFile="ModelsKnuckles" />
+  <SplitEntry SourceFile="s_mot.rel" IniFile="s_mot" />
+  <SplitEntry SourceFile="s_sbmot.rel" IniFile="s_sbmot" />
+  <SplitEntry SourceFile="m_sbmot.rel" IniFile="m_sbmot" />
+  <SplitEntry SourceFile="k_mot.rel" IniFile="k_mot" />
+  <SplitEntry SourceFile="a_mot.rel" IniFile="a_mot" />
+  <SplitEntry SourceFile="b_mot.rel" IniFile="b_mot" />
+  <SplitEntry SourceFile="e_mot.rel" IniFile="e_mot" />
   <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" />
   <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" />
   <SplitEntry SourceFile="_Stg02.rel" IniFile="_Stg02" />
