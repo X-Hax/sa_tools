@@ -8,6 +8,8 @@ using System.Xml.Serialization;
 using System.Net;
 using System.ComponentModel;
 using SAEditorCommon.ProjectManagement;
+using SplitTools;
+using SplitTools.SplitDLL;
 
 namespace SAToolsHub
 {
@@ -246,6 +248,7 @@ namespace SAToolsHub
 				{
 					buildToolStripMenuItem.Enabled = true;
 					editProjectInfoToolStripMenuItem.Enabled = true;
+					tsProjUtils.Enabled = true;
 					tsBuild.Enabled = true;
 					tsGameRun.Enabled = true;
 					tsEditProj.Enabled = true;
@@ -266,6 +269,7 @@ namespace SAToolsHub
 			tsEditProj.Enabled = false;
 			closeProjectToolStripMenuItem.Enabled = false;
 			editProjectInfoToolStripMenuItem.Enabled = false;
+			tsProjUtils.Enabled = false;
 			buildToolStripMenuItem.Enabled = false;
 			browseBack.Enabled = false;
 			browseCurDirectory.TextBox.Clear();
@@ -378,16 +382,6 @@ namespace SAToolsHub
 
 				LoadFiles(nodeDirInfo, item);
 			}
-		}
-
-		string getFileSize(long length)
-		{
-			if (length > 0)
-			{
-				return ((length / (1024.0f)).ToString("#,0.00 KBs"));
-			}
-			else
-				return "0";
 		}
 
 		void LoadFiles(DirectoryInfo nodeDirInfo, ListViewItem item)
@@ -1536,9 +1530,345 @@ namespace SAToolsHub
 				return;
 		}
 
-		private void replitFileToolStripMenuItem_Click(object sender, EventArgs e)
+		private void updateMetadataToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			DialogResult updateMData = MessageBox.Show(("This will update the metadata inside of your project's *_data.ini files.\n\nThis process may take a few moments.\n\nDo you wish to continue?"), "Update Metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+			if (updateMData == DialogResult.Yes)
+			{
+				Dictionary<string, string> metadataList = new Dictionary<string, string>();
 
+				Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GetTemplate()), true);
+
+				foreach (Templates.SplitEntry entry in splitFile.SplitEntries)
+				{
+					string iniFile = Path.Combine("../GameConfig", splitFile.GameInfo.DataFolder, entry.IniFile + ".ini");
+					string srcExt = Path.GetExtension(entry.SourceFile).ToLowerInvariant();
+					
+					switch (srcExt)
+					{
+						case ".exe":
+						case ".bin":
+						case ".prs":
+						case ".rel":
+							IniData binMData = IniSerializer.Deserialize<IniData>(iniFile);
+
+							foreach (KeyValuePair<string, SplitTools.FileInfo> file in binMData.Files)
+							{
+								switch (file.Value.Type)
+								{
+									case "model":
+									case "basicmodel":
+									case "basicdxmodel":
+									case "chunkmodel":
+									case "gcmodel":
+										if (!metadataList.ContainsKey(file.Value.Filename))
+										{
+											List<string> metaInfo = new List<string>();
+
+											metaInfo.Add(file.Key);
+											if (file.Value.CustomProperties.ContainsKey("texture"))
+												metaInfo.Add(file.Value.CustomProperties["texture"]);
+											if (file.Value.CustomProperties.ContainsKey("texids"))
+												metaInfo.Add(file.Value.CustomProperties["texids"]);
+											else if (file.Value.CustomProperties.ContainsKey("texnames"))
+												metaInfo.Add(file.Value.CustomProperties["texnames"]);
+											metadataList.Add(NormalizePath(file.Value.Filename), string.Join("|", metaInfo));
+										}
+										break;
+								}
+							}
+							break;
+
+						case ".dll":
+							IniDataSplitDLL dllMData = IniSerializer.Deserialize<IniDataSplitDLL>(iniFile);
+
+							foreach (KeyValuePair<string, SplitTools.SplitDLL.FileInfo> file in dllMData.Files)
+							{
+								switch (file.Value.Type)
+								{
+									case "model":
+									case "object":
+									case "basicmodel":
+									case "basicdxmodel":
+									case "chunkmodel":
+									case "gcmodel":
+									case "morph":
+									case "attach":
+									case "basicattach":
+									case "basicdx":
+									case "basicdxattach":
+									case "chunkattach":
+									case "gcattach":
+										if (file.Value.CustomProperties.ContainsKey("meta"))
+										{
+											if (!metadataList.ContainsKey(file.Value.Filename))
+											{
+												metadataList.Add(NormalizePath(file.Value.Filename), file.Value.CustomProperties["meta"]);
+											}
+										}
+										break;
+
+									case "modelarray":
+									case "modelsarray":
+									case "attacharray":
+									case "basicattacharray":
+									case "basicdxattacharray":
+										for (int i = 0; i < file.Value.Length; i++)
+										{
+											if (file.Value.CustomProperties.ContainsKey("meta" + i.ToString()))
+											{
+												string modelpath;
+												if (!file.Value.CustomProperties.ContainsKey("filename" + i.ToString()))
+													modelpath = Path.Combine(file.Value.Filename, i.ToString("D3") + ".sa1mdl");
+												else
+													modelpath = Path.Combine(file.Value.Filename, file.Value.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
+												if (!metadataList.ContainsKey(modelpath))
+													metadataList.Add(NormalizePath(modelpath), file.Value.CustomProperties["meta" + i.ToString()]);
+											}
+										}
+										break;
+
+									case "chunkattacharray":
+										for (int i = 0; i < file.Value.Length; i++)
+										{
+											if (file.Value.CustomProperties.ContainsKey("meta" + i.ToString()))
+											{
+												string modelpath;
+												if (!file.Value.CustomProperties.ContainsKey("filename" + i.ToString()))
+													modelpath = Path.Combine(file.Value.Filename, i.ToString("D3") + ".sa2mdl");
+												else
+													modelpath = Path.Combine(file.Value.Filename, file.Value.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
+												if (!metadataList.ContainsKey(modelpath))
+													metadataList.Add(NormalizePath(modelpath), file.Value.CustomProperties["meta" + i.ToString()]);
+											}
+										}
+										break;
+
+									case "gcattacharray":
+										for (int i = 0; i < file.Value.Length; i++)
+										{
+											if (file.Value.CustomProperties.ContainsKey("meta" + i.ToString()))
+											{
+												string modelpath;
+												if (!file.Value.CustomProperties.ContainsKey("filename" + i.ToString()))
+													modelpath = Path.Combine(file.Value.Filename, i.ToString("D3") + ".sa2bmdl");
+												else
+													modelpath = Path.Combine(file.Value.Filename, file.Value.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
+												if (!metadataList.ContainsKey(modelpath))
+													metadataList.Add(NormalizePath(modelpath), file.Value.CustomProperties["meta" + i.ToString()]);
+											}
+										}
+										break;
+
+									case "actionarray":
+										for (int i = 0; i < file.Value.Length; i++)
+										{
+											if (file.Value.CustomProperties.ContainsKey("meta" + i.ToString() + "_m"))
+											{
+												string modelpath = Path.Combine(file.Value.Filename, file.Value.CustomProperties["filename" + i.ToString() + "_m"] + "sa1mdl");
+												if (!file.Value.CustomProperties.ContainsKey(modelpath))
+													metadataList.Add(NormalizePath(modelpath), file.Value.CustomProperties["meta" + i.ToString() + "_m"]);
+											}
+										}
+										break;
+								}
+							}
+							break;
+
+						case ".nb":
+							Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(iniFile);
+
+							foreach (var nbFile in nbFilenames)
+							{
+								List<string> nbMData = new List<string>();
+								string[] nbMeta = nbFile.Value.Split('|');
+
+								if (nbMeta.Length > 1)
+								{
+									for (int i = 1; i < nbMeta.Length; i++)
+										nbMData.Add(nbMeta[i]);
+									metadataList.Add(NormalizePath(nbMeta[0] + ".sa1mdl"), string.Join("|", nbMData));
+								}
+							}
+							break;
+
+						default:
+							break;
+					}
+				}
+
+				foreach (Templates.SplitEntry entry in projSplitEntries)
+				{
+					string iniFilePath = Path.Combine(projectDirectory, entry.IniFile + "_data.ini");
+					string srcExt = Path.GetExtension(entry.SourceFile).ToLowerInvariant();
+					bool modified = false;
+					
+					switch (srcExt)
+					{
+						case ".exe":
+						case ".bin":
+						case ".prs":
+						case ".rel":
+							IniData iniFile = IniSerializer.Deserialize<IniData>(iniFilePath);
+							Dictionary<string, SplitTools.FileInfo> check = new Dictionary<string, SplitTools.FileInfo>();
+
+							foreach (KeyValuePair<string, SplitTools.FileInfo> file in iniFile.Files)
+							{
+								switch (file.Value.Type)
+								{
+									case "model":
+									case "basicmodel":
+									case "basicdxmodel":
+									case "chunkmodel":
+									case "gcmodel":
+										if (metadataList.ContainsKey(NormalizePath(file.Value.Filename)))
+										{
+											string[] meta = metadataList[NormalizePath(file.Value.Filename)].Split('|');
+											string curHash = file.Value.MD5Hash;
+											if (!check.ContainsKey(meta[0]))
+											{
+												if (meta.Length > 1 && meta[1] != "")
+												{
+													file.Value.CustomProperties["texture"] = meta[1];
+													if (meta.Length > 2)
+													{
+														if (Path.GetExtension(meta[1].ToLowerInvariant()) == ".ini")
+															file.Value.CustomProperties["texnames"] = meta[2];
+														else
+															file.Value.CustomProperties["texids"] = meta[2];
+													}
+												}
+											}
+											file.Value.MD5Hash = curHash;
+											check.Add(meta[0], file.Value);
+										}
+										else
+											check.Add(file.Key, file.Value);
+										break;
+
+									default:
+										check.Add(file.Key, file.Value);
+										break;
+								}
+							}
+
+							if (modified)
+							{
+								iniFile.Files = check;
+								IniSerializer.Serialize(iniFile, iniFilePath);
+							}
+							break;
+
+						case ".dll":
+							DllIniData dllFile = IniSerializer.Deserialize<DllIniData>(iniFilePath);
+
+							if (dllFile.SAMDLData.Count > 0)
+								dllFile.SAMDLData.Clear();
+
+							foreach (KeyValuePair<string, FileTypeHash> file in dllFile.Files)
+							{
+								if (file.Key.Contains("sa1mdl") || file.Key.Contains("sa2mdl") || file.Key.Contains("sa2bmdl"))
+								{
+									if (metadataList.ContainsKey(NormalizePath(file.Key)))
+									{
+										string[] meta = metadataList[NormalizePath(file.Key)].Split('|');
+										string mg = meta[0];
+										if (meta.Length > 2 && meta[2] != "")
+											mg += "|" + meta[1] + "|" + meta[2];
+										else if (meta.Length > 1 && meta[1] != "")
+											mg += "|" + meta[1];
+											SAMDLMetadata convMeta = new SAMDLMetadata(mg);
+										dllFile.SAMDLData.Add(file.Key, convMeta);
+									}
+								}
+							}
+
+							if (modified)
+								IniSerializer.Serialize(dllFile, iniFilePath);
+							break;
+
+						case ".nb":
+							Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(iniFilePath);
+							bool nbModified = false;
+							foreach (var file in nbFilenames)
+							{
+								string[] meta = file.Value.Split('|');
+
+								if (metadataList.ContainsKey(NormalizePath(meta[0] + ".sa1mdl")))
+								{
+
+									List<string> nbNames = new List<string>();
+									nbNames.Add(NormalizePath(meta[0]));
+									nbNames.Add(metadataList[NormalizePath(meta[0] + ".sa1mdl")]);
+									nbFilenames.Add(file.Key, string.Join("|", nbNames));
+								}
+								else
+									nbFilenames.Add(file.Key, NormalizePath(meta[0]));
+							}
+
+							if (nbModified)
+								IniSerializer.Serialize(nbFilenames, iniFilePath);
+							break;
+					}
+				}
+			}
+		}
+
+		private void resplitItemsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GetTemplate()), true);
+		}
+
+		static string NormalizePath(string path)
+		{
+			return path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToLowerInvariant();
+		}
+
+		private string GetTemplate()
+		{
+			string templateFile = "";
+
+			switch (setGame)
+			{
+				case "SADXPC":
+					templateFile = "PC - SADX.xml";
+					break;
+				case "SA2PC":
+					templateFile = "PC - SA2.xml";
+					break;
+				case "SA1AD":
+					templateFile = "DC - SA1 Autodemo.xml";
+					break;
+				case "SA1":
+					templateFile = "DC - SA1.xml";
+					break;
+				case "SA2TT":
+					templateFile = "DC - SA2 The Trial.xml";
+					break;
+				case "SA2PRE":
+					templateFile = "DC - SA2 Preview.xml";
+					break;
+				case "SA2":
+					templateFile = "DC - SA2.xml";
+					break;
+				case "SADXGCP":
+					templateFile = "GC - SADX Preview.xml";
+					break;
+				case "SADXGCR":
+					templateFile = "GC - SADX Review.xml";
+					break;
+				case "SADXGC":
+					templateFile = "GC - SADX.xml";
+					break;
+				case "SA2GC":
+					templateFile = "GC - SA2B.xml";
+					break;
+				case "SADX360":
+					templateFile = "X360 - SADX Debug Prototype.xml";
+					break;
+			}
+
+			return templateFile;
 		}
 	}
 }

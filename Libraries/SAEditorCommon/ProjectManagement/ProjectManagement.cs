@@ -607,5 +607,4 @@ namespace SAEditorCommon.ProjectManagement
                 fileOutputFolder, splitMDL.MotionFiles.ToArray());
         }
     }
-
 }
