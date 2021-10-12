@@ -223,14 +223,14 @@ namespace Split
 					else
 						Console.Write(System.Environment.NewLine);
 					fullpath_out = Path.GetDirectoryName(fullpath_mdl);
-					if (args.Length > 2)
+					if (args.Length > 1)
 					{
 						fullpath_out = args[2];
 						if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
 						fullpath_out = Path.GetFullPath(fullpath_out);
 					}
 					Console.WriteLine("Output path: {0}", fullpath_out);
-					if (args.Length > 3)
+					if (args.Length > 2)
 					{
 						mdlanimfiles = new List<string>();
 						Console.WriteLine("Animation files:");
