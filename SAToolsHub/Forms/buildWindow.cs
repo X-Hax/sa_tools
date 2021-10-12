@@ -285,7 +285,6 @@ namespace SAToolsHub
 		#region Form Functions
 		private void buildWindow_Shown(object sender, EventArgs e)
 		{
-			bool sa2 = true;
 			chkBoxEXE.Items.Clear();
 			chkBoxDLL.Items.Clear();
 			chkBoxMDL.Items.Clear();

@@ -100,6 +100,12 @@
     <Compile Include="Forms\gameOptions.Designer.cs">
       <DependentUpon>gameOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\resplitMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\resplitMenu.Designer.cs">
+      <DependentUpon>resplitMenu.cs</DependentUpon>
+    </Compile>
     <Compile Include="ListViewSortingcs.cs" />
     <Compile Include="Forms\ManualBuildWindow.cs">
       <SubType>Form</SubType>
@@ -181,6 +187,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\projConv.resx">
       <DependentUpon>projConv.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\resplitMenu.resx">
+      <DependentUpon>resplitMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\templateWriter.resx">
       <DependentUpon>templateWriter.cs</DependentUpon>

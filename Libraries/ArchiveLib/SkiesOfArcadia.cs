@@ -64,7 +64,7 @@ namespace ArchiveLib
 		public int ptr_texTable; // 0x20
 		public string name; // 0x24 (32 bytes)
 		public Vertex pos; // 0x44
-		public Rotation rot; // 0x50
+		public Vertex rot; // 0x50
 		public Vertex scl; // 0x5C
 
 		public nmldEntry(byte[] data, int start)
@@ -90,7 +90,7 @@ namespace ArchiveLib
 			Array.Copy(data, start + 0x24, namechunk, 0, namesize);
 			name = System.Text.Encoding.ASCII.GetString(namechunk);
 			pos = new Vertex(ByteConverter.ToSingle(data, start + 0x44), ByteConverter.ToSingle(data, start + 0x48), ByteConverter.ToSingle(data, start + 0x4C));
-			rot = new Rotation(ByteConverter.ToInt32(data, start + 0x50), ByteConverter.ToInt32(data, start + 0x54), ByteConverter.ToInt32(data, start + 0x58));
+			rot = new Vertex(ByteConverter.ToSingle(data, start + 0x50), ByteConverter.ToSingle(data, start + 0x54), ByteConverter.ToSingle(data, start + 0x58));
 			scl = new Vertex(ByteConverter.ToSingle(data, start + 0x5C), ByteConverter.ToSingle(data, start + 0x60), ByteConverter.ToSingle(data, start + 0x64));
 			Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}, GRND at: {4}, Motion at: {5}, Texlist at: {6}", start.ToString("X"),idx.ToString(), name, ptr_objTable.ToString("X"), ptr_grndTable.ToString("X"), ptr_motTable.ToString("X"), ptr_texTable.ToString("X"));
 		}
@@ -213,7 +213,7 @@ namespace ArchiveLib
 
 					//Write NMLD Entry output
 					Console.WriteLine("Generate NMLD Entry List");
-					nmldInfo += "Entry " + (nmldEntries[e].idx.ToString() + ": " + mdlName + ", { " + nmldEntries[e].pos.ToString() + " }, { " + nmldEntries[e].rot.ToString() + " },  { " + nmldEntries[e].scl.ToString() + " }\n");
+					nmldInfo += mdlName + ", " + nmldEntries[e].pos.ToString() + ", " + nmldEntries[e].rot.ToString() + ", " + nmldEntries[e].scl.ToString() + "\n";
 				}
 			}
 
@@ -235,26 +235,9 @@ namespace ArchiveLib
 				Entries.Add(new MLDArchiveEntry(nmdmFile, njmName));
 			}
 
-			/*
-			for (int n = 0; n < nmldObjectEntries.Count; n++)
-			{
-				// Find next entry that has data
-				int nextentry = 0;
-				for (int k = n; k < nmldObjectEntries.Count - 1; k++)
-				{
-					if (nmldObjectEntries[k].PointerInfo != 0 && nmldObjectEntries[k].PointerInfo > nmldObjectEntries[n].PointerInfo)
-						nextentry = k;
-				}
-				int end = (n < nmldObjectEntries.Count - 1 && nextentry != 0) ? (int)nmldObjectEntries[nextentry].PointerInfo : (int)textablepointer;
-				if (nmldObjectEntries[n].PointerInfo != 0)
-				{
-					Console.WriteLine("Write nmldObjectTable {0}, end {1} (model)", n, end.ToString("X"));
-					Entries.Add(new MLDArchiveEntry(nmldObjectEntries[n].GetBytes(file, end), Path.ChangeExtension(n.ToString("D3") + "_" + nmldObjectEntries[n].Name, ".nj")));
-				}
-			}
-			*/
-
 			int numtex = ByteConverter.ToInt32(file, (int)textablepointer);
+			List<string> texnames = new List<string>();
+			string texList = "";
 			// Extract textures
 			Console.WriteLine("Number of textures: {0}, pointer: {1}", numtex, textablepointer.ToString("X"));
 			if (numtex > 0)
@@ -287,8 +270,16 @@ namespace ArchiveLib
 					byte[] texture = new byte[size];
 					Array.Copy(file, currenttextureoffset, texture, 0, size);
 					Entries.Add(new MLDArchiveEntry(texture, entryfn + ext));
+					texnames.Add(entryfn);
 					currenttextureoffset += size;
 				}
+
+				for (int t = 0; t < numtex; t++)
+				{
+					texList += t.ToString() + "," + texnames[t] + ".png\n";
+				}
+
+				Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(texList), "index.txt"));
 			}
 		}
 

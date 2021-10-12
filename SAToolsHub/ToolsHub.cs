@@ -40,6 +40,7 @@ namespace SAToolsHub
 		private gameOptions gameOptionsDiag;
 		private projConv projectConverter;
 		private ListViewColumnSorter lvwColumnSorter;
+		private resplitMenu resplitTool;
 
 		//Variables
 		public static string newProjFile { get; set; }
@@ -97,6 +98,7 @@ namespace SAToolsHub
 			templateWriter = new templateWriter();
 			gameOptionsDiag = new gameOptions();
 			projectConverter = new projConv();
+			resplitTool = new resplitMenu();
 
 			SetProgramPaths();
 
@@ -1816,7 +1818,9 @@ namespace SAToolsHub
 
 		private void resplitItemsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GetTemplate()), true);
+			//Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GetTemplate()), true);
+
+			resplitTool.ShowDialog();
 		}
 
 		static string NormalizePath(string path)
@@ -1824,7 +1828,7 @@ namespace SAToolsHub
 			return path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToLowerInvariant();
 		}
 
-		private string GetTemplate()
+		public static string GetTemplate()
 		{
 			string templateFile = "";
 
@@ -1868,7 +1872,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			return templateFile;
+			return Path.Combine("GameConfig", templateFile);
 		}
 	}
 }
