@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="DAT.cs" />
     <Compile Include="ArchiveLib.cs" />
+    <Compile Include="gcaxMLT.cs" />
     <Compile Include="MLT.cs" />
     <Compile Include="njUtil.cs" />
     <Compile Include="PAK.cs" />

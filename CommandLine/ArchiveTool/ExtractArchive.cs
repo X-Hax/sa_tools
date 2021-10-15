@@ -67,7 +67,12 @@ namespace ArchiveTool
                     arc = new MLDArchive(arcdata);
                     break;
                 case (".mlt"):
-                    arc = new MLTFile(arcdata, Path.GetFileNameWithoutExtension(filePath));
+                case (".gcaxmlt"):
+                    string test = System.Text.Encoding.ASCII.GetString(arcdata, 0, 4);
+                    if (test == "gcax")
+                        arc = new gcaxMLTFile(arcdata, Path.GetFileNameWithoutExtension(filePath));
+                    else
+                        arc = new MLTFile(arcdata, Path.GetFileNameWithoutExtension(filePath));
                     break;
                 default:
                     Console.WriteLine("Unknown archive type");

@@ -97,7 +97,7 @@ namespace ArchiveLib
                 BankID = file[offset + 4];
                 LoadAddress = BitConverter.ToInt32(file, offset + 0x08);
                 AllocatedMemory = BitConverter.ToInt32(file, offset + 0x0C);
-                Name = filename == "" ? "BANK" : filename + "_BANK" + BankID.ToString("D2") + GetMLTItemExtension(file, offset);
+                Name = (filename == "" ? "BANK" : filename + "_BANK") + BankID.ToString("D2") + GetMLTItemExtension(file, offset);
                 int pointer = BitConverter.ToInt32(file, offset + 0x10);
                 int size = BitConverter.ToInt32(file, offset + 0x14);
                 if (pointer != -1)

@@ -9,6 +9,7 @@ using SplitTools;
 using static ArchiveLib.DATFile;
 using static ArchiveLib.PVMXFile;
 using static ArchiveLib.MLTFile;
+using static ArchiveLib.gcaxMLTFile;
 //using static ArchiveLib.MLTFile;
 
 namespace ArchiveTool
@@ -93,7 +94,12 @@ namespace ArchiveTool
                     case ".psr":
                         folderMode = ArchiveFromFolderMode.MLT;
                         arc = new MLTFile();
-                        break;  
+                        break;
+                    case ".gcaxmpb":
+                    case ".gcaxmsb":
+                        folderMode = ArchiveFromFolderMode.gcaxMLT;
+                        arc = new gcaxMLTFile();
+                        break;
                     case ".png":
                     case ".jpg":
                     case ".bmp":
@@ -112,6 +118,11 @@ namespace ArchiveTool
                     string filename = split[0];
                     switch (folderMode)
                     {
+                        case ArchiveFromFolderMode.gcaxMLT:
+                            int bIDgc = int.Parse(split[1]);
+                            arc.Entries.Add(new gcaxMLTEntry(Path.Combine(filePath, filename), bIDgc));
+                            extension = ".mlt";
+                            break;
                         case ArchiveFromFolderMode.MLT:
                             int bID = int.Parse(split[1]);
                             int mem = int.Parse(split[2], System.Globalization.NumberStyles.HexNumber);
@@ -311,12 +322,13 @@ namespace ArchiveTool
 
         enum ArchiveFromFolderMode
         {
-            PVM = 0,
-            GVM = 1,
-            DAT = 2,
-            PVMX = 3,
-            PB = 4,
-            MLT = 5,
+            PVM,
+            GVM,
+            DAT,
+            PVMX,
+            PB,
+            MLT,
+            gcaxMLT,
         }
     }
 }
