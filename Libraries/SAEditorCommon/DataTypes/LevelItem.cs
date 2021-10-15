@@ -332,7 +332,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			}
 			set
 			{
-				COL.BlockBits = int.Parse(value, NumberStyles.HexNumber);
+				COL.BlockBits = uint.Parse(value, NumberStyles.HexNumber);
 			}
 		}
 
