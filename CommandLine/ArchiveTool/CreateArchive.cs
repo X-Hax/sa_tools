@@ -8,6 +8,8 @@ using ArchiveLib;
 using SplitTools;
 using static ArchiveLib.DATFile;
 using static ArchiveLib.PVMXFile;
+using static ArchiveLib.MLTFile;
+using static ArchiveLib.gcaxMLTFile;
 //using static ArchiveLib.MLTFile;
 
 namespace ArchiveTool
@@ -42,7 +44,7 @@ namespace ArchiveTool
                 if (args[a] == "-prs") compressPRS = true;
                 if (args[a] == "-pb") createPB = true;
             }
-            //Folder mode
+            // Folder mode
             if (Directory.Exists(filePath))
             {
                 GenericArchive arc;
@@ -54,6 +56,11 @@ namespace ArchiveTool
                 }
                 List<string> filenames = new List<string>(File.ReadAllLines(indexfilename).Where(a => !string.IsNullOrEmpty(a)));
                 string ext = Path.GetExtension(filenames[0]).ToLowerInvariant();
+                if (filenames[0].Contains(","))
+                {
+                    string[] checkf = filenames[0].Split(',');
+                    ext = Path.GetExtension(checkf[0].ToLowerInvariant());
+                }
                 switch (ext)
                 {
                     case ".pvr":
@@ -77,16 +84,22 @@ namespace ArchiveTool
                         folderMode = ArchiveFromFolderMode.DAT;
                         arc = new DATFile();
                         break;
-                    /* 
-               case ".mlt":
-               case ".mpb":
-               case ".msb":
-               case ".fpb":
-               case ".fob":
-                   folderMode = ArchiveFromFolderMode.MLT;
-                   arc = new MLTFile();
-                   break;
-                    */
+                    case ".mpb":
+                    case ".mdb":
+                    case ".msb":
+                    case ".osb":
+                    case ".fpb":
+                    case ".fob":
+                    case ".fpw":
+                    case ".psr":
+                        folderMode = ArchiveFromFolderMode.MLT;
+                        arc = new MLTFile();
+                        break;
+                    case ".gcaxmpb":
+                    case ".gcaxmsb":
+                        folderMode = ArchiveFromFolderMode.gcaxMLT;
+                        arc = new gcaxMLTFile();
+                        break;
                     case ".png":
                     case ".jpg":
                     case ".bmp":
@@ -105,12 +118,30 @@ namespace ArchiveTool
                     string filename = split[0];
                     switch (folderMode)
                     {
-                        /*
-                        case ArchiveFromFolderMode.MLT:
-                            arc.Entries.Add(new MLTEntry(Path.Combine(filePath, filename)));
+                        case ArchiveFromFolderMode.gcaxMLT:
+                            int bIDgc = int.Parse(split[1]);
+                            arc.Entries.Add(new gcaxMLTEntry(Path.Combine(filePath, filename), bIDgc));
                             extension = ".mlt";
                             break;
-                        */
+                        case ArchiveFromFolderMode.MLT:
+                            int bID = int.Parse(split[1]);
+                            int mem = int.Parse(split[2], System.Globalization.NumberStyles.HexNumber);
+                            int sz = int.Parse(split[3]);
+                            int version = 1;
+                            int revision = 1;
+                            string versionfilename = Path.Combine(filePath, "version.txt");
+                            if (File.Exists(versionfilename))
+                            {
+                                string[] ver = File.ReadAllLines(versionfilename);
+                                version = int.Parse(ver[0]);
+                                revision = int.Parse(ver[1]);
+                                MLTFile mlt = (MLTFile)arc;
+                                mlt.Version = (byte)version;
+                                mlt.Revision = (byte)revision;
+                            }
+                            arc.Entries.Add(new MLTEntry(Path.Combine(filePath, filename), bID, mem, sz));
+                            extension = ".mlt";
+                            break;
                         case ArchiveFromFolderMode.DAT:
                             arc.Entries.Add(new DATEntry(Path.Combine(filePath, filename)));
                             extension = ".dat";
@@ -291,12 +322,13 @@ namespace ArchiveTool
 
         enum ArchiveFromFolderMode
         {
-            PVM = 0,
-            GVM = 1,
-            DAT = 2,
-            PVMX = 3,
-            PB = 4,
-            MLT = 5,
+            PVM,
+            GVM,
+            DAT,
+            PVMX,
+            PB,
+            MLT,
+            gcaxMLT,
         }
     }
 }

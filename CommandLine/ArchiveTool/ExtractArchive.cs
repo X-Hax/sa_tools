@@ -66,11 +66,14 @@ namespace ArchiveTool
                 case (".mld"):
                     arc = new MLDArchive(arcdata);
                     break;
-                /*
-                    case (".mlt"):
-                    arc = new MLTFile(arcdata);
+                case (".mlt"):
+                case (".gcaxmlt"):
+                    string test = System.Text.Encoding.ASCII.GetString(arcdata, 0, 4);
+                    if (test == "gcax")
+                        arc = new gcaxMLTFile(arcdata, Path.GetFileNameWithoutExtension(filePath));
+                    else
+                        arc = new MLTFile(arcdata, Path.GetFileNameWithoutExtension(filePath));
                     break;
-                */
                 default:
                     Console.WriteLine("Unknown archive type");
                     return;
@@ -79,6 +82,11 @@ namespace ArchiveTool
             Directory.CreateDirectory(outputPath);
             foreach (GenericArchiveEntry entry in arc.Entries)
             {
+                if (entry.Data == null)
+                {
+                    Console.WriteLine("Entry {0} has no data", entry.Name);
+                    continue;
+                }
                 Console.WriteLine("Extracting file: {0}", entry.Name);
                 File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.Data);
             }

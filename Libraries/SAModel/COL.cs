@@ -11,7 +11,7 @@ namespace SAModel
 		public float WidthY { get; set; }
 		public float WidthZ { get; set; }
 		public NJS_OBJECT Model { get; set; }
-		public int BlockBits { get; set; }
+		public uint BlockBits { get; set; }
 		public int Flags { get; set; }
 
 		public SA1SurfaceFlags SurfaceFlags
@@ -83,7 +83,7 @@ namespace SAModel
 					WidthZ = ByteConverter.ToSingle(file, address + 0x14);
 					uint tmpaddr = ByteConverter.ToUInt32(file, address + 0x18) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches);
-					BlockBits = ByteConverter.ToInt32(file, address + 0x1C);
+					BlockBits = ByteConverter.ToUInt32(file, address + 0x1C);
 					Flags = ByteConverter.ToInt32(file, address + 0x20);
 					break;
 				case LandTableFormat.SA2:
@@ -94,7 +94,7 @@ namespace SAModel
 					tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches);
 					WidthZ = ByteConverter.ToInt32(file, address + 0x14);
-					BlockBits = ByteConverter.ToInt32(file, address + 0x18);
+					BlockBits = ByteConverter.ToUInt32(file, address + 0x18);
 					break;
 			}
 		}

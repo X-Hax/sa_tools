@@ -1406,7 +1406,7 @@ namespace SplitTools.Split
                 }
                 Console.WriteLine();
             }
-            SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, Path.GetPathRoot(outputFilename), File.ReadAllBytes(dataFileName), imageBase, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
+            SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, File.ReadAllBytes(dataFileName), imageBase, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
         }
     }
 
