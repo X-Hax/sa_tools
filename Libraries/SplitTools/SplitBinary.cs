@@ -12,7 +12,7 @@ namespace SplitTools.Split
 {
     public static class SplitBinary
     {
-        public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
+        public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false, bool overwrite = true)
         {
 #if !DEBUG
 			try
@@ -141,7 +141,7 @@ namespace SplitTools.Split
                             break;
                         // Single split mode for everything else
                         default:
-                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, inifile.MasterObjectList, nometa, nolabel);
+                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, inifile.MasterObjectList, nometa, nolabel, overwrite);
                             break;
                     }
                 }
@@ -181,10 +181,12 @@ namespace SplitTools.Split
             return (int)SplitERRORVALUE.Success;
         }
 
-        public static int SplitSingle(string itemName, SplitTools.FileInfo itemFileInfo, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false)
+		public static int SplitSingle(string itemName, SplitTools.FileInfo itemFileInfo, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
         {
             if (string.IsNullOrEmpty(itemName))
                 return 0;
+			if (File.Exists(fileOutputPath) && overwrite == false)
+				return 0;
             string filedesc = itemName;
             SplitTools.FileInfo data = itemFileInfo;
             Dictionary<string, string> customProperties = data.CustomProperties;

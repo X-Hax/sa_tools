@@ -99,7 +99,7 @@ namespace SAToolsHub
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 					TextWriter writer = new StreamWriter(projFileStream);
 
-					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
+					Templates.ProjectInfo projInfo = new Templates.ProjectInfo(); ;
 
 					switch (game)
 					{

@@ -44,7 +44,7 @@ namespace SAToolsHub
 
 		//Variables
 		public static string newProjFile { get; set; }
-		string projXML = "";
+		public static string projXML { get; set; }
         public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameDirectory { get; set; }
@@ -53,6 +53,7 @@ namespace SAToolsHub
 		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
 		List<string> copyPaths;
+		public static bool resplit { get; set; }
 
 		public class itemTags
 		{
@@ -85,6 +86,8 @@ namespace SAToolsHub
             Application.ThreadException += Application_ThreadException;
 
             hubSettings = ProjectSettings.Load();
+			resplit = false;
+			projXML = "";
 
             if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
             {
@@ -1539,7 +1542,7 @@ namespace SAToolsHub
 			{
 				Dictionary<string, string> metadataList = new Dictionary<string, string>();
 
-				Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GetTemplate()), true);
+				Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(GetTemplate(), true);
 
 				foreach (Templates.SplitEntry entry in splitFile.SplitEntries)
 				{
@@ -1821,6 +1824,13 @@ namespace SAToolsHub
 			//Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), GetTemplate()), true);
 
 			resplitTool.ShowDialog();
+
+			if (resplit)
+			{
+				resetOpenProject();
+				openProject(ProjectFunctions.openProjectFileString(projXML));
+				resplit = false;
+			}
 		}
 
 		static string NormalizePath(string path)
@@ -1831,6 +1841,12 @@ namespace SAToolsHub
 		public static string GetTemplate()
 		{
 			string templateFile = "";
+			string templatePath = "";
+
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig")))
+				templatePath = "GameConfig";
+			else
+				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../GameConfig");
 
 			switch (setGame)
 			{
@@ -1872,7 +1888,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			return Path.Combine("GameConfig", templateFile);
+			return Path.Combine(templatePath, templateFile);
 		}
 	}
 }

@@ -34,6 +34,7 @@ namespace SAToolsHub
 			this.chkOverwrite = new System.Windows.Forms.CheckBox();
 			this.unchkAll = new System.Windows.Forms.Button();
 			this.chkAll = new System.Windows.Forms.Button();
+			this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
 			this.SuspendLayout();
 			// 
 			// checkedListBox1
@@ -122,5 +123,6 @@ namespace SAToolsHub
 		private System.Windows.Forms.CheckBox chkOverwrite;
 		private System.Windows.Forms.Button unchkAll;
 		private System.Windows.Forms.Button chkAll;
+		private System.ComponentModel.BackgroundWorker backgroundWorker1;
 	}
 }

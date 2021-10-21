@@ -117,11 +117,11 @@ namespace SAToolsHub
 					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
 
 					projInfo.GameName = gameName;
-                    projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
-                    projInfo.CheckFile = checkFile;
-                    projInfo.GameDataFolder = gameDataFolder;
+					projInfo.CheckFile = checkFile;
 					projInfo.GameFolder = gamePath;
+					projInfo.GameDataFolder = gameDataFolder;
 					projInfo.ProjectFolder = projFolder;
+					projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
 
 					projectFile.GameInfo = projInfo;
 					projectFile.SplitEntries = splitEntries;

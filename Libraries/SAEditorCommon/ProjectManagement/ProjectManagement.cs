@@ -286,6 +286,7 @@ namespace SAEditorCommon.ProjectManagement
 				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 				var projFileStream = File.OpenRead(fileName);
 				projectFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+				projFileStream.Close();
 				return projectFile;
 			}
 			else
@@ -506,7 +507,7 @@ namespace SAEditorCommon.ProjectManagement
         /// <summary>
         /// Splits data from a SplitEntry.
         /// </summary>
-        public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder)
+        public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, bool overwrite = true)
         {
             string datafilename;
             switch (splitData.SourceFile)
@@ -568,13 +569,13 @@ namespace SAEditorCommon.ProjectManagement
             switch (ext.ToLower())
             {
                 case ".dll":
-                    SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName);
+                    SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, false, false, overwrite);
                     break;
                 case ".nb":
-                    SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
+                    SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, overwrite);
                     break;
                 default:
-                    SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName);
+                    SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, false, false, overwrite);
                     break;
             }
         }
@@ -582,7 +583,7 @@ namespace SAEditorCommon.ProjectManagement
         /// <summary>
         /// Splits data from a SplitEntryMDL.
         /// </summary>
-        public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder)
+        public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
         {
             string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
             string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
@@ -603,8 +604,8 @@ namespace SAEditorCommon.ProjectManagement
             }
             #endregion
 
-            sa2MDL.Split(splitMDL.BigEndian, filePath,
-                fileOutputFolder, splitMDL.MotionFiles.ToArray());
+			if (overwrite)
+				sa2MDL.Split(splitMDL.BigEndian, filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
         }
     }
 }

@@ -81,7 +81,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 				File.WriteAllBytes(dest, result.ToArray());
 			}
 		}
-        public static void SplitNBFile(string filename, bool extractchunks, string outdir, int verbose = 0, string inifilename = null)
+        public static void SplitNBFile(string filename, bool extractchunks, string outdir, int verbose = 0, string inifilename = null, bool overwrite = true)
         {
             Dictionary<int, string> sectionlist = new Dictionary<int, string>();
             Dictionary<int, NJS_OBJECT> modellist = new Dictionary<int, NJS_OBJECT>();
@@ -178,6 +178,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
                     string[] filenameSplit = filenameString.Split('|');
                     filenameString = filenameSplit[0];
                 }
+
                 List<string> anims = new List<string>();
                 foreach (var animitem in animlist)
                 {
@@ -189,7 +190,9 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
                     }
                     if (modelitem.Value.CountAnimated() == animitem.Value.ModelParts)
                     {
-                        if (!Directory.Exists(Path.GetDirectoryName(filenameStringAnim + ".saanim")) && Path.GetDirectoryName(filenameStringAnim + ".saanim") != "")
+						if (File.Exists(Path.Combine(outdir, filenameStringAnim + ".saanim")) && !overwrite)
+							return;
+						if (!Directory.Exists(Path.GetDirectoryName(filenameStringAnim + ".saanim")) && Path.GetDirectoryName(filenameStringAnim + ".saanim") != "")
                             Directory.CreateDirectory(Path.GetDirectoryName(filenameStringAnim + ".saanim"));
                         animitem.Value.Save(filenameStringAnim + ".saanim");
                         System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
@@ -197,7 +200,9 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
                         anims.Add(sb.ToString());
                     }
                 }
-                if (!Directory.Exists(Path.GetDirectoryName(filenameString + ".sa1mdl")) && Path.GetDirectoryName(filenameString + ".sa1mdl") != "")
+				if (File.Exists(Path.Combine(outdir, filenameString + ".sa1mdl")) && !overwrite)
+					return;
+				if (!Directory.Exists(Path.GetDirectoryName(filenameString + ".sa1mdl")) && Path.GetDirectoryName(filenameString + ".sa1mdl") != "")
                     Directory.CreateDirectory(Path.GetDirectoryName(filenameString + ".sa1mdl"));
                 ModelFile.CreateFile(filenameString + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
             }

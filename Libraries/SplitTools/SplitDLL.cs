@@ -18,7 +18,7 @@ namespace SplitTools.SplitDLL
 										"Amy", "Metal Sonic", "Tikal", "Chaos", "Chao Walker", "Dark Chao Walker",
 										"Neutral Chao", "Hero Chao", "Dark Chao"
 									};
-		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false)
+		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false, bool overwrite = true)
 		{
 #if !DEBUG
 			try
@@ -97,6 +97,7 @@ namespace SplitTools.SplitDLL
 					}
 					else
 						Console.WriteLine(name);
+
 					switch (type)
 					{
 						// Landtables
@@ -139,6 +140,8 @@ namespace SplitTools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(land.Name))
 								{
+									if (File.Exists(fileOutputPath) && !overwrite)
+										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 									land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
@@ -174,6 +177,8 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + landext_def);
 											fileName = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + landext_def);
 										}
+										if (File.Exists(outputFN) && !overwrite)
+											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										land.SaveToFile(outputFN, landfmt_def, nometa);
@@ -378,8 +383,10 @@ namespace SplitTools.SplitDLL
                                         {
                                             fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
                                         }
-                                        // Metadata for SAMDL project mode
-                                        if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										if (File.Exists(Path.Combine(projectFolderName, fn)) && !overwrite)
+											return 0;
+										// Metadata for SAMDL project mode
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
                                             output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
 										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_arr));
 										if (!labels.Contains(mdl.Name))
@@ -456,8 +463,10 @@ namespace SplitTools.SplitDLL
 											{
 												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + attachext_arr);
 											}
-                                            // Metadata for SAMDL project mode
-                                            if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+											if (File.Exists(Path.Combine(projectFolderName, fn)) && !overwrite)
+												return 0;
+											// Metadata for SAMDL project mode
+											if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
                                                 output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
                                             models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_att));
 											if (!labels.Contains(mdl.Name))
@@ -520,8 +529,11 @@ namespace SplitTools.SplitDLL
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										saveani = true;
 									}
+									
 									if (saveani)
 									{
+										if (File.Exists(outputFN) && !overwrite)
+											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										//Console.WriteLine("Saving animation: {0}", outputFN);
@@ -544,12 +556,16 @@ namespace SplitTools.SplitDLL
 										{
                                             outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
                                             mfn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
-                                            // Metadata for SAMDL project mode
-                                            if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_m"))
+											
+											// Metadata for SAMDL project mode
+											if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_m"))
                                                 output.SAMDLData.Add(mfn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_m"]));
                                         }
+										
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+										if (File.Exists(outputmfn) && !overwrite)
+											return 0;
 
 										PathRelativePathTo(sb, Path.GetFullPath(outputmfn), 0, Path.GetFullPath(outputFN), 0);
 										string animationName = sb.ToString();
@@ -639,6 +655,8 @@ namespace SplitTools.SplitDLL
 												outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 												fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 											}
+											if (File.Exists(outputFN) && !overwrite)
+												return 0;
 											if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 												Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 											ani.Save(outputFN, nometa);
@@ -661,6 +679,8 @@ namespace SplitTools.SplitDLL
                                 if (data.CustomProperties.ContainsKey("extension"))
                                     ext = data.CustomProperties["extension"];
                                 TexnameArray texarrs = new TexnameArray(datafile, address, imageBase);
+								if (File.Exists(fileOutputPath + ".tls") && !overwrite)
+									return 0;
                                 if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 									Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 								texarrs.Save(fileOutputPath + ".tls", ext);
@@ -685,6 +705,8 @@ namespace SplitTools.SplitDLL
 									{
 										fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".tls");
 									}
+									if (File.Exists(fn) && !overwrite)
+										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(fn)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fn));
 									texarr.Save(fn);
@@ -712,6 +734,8 @@ namespace SplitTools.SplitDLL
 								int i = ByteConverter.ToInt16(datafile, address);
 								while (i != -1)
 								{
+									if (File.Exists(fileOutputPath + "/" + i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim") && !overwrite)
+										return 0;
 									new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
 										.Save(fileOutputPath + "/" + i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim", nometa);
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim"));
@@ -827,6 +851,8 @@ namespace SplitTools.SplitDLL
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
+									if (File.Exists(outputFN) && !overwrite)
+										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
@@ -880,6 +906,8 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
 										}
+										if (File.Exists(outputFN) && !overwrite)
+											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.GC, nometa);
@@ -937,6 +965,8 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										}
+										if (File.Exists(outputFN) && !overwrite)
+											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
@@ -1018,6 +1048,8 @@ namespace SplitTools.SplitDLL
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
+									if (File.Exists(outputFN) && !overwrite)
+										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
@@ -1056,6 +1088,8 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".saanim");
 										}
+										if (File.Exists(outputFN) && !overwrite)
+											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										motion.Save(outputFN, nometa);
@@ -1098,6 +1132,8 @@ namespace SplitTools.SplitDLL
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_c"] + ".ini");
 										fileName = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_c"] + ".ini");
 									}
+									if (File.Exists(outputFN) && !overwrite)
+										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									cam.Save(outputFN);
@@ -1114,6 +1150,8 @@ namespace SplitTools.SplitDLL
 											outputFN_m = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + ".saanim");
 											fn_m = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + ".saanim");
 										}
+										if (File.Exists(outputFN_m) && !overwrite)
+											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ani.Save(outputFN_m, nometa);
