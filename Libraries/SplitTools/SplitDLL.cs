@@ -18,8 +18,9 @@ namespace SplitTools.SplitDLL
 										"Amy", "Metal Sonic", "Tikal", "Chaos", "Chao Walker", "Dark Chao Walker",
 										"Neutral Chao", "Hero Chao", "Dark Chao"
 									};
-		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false, bool overwrite = true)
+		public static int SplitDLLFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false, bool overwrite = true, bool logWriter = false)
 		{
+			string errname = "";
 #if !DEBUG
 			try
 #endif
@@ -85,6 +86,7 @@ namespace SplitTools.SplitDLL
 					FileInfo data = item.Value;
 					string type = data.Type;
 					string name = item.Key;
+					errname = item.Key;
 					output.Exports[name] = type;
 					int address = exports[name];
 
@@ -1226,6 +1228,14 @@ namespace SplitTools.SplitDLL
 				Console.WriteLine(e.StackTrace);
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
+				if (logWriter)
+				{
+					TextWriter log = File.CreateText(Path.Combine(projectFolderName, "SplitLog.log"));
+					log.WriteLine("Failed to split {0} in {1}.\n", errname, Path.GetFileName(inifilename));
+					log.WriteLine(e.Message);
+					log.WriteLine(e.StackTrace);
+					log.Close();
+				}
 				return (int)SplitTools.Split.SplitERRORVALUE.UnhandledException;
 			}
 #endif

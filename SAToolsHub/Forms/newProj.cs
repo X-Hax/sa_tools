@@ -27,6 +27,7 @@ namespace SAToolsHub
         string checkFile;
         string projName;
         int selectedTemplateIndex = -1;
+		int splitCheck;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
 
@@ -366,7 +367,7 @@ namespace SAToolsHub
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
-		void splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress)
+		int splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress)
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
@@ -380,9 +381,13 @@ namespace SAToolsHub
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
+			{
 				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder);
-            // SALVL stuff
-            if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
+				if (File.Exists(Path.Combine(projFolder, "SplitLog.log")))
+					return 0;
+			}
+			// SALVL stuff
+			if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
             {
                 progress.SetStep("Copying Object Definitions");
                 string objdefsPath = GetObjDefsDirectory();
@@ -408,6 +413,8 @@ namespace SAToolsHub
 				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
                 progress.StepProgress();
             }
+
+			return 1;
 		}
 		#endregion
 
@@ -419,7 +426,7 @@ namespace SAToolsHub
 			{
 				Invoke((Action)splitProgress.Show);
 
-				splitGame(gameName, splitProgress);
+				splitCheck = splitGame(gameName, splitProgress);
 
 				Invoke((Action)splitProgress.Close);
 			}
@@ -433,11 +440,16 @@ namespace SAToolsHub
 			}
 			else
 			{
-				DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
-				if (successDiag == DialogResult.OK)
+				if (splitCheck == 0)
+					MessageBox.Show("Item failed to split properly. Please check the SplitLog.log file at:\n\n" + projFolder, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				else
 				{
-					SAToolsHub.newProjFile = Path.Combine(projFolder, projName);
-					this.Close();
+					DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
+					if (successDiag == DialogResult.OK)
+					{
+						SAToolsHub.newProjFile = Path.Combine(projFolder, projName);
+						this.Close();
+					}
 				}
 			}
 		}

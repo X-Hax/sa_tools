@@ -569,13 +569,13 @@ namespace SAEditorCommon.ProjectManagement
             switch (ext.ToLower())
             {
                 case ".dll":
-                    SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, false, false, overwrite);
+                    SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
                     break;
                 case ".nb":
                     SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, overwrite);
                     break;
                 default:
-                    SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, false, false, overwrite);
+                    SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
                     break;
             }
         }

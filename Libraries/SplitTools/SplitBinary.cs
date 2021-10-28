@@ -12,8 +12,9 @@ namespace SplitTools.Split
 {
     public static class SplitBinary
     {
-        public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false, bool overwrite = true)
+        public static int SplitFile(string datafilename, string inifilename, string projectFolderName, bool nometa = false, bool nolabel = false, bool overwrite = true, bool logWriter = false)
         {
+			string errname = "";
 #if !DEBUG
 			try
 #endif
@@ -74,6 +75,7 @@ namespace SplitTools.Split
                         continue;
                     // Set up split FileInfo
                     string filedesc = item.Key;
+					errname = item.Key;
                     SplitTools.FileInfo data = item.Value;
                     Dictionary<string, string> customProperties = data.CustomProperties;
                     string type = data.Type;
@@ -175,6 +177,14 @@ namespace SplitTools.Split
 				Console.WriteLine(e.StackTrace);
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadLine();
+				if (logWriter)
+				{
+					TextWriter log = File.CreateText(Path.Combine(projectFolderName, "SplitLog.log"));
+					log.WriteLine("Failed to split {0} in {1}.\n", errname, Path.GetFileName(inifilename));
+					log.WriteLine(e.Message);
+					log.WriteLine(e.StackTrace);
+					log.Close();
+				}
 				return (int)SplitERRORVALUE.UnhandledException;
 			}
 #endif
