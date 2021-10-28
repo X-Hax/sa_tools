@@ -45,10 +45,10 @@ namespace SAToolsHub
 		//Variables
 		public static string newProjFile { get; set; }
 		public static string projXML { get; set; }
-        public static string projectDirectory { get; set; }
+		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
 		public static string gameDirectory { get; set; }
-        public static string gameSystemDirectory { get; set; }
+		public static string gameSystemDirectory { get; set; }
 		public static List<Templates.SplitEntry> projSplitEntries { get; set; }
 		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
 		public static ProjectSettings hubSettings { get; set; }
@@ -83,17 +83,17 @@ namespace SAToolsHub
 			InitializeComponent();
 			lvwColumnSorter = new ListViewColumnSorter();
 			this.listView1.ListViewItemSorter = lvwColumnSorter;
-            Application.ThreadException += Application_ThreadException;
+			Application.ThreadException += Application_ThreadException;
 
-            hubSettings = ProjectSettings.Load();
+			hubSettings = ProjectSettings.Load();
 			resplit = false;
 			projXML = "";
 
-            if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
-            {
-                projXML = Program.Arguments[0];
-                openProject(ProjectFunctions.openProjectFileString(projXML));
-            }
+			if (Program.Arguments.Length > 0 && Program.Arguments[0].Contains(".sap"))
+			{
+				projXML = Program.Arguments[0];
+				openProject(ProjectFunctions.openProjectFileString(projXML));
+			}
 
 			projectCreateDiag = new newProj();
 			projectEditorDiag = new editProj();
@@ -165,7 +165,7 @@ namespace SAToolsHub
 			
 			projectDirectory = projFile.GameInfo.ProjectFolder;
 			gameDirectory = projFile.GameInfo.GameFolder;
-            gameSystemDirectory = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
+			gameSystemDirectory = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
 			// Check for valid paths just in case the user moved folders.
 			if (!Directory.Exists(projectDirectory))
 			{
@@ -236,7 +236,7 @@ namespace SAToolsHub
 
 			if (validFolders)
 			{
-                rootFolder = setGame + " Game Files";
+				rootFolder = setGame + " Game Files";
 				PopulateTreeView(projectDirectory);
 				PopulateTreeView(gameSystemDirectory);
 				treeView1.Nodes[1].Text = rootFolder;
@@ -244,8 +244,8 @@ namespace SAToolsHub
 					new TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
 
 				projSplitEntries = projFile.SplitEntries;
-                if (projFile.SplitMDLEntries != null)
-                    projSplitMDLEntries = projFile.SplitMDLEntries;
+				if (projFile.SplitMDLEntries != null)
+					projSplitMDLEntries = projFile.SplitMDLEntries;
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
@@ -820,77 +820,84 @@ namespace SAToolsHub
 		//General Tools Initializers
 		private void sAMDLToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            if (projectDirectory != null)
-                samdlStartInfo.Arguments = $"\"{projXML}\"";
-            Process samdlProcess = Process.Start(samdlStartInfo);
+			if (projectDirectory != null)
+				samdlStartInfo.Arguments = $"\"{projXML}\"";
+			Process proc = Process.Start(samdlStartInfo);
+			samdlStartInfo.Arguments = "";
 		}
 
-        private void toolStripMenuItem3_Click(object sender, EventArgs e)
-        {
-            if (projectDirectory != null)
-            {
-                string projectArgumentsPath = File.Exists(Path.Combine(projectDirectory, "sadxlvl.ini")) ? $"\"{projXML}\"" : "";
-                salvlStartInfo.Arguments = projectArgumentsPath;
-            }
-            Process salvlProcess = Process.Start(salvlStartInfo);
-        }
+		private void toolStripMenuItem3_Click(object sender, EventArgs e)
+		{
+			if (projectDirectory != null)
+			{
+				string projectArgumentsPath = File.Exists(Path.Combine(projectDirectory, "sadxlvl.ini")) ? $"\"{projXML}\"" : "";
+				salvlStartInfo.Arguments = projectArgumentsPath;
+			}
+			Process proc = Process.Start(salvlStartInfo);
+			salvlStartInfo.Arguments = "";
+
+		}
 
 		private void textureEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process texEditProcess = Process.Start(texeditStartInfo);
+			Process proc = Process.Start(texeditStartInfo);
 		}
 
 		//SADX Tools Initializers
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process tweakerProcess = Process.Start(sadxtweakerStartInfo);
+			Process proc = Process.Start(sadxtweakerStartInfo);
 		}
 
 		private void sADXsndSharpToolStripMenuItem_Click(object sender, EventArgs e)
 		{ 
-			Process sndSharpProcess = Process.Start(sadxsndsharpStartInfo);
+			Process proc = Process.Start(sadxsndsharpStartInfo);
 		}
 
 		private void sAFontEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{ 
-			Process saFontProcess = Process.Start(sadxfonteditStartInfo);
+			Process proc = Process.Start(sadxfonteditStartInfo);
 		}
 
 		private void sASaveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saSaveProcess = Process.Start(sasaveStartInfo);
+			Process proc = Process.Start(sasaveStartInfo);
 		}
 
 		private void sADLCToolToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saDLCToolProcess = Process.Start(sadlctoolStartInfo);
+			Process proc = Process.Start(sadlctoolStartInfo);
 		}
 
 		//SA2 Tools Initializers
 		private void sA2EventViewerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saSaveProcess = Process.Start(sa2eventviewStartInfo);
+			Process proc = Process.Start(sa2eventviewStartInfo);
 		}
 
 		private void sA2CutsceneTextEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saSaveProcess = Process.Start(sa2evtexteditStartInfo);
+			Process proc = Process.Start(sa2evtexteditStartInfo);
 		}
 
 		private void sA2MessageEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saSaveProcess = Process.Start(sa2streditStartInfo);
+			Process proc = Process.Start(sa2streditStartInfo);
 		}
 
 		private void sA2StageSelectEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saSaveProcess = Process.Start(sa2stgselStartInfo);
+			if (setGame == "SA2PC")
+				if (projectDirectory != null)
+					sa2stgselStartInfo.Arguments = $"\"{projXML}\"";
+			Process proc = Process.Start(sa2stgselStartInfo);
+			sa2stgselStartInfo.Arguments = "";
 		}
 
 		//Data Extractor/Convert (new Split UI)
 		private void splitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process saSaveProcess = Process.Start(datatoolboxStartInfo);
+			Process proc = Process.Start(datatoolboxStartInfo);
 		}
 
 		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1510,26 +1517,26 @@ namespace SAToolsHub
 		{
 			templateWriter.ShowDialog();
 		}
-        #endregion
+		#endregion
 
-        #region Error Handling
-        void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
-        {
-            string errDesc = "SA Tools Hub has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
-                 "If you wish to report a bug, please include the following in your report:";
-            SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, e.Exception.ToString());
-            DialogResult dgresult = report.ShowDialog();
-            switch (dgresult)
-            {
-                case DialogResult.Abort:
-                case DialogResult.OK:
-                    Application.Exit();
-                    break;
-            }
-        }
-        #endregion
+		#region Error Handling
+		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+		{
+			string errDesc = "SA Tools Hub has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
+				 "If you wish to report a bug, please include the following in your report:";
+			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, e.Exception.ToString());
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
+		}
+		#endregion
 
-        private void SAToolsHub_Shown(object sender, EventArgs e)
+		private void SAToolsHub_Shown(object sender, EventArgs e)
 		{
 			if (CheckForUpdates())
 				return;

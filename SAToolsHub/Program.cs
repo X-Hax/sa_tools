@@ -12,19 +12,19 @@ using SAToolsHub.Updater;
 namespace SAToolsHub
 {
 
-    static class Program
-    {
+	static class Program
+	{
 		private const string pipeName = "sa-tools";
 
 		static internal string[] Arguments { get; set; }
-        public static SAToolsHub toolsHub;
+		public static SAToolsHub toolsHub;
 		private static readonly Mutex mutex = new Mutex(true, pipeName);
 
 		[STAThread]
-        static void Main(string[] args)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+		static void Main(string[] args)
+		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
 
 			bool alreadyRunning;
 			try { alreadyRunning = !mutex.WaitOne(0, true); }
@@ -66,29 +66,29 @@ namespace SAToolsHub
 			Application.Run(new SAToolsHub());
 		}
 
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            if (toolsHub != null)
-            {
-                Exception ex = (Exception)e.ExceptionObject;
-                string errDesc = "SA Tools Hub has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
-                    "If you wish to report a bug, please include the following in your report:";
-                SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, ex.ToString());
-                DialogResult dgresult = report.ShowDialog(toolsHub);
-                switch (dgresult)
-                {
-                    case DialogResult.Abort:
-                    case DialogResult.OK:
-                        Application.Exit();
-                        break;
-                }
-            }
-            else
-            {
-                string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAToolsHub.log";
-                System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
-                MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA Tools Hub Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-    }
+		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			if (toolsHub != null)
+			{
+				Exception ex = (Exception)e.ExceptionObject;
+				string errDesc = "SA Tools Hub has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
+					"If you wish to report a bug, please include the following in your report:";
+				SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, ex.ToString());
+				DialogResult dgresult = report.ShowDialog(toolsHub);
+				switch (dgresult)
+				{
+					case DialogResult.Abort:
+					case DialogResult.OK:
+						Application.Exit();
+						break;
+				}
+			}
+			else
+			{
+				string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAToolsHub.log";
+				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
+				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA Tools Hub Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+	}
 }

@@ -10,6 +10,7 @@ using SAModel.Direct3D.TextureSystem;
 using SplitTools;
 using Pfim;
 using System.Linq;
+using SAEditorCommon.ProjectManagement;
 
 namespace SA2StageSelEdit
 {
@@ -43,95 +44,139 @@ namespace SA2StageSelEdit
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+			if (Program.sapFile != null)
+				openFile(Program.sapFile);
 		}
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog fd = new OpenFileDialog() { DefaultExt = "ini", Filter = "INI Files|*.ini" })
-                if (fd.ShowDialog(this) == DialogResult.OK)
-                {
-                    IniData ini = IniSerializer.Deserialize<IniData>(fd.FileName);
-                    filename = Path.Combine(Path.GetDirectoryName(fd.FileName),
-                        ini.Files.First((item) => item.Value.Type == "stageselectlist").Value.Filename);
-                    levels = new List<StageSelectLevel>(StageSelectLevelList.Load(filename));
-                    string resdir = Path.Combine(Path.GetDirectoryName(fd.FileName), ini.SystemFolder);
-                    using (MemoryStream str = new MemoryStream(
-                        new PAKFile(Path.Combine(resdir, @"SOC\stageMapBG.pak")).Entries.Find(
-                        (a) => a.Name.Equals(@"stagemapbg\stagemap.dds")).Data))
-                        bgtex = LoadDDS(str);
-                    if (File.Exists(Path.Combine(resdir, @"PRS\stageMap.pak")))
-                    {
-                        PAKFile pakf = new PAKFile(Path.Combine(resdir, @"PRS\stageMap.pak"));
-                        byte[] inf = pakf.Entries.Find((a) => a.Name.Equals(@"stagemap\stagemap.inf")).Data;
-                        uitexs = new Bitmap[inf.Length / 0x3C];
-                        for (int i = 0; i < uitexs.Length; i++)
-                            using (MemoryStream str = new MemoryStream(pakf.Entries.Find(
-                                (a) => a.Name.Equals(@"stagemap\" + Encoding.ASCII.GetString(inf, i * 0x3C, 0x1c).TrimEnd('\0') + ".dds")).Data))
-                                uitexs[i] = LoadDDS(str);
-                    }
-                    else
-                        uitexs = TextureArchive.GetTextures(Path.Combine(resdir, "stageMap.prs")).Select((tex) => tex.Image).ToArray();
-                    saveToolStripMenuItem.Enabled = panel1.Enabled = panel2.Enabled = true;
-                    selected = 0;
-                    level.SelectedIndex = (int)levels[selected].Level;
-                    character.SelectedIndex = (int)levels[selected].Character;
-                    column.Value = levels[selected].Column;
-                    row.Value = levels[selected].Row;
-                    DrawLevel();
-                }
-        }
+		void openFile(string projFileString)
+		{
+			if (projFileString != null)
+			{
+				Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFileString(projFileString);
+				if (projFile.GameInfo.GameName == "SA2PC")
+				{
+					string projFolder = projFile.GameInfo.ProjectFolder;
+					string gameFolder = "";
+					if (projFile.GameInfo.GameDataFolder != null)
+						gameFolder = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
+					else
+						gameFolder = Path.Combine(projFile.GameInfo.GameFolder, "resource\\gd_PC");
 
-        private bool CheckIfDDS(Stream input)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                input.CopyTo(ms);
-                byte[] dds = ms.ToArray();
-                uint check = BitConverter.ToUInt32(dds.ToArray(), 0);
-                if (check == 0x20534444) // DDS header
-                    return true;
-                else
-                    return false;
-            }
-        }
+					if (File.Exists(Path.Combine(projFolder, "ADVERTISE_data.ini")))
+					{
+						IniData ini = IniSerializer.Deserialize<IniData>(Path.Combine(projFolder, "ADVERTISE_data.ini"));
+						filename = Path.Combine(projFolder, ini.Files.First((item) => item.Value.Type == "stageselectlist").Value.Filename);
+						levels = new List<StageSelectLevel>(StageSelectLevelList.Load(filename));
+						string socFilePath = "";
+						string prsFilePath = "";
 
-        private Bitmap LoadDDS(MemoryStream str)
-        {
-            // Check if the texture is DDS
-            if (CheckIfDDS(str))
-            {
-                str.Seek(0, SeekOrigin.Begin);
-                PixelFormat pxformat;
-                var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
-                switch (image.Format)
-                {
-                    case Pfim.ImageFormat.Rgba32:
-                        pxformat = PixelFormat.Format32bppArgb;
-                        break;
-                    case Pfim.ImageFormat.Rgb24:
-                        pxformat = PixelFormat.Format24bppRgb;
-                        break;
-                    case Pfim.ImageFormat.R5g5b5:
-                        pxformat = PixelFormat.Format16bppRgb555;
-                        break;
-                    case Pfim.ImageFormat.R5g5b5a1:
-                        pxformat = PixelFormat.Format16bppArgb1555;
-                        break;
-                    case Pfim.ImageFormat.R5g6b5:
-                        pxformat = PixelFormat.Format16bppRgb565;
-                        break;
-                    default:
-                        throw new Exception("Unsupported image format: " + image.Format.ToString());
-                }
-                var bitmap = new Bitmap(image.Width, image.Height, pxformat);
-                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
-                System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-                bitmap.UnlockBits(bmpData);
-                return bitmap;
-            }
-            else // Not DDS
-                return new Bitmap(str);
-        }
+						if (projFile.GameInfo.GameName == "SA2PC")
+						{
+							if (File.Exists(Path.Combine(projFolder, "gd_PC\\SOC\\stageMapBG.pak")))
+								socFilePath = Path.Combine(projFolder, "gd_PC\\SOC\\stageMapBG.pak");
+							else
+								socFilePath = Path.Combine(gameFolder, "SOC\\stageMapBG.pak");
+
+							if (File.Exists(Path.Combine(projFolder, "gd_PC\\PRS\\stageMap.pak")))
+								prsFilePath = Path.Combine(projFolder, "gd_PC\\PRS\\stageMap.pak");
+							else
+								prsFilePath = Path.Combine(gameFolder, "PRS\\stageMap.pak");
+						}
+						else
+						{
+							socFilePath = Path.Combine(gameFolder, "stageMapBG.prs");
+							prsFilePath = Path.Combine(gameFolder, "stageMap.prs");
+						}
+
+						PAKFile socpak = new PAKFile(socFilePath);
+						using (MemoryStream str = new MemoryStream(socpak.Entries.Find((a) => a.Name.Equals("stagemap.dds")).Data))
+							bgtex = LoadDDS(str);
+
+						if (File.Exists(prsFilePath))
+						{
+							PAKFile pakf = new PAKFile(prsFilePath);
+							byte[] inf = pakf.Entries.Find((a) => a.Name.Equals("stagemap.inf")).Data;
+							uitexs = new Bitmap[inf.Length / 0x3C];
+							for (int i = 0; i < uitexs.Length; i++)
+								using (MemoryStream str = new MemoryStream(pakf.Entries.Find(
+									(a) => a.Name.Equals(Encoding.ASCII.GetString(inf, i * 0x3C, 0x1c).TrimEnd('\0') + ".dds")).Data))
+									uitexs[i] = LoadDDS(str);
+						}
+						else
+							uitexs = TextureArchive.GetTextures(prsFilePath).Select((tex) => tex.Image).ToArray();
+						saveToolStripMenuItem.Enabled = panel1.Enabled = panel2.Enabled = true;
+						selected = 0;
+						level.SelectedIndex = (int)levels[selected].Level;
+						character.SelectedIndex = (int)levels[selected].Character;
+						column.Value = levels[selected].Column;
+						row.Value = levels[selected].Row;
+						DrawLevel();
+					}
+				}
+				else
+					MessageBox.Show("The opened project file is not ", "Incorrect File", MessageBoxButtons.OK);
+			}
+			Program.sapFile = "";
+		}
+
+		private void openToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog fd = new OpenFileDialog() { DefaultExt = "sap", Filter = "SA Project File|*.sap" };
+			if (fd.ShowDialog(this) == DialogResult.OK)
+				openFile(fd.FileName);
+		}
+
+		private bool CheckIfDDS(Stream input)
+		{
+			using (MemoryStream ms = new MemoryStream())
+			{
+				input.CopyTo(ms);
+				byte[] dds = ms.ToArray();
+				uint check = BitConverter.ToUInt32(dds.ToArray(), 0);
+				if (check == 0x20534444) // DDS header
+					return true;
+				else
+					return false;
+			}
+		}
+
+		private Bitmap LoadDDS(MemoryStream str)
+		{
+			// Check if the texture is DDS
+			if (CheckIfDDS(str))
+			{
+				str.Seek(0, SeekOrigin.Begin);
+				PixelFormat pxformat;
+				var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+				switch (image.Format)
+				{
+					case Pfim.ImageFormat.Rgba32:
+						pxformat = PixelFormat.Format32bppArgb;
+						break;
+					case Pfim.ImageFormat.Rgb24:
+						pxformat = PixelFormat.Format24bppRgb;
+						break;
+					case Pfim.ImageFormat.R5g5b5:
+						pxformat = PixelFormat.Format16bppRgb555;
+						break;
+					case Pfim.ImageFormat.R5g5b5a1:
+						pxformat = PixelFormat.Format16bppArgb1555;
+						break;
+					case Pfim.ImageFormat.R5g6b5:
+						pxformat = PixelFormat.Format16bppRgb565;
+						break;
+					default:
+						throw new Exception("Unsupported image format: " + image.Format.ToString());
+				}
+				var bitmap = new Bitmap(image.Width, image.Height, pxformat);
+				BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
+				System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+				bitmap.UnlockBits(bmpData);
+				return bitmap;
+			}
+			else // Not DDS
+				return new Bitmap(str);
+		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
