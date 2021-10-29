@@ -1,4 +1,4 @@
-﻿namespace SonicRetro.SAModel.SAMDL
+﻿namespace SAModel.SAMDL
 {
     partial class SA2MDLDialog
     {

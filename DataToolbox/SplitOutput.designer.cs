@@ -1,4 +1,4 @@
-namespace SonicRetro.SAModel.DataToolbox
+namespace SAModel.DataToolbox
 {
 	partial class SplitProgress
 	{

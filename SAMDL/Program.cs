@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAMDL
+namespace SAModel.SAMDL
 {
 	static class Program
 	{

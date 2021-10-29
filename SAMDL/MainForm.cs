@@ -7,15 +7,17 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Direct3D9;
-using SonicRetro.SAModel.Direct3D;
-using SonicRetro.SAModel.Direct3D.TextureSystem;
-using SonicRetro.SAModel.SAEditorCommon;
-using SonicRetro.SAModel.SAEditorCommon.UI;
+using SAModel.Direct3D;
+using SAModel.Direct3D.TextureSystem;
+using SAModel.SAEditorCommon;
+using SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
-using Mesh = SonicRetro.SAModel.Direct3D.Mesh;
+using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
+using SplitTools;
+using SAEditorCommon.ProjectManagement;
 
-namespace SonicRetro.SAModel.SAMDL
+namespace SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
@@ -26,6 +28,8 @@ namespace SonicRetro.SAModel.SAMDL
 		bool mouseWrapScreen = false;
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
+        string currentProject; // Path to currently loaded project, if it exists
+        int lastProjectModeCategory = 0; // Last selected category in the model list
 
 		public MainForm()
 		{
@@ -63,15 +67,15 @@ namespace SonicRetro.SAModel.SAMDL
 		private void SAMDL_DragDrop(object sender, DragEventArgs e)
 		{
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-			LoadModelList(files);
+			LoadFileList(files);
 		}
 
-		public void LoadModelList(string[] files, bool cmdLoad = false)
+		public void LoadFileList(string[] files, bool cmdLoad = false)
 		{
-			bool modelLoaded = false; //We can only load one model at once for now. Set to true when user loads first file and ignore others.
-			bool modelLoadedWarning = false; //Flag so we can warn users that they should do one model at a time.
+			bool modelLoaded = false; // We can only load one model at once for now. Set to true when user loads first file and ignore others.
+			bool modelLoadedWarning = false; // Flag so we can warn users that they should do one model at a time.
 			
-			List<string> modelFiles = new List<string>(); //For multi support, if that happens
+			List<string> modelFiles = new List<string>(); // For multi support, if that happens
 			List<string> modelImportFiles = new List<string>();
 			List<string> animFiles = new List<string>();
 
@@ -125,9 +129,17 @@ namespace SonicRetro.SAModel.SAMDL
                     case ".pak":
                     case ".prs":
                     case ".pvr":
+                        AddSingleTexture(file);
+                        break;
                     case ".gvr":
                     case ".txt":
                         LoadTextures(file);
+                        break;
+                    case ".tls":
+                        LoadTexlistFile(file);
+                        break;
+                    case ".sap":
+                        LoadFile(file);
                         break;
                     default:
 						break;
@@ -196,9 +208,11 @@ namespace SonicRetro.SAModel.SAMDL
 		int animframe = 0;
 		Mesh[] meshes;
 		string TexturePackName;
-		BMPInfo[] TextureInfo;
-		Texture[] Textures;
-		ModelFileDialog modelinfo = new ModelFileDialog();
+        TexnameArray TexList; // Current texlist
+        BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
+        BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
+        Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
+        ModelFileDialog modelinfo = new ModelFileDialog();
 		NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
 		OnScreenDisplay osd;
@@ -219,10 +233,6 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-            if (Environment.Is64BitOperatingSystem)
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x64.dll"));
-            else
-                Assimp.Unmanaged.AssimpLibrary.Instance.LoadLibrary(Path.Combine(Application.StartupPath, "lib", "assimp_x86.dll"));
             log.DeleteLogFile();
             log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
             log.Add("Build Date: ");
@@ -287,7 +297,7 @@ namespace SonicRetro.SAModel.SAMDL
 			modelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Red);
 			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
-				LoadModelList(Program.Arguments, true);
+				LoadFileList(Program.Arguments, true);
 		}
 
 		void ShowWelcomeScreen()
@@ -306,7 +316,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 			welcomeForm.ThisToolLink.LinkClicked += (object link, LinkLabelLinkClickedEventArgs linkEventArgs) =>
 			{
-				welcomeForm.GoToSite("https://github.com/sonicretro/sa_tools/wiki/SAMDL");
+				welcomeForm.GoToSite("https://github.com/X-Hax/sa_tools/wiki/SAMDL");
 			};
 
 			welcomeForm.ShowDialog();
@@ -329,8 +339,8 @@ namespace SonicRetro.SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
-			};
+				Filter = "All supported files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel;*.sap|All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+            };
 			goto loadfiledlg;
 		loadfiledlg:
 			DialogResult result = a.ShowDialog(this);
@@ -491,6 +501,56 @@ namespace SonicRetro.SAModel.SAMDL
 
 			return -1;
 		}
+		
+		/*
+		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
+		{
+			List<int> positions = new List<int>();
+			int patternLength = pattern.Length;
+			int totalLength = bytes.Length;
+			byte firstMatchByte = pattern[0];
+			for (int i = 0; i < totalLength; i++)
+			{
+				if (firstMatchByte == bytes[i] && totalLength - i >= patternLength)
+				{
+					byte[] match = new byte[patternLength];
+					Array.Copy(bytes, i, match, 0, patternLength);
+					if (match.SequenceEqual<byte>(pattern))
+					{
+						positions.Add(i);
+						i += patternLength - 1;
+					}
+				}
+			}
+			return positions;
+		}
+
+		public List<NJS_MOTION> LoadNMDM(byte[] file)
+		{
+			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			byte[] nmdmByte = new byte[] { 0x4E, 0x4D, 0x44, 0x4D };
+			List<int> nmdmAddr = SearchBytePattern(nmdmByte, file);
+
+			if (nmdmAddr.Count != 0)
+			{
+				foreach (int addr in nmdmAddr)
+				{
+					int nmdmLength = ByteConverter.ToInt32(file, addr + 0x4);
+					byte[] newFile = new byte[nmdmLength];
+					Array.Copy(file, (addr + 8), newFile, 0, newFile.Length);
+
+					string njmName = ("motion_" + addr.ToString());
+					Dictionary<int, string> label = new Dictionary<int, string>();
+					label.Add(0, njmName);
+					NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
+
+					motions.Add(njm);
+				}
+			}
+			
+			return motions;
+		}
+		*/
 
 		private void LoadFile(string filename, bool cmdLoad = false)
 		{
@@ -508,259 +568,273 @@ namespace SonicRetro.SAModel.SAMDL
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			animnum = -1;
 			animframe = 0;
-			if (ModelFile.CheckModelFile(filename))
-			{
-				try
-				{
-					modelFile = new ModelFile(filename);
-					outfmt = modelFile.Format;
-					if (modelFile.Model.Sibling != null)
-					{
-						model = new NJS_OBJECT { Name = "Root" };
-						model.AddChild(modelFile.Model);
-						rootSiblingMode = true;
-					}
-					else
-					{
-						model = modelFile.Model;
-						rootSiblingMode = false;
-					}
-					animations = new List<NJS_MOTION>(modelFile.Animations);
-					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
-				}
-				catch (Exception ex)
-				{
-					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
-					string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
-						"Please check the model's type and address and try again.\n\n" +
-						"If you wish to report a bug, please include the model file and this information\n" +
-						"in your report.";
-					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
-					log.WriteLog();
-					report.ShowDialog();
-					return;
-				}
-			}
-			else if (extension.Equals(".nj") || extension.Equals(".gj"))
-			{
-				byte[] file = File.ReadAllBytes(filename);
-				int ninjaDataOffset = 0;
-				bool basicModel = false;
+            // Model file
+            if (ModelFile.CheckModelFile(filename))
+            {
+                try
+                {
+                    modelFile = new ModelFile(filename);
+                    outfmt = modelFile.Format;
+                    if (modelFile.Model.Sibling != null)
+                    {
+                        model = new NJS_OBJECT { Name = "Root" };
+                        model.AddChild(modelFile.Model);
+                        rootSiblingMode = true;
+                    }
+                    else
+                    {
+                        model = modelFile.Model;
+                        rootSiblingMode = false;
+                    }
+                    animations = new List<NJS_MOTION>(modelFile.Animations);
+                    if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+                    string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
+                        "Please check the model's type and address and try again.\n\n" +
+                        "If you wish to report a bug, please include the model file and this information\n" +
+                        "in your report.";
+                    ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
+                    log.WriteLog();
+                    report.ShowDialog();
+                    return;
+                }
+            }
+            // Ninja/Ginja model file
+            else if (extension.Equals(".nj") || extension.Equals(".gj"))
+            {
+                byte[] file = File.ReadAllBytes(filename);
+                int ninjaDataOffset = 0;
+                bool basicModel = false;
 
-				string magic = System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
+                string magic = System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
 
-				switch (magic)
-				{
-					case "GJTL":
-					case "NJTL":
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-						int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
-						int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
-						int texListOffset = POF0Offset + POF0Size + 0x8;
-						ninjaDataOffset = texListOffset + 0x8;
-						//Get Texture Listings for if SA Tools gets that implemented
-						int texCount = ByteConverter.ToInt32(file, 0xC);
-						int texOffset = 0;
-						List<string> texNames = new List<string>();
+                switch (magic)
+                {
+                    case "GJTL":
+                    case "NJTL":
+                        ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+                        int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
+                        int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
+                        int texListOffset = POF0Offset + POF0Size + 0x8;
+                        ninjaDataOffset = texListOffset + 0x8;
+                        //Get Texture Listings for if SA Tools gets that implemented
+                        int texCount = ByteConverter.ToInt32(file, 0xC);
+                        int texOffset = 0;
+                        List<string> texNames = new List<string>();
 
-						for (int i = 0; i < texCount; i++)
-						{
-							int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
+                        for (int i = 0; i < texCount; i++)
+                        {
+                            int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
 
-							//Read null terminated U8String
-							List<byte> u8String = new List<byte>();
-							byte u8Char = (file[textAddress]);
-							int j = 0;
-							while (u8Char != 0)
-							{
-								u8String.Add(u8Char);
-								j++;
-								u8Char = (file[textAddress + j]);
-							}
-							texNames.Add(System.Text.Encoding.UTF8.GetString(u8String.ToArray()));
+                            // Read null terminated string
+                            List<byte> namestring = new List<byte>();
+                            byte namechar = (file[textAddress]);
+                            int j = 0;
+                            while (namechar != 0)
+                            {
+                                namestring.Add(namechar);
+                                j++;
+                                namechar = (file[textAddress + j]);
+                            }
+                            texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
 
-							texOffset += 0xC;
-						}
-						break;
-					case "GJCM":
-					case "NJCM":
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-						ninjaDataOffset = 0x8;
-						break;
-					case "NJBM":
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-						ninjaDataOffset = 0x8;
-						basicModel = true;
-						break;
-					default:
-						MessageBox.Show("Incorrect format!");
-						return;
-				}
+                            texOffset += 0xC;
+                        }
+                        TexList = new TexnameArray(texNames.ToArray());
 
-				//Set modelinfo parameters
-				modelinfo.CheckBox_BigEndian.Checked = ByteConverter.BigEndian;
-				modelinfo.RadioButton_Object.Checked = true;
-				modelinfo.NumericUpDown_ObjectAddress.Value = 0;
-				if (basicModel)
-				{
-					modelinfo.ComboBox_Format.SelectedIndex = 0;
-				} else if (extension.Equals(".nj"))
-				{
-					modelinfo.ComboBox_Format.SelectedIndex = 2;
-				} else if (extension.Equals(".gj"))
-				{
-					modelinfo.ComboBox_Format.SelectedIndex = 3;
-				}
+                        break;
+                    case "GJCM":
+                    case "NJCM":
+                        ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+                        ninjaDataOffset = 0x8;
+                        break;
+                    case "NJBM":
+                        ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+                        ninjaDataOffset = 0x8;
+                        basicModel = true;
+                        break;
+                    default:
+                        MessageBox.Show("Incorrect format!");
+                        return;
+                }
 
-				modelinfo.NumericUpDown_MotionAddress.Value = 0;
-				modelinfo.CheckBox_Memory_Object.Checked = false;
-				modelinfo.CheckBox_Memory_Motion.Checked = false;
+                //Set modelinfo parameters
+                modelinfo.CheckBox_BigEndian.Checked = ByteConverter.BigEndian;
+                modelinfo.RadioButton_Object.Checked = true;
+                modelinfo.NumericUpDown_ObjectAddress.Value = 0;
+                if (basicModel)
+                {
+                    modelinfo.ComboBox_Format.SelectedIndex = 0;
+                }
+                else if (extension.Equals(".nj"))
+                {
+                    modelinfo.ComboBox_Format.SelectedIndex = 2;
+                }
+                else if (extension.Equals(".gj"))
+                {
+                    modelinfo.ComboBox_Format.SelectedIndex = 3;
+                }
 
-				modelinfo.NumericUpDown_Key.Value = 0;
-				modelinfo.NumericUpDown_Key.Value = 0;
+                modelinfo.NumericUpDown_MotionAddress.Value = 0;
+                modelinfo.CheckBox_Memory_Object.Checked = false;
+                modelinfo.CheckBox_Memory_Motion.Checked = false;
 
-				//Get rid of the junk so that we can treat it like what SAMDL expects
+                modelinfo.NumericUpDown_Key.Value = 0;
+                modelinfo.NumericUpDown_Key.Value = 0;
 
-				byte[] newFile = new byte[file.Length - ninjaDataOffset];
-				Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
+                //Get rid of the junk so that we can treat it like what SAMDL expects
 
-				LoadBinFile(newFile);
-				animations = new List<NJS_MOTION>();
-			}
-			else
-			{
-				byte[] file = File.ReadAllBytes(filename);
-				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					file = FraGag.Compression.Prs.Decompress(file);
-				ByteConverter.BigEndian = false;
-				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
-				if (baseaddr.HasValue)
-				{
-					modelinfo.NumericUpDown_Key.Value = baseaddr.Value;
-					modelinfo.NumericUpDown_Key.Enabled = false;
-					modelinfo.ComboBox_FileType.Enabled = false;
-					modelinfo.CheckBox_BigEndian.Checked = modelinfo.CheckBox_BigEndian.Enabled = false;
-					modelinfo.ComboBox_Format.SelectedIndex = 1;
-				}
-				else if (extension.Equals(".rel", StringComparison.OrdinalIgnoreCase))
-				{
-					ByteConverter.BigEndian = true;
-					SA_Tools.HelperFunctions.FixRELPointers(file);
-					modelinfo.NumericUpDown_Key.Value = 0;
-					modelinfo.NumericUpDown_Key.Enabled = false;
-					modelinfo.ComboBox_FileType.Enabled = false;
-					modelinfo.CheckBox_BigEndian.Enabled = false;
-					modelinfo.CheckBox_BigEndian.Checked = true;
-				}
-				else
-				{
-					int u = CheckKnownFile(filename);
-					if (u == -5)
-					{
-						modelinfo.NumericUpDown_Key.Value = 0xC600000u;
-						modelinfo.ComboBox_Format.SelectedIndex = 2;
-					}
-					else if (u == -4)
-					{
-						modelinfo.NumericUpDown_Key.Value = 0xCB80000u;
-						modelinfo.ComboBox_Format.SelectedIndex = 0;
-					}
-					else if (u == -3)
-					{
-						modelinfo.RadioButton_SA2BMDL.Checked = true;
-					}
-					else if (u == -2)
-					{
-						modelinfo.RadioButton_SA2MDL.Checked = true;
-					}
-					else if (u != -1)
-					{
-						modelinfo.NumericUpDown_Key.Value = KnownBinaryFiles[u].key;
-						modelinfo.ComboBox_Format.SelectedIndex = KnownBinaryFiles[u].data_type;
-					}
-					else modelinfo.ComboBox_Format.SelectedIndex = 1;
-					if (modelinfo.RadioButton_Binary.Checked)
-					{
-						modelinfo.NumericUpDown_Key.Enabled = true;
-						modelinfo.ComboBox_FileType.Enabled = true;
-						modelinfo.CheckBox_BigEndian.Enabled = true;
-					}
-				}
-				modelinfo.ShowDialog(this);
-				if (modelinfo.DialogResult == DialogResult.OK)
-				{
-					if (modelinfo.RadioButton_Binary.Checked)
-					{
-						log.Add("Loading model from binary file " + filename + ", key: " + uint.Parse(modelinfo.NumericUpDown_Key.Value.ToString()).ToCHex() + ", address: " + uint.Parse(modelinfo.NumericUpDown_ObjectAddress.Value.ToString()).ToCHex() + ", motion at: " + uint.Parse(modelinfo.NumericUpDown_MotionAddress.Value.ToString()).ToCHex());
-						LoadBinFile(file);
-					}
-					else
-					{
-						ModelFormat fmt = outfmt = ModelFormat.Chunk;
-						ByteConverter.BigEndian = modelinfo.RadioButton_SA2BMDL.Checked;
-						using (SA2MDLDialog dlg = new SA2MDLDialog())
-						{
-							int address = 0;
-							SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
-							int i = ByteConverter.ToInt32(file, address);
-							while (i != -1)
-							{
-								sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
-								address += 8;
-								i = ByteConverter.ToInt32(file, address);
-							}
-							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-								dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
-							dlg.ShowDialog(this);
-							i = 0;
-							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-							{
-								if (i == dlg.modelChoice.SelectedIndex)
-								{
-									model = item.Value;
-									break;
-								}
-								i++;
-							}
-							if (dlg.checkBox1.Checked)
-							{
-								using (OpenFileDialog anidlg = new OpenFileDialog()
-								{
-									DefaultExt = "bin",
-									Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
-								})
-								{
-									if (anidlg.ShowDialog(this) == DialogResult.OK)
-									{
-										byte[] anifile = File.ReadAllBytes(anidlg.FileName);
-										if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-											anifile = FraGag.Compression.Prs.Decompress(anifile);
-										address = 0;
-										SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
-										i = ByteConverter.ToInt32(file, address);
-										while (i != -1)
-										{
-											anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
-											address += 8;
-											i = ByteConverter.ToInt32(file, address);
-										}
-										animations = new List<NJS_MOTION>(anis.Values);
-										if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
-									}
-								}
-							}
-						}
-					}
-				}
-				else return;
-			}
+                byte[] newFile = new byte[file.Length - ninjaDataOffset];
+                Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
+
+                LoadBinFile(newFile);
+                animations = new List<NJS_MOTION>();
+                if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+            }
+            // Project file
+            else if (extension.Equals(".sap"))
+            {
+                LoadProject(filename);
+                return;
+            }
+            // Generic binary
+            else
+            {
+                byte[] file = File.ReadAllBytes(filename);
+                if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                    file = FraGag.Compression.Prs.Decompress(file);
+                ByteConverter.BigEndian = false;
+                uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
+                if (baseaddr.HasValue)
+                {
+                    modelinfo.NumericUpDown_Key.Value = baseaddr.Value;
+                    modelinfo.NumericUpDown_Key.Enabled = false;
+                    modelinfo.ComboBox_FileType.Enabled = false;
+                    modelinfo.CheckBox_BigEndian.Checked = modelinfo.CheckBox_BigEndian.Enabled = false;
+                    modelinfo.ComboBox_Format.SelectedIndex = 1;
+                }
+                else if (extension.Equals(".rel", StringComparison.OrdinalIgnoreCase))
+                {
+                    ByteConverter.BigEndian = true;
+                    SplitTools.HelperFunctions.FixRELPointers(file);
+                    modelinfo.NumericUpDown_Key.Value = 0;
+                    modelinfo.NumericUpDown_Key.Enabled = false;
+                    modelinfo.ComboBox_FileType.Enabled = false;
+                    modelinfo.CheckBox_BigEndian.Enabled = false;
+                    modelinfo.CheckBox_BigEndian.Checked = true;
+                }
+                else
+                {
+                    int u = CheckKnownFile(filename);
+                    if (u == -5)
+                    {
+                        modelinfo.NumericUpDown_Key.Value = 0xC600000u;
+                        modelinfo.ComboBox_Format.SelectedIndex = 2;
+                    }
+                    else if (u == -4)
+                    {
+                        modelinfo.NumericUpDown_Key.Value = 0xCB80000u;
+                        modelinfo.ComboBox_Format.SelectedIndex = 0;
+                    }
+                    else if (u == -3)
+                    {
+                        modelinfo.RadioButton_SA2BMDL.Checked = true;
+                    }
+                    else if (u == -2)
+                    {
+                        modelinfo.RadioButton_SA2MDL.Checked = true;
+                    }
+                    else if (u != -1)
+                    {
+                        modelinfo.NumericUpDown_Key.Value = KnownBinaryFiles[u].key;
+                        modelinfo.ComboBox_Format.SelectedIndex = KnownBinaryFiles[u].data_type;
+                    }
+                    else modelinfo.ComboBox_Format.SelectedIndex = 1;
+                    if (modelinfo.RadioButton_Binary.Checked)
+                    {
+                        modelinfo.NumericUpDown_Key.Enabled = true;
+                        modelinfo.ComboBox_FileType.Enabled = true;
+                        modelinfo.CheckBox_BigEndian.Enabled = true;
+                    }
+                }
+                modelinfo.ShowDialog(this);
+                if (modelinfo.DialogResult == DialogResult.OK)
+                {
+                    if (modelinfo.RadioButton_Binary.Checked)
+                    {
+                        log.Add("Loading model from binary file " + filename + ", key: " + uint.Parse(modelinfo.NumericUpDown_Key.Value.ToString()).ToCHex() + ", address: " + uint.Parse(modelinfo.NumericUpDown_ObjectAddress.Value.ToString()).ToCHex() + ", motion at: " + uint.Parse(modelinfo.NumericUpDown_MotionAddress.Value.ToString()).ToCHex());
+                        LoadBinFile(file);
+                    }
+                    else
+                    {
+                        ModelFormat fmt = outfmt = ModelFormat.Chunk;
+                        ByteConverter.BigEndian = modelinfo.RadioButton_SA2BMDL.Checked;
+                        using (SA2MDLDialog dlg = new SA2MDLDialog())
+                        {
+                            int address = 0;
+                            SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
+                            int i = ByteConverter.ToInt32(file, address);
+                            while (i != -1)
+                            {
+                                sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
+                                address += 8;
+                                i = ByteConverter.ToInt32(file, address);
+                            }
+                            foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+                                dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
+                            dlg.ShowDialog(this);
+                            i = 0;
+                            foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+                            {
+                                if (i == dlg.modelChoice.SelectedIndex)
+                                {
+                                    model = item.Value;
+                                    break;
+                                }
+                                i++;
+                            }
+                            if (dlg.checkBox1.Checked)
+                            {
+                                using (OpenFileDialog anidlg = new OpenFileDialog()
+                                {
+                                    DefaultExt = "bin",
+                                    Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
+                                })
+                                {
+                                    if (anidlg.ShowDialog(this) == DialogResult.OK)
+                                    {
+                                        byte[] anifile = File.ReadAllBytes(anidlg.FileName);
+                                        if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+                                            anifile = FraGag.Compression.Prs.Decompress(anifile);
+                                        address = 0;
+                                        SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
+                                        i = ByteConverter.ToInt32(file, address);
+                                        while (i != -1)
+                                        {
+                                            anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
+                                            address += 8;
+                                            i = ByteConverter.ToInt32(file, address);
+                                        }
+                                        animations = new List<NJS_MOTION>(anis.Values);
+                                        if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else return;
+            }
 
             currentFileName = filename;
 
             RebuildModelCache();
             loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animations != null && animations.Count > 0);
-			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 			if (cmdLoad == false)
 			{
@@ -951,7 +1025,7 @@ namespace SonicRetro.SAModel.SAMDL
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animations[u].Name + ".njm";
-							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}
@@ -967,9 +1041,9 @@ namespace SonicRetro.SAModel.SAMDL
 						List<byte> njModel = new List<byte>();
 						List<string> texList = new List<string>();
 
-						if (TextureInfo != null)
+						if (TextureInfoCurrent != null)
 						{
-							foreach (BMPInfo tex in TextureInfo)
+							foreach (BMPInfo tex in TextureInfoCurrent)
 							{
 								if (tex != null)
 								{
@@ -1132,7 +1206,7 @@ namespace SonicRetro.SAModel.SAMDL
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
-			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			SelectedItemChanged();
 
 			currentFileName = "";
@@ -1189,7 +1263,7 @@ namespace SonicRetro.SAModel.SAMDL
 			string look = "Look";
 			string zoom = "Zoom";
 			if (!string.IsNullOrEmpty(currentFileName))
-				Text = "SAMDL: " + currentFileName;
+				Text = "SAMDL: " + Path.GetFullPath(currentFileName);
 			else
 				Text = "SAMDL";
 			cameraPosLabel.Text = $"Camera X: " + cam.Position.X.ToString("0.000") + " Y: " + cam.Position.Y.ToString("0.000") + " Z: " + cam.Position.Z.ToString("0.000");
@@ -1288,7 +1362,7 @@ namespace SonicRetro.SAModel.SAMDL
 			if (showNodesToolStripMenuItem.Checked)
 				DrawNodes(model, transform);
 
-			if (showNodeConnectionsToolStripMenuItem.Checked)
+			if (showNodeConnectionsToolStripMenuItem.Checked && model.CountAnimated() > 1)
 				DrawNodeConnections(model, transform);
 			osd.ProcessMessages();
 			d3ddevice.EndScene(); //all drawings before this line
@@ -1576,17 +1650,17 @@ namespace SonicRetro.SAModel.SAMDL
 				case ("Zoom to target"):
 					if (selectedObject != null)
 					{
-						BoundingSphere bounds = (selectedObject.Attach != null) ? selectedObject.Attach.Bounds :
+						BoundingSphere bounds = (selectedObject.Attach != null) ? 
+                            new BoundingSphere(selectedObject.Attach.Bounds.Center, selectedObject.Attach.Bounds.Radius) :
 							new BoundingSphere(selectedObject.Position.X, selectedObject.Position.Y, selectedObject.Position.Z, 10);
-
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
 					else
 					{
-						BoundingSphere bounds = (model.Attach != null) ? model.Attach.Bounds :
+						BoundingSphere bounds = (model.Attach != null) ? 
+                            new BoundingSphere(model.Attach.Bounds.Center, model.Attach.Bounds.Radius) :
 							new BoundingSphere(model.Position.X, model.Position.Y, model.Position.Z, 10);
-
 						bounds.Center += model.Position;
 						cam.MoveToShowBounds(bounds);
 					}
@@ -1788,19 +1862,51 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
 		}
-		#endregion
+        #endregion
+
+        private void UpdateTexlist()
+        {
+            if (TextureInfo == null)
+            {
+                unloadTextureToolStripMenuItem.Enabled = false;
+                return;
+            }
+            if (TexList != null)
+            {
+                List<Texture> textures = new List<Texture>();
+                List<BMPInfo> texinfo = new List<BMPInfo>();
+                for (int i = 0; i < TexList.TextureNames.Length; i++)
+                    for (int j = 0; j < TextureInfo.Length; j++)
+                        if (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() || TexList.TextureNames[i] == "empty")
+                        {
+                            texinfo.Add(TextureInfo[j]);
+                            textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
+                            continue;
+                        }
+                Textures = textures.ToArray();
+                TextureInfoCurrent = texinfo.ToArray();
+            }
+            else
+            {
+                TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+                for (int i = 0; i < TextureInfo.Length; i++)
+                    TextureInfoCurrent[i] = TextureInfo[i];
+                Textures = new Texture[TextureInfoCurrent.Length];
+                for (int j = 0; j < TextureInfoCurrent.Length; j++)
+                    Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
+            }
+            unloadTextureToolStripMenuItem.Enabled = true;
+        }
 
 		private void LoadTextures(string filename)
 		{
 			TextureInfo = TextureArchive.GetTextures(filename);
-
 			TexturePackName = Path.GetFileNameWithoutExtension(filename);
-			Textures = new Texture[TextureInfo.Length];
-			for (int j = 0; j < TextureInfo.Length; j++)
-				Textures[j] = TextureInfo[j].Image.ToTexture(d3ddevice);
-
+            TexList = null;
+            UpdateTexlist();
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
-			if (loaded) DrawEntireModel();
+			if (loaded) 
+                DrawEntireModel();
 		}
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1872,9 +1978,9 @@ namespace SonicRetro.SAModel.SAMDL
 						string[] texnames = null;
 						if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
 						{
-							texnames = new string[TextureInfo.Length];
-							for (int i = 0; i < TextureInfo.Length; i++)
-								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+							texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfoCurrent[i].Name);
 							sw.Write("enum {0}TexName", TexturePackName);
 							sw.WriteLine();
 							sw.WriteLine("{");
@@ -2058,7 +2164,7 @@ namespace SonicRetro.SAModel.SAMDL
 					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 					break;
 			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfo))
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent))
 			{
 				dlg.FormUpdated += (s, ev) => DrawEntireModel();
 				dlg.ShowDialog(this);
@@ -2161,7 +2267,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void textureRemappingToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (TextureRemappingDialog dlg = new TextureRemappingDialog(TextureInfo))
+			using (TextureRemappingDialog dlg = new TextureRemappingDialog(TextureInfoCurrent))
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					unsaved = true;
@@ -2270,9 +2376,9 @@ namespace SonicRetro.SAModel.SAMDL
 						string[] texnames = null;
 						if (TexturePackName != null)
 						{
-							texnames = new string[TextureInfo.Length];
-							for (int i = 0; i < TextureInfo.Length; i++)
-								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+							texnames = new string[TextureInfoCurrent.Length];
+							for (int i = 0; i < TextureInfoCurrent.Length; i++)
+								texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfoCurrent[i].Name);
 							sw.Write("enum {0}TexName", TexturePackName);
 							sw.WriteLine();
 							sw.WriteLine("{");
@@ -2290,7 +2396,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false)
 		{
-			if (TextureInfo == null)
+			if (TextureInfoCurrent == null)
 			{
 				using (OpenFileDialog a = new OpenFileDialog() { Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
 				{
@@ -2313,7 +2419,7 @@ namespace SonicRetro.SAModel.SAMDL
             // Collada adds a root node, so use the first child node instead
             if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
                 importnode = scene.RootNode.Children[0];
-            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfo?.Select(t => t.Name).ToArray(), importAsSingle);
+            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfoCurrent?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				modelFile = null;
@@ -2341,7 +2447,7 @@ namespace SonicRetro.SAModel.SAMDL
             RebuildModelCache();
             unsaved = true;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
-			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfo != null;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			SelectedItemChanged();
 			DrawEntireModel();
@@ -2370,9 +2476,9 @@ namespace SonicRetro.SAModel.SAMDL
 			scene.RootNode = n;
 			string rootPath = Path.GetDirectoryName(filename);
 			List<string> texturePaths = new List<string>();
-			if (TextureInfo != null)
+			if (TextureInfoCurrent != null)
 			{
-				foreach (BMPInfo bmp in TextureInfo)
+				foreach (BMPInfo bmp in TextureInfoCurrent)
 				{
 					texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
 					bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
@@ -2426,7 +2532,7 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm|SA Tools Animation Files|*.saanim;*.action|" +
+			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm;*.motions|SA Tools Animation Files|*.saanim;*.action|" +
 																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
@@ -2464,7 +2570,7 @@ namespace SonicRetro.SAModel.SAMDL
 						break;
 					case ".njm":
 						byte[] njmFile = File.ReadAllBytes(fn);
-						ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
+						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(njmFile, 0xC);
 
 						byte[] newFile = new byte[njmFile.Length - 0x8];
 						Array.Copy(njmFile, 0x8, newFile, 0, newFile.Length);
@@ -2496,11 +2602,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 						if (BitConverter.ToInt16(anifile, 0) == 0)
 						{
-							ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt16(anifile, 0);
+							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 0);
 						}
 						else
 						{
-							ByteConverter.BigEndian = SA_Tools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
+							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
 						}
 
 						int address = 0;
@@ -2545,15 +2651,46 @@ namespace SonicRetro.SAModel.SAMDL
 							for (int u = 0; u < count; u++)
 							{
 								animationFiles[u] = tr.ReadLine();
+
 								if (File.Exists(Path.Combine(path, animationFiles[u])))
 								{
-									if (Path.GetExtension(animationFiles[u]).ToLowerInvariant() == ".json")
+									string filePath = Path.Combine(path, animationFiles[u]);
+									string animExt = Path.GetExtension(filePath).ToLowerInvariant();
+									NJS_MOTION mot;
+									switch (animExt)
 									{
-										JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
-										using (TextReader tr2 = File.OpenText(Path.Combine(path, animationFiles[u])))
-										{
-											JsonTextReader jtr = new JsonTextReader(tr2);
-											NJS_MOTION mot = js.Deserialize<NJS_MOTION>(jtr);
+										case ".json":
+											JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+											using (TextReader tr2 = File.OpenText(filePath))
+											{
+												JsonTextReader jtr = new JsonTextReader(tr2);
+												mot = js.Deserialize<NJS_MOTION>(jtr);
+												if (first)
+												{
+													first = false;
+													animframe = 0;
+													animnum = animations.Count;
+													animations.Add(mot);
+													animation = mot;
+													UpdateWeightedModel();
+													DrawEntireModel();
+												}
+												else
+													animations.Add(mot);
+											}
+											break;
+
+										case ".njm":
+											byte[] motFile = File.ReadAllBytes(filePath);
+											ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(motFile, 0xC);
+
+											byte[] newMotFile = new byte[motFile.Length - 0x8];
+											Array.Copy(motFile, 0x8, newMotFile, 0, newMotFile.Length);
+
+											string motName = Path.GetFileNameWithoutExtension(filePath);
+											Dictionary<int, string> motLabel = new Dictionary<int, string>();
+											motLabel.Add(0, motName);
+											mot = new NJS_MOTION(newMotFile, 0, 0, model.CountAnimated(), motLabel, false);
 											if (first)
 											{
 												first = false;
@@ -2566,23 +2703,24 @@ namespace SonicRetro.SAModel.SAMDL
 											}
 											else
 												animations.Add(mot);
-										}
-									}
-									else
-									{
-										NJS_MOTION mot = NJS_MOTION.Load(Path.Combine(path, animationFiles[u]));
-										if (first)
-										{
-											first = false;
-											animframe = 0;
-											animnum = animations.Count;
-											animations.Add(mot);
-											animation = mot;
-											UpdateWeightedModel();
-											DrawEntireModel();
-										}
-										else
-											animations.Add(mot);
+											break;
+
+										case ".saanim":
+										default:
+											mot = NJS_MOTION.Load(filePath);
+											if (first)
+											{
+												first = false;
+												animframe = 0;
+												animnum = animations.Count;
+												animations.Add(mot);
+												animation = mot;
+												UpdateWeightedModel();
+												DrawEntireModel();
+											}
+											else
+												animations.Add(mot);
+											break;
 									}
 								}
 							}
@@ -2632,9 +2770,11 @@ namespace SonicRetro.SAModel.SAMDL
 
 		private void UnloadTextures()
 		{
-			TextureInfo = null;
+            TextureInfo = null;
+            TextureInfoCurrent = null;
 			Textures = null;
-			unloadTextureToolStripMenuItem.Enabled = false;
+            TexList = null;
+            unloadTextureToolStripMenuItem.Enabled = false;
 		}
 
 		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2947,7 +3087,7 @@ namespace SonicRetro.SAModel.SAMDL
 						for (int u = 0; u < animations.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animations[u].Name + ".njm";
-							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true, false);
+							byte[] rawAnim = animations[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}
@@ -3005,9 +3145,9 @@ namespace SonicRetro.SAModel.SAMDL
 			string[] texnames = null;
 			if (TexturePackName != null && exportTextureNamesToolStripMenuItem.Checked)
 			{
-				texnames = new string[TextureInfo.Length];
-				for (int i = 0; i < TextureInfo.Length; i++)
-					texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfo[i].Name);
+				texnames = new string[TextureInfoCurrent.Length];
+				for (int i = 0; i < TextureInfoCurrent.Length; i++)
+					texnames[i] = string.Format("{0}TexName_{1}", TexturePackName, TextureInfoCurrent[i].Name);
 				text.export += "enum " + TexturePackName + "TexName";
 				text.export += System.Environment.NewLine;
 				text.export += "{";
@@ -3433,7 +3573,7 @@ namespace SonicRetro.SAModel.SAMDL
 
         private void ImportOBJLegacy(NJS_OBJECT obj, string filename)
         {
-            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfo != null ? TextureInfo?.Select(a => a.Name).ToArray() : null);
+            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfoCurrent != null ? TextureInfoCurrent?.Select(a => a.Name).ToArray() : null);
             RebuildModelCache();
             DrawEntireModel();
         }
@@ -3510,6 +3650,71 @@ namespace SonicRetro.SAModel.SAMDL
             RebuildModelCache();
             unsaved = true;
         }
+
+        private void LoadTexlistFile(string filename)
+        {
+            TexList = new TexnameArray(filename);
+            UpdateTexlist();
+        }
+
+        private void loadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Load Texlist", Filter = "Texlist Files (*.tls)|*.tls|All Files (*.*)|*.*", DefaultExt = "tls" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    LoadTexlistFile(ofd.FileName);
+                    unloadTexlistToolStripMenuItem.Enabled = true;
+                }
+            }
+        }
+
+        private void unloadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TexList = null;
+            UpdateTexlist();
+            unloadTexlistToolStripMenuItem.Enabled = false;
+        }
+
+        private void AddSingleTexture(string filename)
+        {
+            List<BMPInfo> result = new List<BMPInfo>();
+            if (TextureInfo != null && TextureInfo.Length > 0)
+            result.AddRange(TextureInfo);
+                result.AddRange(TextureArchive.GetTextures(filename));
+            TextureInfo = result.ToArray();
+            UpdateTexlist();
+        }
+
+        private void AddTextures(string[] filenames)
+        {
+            List<BMPInfo> result = new List<BMPInfo>();
+            if (TextureInfo != null && TextureInfo.Length > 0)
+                result.AddRange(TextureInfo);
+            for (int i = 0; i < filenames.Length; i++)
+            {
+                if (File.Exists(filenames[i]))
+                    result.AddRange(TextureArchive.GetTextures(filenames[i]));
+                else
+                    MessageBox.Show(this, "Texture file " + filenames[i] + " doesn't exist.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            TextureInfo = result.ToArray();
+            UpdateTexlist();
+        }
+
+		private void addTexturestoolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    AddTextures(ofd.FileNames);
+            }
+		}
+
+		private void modelListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+            LoadProject(currentProject);
+		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -3600,7 +3805,7 @@ namespace SonicRetro.SAModel.SAMDL
 				unsaved = true;
 			}
 		}
-
+        
 		// Meshset sorting
 		private void SortModel(NJS_OBJECT mdl, bool withchildren)
 		{
@@ -3686,5 +3891,62 @@ namespace SonicRetro.SAModel.SAMDL
 		{
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
+
+        private void buttonModelList_Click(object sender, EventArgs e)
+        {
+            LoadProject(currentProject);
+        }
+
+        private void SetPartialTexlist(int[] texIDs)
+        {
+            // If a partial texlist isn't set, remove all of it
+            if (texIDs == null)
+                TexList = null;
+            // If a partial texlist exists, trim the texlist
+            else
+            {
+                List<string> texnames = new List<string>();
+                for (int i = texIDs[0]; i <= texIDs[texIDs.Length - 1]; i++)
+                    texnames.Add(TextureInfo[i].Name);
+                TexList = new TexnameArray(texnames.ToArray());
+            }
+            UpdateTexlist();
+        }
+
+        private void LoadModelInfo(ModelLoadInfo info)
+        {
+            if (info == null)
+                return;
+            // Load model file
+            if (info.ModelFilePath != "" && File.Exists(info.ModelFilePath))
+                LoadFile(info.ModelFilePath);
+            // Load textures
+            if (info.TextureArchives != null)
+            {
+                // Load texture archives
+                AddTextures(info.TextureArchives);
+                // Set texture IDs for partial texlist if defined
+                if (info.TextureIDs != null)
+                    SetPartialTexlist(info.TextureIDs);
+                // Set texture names for partial texlist if defined
+                else if (info.TextureNames != null)
+                    TexList = info.TextureNames;
+                UpdateTexlist();
+            }
+        }
+
+        private void LoadProject(string filename)
+        {
+            currentProject = filename;
+            ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename), lastProjectModeCategory);
+            DialogResult result = mdldialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                UnloadTextures();
+                lastProjectModeCategory = mdldialog.CategoryIndex;
+                LoadModelInfo(mdldialog.ModelInfo);
+            }
+            modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
+        }
 	}
 }

@@ -3,24 +3,55 @@ using System.IO;
 using System.Windows.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using SAEditorCommon.ProjectManagement;
 
-namespace SonicRetro.SAModel.DataToolbox
+namespace SAModel.DataToolbox
 {
 	public partial class MainForm : Form
 	{
 		byte[] file;
 		Properties.Settings Settings = Properties.Settings.Default;
+        Dictionary<string, string> templateList = new Dictionary<string, string>();
 
-		public MainForm()
+        public MainForm()
 		{
 			InitializeComponent();
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
+        string[] SortTemplateList(string[] originalList)
+        {
+            var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
+            List<string> result = new List<string>();
+            // Put SADXPC first and SA2PC second
+            foreach (string file in ordered)
+            {
+                if (file.Contains("DX") && file.Contains("PC"))
+                    result.Insert(0, file);
+                else if (file.Contains("SA2") && file.Contains("PC"))
+                    result.Add(file);
+            }
+            // Add other items
+            foreach (string file in ordered)
+            {
+                if (!result.Contains(file))
+                    result.Add(file);
+            }
+            return result.ToArray();
+        }
+
+        private void loadTemplateList(string folder)
+        {
+            templateList = new Dictionary<string, string>();
+            string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
+            for (int i = 0; i < templateNames.Length; i++)
+            {
+                templateList.Add(Path.GetFileNameWithoutExtension(templateNames[i]), templateNames[i]);
+            }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
 		{
 			// Binary File Extractor defaults
-			DataMappingFolder = "SADXPC";
-			comboBoxSplitGameSelect.SelectedIndex = 2;
 			comboBoxBinaryFormat.SelectedIndex = 1;
 			textBoxBinaryAuthor.Text = Settings.Author;
 			ComboBoxBinaryType.Items.Clear();
@@ -29,11 +60,32 @@ namespace SonicRetro.SAModel.DataToolbox
 			{
 				ComboBoxBinaryType.Items.Add(ModelFileTypes[i].name_or_type);
 			}
-		}
+
+            // Initialize templates
+            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+            string templatesPath;
+            if (Directory.Exists(Path.Combine(appPath, "..\\GameConfig")))
+                templatesPath = Path.Combine(appPath, "..\\GameConfig");
+            else
+                templatesPath = Path.Combine(appPath, "..\\..\\GameConfig");
+            loadTemplateList(templatesPath);
+            foreach (KeyValuePair<string, string> entry in templateList)
+            {
+                comboBoxSplitGameSelect.Items.Add(entry);
+            }
+            comboBoxSplitGameSelect.DisplayMember = "Key";
+            if (comboBoxSplitGameSelect.Items.Count > 0)
+                comboBoxSplitGameSelect.SelectedIndex = 0;
+            else
+                MessageBox.Show(this, "Game templates not found.", "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            // Split screen defaults
+            comboBoxLabels.SelectedIndex = 0;
+        }
 
 
-		#region Binary Data Extractor Tab
-		public struct BinaryModelType
+        #region Binary Data Extractor Tab
+        public struct BinaryModelType
 		{
 			public string name_or_type;
 			public UInt32 key;
@@ -45,8 +97,6 @@ namespace SonicRetro.SAModel.DataToolbox
 			public string name_or_type;
 			public UInt32 key;
 		};
-
-		public static string DataMappingFolder;
 
 		public static readonly ModelFileType[] ModelFileTypes = new[] {
 		new ModelFileType { name_or_type = "EXE", key = 0x00400000u },
@@ -157,7 +207,7 @@ namespace SonicRetro.SAModel.DataToolbox
 			SaveFileDialog sd = new SaveFileDialog();
 			switch (comboBoxBinaryItemType.SelectedIndex)
 			{
-				//Level
+				// Level
 				case 0:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "lvl", Filter = outfmt.ToString().ToUpperInvariant() + "LVL Files|*." + outfmt.ToString().ToLowerInvariant() + "lvl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -168,7 +218,7 @@ namespace SonicRetro.SAModel.DataToolbox
 						success = true;
 					}
 					break;
-				//Model
+				// Model
 				case 1:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -180,19 +230,19 @@ namespace SonicRetro.SAModel.DataToolbox
 						success = true;
 					}
 					break;
-				//Action
+				// Action
 				case 2:
 					sd = new SaveFileDialog() { DefaultExt = outfmt.ToString().ToLowerInvariant() + "mdl", Filter = outfmt.ToString().ToUpperInvariant() + "MDL Files|*." + outfmt.ToString().ToLowerInvariant() + "mdl|All Files|*.*" };
 					if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 					{
-						//Model
+						// Model
 						NJS_ACTION tempaction = new NJS_ACTION(file, (int)address, (uint)numericUpDownBinaryKey.Value, (ModelFormat)comboBoxBinaryFormat.SelectedIndex, null);
 						NJS_OBJECT tempmodel = tempaction.Model;
 						ModelFile.CreateFile(sd.FileName, tempmodel, null, textBoxBinaryAuthor.Text, textBoxBinaryDescription.Text, null, (ModelFormat)comboBoxBinaryFormat.SelectedIndex);
 						ConvertToText(sd.FileName, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, false);
 						if (!checkBoxBinarySAModel.Checked) File.Delete(sd.FileName);
 
-						//Action
+						// Action
 						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
 
 						tempaction.Animation.Save(saanimPath);
@@ -256,7 +306,7 @@ namespace SonicRetro.SAModel.DataToolbox
 				file = File.ReadAllBytes(textBoxBinaryFilename.Text);
 				if (Path.GetExtension(textBoxBinaryFilename.Text).Equals(".prs", StringComparison.OrdinalIgnoreCase)) file = FraGag.Compression.Prs.Decompress(file);
 				buttonBinaryExtract.Enabled = true;
-				uint? baseaddr = SA_Tools.HelperFunctions.SetupEXE(ref file);
+				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
 				if (!baseaddr.HasValue)
 				{
 					int u = CheckKnownFile(textBoxBinaryFilename.Text);
@@ -315,8 +365,8 @@ namespace SonicRetro.SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
-			}
+                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
+            }
 			if (NJA)
 			{
 				outext = ".nja";
@@ -382,15 +432,40 @@ namespace SonicRetro.SAModel.DataToolbox
 			buttonStructConvConvertBatch.Enabled = false;
 		}
 
-		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+        private void AddDirectoryForStructConverter(string dirname)
 		{
-			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-			for (int u = 0; u < fileList.Length; u++)
-			{
-				if (!listBoxStructConverter.Items.Contains(fileList[u])) listBoxStructConverter.Items.Add(fileList[u]);
-			}
-			UpdateConvertButton();
-		}
+			string[] files = Directory.GetFiles(dirname, "*.*", SearchOption.AllDirectories);
+			for (int i = 0; i < files.Length; i++)
+                if (!listBoxStructConverter.Items.Contains(files[i]))
+                {
+                    switch (Path.GetExtension(files[i]).ToLowerInvariant())
+                    {
+                        case ".sa1mdl":
+                        case ".sa2mdl":
+                        case ".sa1lvl":
+                        case ".sa2lvl":
+                        case ".saanim":
+                            if (!listBoxStructConverter.Items.Contains(files[i]))
+                                listBoxStructConverter.Items.Add(files[i]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+        }
+
+        private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            for (int u = 0; u < fileList.Length; u++)
+            {
+                if (Directory.Exists(fileList[u]))
+                    AddDirectoryForStructConverter(fileList[u]);
+                else if (!listBoxStructConverter.Items.Contains(fileList[u])) 
+                    listBoxStructConverter.Items.Add(fileList[u]);
+            }
+            UpdateConvertButton();
+        }
 
 		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
 		{
@@ -427,19 +502,20 @@ namespace SonicRetro.SAModel.DataToolbox
 			}
 		}
 
-		private void buttonSplit_Click(object sender, EventArgs e)
-		{
-			string outdir = "";
-			if (!checkBoxSameFolderSplit.Checked)
-			{
-				SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
-				if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-				{
-					outdir = sd.FileName;
-				}
-				else return;
-			}
-			SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), DataMappingFolder, outdir, checkBoxFindAllSplit.Checked);
+        private void buttonSplit_Click(object sender, EventArgs e)
+        {
+            string outdir = "";
+            if (!checkBoxSameFolderSplit.Checked)
+            {
+                SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
+                if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    outdir = sd.FileName;
+                }
+                else return;
+            }
+            Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateList[comboBoxSplitGameSelect.Text], true);
+            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir, 0, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 
@@ -471,36 +547,6 @@ namespace SonicRetro.SAModel.DataToolbox
 		{
 			listBoxSplitFiles.Items.Clear();
 			buttonSplitStart.Enabled = false;
-		}
-		private void comboBoxGameSelect_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			switch (comboBoxSplitGameSelect.SelectedIndex)
-			{
-				case 0:
-					DataMappingFolder = "SA1";
-					break;
-				case 1:
-					DataMappingFolder = "AutoDemo";
-					break;
-				case 2:
-					DataMappingFolder = "SADXPC";
-					break;
-				case 3:
-					DataMappingFolder = "SADXGC";
-					break;
-				case 4:
-					DataMappingFolder = "SADXX360";
-					break;
-				case 5:
-					DataMappingFolder = "SA2";
-					break;
-				case 6:
-					DataMappingFolder = "SA2TheTrial";
-					break;
-				case 7:
-					DataMappingFolder = "SA2PC";
-					break;
-			}
 		}
 		private void listBox_SplitFiles_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -549,7 +595,7 @@ namespace SonicRetro.SAModel.DataToolbox
 			List<string> files = new List<string>();
 			files.Add(textBoxMDLFilename.Text);
 			files.AddRange(listBoxMDLAnimationFiles.Items.Cast<String>().ToList());
-			SplitProgress spl = new SplitProgress(null, files, null, outdir, false, checkBoxMDLBigEndian.Checked ? 2 : 1);
+			SplitProgress spl = new SplitProgress(null, files, null, outdir, checkBoxMDLBigEndian.Checked ? 2 : 1, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 

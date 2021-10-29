@@ -8,19 +8,21 @@
     <ProjectGuid>{5997DC6A-DA95-487E-BB19-2D8890684A54}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SonicRetro.SAModel.SALVL</RootNamespace>
+    <RootNamespace>SAModel.SALVL</RootNamespace>
     <AssemblyName>SALVL</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\tools\</OutputPath>
+    <OutputPath>..\build\tools\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>0</WarningLevel>
@@ -30,7 +32,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\tools\</OutputPath>
+    <OutputPath>..\build\tools\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,13 +45,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AssimpNet, Version=4.1.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\AssimpNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="FraGag.Compression.Prs">
-      <HintPath>..\Dependencies\FraGag.Compression.Prs.dll</HintPath>
+    <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -76,6 +73,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DrawLevel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Input.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LevelSelectMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Loading.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ObjectDefinitions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Saving.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="UI\BinaryFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,20 +120,7 @@
     <Compile Include="MainForm.designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\ProjectSelectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ProjectSelectDialog.Designer.cs">
-      <DependentUpon>ProjectSelectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\PathWarning.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\PathWarning.Designer.cs">
-      <DependentUpon>PathWarning.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="UI\BinaryFileDialog.resx">
       <DependentUpon>BinaryFileDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -138,12 +144,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UI\ProjectSelectDialog.resx">
-      <DependentUpon>ProjectSelectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\PathWarning.resx">
-      <DependentUpon>PathWarning.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
@@ -158,22 +158,27 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SA Tools\SA Tools.csproj">
-      <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
-      <Name>SA Tools</Name>
+    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
+      <Name>FraGag.Compression.Prs</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SAEditorCommon\SAEditorCommon.csproj">
+    <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
+      <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
+      <Name>SplitTools</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
       <Project>{0D72870C-29A2-4B16-B016-2F2E266A0E64}</Project>
       <Name>SAEditorCommon</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj">
+    <ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
       <Project>{E81631CC-8721-425B-87A3-CB6199DECAF4}</Project>
       <Name>SAModel.Direct3D</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SAModel\SAModel.csproj">
+    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
       <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
       <Name>SAModel</Name>
       <Private>False</Private>
@@ -231,6 +236,13 @@
     <None Include="Resources\save_advanced.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.4.1.0\build\AssimpNet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

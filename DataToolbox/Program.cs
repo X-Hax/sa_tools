@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.DataToolbox
+namespace SAModel.DataToolbox
 {
 	static class Program
 	{

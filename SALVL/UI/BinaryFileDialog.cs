@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SALVL
+namespace SAModel.SALVL
 {
 	public partial class BinaryFileDialog : Form
 	{
@@ -49,7 +49,7 @@ namespace SonicRetro.SAModel.SALVL
 
 		private void BinaryFileDialog_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			System.Diagnostics.Process.Start("https://github.com/sonicretro/sa_tools/wiki/Working-with-Binary-Files");
+			System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/Working-with-Binary-Files");
 		}
 	}
 }

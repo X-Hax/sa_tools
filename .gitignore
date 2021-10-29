@@ -47,6 +47,7 @@ local.properties
 [Rr]elease/
 x64/
 build/
+output/
 [Bb]in/
 [Oo]bj/
 
@@ -217,3 +218,7 @@ pip-log.txt
 *.opendb
 /.vs
 /tools
+/SAEditorCommon.dll
+/SAToolsHub.exe
+/SAToolsHub.exe.config
+/GameConfig/GamePaths.ini

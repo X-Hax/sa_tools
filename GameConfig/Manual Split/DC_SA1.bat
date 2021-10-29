@@ -1,0 +1,1 @@
+..\..\bin\split template "..\DC - SA1.xml"

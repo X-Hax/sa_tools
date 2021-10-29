@@ -1,0 +1,383 @@
+﻿using SplitTools;
+using SplitTools.SplitDLL;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
+using static SAEditorCommon.ProjectManagement.Templates;
+using IniDictionary = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
+
+namespace SAModel.SAMDL
+{
+    public partial class ModelSelectDialog : Form
+    {
+        public ModelLoadInfo ModelInfo;
+        public int CategoryIndex = -1;
+        List<SplitEntry> Categories = new List<SplitEntry>();
+        List <ModelLoadInfo> Models = new List<ModelLoadInfo>();
+        public string modFolder;
+        public string modSystemFolder;
+        public string gameSystemFolder;
+
+        public bool CheckIfIniFileHasModels(SplitEntry split)
+        {
+            // Returns true if the split INI file for the entry has models
+            string inipath = Path.Combine(modFolder, split.IniFile + "_data.ini");
+            if (!File.Exists(inipath))
+                return false;
+            // Check source file extension to determine what kind of split INI data is used with it
+            switch (Path.GetExtension(split.SourceFile).ToLowerInvariant())
+            {
+                case ".nb":
+                    Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
+                    foreach (var nbitem in nbFilenames)
+                    {
+                        string entryFilename = nbitem.Value;
+                        if (nbitem.Value.Contains("|"))
+                        {
+                            string[] nbMeta = nbitem.Value.Split('|');
+                            entryFilename = nbMeta[0];
+                        }
+                        switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+                        {
+                            case ".sa1mdl":
+                            case ".sa2mdl":
+                            case ".sa2bmdl":
+                                return true;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                default:
+                    IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
+                    foreach (var key in iniFile)
+                    {
+                        // If this section exists in the file, it's a DLL split
+                        if (key.Key == "SAMDLData")
+                            if (key.Value.Count > 0)
+                                return true;
+                        // Regular binary split
+                        if (key.Value.ContainsKey("type"))
+                            switch (key.Value["type"])
+                            {
+                                case "model":
+                                case "basicmodel":
+                                case "basicdxmodel":
+                                case "chunkmodel":
+                                case "gcmodel":
+                                    return true;
+                                default:
+                                    break;
+                            }
+                    }
+                    break;
+            }
+            return false;
+        }
+
+        public ModelSelectDialog(ProjectTemplate projFile, int index)
+        {
+            modFolder = projFile.GameInfo.ProjectFolder;
+            modSystemFolder = Path.Combine(modFolder, projFile.GameInfo.GameDataFolder);
+            gameSystemFolder = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder); // To get a path like "SADX\system" or "SA1\SONICADV"
+            InitializeComponent();
+
+            // Find valid INI files
+            foreach (SplitEntry split in projFile.SplitEntries)
+            {
+                if (CheckIfIniFileHasModels(split))
+                {
+                    Categories.Add(split);
+                    string categoryName = split.IniFile;
+                    // To prevent a crash when category names aren't defined
+                    if (split.CmnName != null && split.CmnName != "")
+                        categoryName = split.CmnName;
+                    comboCategories.Items.Add(categoryName);
+                }
+            }
+            if (comboCategories.Items.Count - 1 >= index)
+                comboCategories.SelectedIndex = index;
+            else if (comboCategories.Items.Count > 0)
+                comboCategories.SelectedIndex = 0;
+            else 
+                comboCategories.SelectedIndex = -1;
+        }
+
+        private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboCategories.SelectedIndex == CategoryIndex)
+                return;
+            Models.Clear();
+            listModels.Items.Clear();
+            CategoryIndex = comboCategories.SelectedIndex;
+            string inipath = Path.Combine(modFolder, Categories[CategoryIndex].IniFile + "_data.ini");
+            // Get models from inidata by type
+            switch (Path.GetExtension(Categories[CategoryIndex].SourceFile).ToLowerInvariant())
+            {
+                case ".dll":
+                    IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
+                    foreach (var dllItem in iniFile["SAMDLData"])
+					{
+                        SAMDLMetadata meta = new SAMDLMetadata(dllItem.Value);
+                        Models.Add(new ModelLoadInfo(dllItem.Key, meta, modFolder));
+                    }
+                    break;
+                case ".nb":
+                    Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
+                    foreach (var nbitem in nbFilenames)
+                    {
+                        string entryFilename = nbitem.Value;
+                        string entryDescription = "";
+                        string entryTexture = "";
+                        if (nbitem.Value.Contains("|"))
+                        {
+                            string[] nbMeta = nbitem.Value.Split('|');
+                            entryFilename = nbMeta[0];
+                            if (nbMeta.Length > 1)
+                                entryDescription = nbMeta[1];
+                            if (nbMeta.Length > 2)
+                                entryTexture = nbMeta[2];
+                        }
+                        else
+                            entryDescription = Path.GetFileNameWithoutExtension(nbitem.Value);
+                        switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+                        {
+                            case ".sa1mdl":
+                            case ".sa2mdl":
+                            case ".sa2bmdl":
+                                string[] textures = new string[1];
+                                textures[0] = entryTexture;
+                                Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                default:
+                    IniData inidata = IniSerializer.Deserialize<IniData>(inipath);
+                    foreach (var item in inidata.Files)
+                    {
+                        switch (item.Value.Type)
+                        {
+                            case "model":
+                            case "basicmodel":
+                            case "basicdxmodel":
+                            case "chunkmodel":
+                            case "gcmodel":
+                                Models.Add(new ModelLoadInfo(item.Key, item.Value, modFolder));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+            }
+            // Fill in models
+            foreach (var item in Models)
+            {
+                listModels.Items.Add(item.ModelName);
+            }
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            ModelInfo = null;
+            Close();
+        }
+
+        // Get the exact filename for a PVM/GVM/PRS/whatever (i.e. OBJ_REGULAR will return the full path to OBJ_REGULAR.PVM or OBJ_REGULAR.GVM or OBJ_REGULAR.PRS etc.)
+        private string GetTextureFilename(string pvmName)
+        {
+            string extension = ".PVM";
+            // Determine whether a custom texture pack or a PVMX exists
+            if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
+                return Path.Combine(modFolder, "textures", pvmName, "index.txt");
+            else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
+                return Path.Combine(modFolder, "textures", pvmName + ".PVMX");
+            else
+            {
+                bool modHasTexture = false;
+                // Check if PVM/GVM/PRS/PAK exists in the mod's system folder
+                if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVM"))
+                {
+                    extension = ".PVM";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".GVM"))
+                {
+                    extension = ".GVM";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PRS"))
+                {
+                    extension = ".PRS";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PAK"))
+                {
+                    extension = ".PAK";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PB"))
+                {
+                    extension = ".PB";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PVR"))
+                {
+                    extension = ".PVR";
+                    modHasTexture = true;
+                }
+                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".GVR"))
+                {
+                    extension = ".GVR";
+                    modHasTexture = true;
+                }
+                // Fallback on the game's system folder
+                if (!modHasTexture)
+                {
+                    if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVM"))
+                        extension = ".PVM";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".GVM"))
+                        extension = ".GVM";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PRS"))
+                        extension = ".PRS";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PAK"))
+                        extension = ".PAK";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PB"))
+                        extension = ".PB";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVR"))
+                        extension = ".PVR";
+                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".GVR"))
+                        extension = ".GVR";
+                }
+                return Path.Combine(modHasTexture ? modSystemFolder : gameSystemFolder, pvmName) + extension;
+            }
+        }
+
+        private ModelLoadInfo LoadModelIndex(int index)
+        {
+            if (index == -1)
+                return null;
+
+            string modelFilePath;
+            string[] textureArchives;
+            List<string> textureArchiveList = new List<string>();
+            string modelName = listModels.Items[listModels.SelectedIndex].ToString();
+            // Loop through the model list to find the selected model
+            foreach (var model in Models)
+            {
+                if (model.ModelName == modelName)
+                {
+                    // Set model filename
+                    modelFilePath = Path.Combine(modFolder, model.ModelFilePath);
+                    // Get PVM name(s) or texlist INI file
+                    if (model.TextureArchives != null)
+                    {
+                        // Check if there are multiple entries
+                        if (model.TextureArchives.Length > 1)
+                        {
+                            for (int p = 0; p < model.TextureArchives.Length; p++)
+                                textureArchiveList.Add(GetTextureFilename(model.TextureArchives[p]));
+                        }
+                        // If not, use the whole field as texlist INI or PVM name + optional texture IDs
+                        else
+                        {
+                            // If this is an INI texlist, get PVM filenames from it
+                            string tspath = Path.Combine(modFolder, model.TextureArchives[0]);
+                            if (Path.GetExtension(tspath).ToLowerInvariant() == ".ini")
+                            {
+                                TextureListEntry[] ts = TextureList.Load(tspath);
+                                for (int t = 0; t < ts.Length; t++)
+                                {
+                                    if (ts[t].Name != null && ts[t].Name != "")
+                                        textureArchiveList.Add(GetTextureFilename(ts[t].Name));
+                                }
+                            }
+                            // If not, use it as a single texture archive
+                            else
+                                textureArchiveList.Add(GetTextureFilename(model.TextureArchives[0]));
+                        }
+                    }
+                    // Set the list of texture archive names
+                    textureArchives = textureArchiveList.ToArray();
+                    return new ModelLoadInfo(model.ModelName, modelFilePath, textureArchives, model.TextureNames, model.TextureIDs);
+                }
+            }
+            return null;
+        }
+
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            ModelInfo = LoadModelIndex(listModels.SelectedIndex);
+        }
+
+        private void listModels_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            buttonOK.Enabled = listModels.SelectedIndex != -1;
+        }
+
+        private void listModels_DoubleClick(object sender, EventArgs e)
+        {
+            if (listModels.SelectedIndex != -1)
+            {
+                ModelInfo = LoadModelIndex(listModels.SelectedIndex);
+            }
+            this.DialogResult = DialogResult.OK;
+            Close();
+        }
+    }
+    public class ModelLoadInfo
+    {
+        public string ModelName;
+        public string ModelFilePath;
+        public string[] TextureArchives;
+        public TexnameArray TextureNames;
+        public int[] TextureIDs;
+
+        public ModelLoadInfo(string name, string modelFile, string[] textures, TexnameArray texnames, int[] texids)
+        {
+            ModelName = name;
+            ModelFilePath = modelFile;
+            TextureArchives = textures;
+            TextureNames = texnames;
+            TextureIDs = texids;
+        }
+
+        public ModelLoadInfo(string name, SplitTools.FileInfo split, string modFolder)
+        {
+            ModelName = name;
+            ModelFilePath = split.Filename;
+            if (split.CustomProperties.ContainsKey("texture"))
+                TextureArchives = split.CustomProperties["texture"].Split(',');
+            if (split.CustomProperties.ContainsKey("texids"))
+            {
+                string[] texids_s = split.CustomProperties["texids"].Split(',');
+                List<int> texid_list = new List<int>();
+                for (int i = 0; i < texids_s.Length; i++)
+                    texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+                TextureIDs = texid_list.ToArray();
+            }
+            else if (split.CustomProperties.ContainsKey("texnames"))
+            {
+                string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
+                TextureNames = new TexnameArray(texnamefile);
+            }
+        }
+
+        public ModelLoadInfo(string modelFilePath, SAMDLMetadata meta, string modFolder)
+        {
+            ModelFilePath = modelFilePath;
+            ModelName = meta.ModelName;
+            TextureArchives = meta.TextureArchives;
+            TextureIDs = meta.TextureIDs;
+            if (meta.TextureNameFile != null && meta.TextureNameFile != "")
+            {
+                string texnamefile = Path.Combine(modFolder, meta.TextureNameFile);
+                TextureNames = new TexnameArray(texnamefile);
+            }
+        }
+    }
+}

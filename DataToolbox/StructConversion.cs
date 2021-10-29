@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SonicRetro.SAModel.DataToolbox
+namespace SAModel.DataToolbox
 {
-	class StructConversion
+	public static class StructConversion
 	{
 		public enum TextType
 		{

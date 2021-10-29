@@ -1,0 +1,1 @@
+..\..\bin\split template "..\PC - SA2.xml"

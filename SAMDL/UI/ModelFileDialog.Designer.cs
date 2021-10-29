@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace SonicRetro.SAModel.SAMDL
+namespace SAModel.SAMDL
 {
     partial class ModelFileDialog : Form
     {
@@ -54,9 +54,9 @@ namespace SonicRetro.SAModel.SAMDL
             this.CheckBox_Hex_Motion = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.RadioButton_Attach = new System.Windows.Forms.RadioButton();
-            this.NumericUpDown_Key = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.NumericUpDown_MotionAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.NumericUpDown_ObjectAddress = new SonicRetro.SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.NumericUpDown_Key = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.NumericUpDown_MotionAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.NumericUpDown_ObjectAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).BeginInit();
