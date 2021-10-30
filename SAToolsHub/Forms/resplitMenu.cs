@@ -17,6 +17,25 @@ namespace SAToolsHub
 		Templates.SplitTemplate template;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMDLEntries = new List<Templates.SplitEntryMDL>();
+		List<chkBoxData> chkBoxEntries = new List<chkBoxData>();
+
+		public class chkBoxData
+		{
+			public string type { get; set; }
+			public string dispName { get; set; }
+			public Templates.SplitEntry splitEntry { get; set; }
+			public Templates.SplitEntryMDL mdlEntry { get; set; }
+
+			public chkBoxData(string t, string n, Templates.SplitEntry split = null, Templates.SplitEntryMDL mdl = null)
+			{
+				type = t;
+				dispName = n;
+				if (split != null)
+					splitEntry = split;
+				if (mdl != null)
+					mdlEntry = mdl;
+			}
+		}
 
 		public resplitMenu()
 		{
@@ -31,23 +50,34 @@ namespace SAToolsHub
 		#region Form Functions
 		private void resplitMenu_Shown(object sender, EventArgs e)
 		{
-			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplate());
+			chkBoxEntries.Clear();
 			checkedListBox1.Items.Clear();
+
+			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplate());
 
 			foreach (Templates.SplitEntry splitEntry in template.SplitEntries)
 			{
-				checkedListBox1.Items.Add(splitEntry);
+				string name;
 				if (splitEntry.CmnName != null)
-					checkedListBox1.DisplayMember = "CmnName";
+					name = splitEntry.CmnName;
 				else
-					checkedListBox1.DisplayMember = "IniFile";
+					name = splitEntry.IniFile;
+				chkBoxData item = new chkBoxData("exe", name, splitEntry);
+				chkBoxEntries.Add(item);
+
 			}
 
 			foreach (Templates.SplitEntryMDL mdlEntry in template.SplitMDLEntries)
 			{
-				checkedListBox1.Items.Add(mdlEntry);
 				string mdlFile = Path.GetFileNameWithoutExtension(mdlEntry.ModelFile);
-				checkedListBox1.DisplayMember = mdlFile;
+				chkBoxData item = new chkBoxData("mdl", mdlFile, null, mdlEntry);
+				chkBoxEntries.Add(item);
+			}
+
+			foreach (chkBoxData data in chkBoxEntries)
+			{
+				checkedListBox1.Items.Add(data);
+				checkedListBox1.DisplayMember = "dispName";
 			}
 		}
 
@@ -69,12 +99,12 @@ namespace SAToolsHub
 
 		private void btnSplit_Click(object sender, EventArgs e)
 		{
-			foreach (Object item in checkedListBox1.CheckedItems)
+			foreach (chkBoxData item in checkedListBox1.CheckedItems)
 			{
-				if (item.GetType() == typeof(Templates.SplitEntry))
-					splitEntries.Add((Templates.SplitEntry)item);
+				if (item.type == "exe")
+					splitEntries.Add(item.splitEntry);
 				else
-					splitMDLEntries.Add((Templates.SplitEntryMDL)item);
+					splitMDLEntries.Add(item.mdlEntry);
 			}
 
 #if !DEBUG
@@ -136,7 +166,7 @@ namespace SAToolsHub
 				Templates.ProjectInfo projInfo = projFile.GameInfo;
 				List<Templates.SplitEntry> projEntries = projFile.SplitEntries;
 				List<Templates.SplitEntryMDL> projMdlEntries = projFile.SplitMDLEntries;
-				
+
 
 				foreach (Templates.SplitEntry entry in splitEntries)
 				{
@@ -177,7 +207,7 @@ namespace SAToolsHub
 			}
 		}
 
-#region Background Worker
+		#region Background Worker
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
 		{
 			using (splitProgress = new SAModel.SAEditorCommon.UI.ProgressDialog("Creating project"))
@@ -206,6 +236,6 @@ namespace SAToolsHub
 				}
 			}
 		}
-#endregion
+		#endregion
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Ookii.Dialogs.Wpf;
 using SplitTools;
 using SplitTools.SplitDLL;
 
@@ -202,7 +201,7 @@ namespace SAModel.SAEditorCommon
 			listView.EndUpdate();
 		}
 
-		private void UncheckAllButton_Click(object sender, EventArgs e)
+		private void CheckModifiedButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
 			ListView listView = assemblyListViews[page.Text];
@@ -217,7 +216,7 @@ namespace SAModel.SAEditorCommon
 			listView.EndUpdate();
 		}
 
-		private void CheckModifiedButton_Click(object sender, EventArgs e)
+		private void UncheckAllButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
 			ListView listView = assemblyListViews[page.Text];
@@ -232,11 +231,10 @@ namespace SAModel.SAEditorCommon
 
 		private void CPPExportButton_Click(object sender, EventArgs e)
 		{
-			var folderDialog = new VistaFolderBrowserDialog();
-			var folderResult = folderDialog.ShowDialog();
-			if (folderResult.HasValue && folderResult.Value)
+			var folderDialog = new FolderSelect.FolderSelectDialog();
+			if (folderDialog.ShowDialog(IntPtr.Zero))
 			{
-				string outputFolder = folderDialog.SelectedPath;
+				string outputFolder = folderDialog.FileName;
 
 				foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 				{
@@ -266,11 +264,10 @@ namespace SAModel.SAEditorCommon
 
 		private void IniExportButton_Click(object sender, EventArgs e)
 		{
-			var folderDialog = new VistaFolderBrowserDialog();
-			var folderResult = folderDialog.ShowDialog();
-			if (folderResult.HasValue && folderResult.Value)
+			var folderDialog = new FolderSelect.FolderSelectDialog();
+			if (folderDialog.ShowDialog(IntPtr.Zero))
 			{
-				string outputFolder = folderDialog.SelectedPath;
+				string outputFolder = folderDialog.FileName;
                 List<string> listIni_exe = new List<string>();
                 Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
                 foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
@@ -287,7 +284,7 @@ namespace SAModel.SAEditorCommon
 
 						case AssemblyType.DLL:
                             DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
-								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
+								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.FileName, assembly.Key + "_data.ini"));
 							break;
 
 						default:
