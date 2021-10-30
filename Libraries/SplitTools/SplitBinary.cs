@@ -804,7 +804,6 @@ namespace SplitTools.Split
                     SA2EndPosList.Load(datafile, address).Save(fileOutputPath);
                     break;
                 case "animationlist":
-                case "enemyanimationlist":
                 case "sa1actionlist":
                     {
                         int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
@@ -817,18 +816,18 @@ namespace SplitTools.Split
                             case Game.SA2B:
                             case Game.SA2:
                             default:
-                                bool enemy = false;
-                                if (customProperties.ContainsKey("enemy"))
-                                    enemy = bool.Parse(customProperties["enemy"]);
-                                if (!enemy)
-                                    SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath);
-                                else
-                                    SA2EnemyAnimInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+                                SA2AnimationInfoList.Load(datafile, address, cnt).Save(fileOutputPath);
                                 break;
                         }
                     }
                     break;
-                case "motiontable":
+				case "enemyanimationlist":
+					{
+						int cnt = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+						SA2EnemyAnimInfoList.Load(datafile, address, imageBase, cnt).Save(fileOutputPath);
+					}
+					break;
+				case "motiontable":
                     {
                         Directory.CreateDirectory(fileOutputPath);
                         List<MotionTableEntry> result = new List<MotionTableEntry>();
