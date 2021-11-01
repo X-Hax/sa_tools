@@ -427,7 +427,6 @@ namespace SAModel.SAEditorCommon.DataTypes
             {
                 if (objm.Children != null && objm.Children.Count > 0)
                 {
-                    int c = 0;
                     foreach (NJS_OBJECT child in objm.Children)
                     {
                         createdItems.AddRange(ImportFromHierarchy(child, selectionManager, osd, true));

@@ -1413,7 +1413,7 @@ namespace SAToolsHub
 		#endregion
 
 		#region Update Code
-		private bool checkedForUpdates;
+		private bool checkedForUpdates; // Unused?
 		const string updatePath = ".updates";
 
 		private static bool UpdateTimeElapsed(ProjectSettings.UpdateUnits unit, int amount, DateTime start)
@@ -1851,7 +1851,7 @@ namespace SAToolsHub
 			string templatePath = "";
 
 			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig")))
-				templatePath = "GameConfig";
+				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig");
 			else
 				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../GameConfig");
 

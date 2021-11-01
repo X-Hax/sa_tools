@@ -17,8 +17,8 @@ namespace SAToolsHub
 		private const string pipeName = "sa-tools";
 
 		static internal string[] Arguments { get; set; }
-		public static SAToolsHub toolsHub;
-		private static readonly Mutex mutex = new Mutex(true, pipeName);
+		public static SAToolsHub toolsHub; // Unused?
+        private static readonly Mutex mutex = new Mutex(true, pipeName);
 
 		[STAThread]
 		static void Main(string[] args)

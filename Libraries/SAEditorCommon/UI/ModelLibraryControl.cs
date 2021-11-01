@@ -63,9 +63,9 @@ namespace SAModel.SAEditorCommon.UI
 		private System.Drawing.Point screenCenter;
 		private Texture screenRenderTexture;
 		private Surface defaultRenderTarget;
-		private FillMode renderFillMode = FillMode.Solid;
-		private Cull renderCullMode = Cull.None;
-		private float renderDrawDistance = 3500f;
+		//private FillMode renderFillMode = FillMode.Solid;
+		//private Cull renderCullMode = Cull.None;
+		//private float renderDrawDistance = 3500f;
 		private EditorCamera defaultCam; // the default camera is used for rendering the textures
 		private EditorCamera panelCam; // the panel cam is user-controllable and can show an object from any angle.
 		private List<Direct3D.Mesh> meshes;

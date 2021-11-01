@@ -83,7 +83,7 @@ namespace SA2EventViewer
 		bool zoomKeyDown;
 		bool cameraKeyDown;
 
-		int cameraMotionInterval = 1;
+		//int cameraMotionInterval = 1;
 
 		ActionMappingList actionList;
 		ActionInputCollector actionInputCollector;

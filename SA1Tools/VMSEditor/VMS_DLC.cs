@@ -14,7 +14,8 @@ namespace VMSEditor
     {
         public class VMS_DLC : VMSFile
         {
-            // Stuff that goes in the header
+            // Stuff that goes in the header (common across all VMS files)
+            /*
             [IniAlwaysInclude]
             public string Title;
             [IniAlwaysInclude]
@@ -22,6 +23,8 @@ namespace VMSEditor
             [IniAlwaysInclude]
             [IniName("Author")]
             public string AppName;
+            */
+            // Stuff that goes in the header
             [IniAlwaysInclude]
             public uint Identifier;
             [IniAlwaysInclude]

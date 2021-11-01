@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using SplitTools;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace VMSEditor
 {
 	public class VMSFile
 	{
+        [IniAlwaysInclude]
         public string Title;
+        [IniAlwaysInclude]
         public string Description;
+        [IniAlwaysInclude]
+        [IniName("Author")]
         public string AppName;
         private uint Length;
 

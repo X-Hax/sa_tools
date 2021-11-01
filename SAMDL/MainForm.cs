@@ -223,7 +223,7 @@ namespace SAModel.SAMDL
 		bool zoomKeyDown;
 		bool cameraKeyDown;
 
-		int cameraMotionInterval = 1;
+		//int cameraMotionInterval = 1;
 
 		ActionMappingList actionList;
 		ActionInputCollector actionInputCollector;
@@ -364,7 +364,6 @@ namespace SAModel.SAMDL
 					{
 						case DialogResult.Cancel:
 							goto loadfiledlg;
-							break;
 						case DialogResult.Abort:
 							Application.Exit();
 							break;
