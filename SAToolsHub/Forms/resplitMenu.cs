@@ -30,10 +30,16 @@ namespace SAToolsHub
 			{
 				type = t;
 				dispName = n;
-				if (split != null)
-					splitEntry = split;
-				if (mdl != null)
-					mdlEntry = mdl;
+                if (split != null)
+                {
+                    splitEntry = split;
+                    dispName += " (" + split.SourceFile + ")";
+                }
+                if (mdl != null)
+                {
+                    mdlEntry = mdl;
+                    dispName += " (" + mdl.ModelFile + ")";
+                }
 			}
 		}
 
