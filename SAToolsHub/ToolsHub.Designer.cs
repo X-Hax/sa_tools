@@ -1148,7 +1148,8 @@
 			// cmsDelete
 			// 
 			this.cmsDelete.Enabled = false;
-			this.cmsDelete.Name = "cmsDelete";
+            this.cmsDelete.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmsDelete.Name = "cmsDelete";
 			this.cmsDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
 			this.cmsDelete.Size = new System.Drawing.Size(151, 22);
 			this.cmsDelete.Text = "Delete";
