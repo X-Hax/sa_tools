@@ -288,7 +288,7 @@ namespace SAModel.SAMDL
                 return null;
 
             string modelFilePath;
-            string[] textureArchives;
+            string[] textureArchives = null;
             List<string> textureArchiveList = new List<string>();
             string modelName = listModels.Items[listModels.SelectedIndex].ToString();
             // Loop through the model list to find the selected model
@@ -327,7 +327,8 @@ namespace SAModel.SAMDL
                         }
                     }
                     // Set the list of texture archive names
-                    textureArchives = textureArchiveList.ToArray();
+                    if (textureArchiveList.Count > 0)
+                        textureArchives = textureArchiveList.ToArray();
                     return new ModelLoadInfo(model.ModelName, modelFilePath, textureArchives, model.TextureNames, model.TextureIDs);
                 }
             }
