@@ -12,14 +12,14 @@ namespace SAModel.SAMDL
     public partial class ModelSelectDialog : Form
     {
         public ModelLoadInfo ModelInfo;
-        public int CategoryIndex = -1;
-        List<SplitEntry> Categories = new List<SplitEntry>();
+        public string SelectedCategory = "";
+        Dictionary<string, List<SplitEntry>> Categories = new Dictionary<string, List<SplitEntry>>();
         List <ModelLoadInfo> Models = new List<ModelLoadInfo>();
         public string modFolder;
         public string modSystemFolder;
         public string gameSystemFolder;
 
-        public bool CheckIfIniFileHasModels(SplitEntry split)
+        private bool CheckIfIniFileHasModels(SplitEntry split)
         {
             // Returns true if the split INI file for the entry has models
             string inipath = Path.Combine(modFolder, split.IniFile + "_data.ini");
@@ -76,7 +76,20 @@ namespace SAModel.SAMDL
             return false;
         }
 
-        public ModelSelectDialog(ProjectTemplate projFile, int index)
+        private void AddSplitEntryToCategories(SplitEntry entry, string categoryName)
+        {
+            if (Categories.ContainsKey(categoryName))
+                Categories[categoryName].Add(entry);
+            else
+            {
+                List<SplitEntry> splitlist = new List<SplitEntry>();
+                splitlist.Add(entry);
+                Categories.Add(categoryName, splitlist);
+                comboCategories.Items.Add(categoryName);
+            }
+        }
+
+        public ModelSelectDialog(ProjectTemplate projFile, string lastCategory)
         {
             modFolder = projFile.GameInfo.ProjectFolder;
             modSystemFolder = Path.Combine(modFolder, projFile.GameInfo.GameDataFolder);
@@ -88,91 +101,103 @@ namespace SAModel.SAMDL
             {
                 if (CheckIfIniFileHasModels(split))
                 {
-                    Categories.Add(split);
                     string categoryName = split.IniFile;
                     // To prevent a crash when category names aren't defined
                     if (split.CmnName != null && split.CmnName != "")
                         categoryName = split.CmnName;
-                    comboCategories.Items.Add(categoryName);
+                    AddSplitEntryToCategories(split, categoryName);
                 }
             }
-            if (comboCategories.Items.Count - 1 >= index)
-                comboCategories.SelectedIndex = index;
-            else if (comboCategories.Items.Count > 0)
-                comboCategories.SelectedIndex = 0;
-            else 
-                comboCategories.SelectedIndex = -1;
+
+            // Select the first category by default, or none if there are none
+            comboCategories.SelectedIndex = comboCategories.Items.Count > 0 ? 0 : -1;
+            
+            // Reselect an existing category if it was selected previously
+            if (lastCategory != "" && comboCategories.Items.Count > 0)
+                for (int i = 0; i < comboCategories.Items.Count; i++)
+                {
+                    if (comboCategories.GetItemText(comboCategories.Items[i]) == lastCategory)
+                    {
+                        comboCategories.SelectedIndex = i;
+                        break;
+                    }
+                }
         }
 
         private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboCategories.SelectedIndex == CategoryIndex)
+            if (comboCategories.SelectedItem == null)
+                return;
+            if (comboCategories.GetItemText(comboCategories.SelectedItem) == SelectedCategory)
                 return;
             Models.Clear();
             listModels.Items.Clear();
-            CategoryIndex = comboCategories.SelectedIndex;
-            string inipath = Path.Combine(modFolder, Categories[CategoryIndex].IniFile + "_data.ini");
-            // Get models from inidata by type
-            switch (Path.GetExtension(Categories[CategoryIndex].SourceFile).ToLowerInvariant())
+            SelectedCategory = comboCategories.GetItemText(comboCategories.SelectedItem);
+            foreach (SplitEntry entry in Categories[SelectedCategory])
             {
-                case ".dll":
-                    IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
-                    foreach (var dllItem in iniFile["SAMDLData"])
-					{
-                        SAMDLMetadata meta = new SAMDLMetadata(dllItem.Value);
-                        Models.Add(new ModelLoadInfo(dllItem.Key, meta, modFolder));
-                    }
-                    break;
-                case ".nb":
-                    Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
-                    foreach (var nbitem in nbFilenames)
-                    {
-                        string entryFilename = nbitem.Value;
-                        string entryDescription = "";
-                        string entryTexture = "";
-                        if (nbitem.Value.Contains("|"))
+                string inipath = Path.Combine(modFolder, entry.IniFile + "_data.ini");
+                // Get models from inidata by type
+                switch (Path.GetExtension(entry.SourceFile).ToLowerInvariant())
+                {
+                    case ".dll":
+                        IniDictionary iniFile = SplitTools.IniFile.Load(inipath);
+                        foreach (var dllItem in iniFile["SAMDLData"])
                         {
-                            string[] nbMeta = nbitem.Value.Split('|');
-                            entryFilename = nbMeta[0];
-                            if (nbMeta.Length > 1)
-                                entryDescription = nbMeta[1];
-                            if (nbMeta.Length > 2)
-                                entryTexture = nbMeta[2];
+                            SAMDLMetadata meta = new SAMDLMetadata(dllItem.Value);
+                            Models.Add(new ModelLoadInfo(dllItem.Key, meta, modFolder));
                         }
-                        else
-                            entryDescription = Path.GetFileNameWithoutExtension(nbitem.Value);
-                        switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+                        break;
+                    case ".nb":
+                        Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
+                        foreach (var nbitem in nbFilenames)
                         {
-                            case ".sa1mdl":
-                            case ".sa2mdl":
-                            case ".sa2bmdl":
-                                string[] textures = new string[1];
-                                textures[0] = entryTexture;
-                                Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null));
-                                break;
-                            default:
-                                break;
+                            string entryFilename = nbitem.Value;
+                            string entryDescription = "";
+                            string entryTexture = "";
+                            if (nbitem.Value.Contains("|"))
+                            {
+                                string[] nbMeta = nbitem.Value.Split('|');
+                                entryFilename = nbMeta[0];
+                                if (nbMeta.Length > 1)
+                                    entryDescription = nbMeta[1];
+                                if (nbMeta.Length > 2)
+                                    entryTexture = nbMeta[2];
+                            }
+                            else
+                                entryDescription = Path.GetFileNameWithoutExtension(nbitem.Value);
+                            switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+                            {
+                                case ".sa1mdl":
+                                case ".sa2mdl":
+                                case ".sa2bmdl":
+                                    string[] textures = new string[1];
+                                    textures[0] = entryTexture;
+                                    Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null));
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                    break;
-                default:
-                    IniData inidata = IniSerializer.Deserialize<IniData>(inipath);
-                    foreach (var item in inidata.Files)
-                    {
-                        switch (item.Value.Type)
+                        break;
+                    default:
+                        IniData inidata = IniSerializer.Deserialize<IniData>(inipath);
+                        foreach (var item in inidata.Files)
                         {
-                            case "model":
-                            case "basicmodel":
-                            case "basicdxmodel":
-                            case "chunkmodel":
-                            case "gcmodel":
-                                Models.Add(new ModelLoadInfo(item.Key, item.Value, modFolder));
-                                break;
-                            default:
-                                break;
+                            switch (item.Value.Type)
+                            {
+                                case "model":
+                                case "basicmodel":
+                                case "basicdxmodel":
+                                case "chunkmodel":
+                                case "gcmodel":
+                                    Models.Add(new ModelLoadInfo(item.Key, item.Value, modFolder));
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
             // Fill in models
             foreach (var item in Models)

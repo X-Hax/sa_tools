@@ -29,7 +29,7 @@ namespace SAModel.SAMDL
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
         string currentProject; // Path to currently loaded project, if it exists
-        int lastProjectModeCategory = 0; // Last selected category in the model list
+        string lastProjectModeCategory = ""; // Last selected category in the model list
 
 		public MainForm()
 		{
@@ -3942,7 +3942,7 @@ namespace SAModel.SAMDL
             if (result == DialogResult.OK)
             {
                 UnloadTextures();
-                lastProjectModeCategory = mdldialog.CategoryIndex;
+                lastProjectModeCategory = mdldialog.SelectedCategory;
                 LoadModelInfo(mdldialog.ModelInfo);
             }
             modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
