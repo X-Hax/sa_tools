@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -33,12 +35,12 @@ namespace SADXTweaker2
 		private void ObjectListEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("objlist", StringComparison.OrdinalIgnoreCase))
-				{
-					objectLists.Add(new KeyValuePair<string, SA1ObjectListEntry[]>(item.Value.Filename, (SA1ObjectListEntry[])ObjectList.Load(item.Value.Filename, false)));
-					levelList.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("objlist", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				objectLists.Add(new KeyValuePair<string, SA1ObjectListEntry[]>(path, (SA1ObjectListEntry[])ObjectList.Load(path, false)));
+				levelList.Items.Add(item.Key);
+			}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;
 		}
@@ -155,7 +157,7 @@ namespace SADXTweaker2
 
 		private void importButton_Click(object sender, EventArgs e)
 		{
-			if (Program.IniData.MasterObjectList == null)
+			if (Program.IniData.All(a => a.MasterObjectList == null))
 				MessageBox.Show(this, "No master object list specified in project file.", Text);
 			else
 				using (ObjectSearchDialog dlg = new ObjectSearchDialog())

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SAEditorCommon.ProjectManagement;
 using SplitTools;
 
 namespace SADXTweaker2
@@ -8,7 +9,8 @@ namespace SADXTweaker2
 	{
 		internal static string[] args;
 		private static MainForm FormInstance;
-		internal static IniData IniData;
+		internal static Templates.ProjectTemplate project;
+		internal static IniData[] IniData;
 
 		/// <summary>
 		/// The main entry point for the application.

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -33,12 +35,12 @@ namespace SADXTweaker2
 		private void NextLevelListEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("nextlevellist", StringComparison.OrdinalIgnoreCase))
-				{
-					objectLists.Add(new KeyValuePair<string, NextLevelListEntry[]>(item.Value.Filename, NextLevelList.Load(item.Value.Filename)));
-					levelList.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("nextlevellist", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				objectLists.Add(new KeyValuePair<string, NextLevelListEntry[]>(path, NextLevelList.Load(path)));
+				levelList.Items.Add(item.Key);
+			}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;
 		}

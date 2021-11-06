@@ -707,14 +707,7 @@ namespace SAToolsHub
 								projectEditorDiag.ShowDialog();
 								break;
 							default:
-								if (itemName.Contains("_data") && setGame == "SADX")
-								{
-									sadxtweakerStartInfo.Arguments = $"\"{Path.Combine(projectDirectory, itemName)}\"";
-									Process.Start(sadxtweakerStartInfo);
-									sadxtweakerStartInfo.Arguments = "";
-								}
-								else
-									Process.Start($"\"{itemPath}\"");
+								Process.Start($"\"{itemPath}\"");
 								break;
 						}
 						break;
@@ -846,11 +839,14 @@ namespace SAToolsHub
 		//SADX Tools Initializers
 		private void sADXTweakerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (projectDirectory != null)
+				sadxtweakerStartInfo.Arguments = $"\"{projXML}\"";
 			Process proc = Process.Start(sadxtweakerStartInfo);
+			sadxtweakerStartInfo.Arguments = "";
 		}
 
 		private void sADXsndSharpToolStripMenuItem_Click(object sender, EventArgs e)
-		{ 
+		{
 			Process proc = Process.Start(sadxsndsharpStartInfo);
 		}
 

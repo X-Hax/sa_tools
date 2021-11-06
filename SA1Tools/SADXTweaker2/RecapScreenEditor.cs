@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -29,12 +30,12 @@ namespace SADXTweaker2
 		private void RecapScreenEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("recapscreen", StringComparison.OrdinalIgnoreCase))
-				{
-					objectLists.Add(new KeyValuePair<string, RecapScreen[][]>(item.Value.Filename, RecapScreenList.Load(item.Value.Filename, item.Value.Length)));
-					levelList.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("recapscreen", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				objectLists.Add(new KeyValuePair<string, RecapScreen[][]>(path, RecapScreenList.Load(path, item.Value.Length)));
+				levelList.Items.Add(item.Key);
+			}
 			levelList.EndUpdate();
 			language.SelectedIndex = 1;
 			levelList.SelectedIndex = 0;

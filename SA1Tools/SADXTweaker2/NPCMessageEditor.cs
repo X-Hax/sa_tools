@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
@@ -27,14 +28,14 @@ namespace SADXTweaker2
 		private void NPCMessageEditor_Load(object sender, EventArgs e)
 		{
 			level.BeginUpdate();
-			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase))
-				{
-					NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(item.Value.Filename, item.Value.Length)));
-					level.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(item.Value.Filename, item.Value.Length)));
+				level.Items.Add(item.Key);
+			}
 			level.EndUpdate();
-			voiceNum.Directory = Program.IniData.VoiceFolder;
+			voiceNum.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\voice_us\\wma");
 			language.SelectedIndex = 1;
 			level.SelectedIndex = 0;
 		}

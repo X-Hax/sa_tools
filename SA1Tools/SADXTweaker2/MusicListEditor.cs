@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -24,14 +26,14 @@ namespace SADXTweaker2
 
 		private void MusicListEditor_Load(object sender, EventArgs e)
 		{
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files))
 				if (item.Value.Type.Equals("musiclist", StringComparison.OrdinalIgnoreCase))
 				{
-					musicfiles = MusicList.Load(item.Value.Filename);
-					musiclistfile = item.Value.Filename;
+					musiclistfile = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+					musicfiles = MusicList.Load(musiclistfile);
 					break;
 				}
-			filename.Directory = Program.IniData.MusicFolder;
+			filename.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\bgm\\wma");
 			trackNum.SelectedIndex = 0;
 		}
 

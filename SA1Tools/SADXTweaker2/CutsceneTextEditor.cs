@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -32,12 +34,12 @@ namespace SADXTweaker2
 		private void CutsceneTextEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("cutscenetext", StringComparison.OrdinalIgnoreCase))
-				{
-					objectLists.Add(new KeyValuePair<string, CutsceneText>(item.Value.Filename, new CutsceneText(item.Value.Filename)));
-					levelList.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("cutscenetext", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				objectLists.Add(new KeyValuePair<string, CutsceneText>(path, new CutsceneText(path)));
+				levelList.Items.Add(item.Key);
+			}
 			levelList.EndUpdate();
 			language.SelectedIndex = 1;
 			levelList.SelectedIndex = 0;
