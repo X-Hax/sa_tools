@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -33,15 +35,15 @@ namespace SADXTweaker2
 		private void SoundListEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("soundlist", StringComparison.OrdinalIgnoreCase))
-				{
-					soundLists.Add(new KeyValuePair<string, SoundListEntry[]>(item.Value.Filename, SoundList.Load(item.Value.Filename)));
-					levelList.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("soundlist", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				soundLists.Add(new KeyValuePair<string, SoundListEntry[]>(path, SoundList.Load(path)));
+				levelList.Items.Add(item.Key);
+			}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;
-			soundName.Directory = Program.IniData.SoundFolder;
+			soundName.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\se"); ;
 		}
 
 		private void SoundListEditor_FormClosing(object sender, FormClosingEventArgs e)

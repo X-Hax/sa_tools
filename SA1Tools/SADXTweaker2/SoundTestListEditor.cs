@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -34,15 +36,16 @@ namespace SADXTweaker2
 		private void SoundTestListEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files))
 				if (item.Value.Type.Equals("soundtestlist", StringComparison.OrdinalIgnoreCase))
 				{
-					objectLists.Add(new KeyValuePair<string, SoundTestListEntry[]>(item.Value.Filename, SoundTestList.Load(item.Value.Filename)));
+					string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+					objectLists.Add(new KeyValuePair<string, SoundTestListEntry[]>(path, SoundTestList.Load(path)));
 					levelList.Items.Add(item.Key);
 				}
 				else if (item.Value.Type.Equals("musiclist", StringComparison.OrdinalIgnoreCase) & musicfiles == null)
 				{
-					musicfiles = MusicList.Load(item.Value.Filename);
+					musicfiles = MusicList.Load(Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename));
 				}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;

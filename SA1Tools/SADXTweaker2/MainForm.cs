@@ -5,6 +5,8 @@ using System.IO;
 using System.Windows.Forms;
 using SplitTools;
 using SAModel.SAEditorCommon.UI;
+using SAEditorCommon.ProjectManagement;
+using System.Linq;
 
 namespace SADXTweaker2
 {
@@ -55,8 +57,8 @@ namespace SADXTweaker2
 		{
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
-				DefaultExt = "ini",
-				Filter = "*.ini|*.ini|All Files|*.*"
+				DefaultExt = "sap",
+				Filter = "Project Files|*.sap|All Files|*.*"
 			})
 				if (a.ShowDialog(this) == DialogResult.OK)
 					LoadINI(a.FileName);
@@ -71,7 +73,14 @@ namespace SADXTweaker2
 		private void LoadINI(string filename)
 		{
 			CloseChildWindows();
-			Program.IniData = IniSerializer.Deserialize<IniData>(filename);
+			Templates.ProjectTemplate projtmp = ProjectFunctions.openProjectFileString(filename);
+			if (projtmp.GameInfo.GameName != "SADXPC")
+			{
+				MessageBox.Show(this, "Unsupported project type.", "SADXTweaker2", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+				return;
+			}
+			Program.project = projtmp;
+			Program.IniData = projtmp.SplitEntries.Where(a => a.SourceFile == "sonic.exe").Select(b => IniSerializer.Deserialize<IniData>(Path.Combine(projtmp.GameInfo.ProjectFolder, b.IniFile))).ToArray();
 			windowToolStripMenuItem.Enabled = true;
 			if (Settings.MRUList.Contains(filename))
 			{
@@ -80,7 +89,6 @@ namespace SADXTweaker2
 			}
 			Settings.MRUList.Insert(0, filename);
 			recentProjectsToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename));
-			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -142,7 +150,7 @@ namespace SADXTweaker2
 
 		private void AddChildForm(Type formType, string dataType, ToolStripMenuItem menuItem)
 		{
-			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.Files)
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files))
 				if (item.Value.Type.Equals(dataType, StringComparison.OrdinalIgnoreCase))
 				{
 					AddChildForm(formType, menuItem);

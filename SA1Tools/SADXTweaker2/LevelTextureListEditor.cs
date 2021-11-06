@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
 
@@ -33,15 +35,15 @@ namespace SADXTweaker2
 		private void LevelTextureListEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, FileInfo> item in Program.IniData.Files)
-				if (item.Value.Type.Equals("leveltexlist", StringComparison.OrdinalIgnoreCase))
-				{
-					textureLists.Add(new KeyValuePair<string, LevelTextureList>(item.Value.Filename, LevelTextureList.Load(item.Value.Filename)));
-					levelList.Items.Add(item.Key);
-				}
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("leveltexlist", StringComparison.OrdinalIgnoreCase)))
+			{
+				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				textureLists.Add(new KeyValuePair<string, LevelTextureList>(path, LevelTextureList.Load(path)));
+				levelList.Items.Add(item.Key);
+			}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;
-			textureName.Directory = Program.IniData.SystemFolder;
+			textureName.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder);
 		}
 
 		private void LevelTextureListEditor_FormClosing(object sender, FormClosingEventArgs e)

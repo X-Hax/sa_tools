@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SplitTools;
@@ -30,7 +31,7 @@ namespace SADXTweaker2
 
 		private void ObjectSearchDialog_Load(object sender, EventArgs e)
 		{
-			objects = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(Program.IniData.MasterObjectList);
+			objects = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.IniData.First(a => a.MasterObjectList != null).MasterObjectList));
 		}
 
 		private void textBox1_TextChanged(object sender, EventArgs e)

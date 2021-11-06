@@ -15,7 +15,7 @@ namespace SADXTweaker2
 
 		string CurrentFile
 		{
-			get { return Path.Combine(Program.IniData.SystemFolder, string.Format(filepattern, filename.SelectedItem, langs[language.SelectedIndex])); }
+			get { return string.Format(filepattern, filename.SelectedItem, langs[language.SelectedIndex]); }
 		}
 
 		List<string> Messages = new List<string>();
@@ -36,13 +36,17 @@ namespace SADXTweaker2
 		private void field_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (filename.SelectedIndex == -1 | language.SelectedIndex == -1) return;
-			loadButton.Enabled = File.Exists(CurrentFile);
+			loadButton.Enabled = File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)) || File.Exists(Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
 		}
 
 		private void loadButton_Click(object sender, EventArgs e)
 		{
 			Messages = new List<string>();
-			byte[] file = File.ReadAllBytes(CurrentFile);
+			byte[] file;
+			if (File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)))
+				file = File.ReadAllBytes(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
+			else
+				file = File.ReadAllBytes(Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
 			int address = 0;
 			int off = ReadInt32BE(file, 0);
 			while (off != -1)
@@ -83,7 +87,7 @@ namespace SADXTweaker2
 			}
 			file.AddRange(BitConverter.GetBytes(-1));
 			file.AddRange(strings);
-			File.WriteAllBytes(CurrentFile, file.ToArray());
+			File.WriteAllBytes(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile), file.ToArray());
 		}
 
 		private byte[] Int32BEToBytes(int value)
