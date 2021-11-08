@@ -965,8 +965,8 @@ namespace TextureEditor
                     scale = 16.0f;
                     break;
             }
-            int newwidth = (int)((float)image.Width * scale);
-            int newheight = (int)((float)image.Height * scale);
+            int newwidth = Math.Min(2048, Math.Max((int)((float)image.Width * scale), 1));
+            int newheight = Math.Min(2048, Math.Max((int)((float)image.Height * scale), 1));
             Bitmap bmp = new Bitmap(newwidth, newheight);
             using (Graphics gfx = Graphics.FromImage(bmp))
             {
