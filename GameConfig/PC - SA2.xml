@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2PC" dataFolder="PC_SA2" checkFile="sonic2app.exe" gameDataFolderName="resource/gd_PC" checkHashes="4f03dff9b720986cd922ab461d2a6c69,1c28ae7958300273484a32923788a060" />
+  <GameInfo gameName="SA2PC" dataFolder="PC_SA2" checkFile="sonic2app.exe" gameDataFolderName="resource/gd_PC" checkHashes="4f03dff9b720986cd922ab461d2a6c69,1c28ae7958300273484a32923788a060,743a9f6f652e2dd1f4184bf013eef3bd" />
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG00" CmnName="Test Stage"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG03" CmnName="Green Forest"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG04" CmnName="White Jungle"/>
