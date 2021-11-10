@@ -166,10 +166,14 @@ namespace SAModel
 		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null)
 		{
 			if (nummodels == 0) nummodels = CalculateModelParts(file, address, imageBase);
-			if (labels != null && labels.ContainsKey(address))
-				Name = labels[address];
-			else
-				Name = "animation_" + address.ToString("X8");
+            if (labels != null && labels.ContainsKey(address))
+            {
+                Name = labels[address];
+                   if (int.TryParse(Name, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int num) == true)
+                        Name = "animation_" + address.ToString("X8");
+            }
+            else
+                Name = "animation_" + address.ToString("X8");
 			if (address > file.Length - 12) return;
 			Frames = ByteConverter.ToInt32(file, address + 4);
 			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
