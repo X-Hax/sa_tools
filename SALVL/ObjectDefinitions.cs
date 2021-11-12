@@ -141,36 +141,36 @@ namespace SAModel.SALVL
 
         }
 
-		// System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-		// SALVL, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-		private static readonly MetadataReference[] objectDefinitionReferences =
-		new[]
-		{
-			MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(System.Drawing.Bitmap).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(SharpDX.Mathematics.Interop.RawBool).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(Vector3).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(Device).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(LandTable).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(EditorCamera).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(SA1LevelAct).Assembly.Location),
-			MetadataReference.CreateFromFile(typeof(ObjectDefinition).Assembly.Location)
-		};
+        // System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+        // SALVL, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+        private static readonly MetadataReference[] objectDefinitionReferences =
+        new[]
+        {
+            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Drawing.Bitmap).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(SharpDX.Mathematics.Interop.RawBool).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Vector3).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Device).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(LandTable).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(EditorCamera).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(SA1LevelAct).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(ObjectDefinition).Assembly.Location)
+        };
 
-		private static readonly CSharpCompilationOptions objectDefinitionOptions =
-			new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-				.WithOverflowChecks(true)
-				.WithOptimizationLevel(OptimizationLevel.Release);
+        private static readonly CSharpCompilationOptions objectDefinitionOptions =
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                .WithOverflowChecks(true)
+                .WithOptimizationLevel(OptimizationLevel.Release);
 
-		private static ObjectDefinition CompileObjectDefinition(ObjectData defgroup, out bool errorOccured, out string errorText)
+        private static ObjectDefinition CompileObjectDefinition(ObjectData defgroup, out bool errorOccured, out string errorText)
         {
             ObjectDefinition def;
             errorOccured = false;
             errorText = "";
             string codeType = defgroup.CodeType;
             string dllfile = Path.Combine("dllcache", codeType + ".dll");
-			string pdbfile = Path.Combine("dllcache", codeType + ".pdb");
-			DateTime modDate = DateTime.MinValue;
+            string pdbfile = Path.Combine("dllcache", codeType + ".pdb");
+            DateTime modDate = DateTime.MinValue;
             if (File.Exists(dllfile)) modDate = File.GetLastWriteTime(dllfile);
             string fp = defgroup.CodeFile.Replace('/', Path.DirectorySeparatorChar);
             if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
@@ -183,48 +183,48 @@ namespace SAModel.SALVL
             }
             else
             {
-				SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
+                SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
 
-				CSharpCompilation compilation =
-						CSharpCompilation.Create(codeType, st, objectDefinitionReferences, objectDefinitionOptions);
+                CSharpCompilation compilation =
+                        CSharpCompilation.Create(codeType, st, objectDefinitionReferences, objectDefinitionOptions);
 
-				try
-				{
-					EmitResult result = compilation.Emit(dllfile, pdbfile);
+                try
+                {
+                    EmitResult result = compilation.Emit(dllfile, pdbfile);
 
-					if (!result.Success)
-					{
-						errorOccured = true;
-						foreach (Diagnostic diagnostic in result.Diagnostics)
-						{
-							errorText += String.Format("\n\n{0}", diagnostic.ToString());
-						}
+                    if (!result.Success)
+                    {
+                        errorOccured = true;
+                        foreach (Diagnostic diagnostic in result.Diagnostics)
+                        {
+                            errorText += String.Format("\n\n{0}", diagnostic.ToString());
+                        }
 
-						File.Delete(dllfile);
-						File.Delete(pdbfile);
+                        File.Delete(dllfile);
+                        File.Delete(pdbfile);
 
-						def = new DefaultObjectDefinition();
-					}
-					else
-					{
-						def =
-							(ObjectDefinition)
-								Activator.CreateInstance(
-									Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-										.GetType(codeType));
-					}
-				}
-				catch (Exception e)
-				{
-					errorOccured = true;
-					errorText = String.Format("\n\n{0}", e.ToString());
+                        def = new DefaultObjectDefinition();
+                    }
+                    else
+                    {
+                        def =
+                            (ObjectDefinition)
+                                Activator.CreateInstance(
+                                    Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+                                        .GetType(codeType));
+                    }
+                }
+                catch (Exception e)
+                {
+                    errorOccured = true;
+                    errorText = String.Format("\n\n{0}", e.ToString());
 
-					File.Delete(dllfile);
-					File.Delete(pdbfile);
+                    File.Delete(dllfile);
+                    File.Delete(pdbfile);
 
-					def = new DefaultObjectDefinition();
-				}
-			}
+                    def = new DefaultObjectDefinition();
+                }
+            }
             return def;
         }
 
