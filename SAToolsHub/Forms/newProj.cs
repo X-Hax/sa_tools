@@ -59,15 +59,14 @@ namespace SAToolsHub
 			btnCreate.Enabled = false;
 		}
 
-		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
-		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select the path for split data to be stored at";
-			if (fsd.ShowDialog(IntPtr.Zero))
-			{
-				txtProjFolder.Text = fsd.FileName;
-			}
-		}
+        private void btnAltFolderBrowse_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fsd = new FolderBrowserDialog { Description = "Please select the path for split data to be stored at", UseDescriptionForTitle = true };
+            if (fsd.ShowDialog() == DialogResult.OK)
+            {
+                txtProjFolder.Text = fsd.SelectedPath;
+            }
+        }
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{

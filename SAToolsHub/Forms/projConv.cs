@@ -71,11 +71,10 @@ namespace SAToolsHub
 		#region Form Functions
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select an old project folder.";
-			if (fsd.ShowDialog(IntPtr.Zero))
+            var fsd = new FolderBrowserDialog { Description = "Please select an old project folder.", UseDescriptionForTitle = true };
+			if (fsd.ShowDialog() == DialogResult.OK)
 			{
-				txtProjFolder.Text = fsd.FileName;
+				txtProjFolder.Text = fsd.SelectedPath;
 				projPath = txtProjFolder.Text;
 				setGame();
 			}

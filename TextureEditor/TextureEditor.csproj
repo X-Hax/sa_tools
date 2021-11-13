@@ -24,11 +24,6 @@
     <Content Include="icon_TexEdit.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="VrSharp">
       <HintPath>..\Dependencies\VrSharp.dll</HintPath>
       <Private>True</Private>

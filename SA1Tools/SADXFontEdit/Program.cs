@@ -15,6 +15,7 @@ namespace SADXFontEdit
         {
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }

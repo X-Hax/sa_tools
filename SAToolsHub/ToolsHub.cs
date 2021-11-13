@@ -174,11 +174,10 @@ namespace SAToolsHub
 				DialogResult projDirMissing = MessageBox.Show(("Project Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (projDirMissing == DialogResult.OK)
 				{
-					var fsd = new FolderSelect.FolderSelectDialog();
-					fsd.Title = "Please select the correct project folder";
-					if (fsd.ShowDialog(IntPtr.Zero))
+                    var fsd = new FolderBrowserDialog { Description = "Please select the correct project folder", UseDescriptionForTitle = true };
+					if (fsd.ShowDialog() == DialogResult.OK)
 					{
-						projectDirectory = fsd.FileName;
+						projectDirectory = fsd.SelectedPath;
 						projFile.GameInfo.ProjectFolder = projectDirectory;
 						sapChanged = true;
 					}
@@ -199,13 +198,12 @@ namespace SAToolsHub
 				DialogResult gameDirMissing = MessageBox.Show(("Game Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gameDirMissing == DialogResult.OK)
 				{
-					var fsd = new FolderSelect.FolderSelectDialog();
-					fsd.Title = "Please select the correct game folder";
-					if (fsd.ShowDialog(IntPtr.Zero))
+                    var fsd = new FolderBrowserDialog { Description = "Please select the correct game folder", UseDescriptionForTitle = true };
+					if (fsd.ShowDialog() == DialogResult.OK)
 					{
-						if (File.Exists(Path.Combine(fsd.FileName, projFile.GameInfo.CheckFile)))
+						if (File.Exists(Path.Combine(fsd.SelectedPath, projFile.GameInfo.CheckFile)))
 						{
-							gameDirectory = fsd.FileName;
+							gameDirectory = fsd.SelectedPath;
 							projFile.GameInfo.GameFolder = gameDirectory;
 							sapChanged = true;
 						}

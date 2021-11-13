@@ -14,7 +14,8 @@ namespace SA2CutsceneTextEditor
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm(args));
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Application.Run(new MainForm(args));
 		}
 	}
 }

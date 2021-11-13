@@ -33,10 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="nQuant.Master" Version="1.1.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="6.0.0-preview.4.21253.7" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>

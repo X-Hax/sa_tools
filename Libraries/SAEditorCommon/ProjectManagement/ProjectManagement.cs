@@ -332,19 +332,19 @@ namespace SAEditorCommon.ProjectManagement
                 if (gamePathWarning == DialogResult.OK)
                 {
                 FolderSelectionNew:
-                    var fsd = new FolderSelect.FolderSelectDialog();
-                    fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+                    var fsd = new FolderBrowserDialog
+                    { Description = "Please select path for " + templateFile.GameInfo.GameName, UseDescriptionForTitle = true };
                     fsd.ShowDialog();
-                    if (Directory.Exists(fsd.FileName))
+                    if (Directory.Exists(fsd.SelectedPath))
                     {
-                        string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+                        string checkFile = Path.Combine(fsd.SelectedPath, templateFile.GameInfo.CheckFile);
                         if (File.Exists(checkFile))
                         {
                             string checkFileHash = HelperFunctions.FileHash(checkFile);
                             if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                             {
                                 TextWriter splitsWriter = File.CreateText(templateFilePath);
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
+                                SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
                                 templateFileSerializer.Serialize(splitsWriter, templateFile);
 
                                 return templateFile;
@@ -392,18 +392,18 @@ namespace SAEditorCommon.ProjectManagement
                 if (gamePathWarning == DialogResult.OK)
                 {
                 FolderSelectionMissing:
-                    var fsd = new FolderSelect.FolderSelectDialog();
-                    fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+                    var fsd = new FolderBrowserDialog
+                    { Description = "Please select path for " + templateFile.GameInfo.GameName, UseDescriptionForTitle = true };
                     fsd.ShowDialog();
-                    if (Directory.Exists(fsd.FileName))
+                    if (Directory.Exists(fsd.SelectedPath))
                     {
-                        string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+                        string checkFile = Path.Combine(fsd.SelectedPath, templateFile.GameInfo.CheckFile);
                         if (File.Exists(checkFile))
                         {
                             string checkFileHash = HelperFunctions.FileHash(checkFile);
                             if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                             {
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
+                                SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
                                 return templateFile;
                             }
                             else
