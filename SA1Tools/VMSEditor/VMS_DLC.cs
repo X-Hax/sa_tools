@@ -4,7 +4,6 @@ using System.Linq;
 using SplitTools;
 using System.Drawing;
 using System.Drawing.Imaging;
-using AForge.Imaging.ColorReduction;
 using SAModel;
 using System.IO;
 
@@ -702,8 +701,8 @@ namespace VMSEditor
             if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed)
             {
                 //Console.WriteLine("Icon is {0}, converting to {1} (loss of quality possible)", bitmap.PixelFormat.ToString(), PixelFormat.Format4bppIndexed.ToString());
-                ColorImageQuantizer ciq = new ColorImageQuantizer(new MedianCutQuantizer());
-                bitmap = ciq.ReduceColors(bitmap, 16);
+                var quantizer = new PnnQuant.PnnQuantizer();
+                bitmap = quantizer.QuantizeImage(bitmap, PixelFormat.Format4bppIndexed, 16, true);
             }
             for (int u = 0; u < 16; u++)
             {

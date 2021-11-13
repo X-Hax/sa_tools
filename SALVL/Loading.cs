@@ -9,15 +9,17 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using SplitTools;
 using System;
-using System.CodeDom.Compiler;
+using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace SAModel.SALVL
 {
@@ -871,8 +873,8 @@ namespace SAModel.SALVL
                     LevelDefinition def = null;
                     string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
                     string dllfile = Path.Combine("dllcache", ty + ".dll");
+                    string pdbfile = Path.Combine("dllcache", ty + ".pdb");
                     DateTime modDate = DateTime.MinValue;
-
                     if (File.Exists(dllfile))
                         modDate = File.GetLastWriteTime(dllfile);
 
@@ -886,44 +888,48 @@ namespace SAModel.SALVL
                     }
                     else
                     {
-                        string ext = Path.GetExtension(fp);
-                        CodeDomProvider pr = null;
-                        switch (ext.ToLowerInvariant())
+
+                        SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
+
+                        CSharpCompilation compilation =
+                                CSharpCompilation.Create(ty, st, objectDefinitionReferences, objectDefinitionOptions);
+
+                        try
                         {
-                            case ".cs":
-                                pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
-                                break;
-                            case ".vb":
-                                pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
-                                break;
-                        }
-                        if (pr != null)
-                        {
-                            // System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-                            // SALVL, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-                            CompilerParameters para =
-                                new CompilerParameters(new string[]
-                                {
-                                                "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
-                                                Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
-                                                Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
-                                                Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
-                                                Assembly.GetAssembly(typeof(ObjectDefinition)).Location
-                                })
-                                {
-                                    GenerateExecutable = false,
-                                    GenerateInMemory = false,
-                                    IncludeDebugInformation = true,
-                                    OutputAssembly = Path.Combine(modFolder, dllfile)
-                                };
-                            if (File.Exists(fp))
+                            EmitResult result = compilation.Emit(dllfile, pdbfile);
+
+                            if (!result.Success)
                             {
-                                CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-                                if (!res.Errors.HasErrors)
-                                    def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+                                log.Add("Error loading level background:");
+                                foreach (Diagnostic diagnostic in result.Diagnostics)
+                                {
+                                    log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+                                }
+
+                                File.Delete(dllfile);
+                                File.Delete(pdbfile);
+
+                                def = null;
+                            }
+                            else
+                            {
+                                def =
+                                    (LevelDefinition)
+                                        Activator.CreateInstance(
+                                            Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+                                                .GetType(ty));
                             }
                         }
-                    }
+                        catch (Exception e)
+                        {
+                            log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
+
+                            File.Delete(dllfile);
+                            File.Delete(pdbfile);
+
+                            def = null;
+                        }
+                }
 
                     if (def != null)
                         def.Init(level, levelact.Act);

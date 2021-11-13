@@ -67,8 +67,9 @@ namespace SAModel.SAEditorCommon.UI
 		}
 	}
 
-	[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-	public class IDEditor : UITypeEditor
+    // Produces a warning in 6.0
+    //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+    public class IDEditor : UITypeEditor
 	{
 		public IDEditor()
 		{

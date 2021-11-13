@@ -15,6 +15,7 @@ namespace SA2EventViewer
 		{
 			Arguments = args;
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new MainForm());
 		}

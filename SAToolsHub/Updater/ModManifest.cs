@@ -339,19 +339,8 @@ namespace SAToolsHub.Updater
 		public static string GetFileHash(string filePath)
 		{
 			byte[] hash;
-			SHA256 sha;
 
-			// This is a work around for Windows XP.
-			try
-			{
-				sha = new SHA256Cng();
-			}
-			catch (PlatformNotSupportedException)
-			{
-				sha = SHA256.Create();
-			}
-
-			using (sha)
+			using (SHA256 sha = SHA256.Create())
 			{
 				using (FileStream stream = File.OpenRead(filePath))
 				{

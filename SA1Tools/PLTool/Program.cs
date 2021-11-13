@@ -19,6 +19,7 @@ namespace PLTool
             Arguments = args;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             if (args.Length > 0 && File.Exists(args[0]))
                 switch (Path.GetFileNameWithoutExtension(args[0]).Substring(0, 2).ToUpperInvariant())
                 {

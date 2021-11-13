@@ -1,23 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1386B837-8AE5-4136-9007-1968CF705628}</ProjectGuid>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SASave</RootNamespace>
-    <AssemblyName>SASave</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <ApplicationIcon>SonicDXLife.ico</ApplicationIcon>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,205 +18,55 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <OutputPath>..\..\build\tools\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\build\tools\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CA1416</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;CA1416</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
+    <Reference Update="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmblemControl.cs">
+    <Compile Update="EmblemControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EmblemControl.Designer.cs">
-      <DependentUpon>EmblemControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HourControl.cs">
+    <Compile Update="HourControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="HourControl.Designer.cs">
-      <DependentUpon>HourControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IniFile.cs" />
-    <Compile Include="LevelActControl.cs">
+    <Compile Update="LevelActControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LevelActControl.Designer.cs">
-      <DependentUpon>LevelActControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MetalEmblemControl.cs">
+    <Compile Update="MetalEmblemControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MetalEmblemControl.Designer.cs">
-      <DependentUpon>MetalEmblemControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="EmblemControl.resx">
-      <DependentUpon>EmblemControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HourControl.resx">
-      <DependentUpon>HourControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LevelActControl.resx">
-      <DependentUpon>LevelActControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MetalEmblemControl.resx">
-      <DependentUpon>MetalEmblemControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SA1SlotDialog.resx">
-      <DependentUpon>SA1SlotDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SaveFormatDialog.resx">
-      <DependentUpon>SaveFormatDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TimeControl.resx">
-      <DependentUpon>TimeControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TimeOfDayControl.resx">
-      <DependentUpon>TimeOfDayControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WeightControl.resx">
-      <DependentUpon>WeightControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
-    <None Include="CutsceneFlags.ini">
+    <None Update="CutsceneFlags.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="SA1SlotDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SA1SlotDialog.Designer.cs">
-      <DependentUpon>SA1SlotDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SaveData.cs" />
-    <Compile Include="SaveFormatDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SaveFormatDialog.Designer.cs">
-      <DependentUpon>SaveFormatDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimeControl.cs">
+    <Compile Update="TimeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TimeControl.Designer.cs">
-      <DependentUpon>TimeControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimeOfDayControl.cs">
+    <Compile Update="TimeOfDayControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TimeOfDayControl.Designer.cs">
-      <DependentUpon>TimeOfDayControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WeightControl.cs">
+    <Compile Update="WeightControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="WeightControl.Designer.cs">
-      <DependentUpon>WeightControl.cs</DependentUpon>
-    </Compile>
-    <None Include="StoryFlags.ini">
+    <None Update="StoryFlags.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Amy.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Big.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\emblem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Gamma.png" />
-    <None Include="Resources\GC.gci" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Knuckles.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\metal_emblem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\metal_noemblem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\noemblem.png" />
-    <None Include="Resources\PC.snc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Sonic.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Super Sonic.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GCPreview.gci" />
-    <None Include="Resources\INTERNAT.VMS" />
-    <None Include="Resources\NTSCJ.VMS" />
-    <None Include="Resources\NTSCU.vms" />
-    <None Include="Resources\Tails.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\saveas.png" />
-    <None Include="Resources\new.png" />
-    <None Include="Resources\open.png" />
-    <None Include="Resources\save.png" />
     <Content Include="SonicDXLife.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -256,12 +91,10 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+  </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@ using static VMSEditor.SA1DLC;
 using ArchiveLib;
 using SAModel;
 using System.Drawing.Imaging;
-using AForge.Imaging.ColorReduction;
 using System.Text;
 using System.Collections.Generic;
 using SplitTools;
@@ -265,8 +264,8 @@ namespace VMSEditor
                     Bitmap bitmap = new Bitmap(od.FileName);
                     if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed)
                     {
-                        ColorImageQuantizer ciq = new ColorImageQuantizer(new MedianCutQuantizer());
-                        bitmap = ciq.ReduceColors(bitmap, 16);
+                        var quantizer = new PnnQuant.PnnQuantizer();
+                        bitmap = quantizer.QuantizeImage(bitmap, PixelFormat.Format4bppIndexed, 16, true);
                     }
                     meta.Icon = bitmap;
                     pictureBoxDLCicon.Image = ScalePreview(meta.Icon, pictureBoxDLCicon, checkBoxZoom.Checked);

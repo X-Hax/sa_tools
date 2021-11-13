@@ -18,6 +18,7 @@ namespace SAModel.SAMDL
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			Arguments = args;
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.SetCompatibleTextRenderingDefault(false);
 			primaryForm = new MainForm();
 			Application.Run(primaryForm);

@@ -24,6 +24,7 @@ namespace SAToolsHub
 		static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			bool alreadyRunning;
@@ -36,6 +37,7 @@ namespace SAToolsHub
 					try { mutex.WaitOne(); }
 					catch (AbandonedMutexException) { }
 				Application.EnableVisualStyles();
+				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 				Application.SetCompatibleTextRenderingDefault(false);
 				Application.Run(new LoaderManifestDialog(args[1]));
 				return;

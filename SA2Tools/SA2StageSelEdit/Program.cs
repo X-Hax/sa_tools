@@ -18,6 +18,7 @@ namespace SA2StageSelEdit
 					sapFile = Path.GetFullPath(args[0]);
 
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new MainForm());
 		}

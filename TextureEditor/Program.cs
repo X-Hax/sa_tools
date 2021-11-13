@@ -17,6 +17,7 @@ namespace TextureEditor
 		{
 			Arguments = args;
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             primaryForm = new MainForm();

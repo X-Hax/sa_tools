@@ -10,6 +10,7 @@ using System.ComponentModel;
 using SAEditorCommon.ProjectManagement;
 using SplitTools;
 using SplitTools.SplitDLL;
+using System.Net.Http;
 
 namespace SAToolsHub
 {
