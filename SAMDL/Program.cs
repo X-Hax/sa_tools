@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Windows.Forms;
 
 namespace SAModel.SAMDL
@@ -16,7 +18,8 @@ namespace SAModel.SAMDL
 		static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-			Arguments = args;
+            AssemblyLoadContext.Default.Resolving += ResolveAssembly;
+            Arguments = args;
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.SetCompatibleTextRenderingDefault(false);
@@ -24,7 +27,23 @@ namespace SAModel.SAMDL
 			Application.Run(primaryForm);
 		}
 
-		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static Assembly ResolveAssembly(AssemblyLoadContext alc, AssemblyName assemblyName)
+        {
+            string probeSetting = AppContext.GetData("lib") as string;
+            if (string.IsNullOrEmpty(probeSetting))
+                return null;
+
+            foreach (string subdirectory in probeSetting.Split(';'))
+            {
+                string pathMaybe = Path.Combine(AppContext.BaseDirectory, subdirectory, $"{assemblyName.Name}.dll");
+                if (File.Exists(pathMaybe))
+                    return alc.LoadFromAssemblyPath(pathMaybe);
+            }
+
+            return null;
+        }
+
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			if (primaryForm != null)
 			{
