@@ -4,6 +4,10 @@
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\..\build\tools\lib\</OutputPath>
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+   <DebugType>embedded</DebugType>
+<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SALVL\SALVL.csproj" />

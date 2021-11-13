@@ -4,6 +4,10 @@
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\..\build\bin\</OutputPath>
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+   <DebugType>embedded</DebugType>
+<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />

@@ -6,6 +6,10 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <OutputPath>..\..\build\tools\lib\</OutputPath>
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+   <DebugType>embedded</DebugType>
+<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj" />

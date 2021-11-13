@@ -5,6 +5,9 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\build\tools\lib\</OutputPath>
@@ -26,5 +29,7 @@
     <Compile Remove="EndianReader.cs" />
     <Compile Remove="EndianWriter.cs" />
   </ItemGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
 </Project>
