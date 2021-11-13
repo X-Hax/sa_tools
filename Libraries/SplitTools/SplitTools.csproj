@@ -8,13 +8,7 @@
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\build\tools\lib\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\build\tools\lib\</OutputPath>
-    <WarningLevel>1</WarningLevel>
+    <OutputPath>..\..\build\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />

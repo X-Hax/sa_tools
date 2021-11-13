@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\build\bin\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>

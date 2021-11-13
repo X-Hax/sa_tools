@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FraGag.Compression</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\build\tools\lib\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DebugType>embedded</DebugType>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>

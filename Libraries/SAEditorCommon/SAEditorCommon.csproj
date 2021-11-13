@@ -8,16 +8,9 @@
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+<NoWarn>1701;1702;CA1416</NoWarn>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\build\tools\lib\</OutputPath>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\build\tools\lib\</OutputPath>
-    <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>

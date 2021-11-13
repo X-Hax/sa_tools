@@ -3,7 +3,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\build\bin\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
    <DebugType>embedded</DebugType>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

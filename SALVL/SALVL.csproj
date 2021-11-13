@@ -8,7 +8,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <OutputPath>..\build\tools\</OutputPath>
+    <OutputPath>..\build\</OutputPath>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>

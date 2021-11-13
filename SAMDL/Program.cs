@@ -6,41 +6,24 @@ using System.Windows.Forms;
 
 namespace SAModel.SAMDL
 {
-	static class Program
-	{
-		static internal string[] Arguments { get; set; }
-		public static MainForm primaryForm;
+    static class Program
+    {
+        static internal string[] Arguments { get; set; }
+        public static MainForm primaryForm;
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main(string[] args)
-		{
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            AssemblyLoadContext.Default.Resolving += ResolveAssembly;
-            Arguments = args;
-			Application.EnableVisualStyles();
-			Application.SetHighDpiMode(HighDpiMode.SystemAware);
-			Application.SetCompatibleTextRenderingDefault(false);
-			primaryForm = new MainForm();
-			Application.Run(primaryForm);
-		}
-
-        private static Assembly ResolveAssembly(AssemblyLoadContext alc, AssemblyName assemblyName)
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main(string[] args)
         {
-            string probeSetting = AppContext.GetData("lib") as string;
-            if (string.IsNullOrEmpty(probeSetting))
-                return null;
-
-            foreach (string subdirectory in probeSetting.Split(';'))
-            {
-                string pathMaybe = Path.Combine(AppContext.BaseDirectory, subdirectory, $"{assemblyName.Name}.dll");
-                if (File.Exists(pathMaybe))
-                    return alc.LoadFromAssemblyPath(pathMaybe);
-            }
-
-            return null;
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            Arguments = args;
+            Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.SetCompatibleTextRenderingDefault(false);
+            primaryForm = new MainForm();
+            Application.Run(primaryForm);
         }
 
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

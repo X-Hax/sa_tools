@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SAModel.DataToolbox
+namespace SAModel.SAEditorCommon
 {
 	public static class StructConversion
 	{

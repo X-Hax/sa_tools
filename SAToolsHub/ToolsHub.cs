@@ -76,7 +76,7 @@ namespace SAToolsHub
 		ProcessStartInfo sa2evtexteditStartInfo;
 		ProcessStartInfo sa2streditStartInfo;
 		ProcessStartInfo sa2stgselStartInfo;
-		ProcessStartInfo datatoolboxStartInfo;
+		ProcessStartInfo SAEditorCommonStartInfo;
 		ProcessStartInfo sadlctoolStartInfo;
 
 		public SAToolsHub()
@@ -323,7 +323,7 @@ namespace SAToolsHub
 			sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));
 			sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
 			sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
-			datatoolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
+			SAEditorCommonStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAEditorCommon.exe")));
 			sadlctoolStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "VMSEditor.exe")));
 		}
 
@@ -892,7 +892,7 @@ namespace SAToolsHub
 		//Data Extractor/Convert (new Split UI)
 		private void splitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process proc = Process.Start(datatoolboxStartInfo);
+			Process proc = Process.Start(SAEditorCommonStartInfo);
 		}
 
 		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1175,7 +1175,7 @@ namespace SAToolsHub
 					string filename = ((itemTags)selItem.Tag).Path;
 					string outName = Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path))) + ".c";
 
-					SAModel.DataToolbox.StructConversion.ConvertFileToText(filename, SAModel.DataToolbox.StructConversion.TextType.CStructs, outName);
+					SAModel.SAEditorCommon.StructConversion.ConvertFileToText(filename, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outName);
 				}
 			}
 		}
@@ -1188,9 +1188,9 @@ namespace SAToolsHub
 				{
 					if (Path.GetExtension(((itemTags)selItem.Tag).Path) == ".saanim")
 					{
-						SAModel.DataToolbox.StructConversion.ConvertFileToText(
+						SAModel.SAEditorCommon.StructConversion.ConvertFileToText(
 							((itemTags)selItem.Tag).Path,
-							SAModel.DataToolbox.StructConversion.TextType.JSON);
+							SAModel.SAEditorCommon.StructConversion.TextType.JSON);
 					}
 					
 				}

@@ -6,7 +6,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\build\tools\</OutputPath>
+    <OutputPath>..\build\</OutputPath>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
@@ -16,9 +16,17 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
-    <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
-    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
-    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
+    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+      <CopyLocal>False</CopyLocal>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
+      <CopyLocal>False</CopyLocal>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
+      <CopyLocal>False</CopyLocal>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
+      <CopyLocal>False</CopyLocal>
+    </ProjectReference>
   </ItemGroup>
 </Project>

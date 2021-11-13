@@ -21,7 +21,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\build\tools\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>

@@ -35,7 +35,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataToolbox\DataToolbox.csproj" />
     <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
     <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
     <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />

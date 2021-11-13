@@ -3,14 +3,13 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\build\tools\lib\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
    <DebugType>embedded</DebugType>
 <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SALVL\SALVL.csproj" />
     <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
     <ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
