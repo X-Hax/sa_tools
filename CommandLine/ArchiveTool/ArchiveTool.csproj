@@ -10,17 +10,11 @@
    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="VrSharp">
-      <HintPath>..\..\Dependencies\VrSharp.dll</HintPath>
-      <Private>False</Private>
-      <CopyLocal>True</CopyLocal>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />
     <ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
     <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+    <ProjectReference Include="..\..\Libraries\VrSharp\VrSharp.csproj" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CA1416</NoWarn>

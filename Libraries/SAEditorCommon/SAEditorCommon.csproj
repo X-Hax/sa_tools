@@ -17,12 +17,6 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NvTriStripDotNet">
-      <HintPath>..\..\Dependencies\NvTriStripDotNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="UI\HexNumericUpDown.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -40,6 +34,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NvTriStripDotNet\NvTriStripDotNet.csproj" />
     <ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj" />
     <ProjectReference Include="..\SAModel\SAModel.csproj" />
     <ProjectReference Include="..\SplitTools\SplitTools.csproj" />

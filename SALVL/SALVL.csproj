@@ -27,24 +27,14 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
-      <CopyLocal>True</CopyLocal>
-      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
-      <CopyLocal>True</CopyLocal>
-      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
-      <CopyLocal>True</CopyLocal>
-      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
-      <CopyLocal>True</CopyLocal>
-      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
-      <CopyLocal>True</CopyLocal>
-      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

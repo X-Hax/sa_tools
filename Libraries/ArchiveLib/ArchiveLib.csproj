@@ -15,14 +15,11 @@
     <Reference Update="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="VrSharp">
-      <HintPath>..\..\Dependencies\VrSharp.dll</HintPath>
-      <CopyLocal>True</CopyLocal>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SplitTools\SplitTools.csproj" />
     <ProjectReference Include="..\SAModel\SAModel.csproj" />
+    <ProjectReference Include="..\VrSharp\VrSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Pfim" Version="0.10.1" />

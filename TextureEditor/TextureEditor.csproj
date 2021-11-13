@@ -19,15 +19,10 @@
     <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
     <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
     <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
+    <ProjectReference Include="..\Libraries\VrSharp\VrSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon_TexEdit.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="VrSharp">
-      <HintPath>..\Dependencies\VrSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
