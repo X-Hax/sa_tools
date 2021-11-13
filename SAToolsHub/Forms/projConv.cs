@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Serialization;
 using SAEditorCommon.ProjectManagement;
 
@@ -95,8 +96,9 @@ namespace SAToolsHub
 				{
 					gamePath = GetSystemPath();
 
+
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
+					XmlWriter writer = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
 
 					Templates.ProjectInfo projInfo = new Templates.ProjectInfo(); ;
 

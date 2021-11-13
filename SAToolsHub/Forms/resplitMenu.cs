@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
 using SplitTools.SAArc;
+using System.Xml;
 
 namespace SAToolsHub
 {
@@ -198,7 +199,7 @@ namespace SAToolsHub
 				if (needsUpdate)
 				{
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(SAToolsHub.projXML);
+                    XmlWriter writer = XmlWriter.Create(SAToolsHub.projXML, new XmlWriterSettings() { Indent = true });
 					Templates.ProjectTemplate updProjFile = new Templates.ProjectTemplate();
 
 

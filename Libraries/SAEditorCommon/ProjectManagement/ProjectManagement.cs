@@ -283,7 +283,7 @@ namespace SAEditorCommon.ProjectManagement
 
 			if (fileName != null)
 			{
-				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
+                var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 				var projFileStream = File.OpenRead(fileName);
 				projectFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
 				projFileStream.Close();
@@ -343,10 +343,7 @@ namespace SAEditorCommon.ProjectManagement
                             string checkFileHash = HelperFunctions.FileHash(checkFile);
                             if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                             {
-                                TextWriter splitsWriter = File.CreateText(templateFilePath);
                                 SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
-                                templateFileSerializer.Serialize(splitsWriter, templateFile);
-
                                 return templateFile;
                             }
                             else
