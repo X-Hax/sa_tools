@@ -21,7 +21,7 @@ namespace SADXTweaker2
 			Program.args = args;
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			Application.EnableVisualStyles();
-			Application.SetHighDpiMode(HighDpiMode.SystemAware);
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             Application.SetCompatibleTextRenderingDefault(false);
 			FormInstance = new MainForm();

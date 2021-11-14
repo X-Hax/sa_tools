@@ -49,19 +49,17 @@ namespace VMSEditor
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 17);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(60, 21);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(110, 13);
+            this.label1.Size = new System.Drawing.Size(189, 25);
             this.label1.TabIndex = 0;
             this.label1.Text = "Select program mode:";
             // 
             // buttonExit
             // 
-            this.buttonExit.Location = new System.Drawing.Point(50, 205);
-            this.buttonExit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonExit.Location = new System.Drawing.Point(88, 330);
             this.buttonExit.Name = "buttonExit";
-            this.buttonExit.Size = new System.Drawing.Size(134, 35);
+            this.buttonExit.Size = new System.Drawing.Size(210, 44);
             this.buttonExit.TabIndex = 5;
             this.buttonExit.Text = "Exit";
             this.buttonExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -70,10 +68,9 @@ namespace VMSEditor
             // 
             // buttonVMIEditor
             // 
-            this.buttonVMIEditor.Location = new System.Drawing.Point(50, 166);
-            this.buttonVMIEditor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonVMIEditor.Location = new System.Drawing.Point(88, 262);
             this.buttonVMIEditor.Name = "buttonVMIEditor";
-            this.buttonVMIEditor.Size = new System.Drawing.Size(134, 35);
+            this.buttonVMIEditor.Size = new System.Drawing.Size(210, 48);
             this.buttonVMIEditor.TabIndex = 4;
             this.buttonVMIEditor.Text = "VMI Editor";
             this.buttonVMIEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -82,10 +79,9 @@ namespace VMSEditor
             // 
             // buttonOpenFile
             // 
-            this.buttonOpenFile.Location = new System.Drawing.Point(50, 49);
-            this.buttonOpenFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonOpenFile.Location = new System.Drawing.Point(88, 60);
             this.buttonOpenFile.Name = "buttonOpenFile";
-            this.buttonOpenFile.Size = new System.Drawing.Size(134, 35);
+            this.buttonOpenFile.Size = new System.Drawing.Size(210, 48);
             this.buttonOpenFile.TabIndex = 1;
             this.buttonOpenFile.Text = "Auto (Open File)";
             this.buttonOpenFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -94,10 +90,9 @@ namespace VMSEditor
             // 
             // buttonDLCEditor
             // 
-            this.buttonDLCEditor.Location = new System.Drawing.Point(50, 127);
-            this.buttonDLCEditor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonDLCEditor.Location = new System.Drawing.Point(88, 195);
             this.buttonDLCEditor.Name = "buttonDLCEditor";
-            this.buttonDLCEditor.Size = new System.Drawing.Size(134, 35);
+            this.buttonDLCEditor.Size = new System.Drawing.Size(210, 48);
             this.buttonDLCEditor.TabIndex = 3;
             this.buttonDLCEditor.Text = "DLC Editor (SA1)";
             this.buttonDLCEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -106,10 +101,9 @@ namespace VMSEditor
             // 
             // buttonChaoEditor
             // 
-            this.buttonChaoEditor.Location = new System.Drawing.Point(50, 88);
-            this.buttonChaoEditor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonChaoEditor.Location = new System.Drawing.Point(88, 128);
             this.buttonChaoEditor.Name = "buttonChaoEditor";
-            this.buttonChaoEditor.Size = new System.Drawing.Size(134, 35);
+            this.buttonChaoEditor.Size = new System.Drawing.Size(210, 48);
             this.buttonChaoEditor.TabIndex = 2;
             this.buttonChaoEditor.Text = "Chao Editor (SA1)";
             this.buttonChaoEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -120,9 +114,10 @@ namespace VMSEditor
             // 
             this.pictureBox1.Image = global::VMSEditor.Properties.Resources.open;
             this.pictureBox1.InitialImage = global::VMSEditor.Properties.Resources.open;
-            this.pictureBox1.Location = new System.Drawing.Point(13, 50);
+            this.pictureBox1.Location = new System.Drawing.Point(24, 60);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox1.Size = new System.Drawing.Size(48, 48);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
@@ -131,9 +126,10 @@ namespace VMSEditor
             // 
             this.pictureBox2.Image = global::VMSEditor.Properties.Resources.editorChao;
             this.pictureBox2.InitialImage = null;
-            this.pictureBox2.Location = new System.Drawing.Point(13, 89);
+            this.pictureBox2.Location = new System.Drawing.Point(24, 128);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox2.Size = new System.Drawing.Size(48, 48);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 7;
             this.pictureBox2.TabStop = false;
@@ -142,9 +138,10 @@ namespace VMSEditor
             // 
             this.pictureBox3.Image = global::VMSEditor.Properties.Resources.editorDLC;
             this.pictureBox3.InitialImage = null;
-            this.pictureBox3.Location = new System.Drawing.Point(13, 127);
+            this.pictureBox3.Location = new System.Drawing.Point(24, 195);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox3.Size = new System.Drawing.Size(48, 48);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox3.TabIndex = 8;
             this.pictureBox3.TabStop = false;
@@ -153,18 +150,19 @@ namespace VMSEditor
             // 
             this.pictureBox4.Image = global::VMSEditor.Properties.Resources.vmi;
             this.pictureBox4.InitialImage = null;
-            this.pictureBox4.Location = new System.Drawing.Point(13, 167);
+            this.pictureBox4.Location = new System.Drawing.Point(24, 262);
+            this.pictureBox4.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox4.Size = new System.Drawing.Size(48, 48);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox4.TabIndex = 9;
             this.pictureBox4.TabStop = false;
             // 
             // ProgramModeSelector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(199, 248);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(324, 386);
             this.Controls.Add(this.pictureBox4);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
@@ -177,7 +175,6 @@ namespace VMSEditor
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.Name = "ProgramModeSelector";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
