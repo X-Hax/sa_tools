@@ -112,6 +112,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.labelZoomInfo = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -690,28 +691,30 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.textureSizeLabel, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.importExportPanel, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.importExportPanel, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.dataFormatLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.pixelFormatLabel, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.palettePreview, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.panel3, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.panelPaletteInfo, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.palettePreview, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.panel3, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.panelPaletteInfo, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.texturePreviewZoomTrackBar, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.labelZoomInfo, 0, 4);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 106);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 10;
+            this.tableLayoutPanel1.RowCount = 11;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 345);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 365);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // textureSizeLabel
@@ -733,7 +736,7 @@
             this.importExportPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.importExportPanel.Controls.Add(this.exportButton);
             this.importExportPanel.Controls.Add(this.importButton);
-            this.importExportPanel.Location = new System.Drawing.Point(3, 175);
+            this.importExportPanel.Location = new System.Drawing.Point(3, 195);
             this.importExportPanel.Name = "importExportPanel";
             this.importExportPanel.Size = new System.Drawing.Size(123, 29);
             this.importExportPanel.TabIndex = 5;
@@ -791,7 +794,7 @@
             // palettePreview
             // 
             this.palettePreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.palettePreview.Location = new System.Drawing.Point(0, 207);
+            this.palettePreview.Location = new System.Drawing.Point(0, 227);
             this.palettePreview.Margin = new System.Windows.Forms.Padding(0);
             this.palettePreview.Name = "palettePreview";
             this.palettePreview.Size = new System.Drawing.Size(33, 33);
@@ -805,7 +808,7 @@
             this.panel3.Controls.Add(this.buttonLoadPalette);
             this.panel3.Controls.Add(this.buttonSavePalette);
             this.panel3.Controls.Add(this.buttonResetPalette);
-            this.panel3.Location = new System.Drawing.Point(3, 308);
+            this.panel3.Location = new System.Drawing.Point(3, 328);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(174, 34);
             this.panel3.TabIndex = 27;
@@ -852,7 +855,7 @@
             this.panelPaletteInfo.Controls.Add(this.numericUpDownStartBank);
             this.panelPaletteInfo.Controls.Add(this.comboBoxCurrentPaletteBank);
             this.panelPaletteInfo.Controls.Add(this.labelPaletteFormat);
-            this.panelPaletteInfo.Location = new System.Drawing.Point(183, 210);
+            this.panelPaletteInfo.Location = new System.Drawing.Point(183, 230);
             this.panelPaletteInfo.Name = "panelPaletteInfo";
             this.panelPaletteInfo.Size = new System.Drawing.Size(152, 92);
             this.panelPaletteInfo.TabIndex = 20;
@@ -949,7 +952,7 @@
             // textureImage
             // 
             this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.textureImage.Location = new System.Drawing.Point(0, 108);
+            this.textureImage.Location = new System.Drawing.Point(0, 128);
             this.textureImage.Margin = new System.Windows.Forms.Padding(0);
             this.textureImage.Name = "textureImage";
             this.textureImage.Size = new System.Drawing.Size(64, 64);
@@ -1036,6 +1039,15 @@
             this.pasteToolStripMenuItem.Text = "&Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
+            // labelZoomInfo
+            // 
+            this.labelZoomInfo.AutoSize = true;
+            this.labelZoomInfo.Location = new System.Drawing.Point(3, 108);
+            this.labelZoomInfo.Name = "labelZoomInfo";
+            this.labelZoomInfo.Size = new System.Drawing.Size(60, 13);
+            this.labelZoomInfo.TabIndex = 29;
+            this.labelZoomInfo.Text = "Zoom: N/A";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1048,9 +1060,9 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PVM Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -1164,6 +1176,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.TrackBar texturePreviewZoomTrackBar;
 		private System.Windows.Forms.ToolStripMenuItem textureFilteringToolStripMenuItem;
+		private System.Windows.Forms.Label labelZoomInfo;
 	}
 }
 
