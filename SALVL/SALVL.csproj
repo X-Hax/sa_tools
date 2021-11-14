@@ -282,6 +282,41 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /D /Y "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.CSharp.*" "$(ProjectDir)..\build\tools\lib\Microsoft.CodeAnalysis.CSharp.*"
+xcopy /D /Y "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Buffers.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Collections.Immutable.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Memory.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Numerics.Vectors.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Reflection.Metadata.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Runtime.CompilerServices.Unsafe.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Text.Encoding.CodePages.*" "$(ProjectDir)..\build\tools\lib\"
+xcopy /D /Y "$(ProjectDir)..\build\tools\System.Threading.Tasks.Extensions.*" "$(ProjectDir)..\build\tools\lib\"
+rmdir /S /Q "$(ProjectDir)..\build\tools\cs"
+rmdir /S /Q "$(ProjectDir)..\build\tools\de"
+rmdir /S /Q "$(ProjectDir)..\build\tools\es"
+rmdir /S /Q "$(ProjectDir)..\build\tools\fr"
+rmdir /S /Q "$(ProjectDir)..\build\tools\it"
+rmdir /S /Q "$(ProjectDir)..\build\tools\ja"
+rmdir /S /Q "$(ProjectDir)..\build\tools\ko"
+rmdir /S /Q "$(ProjectDir)..\build\tools\pl"
+rmdir /S /Q "$(ProjectDir)..\build\tools\pt-BR"
+rmdir /S /Q "$(ProjectDir)..\build\tools\ru"
+rmdir /S /Q "$(ProjectDir)..\build\tools\tr"
+rmdir /S /Q "$(ProjectDir)..\build\tools\zh-Hans"
+rmdir /S /Q "$(ProjectDir)..\build\tools\zh-Hant"
+del /Q "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.CSharp.*"
+del /Q "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.*"
+del /Q "$(ProjectDir)..\build\tools\System.Buffers.*"
+del /Q "$(ProjectDir)..\build\tools\System.Collections.Immutable.*"
+del /Q "$(ProjectDir)..\build\tools\System.Memory.*"
+del /Q "$(ProjectDir)..\build\tools\System.Numerics.Vectors.*"
+del /Q "$(ProjectDir)..\build\tools\System.Reflection.Metadata.*"
+del /Q "$(ProjectDir)..\build\tools\System.Runtime.CompilerServices.Unsafe.*"
+del /Q "$(ProjectDir)..\build\tools\System.Text.Encoding.CodePages.*"
+del /Q "$(ProjectDir)..\build\tools\System.Threading.Tasks.Extensions.*"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
