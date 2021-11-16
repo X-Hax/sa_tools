@@ -37,7 +37,9 @@ namespace VMSEditor
             Program.args = args;
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             // No arguments: Select program mode
             if (args.Length == 0)
                 primaryForm = new ProgramModeSelector();

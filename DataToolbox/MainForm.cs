@@ -365,17 +365,17 @@ namespace SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
+                SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outpath + outext, dx, false);
             }
 			if (NJA)
 			{
 				outext = ".nja";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false);
+				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.NJA, outpath + outext, dx, false);
 			}
 			if (JSON)
 			{
 				outext = ".json";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.JSON, outpath + outext, dx, false);
+				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.JSON, outpath + outext, dx, false);
 			}
 		}
 

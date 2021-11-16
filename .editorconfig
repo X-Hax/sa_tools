@@ -1,3 +1,4 @@
 root=true
 [*.{cs,c,h,cpp,hpp}]
 indent_style=tab
+dotnet_diagnostic.CA1416.severity = none

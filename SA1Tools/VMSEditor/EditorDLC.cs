@@ -6,7 +6,6 @@ using static VMSEditor.SA1DLC;
 using ArchiveLib;
 using SAModel;
 using System.Drawing.Imaging;
-using AForge.Imaging.ColorReduction;
 using System.Text;
 using System.Collections.Generic;
 using SplitTools;
@@ -35,7 +34,7 @@ namespace VMSEditor
         {
             string errDesc = "DLC Tool has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
                 "If you wish to report a bug, please include the following in your report:";
-			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("DLC Tool", errDesc, e.Exception.ToString());
+            SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("DLC Tool", errDesc, e.Exception.ToString());
             DialogResult dgresult = report.ShowDialog();
             switch (dgresult)
             {
@@ -197,7 +196,7 @@ namespace VMSEditor
             }
             while (item_size % 16 != 0);
             int prs_size = 0;
-            if (prs_value != 0) 
+            if (prs_value != 0)
                 prs_size = file.Length - (int)prs_pointer;
             Console.WriteLine("Headerless size {0}, item size {1}, text size {2}, PVM size {3}, MLT size {4}, PRS size {5}", sectionsize, item_size, text_count * 64, pvm_size, mlt_size, prs_size);
             // Get Model
@@ -265,8 +264,8 @@ namespace VMSEditor
                     Bitmap bitmap = new Bitmap(od.FileName);
                     if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed)
                     {
-                        ColorImageQuantizer ciq = new ColorImageQuantizer(new MedianCutQuantizer());
-                        bitmap = ciq.ReduceColors(bitmap, 16);
+                        var quantizer = new PnnQuant.PnnQuantizer();
+                        bitmap = quantizer.QuantizeImage(bitmap, PixelFormat.Format4bppIndexed, 16, true);
                     }
                     meta.Icon = bitmap;
                     pictureBoxDLCicon.Image = ScalePreview(meta.Icon, pictureBoxDLCicon, checkBoxZoom.Checked);
@@ -344,12 +343,12 @@ namespace VMSEditor
 
         private void dLCToolManualToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/Dreamcast-DLC-Tool");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/VMS-Editor#dlc-editor") { CreateNoWindow = true });
         }
 
         private void gitHubIssueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/issues") { CreateNoWindow = true });
         }
 
         private void checkBoxEnableTextures_Click(object sender, EventArgs e)
@@ -645,8 +644,8 @@ namespace VMSEditor
             textBoxMessageTextSP.Text = "";
         }
 
-		private void buttonLoadPVM_Click(object sender, EventArgs e)
-		{
+        private void buttonLoadPVM_Click(object sender, EventArgs e)
+        {
             using (OpenFileDialog op = new OpenFileDialog() { FileName = Path.ChangeExtension(Path.GetFileName(currentFilename), "pvm"), Title = "Load a PVM File", Filter = "PVM Files|*.pvm|All Files|*.*", DefaultExt = "pvm" })
             {
                 if (op.ShowDialog() == DialogResult.OK)
@@ -669,78 +668,78 @@ namespace VMSEditor
             }
         }
 
-		private void checkBoxSonic_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxSonic_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableSonic = checkBoxSonic.Checked;
-		}
+        }
 
-		private void checkBoxTails_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxTails_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableTails = checkBoxTails.Checked;
         }
 
-		private void checkBoxKnuckles_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxKnuckles_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableKnuckles = checkBoxKnuckles.Checked;
         }
 
-		private void checkBoxAmy_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxAmy_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableAmy = checkBoxAmy.Checked;
-		}
+        }
 
-		private void checkBoxBig_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxBig_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableBig = checkBoxBig.Checked;
         }
 
-		private void checkBoxGamma_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxGamma_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableGamma = checkBoxGamma.Checked;
         }
 
-		private void checkBoxUnknown1_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxUnknown1_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableWhatever1 = checkBoxUnknown1.Checked;
         }
 
-		private void checkBoxUnknown2_CheckedChanged(object sender, EventArgs e)
-		{
+        private void checkBoxUnknown2_CheckedChanged(object sender, EventArgs e)
+        {
             meta.EnableWhatever2 = checkBoxUnknown2.Checked;
         }
 
-		private void textBoxMessageTextJP_Click(object sender, EventArgs e)
-		{
+        private void textBoxMessageTextJP_Click(object sender, EventArgs e)
+        {
             currentLanguage = 0;
             toolStripStatusHint.Text = "Enter Japanese message " + numericUpDownMessageID.Value.ToString() + ".";
         }
 
-		private void textBoxMessageTextEN_Click(object sender, EventArgs e)
-		{
+        private void textBoxMessageTextEN_Click(object sender, EventArgs e)
+        {
             currentLanguage = 1;
             toolStripStatusHint.Text = "Enter English message " + numericUpDownMessageID.Value.ToString() + ".";
         }
 
-		private void textBoxMessageTextFR_Click(object sender, EventArgs e)
-		{
+        private void textBoxMessageTextFR_Click(object sender, EventArgs e)
+        {
             currentLanguage = 2;
             toolStripStatusHint.Text = "Enter French message " + numericUpDownMessageID.Value.ToString() + ".";
         }
 
-		private void textBoxMessageTextGE_Click(object sender, EventArgs e)
-		{
+        private void textBoxMessageTextGE_Click(object sender, EventArgs e)
+        {
             currentLanguage = 3;
             toolStripStatusHint.Text = "Enter German message " + numericUpDownMessageID.Value.ToString() + ".";
         }
 
-		private void textBoxMessageTextSP_Click(object sender, EventArgs e)
-		{
+        private void textBoxMessageTextSP_Click(object sender, EventArgs e)
+        {
             currentLanguage = 4;
             toolStripStatusHint.Text = "Enter Spanish message " + numericUpDownMessageID.Value.ToString() + ".";
         }
 
-		private void newToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             meta = new VMS_DLC();
             meta.Icon = new Bitmap(32, 32);
             metaBackup = new VMS_DLC(meta);
@@ -752,8 +751,8 @@ namespace VMSEditor
             UpdateSize();
         }
 
-		private void checkBoxEnableModel_Click(object sender, EventArgs e)
-		{
+        private void checkBoxEnableModel_Click(object sender, EventArgs e)
+        {
             buttonLoadModel.Enabled = buttonSaveModel.Enabled = buttonImportRawModel.Enabled = buttonSaveRawModel.Enabled = checkBoxEnableModel.Checked;
         }
 
@@ -770,7 +769,7 @@ namespace VMSEditor
             if (meta.ModelData != null && meta.ModelData.Length > 0)
             {
                 byte[] prsdata = FraGag.Compression.Prs.Decompress(meta.ModelData);
-                uint modelpointer = BitConverter.ToUInt32(prsdata, 0) - 0xCCA4000;            
+                uint modelpointer = BitConverter.ToUInt32(prsdata, 0) - 0xCCA4000;
                 NJS_OBJECT mdl = new NJS_OBJECT(prsdata, (int)modelpointer, 0xCCA4000, ModelFormat.Basic, null);
                 ModelFile.CreateFile(Path.Combine(dir, fname + ".sa1mdl"), mdl, null, null, null, null, ModelFormat.Basic);
                 if (exportBinaryDataToolStripMenuItem.Checked)
@@ -838,8 +837,8 @@ namespace VMSEditor
             }
         }
 
-		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (SaveFileDialog sv = new SaveFileDialog() { FileName = Path.GetFileNameWithoutExtension(currentFilename), Title = "Export Folder", Filter = "Folder|", DefaultExt = "" })
             {
                 if (sv.ShowDialog() == DialogResult.OK)
@@ -849,8 +848,8 @@ namespace VMSEditor
             }
         }
 
-		private void checkBoxRectangleTexture_Click(object sender, EventArgs e)
-		{
+        private void checkBoxRectangleTexture_Click(object sender, EventArgs e)
+        {
             UpdateTexturePreview();
             toolStripStatusHint.Text = "This setting only affects the preview.";
         }
@@ -866,53 +865,53 @@ namespace VMSEditor
                 File.WriteAllBytes(Path.ChangeExtension(currentFullPath, ".VMI"), new VMIFile(meta, Path.GetFileNameWithoutExtension(currentFullPath)).GetBytes());
         }
 
-		private void textBoxTitle_Click(object sender, EventArgs e)
-		{
+        private void textBoxTitle_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Set DLC title that will appear in the Dreamcast's 'File' menu.";
-		}
+        }
 
-		private void textBoxDescription_Click(object sender, EventArgs e)
-		{
+        private void textBoxDescription_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Set DLC description that will appear in the Dreamcast's 'File' menu.";
         }
 
-		private void textBoxAuthor_Click(object sender, EventArgs e)
-		{
+        private void textBoxAuthor_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Copyright information.";
         }
 
-		private void numericUpDownDLCid_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownDLCid_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Unique ID. Values under 200 force the language to Japanese.";
         }
 
-		private void comboBoxRegionLock_Click(object sender, EventArgs e)
-		{
+        private void comboBoxRegionLock_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Restrict the DLC to certain versions of the game.";
         }
 
-		private void numericUpDownMessageID_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownMessageID_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "There can be up to 16 messages per language.";
         }
 
-		private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-		{
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "";
         }
 
-		private void checkBoxUnknown1_Click(object sender, EventArgs e)
-		{
+        private void checkBoxUnknown1_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Unknown.";
         }
 
-		private void checkBoxUnknown2_Click(object sender, EventArgs e)
-		{
+        private void checkBoxUnknown2_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "Unknown.";
         }
 
-		private void encryptVMSFileToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void encryptVMSFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "VMS Files|*.vms|All Files|*.*" })
                 if (od.ShowDialog(this) == DialogResult.OK)
                 {
@@ -922,8 +921,8 @@ namespace VMSEditor
                 }
         }
 
-		private void encryptRawDataToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void encryptRawDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "bin", Filter = "All Files|*.*" })
                 if (od.ShowDialog(this) == DialogResult.OK)
                 {
@@ -933,14 +932,14 @@ namespace VMSEditor
                 }
         }
 
-		private void checkBoxSonic_Click(object sender, EventArgs e)
-		{
+        private void checkBoxSonic_Click(object sender, EventArgs e)
+        {
             toolStripStatusHint.Text = "";
-		}
+        }
 
-		private void EditorDLC_FormClosing(object sender, FormClosingEventArgs e)
-		{
+        private void EditorDLC_FormClosing(object sender, FormClosingEventArgs e)
+        {
             Application.Exit();
-		}
-	}
+        }
+    }
 }

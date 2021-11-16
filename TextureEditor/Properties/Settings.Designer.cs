@@ -34,40 +34,5 @@ namespace TextureEditor.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool HighQualityGVM {
-            get {
-                return ((bool)(this["HighQualityGVM"]));
-            }
-            set {
-                this["HighQualityGVM"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SACompatiblePalettes {
-            get {
-                return ((bool)(this["SACompatiblePalettes"]));
-            }
-            set {
-                this["SACompatiblePalettes"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool EnableFiltering {
-            get {
-                return ((bool)(this["EnableFiltering"]));
-            }
-            set {
-                this["EnableFiltering"] = value;
-            }
-        }
     }
 }

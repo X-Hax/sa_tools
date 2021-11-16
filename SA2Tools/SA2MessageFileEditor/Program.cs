@@ -12,8 +12,10 @@ namespace SA2MessageFileEditor
 		static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm(args));
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Application.Run(new MainForm(args));
 		}
 	}
 }

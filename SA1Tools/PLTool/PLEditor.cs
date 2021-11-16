@@ -571,12 +571,12 @@ namespace PLTool
 
         private void pLToolHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/PL-Tool");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/PL-Tool") { CreateNoWindow = true });
         }
 
         private void issueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/issues") { CreateNoWindow = true });
         }
 
         private void toolStripSplitButtonColor_MouseUp(object sender, MouseEventArgs e)
@@ -754,7 +754,7 @@ namespace PLTool
                     ToolStripMenuItem i = new ToolStripMenuItem(entry.Level);
                     i.Click += selectLevel;
                     i.ToolTipText = "PL" + entry.FileID + ".BIN";
-                    levelSelectToolStripMenuItem.DropDownItems.Add(i); 
+                    levelSelectToolStripMenuItem.DropDownItems.Add(i);
                 }
             }
             // Add acts
@@ -806,7 +806,7 @@ namespace PLTool
                     return;
                 }
             }
-            using (OpenFileDialog ofd = new OpenFileDialog() { FileName= "PL" + plID + ".BIN", Title = "Open PL File", Filter = "PL Files|PL*.BIN|All Files|*.*" })
+            using (OpenFileDialog ofd = new OpenFileDialog() { FileName = "PL" + plID + ".BIN", Title = "Open PL File", Filter = "PL Files|PL*.BIN|All Files|*.*" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {

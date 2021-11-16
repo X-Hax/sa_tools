@@ -1,29 +1,32 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Windows.Forms;
 
 namespace SAModel.SAMDL
 {
-	static class Program
-	{
-		static internal string[] Arguments { get; set; }
-		public static MainForm primaryForm;
+    static class Program
+    {
+        static internal string[] Arguments { get; set; }
+        public static MainForm primaryForm;
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main(string[] args)
-		{
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-			Arguments = args;
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			primaryForm = new MainForm();
-			Application.Run(primaryForm);
-		}
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main(string[] args)
+        {
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            Arguments = args;
+            Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            Application.SetCompatibleTextRenderingDefault(false);
+            primaryForm = new MainForm();
+            Application.Run(primaryForm);
+        }
 
-		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			if (primaryForm != null)
 			{

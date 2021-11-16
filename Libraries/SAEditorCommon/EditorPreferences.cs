@@ -14,8 +14,9 @@ namespace SAModel.SAEditorCommon
 		public Settings_SALVL SALVL;
 		public Settings_SAMDL SAMDL;
 		public Settings_SA2EventViewer SA2EventViewer;
+        public Settings_TextureEditor TextureEditor;
 
-		private static string GetSettingsPath()
+        private static string GetSettingsPath()
 		{
 			return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "EditorPreferences.ini");
 		}
@@ -33,8 +34,9 @@ namespace SAModel.SAEditorCommon
 				{
 					SALVL = new Settings_SALVL(),
 					SAMDL = new Settings_SAMDL(),
-					SA2EventViewer = new Settings_SA2EventViewer()
-				};
+					SA2EventViewer = new Settings_SA2EventViewer(),
+                    TextureEditor = new Settings_TextureEditor()
+                };
 				return settings;
 			}
 		}
@@ -134,5 +136,21 @@ namespace SAModel.SAEditorCommon
 				CameraModifier = 1;
 			}
 		}
-	}
+
+        public class Settings_TextureEditor
+        {
+            [DefaultValue(false)]
+            public bool HighQualityGVM { get; set; }
+            [DefaultValue(true)]
+            public bool SACompatiblePalettes { get; set; }
+            [DefaultValue(true)]
+            public bool EnableFiltering { get; set; }
+            public Settings_TextureEditor()
+            {
+                HighQualityGVM = false;
+                SACompatiblePalettes = true;
+                EnableFiltering = true;
+            }
+        }
+    }
 }

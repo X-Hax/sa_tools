@@ -21,7 +21,7 @@ namespace SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
-		SettingsFile settingsfile; //For user editable settings
+		SettingsFile settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
 		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
 		System.Drawing.Rectangle mouseBounds;

@@ -4,10 +4,12 @@ using System.Threading;
 
 namespace buildSATools
 {
-	class Program
+    partial class Program
 	{
         static void Main(string[] args)
         {
+            MainPatcher(args);
+            return;
             // Set output directory
             int retries = 0;
             string outdir = "output";
@@ -56,8 +58,7 @@ namespace buildSATools
             }
         }
 
-		private static void DirectoryCopy(
-	   string sourceDirName, string destDirName, bool copySubDirs)
+		private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
 		{
 			DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 			DirectoryInfo[] dirs = dir.GetDirectories();
@@ -103,5 +104,6 @@ namespace buildSATools
 				}
 			}
 		}
+
 	}
 }

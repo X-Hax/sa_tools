@@ -9,6 +9,7 @@ using SAModel.SAEditorCommon.ModManagement;
 using SAEditorCommon.ProjectManagement;
 using SplitTools.Split;
 using SplitTools.SAArc;
+using System.Xml;
 
 namespace SAToolsHub
 {
@@ -59,15 +60,14 @@ namespace SAToolsHub
 			btnCreate.Enabled = false;
 		}
 
-		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
-		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select the path for split data to be stored at";
-			if (fsd.ShowDialog(IntPtr.Zero))
-			{
-				txtProjFolder.Text = fsd.FileName;
-			}
-		}
+        private void btnAltFolderBrowse_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fsd = new FolderBrowserDialog { Description = "Please select the path for split data to be stored at", UseDescriptionForTitle = true };
+            if (fsd.ShowDialog() == DialogResult.OK)
+            {
+                txtProjFolder.Text = fsd.SelectedPath;
+            }
+        }
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
@@ -98,8 +98,8 @@ namespace SAToolsHub
 			{
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
-					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
+                    XmlSerializer serializer = new(typeof(Templates.ProjectTemplate));
+                    XmlWriter xmlWriter = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
 					if (checkBox1.Checked && (txtProjFolder.Text != null))
 					{
 						projFolder = txtProjFolder.Text;
@@ -129,7 +129,7 @@ namespace SAToolsHub
                     if (splitMdlEntries != null)
 						projectFile.SplitMDLEntries = splitMdlEntries;
 
-					serializer.Serialize(writer, projectFile);
+					serializer.Serialize(xmlWriter, projectFile);
 					projFileStream.Close();
 
 #if !DEBUG

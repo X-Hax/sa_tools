@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using static DLCTool.SA1DLC;
+using VMSEditor;
 
 namespace DLCTool
 {
@@ -12,7 +12,8 @@ namespace DLCTool
 
 		public VMIEditor(VMSFile data)
 		{
-            vmi = new VMIFile(data, "SADV_" + data.Identifier.ToString("D3"));
+            if (data is SA1DLC.VMS_DLC dlc)
+            vmi = new VMIFile(dlc, "SADV_" + dlc.Identifier.ToString("D3"));
             vms = data;
 			InitializeComponent();
             comboBoxWeekday.SelectedIndex = 0;
@@ -44,10 +45,13 @@ namespace DLCTool
             vmi.Copyright = vms.AppName;
             vmi.Version = 0;
             vmi.FileID = 1;
-            vmi.ResourceName = "SA1_" + vms.Identifier.ToString("D3");
-            vmi.FileName = "SONICADV_" + vms.Identifier.ToString("D3");
+            if (vms is SA1DLC.VMS_DLC dlc)
+            {
+                vmi.ResourceName = "SA1_" + dlc.Identifier.ToString("D3");
+                vmi.FileName = "SONICADV_" + dlc.Identifier.ToString("D3");
+            }
             vmi.Flags = 0;
-            vmi.Size = (uint)vms.GetBytes().Length;
+            vmi.Size = vms.GetLength();
             SetCurrentTime();
             UpdateAllLabels();
         }

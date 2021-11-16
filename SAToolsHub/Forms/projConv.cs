@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Serialization;
 using SAEditorCommon.ProjectManagement;
 
@@ -71,11 +72,10 @@ namespace SAToolsHub
 		#region Form Functions
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select an old project folder.";
-			if (fsd.ShowDialog(IntPtr.Zero))
+            var fsd = new FolderBrowserDialog { Description = "Please select an old project folder.", UseDescriptionForTitle = true };
+			if (fsd.ShowDialog() == DialogResult.OK)
 			{
-				txtProjFolder.Text = fsd.FileName;
+				txtProjFolder.Text = fsd.SelectedPath;
 				projPath = txtProjFolder.Text;
 				setGame();
 			}
@@ -96,8 +96,9 @@ namespace SAToolsHub
 				{
 					gamePath = GetSystemPath();
 
+
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
+					XmlWriter writer = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
 
 					Templates.ProjectInfo projInfo = new Templates.ProjectInfo(); ;
 
