@@ -11,45 +11,45 @@ namespace SAModel.DataToolbox
 	{
 		byte[] file;
 		Properties.Settings Settings = Properties.Settings.Default;
-        Dictionary<string, string> templateList = new Dictionary<string, string>();
+		Dictionary<string, string> templateList = new Dictionary<string, string>();
 
-        public MainForm()
+		public MainForm()
 		{
 			InitializeComponent();
 		}
 
-        string[] SortTemplateList(string[] originalList)
-        {
-            var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
-            List<string> result = new List<string>();
-            // Put SADXPC first and SA2PC second
-            foreach (string file in ordered)
-            {
-                if (file.Contains("DX") && file.Contains("PC"))
-                    result.Insert(0, file);
-                else if (file.Contains("SA2") && file.Contains("PC"))
-                    result.Add(file);
-            }
-            // Add other items
-            foreach (string file in ordered)
-            {
-                if (!result.Contains(file))
-                    result.Add(file);
-            }
-            return result.ToArray();
-        }
+		string[] SortTemplateList(string[] originalList)
+		{
+			var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
+			List<string> result = new List<string>();
+			// Put SADXPC first and SA2PC second
+			foreach (string file in ordered)
+			{
+				if (file.Contains("DX") && file.Contains("PC"))
+					result.Insert(0, file);
+				else if (file.Contains("SA2") && file.Contains("PC"))
+					result.Add(file);
+			}
+			// Add other items
+			foreach (string file in ordered)
+			{
+				if (!result.Contains(file))
+					result.Add(file);
+			}
+			return result.ToArray();
+		}
 
-        private void loadTemplateList(string folder)
-        {
-            templateList = new Dictionary<string, string>();
-            string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
-            for (int i = 0; i < templateNames.Length; i++)
-            {
-                templateList.Add(Path.GetFileNameWithoutExtension(templateNames[i]), templateNames[i]);
-            }
-        }
+		private void loadTemplateList(string folder)
+		{
+			templateList = new Dictionary<string, string>();
+			string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
+			for (int i = 0; i < templateNames.Length; i++)
+			{
+				templateList.Add(Path.GetFileNameWithoutExtension(templateNames[i]), templateNames[i]);
+			}
+		}
 
-        private void MainForm_Load(object sender, EventArgs e)
+		private void MainForm_Load(object sender, EventArgs e)
 		{
 			// Binary File Extractor defaults
 			comboBoxBinaryFormat.SelectedIndex = 1;
@@ -61,31 +61,31 @@ namespace SAModel.DataToolbox
 				ComboBoxBinaryType.Items.Add(ModelFileTypes[i].name_or_type);
 			}
 
-            // Initialize templates
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            string templatesPath;
-            if (Directory.Exists(Path.Combine(appPath, "..\\GameConfig")))
-                templatesPath = Path.Combine(appPath, "..\\GameConfig");
-            else
-                templatesPath = Path.Combine(appPath, "..\\..\\GameConfig");
-            loadTemplateList(templatesPath);
-            foreach (KeyValuePair<string, string> entry in templateList)
-            {
-                comboBoxSplitGameSelect.Items.Add(entry);
-            }
-            comboBoxSplitGameSelect.DisplayMember = "Key";
-            if (comboBoxSplitGameSelect.Items.Count > 0)
-                comboBoxSplitGameSelect.SelectedIndex = 0;
-            else
-                MessageBox.Show(this, "Game templates not found.", "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			// Initialize templates
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			string templatesPath;
+			if (Directory.Exists(Path.Combine(appPath, "..\\GameConfig")))
+				templatesPath = Path.Combine(appPath, "..\\GameConfig");
+			else
+				templatesPath = Path.Combine(appPath, "..\\..\\GameConfig");
+			loadTemplateList(templatesPath);
+			foreach (KeyValuePair<string, string> entry in templateList)
+			{
+				comboBoxSplitGameSelect.Items.Add(entry);
+			}
+			comboBoxSplitGameSelect.DisplayMember = "Key";
+			if (comboBoxSplitGameSelect.Items.Count > 0)
+				comboBoxSplitGameSelect.SelectedIndex = 0;
+			else
+				MessageBox.Show(this, "Game templates not found.", "Data Toolbox Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            // Split screen defaults
-            comboBoxLabels.SelectedIndex = 0;
-        }
+			// Split screen defaults
+			comboBoxLabels.SelectedIndex = 0;
+		}
 
 
-        #region Binary Data Extractor Tab
-        public struct BinaryModelType
+		#region Binary Data Extractor Tab
+		public struct BinaryModelType
 		{
 			public string name_or_type;
 			public UInt32 key;
@@ -365,8 +365,8 @@ namespace SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
-            }
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
+			}
 			if (NJA)
 			{
 				outext = ".nja";
@@ -432,40 +432,40 @@ namespace SAModel.DataToolbox
 			buttonStructConvConvertBatch.Enabled = false;
 		}
 
-        private void AddDirectoryForStructConverter(string dirname)
+		private void AddDirectoryForStructConverter(string dirname)
 		{
 			string[] files = Directory.GetFiles(dirname, "*.*", SearchOption.AllDirectories);
 			for (int i = 0; i < files.Length; i++)
-                if (!listBoxStructConverter.Items.Contains(files[i]))
-                {
-                    switch (Path.GetExtension(files[i]).ToLowerInvariant())
-                    {
-                        case ".sa1mdl":
-                        case ".sa2mdl":
-                        case ".sa1lvl":
-                        case ".sa2lvl":
-                        case ".saanim":
-                            if (!listBoxStructConverter.Items.Contains(files[i]))
-                                listBoxStructConverter.Items.Add(files[i]);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-        }
+				if (!listBoxStructConverter.Items.Contains(files[i]))
+				{
+					switch (Path.GetExtension(files[i]).ToLowerInvariant())
+					{
+						case ".sa1mdl":
+						case ".sa2mdl":
+						case ".sa1lvl":
+						case ".sa2lvl":
+						case ".saanim":
+							if (!listBoxStructConverter.Items.Contains(files[i]))
+								listBoxStructConverter.Items.Add(files[i]);
+							break;
+						default:
+							break;
+					}
+				}
+		}
 
-        private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            for (int u = 0; u < fileList.Length; u++)
-            {
-                if (Directory.Exists(fileList[u]))
-                    AddDirectoryForStructConverter(fileList[u]);
-                else if (!listBoxStructConverter.Items.Contains(fileList[u])) 
-                    listBoxStructConverter.Items.Add(fileList[u]);
-            }
-            UpdateConvertButton();
-        }
+		private void listBoxStructConverter_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if (Directory.Exists(fileList[u]))
+					AddDirectoryForStructConverter(fileList[u]);
+				else if (!listBoxStructConverter.Items.Contains(fileList[u])) 
+					listBoxStructConverter.Items.Add(fileList[u]);
+			}
+			UpdateConvertButton();
+		}
 
 		private void listBoxStructConverter_DragEnter(object sender, DragEventArgs e)
 		{
@@ -502,20 +502,20 @@ namespace SAModel.DataToolbox
 			}
 		}
 
-        private void buttonSplit_Click(object sender, EventArgs e)
-        {
-            string outdir = "";
-            if (!checkBoxSameFolderSplit.Checked)
-            {
-                SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
-                if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    outdir = sd.FileName;
-                }
-                else return;
-            }
-            Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateList[comboBoxSplitGameSelect.Text], true);
-            SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir, 0, comboBoxLabels.SelectedIndex);
+		private void buttonSplit_Click(object sender, EventArgs e)
+		{
+			string outdir = "";
+			if (!checkBoxSameFolderSplit.Checked)
+			{
+				SaveFileDialog sd = new SaveFileDialog() { Title = "Select output folder", FileName = "output", DefaultExt = "" };
+				if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					outdir = sd.FileName;
+				}
+				else return;
+			}
+			Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(templateList[comboBoxSplitGameSelect.Text], true);
+			SplitProgress spl = new SplitProgress(null, listBoxSplitFiles.Items.Cast<String>().ToList(), template, outdir, 0, comboBoxLabels.SelectedIndex);
 			spl.ShowDialog();
 		}
 

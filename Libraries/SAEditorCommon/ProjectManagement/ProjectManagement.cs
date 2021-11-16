@@ -83,22 +83,22 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("dataFolder")]
 			public string DataFolder { get; set; }
-            /// <summary>
+			/// <summary>
 			/// Game data folder name, e.g. 'SONICADV', 'resource/gd_PC' or 'system'.
 			/// </summary>
 			[XmlAttribute("gameDataFolderName")]
-            public string GameDataFolderName { get; set; }
-            /// <summary>
-            /// The filename to be checked against verified hashes to verify the game being used.
-            /// </summary>
-            [XmlAttribute("checkFile")]
+			public string GameDataFolderName { get; set; }
+			/// <summary>
+			/// The filename to be checked against verified hashes to verify the game being used.
+			/// </summary>
+			[XmlAttribute("checkFile")]
 			public string CheckFile { get; set; }
-            /// <summary>
+			/// <summary>
 			/// MD5 hashes (comma-separated) to be checked against to verify the game being used.
 			/// </summary>
 			[XmlAttribute("checkHashes")]
-            public string CheckHashes { get; set; }
-        }
+			public string CheckHashes { get; set; }
+		}
 
 		/// <summary>
 		/// <para>
@@ -127,32 +127,32 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("gameName")]
 			public string GameName { get; set; }
-            /// <summary>
+			/// <summary>
 			/// Game main executable (same as checkFile in game template)
 			/// </summary>
 			[XmlAttribute("checkFile")]
-            public string CheckFile { get; set; }
-            /// <summary>
-            /// The directory for the main game stored in the *.sap file.
-            /// </summary>
-            [XmlAttribute("gameFolder")]
+			public string CheckFile { get; set; }
+			/// <summary>
+			/// The directory for the main game stored in the *.sap file.
+			/// </summary>
+			[XmlAttribute("gameFolder")]
 			public string GameFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
 			/// <summary>
 			/// The file folder used by the game stored in the *.sap file. e.g. system, gd_PC, etc
 			/// </summary>
-            [XmlAttribute("gameDataFolder")]
-            public string GameDataFolder { get; set; } // The game's 'system' folder, e.g. SONICADV or system
+			[XmlAttribute("gameDataFolder")]
+			public string GameDataFolder { get; set; } // The game's 'system' folder, e.g. SONICADV or system
 			/// <summary>
 			/// The directory of the files for the project stored in the *.sap file.
 			/// </summary>
-            [XmlAttribute("projectFolder")]
+			[XmlAttribute("projectFolder")]
 			public string ProjectFolder { get; set; }
 			/// <summary>
 			/// Bool for if the project can be built or not stored in the *.sap file.
 			/// </summary>
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
-        }
+		}
 
 		/// <summary>
 		/// Stores names for the source file, data file, and a common name for processing data to be split.
@@ -259,13 +259,13 @@ namespace SAEditorCommon.ProjectManagement
 
 	public class ProjectFunctions
 	{
-        /// <summary>
+		/// <summary>
 		/// Checks a file's MD5 hash against a comma-separated list of known hashes.
 		/// </summary>
 		/// <returns>True if a match is found</returns>
 		private static bool checkFileHashes(string gameHashes, string checkFileHash)
 		{
-            string[] hashes = gameHashes.Split(',');
+			string[] hashes = gameHashes.Split(',');
 			
 			if (!hashes.Any(h => h.Equals(checkFileHash, StringComparison.OrdinalIgnoreCase)))
 				return false;
@@ -313,299 +313,299 @@ namespace SAEditorCommon.ProjectManagement
 				return null;
 		}
 
-        /// <summary>
-        /// Opens a Project Template file to begin the game data split. Optionally asks and saves game directory to template if one does not exist.
-        /// </summary>
-        /// <returns>SplitTemplate file</returns>
-        public static Templates.SplitTemplate openTemplateFile(string templateFilePath, bool ignoreGamePath = false)
-        {
-            Templates.SplitTemplate templateFile;
-            var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
-            var templateFileStream = File.OpenRead(templateFilePath);
-            templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
-            templateFileStream.Close();
-            if (ignoreGamePath)
-                return templateFile;
-            if (GetGamePath(templateFile.GameInfo.GameName) == "")
-            {
-                DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease select a valid game path containing this file: " + templateFile.GameInfo.CheckFile + ".\n\nPress OK to select a valid path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                if (gamePathWarning == DialogResult.OK)
-                {
-                FolderSelectionNew:
-                    var fsd = new FolderSelect.FolderSelectDialog();
-                    fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
-                    fsd.ShowDialog();
-                    if (Directory.Exists(fsd.FileName))
-                    {
-                        string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
-                        if (File.Exists(checkFile))
-                        {
-                            string checkFileHash = HelperFunctions.FileHash(checkFile);
-                            if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
-                            {
-                                TextWriter splitsWriter = File.CreateText(templateFilePath);
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
-                                templateFileSerializer.Serialize(splitsWriter, templateFile);
+		/// <summary>
+		/// Opens a Project Template file to begin the game data split. Optionally asks and saves game directory to template if one does not exist.
+		/// </summary>
+		/// <returns>SplitTemplate file</returns>
+		public static Templates.SplitTemplate openTemplateFile(string templateFilePath, bool ignoreGamePath = false)
+		{
+			Templates.SplitTemplate templateFile;
+			var templateFileSerializer = new XmlSerializer(typeof(Templates.SplitTemplate));
+			var templateFileStream = File.OpenRead(templateFilePath);
+			templateFile = (Templates.SplitTemplate)templateFileSerializer.Deserialize(templateFileStream);
+			templateFileStream.Close();
+			if (ignoreGamePath)
+				return templateFile;
+			if (GetGamePath(templateFile.GameInfo.GameName) == "")
+			{
+				DialogResult gamePathWarning = MessageBox.Show(("A game path has not been supplied for this template.\n\nPlease select a valid game path containing this file: " + templateFile.GameInfo.CheckFile + ".\n\nPress OK to select a valid path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gamePathWarning == DialogResult.OK)
+				{
+				FolderSelectionNew:
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+					fsd.ShowDialog();
+					if (Directory.Exists(fsd.FileName))
+					{
+						string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+						if (File.Exists(checkFile))
+						{
+							string checkFileHash = HelperFunctions.FileHash(checkFile);
+							if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
+							{
+								TextWriter splitsWriter = File.CreateText(templateFilePath);
+								SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
+								templateFileSerializer.Serialize(splitsWriter, templateFile);
 
-                                return templateFile;
-                            }
-                            else
-                            {
-                                DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                                if (pathWarning == DialogResult.Retry)
-                                {
-                                    goto FolderSelectionNew;
-                                }
-                                else
-                                    return null;
-                            }
+								return templateFile;
+							}
+							else
+							{
+								DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+								if (pathWarning == DialogResult.Retry)
+								{
+									goto FolderSelectionNew;
+								}
+								else
+									return null;
+							}
 
-                        }
-                        else
-                        {
-                            DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                            if (pathWarning == DialogResult.Retry)
-                            {
-                                goto FolderSelectionNew;
-                            }
-                            else
-                                return null;
-                        }
-                    }
-                    else
-                    {
-                        DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                        if (pathWarning == DialogResult.Retry)
-                        {
-                            goto FolderSelectionNew;
-                        }
-                        else
-                            return null;
-                    }
-                }
-                else
-                    return null;
-            }
-            else if (!Directory.Exists(GetGamePath(templateFile.GameInfo.GameName)))
-            {
-                DialogResult gamePathWarning = MessageBox.Show(("The folder for " + templateFile.GameInfo.GameName + " does not exist.\n\nPlease press OK and select the correct path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                if (gamePathWarning == DialogResult.OK)
-                {
-                FolderSelectionMissing:
-                    var fsd = new FolderSelect.FolderSelectDialog();
-                    fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
-                    fsd.ShowDialog();
-                    if (Directory.Exists(fsd.FileName))
-                    {
-                        string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
-                        if (File.Exists(checkFile))
-                        {
-                            string checkFileHash = HelperFunctions.FileHash(checkFile);
-                            if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
-                            {
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
-                                return templateFile;
-                            }
-                            else
-                            {
-                                DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                                if (pathWarning == DialogResult.Retry)
-                                {
-                                    goto FolderSelectionMissing;
-                                }
-                                else
-                                    return null;
-                            }
+						}
+						else
+						{
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.Retry)
+							{
+								goto FolderSelectionNew;
+							}
+							else
+								return null;
+						}
+					}
+					else
+					{
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						if (pathWarning == DialogResult.Retry)
+						{
+							goto FolderSelectionNew;
+						}
+						else
+							return null;
+					}
+				}
+				else
+					return null;
+			}
+			else if (!Directory.Exists(GetGamePath(templateFile.GameInfo.GameName)))
+			{
+				DialogResult gamePathWarning = MessageBox.Show(("The folder for " + templateFile.GameInfo.GameName + " does not exist.\n\nPlease press OK and select the correct path for " + templateFile.GameInfo.GameName + "."), "Game Path Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (gamePathWarning == DialogResult.OK)
+				{
+				FolderSelectionMissing:
+					var fsd = new FolderSelect.FolderSelectDialog();
+					fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+					fsd.ShowDialog();
+					if (Directory.Exists(fsd.FileName))
+					{
+						string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+						if (File.Exists(checkFile))
+						{
+							string checkFileHash = HelperFunctions.FileHash(checkFile);
+							if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
+							{
+								SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
+								return templateFile;
+							}
+							else
+							{
+								DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+								if (pathWarning == DialogResult.Retry)
+								{
+									goto FolderSelectionMissing;
+								}
+								else
+									return null;
+							}
 
-                        }
-                        else
-                        {
-                            DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                            if (pathWarning == DialogResult.Retry)
-                            {
-                                goto FolderSelectionMissing;
-                            }
-                            else
-                                return null;
-                        }
-                    }
-                    else
-                    {
-                        DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                        if (pathWarning == DialogResult.Retry)
-                        {
-                            goto FolderSelectionMissing;
-                        }
-                        else
-                            return null;
-                    }
-                }
-                else
-                    return null;
-            }
-            else
-                return templateFile;
-        }
+						}
+						else
+						{
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.Retry)
+							{
+								goto FolderSelectionMissing;
+							}
+							else
+								return null;
+						}
+					}
+					else
+					{
+						DialogResult pathWarning = MessageBox.Show(("No path was supplied."), "No Path Supplied", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						if (pathWarning == DialogResult.Retry)
+						{
+							goto FolderSelectionMissing;
+						}
+						else
+							return null;
+					}
+				}
+				else
+					return null;
+			}
+			else
+				return templateFile;
+		}
 
-        /// <summary>
-        /// Gets the path for a specified game from GamePaths.ini.
-        /// </summary>
-        /// <returns>Path string</returns>
-        public static string GetGamePath(string gameName)
-        {
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            // Release mode
-            string gamePathsFile = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
-            if (File.Exists(gamePathsFile))
-                goto getpath;
-            // Visual Studio mode
-            else
-            {
-                gamePathsFile = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
-                if (File.Exists(gamePathsFile))
-                    goto getpath;
-            }
-            return "";
-        getpath:
-            Dictionary<string, string> gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFile);
-            return gamePathsList.ContainsKey(gameName) ? gamePathsList[gameName] : "";
-        }
+		/// <summary>
+		/// Gets the path for a specified game from GamePaths.ini.
+		/// </summary>
+		/// <returns>Path string</returns>
+		public static string GetGamePath(string gameName)
+		{
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			// Release mode
+			string gamePathsFile = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
+			if (File.Exists(gamePathsFile))
+				goto getpath;
+			// Visual Studio mode
+			else
+			{
+				gamePathsFile = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
+				if (File.Exists(gamePathsFile))
+					goto getpath;
+			}
+			return "";
+		getpath:
+			Dictionary<string, string> gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFile);
+			return gamePathsList.ContainsKey(gameName) ? gamePathsList[gameName] : "";
+		}
 
-        /// <summary>
-        /// Sets the path for a specified game in GamePaths.ini.
-        /// </summary>
-        public static void SetGamePath(string gameName, string gamePath)
-        {
-            Dictionary<string, string> gamePathsList;
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            string gamePathsFilePath;
-            // Release mode
-            if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
-                gamePathsFilePath = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
-            // Visual Studio mode
-            else
-                gamePathsFilePath = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
-            if (File.Exists(gamePathsFilePath))
-                gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
-            else 
-                gamePathsList = new Dictionary<string, string>();
-            if (gamePathsList.ContainsKey(gameName))
-                gamePathsList[gameName] = gamePath;
-            else
-                gamePathsList.Add(gameName, gamePath);
-            IniSerializer.Serialize(gamePathsList, gamePathsFilePath);
-        }
+		/// <summary>
+		/// Sets the path for a specified game in GamePaths.ini.
+		/// </summary>
+		public static void SetGamePath(string gameName, string gamePath)
+		{
+			Dictionary<string, string> gamePathsList;
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			string gamePathsFilePath;
+			// Release mode
+			if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
+				gamePathsFilePath = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
+			// Visual Studio mode
+			else
+				gamePathsFilePath = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
+			if (File.Exists(gamePathsFilePath))
+				gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
+			else 
+				gamePathsList = new Dictionary<string, string>();
+			if (gamePathsList.ContainsKey(gameName))
+				gamePathsList[gameName] = gamePath;
+			else
+				gamePathsList.Add(gameName, gamePath);
+			IniSerializer.Serialize(gamePathsList, gamePathsFilePath);
+		}
 
-        /// <summary>
-        /// Returns a file path in the mod folder or in the game's fallback folder.
-        /// </summary>
-        public static string ModPathOrGameFallback(string path, string fallbackPath)
-        {
-            return (File.Exists(path)) ? path : fallbackPath;
-        }
+		/// <summary>
+		/// Returns a file path in the mod folder or in the game's fallback folder.
+		/// </summary>
+		public static string ModPathOrGameFallback(string path, string fallbackPath)
+		{
+			return (File.Exists(path)) ? path : fallbackPath;
+		}
 
-        /// <summary>
-        /// Splits data from a SplitEntry.
-        /// </summary>
-        public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, bool overwrite = true)
-        {
-            string datafilename;
-            switch (splitData.SourceFile)
-            {
-                case ("system/chrmodels.dll"):
-                    if (File.Exists(Path.Combine(gameFolder, "system/chrmodels_orig.dll")))
-                        datafilename = Path.Combine(gameFolder, "system/chrmodels_orig.dll");
-                    else
-                        datafilename = Path.Combine(gameFolder, splitData.SourceFile);
-                    break;
-                case ("Data_DLL.dll"):
-                    if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
-                        datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll");
-                    else
-                        datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL.dll");
-                    break;
-                default:
-                    datafilename = Path.Combine(gameFolder, splitData.SourceFile);
-                    break;
-            }
-            string inifilename = Path.Combine(iniFolder, (splitData.IniFile.ToLower() + ".ini"));
-            string projectFolderName = (outputFolder + "\\");
+		/// <summary>
+		/// Splits data from a SplitEntry.
+		/// </summary>
+		public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, bool overwrite = true)
+		{
+			string datafilename;
+			switch (splitData.SourceFile)
+			{
+				case ("system/chrmodels.dll"):
+					if (File.Exists(Path.Combine(gameFolder, "system/chrmodels_orig.dll")))
+						datafilename = Path.Combine(gameFolder, "system/chrmodels_orig.dll");
+					else
+						datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+					break;
+				case ("Data_DLL.dll"):
+					if (File.Exists(Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll")))
+						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL_orig.dll");
+					else
+						datafilename = Path.Combine(gameFolder, "resource/gd_PC/DLL/Win32/Data_DLL.dll");
+					break;
+				default:
+					datafilename = Path.Combine(gameFolder, splitData.SourceFile);
+					break;
+			}
+			string inifilename = Path.Combine(iniFolder, (splitData.IniFile.ToLower() + ".ini"));
+			string projectFolderName = (outputFolder + "\\");
 
-            string splitItem;
+			string splitItem;
 
-            if (splitData.CmnName != null)
-                splitItem = splitData.CmnName;
-            else
-                splitItem = splitData.IniFile;
+			if (splitData.CmnName != null)
+				splitItem = splitData.CmnName;
+			else
+				splitItem = splitData.IniFile;
 
-            if (progress != null)
-            {
-                progress.StepProgress();
-                progress.SetStep("Splitting " + splitItem + " from " + splitData.SourceFile);
-            }
+			if (progress != null)
+			{
+				progress.StepProgress();
+				progress.SetStep("Splitting " + splitItem + " from " + splitData.SourceFile);
+			}
 
-            #region Validating Inputs
-            if (!File.Exists(datafilename))
-            {
-                MessageBox.Show((datafilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			#region Validating Inputs
+			if (!File.Exists(datafilename))
+			{
+				MessageBox.Show((datafilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                throw new Exception(SplitTools.Split.SplitERRORVALUE.NoSourceFile.ToString());
-                //return (int)ERRORVALUE.NoSourceFile;
-            }
+				throw new Exception(SplitTools.Split.SplitERRORVALUE.NoSourceFile.ToString());
+				//return (int)ERRORVALUE.NoSourceFile;
+			}
 
-            if (!File.Exists(inifilename))
-            {
-                MessageBox.Show((inifilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			if (!File.Exists(inifilename))
+			{
+				MessageBox.Show((inifilename + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                throw new Exception(SplitTools.Split.SplitERRORVALUE.NoDataMapping.ToString());
-                //return (int)ERRORVALUE.NoDataMapping;
-            }
-            #endregion
+				throw new Exception(SplitTools.Split.SplitERRORVALUE.NoDataMapping.ToString());
+				//return (int)ERRORVALUE.NoDataMapping;
+			}
+			#endregion
 
-            // switch on file extension - if dll, use dll splitter
-            System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
-            string ext = fileInfo.Extension;
+			// switch on file extension - if dll, use dll splitter
+			System.IO.FileInfo fileInfo = new System.IO.FileInfo(datafilename);
+			string ext = fileInfo.Extension;
 
-            switch (ext.ToLower())
-            {
-                case ".dll":
-                    SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
-                    break;
-                case ".nb":
-                    SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, overwrite);
-                    break;
-                default:
-                    SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
-                    break;
-            }
-        }
+			switch (ext.ToLower())
+			{
+				case ".dll":
+					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
+					break;
+				case ".nb":
+					SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, overwrite);
+					break;
+				default:
+					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
+					break;
+			}
+		}
 
-        /// <summary>
-        /// Splits data from a SplitEntryMDL.
-        /// </summary>
-        public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
-        {
-            string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
-            string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
+		/// <summary>
+		/// Splits data from a SplitEntryMDL.
+		/// </summary>
+		public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		{
+			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
-            if (progress != null)
-            {
-                progress.StepProgress();
-                progress.SetStep("Splitting models from " + splitMDL.ModelFile);
-            }
+			if (progress != null)
+			{
+				progress.StepProgress();
+				progress.SetStep("Splitting models from " + splitMDL.ModelFile);
+			}
 
-            #region Validating Inputs
-            if (!File.Exists(filePath))
-            {
-                MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			#region Validating Inputs
+			if (!File.Exists(filePath))
+			{
+				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
-                //return (int)ERRORVALUE.NoSourceFile;
-            }
-            #endregion
+				throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
+				//return (int)ERRORVALUE.NoSourceFile;
+			}
+			#endregion
 
 			if (overwrite)
 				sa2MDL.Split(splitMDL.BigEndian, filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
-        }
-    }
+		}
+	}
 }

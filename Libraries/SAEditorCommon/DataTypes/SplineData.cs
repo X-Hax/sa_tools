@@ -87,10 +87,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 			vertexHelper = new PointHelper { HandleSize = 3f };
 		}
 
-        public void Save(string filename)
-        {
-            splineData.Save(filename);
-        }
+		public void Save(string filename)
+		{
+			splineData.Save(filename);
+		}
 
 		public SplineData(EditorItemSelection selectionManager)
 			: base(selectionManager)

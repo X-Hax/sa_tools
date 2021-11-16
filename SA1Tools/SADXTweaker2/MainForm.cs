@@ -80,7 +80,7 @@ namespace SADXTweaker2
 				return;
 			}
 			Program.project = projtmp;
-            Program.IniData = projtmp.SplitEntries.Where(a => a.SourceFile == "sonic.exe").Select(b => IniSerializer.Deserialize<IniData>(Path.Combine(projtmp.GameInfo.ProjectFolder, b.IniFile + "_data.ini"))).ToArray();
+			Program.IniData = projtmp.SplitEntries.Where(a => a.SourceFile == "sonic.exe").Select(b => IniSerializer.Deserialize<IniData>(Path.Combine(projtmp.GameInfo.ProjectFolder, b.IniFile + "_data.ini"))).ToArray();
 			windowToolStripMenuItem.Enabled = true;
 			if (Settings.MRUList.Contains(filename))
 			{

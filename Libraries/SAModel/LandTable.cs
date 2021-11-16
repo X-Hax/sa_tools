@@ -608,11 +608,11 @@ namespace SAModel
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-            if (nometa)
-            {
-                TextureList = 0;
-                TextureFileName = "";
-            }
+			if (nometa)
+			{
+				TextureList = 0;
+				TextureFileName = "";
+			}
 			byte[] lvl = GetBytes(0x10, format, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			if (!nometa) file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));

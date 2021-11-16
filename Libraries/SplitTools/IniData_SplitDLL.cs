@@ -43,8 +43,8 @@ namespace SplitTools.SplitDLL
 		public Game Game { get; set; }
 		public DictionaryContainer<string> Exports { get; set; }
 		public DictionaryContainer<FileTypeHash> Files { get; set; }
-        public DictionaryContainer<SAMDLMetadata> SAMDLData { get; set; }
-        public DictionaryContainer<FileTypeHash> HiddenFiles { get; set; }
+		public DictionaryContainer<SAMDLMetadata> SAMDLData { get; set; }
+		public DictionaryContainer<FileTypeHash> HiddenFiles { get; set; }
 		public TexListContainer TexLists { get; set; }
 		[IniName("Item")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets, StartIndex = 1)]
@@ -57,7 +57,7 @@ namespace SplitTools.SplitDLL
 		{
 			Exports = new DictionaryContainer<string>();
 			Files = new DictionaryContainer<FileTypeHash>();
-            SAMDLData = new DictionaryContainer<SAMDLMetadata>();
+			SAMDLData = new DictionaryContainer<SAMDLMetadata>();
 			HiddenFiles = new DictionaryContainer<FileTypeHash>();
 			Items = new List<DllItemInfo>();
 			DataItems = new List<DllDataItemInfo>();
@@ -153,74 +153,74 @@ namespace SplitTools.SplitDLL
 		}
 	}
 
-    [TypeConverter(typeof(StringConverter<SAMDLMetadata>))]
-    public class SAMDLMetadata
-    {
-        public string ModelName { get; set; }
-        public string[] TextureArchives { get; set; }
-        public string TextureNameFile { get; set; }
-        public int[] TextureIDs { get; set; }
+	[TypeConverter(typeof(StringConverter<SAMDLMetadata>))]
+	public class SAMDLMetadata
+	{
+		public string ModelName { get; set; }
+		public string[] TextureArchives { get; set; }
+		public string TextureNameFile { get; set; }
+		public int[] TextureIDs { get; set; }
 
-        public SAMDLMetadata(string name, string[] textures, int[] textureIDs = null, string texnameFile = null)
-        {
-            ModelName = name;
-            TextureArchives = textures;
-            TextureIDs = textureIDs;
-            TextureNameFile = texnameFile;
-        }
+		public SAMDLMetadata(string name, string[] textures, int[] textureIDs = null, string texnameFile = null)
+		{
+			ModelName = name;
+			TextureArchives = textures;
+			TextureIDs = textureIDs;
+			TextureNameFile = texnameFile;
+		}
 
-        public SAMDLMetadata(string data)
-        {
-            string[] split = data.Split('|');
-            ModelName = split[0];
-            if (split.Length > 1)
-                TextureArchives = split[1].Split(',');
-            if (split.Length > 2)
-            {
-                string[] texids_s = split[2].Split(',');
-                List<int> texid_list = new List<int>();
-                for (int i = 0; i < texids_s.Length; i++)
-                    texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
-                TextureIDs = texid_list.ToArray();
-            }
-            if (split.Length > 3)
-            {
-                TextureIDs = null;
-                TextureNameFile = split[3];
-            }
-        }
+		public SAMDLMetadata(string data)
+		{
+			string[] split = data.Split('|');
+			ModelName = split[0];
+			if (split.Length > 1)
+				TextureArchives = split[1].Split(',');
+			if (split.Length > 2)
+			{
+				string[] texids_s = split[2].Split(',');
+				List<int> texid_list = new List<int>();
+				for (int i = 0; i < texids_s.Length; i++)
+					texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+				TextureIDs = texid_list.ToArray();
+			}
+			if (split.Length > 3)
+			{
+				TextureIDs = null;
+				TextureNameFile = split[3];
+			}
+		}
 
-        public override string ToString()
-        {
-            string result = ModelName;
-            if (TextureArchives != null)
-            {
-                result += "|";
-                for (int t = 0; t < TextureArchives.Length; t++)
-                {
-                    result += TextureArchives[t];
-                    if (t < TextureArchives.Length - 1)
-                        result += ",";
-                }
-            }
-            if (TextureNameFile != null && TextureNameFile!="")
-                result += "|0|" + TextureNameFile;
-            else if (TextureIDs != null)
-            {
-                StringBuilder sb = new StringBuilder();
-                for (int t = 0; t < TextureIDs.Length; t++)
-                {
-                    sb.Append(TextureIDs[t].ToString());
-                    if (t < TextureIDs.Length - 1)
-                        sb.Append(",");
+		public override string ToString()
+		{
+			string result = ModelName;
+			if (TextureArchives != null)
+			{
+				result += "|";
+				for (int t = 0; t < TextureArchives.Length; t++)
+				{
+					result += TextureArchives[t];
+					if (t < TextureArchives.Length - 1)
+						result += ",";
+				}
+			}
+			if (TextureNameFile != null && TextureNameFile!="")
+				result += "|0|" + TextureNameFile;
+			else if (TextureIDs != null)
+			{
+				StringBuilder sb = new StringBuilder();
+				for (int t = 0; t < TextureIDs.Length; t++)
+				{
+					sb.Append(TextureIDs[t].ToString());
+					if (t < TextureIDs.Length - 1)
+						sb.Append(",");
 				}
 				result += "|" + sb.ToString();
 			}
 			return result;
-        }
-    }
+		}
+	}
 
-    public class TexListContainer : IEnumerable<KeyValuePair<uint, DllTexListInfo>>
+	public class TexListContainer : IEnumerable<KeyValuePair<uint, DllTexListInfo>>
 	{
 		[IniCollection(IniCollectionMode.IndexOnly, KeyConverter = typeof(UInt32HexConverter))]
 		public Dictionary<uint, DllTexListInfo> Items { get; set; }

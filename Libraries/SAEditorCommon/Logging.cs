@@ -9,10 +9,10 @@ using SharpDX.Mathematics.Interop;
 
 namespace SAModel.SAEditorCommon
 {
-    /// <summary>
-    /// Class for creating log files.
-    /// </summary>
-    public class Logger
+	/// <summary>
+	/// Class for creating log files.
+	/// </summary>
+	public class Logger
 	{
 		private string file;
 		public List<string> LogQueue { get; set; }

@@ -136,8 +136,8 @@ namespace SAModel.SAEditorCommon.UI
 			Hide();
 		}
 
-        private void ignoreMaterialColorsCheck_Click(object sender, EventArgs e)
-        {
+		private void ignoreMaterialColorsCheck_Click(object sender, EventArgs e)
+		{
 			EditorOptions.IgnoreMaterialColors = ignoreMaterialColorsCheck.Checked;
 			FormUpdated();
 		}
@@ -175,7 +175,7 @@ namespace SAModel.SAEditorCommon.UI
 		}
 
 		private void listBoxActions_SelectedIndexChanged(object sender, EventArgs e)
-        {
+		{
 			if (listBoxActions.SelectedIndex == -1)
 			{
 				groupBoxKeys.Enabled = false;
@@ -213,8 +213,8 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
-        private void buttonResetSelectedKey_Click(object sender, EventArgs e)
-        {
+		private void buttonResetSelectedKey_Click(object sender, EventArgs e)
+		{
 			switch (SelectedKey)
 			{
 				case SelectedKeyType.Main:
@@ -252,13 +252,13 @@ namespace SAModel.SAEditorCommon.UI
 		}
 
 		private void textBoxAltKey_KeyDown(object sender, KeyEventArgs e)
-        {
+		{
 			textBoxAltKey.Text = e.KeyCode.ToString();
 			actionKeyMappings[listBoxActions.SelectedIndex].AltKey = e.KeyCode;
 		}
 
-        private void textBoxAltKey_MouseDown(object sender, MouseEventArgs e)
-        {
+		private void textBoxAltKey_MouseDown(object sender, MouseEventArgs e)
+		{
 			SelectedKey = SelectedKeyType.Alt;
 			if (e.Button == MouseButtons.Middle)
 			{
@@ -268,8 +268,8 @@ namespace SAModel.SAEditorCommon.UI
 			SelectedKeyChanged();
 		}
 
-        private void textBoxModifier_KeyDown(object sender, KeyEventArgs e)
-        {
+		private void textBoxModifier_KeyDown(object sender, KeyEventArgs e)
+		{
 			textBoxModifier.Text = e.KeyCode.ToString();
 			actionKeyMappings[listBoxActions.SelectedIndex].Modifiers = e.KeyCode;
 		}

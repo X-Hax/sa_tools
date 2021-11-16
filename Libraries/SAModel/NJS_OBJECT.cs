@@ -286,31 +286,31 @@ namespace SAModel
 			return result.ToArray();
 		}
 
-        public NJS_OBJECT[] GetObjectsAnimated()
-        {
-            return GetObjects().Where(a => a.Animate).ToArray();
-        }
+		public NJS_OBJECT[] GetObjectsAnimated()
+		{
+			return GetObjects().Where(a => a.Animate).ToArray();
+		}
 
-        public int[] GetVertexCounts()
-        {
-            switch (GetModelFormat())
-            {
-                case ModelFormat.Basic:
-                case ModelFormat.BasicDX:
-                    return GetObjects().Where(a => a.Animate).Select(a => (a.Attach as BasicAttach)?.Vertex?.Length ?? 0).ToArray();
-                case ModelFormat.Chunk:
-                    return GetObjects().Where(a => a.Animate).Select(a =>
-                    {
-                        ChunkAttach cnkatt = a.Attach as ChunkAttach;
-                        if (cnkatt != null && cnkatt.Vertex != null)
-                            return cnkatt.Vertex.Sum(b => b.VertexCount);
-                        return 0;
-                    }).ToArray();
-                default:
-                    return new int[0];
-            }
-          
-        }
+		public int[] GetVertexCounts()
+		{
+			switch (GetModelFormat())
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+					return GetObjects().Where(a => a.Animate).Select(a => (a.Attach as BasicAttach)?.Vertex?.Length ?? 0).ToArray();
+				case ModelFormat.Chunk:
+					return GetObjects().Where(a => a.Animate).Select(a =>
+					{
+						ChunkAttach cnkatt = a.Attach as ChunkAttach;
+						if (cnkatt != null && cnkatt.Vertex != null)
+							return cnkatt.Vertex.Sum(b => b.VertexCount);
+						return 0;
+					}).ToArray();
+				default:
+					return new int[0];
+			}
+		  
+		}
 
 		public int CountAnimated()
 		{

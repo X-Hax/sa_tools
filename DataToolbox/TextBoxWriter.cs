@@ -55,9 +55,9 @@ namespace SAModel.DataToolbox
 		}
 
 		public override Encoding Encoding
-        {
-            get { return Encoding.Unicode; }
-        }
+		{
+			get { return Encoding.Unicode; }
+		}
 
 	}
 }

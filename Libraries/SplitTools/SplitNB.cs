@@ -81,136 +81,136 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 				File.WriteAllBytes(dest, result.ToArray());
 			}
 		}
-        public static void SplitNBFile(string filename, bool extractchunks, string outdir, int verbose = 0, string inifilename = null, bool overwrite = true)
-        {
-            Dictionary<int, string> sectionlist = new Dictionary<int, string>();
-            Dictionary<int, NJS_OBJECT> modellist = new Dictionary<int, NJS_OBJECT>();
-            Dictionary<int, NJS_MOTION> animlist = new Dictionary<int, NJS_MOTION>();
-            byte[] file = File.ReadAllBytes(filename);
-            if (file.Length == 180920) // Patch in unused rotation for E101R, required for rebuilding with correct pointers
-            {
-                file[129896] = 0xE0;
-                file[129897] = 0x0A;
-                file[129904] = 0x02;
-            }
-            if (BitConverter.ToInt32(file, 0) != 0x04424A4E)
-            {
-                Console.WriteLine("Invalid NB file.");
-                return;
-            }
-            if (!Directory.Exists(outdir))
-                Directory.CreateDirectory(outdir);
-            Environment.CurrentDirectory = outdir;
-            int numfiles = BitConverter.ToInt16(file, 4);
-            Dictionary<int, string> splitfilenames = new Dictionary<int, string>();
-            if (inifilename != null) inifilename = Path.GetFullPath(inifilename);
-            if (File.Exists(inifilename))
-            {
-                splitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inifilename);
-                if (verbose > 0)
-                    Console.WriteLine("Split INI: {0}", inifilename);
-            }
-            else
-            {
-                if (verbose > 0)
-                    Console.WriteLine("Split INI {0} not found!", inifilename);
-                for (int i = 0; i < numfiles; i++)
-                {
-                    splitfilenames[i] = i.ToString("D2");
-                }
-            }
-            int curaddr = 8;
-            for (int i = 0; i < numfiles; i++)
-            {
-                ushort type = BitConverter.ToUInt16(file, curaddr);
-                byte[] chunk = new byte[BitConverter.ToInt32(file, curaddr + 4)];
-                Array.Copy(file, curaddr + 8, chunk, 0, chunk.Length);
-                switch (type)
-                {
-                    case 0:
-                        if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is empty", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
-                        sectionlist.Add(i, "NULL");
-                        break;
-                    case 1:
-                        if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
-                        if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-                        NJS_OBJECT mdl = ProcessModel(chunk, verbose, curaddr + 8);
-                        //if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mdl));
-                        // Assume there is no description/texture for SAMDL project mode
-                        string[] metadata = new string[0];
-                        string outFilename = splitfilenames[i];
-                        if (splitfilenames[i].Contains("|"))
-                        {
-                            metadata = splitfilenames[i].Split('|'); // Filename|Description|Texture file
-                            outFilename = metadata[0];
-                        }
-                        string outResult = outFilename + ".sa1mdl";
-                            modellist.Add(i, mdl);
-                            if (metadata.Length > 1)
-                            outResult += ("|" + metadata[1]);
-                            if (metadata.Length > 2)
-                            outResult += ("|" + metadata[2]);
-                        sectionlist.Add(i, outResult);
-                        break;
-                    case 3:
-                        if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
-                        if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-                        NJS_MOTION mot = ProcessMotion(chunk, verbose, curaddr + 8);
-                        //if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mot));
-                        animlist.Add(i, mot);
-                        sectionlist.Add(i, splitfilenames[i] + ".saanim");
-                        break;
-                    default:
-                        if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is an unknown type", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
-                        if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-                        sectionlist.Add(i, splitfilenames[i] + ".wtf");
-                        break;
-                }
-                curaddr += chunk.Length + 8;
-            }
-            // Save models and animations
-            foreach (var modelitem in modellist)
-            {
-                // If the filename field contains description/texture, split it
-                string filenameString = splitfilenames[modelitem.Key];
-                if (splitfilenames[modelitem.Key].Contains("|"))
-                {
-                    string[] filenameSplit = filenameString.Split('|');
-                    filenameString = filenameSplit[0];
-                }
+		public static void SplitNBFile(string filename, bool extractchunks, string outdir, int verbose = 0, string inifilename = null, bool overwrite = true)
+		{
+			Dictionary<int, string> sectionlist = new Dictionary<int, string>();
+			Dictionary<int, NJS_OBJECT> modellist = new Dictionary<int, NJS_OBJECT>();
+			Dictionary<int, NJS_MOTION> animlist = new Dictionary<int, NJS_MOTION>();
+			byte[] file = File.ReadAllBytes(filename);
+			if (file.Length == 180920) // Patch in unused rotation for E101R, required for rebuilding with correct pointers
+			{
+				file[129896] = 0xE0;
+				file[129897] = 0x0A;
+				file[129904] = 0x02;
+			}
+			if (BitConverter.ToInt32(file, 0) != 0x04424A4E)
+			{
+				Console.WriteLine("Invalid NB file.");
+				return;
+			}
+			if (!Directory.Exists(outdir))
+				Directory.CreateDirectory(outdir);
+			Environment.CurrentDirectory = outdir;
+			int numfiles = BitConverter.ToInt16(file, 4);
+			Dictionary<int, string> splitfilenames = new Dictionary<int, string>();
+			if (inifilename != null) inifilename = Path.GetFullPath(inifilename);
+			if (File.Exists(inifilename))
+			{
+				splitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inifilename);
+				if (verbose > 0)
+					Console.WriteLine("Split INI: {0}", inifilename);
+			}
+			else
+			{
+				if (verbose > 0)
+					Console.WriteLine("Split INI {0} not found!", inifilename);
+				for (int i = 0; i < numfiles; i++)
+				{
+					splitfilenames[i] = i.ToString("D2");
+				}
+			}
+			int curaddr = 8;
+			for (int i = 0; i < numfiles; i++)
+			{
+				ushort type = BitConverter.ToUInt16(file, curaddr);
+				byte[] chunk = new byte[BitConverter.ToInt32(file, curaddr + 4)];
+				Array.Copy(file, curaddr + 8, chunk, 0, chunk.Length);
+				switch (type)
+				{
+					case 0:
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is empty", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						sectionlist.Add(i, "NULL");
+						break;
+					case 1:
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a model", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
+						NJS_OBJECT mdl = ProcessModel(chunk, verbose, curaddr + 8);
+						//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mdl));
+						// Assume there is no description/texture for SAMDL project mode
+						string[] metadata = new string[0];
+						string outFilename = splitfilenames[i];
+						if (splitfilenames[i].Contains("|"))
+						{
+							metadata = splitfilenames[i].Split('|'); // Filename|Description|Texture file
+							outFilename = metadata[0];
+						}
+						string outResult = outFilename + ".sa1mdl";
+							modellist.Add(i, mdl);
+							if (metadata.Length > 1)
+							outResult += ("|" + metadata[1]);
+							if (metadata.Length > 2)
+							outResult += ("|" + metadata[2]);
+						sectionlist.Add(i, outResult);
+						break;
+					case 3:
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
+						NJS_MOTION mot = ProcessMotion(chunk, verbose, curaddr + 8);
+						//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mot));
+						animlist.Add(i, mot);
+						sectionlist.Add(i, splitfilenames[i] + ".saanim");
+						break;
+					default:
+						if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is an unknown type", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
+						if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
+						sectionlist.Add(i, splitfilenames[i] + ".wtf");
+						break;
+				}
+				curaddr += chunk.Length + 8;
+			}
+			// Save models and animations
+			foreach (var modelitem in modellist)
+			{
+				// If the filename field contains description/texture, split it
+				string filenameString = splitfilenames[modelitem.Key];
+				if (splitfilenames[modelitem.Key].Contains("|"))
+				{
+					string[] filenameSplit = filenameString.Split('|');
+					filenameString = filenameSplit[0];
+				}
 
-                List<string> anims = new List<string>();
-                foreach (var animitem in animlist)
-                {
-                    string filenameStringAnim = splitfilenames[animitem.Key];
-                    if (splitfilenames[animitem.Key].Contains("|"))
-                    {
-                        string[] filenameSplitAnim = filenameStringAnim.Split('|');
-                        filenameStringAnim = filenameSplitAnim[0];
-                    }
-                    if (modelitem.Value.CountAnimated() == animitem.Value.ModelParts)
-                    {
+				List<string> anims = new List<string>();
+				foreach (var animitem in animlist)
+				{
+					string filenameStringAnim = splitfilenames[animitem.Key];
+					if (splitfilenames[animitem.Key].Contains("|"))
+					{
+						string[] filenameSplitAnim = filenameStringAnim.Split('|');
+						filenameStringAnim = filenameSplitAnim[0];
+					}
+					if (modelitem.Value.CountAnimated() == animitem.Value.ModelParts)
+					{
 						if (File.Exists(Path.Combine(outdir, filenameStringAnim + ".saanim")) && !overwrite)
 							return;
 						if (!Directory.Exists(Path.GetDirectoryName(filenameStringAnim + ".saanim")) && Path.GetDirectoryName(filenameStringAnim + ".saanim") != "")
-                            Directory.CreateDirectory(Path.GetDirectoryName(filenameStringAnim + ".saanim"));
-                        animitem.Value.Save(filenameStringAnim + ".saanim");
-                        System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
-                        PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(outdir, filenameStringAnim + ".saanim")), 0, Path.GetFullPath(filenameStringAnim + ".saanim"), 0);
-                        anims.Add(sb.ToString());
-                    }
-                }
+							Directory.CreateDirectory(Path.GetDirectoryName(filenameStringAnim + ".saanim"));
+						animitem.Value.Save(filenameStringAnim + ".saanim");
+						System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+						PathRelativePathTo(sb, Path.GetFullPath(Path.Combine(outdir, filenameStringAnim + ".saanim")), 0, Path.GetFullPath(filenameStringAnim + ".saanim"), 0);
+						anims.Add(sb.ToString());
+					}
+				}
 				if (File.Exists(Path.Combine(outdir, filenameString + ".sa1mdl")) && !overwrite)
 					return;
 				if (!Directory.Exists(Path.GetDirectoryName(filenameString + ".sa1mdl")) && Path.GetDirectoryName(filenameString + ".sa1mdl") != "")
-                    Directory.CreateDirectory(Path.GetDirectoryName(filenameString + ".sa1mdl"));
-                ModelFile.CreateFile(filenameString + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
-            }
-            string sectionListFilename = Path.GetFileNameWithoutExtension(filename) + ".ini";
-            if (inifilename != null)
-                sectionListFilename = Path.GetFileNameWithoutExtension(inifilename) + "_data.ini";
-            IniSerializer.Serialize(sectionlist, Path.Combine(outdir, sectionListFilename));
-        }
+					Directory.CreateDirectory(Path.GetDirectoryName(filenameString + ".sa1mdl"));
+				ModelFile.CreateFile(filenameString + ".sa1mdl", modelitem.Value, anims.ToArray(), null, null, null, ModelFormat.Basic);
+			}
+			string sectionListFilename = Path.GetFileNameWithoutExtension(filename) + ".ini";
+			if (inifilename != null)
+				sectionListFilename = Path.GetFileNameWithoutExtension(inifilename) + "_data.ini";
+			IniSerializer.Serialize(sectionlist, Path.Combine(outdir, sectionListFilename));
+		}
 		static byte[] GetSections(NJS_OBJECT mdl)
 		{
 			List<byte> result = new List<byte>();
