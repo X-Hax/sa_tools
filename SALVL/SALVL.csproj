@@ -1,325 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5997DC6A-DA95-487E-BB19-2D8890684A54}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SAModel.SALVL</RootNamespace>
-    <AssemblyName>SALVL</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\build\tools\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>0</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\build\tools\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
-      <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.4.0.1\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.4.0.1\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D9.4.2.0\lib\net45\SharpDX.Direct3D9.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.5.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.Metadata.5.0.0\lib\net461\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encoding.CodePages, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encoding.CodePages.4.5.1\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="VrSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\VrSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DrawLevel.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImportExport.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Input.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LevelSelectMenu.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Loading.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ObjectDefinitions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Saving.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\BinaryFileDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\BinaryFileDialog.designer.cs">
-      <DependentUpon>BinaryFileDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DefaultActionList.cs" />
-    <Compile Include="UI\EditLevelInfoDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\EditLevelInfoDialog.designer.cs">
-      <DependentUpon>EditLevelInfoDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\LevelSelectDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\LevelSelectDialog.Designer.cs">
-      <DependentUpon>LevelSelectDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="UI\BinaryFileDialog.resx">
-      <DependentUpon>BinaryFileDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\EditLevelInfoDialog.resx">
-      <DependentUpon>EditLevelInfoDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\LevelSelectDialog.resx">
-      <DependentUpon>LevelSelectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
-      <Project>{ec8bb2b3-1975-41b9-8d59-3a6403271112}</Project>
-      <Name>FraGag.Compression.Prs</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
-      <Project>{50847bdb-699d-4a2e-aaf7-1ea58e1ec48e}</Project>
-      <Name>SplitTools</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
-      <Project>{0D72870C-29A2-4B16-B016-2F2E266A0E64}</Project>
-      <Name>SAEditorCommon</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
-      <Project>{E81631CC-8721-425B-87A3-CB6199DECAF4}</Project>
-      <Name>SAModel.Direct3D</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
-      <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
-      <Name>SAModel</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\copy.png" />
-    <None Include="Resources\cut.png" />
-    <None Include="Resources\delete.png" />
-    <None Include="Resources\paste.png" />
-    <None Include="Resources\SelectIcon.png" />
-    <None Include="Resources\MoveIcon.png" />
-    <None Include="Resources\RotateIcon.png" />
-    <None Include="Resources\ScaleIcon.png" />
-    <None Include="Resources\hyoji_zanki_a.png" />
-    <None Include="Resources\hyoji_zanki_e.png" />
-    <None Include="Resources\hyoji_zanki_k.png" />
-    <None Include="Resources\hyoji_zanki_s.png" />
-    <None Include="Resources\hyoji_zanki_t.png" />
-    <None Include="Resources\hyoji_zankib.png" />
-    <None Include="Resources\add.png" />
-    <None Include="Resources\point.png" />
-    <None Include="Resources\settings.png" />
-    <None Include="Resources\deathzone.png" />
-    <None Include="Resources\background.png" />
-    <None Include="Resources\set.png" />
-    <None Include="Resources\cam.png" />
-    <None Include="Resources\mis.png" />
-    <None Include="Resources\splines.png" />
-    <None Include="Resources\advanced.png" />
-    <None Include="Resources\import.png" />
-    <None Include="Resources\export.png" />
-    <None Include="Resources\save.png" />
-    <None Include="Resources\help.png" />
-    <None Include="Resources\bug.png" />
-    <None Include="Resources\stats.png" />
-    <None Include="Resources\bounds.png" />
-    <None Include="Resources\levelitem.png" />
-    <None Include="Resources\duplicate.png" />
-    <None Include="Resources\startpos.png" />
-    <None Include="Resources\geoanim.png" />
-    <None Include="Resources\find.png" />
-    <None Include="Resources\messages.png" />
-    <None Include="Resources\lighting.png" />
-    <None Include="Resources\jumpzero.png" />
-    <None Include="Resources\material.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon_dxLvl2.ico" />
-    <None Include="Resources\open.png" />
-    <None Include="Resources\assimp.png" />
-    <None Include="Resources\samdl.png" />
-    <None Include="Resources\source.png" />
-    <None Include="Resources\editinfo.png" />
-    <None Include="Resources\save_advanced.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.4.1.0\build\AssimpNet.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets'))" />
-  </Target>
-  <Import Project="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /D /Y "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.CSharp.*" "$(ProjectDir)..\build\tools\lib\Microsoft.CodeAnalysis.CSharp.*"
-xcopy /D /Y "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Buffers.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Collections.Immutable.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Memory.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Numerics.Vectors.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Reflection.Metadata.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Runtime.CompilerServices.Unsafe.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Text.Encoding.CodePages.*" "$(ProjectDir)..\build\tools\lib\"
-xcopy /D /Y "$(ProjectDir)..\build\tools\System.Threading.Tasks.Extensions.*" "$(ProjectDir)..\build\tools\lib\"
-rmdir /S /Q "$(ProjectDir)..\build\tools\cs"
-rmdir /S /Q "$(ProjectDir)..\build\tools\de"
-rmdir /S /Q "$(ProjectDir)..\build\tools\es"
-rmdir /S /Q "$(ProjectDir)..\build\tools\fr"
-rmdir /S /Q "$(ProjectDir)..\build\tools\it"
-rmdir /S /Q "$(ProjectDir)..\build\tools\ja"
-rmdir /S /Q "$(ProjectDir)..\build\tools\ko"
-rmdir /S /Q "$(ProjectDir)..\build\tools\pl"
-rmdir /S /Q "$(ProjectDir)..\build\tools\pt-BR"
-rmdir /S /Q "$(ProjectDir)..\build\tools\ru"
-rmdir /S /Q "$(ProjectDir)..\build\tools\tr"
-rmdir /S /Q "$(ProjectDir)..\build\tools\zh-Hans"
-rmdir /S /Q "$(ProjectDir)..\build\tools\zh-Hant"
-del /Q "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.CSharp.*"
-del /Q "$(ProjectDir)..\build\tools\Microsoft.CodeAnalysis.*"
-del /Q "$(ProjectDir)..\build\tools\System.Buffers.*"
-del /Q "$(ProjectDir)..\build\tools\System.Collections.Immutable.*"
-del /Q "$(ProjectDir)..\build\tools\System.Memory.*"
-del /Q "$(ProjectDir)..\build\tools\System.Numerics.Vectors.*"
-del /Q "$(ProjectDir)..\build\tools\System.Reflection.Metadata.*"
-del /Q "$(ProjectDir)..\build\tools\System.Runtime.CompilerServices.Unsafe.*"
-del /Q "$(ProjectDir)..\build\tools\System.Text.Encoding.CodePages.*"
-del /Q "$(ProjectDir)..\build\tools\System.Threading.Tasks.Extensions.*"</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<RootNamespace>SAModel.SALVL</RootNamespace>
+		<UseWindowsForms>true</UseWindowsForms>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<OutputPath>..\build\tools\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+		<Platforms>x64;x86</Platforms>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="icon_dxLvl2.ico" />
+	</ItemGroup>
+	<ItemGroup>
+		<Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+		<Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
+	</ItemGroup>
+</Project>
