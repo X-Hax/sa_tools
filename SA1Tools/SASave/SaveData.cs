@@ -414,11 +414,11 @@ namespace SASave
 			BinaryReader file = new BinaryReader(new MemoryStream(data));
 			TimeOfDay = (TimesOfDay)file.ReadByte();
 			file.ReadByte();
-			CurrentSequence = file.ReadInt16();
-			NextSequence = file.ReadInt16();
+            CurrentSequence = file.ReadInt16();
+            NextSequence = file.ReadInt16();
 			Entrance = file.ReadInt16();
 			Level = file.ReadUInt16();
-			Destination = file.ReadInt16();
+            Destination = file.ReadInt16();
 			file.Close();
 		}
 

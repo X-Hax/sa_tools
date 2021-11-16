@@ -347,18 +347,18 @@ namespace SADXFontEdit
 	}
 
 	internal class FontItem
-	{
-		public ushort ID;
-		public byte[] miscdata;
-		public BitmapBits bits;
+    {
+        public ushort ID;
+        public byte[] miscdata;
+        public BitmapBits bits;
 		public string character;
 
-		public FontItem()
-		{
-		}
+        public FontItem()
+        {
+        }
 
-		public FontItem(byte[] file, int address, bool oldformat, ushort index)
-		{
+        public FontItem(byte[] file, int address, bool oldformat, ushort index)
+        {
 			if (!oldformat)
 			{
 				ID = BitConverter.ToUInt16(file, address);
@@ -372,17 +372,17 @@ namespace SADXFontEdit
 				miscdata = new byte[0xE];
 				bits = new BitmapBits(file, address, true);
 			}
-		}
+        }
 
-		public byte[] GetBytes()
-		{
-			List<byte> result = new List<byte>();
-			result.AddRange(BitConverter.GetBytes(ID));
-			result.AddRange(miscdata);
-			result.AddRange(bits.GetBytes(false));
-			return result.ToArray();
-		}
-	}
+        public byte[] GetBytes()
+        {
+            List<byte> result = new List<byte>();
+            result.AddRange(BitConverter.GetBytes(ID));
+            result.AddRange(miscdata);
+            result.AddRange(bits.GetBytes(false));
+            return result.ToArray();
+        }
+    }
 
 	public class FontCharacter
 	{

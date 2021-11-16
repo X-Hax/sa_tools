@@ -4,7 +4,7 @@
   <SplitEntry SourceFile="1ST_READ.bin" IniFile="1ST_READ" />
   <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" />
   <SplitEntryMDL BigEndian="false" ModelFile="sonicmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>sonicmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

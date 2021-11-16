@@ -89,14 +89,14 @@ namespace SAModel
 			return "0x" + i.ToString("X");
 		}
 
-		public static string ToCHex(this short i)
-		{
-			if (i < 10 && i > -1)
-				return i.ToString(NumberFormatInfo.InvariantInfo);
-			return "0x" + i.ToString("X");
-		}
+        public static string ToCHex(this short i)
+        {
+            if (i < 10 && i > -1)
+                return i.ToString(NumberFormatInfo.InvariantInfo);
+            return "0x" + i.ToString("X");
+        }
 
-		public static string ToCHex(this uint i)
+        public static string ToCHex(this uint i)
 		{
 			if (i < 10)
 				return i.ToString(NumberFormatInfo.InvariantInfo);

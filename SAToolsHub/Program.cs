@@ -18,7 +18,7 @@ namespace SAToolsHub
 
 		static internal string[] Arguments { get; set; }
 		public static SAToolsHub toolsHub; // Unused?
-		private static readonly Mutex mutex = new Mutex(true, pipeName);
+        private static readonly Mutex mutex = new Mutex(true, pipeName);
 
 		[STAThread]
 		static void Main(string[] args)

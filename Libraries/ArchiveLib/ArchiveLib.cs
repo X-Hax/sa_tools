@@ -4,42 +4,42 @@ using System.Drawing;
 
 namespace ArchiveLib
 {
-	public abstract class GenericArchive
-	{
-		public List<GenericArchiveEntry> Entries { get; set; }
+    public abstract class GenericArchive
+    {
+        public List<GenericArchiveEntry> Entries { get; set; }
 
-		public GenericArchive()
-		{
-			Entries = new List<GenericArchiveEntry>();
-		}
+        public GenericArchive()
+        {
+            Entries = new List<GenericArchiveEntry>();
+        }
 
-		public void Save(string outputFile)
-		{
-			File.WriteAllBytes(outputFile, GetBytes());
-		}
+        public void Save(string outputFile)
+        {
+            File.WriteAllBytes(outputFile, GetBytes());
+        }
 
-		public abstract byte[] GetBytes();
+        public abstract byte[] GetBytes();
 
-		public abstract void CreateIndexFile(string path);
+        public abstract void CreateIndexFile(string path);
 
-		public abstract class GenericArchiveEntry
-		{
-			public string Name { get; set; }
-			public byte[] Data { get; set; }
+        public abstract class GenericArchiveEntry
+        {
+            public string Name { get; set; }
+            public byte[] Data { get; set; }
 
-			public GenericArchiveEntry(string name, byte[] data)
-			{
-				Name = name;
-				Data = data;
-			}
+            public GenericArchiveEntry(string name, byte[] data)
+            {
+                Name = name;
+                Data = data;
+            }
 
-			public GenericArchiveEntry()
-			{
-				Name = string.Empty;
-			}
+            public GenericArchiveEntry()
+            {
+                Name = string.Empty;
+            }
 
-			public abstract Bitmap GetBitmap();
+            public abstract Bitmap GetBitmap();
 
-		}
-	}
+        }
+    }
 }

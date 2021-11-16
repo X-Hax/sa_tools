@@ -93,95 +93,95 @@
   <SplitEntry SourceFile="files/ChaoStgRaceNeut.prs" IniFile="ChaoStgRaceNeut" />
   <SplitEntry SourceFile="files/ChaoStgStadium.prs" IniFile="ChaoStgStadium" />
   <SplitEntryMDL BigEndian="true" ModelFile="files/amymdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>amymtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>amymtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/bknuckmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>knuckmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>knuckmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/brougemdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>rougemtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>rougemtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/chaos0mdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>chaos0mtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>chaos0mtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/cwalkmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>cwalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>cwalkmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/dwalkmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>dwalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>dwalkmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/eggmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>eggmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>eggmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/ewalk1mdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>ewalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/ewalk2mdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>ewalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/ewalkmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>ewalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/knuckmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>knuckmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>knuckmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/metalsonicmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>metalsonicmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>metalsonicmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/milesmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>milesmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>milesmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/rougemdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>rougemtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>rougemtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/shadow1mdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>teriosmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>teriosmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/sonic1mdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>sonicmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/sonicmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>sonicmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/sshadowmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>sshadowmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sshadowmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/ssonicmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>ssonicmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ssonicmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/teriosmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>teriosmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>teriosmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/ticalmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>ticalmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>ticalmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/twalk1mdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>twalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>twalkmtn.prs</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="true" ModelFile="files/twalkmdl.prs">
-	<MotionFile>plcommtn.prs</MotionFile>
-	<MotionFile>twalkmtn.prs</MotionFile>
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>twalkmtn.prs</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

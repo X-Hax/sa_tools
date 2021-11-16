@@ -11,7 +11,7 @@ namespace SAModel.SAEditorCommon
 	{
 		private string programName, errorDescription, log;
 
-		public ErrorDialog(string programName, string errorDescription, string log)
+        public ErrorDialog(string programName, string errorDescription, string log)
 		{
 			InitializeComponent();
 			this.programName = programName;
@@ -19,20 +19,20 @@ namespace SAModel.SAEditorCommon
 			this.log = log;
 		}
 
-		static void UpdateClipboard(object info)
-		{
-			string text = (string)info;
-			Clipboard.SetText(text);
-		}
+        static void UpdateClipboard(object info)
+        {
+            string text = (string)info;
+            Clipboard.SetText(text);
+        }
 
-		private void okButton_Click(object sender, EventArgs e)
-		{
-			Thread newThread = new Thread(new ParameterizedThreadStart(UpdateClipboard));
-			newThread.SetApartmentState(ApartmentState.STA);
-			newThread.Start(textBoxLog.Text);
-			System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
-			Close();
-		}
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            Thread newThread = new Thread(new ParameterizedThreadStart(UpdateClipboard));
+            newThread.SetApartmentState(ApartmentState.STA);
+            newThread.Start(textBoxLog.Text);
+            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
+            Close();
+        }
 
 		private void cancelButton_Click(object sender, EventArgs e)
 		{

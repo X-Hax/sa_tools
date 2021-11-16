@@ -105,16 +105,16 @@ namespace SAModel
 		Visible               = unchecked((int)0x80000000)
 	}
 
-	[Flags]
-	public enum SA1LandtableAttributes : short
-	{
-		EnableMotion       = 0x1,
-		LoadTexlist        = 0x2,
-		CustomDrawDistance = 0x4,
-		LoadTextureFile    = 0x8,
-	}
+    [Flags]
+    public enum SA1LandtableAttributes : short
+    {
+        EnableMotion       = 0x1,
+        LoadTexlist        = 0x2,
+        CustomDrawDistance = 0x4,
+        LoadTextureFile    = 0x8,
+    }
 
-	[Flags]
+    [Flags]
 	public enum SA2SurfaceFlags : int
 	{
 		Solid			= 0x01,

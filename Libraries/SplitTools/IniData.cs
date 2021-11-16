@@ -55,29 +55,29 @@ namespace SplitTools
 	public enum Game
 	{
 		SA1,
-		SADX,
-		SA2,
-		SA2B
+        SADX,
+        SA2,
+        SA2B
 	}
 
-	public class FileInfo
-	{
-		[IniName("type")]
-		public string Type { get; set; }
-		[IniName("address")]
-		[TypeConverter(typeof(Int32HexConverter))]
-		public int Address { get; set; }
-		[IniName("filename")]
-		public string Filename { get; set; }
-		[IniName("length")]
-		public int Length { get; set; }
-		[IniName("md5")]
-		public string MD5Hash { get; set; }
-		[IniName("pointer")]
-		[IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
-		public int[] PointerList { get; set; }
-		[IniCollection(IniCollectionMode.IndexOnly)]
-		public Dictionary<string, string> CustomProperties { get; set; }
+    public class FileInfo
+    {
+        [IniName("type")]
+        public string Type { get; set; }
+        [IniName("address")]
+        [TypeConverter(typeof(Int32HexConverter))]
+        public int Address { get; set; }
+        [IniName("filename")]
+        public string Filename { get; set; }
+        [IniName("length")]
+        public int Length { get; set; }
+        [IniName("md5")]
+        public string MD5Hash { get; set; }
+        [IniName("pointer")]
+        [IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
+        public int[] PointerList { get; set; }
+        [IniCollection(IniCollectionMode.IndexOnly)]
+        public Dictionary<string, string> CustomProperties { get; set; }
 	}
 
 	[Serializable]
@@ -720,79 +720,79 @@ namespace SplitTools
 		}
 	}
 
-	public class TexnameArray
-	{
-		public string[] TextureNames { get; set; }
-		public TexnameArray(byte[] file, int address, uint imageBase)
-		{
-			uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
-			uint NumTextures = ByteConverter.ToUInt32(file, address + 4);
-			TextureNames = new string[NumTextures];
-			if (TexnameArrayAddr == 0)
-				return;
-			if (NumTextures <= 300 && NumTextures > 0)
-			{
-				TextureNames = new string[NumTextures];
-				for (int u = 0; u < NumTextures; u++)
-				{
-					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
-					if (TexnamePointer != 0)
-						TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
-					else
-						TextureNames[u] = "empty";
-				}
-			}
-		}
+    public class TexnameArray
+    {
+        public string[] TextureNames { get; set; }
+        public TexnameArray(byte[] file, int address, uint imageBase)
+        {
+            uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
+            uint NumTextures = ByteConverter.ToUInt32(file, address + 4);
+            TextureNames = new string[NumTextures];
+            if (TexnameArrayAddr == 0)
+                return;
+            if (NumTextures <= 300 && NumTextures > 0)
+            {
+                TextureNames = new string[NumTextures];
+                for (int u = 0; u < NumTextures; u++)
+                {
+                    uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
+                    if (TexnamePointer != 0)
+                        TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
+                    else
+                        TextureNames[u] = "empty";
+                }
+            }
+        }
 
-		public TexnameArray(string[] list)
-		{
-			TextureNames = list;
-		}
+        public TexnameArray(string[] list)
+        {
+            TextureNames = list;
+        }
 
-		public TexnameArray(string textFile)
-		{
-			string extension = "pvr";
-			string[] texnames_raw = File.ReadAllLines(textFile);
-			if (texnames_raw.Length > 0)
-			{
-				switch (Path.GetExtension(texnames_raw[0]))
-				{
-					case ".gvr":
-						extension = "gvr";
-						break;
-					case ".dds":
-						extension = "dds";
-						break;
-					case ".pvr":
-					default:
-						break;
-				}
-			}
-			TextureNames = new string[texnames_raw.Length];
-			for (int i = 0; i < texnames_raw.Length; i++)
-			{
-				if (texnames_raw[i] == "")
-					break;
-				TextureNames[i] = texnames_raw[i].Replace("." + extension, "");
-			}
-		}
+        public TexnameArray(string textFile)
+        {
+            string extension = "pvr";
+            string[] texnames_raw = File.ReadAllLines(textFile);
+            if (texnames_raw.Length > 0)
+            {
+                switch (Path.GetExtension(texnames_raw[0]))
+                {
+                    case ".gvr":
+                        extension = "gvr";
+                        break;
+                    case ".dds":
+                        extension = "dds";
+                        break;
+                    case ".pvr":
+                    default:
+                        break;
+                }
+            }
+            TextureNames = new string[texnames_raw.Length];
+            for (int i = 0; i < texnames_raw.Length; i++)
+            {
+                if (texnames_raw[i] == "")
+                    break;
+                TextureNames[i] = texnames_raw[i].Replace("." + extension, "");
+            }
+        }
 
-		public int GetNumTextures()
-		{
-			return TextureNames.Length;
-		}
+        public int GetNumTextures()
+        {
+            return TextureNames.Length;
+        }
 
-		public void Save(string fileOutputPath, string extension = "pvr")
-		{
-			StreamWriter sw = File.CreateText(fileOutputPath);
-			for (int u = 0; u < TextureNames.Length; u++)
-			{
-				sw.WriteLine(TextureNames[u] + "." + extension);
-			}
-			sw.Flush();
-			sw.Close();
-		}
-	}
+        public void Save(string fileOutputPath, string extension = "pvr")
+        {
+            StreamWriter sw = File.CreateText(fileOutputPath);
+            for (int u = 0; u < TextureNames.Length; u++)
+            {
+                sw.WriteLine(TextureNames[u] + "." + extension);
+            }
+            sw.Flush();
+            sw.Close();
+        }
+    }
 
 	public static class TextureList
 	{

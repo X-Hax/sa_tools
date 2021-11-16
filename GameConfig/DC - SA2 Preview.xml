@@ -13,27 +13,27 @@
   <SplitEntry SourceFile="STG21.PRS" IniFile="STG21" />
   <SplitEntry SourceFile="STG41.PRS" IniFile="STG41" />
   <SplitEntryMDL BigEndian="false" ModelFile="EWALKMDL.PRS">
-	<MotionFile>PLCOMMTN.PRS</MotionFile>
-	<MotionFile>EWALKMTN.PRS</MotionFile>
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="KNUCKMDL.PRS">
-	<MotionFile>PLCOMMTN.PRS</MotionFile>
-	<MotionFile>KNUCKMTN.PRS</MotionFile>
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>KNUCKMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="ROUGEMDL.PRS">
-	<MotionFile>PLCOMMTN.PRS</MotionFile>
-	<MotionFile>ROUGEMTN.PRS</MotionFile>
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="SONICMDL.PRS">
-	<MotionFile>PLCOMMTN.PRS</MotionFile>
-	<MotionFile>SONICMTN.PRS</MotionFile>
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="TERIOSMDL.PRS">
-	<MotionFile>PLCOMMTN.PRS</MotionFile>
-	<MotionFile>TERIOSMTN.PRS</MotionFile>
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL BigEndian="false" ModelFile="TWALKMDL.PRS">
-	<MotionFile>PLCOMMTN.PRS</MotionFile>
-	<MotionFile>TWALKMTN.PRS</MotionFile>
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>TWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

@@ -30,10 +30,10 @@ namespace SAModel.SALVL
 	{
 		SettingsFile settingsfile; //For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SALVL.config
-		ProgressDialog progress;
-		bool initerror = false;
+        ProgressDialog progress;
+        bool initerror = false;
 
-		public MainForm()
+        public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
 			InitializeComponent();
@@ -131,7 +131,7 @@ namespace SAModel.SALVL
 		// project support stuff
 		string systemFallback; // The system/SONICADV folder for cases when the mod doesn't have replacement files
 		string modFolder; // The mod's main folder
-		string modSystemFolder; // The mod's "system" folder, such as SONICADV in SA1 or SYSTEM in SADX
+        string modSystemFolder; // The mod's "system" folder, such as SONICADV in SA1 or SYSTEM in SADX
 		Dictionary<string, ObjectData> objdefini;
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -161,22 +161,22 @@ namespace SAModel.SALVL
 			if (settingsfile.SALVL.ShowWelcomeScreen)
 				ShowWelcomeScreen();
 
-			// MRU list
-			System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
-			if (AppConfig.MRUList != null)
-			{
-				foreach (string file in AppConfig.MRUList)
-				{
-					if (File.Exists(file))
-					{
-						newlist.Add(file);
-						recentFilesToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
-					}
-				}
-			}
-			AppConfig.MRUList = newlist;
+            // MRU list
+            System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
+            if (AppConfig.MRUList != null)
+            {
+                foreach (string file in AppConfig.MRUList)
+                {
+                    if (File.Exists(file))
+                    {
+                        newlist.Add(file);
+                        recentFilesToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+                    }
+                }
+            }
+            AppConfig.MRUList = newlist;
 
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
+            actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -192,7 +192,7 @@ namespace SAModel.SALVL
 			sceneGraphControl1.InitSceneControl(selectedItems);
 
 			if (Program.args.Length > 0)
-				OpenAnyFile(Program.args[0]);
+                OpenAnyFile(Program.args[0]);
 		}
 
 		private void InitGUISettings()
@@ -291,7 +291,7 @@ namespace SAModel.SALVL
 			welcomeForm = null;
 		}
 
-		private void InitializeDirect3D()
+        private void InitializeDirect3D()
 		{
 			if (d3ddevice == null)
 			{
@@ -381,7 +381,7 @@ namespace SAModel.SALVL
 			SaveStage(false);
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
 		}
@@ -404,35 +404,35 @@ namespace SAModel.SALVL
 			isPointOperation = true;
 		}
 
-		void SelectionChanged(EditorItemSelection sender)
-		{
-			propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
+        void SelectionChanged(EditorItemSelection sender)
+        {
+            propertyGrid1.SelectedObjects = sender.GetSelection().ToArray();
 
-			if (cam.mode == 1)
-			{
-				cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
-			}
+            if (cam.mode == 1)
+            {
+                cam.FocalPoint = Item.CenterFromSelection(selectedItems.GetSelection()).ToVector3();
+            }
 
-			if (sender.ItemCount > 0) // set up gizmo
-			{
-				transformGizmo.Enabled = true;
-				SetGizmoPivotAndLocality();
-			}
-			else
-			{
-				if (transformGizmo != null)
-				{
-					transformGizmo.Enabled = false;
-				}
-			}
+            if (sender.ItemCount > 0) // set up gizmo
+            {
+                transformGizmo.Enabled = true;
+                SetGizmoPivotAndLocality();
+            }
+            else
+            {
+                if (transformGizmo != null)
+                {
+                    transformGizmo.Enabled = false;
+                }
+            }
 
-			duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
-			addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
+            duplicateToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            deleteSelectedToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
+            addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
 
-			DrawLevel();
-		}
+            DrawLevel();
+        }
 
 		/// <summary>
 		/// Refreshes the properties for the currently selected items.
@@ -599,7 +599,7 @@ namespace SAModel.SALVL
 			ImportToStage();
 		}
 
-		private void importToModelLibrary_Click(object sender, EventArgs e)
+       	private void importToModelLibrary_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
@@ -708,10 +708,10 @@ namespace SAModel.SALVL
 			Vector3 pos = cam.Position + (-20 * cam.Look);
 			CAMItem item = new CAMItem(new Vertex(pos.X, pos.Y, pos.Z), selectedItems);
 			item.Scale = new Vertex(10, 10, 10);
-			selectedItems.Clear();
-			LevelData.CAMItems[LevelData.Character].Add(item);
-			LevelData.InvalidateRenderState();
-			selectedItems.Add(item);
+            selectedItems.Clear();
+            LevelData.CAMItems[LevelData.Character].Add(item);
+            LevelData.InvalidateRenderState();
+            selectedItems.Add(item);
 			unsaved = true;
 		}
 
@@ -766,7 +766,7 @@ namespace SAModel.SALVL
 					item.Big = true;
 					break;
 			}
-			LevelData.DeathZones.Add(item);
+            LevelData.DeathZones.Add(item);
 			selectedItems.Clear();
 			//selectedItems.Add(item); //Crashes
 			LevelData.InvalidateRenderState();
@@ -1136,8 +1136,8 @@ namespace SAModel.SALVL
 
 			if (result != DialogResult.Yes)
 				return;
-			
-			result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
+            
+            result = MessageBox.Show("Would you like to clear SET & CAM items for all characters?", "SET Items", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Asterisk);
 
 			if (result == DialogResult.Cancel)
 				return;
@@ -1154,10 +1154,10 @@ namespace SAModel.SALVL
 				LevelData.ClearCAMItems(LevelData.Character);
 				LevelData.ClearMissionSETItems(LevelData.Character);
 			}
-			LevelData.LevelSplines.Clear();
-			LevelData.ClearLevelGeoAnims();
+            LevelData.LevelSplines.Clear();
+            LevelData.ClearLevelGeoAnims();
 			LevelData.ClearLevelGeometry();
-			selectedItems.Clear();
+            selectedItems.Clear();
 			unsaved = true;
 		}
 
@@ -1762,25 +1762,25 @@ namespace SAModel.SALVL
 
 		private void advancedSavelevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string filter;
-			string defext;
-			switch (LevelData.geo.Format)
-			{
-				case LandTableFormat.SA2:
-					defext = "sa2lvl";
-					filter = "SA2 Level Files|*.sa2lvl";
-					break;
-				case LandTableFormat.SA2B:
-					defext = "sa2blvl";
-					filter = "SA2B Level Files|*.sa2blvl";
-					break;
-				case LandTableFormat.SA1:
-				case LandTableFormat.SADX:
-				default:
-					defext = "sa1lvl";
-					filter = "SA1/SADX Level Files| *.sa1lvl";
-					break;      
-			}
+            string filter;
+            string defext;
+            switch (LevelData.geo.Format)
+            {
+                case LandTableFormat.SA2:
+                    defext = "sa2lvl";
+                    filter = "SA2 Level Files|*.sa2lvl";
+                    break;
+                case LandTableFormat.SA2B:
+                    defext = "sa2blvl";
+                    filter = "SA2B Level Files|*.sa2blvl";
+                    break;
+                case LandTableFormat.SA1:
+                case LandTableFormat.SADX:
+                default:
+                    defext = "sa1lvl";
+                    filter = "SA1/SADX Level Files| *.sa1lvl";
+                    break;      
+            }
 			using (SaveFileDialog a = new SaveFileDialog
 			{
 				DefaultExt = defext,
@@ -1828,201 +1828,201 @@ namespace SAModel.SALVL
 
 		private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenNewProject();
-		}
+            OpenNewProject();
+        }
 
 		private void changeLevelToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
-			ShowLevelSelect();
-		}
+            ShowLevelSelect();
+        }
 
 		private void loadLandtableToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "sa1lvl",
-				Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
-				InitialDirectory = modFolder,
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					LoadLandtable(fileDialog.FileName);
-					UpdateMRUList(fileDialog.FileName);
-				}
-			}
-		}
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "sa1lvl",
+                Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
+                InitialDirectory = modFolder,
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadLandtable(fileDialog.FileName);
+                    UpdateMRUList(fileDialog.FileName);
+                }
+            }
+        }
 
 		private void loadTexturesToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "pvm",
-				Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*",
-				InitialDirectory = modFolder,
-				Multiselect = false
-			})
-			{
-				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
-					fileDialog.FileName = LevelData.geo.TextureFileName;
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					// Initialize data if necessary
-					if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
-						LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					if (LevelData.TextureBitmaps == null)
-						LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-					if (LevelData.Textures == null) 
-						LevelData.Textures = new Dictionary<string, Texture[]>();
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "pvm",
+                Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*",
+                InitialDirectory = modFolder,
+                Multiselect = false
+            })
+            {
+                if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
+                    fileDialog.FileName = LevelData.geo.TextureFileName;
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Initialize data if necessary
+                    if (string.IsNullOrEmpty(LevelData.geo.TextureFileName)) 
+                        LevelData.geo.TextureFileName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    if (LevelData.TextureBitmaps == null)
+                        LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+                    if (LevelData.Textures == null) 
+                        LevelData.Textures = new Dictionary<string, Texture[]>();
 
-					// Load or replace textures
-					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
-					if (TexBmps != null)
-					{
-						// Load texture bitmaps
-						Texture[] texs = new Texture[TexBmps.Length];
-						for (int j = 0; j < TexBmps.Length; j++)
-							texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
+                    // Load or replace textures
+                    BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
+                    if (TexBmps != null)
+                    {
+                        // Load texture bitmaps
+                        Texture[] texs = new Texture[TexBmps.Length];
+                        for (int j = 0; j < TexBmps.Length; j++)
+                            texs[j] = TexBmps[j].Image.ToTexture(d3ddevice);
 
-						// Remove old textures if they exist
-						if (LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.TextureBitmaps.Remove(LevelData.geo.TextureFileName);
+                        // Remove old textures if they exist
+                        if (LevelData.TextureBitmaps.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.TextureBitmaps.Remove(LevelData.geo.TextureFileName);
 
-						if (LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
-							LevelData.Textures.Remove(LevelData.geo.TextureFileName);
+                        if (LevelData.Textures.ContainsKey(LevelData.geo.TextureFileName))
+                            LevelData.Textures.Remove(LevelData.geo.TextureFileName);
 
-						// Add new textures
-						LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
-						LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
-						LevelData.leveltexs = LevelData.geo.TextureFileName;
-					}
-					unloadTexturesToolStripMenuItem.Enabled = true;
-					DrawLevel();
-				}
-			}
-		}
+                        // Add new textures
+                        LevelData.TextureBitmaps.Add(LevelData.geo.TextureFileName, TexBmps);
+                        LevelData.Textures.Add(LevelData.geo.TextureFileName, texs);
+                        LevelData.leveltexs = LevelData.geo.TextureFileName;
+                    }
+                    unloadTexturesToolStripMenuItem.Enabled = true;
+                    DrawLevel();
+                }
+            }
+        }
 
 		private void loadObjectListToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "Object List Files|*.INI",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					LoadObjectList(fileDialog.FileName);
-				}
-			}
-		}
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "ini",
+                Filter = "Object List Files|*.INI",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadObjectList(fileDialog.FileName);
+                }
+            }
+        }
 
 		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "bin",
-				Filter = "SET Files|SET*.BIN",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
-					LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
-					{
-						if (LevelData.SETItems(i) == null)
-							LevelData.AssignSetList(i, new List<SETItem>());
-					}
-					LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
-					bool isSETPreset = !LevelData.SETItemsIsNull();
-					objectToolStripMenuItem.Enabled = isSETPreset;
-					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
-					LevelData.StateChanged += LevelData_StateChanged;
-					LevelData.InvalidateRenderState();
-					selectedItems.Clear();
-				}
-			}
-		}
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "bin",
+                Filter = "SET Files|SET*.BIN",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
+                    LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
+                    for (int i = 0; i < LevelData.SETChars.Length; i++)
+                    {
+                        if (LevelData.SETItems(i) == null)
+                            LevelData.AssignSetList(i, new List<SETItem>());
+                    }
+                    LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
+                    bool isSETPreset = !LevelData.SETItemsIsNull();
+                    objectToolStripMenuItem.Enabled = isSETPreset;
+                    editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
+                    LevelData.StateChanged += LevelData_StateChanged;
+                    LevelData.InvalidateRenderState();
+                    selectedItems.Clear();
+                }
+            }
+        }
 
 		private void loadObjectDefinitionsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog fileDialog = new OpenFileDialog()
-			{
-				DefaultExt = "ini",
-				Filter = "Object Definition Files|*.INI",
-				Multiselect = false
-			})
-			{
-				DialogResult result = fileDialog.ShowDialog();
-				if (result == DialogResult.OK)
-				{
-					objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(fileDialog.FileName);
-					modFolder = Path.GetDirectoryName(fileDialog.FileName);
-				}
-			}
-		}
+            using (OpenFileDialog fileDialog = new OpenFileDialog()
+            {
+                DefaultExt = "ini",
+                Filter = "Object Definition Files|*.INI",
+                Multiselect = false
+            })
+            {
+                DialogResult result = fileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(fileDialog.FileName);
+                    modFolder = Path.GetDirectoryName(fileDialog.FileName);
+                }
+            }
+        }
 
 		private void loadCAMFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			return;
+            return;
 		}
 
 		private void splinesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult result = MessageBox.Show("This will remove all path data in the stage.\n\nAre you sure you want to continue?",
-				"Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+            DialogResult result = MessageBox.Show("This will remove all path data in the stage.\n\nAre you sure you want to continue?",
+                "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
 
-			if (result != DialogResult.Yes)
-				return;
+            if (result != DialogResult.Yes)
+                return;
 
-			LevelData.LevelSplines.Clear();
-			LevelData.InvalidateRenderState();
-			selectedItems.Clear();
+            LevelData.LevelSplines.Clear();
+            LevelData.InvalidateRenderState();
+            selectedItems.Clear();
 		}
 
 		private void wholeLevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ImportToStage(true);
-		}
+            ImportToStage(true);
+        }
 
-		private void UpdateMRUList(string filename)
-		{
-			if (AppConfig.MRUList.Count > 10)
-			{
-				for (int i = 9; i < AppConfig.MRUList.Count; i++)
-				{
-					AppConfig.MRUList.RemoveAt(i);
-				}
-			}
-			if (AppConfig.MRUList.Contains(filename))
-			{
-				int i = AppConfig.MRUList.IndexOf(filename);
-				AppConfig.MRUList.RemoveAt(i);
-				recentFilesToolStripMenuItem.DropDownItems.RemoveAt(i);
-			}
-			AppConfig.MRUList.Insert(0, filename);
-			recentFilesToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename.Replace("&", "&&")));
-		}
+        private void UpdateMRUList(string filename)
+        {
+            if (AppConfig.MRUList.Count > 10)
+            {
+                for (int i = 9; i < AppConfig.MRUList.Count; i++)
+                {
+                    AppConfig.MRUList.RemoveAt(i);
+                }
+            }
+            if (AppConfig.MRUList.Contains(filename))
+            {
+                int i = AppConfig.MRUList.IndexOf(filename);
+                AppConfig.MRUList.RemoveAt(i);
+                recentFilesToolStripMenuItem.DropDownItems.RemoveAt(i);
+            }
+            AppConfig.MRUList.Insert(0, filename);
+            recentFilesToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename.Replace("&", "&&")));
+        }
 
 		private void recentFilesToolStripMenuItem_DropDownItemClicked_1(object sender, ToolStripItemClickedEventArgs e)
 		{
-			OpenAnyFile(AppConfig.MRUList[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
-		}
+            OpenAnyFile(AppConfig.MRUList[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
+        }
 
 		private void forceClipLevelToAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			List<SETItem> itemsToChange = LevelData.SETItems(LevelData.Character).ToList();
-			foreach (SETItem item in itemsToChange)
-				item.ClipLevel = 0;
-			UpdatePropertyGrid();
-		}
+            List<SETItem> itemsToChange = LevelData.SETItems(LevelData.Character).ToList();
+            foreach (SETItem item in itemsToChange)
+                item.ClipLevel = 0;
+            UpdatePropertyGrid();
+        }
 	}
 }

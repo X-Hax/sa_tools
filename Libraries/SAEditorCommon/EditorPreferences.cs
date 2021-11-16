@@ -6,10 +6,10 @@ using System.Windows.Forms;
 
 namespace SAModel.SAEditorCommon
 {
-	/// <summary>
-	/// Editor-specific user settings stored in EditorPreferences.ini
-	/// </summary>
-	public class SettingsFile
+    /// <summary>
+    /// Editor-specific user settings stored in EditorPreferences.ini
+    /// </summary>
+    public class SettingsFile
 	{
 		public Settings_SALVL SALVL;
 		public Settings_SAMDL SAMDL;

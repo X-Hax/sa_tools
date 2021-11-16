@@ -1129,9 +1129,9 @@ namespace SA2EventViewer
 
 		private void buttonPreferences_Click(object sender, EventArgs e)
 		{
-			optionsEditor.Show();
-			optionsEditor.BringToFront();
-			optionsEditor.Focus();
-		}
+            optionsEditor.Show();
+            optionsEditor.BringToFront();
+            optionsEditor.Focus();
+        }
 	}
 }

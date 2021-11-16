@@ -52,7 +52,7 @@ namespace SADXsndSharp
 			byte[] file = File.ReadAllBytes(filename);
 			Text = "SADXsndSharp - Loading file, please wait...";
 			this.Enabled = false;
-			archive = new DATFile(file);
+            archive = new DATFile(file);
 			RefreshListView(mainView);
 			Text = "SADXsndSharp - " + Path.GetFileName(filename);
 			this.Enabled = true;
@@ -94,11 +94,11 @@ namespace SADXsndSharp
 					using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
 					{
 						archive.Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.Name, f2.Name));
-						for (int i = 0; i < archive.Entries.Count; i++)
-						{
+                        for (int i = 0; i < archive.Entries.Count; i++)
+                        {
 							Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
 							sw.WriteLine(archive.Entries[i].Name);
-							File.WriteAllBytes(Path.Combine(dir, archive.Entries[i].Name), archive.GetFile(i));
+                            File.WriteAllBytes(Path.Combine(dir, archive.Entries[i].Name), archive.GetFile(i));
 						}
 						sw.Flush();
 						sw.Close();
@@ -134,7 +134,7 @@ namespace SADXsndSharp
 				{
 					foreach (string item in a.FileNames)
 					{
-						archive.Entries.Add(new DATEntry(item));
+                        archive.Entries.Add(new DATEntry(item));
 					}
 					RefreshListView(mainView);
 					unsaved = true;
@@ -170,13 +170,13 @@ namespace SADXsndSharp
 					if (archive.Entries[i].Name != a.FileName)
 					{
 						DialogResult mb = MessageBox.Show("Keep original filename " + fn + "?", "Keep filename?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-						if (mb == DialogResult.Yes)
-							archive.Entries[i].Data=File.ReadAllBytes(a.FileName);
-						else archive.Entries[i] = new DATEntry(a.FileName);
-					}
-					else
-						archive.ReplaceFile(a.FileName, i);
-					selectedItem.ForeColor = archive.IsFileCompressed(i) ? Color.Blue : Color.Black;
+                        if (mb == DialogResult.Yes)
+                            archive.Entries[i].Data=File.ReadAllBytes(a.FileName);
+                        else archive.Entries[i] = new DATEntry(a.FileName);
+                    }
+                    else
+                        archive.ReplaceFile(a.FileName, i);
+                    selectedItem.ForeColor = archive.IsFileCompressed(i) ? Color.Blue : Color.Black;
 					unsaved = true;
 					RefreshListView(mainView);
 				}
@@ -222,7 +222,7 @@ namespace SADXsndSharp
 		private void listView1_AfterLabelEdit(object sender, LabelEditEventArgs e)
 		{
 			if (oldName == e.Label) return;
-			for (int i = 0; i < archive.Entries.Count; i++)
+            for (int i = 0; i < archive.Entries.Count; i++)
 			{
 				if (archive.Entries[i].Name.Equals(e.Label, StringComparison.OrdinalIgnoreCase))
 				{
@@ -237,7 +237,7 @@ namespace SADXsndSharp
 				MessageBox.Show("This name contains invalid characters.");
 				return;
 			}
-			archive.Entries[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].Name = e.Label;
+            archive.Entries[int.Parse(listView1.Items[e.Item].SubItems[2].Text)].Name = e.Label;
 			RefreshListView(mainView);
 			unsaved = true;
 		}
@@ -259,7 +259,7 @@ namespace SADXsndSharp
 			}
 			filename = null;
 			Text = "SADXsndSharp";
-			archive = new DATFile();
+            archive = new DATFile();
 			RefreshListView(mainView);
 			saveToolStripMenuItem.Enabled = false;
 			unsaved = false;

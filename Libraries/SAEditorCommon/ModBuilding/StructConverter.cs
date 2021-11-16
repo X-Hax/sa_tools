@@ -81,10 +81,10 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },
 			{ "physicsdata", "Player Parameters" },
-			{ "fogdatatable", "Fog Data Table" },
-			{ "palettelightlist", "LS Palette Data" },
-			{ "camera", "Ninja Camera Data" }
-		};
+            { "fogdatatable", "Fog Data Table" },
+            { "palettelightlist", "LS Palette Data" },
+            { "camera", "Ninja Camera Data" }
+        };
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
 		{
@@ -330,24 +330,24 @@ namespace SAModel.SAEditorCommon.StructConverter
 
 				foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 				{
-					if (all)
-					{
-						if (defaultExportState.ContainsKey(item.Key) && defaultExportState[item.Key] == true)
-							curItems.Add(item.Key, item.Value);
-					}
-					else
-					{
-						CheckItems(item, iniData, ref defaultExportState);
-						curItems.Add(item.Key, item.Value);
-					}
+                    if (all)
+                    {
+                        if (defaultExportState.ContainsKey(item.Key) && defaultExportState[item.Key] == true)
+                            curItems.Add(item.Key, item.Value);
+                    }
+                    else
+                    {
+                        CheckItems(item, iniData, ref defaultExportState);
+                        curItems.Add(item.Key, item.Value);
+                    }
 				}
 			}
 			newiniData.Files = curItems;
 			return newiniData;
 		}
 
-		public static void ExportINI(SplitTools.IniData iniData,
-			Dictionary<string, bool> itemsToExport, string fileName)
+        public static void ExportINI(SplitTools.IniData iniData,
+            Dictionary<string, bool> itemsToExport, string fileName)
 		{
 			string dstfol = Path.GetDirectoryName(fileName);
 
@@ -1250,15 +1250,15 @@ namespace SAModel.SAEditorCommon.StructConverter
 				fil.CopyTo(Path.Combine(dst, fil.Name), true);
 		}
 
-		public static string MakeIdentifier(this string name)
-		{
-			StringBuilder result = new StringBuilder();
-			foreach (char item in name)
-				if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
-					result.Append(item);
-			if (result[0] >= '0' & result[0] <= '9')
-				result.Insert(0, '_');
-			return result.ToString();
-		}
-	}
+        public static string MakeIdentifier(this string name)
+        {
+            StringBuilder result = new StringBuilder();
+            foreach (char item in name)
+                if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
+                    result.Append(item);
+            if (result[0] >= '0' & result[0] <= '9')
+                result.Insert(0, '_');
+            return result.ToString();
+        }
+    }
 }

@@ -23,10 +23,10 @@ namespace SAToolsHub
 		string gamePath;
 		string projFolder;
 		string dataFolder;
-		string gameDataFolder;
-		string checkFile;
-		string projName;
-		int selectedTemplateIndex = -1;
+        string gameDataFolder;
+        string checkFile;
+        string projName;
+        int selectedTemplateIndex = -1;
 		int splitCheck;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
@@ -44,11 +44,11 @@ namespace SAToolsHub
 			comboBox1.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
-			if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
-				templatesPath = Path.Combine(appPath, "GameConfig");
-			else
-				templatesPath = Path.Combine(appPath, "..\\GameConfig");
-			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
+            if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
+                templatesPath = Path.Combine(appPath, "GameConfig");
+            else
+                templatesPath = Path.Combine(appPath, "..\\GameConfig");
+            Dictionary<string, string> templateList = loadTemplateList(templatesPath);
 
 			foreach (KeyValuePair<string, string> entry in templateList)
 			{
@@ -126,7 +126,7 @@ namespace SAToolsHub
 
 					projectFile.GameInfo = projInfo;
 					projectFile.SplitEntries = splitEntries;
-					if (splitMdlEntries != null)
+                    if (splitMdlEntries != null)
 						projectFile.SplitMDLEntries = splitMdlEntries;
 
 					serializer.Serialize(writer, projectFile);
@@ -145,13 +145,13 @@ namespace SAToolsHub
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			// This is needed to prevent opening the template file twice.
+            // This is needed to prevent opening the template file twice.
 			// SelectedIndexChanged fires after a dialog closes even if the selection didn't change.
-			if (selectedTemplateIndex == comboBox1.SelectedIndex)
-				return;
+            if (selectedTemplateIndex == comboBox1.SelectedIndex)
+                return;
 
-			selectedTemplateIndex = comboBox1.SelectedIndex;
-			string templateFile = "";
+            selectedTemplateIndex = comboBox1.SelectedIndex;
+            string templateFile = "";
 			if (comboBox1.SelectedIndex > -1)
 			{
 				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value.ToString());
@@ -169,50 +169,50 @@ namespace SAToolsHub
 		#region Additional Functions
 		private int setProgressMaxStep()
 		{
-			int result = splitEntries.Count;
-			if (splitMdlEntries != null)
-				result += splitMdlEntries.Count;
-			switch (gameName)
+            int result = splitEntries.Count;
+            if (splitMdlEntries != null)
+                result += splitMdlEntries.Count;
+            switch (gameName)
 			{
 				case "SADXPC":
-					result += 4;
-					break;
+                    result += 4;
+                    break;
 				case "SA2PC":
-					result += 3;
-					break;
-				default:
-					break;
+                    result += 3;
+                    break;
+                default:
+                    break;
 			}
-			return result;
+            return result;
 		}
 
-		string[] SortTemplateList(string[] originalList)
-		{
-			var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
-			List<string> result = new List<string>();
-			// Put SADXPC first and SA2PC second
-			foreach (string file in ordered)
-			{
-				if (file.Contains("DX") && file.Contains("PC"))
-					result.Insert(0, file);
-				else if (file.Contains("SA2") && file.Contains("PC"))
-					result.Add(file);
-			}
-			// Add other items
-			foreach (string file in ordered)
-			{
-				if (!result.Contains(file))
-					result.Add(file);
-			}
-			return result.ToArray();
-		}
+        string[] SortTemplateList(string[] originalList)
+        {
+            var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
+            List<string> result = new List<string>();
+            // Put SADXPC first and SA2PC second
+            foreach (string file in ordered)
+            {
+                if (file.Contains("DX") && file.Contains("PC"))
+                    result.Insert(0, file);
+                else if (file.Contains("SA2") && file.Contains("PC"))
+                    result.Add(file);
+            }
+            // Add other items
+            foreach (string file in ordered)
+            {
+                if (!result.Contains(file))
+                    result.Add(file);
+            }
+            return result.ToArray();
+        }
 
 		Dictionary<string, string> loadTemplateList(string folder)
 		{
 			Dictionary<string, string> templates = new Dictionary<string, string>();
-			string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
+            string[] templateNames = SortTemplateList(Directory.GetFiles(folder, "*.xml", SearchOption.TopDirectoryOnly));
 
-			for (int i = 0; i < templateNames.Length; i++)
+            for (int i = 0; i < templateNames.Length; i++)
 			{
 				templates.Add(Path.GetFileNameWithoutExtension(templateNames[i]), templateNames[i]);
 			}
@@ -228,12 +228,12 @@ namespace SAToolsHub
 			{
 				gameName = template.GameInfo.GameName;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
-				// This should never happen under normal circumstances
-				if (gamePath == "")
-					throw new Exception("Game path not set");
-				dataFolder = template.GameInfo.DataFolder;
-				gameDataFolder = template.GameInfo.GameDataFolderName;
-				checkFile = template.GameInfo.CheckFile;
+                // This should never happen under normal circumstances
+                if (gamePath == "")
+                    throw new Exception("Game path not set");
+                dataFolder = template.GameInfo.DataFolder;
+                gameDataFolder = template.GameInfo.GameDataFolderName;
+                checkFile = template.GameInfo.CheckFile;
 				splitEntries = template.SplitEntries;
 				splitMdlEntries = template.SplitMDLEntries;
 			}
@@ -388,31 +388,31 @@ namespace SAToolsHub
 			}
 			// SALVL stuff
 			if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
-			{
-				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory();
-				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
-				if (Directory.Exists(objdefsPath))
-					CopyFolder(objdefsPath, outputObjdefsPath);
-				progress.SetTask("Finalizing SALVL Supported Setup");
-				File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
-				File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
-			}
-			// Split MDL files for SA2
-			if (splitMdlEntries.Count > 0)
-			{
-				progress.SetTask("Splitting Character Models");
-				foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
-					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder);
-			}
-			// Project folders for buildable PC games
+            {
+                progress.SetStep("Copying Object Definitions");
+                string objdefsPath = GetObjDefsDirectory();
+                string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+                if (Directory.Exists(objdefsPath))
+                    CopyFolder(objdefsPath, outputObjdefsPath);
+                progress.SetTask("Finalizing SALVL Supported Setup");
+                File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
+                File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
+            }
+            // Split MDL files for SA2
+            if (splitMdlEntries.Count > 0)
+            {
+                progress.SetTask("Splitting Character Models");
+                foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
+                    ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder);
+            }
+            // Project folders for buildable PC games
 			if (game == "SADXPC" || game == "SA2PC")
 			{
 				progress.SetTask("Finalizing Project Setup");
 				makeProjectFolders(projFolder, progress, game);
 				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
-				progress.StepProgress();
-			}
+                progress.StepProgress();
+            }
 
 			return 1;
 		}

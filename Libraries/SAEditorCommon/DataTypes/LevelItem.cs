@@ -155,23 +155,23 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 		public void RegenerateMesh() => mesh = COL.Model.Attach.CreateD3DMesh();
 
-		public void ImportModel(string filePath, bool legacyImport = false)
+        public void ImportModel(string filePath, bool legacyImport = false)
 		{
-			NJS_OBJECT newmodel;
-			// Old OBJ import (with vcolor face) for NodeTable and legacy import
-			if (legacyImport)
-			{
-				newmodel = new NJS_OBJECT
-				{
-					Attach = SAModel.Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps != null ? LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray() : null),
+            NJS_OBJECT newmodel;
+            // Old OBJ import (with vcolor face) for NodeTable and legacy import
+            if (legacyImport)
+            {
+                newmodel = new NJS_OBJECT
+                {
+                    Attach = SAModel.Direct3D.Extensions.obj2nj(filePath, LevelData.TextureBitmaps != null ? LevelData.TextureBitmaps[LevelData.leveltexs].Select(a => a.Name).ToArray() : null),
 				};
 				COL.Model.Attach = newmodel.Attach;
-				COL.Model.ProcessVertexData();
-				Visible = true;
-				Solid = true;
-				mesh = COL.Model.Attach.CreateD3DMesh();
-				return;
-			}
+                COL.Model.ProcessVertexData();
+                Visible = true;
+                Solid = true;
+                mesh = COL.Model.Attach.CreateD3DMesh();
+                return;
+            }
 			Assimp.AssimpContext context = new Assimp.AssimpContext();
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(filePath, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
@@ -187,25 +187,25 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Edit Materials")]
 		public void EditMaterials()
 		{
-			BMPInfo[] textures;
-			if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
-			if (COL.Model.Attach is BasicAttach attach)
-			{
-				using (MaterialEditor pw = new MaterialEditor(attach.Material, textures))
-				{
-					pw.FormUpdated += pw_FormUpdated;
-					pw.ShowDialog();
-				}
-			}
-			else if (COL.Model.Attach is ChunkAttach)
-			{
-				using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.MeshInfo.Select(a => a.Material).ToList(), textures))
-				{
-					pw.FormUpdated += pw_FormUpdated;
-					pw.ShowDialog();
-				}
-			}
-		}
+            BMPInfo[] textures;
+            if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
+            if (COL.Model.Attach is BasicAttach attach)
+            {
+                using (MaterialEditor pw = new MaterialEditor(attach.Material, textures))
+                {
+                    pw.FormUpdated += pw_FormUpdated;
+                    pw.ShowDialog();
+                }
+            }
+            else if (COL.Model.Attach is ChunkAttach)
+            {
+                using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.MeshInfo.Select(a => a.Material).ToList(), textures))
+                {
+                    pw.FormUpdated += pw_FormUpdated;
+                    pw.ShowDialog();
+                }
+            }
+        }
 
 		[Browsable(true)]
 		[DisplayName("Calculate Bounds")]
@@ -219,26 +219,26 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Export Model")]
 		public void ExportModel()
 		{
-			string defaultex;
+            string defaultex;
 
-			switch (COL.Model.GetModelFormat())
-			{
-				case ModelFormat.Chunk:
-					defaultex = ".sa2mdl";
-					break;
-				case ModelFormat.GC:
-					defaultex = ".sa2bmdl";
-					break;
-				case ModelFormat.Basic:
-				case ModelFormat.BasicDX:
-				default:
-					defaultex = ".sa1mdl";
-					break;
-			}
+            switch (COL.Model.GetModelFormat())
+            {
+                case ModelFormat.Chunk:
+                    defaultex = ".sa2mdl";
+                    break;
+                case ModelFormat.GC:
+                    defaultex = ".sa2bmdl";
+                    break;
+                case ModelFormat.Basic:
+                case ModelFormat.BasicDX:
+                default:
+                    defaultex = ".sa1mdl";
+                    break;
+            }
 
-			using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
-			{
-				FileName = Name + defaultex,
+            using (System.Windows.Forms.SaveFileDialog a = new System.Windows.Forms.SaveFileDialog
+            {
+                FileName = Name + defaultex,
 				Filter = "SAModel Files|*.sa?mdl|Collada|*.dae|Wavefront|*.obj"
 			})
 			{
@@ -248,9 +248,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 					switch (System.IO.Path.GetExtension(a.FileName).ToLowerInvariant())
 					{
 						case ".sa1mdl":
-						case ".sa2mdl":
-						case ".sa2bmdl":
-							ModelFile.CreateFile(a.FileName, COL.Model, null, null, null, null, COL.Model.GetModelFormat());
+                        case ".sa2mdl":
+                        case ".sa2bmdl":
+                            ModelFile.CreateFile(a.FileName, COL.Model, null, null, null, null, COL.Model.GetModelFormat());
 							return;
 						case ".fbx":
 							ftype = "fbx";

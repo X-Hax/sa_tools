@@ -63,8 +63,8 @@ namespace SAModel.SAEditorCommon.Import
 		private static void ProcessNodes(this NJS_OBJECT obj, Matrix parentMatrix, ref int mdlindex)
 		{
 			mdlindex++;
-			string nodename = $"n{mdlindex:000}_{obj.Name}";
-			NodeNames.Add(nodename);
+            string nodename = $"n{mdlindex:000}_{obj.Name}";
+            NodeNames.Add(nodename);
 
 			Matrix nodeTransform = Matrix.Identity;
 
@@ -441,8 +441,8 @@ namespace SAModel.SAEditorCommon.Import
 			else
 			{
 				int nameMeshIndex = 0;
-				if (attach.MeshInfo == null)
-					attach.ProcessVertexData();
+                if (attach.MeshInfo == null)
+                    attach.ProcessVertexData();
 				foreach (MeshInfo meshInfo in attach.MeshInfo)
 				{
 					Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
