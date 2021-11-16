@@ -1,35 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>WinExe</OutputType>
-    <ApplicationIcon>icon_sa2StgEdit.ico</ApplicationIcon>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\build\</OutputPath>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-   <DebugType>embedded</DebugType>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Update="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
-    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon_sa2StgEdit.ico" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<ApplicationIcon>icon_sa2StgEdit.ico</ApplicationIcon>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\..\build\tools\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<DebugType>embedded</DebugType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
+		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="icon_sa2StgEdit.ico" />
+	</ItemGroup>
 </Project>

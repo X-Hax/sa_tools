@@ -6,13 +6,13 @@ using SAModel.SAEditorCommon;
 
 namespace PLTool
 {
-	public partial class SLEditor : Form
-	{
+    public partial class SLEditor : Form
+    {
         SLFile slfile;
         bool isGamecube;
         string currentFile;
 
-        public SLEditor(string filepath = "", bool isGC=false)
+        public SLEditor(string filepath = "", bool isGC = false)
         {
             InitializeComponent();
             isGamecube = isGC;
@@ -38,8 +38,8 @@ namespace PLTool
             this.Text = "SL Editor - " + currentFile;
         }
 
-		private void openToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Open SL File", Filter = "SL Files|SL*.BIN|All Files|*.*" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
@@ -59,7 +59,7 @@ namespace PLTool
             slfile.EnvSpecularMultiplier = (float)trackBarSPC.Value / 100.0f;
             slfile.FreeSlaveRT = (int)numericUpDownRT.Value;
             slfile.FreeSlaveRD = (float)trackBarRD.Value / 100.0f;
-            slfile.FreeSlaveRGB = Color.FromArgb((int)numericUpDownFreeR.Value, (int)numericUpDownFreeG.Value, (int)numericUpDownFreeB.Value);          
+            slfile.FreeSlaveRGB = Color.FromArgb((int)numericUpDownFreeR.Value, (int)numericUpDownFreeG.Value, (int)numericUpDownFreeB.Value);
         }
 
         private void UpdateNumerics()
@@ -82,7 +82,7 @@ namespace PLTool
         private void UpdateLabels()
         {
             // ENV
-            labelEnvR.Text= ((float)numericUpDownEnvR.Value / 255.0f).ToString("0.000");
+            labelEnvR.Text = ((float)numericUpDownEnvR.Value / 255.0f).ToString("0.000");
             labelEnvG.Text = ((float)numericUpDownEnvG.Value / 255.0f).ToString("0.000");
             labelEnvB.Text = ((float)numericUpDownEnvB.Value / 255.0f).ToString("0.000");
             labelSPC.Text = ((float)trackBarSPC.Value / 100.0f).ToString("0.00");
@@ -104,19 +104,19 @@ namespace PLTool
             pictureBoxColorFree.BackColor = Color.FromArgb((int)numericUpDownFreeR.Value, (int)numericUpDownFreeG.Value, (int)numericUpDownFreeB.Value);
         }
 
-		private void trackBarSPC_Scroll(object sender, EventArgs e)
-		{
+        private void trackBarSPC_Scroll(object sender, EventArgs e)
+        {
             UpdateLabels();
-		}
+        }
 
-		private void numericUpDownEnvR_ValueChanged(object sender, EventArgs e)
-		{
+        private void numericUpDownEnvR_ValueChanged(object sender, EventArgs e)
+        {
             UpdateLabels();
             UpdateColors();
         }
 
-		private void pictureBoxColorEnv_Click(object sender, EventArgs e)
-		{
+        private void pictureBoxColorEnv_Click(object sender, EventArgs e)
+        {
             using (ColorDialog cd = new ColorDialog() { AnyColor = true, AllowFullOpen = true, FullOpen = true })
             {
                 if (cd.ShowDialog() == DialogResult.OK)
@@ -126,10 +126,10 @@ namespace PLTool
                     numericUpDownEnvB.Value = cd.Color.B;
                 }
             }
-		}
+        }
 
-		private void pictureBoxColorFree_Click(object sender, EventArgs e)
-		{
+        private void pictureBoxColorFree_Click(object sender, EventArgs e)
+        {
             using (ColorDialog cd = new ColorDialog() { AnyColor = true, AllowFullOpen = true, FullOpen = true })
             {
                 if (cd.ShowDialog() == DialogResult.OK)
@@ -141,29 +141,29 @@ namespace PLTool
             }
         }
 
-		private void dreamcastPCToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void dreamcastPCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             gamecubeToolStripMenuItem.Checked = isGamecube = false;
             dreamcastToolStripMenuItem.Checked = false;
         }
 
-		private void gamecubeToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void gamecubeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             gamecubeToolStripMenuItem.Checked = isGamecube = true;
             dreamcastToolStripMenuItem.Checked = false;
         }
 
-		private void newToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             slfile = new SLFile();
             UpdateNumerics();
             UpdateLabels();
         }
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             Close();
-		}
+        }
 
         private void SaveSLFile(string path)
         {
@@ -171,13 +171,13 @@ namespace PLTool
             File.WriteAllBytes(path, slfile.GetBytes(isGamecube));
         }
 
-		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             SaveSLFile(currentFile);
         }
 
-		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-		{
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Save SL File", Filter = "SL Files|SL*.BIN|All Files|*.*" })
             {
                 if (sfd.ShowDialog() == DialogResult.OK)
@@ -187,14 +187,14 @@ namespace PLTool
             }
         }
 
-		private void issueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
-		}
-
-		private void pLToolHelpToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/PL-Tool");
+        private void issueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/issues") { CreateNoWindow = true });
         }
-	}
+
+        private void pLToolHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/PL-Tool") { CreateNoWindow = true });
+        }
+    }
 }

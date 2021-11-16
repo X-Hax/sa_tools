@@ -1,36 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>SAModel.SAMDL</RootNamespace>
-	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-	  <UseWindowsForms>true</UseWindowsForms>
-    <OutputPath>..\build\</OutputPath>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>ico_samdl.ico</ApplicationIcon>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
-    <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
-    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
-    <ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
-    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ico_samdl.ico" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<RootNamespace>SAModel.SAMDL</RootNamespace>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\build\tools\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<ApplicationIcon>ico_samdl.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
+		<ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
+		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="ico_samdl.ico" />
+	</ItemGroup>
 </Project>

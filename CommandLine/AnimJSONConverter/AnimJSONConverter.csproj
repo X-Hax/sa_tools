@@ -1,18 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>Exe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\build\</OutputPath>
-	<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-   <DebugType>embedded</DebugType>
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+		<OutputPath>..\..\build\bin\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+	</ItemGroup>
 </Project>

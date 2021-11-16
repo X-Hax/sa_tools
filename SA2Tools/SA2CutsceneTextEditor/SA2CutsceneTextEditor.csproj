@@ -1,25 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>WinExe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\build\</OutputPath>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>icon_sa2DiagEdit.ico</ApplicationIcon>
-    <DebugType>embedded</DebugType>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
-    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon_sa2DiagEdit.ico" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\..\build\tools\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<ApplicationIcon>icon_sa2DiagEdit.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="icon_sa2DiagEdit.ico" />
+	</ItemGroup>
 </Project>

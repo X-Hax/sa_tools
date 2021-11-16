@@ -152,7 +152,6 @@ namespace VMSEditor
             // menuStrip1
             // 
             this.menuStrip1.BackColor = System.Drawing.Color.Transparent;
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -161,7 +160,8 @@ namespace VMSEditor
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(796, 33);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(884, 33);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -363,10 +363,11 @@ namespace VMSEditor
             this.tabControl1.Controls.Add(this.tabPageTextures);
             this.tabControl1.Controls.Add(this.tabPageModel);
             this.tabControl1.Controls.Add(this.tabPageSound);
-            this.tabControl1.Location = new System.Drawing.Point(0, 40);
+            this.tabControl1.Location = new System.Drawing.Point(0, 50);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(796, 291);
+            this.tabControl1.Size = new System.Drawing.Size(884, 364);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -376,10 +377,11 @@ namespace VMSEditor
             this.tabPageGeneral.Controls.Add(this.groupBox4);
             this.tabPageGeneral.Controls.Add(this.groupBox2);
             this.tabPageGeneral.Controls.Add(this.groupBox1);
-            this.tabPageGeneral.Location = new System.Drawing.Point(4, 29);
+            this.tabPageGeneral.Location = new System.Drawing.Point(4, 34);
+            this.tabPageGeneral.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabPageGeneral.Name = "tabPageGeneral";
-            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(788, 258);
+            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabPageGeneral.Size = new System.Drawing.Size(876, 326);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "Main";
             // 
@@ -389,18 +391,21 @@ namespace VMSEditor
             this.groupBox4.Controls.Add(this.checkBoxZoom);
             this.groupBox4.Controls.Add(this.pictureBoxDLCicon);
             this.groupBox4.Controls.Add(this.buttonLoadIcon);
-            this.groupBox4.Location = new System.Drawing.Point(614, 6);
+            this.groupBox4.Location = new System.Drawing.Point(682, 8);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(165, 228);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBox4.Size = new System.Drawing.Size(183, 285);
             this.groupBox4.TabIndex = 22;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Icon";
             // 
             // buttonSaveIcon
             // 
-            this.buttonSaveIcon.Location = new System.Drawing.Point(87, 189);
+            this.buttonSaveIcon.Location = new System.Drawing.Point(97, 236);
+            this.buttonSaveIcon.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonSaveIcon.Name = "buttonSaveIcon";
-            this.buttonSaveIcon.Size = new System.Drawing.Size(72, 31);
+            this.buttonSaveIcon.Size = new System.Drawing.Size(80, 39);
             this.buttonSaveIcon.TabIndex = 19;
             this.buttonSaveIcon.Text = "Save...";
             this.buttonSaveIcon.UseVisualStyleBackColor = true;
@@ -411,9 +416,10 @@ namespace VMSEditor
             this.checkBoxZoom.AutoSize = true;
             this.checkBoxZoom.Checked = true;
             this.checkBoxZoom.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxZoom.Location = new System.Drawing.Point(18, 162);
+            this.checkBoxZoom.Location = new System.Drawing.Point(20, 202);
+            this.checkBoxZoom.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxZoom.Name = "checkBoxZoom";
-            this.checkBoxZoom.Size = new System.Drawing.Size(76, 24);
+            this.checkBoxZoom.Size = new System.Drawing.Size(86, 29);
             this.checkBoxZoom.TabIndex = 18;
             this.checkBoxZoom.Text = "Zoom";
             this.checkBoxZoom.UseVisualStyleBackColor = true;
@@ -422,18 +428,20 @@ namespace VMSEditor
             // pictureBoxDLCicon
             // 
             this.pictureBoxDLCicon.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxDLCicon.Location = new System.Drawing.Point(21, 25);
+            this.pictureBoxDLCicon.Location = new System.Drawing.Point(16, 37);
+            this.pictureBoxDLCicon.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBoxDLCicon.Name = "pictureBoxDLCicon";
-            this.pictureBoxDLCicon.Size = new System.Drawing.Size(124, 127);
+            this.pictureBoxDLCicon.Size = new System.Drawing.Size(152, 152);
             this.pictureBoxDLCicon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoxDLCicon.TabIndex = 2;
             this.pictureBoxDLCicon.TabStop = false;
             // 
             // buttonLoadIcon
             // 
-            this.buttonLoadIcon.Location = new System.Drawing.Point(9, 189);
+            this.buttonLoadIcon.Location = new System.Drawing.Point(10, 236);
+            this.buttonLoadIcon.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonLoadIcon.Name = "buttonLoadIcon";
-            this.buttonLoadIcon.Size = new System.Drawing.Size(72, 31);
+            this.buttonLoadIcon.Size = new System.Drawing.Size(80, 39);
             this.buttonLoadIcon.TabIndex = 17;
             this.buttonLoadIcon.Text = "Load...";
             this.buttonLoadIcon.UseVisualStyleBackColor = true;
@@ -449,9 +457,11 @@ namespace VMSEditor
             this.groupBox2.Controls.Add(this.checkBoxKnuckles);
             this.groupBox2.Controls.Add(this.checkBoxTails);
             this.groupBox2.Controls.Add(this.checkBoxSonic);
-            this.groupBox2.Location = new System.Drawing.Point(470, 6);
+            this.groupBox2.Location = new System.Drawing.Point(522, 8);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(138, 228);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBox2.Size = new System.Drawing.Size(153, 285);
             this.groupBox2.TabIndex = 19;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Characters";
@@ -459,9 +469,10 @@ namespace VMSEditor
             // checkBoxGamma
             // 
             this.checkBoxGamma.AutoSize = true;
-            this.checkBoxGamma.Location = new System.Drawing.Point(6, 169);
+            this.checkBoxGamma.Location = new System.Drawing.Point(7, 211);
+            this.checkBoxGamma.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxGamma.Name = "checkBoxGamma";
-            this.checkBoxGamma.Size = new System.Drawing.Size(92, 24);
+            this.checkBoxGamma.Size = new System.Drawing.Size(100, 29);
             this.checkBoxGamma.TabIndex = 7;
             this.checkBoxGamma.Text = "Gamma";
             this.checkBoxGamma.UseVisualStyleBackColor = true;
@@ -471,9 +482,10 @@ namespace VMSEditor
             // checkBoxUnknown2
             // 
             this.checkBoxUnknown2.AutoSize = true;
-            this.checkBoxUnknown2.Location = new System.Drawing.Point(65, 198);
+            this.checkBoxUnknown2.Location = new System.Drawing.Point(72, 248);
+            this.checkBoxUnknown2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxUnknown2.Name = "checkBoxUnknown2";
-            this.checkBoxUnknown2.Size = new System.Drawing.Size(53, 24);
+            this.checkBoxUnknown2.Size = new System.Drawing.Size(56, 29);
             this.checkBoxUnknown2.TabIndex = 6;
             this.checkBoxUnknown2.Text = "2?";
             this.checkBoxUnknown2.UseVisualStyleBackColor = true;
@@ -483,9 +495,10 @@ namespace VMSEditor
             // checkBoxUnknown1
             // 
             this.checkBoxUnknown1.AutoSize = true;
-            this.checkBoxUnknown1.Location = new System.Drawing.Point(6, 198);
+            this.checkBoxUnknown1.Location = new System.Drawing.Point(7, 248);
+            this.checkBoxUnknown1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxUnknown1.Name = "checkBoxUnknown1";
-            this.checkBoxUnknown1.Size = new System.Drawing.Size(53, 24);
+            this.checkBoxUnknown1.Size = new System.Drawing.Size(56, 29);
             this.checkBoxUnknown1.TabIndex = 5;
             this.checkBoxUnknown1.Text = "1?";
             this.checkBoxUnknown1.UseVisualStyleBackColor = true;
@@ -495,9 +508,10 @@ namespace VMSEditor
             // checkBoxBig
             // 
             this.checkBoxBig.AutoSize = true;
-            this.checkBoxBig.Location = new System.Drawing.Point(6, 140);
+            this.checkBoxBig.Location = new System.Drawing.Point(7, 175);
+            this.checkBoxBig.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxBig.Name = "checkBoxBig";
-            this.checkBoxBig.Size = new System.Drawing.Size(58, 24);
+            this.checkBoxBig.Size = new System.Drawing.Size(63, 29);
             this.checkBoxBig.TabIndex = 4;
             this.checkBoxBig.Text = "Big";
             this.checkBoxBig.UseVisualStyleBackColor = true;
@@ -507,9 +521,10 @@ namespace VMSEditor
             // checkBoxAmy
             // 
             this.checkBoxAmy.AutoSize = true;
-            this.checkBoxAmy.Location = new System.Drawing.Point(6, 111);
+            this.checkBoxAmy.Location = new System.Drawing.Point(7, 139);
+            this.checkBoxAmy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxAmy.Name = "checkBoxAmy";
-            this.checkBoxAmy.Size = new System.Drawing.Size(66, 24);
+            this.checkBoxAmy.Size = new System.Drawing.Size(75, 29);
             this.checkBoxAmy.TabIndex = 3;
             this.checkBoxAmy.Text = "Amy";
             this.checkBoxAmy.UseVisualStyleBackColor = true;
@@ -519,9 +534,10 @@ namespace VMSEditor
             // checkBoxKnuckles
             // 
             this.checkBoxKnuckles.AutoSize = true;
-            this.checkBoxKnuckles.Location = new System.Drawing.Point(6, 82);
+            this.checkBoxKnuckles.Location = new System.Drawing.Point(7, 102);
+            this.checkBoxKnuckles.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxKnuckles.Name = "checkBoxKnuckles";
-            this.checkBoxKnuckles.Size = new System.Drawing.Size(99, 24);
+            this.checkBoxKnuckles.Size = new System.Drawing.Size(106, 29);
             this.checkBoxKnuckles.TabIndex = 2;
             this.checkBoxKnuckles.Text = "Knuckles";
             this.checkBoxKnuckles.UseVisualStyleBackColor = true;
@@ -531,9 +547,10 @@ namespace VMSEditor
             // checkBoxTails
             // 
             this.checkBoxTails.AutoSize = true;
-            this.checkBoxTails.Location = new System.Drawing.Point(6, 53);
+            this.checkBoxTails.Location = new System.Drawing.Point(7, 66);
+            this.checkBoxTails.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxTails.Name = "checkBoxTails";
-            this.checkBoxTails.Size = new System.Drawing.Size(67, 24);
+            this.checkBoxTails.Size = new System.Drawing.Size(70, 29);
             this.checkBoxTails.TabIndex = 1;
             this.checkBoxTails.Text = "Tails";
             this.checkBoxTails.UseVisualStyleBackColor = true;
@@ -543,9 +560,10 @@ namespace VMSEditor
             // checkBoxSonic
             // 
             this.checkBoxSonic.AutoSize = true;
-            this.checkBoxSonic.Location = new System.Drawing.Point(6, 24);
+            this.checkBoxSonic.Location = new System.Drawing.Point(7, 30);
+            this.checkBoxSonic.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxSonic.Name = "checkBoxSonic";
-            this.checkBoxSonic.Size = new System.Drawing.Size(75, 24);
+            this.checkBoxSonic.Size = new System.Drawing.Size(81, 29);
             this.checkBoxSonic.TabIndex = 0;
             this.checkBoxSonic.Text = "Sonic";
             this.checkBoxSonic.UseVisualStyleBackColor = true;
@@ -565,19 +583,21 @@ namespace VMSEditor
             this.groupBox1.Controls.Add(this.textBoxAuthor);
             this.groupBox1.Controls.Add(this.numericUpDownDLCid);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Location = new System.Drawing.Point(6, 6);
+            this.groupBox1.Location = new System.Drawing.Point(7, 8);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(458, 228);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBox1.Size = new System.Drawing.Size(509, 285);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "General Information";
             // 
             // buttonEditObjects
             // 
-            this.buttonEditObjects.Location = new System.Drawing.Point(304, 172);
-            this.buttonEditObjects.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonEditObjects.Location = new System.Drawing.Point(338, 215);
+            this.buttonEditObjects.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.buttonEditObjects.Name = "buttonEditObjects";
-            this.buttonEditObjects.Size = new System.Drawing.Size(144, 37);
+            this.buttonEditObjects.Size = new System.Drawing.Size(160, 46);
             this.buttonEditObjects.TabIndex = 17;
             this.buttonEditObjects.Text = "Object Editor...";
             this.buttonEditObjects.UseVisualStyleBackColor = true;
@@ -593,10 +613,11 @@ namespace VMSEditor
             "Exclude Europe",
             "Europe Only",
             "All Regions"});
-            this.comboBoxRegionLock.Location = new System.Drawing.Point(123, 177);
+            this.comboBoxRegionLock.Location = new System.Drawing.Point(137, 221);
+            this.comboBoxRegionLock.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBoxRegionLock.MaxLength = 16;
             this.comboBoxRegionLock.Name = "comboBoxRegionLock";
-            this.comboBoxRegionLock.Size = new System.Drawing.Size(168, 28);
+            this.comboBoxRegionLock.Size = new System.Drawing.Size(186, 33);
             this.comboBoxRegionLock.TabIndex = 15;
             this.comboBoxRegionLock.SelectedIndexChanged += new System.EventHandler(this.comboBoxRegionLock_SelectedIndexChanged);
             this.comboBoxRegionLock.Click += new System.EventHandler(this.comboBoxRegionLock_Click);
@@ -604,9 +625,9 @@ namespace VMSEditor
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(69, 32);
+            this.label1.Location = new System.Drawing.Point(77, 40);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(42, 20);
+            this.label1.Size = new System.Drawing.Size(48, 25);
             this.label1.TabIndex = 4;
             this.label1.Text = "Title:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -614,29 +635,31 @@ namespace VMSEditor
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 182);
+            this.label6.Location = new System.Drawing.Point(9, 228);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(102, 20);
+            this.label6.Size = new System.Drawing.Size(112, 25);
             this.label6.TabIndex = 16;
             this.label6.Text = "Region Lock:";
             this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBoxTitle
             // 
-            this.textBoxTitle.Location = new System.Drawing.Point(123, 29);
+            this.textBoxTitle.Location = new System.Drawing.Point(137, 36);
+            this.textBoxTitle.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBoxTitle.MaxLength = 16;
             this.textBoxTitle.Name = "textBoxTitle";
-            this.textBoxTitle.Size = new System.Drawing.Size(168, 26);
+            this.textBoxTitle.Size = new System.Drawing.Size(186, 31);
             this.textBoxTitle.TabIndex = 0;
             this.textBoxTitle.Click += new System.EventHandler(this.textBoxTitle_Click);
             this.textBoxTitle.TextChanged += new System.EventHandler(this.textBoxTitle_TextChanged);
             // 
             // textBoxDescription
             // 
-            this.textBoxDescription.Location = new System.Drawing.Point(123, 66);
+            this.textBoxDescription.Location = new System.Drawing.Point(137, 82);
+            this.textBoxDescription.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBoxDescription.MaxLength = 32;
             this.textBoxDescription.Name = "textBoxDescription";
-            this.textBoxDescription.Size = new System.Drawing.Size(324, 26);
+            this.textBoxDescription.Size = new System.Drawing.Size(360, 31);
             this.textBoxDescription.TabIndex = 1;
             this.textBoxDescription.Click += new System.EventHandler(this.textBoxDescription_Click);
             this.textBoxDescription.TextChanged += new System.EventHandler(this.textBoxDescription_TextChanged);
@@ -644,9 +667,9 @@ namespace VMSEditor
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(20, 71);
+            this.label2.Location = new System.Drawing.Point(22, 89);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(93, 20);
+            this.label2.Size = new System.Drawing.Size(106, 25);
             this.label2.TabIndex = 5;
             this.label2.Text = "Description:";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -654,33 +677,35 @@ namespace VMSEditor
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 108);
+            this.label3.Location = new System.Drawing.Point(4, 135);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(103, 20);
+            this.label3.Size = new System.Drawing.Size(121, 25);
             this.label3.TabIndex = 6;
             this.label3.Text = "Tool / Author:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBoxAuthor
             // 
-            this.textBoxAuthor.Location = new System.Drawing.Point(123, 103);
+            this.textBoxAuthor.Location = new System.Drawing.Point(137, 129);
+            this.textBoxAuthor.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBoxAuthor.MaxLength = 16;
             this.textBoxAuthor.Name = "textBoxAuthor";
-            this.textBoxAuthor.Size = new System.Drawing.Size(168, 26);
+            this.textBoxAuthor.Size = new System.Drawing.Size(186, 31);
             this.textBoxAuthor.TabIndex = 7;
             this.textBoxAuthor.Click += new System.EventHandler(this.textBoxAuthor_Click);
             this.textBoxAuthor.TextChanged += new System.EventHandler(this.textBoxAuthor_TextChanged);
             // 
             // numericUpDownDLCid
             // 
-            this.numericUpDownDLCid.Location = new System.Drawing.Point(123, 140);
+            this.numericUpDownDLCid.Location = new System.Drawing.Point(137, 175);
+            this.numericUpDownDLCid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.numericUpDownDLCid.Maximum = new decimal(new int[] {
             999,
             0,
             0,
             0});
             this.numericUpDownDLCid.Name = "numericUpDownDLCid";
-            this.numericUpDownDLCid.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownDLCid.Size = new System.Drawing.Size(133, 31);
             this.numericUpDownDLCid.TabIndex = 8;
             this.numericUpDownDLCid.ValueChanged += new System.EventHandler(this.numericUpDownDLCid_ValueChanged);
             this.numericUpDownDLCid.Click += new System.EventHandler(this.numericUpDownDLCid_Click);
@@ -688,9 +713,9 @@ namespace VMSEditor
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(46, 143);
+            this.label4.Location = new System.Drawing.Point(51, 179);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 20);
+            this.label4.Size = new System.Drawing.Size(70, 25);
             this.label4.TabIndex = 9;
             this.label4.Text = "DLC ID:";
             this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -714,70 +739,71 @@ namespace VMSEditor
             this.tabPageStrings.Controls.Add(this.label11);
             this.tabPageStrings.Controls.Add(this.numericUpDownMessageID);
             this.tabPageStrings.Controls.Add(this.textBoxMessageTextJP);
-            this.tabPageStrings.Location = new System.Drawing.Point(4, 29);
+            this.tabPageStrings.Location = new System.Drawing.Point(4, 34);
+            this.tabPageStrings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabPageStrings.Name = "tabPageStrings";
-            this.tabPageStrings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageStrings.Size = new System.Drawing.Size(788, 258);
+            this.tabPageStrings.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabPageStrings.Size = new System.Drawing.Size(876, 326);
             this.tabPageStrings.TabIndex = 1;
             this.tabPageStrings.Text = "Messages";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(396, 202);
+            this.label20.Location = new System.Drawing.Point(440, 252);
             this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(30, 20);
+            this.label20.Size = new System.Drawing.Size(32, 25);
             this.label20.TabIndex = 40;
             this.label20.Text = "SP";
             // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(396, 142);
+            this.label19.Location = new System.Drawing.Point(440, 178);
             this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(33, 20);
+            this.label19.Size = new System.Drawing.Size(33, 25);
             this.label19.TabIndex = 39;
             this.label19.Text = "GE";
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(396, 86);
+            this.label18.Location = new System.Drawing.Point(440, 108);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(31, 20);
+            this.label18.Size = new System.Drawing.Size(32, 25);
             this.label18.TabIndex = 38;
             this.label18.Text = "FR";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(2, 142);
+            this.label17.Location = new System.Drawing.Point(2, 178);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(31, 20);
+            this.label17.Size = new System.Drawing.Size(34, 25);
             this.label17.TabIndex = 37;
             this.label17.Text = "EN";
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(4, 86);
+            this.label16.Location = new System.Drawing.Point(4, 108);
             this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(27, 20);
+            this.label16.Size = new System.Drawing.Size(28, 25);
             this.label16.TabIndex = 36;
             this.label16.Text = "JP";
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 34);
+            this.label15.Location = new System.Drawing.Point(7, 42);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(30, 20);
+            this.label15.Size = new System.Drawing.Size(34, 25);
             this.label15.TabIndex = 35;
             this.label15.Text = "ID:";
             // 
@@ -785,11 +811,11 @@ namespace VMSEditor
             // 
             this.textBoxMessageTextSP.AcceptsReturn = true;
             this.textBoxMessageTextSP.AcceptsTab = true;
-            this.textBoxMessageTextSP.Location = new System.Drawing.Point(432, 188);
-            this.textBoxMessageTextSP.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMessageTextSP.Location = new System.Drawing.Point(480, 235);
+            this.textBoxMessageTextSP.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.textBoxMessageTextSP.Multiline = true;
             this.textBoxMessageTextSP.Name = "textBoxMessageTextSP";
-            this.textBoxMessageTextSP.Size = new System.Drawing.Size(343, 47);
+            this.textBoxMessageTextSP.Size = new System.Drawing.Size(381, 58);
             this.textBoxMessageTextSP.TabIndex = 34;
             this.textBoxMessageTextSP.WordWrap = false;
             this.textBoxMessageTextSP.Click += new System.EventHandler(this.textBoxMessageTextSP_Click);
@@ -799,11 +825,11 @@ namespace VMSEditor
             // 
             this.textBoxMessageTextGE.AcceptsReturn = true;
             this.textBoxMessageTextGE.AcceptsTab = true;
-            this.textBoxMessageTextGE.Location = new System.Drawing.Point(432, 129);
-            this.textBoxMessageTextGE.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMessageTextGE.Location = new System.Drawing.Point(480, 161);
+            this.textBoxMessageTextGE.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.textBoxMessageTextGE.Multiline = true;
             this.textBoxMessageTextGE.Name = "textBoxMessageTextGE";
-            this.textBoxMessageTextGE.Size = new System.Drawing.Size(343, 47);
+            this.textBoxMessageTextGE.Size = new System.Drawing.Size(381, 58);
             this.textBoxMessageTextGE.TabIndex = 33;
             this.textBoxMessageTextGE.WordWrap = false;
             this.textBoxMessageTextGE.Click += new System.EventHandler(this.textBoxMessageTextGE_Click);
@@ -813,11 +839,11 @@ namespace VMSEditor
             // 
             this.textBoxMessageTextFR.AcceptsReturn = true;
             this.textBoxMessageTextFR.AcceptsTab = true;
-            this.textBoxMessageTextFR.Location = new System.Drawing.Point(432, 71);
-            this.textBoxMessageTextFR.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMessageTextFR.Location = new System.Drawing.Point(480, 89);
+            this.textBoxMessageTextFR.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.textBoxMessageTextFR.Multiline = true;
             this.textBoxMessageTextFR.Name = "textBoxMessageTextFR";
-            this.textBoxMessageTextFR.Size = new System.Drawing.Size(343, 47);
+            this.textBoxMessageTextFR.Size = new System.Drawing.Size(381, 58);
             this.textBoxMessageTextFR.TabIndex = 32;
             this.textBoxMessageTextFR.WordWrap = false;
             this.textBoxMessageTextFR.Click += new System.EventHandler(this.textBoxMessageTextFR_Click);
@@ -827,11 +853,11 @@ namespace VMSEditor
             // 
             this.textBoxMessageTextEN.AcceptsReturn = true;
             this.textBoxMessageTextEN.AcceptsTab = true;
-            this.textBoxMessageTextEN.Location = new System.Drawing.Point(42, 129);
-            this.textBoxMessageTextEN.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMessageTextEN.Location = new System.Drawing.Point(47, 161);
+            this.textBoxMessageTextEN.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.textBoxMessageTextEN.Multiline = true;
             this.textBoxMessageTextEN.Name = "textBoxMessageTextEN";
-            this.textBoxMessageTextEN.Size = new System.Drawing.Size(343, 47);
+            this.textBoxMessageTextEN.Size = new System.Drawing.Size(381, 58);
             this.textBoxMessageTextEN.TabIndex = 31;
             this.textBoxMessageTextEN.WordWrap = false;
             this.textBoxMessageTextEN.Click += new System.EventHandler(this.textBoxMessageTextEN_Click);
@@ -839,10 +865,10 @@ namespace VMSEditor
             // 
             // buttonTextReload
             // 
-            this.buttonTextReload.Location = new System.Drawing.Point(42, 188);
-            this.buttonTextReload.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonTextReload.Location = new System.Drawing.Point(47, 235);
+            this.buttonTextReload.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.buttonTextReload.Name = "buttonTextReload";
-            this.buttonTextReload.Size = new System.Drawing.Size(108, 35);
+            this.buttonTextReload.Size = new System.Drawing.Size(120, 44);
             this.buttonTextReload.TabIndex = 30;
             this.buttonTextReload.Text = "Reload";
             this.buttonTextReload.UseVisualStyleBackColor = true;
@@ -850,10 +876,10 @@ namespace VMSEditor
             // 
             // buttonTextClearAll
             // 
-            this.buttonTextClearAll.Location = new System.Drawing.Point(276, 188);
-            this.buttonTextClearAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonTextClearAll.Location = new System.Drawing.Point(307, 235);
+            this.buttonTextClearAll.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.buttonTextClearAll.Name = "buttonTextClearAll";
-            this.buttonTextClearAll.Size = new System.Drawing.Size(108, 35);
+            this.buttonTextClearAll.Size = new System.Drawing.Size(120, 44);
             this.buttonTextClearAll.TabIndex = 29;
             this.buttonTextClearAll.Text = "Clear All";
             this.buttonTextClearAll.UseVisualStyleBackColor = true;
@@ -861,10 +887,10 @@ namespace VMSEditor
             // 
             // buttonTextClear
             // 
-            this.buttonTextClear.Location = new System.Drawing.Point(159, 188);
-            this.buttonTextClear.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonTextClear.Location = new System.Drawing.Point(177, 235);
+            this.buttonTextClear.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.buttonTextClear.Name = "buttonTextClear";
-            this.buttonTextClear.Size = new System.Drawing.Size(108, 35);
+            this.buttonTextClear.Size = new System.Drawing.Size(120, 44);
             this.buttonTextClear.TabIndex = 28;
             this.buttonTextClear.Text = "Clear";
             this.buttonTextClear.UseVisualStyleBackColor = true;
@@ -873,24 +899,24 @@ namespace VMSEditor
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(14, 6);
+            this.label11.Location = new System.Drawing.Point(16, 8);
             this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(261, 20);
+            this.label11.Size = new System.Drawing.Size(292, 25);
             this.label11.TabIndex = 25;
             this.label11.Text = "Manage strings used for messages.";
             // 
             // numericUpDownMessageID
             // 
-            this.numericUpDownMessageID.Location = new System.Drawing.Point(46, 31);
-            this.numericUpDownMessageID.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.numericUpDownMessageID.Location = new System.Drawing.Point(51, 39);
+            this.numericUpDownMessageID.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.numericUpDownMessageID.Maximum = new decimal(new int[] {
             15,
             0,
             0,
             0});
             this.numericUpDownMessageID.Name = "numericUpDownMessageID";
-            this.numericUpDownMessageID.Size = new System.Drawing.Size(122, 26);
+            this.numericUpDownMessageID.Size = new System.Drawing.Size(136, 31);
             this.numericUpDownMessageID.TabIndex = 6;
             this.numericUpDownMessageID.ValueChanged += new System.EventHandler(this.numericUpDownMessageID_ValueChanged);
             this.numericUpDownMessageID.Click += new System.EventHandler(this.numericUpDownMessageID_Click);
@@ -899,11 +925,11 @@ namespace VMSEditor
             // 
             this.textBoxMessageTextJP.AcceptsReturn = true;
             this.textBoxMessageTextJP.AcceptsTab = true;
-            this.textBoxMessageTextJP.Location = new System.Drawing.Point(42, 71);
-            this.textBoxMessageTextJP.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxMessageTextJP.Location = new System.Drawing.Point(47, 89);
+            this.textBoxMessageTextJP.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.textBoxMessageTextJP.Multiline = true;
             this.textBoxMessageTextJP.Name = "textBoxMessageTextJP";
-            this.textBoxMessageTextJP.Size = new System.Drawing.Size(343, 47);
+            this.textBoxMessageTextJP.Size = new System.Drawing.Size(381, 58);
             this.textBoxMessageTextJP.TabIndex = 0;
             this.textBoxMessageTextJP.WordWrap = false;
             this.textBoxMessageTextJP.Click += new System.EventHandler(this.textBoxMessageTextJP_Click);
@@ -922,20 +948,20 @@ namespace VMSEditor
             this.tabPageTextures.Controls.Add(this.label12);
             this.tabPageTextures.Controls.Add(this.buttonLoadPVM);
             this.tabPageTextures.Controls.Add(this.checkBoxEnableTextures);
-            this.tabPageTextures.Location = new System.Drawing.Point(4, 29);
-            this.tabPageTextures.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabPageTextures.Location = new System.Drawing.Point(4, 34);
+            this.tabPageTextures.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.tabPageTextures.Name = "tabPageTextures";
-            this.tabPageTextures.Size = new System.Drawing.Size(788, 258);
+            this.tabPageTextures.Size = new System.Drawing.Size(876, 326);
             this.tabPageTextures.TabIndex = 4;
             this.tabPageTextures.Text = "Textures";
             // 
             // checkBoxRectangleTexture
             // 
             this.checkBoxRectangleTexture.AutoSize = true;
-            this.checkBoxRectangleTexture.Location = new System.Drawing.Point(630, 165);
-            this.checkBoxRectangleTexture.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxRectangleTexture.Location = new System.Drawing.Point(700, 206);
+            this.checkBoxRectangleTexture.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.checkBoxRectangleTexture.Name = "checkBoxRectangleTexture";
-            this.checkBoxRectangleTexture.Size = new System.Drawing.Size(108, 24);
+            this.checkBoxRectangleTexture.Size = new System.Drawing.Size(114, 29);
             this.checkBoxRectangleTexture.TabIndex = 35;
             this.checkBoxRectangleTexture.Text = "Rectangle";
             this.checkBoxRectangleTexture.UseVisualStyleBackColor = true;
@@ -946,11 +972,11 @@ namespace VMSEditor
             this.groupBox3.Controls.Add(this.labelNumberTextures);
             this.groupBox3.Controls.Add(this.labelTextureDimensions);
             this.groupBox3.Controls.Add(this.labelTextureSize);
-            this.groupBox3.Location = new System.Drawing.Point(548, 34);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox3.Location = new System.Drawing.Point(609, 42);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox3.Size = new System.Drawing.Size(225, 117);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.groupBox3.Size = new System.Drawing.Size(250, 146);
             this.groupBox3.TabIndex = 34;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Texture Information";
@@ -958,39 +984,39 @@ namespace VMSEditor
             // labelNumberTextures
             // 
             this.labelNumberTextures.AutoSize = true;
-            this.labelNumberTextures.Location = new System.Drawing.Point(9, 80);
+            this.labelNumberTextures.Location = new System.Drawing.Point(10, 100);
             this.labelNumberTextures.Name = "labelNumberTextures";
-            this.labelNumberTextures.Size = new System.Drawing.Size(48, 20);
+            this.labelNumberTextures.Size = new System.Drawing.Size(53, 25);
             this.labelNumberTextures.TabIndex = 35;
             this.labelNumberTextures.Text = "Total:";
             // 
             // labelTextureDimensions
             // 
             this.labelTextureDimensions.AutoSize = true;
-            this.labelTextureDimensions.Location = new System.Drawing.Point(9, 25);
+            this.labelTextureDimensions.Location = new System.Drawing.Point(10, 31);
             this.labelTextureDimensions.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelTextureDimensions.Name = "labelTextureDimensions";
-            this.labelTextureDimensions.Size = new System.Drawing.Size(96, 20);
+            this.labelTextureDimensions.Size = new System.Drawing.Size(109, 25);
             this.labelTextureDimensions.TabIndex = 30;
             this.labelTextureDimensions.Text = "Dimensions:";
             // 
             // labelTextureSize
             // 
             this.labelTextureSize.AutoSize = true;
-            this.labelTextureSize.Location = new System.Drawing.Point(9, 54);
+            this.labelTextureSize.Location = new System.Drawing.Point(10, 68);
             this.labelTextureSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelTextureSize.Name = "labelTextureSize";
-            this.labelTextureSize.Size = new System.Drawing.Size(44, 20);
+            this.labelTextureSize.Size = new System.Drawing.Size(47, 25);
             this.labelTextureSize.TabIndex = 32;
             this.labelTextureSize.Text = "Size:";
             // 
             // checkBoxZoomTexture
             // 
             this.checkBoxZoomTexture.AutoSize = true;
-            this.checkBoxZoomTexture.Location = new System.Drawing.Point(546, 165);
-            this.checkBoxZoomTexture.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.checkBoxZoomTexture.Location = new System.Drawing.Point(607, 206);
+            this.checkBoxZoomTexture.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.checkBoxZoomTexture.Name = "checkBoxZoomTexture";
-            this.checkBoxZoomTexture.Size = new System.Drawing.Size(76, 24);
+            this.checkBoxZoomTexture.Size = new System.Drawing.Size(86, 29);
             this.checkBoxZoomTexture.TabIndex = 33;
             this.checkBoxZoomTexture.Text = "Zoom";
             this.checkBoxZoomTexture.UseVisualStyleBackColor = true;
@@ -999,10 +1025,10 @@ namespace VMSEditor
             // pictureBoxTexture
             // 
             this.pictureBoxTexture.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxTexture.Location = new System.Drawing.Point(342, 34);
-            this.pictureBoxTexture.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxTexture.Location = new System.Drawing.Point(380, 42);
+            this.pictureBoxTexture.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.pictureBoxTexture.Name = "pictureBoxTexture";
-            this.pictureBoxTexture.Size = new System.Drawing.Size(190, 195);
+            this.pictureBoxTexture.Size = new System.Drawing.Size(211, 243);
             this.pictureBoxTexture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoxTexture.TabIndex = 29;
             this.pictureBoxTexture.TabStop = false;
@@ -1010,28 +1036,29 @@ namespace VMSEditor
             // listBoxTextures
             // 
             this.listBoxTextures.FormattingEnabled = true;
-            this.listBoxTextures.ItemHeight = 20;
-            this.listBoxTextures.Location = new System.Drawing.Point(153, 38);
-            this.listBoxTextures.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.listBoxTextures.ItemHeight = 25;
+            this.listBoxTextures.Location = new System.Drawing.Point(170, 48);
+            this.listBoxTextures.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.listBoxTextures.Name = "listBoxTextures";
-            this.listBoxTextures.Size = new System.Drawing.Size(178, 184);
+            this.listBoxTextures.Size = new System.Drawing.Size(197, 229);
             this.listBoxTextures.TabIndex = 28;
             this.listBoxTextures.SelectedIndexChanged += new System.EventHandler(this.listBoxTextures_SelectedIndexChanged);
             // 
             // labelTextureSectionSize
             // 
             this.labelTextureSectionSize.AutoSize = true;
-            this.labelTextureSectionSize.Location = new System.Drawing.Point(542, 205);
+            this.labelTextureSectionSize.Location = new System.Drawing.Point(602, 256);
             this.labelTextureSectionSize.Name = "labelTextureSectionSize";
-            this.labelTextureSectionSize.Size = new System.Drawing.Size(154, 20);
+            this.labelTextureSectionSize.Size = new System.Drawing.Size(171, 25);
             this.labelTextureSectionSize.TabIndex = 15;
             this.labelTextureSectionSize.Text = "Section size: 0 bytes";
             // 
             // buttonSavePVM
             // 
-            this.buttonSavePVM.Location = new System.Drawing.Point(10, 114);
+            this.buttonSavePVM.Location = new System.Drawing.Point(11, 142);
+            this.buttonSavePVM.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonSavePVM.Name = "buttonSavePVM";
-            this.buttonSavePVM.Size = new System.Drawing.Size(135, 37);
+            this.buttonSavePVM.Size = new System.Drawing.Size(150, 46);
             this.buttonSavePVM.TabIndex = 27;
             this.buttonSavePVM.Text = "Save PVM...";
             this.buttonSavePVM.UseVisualStyleBackColor = true;
@@ -1040,18 +1067,19 @@ namespace VMSEditor
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(14, 6);
+            this.label12.Location = new System.Drawing.Point(16, 8);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(250, 20);
+            this.label12.Size = new System.Drawing.Size(275, 25);
             this.label12.TabIndex = 26;
             this.label12.Text = "Manage textures used in the DLC.";
             // 
             // buttonLoadPVM
             // 
-            this.buttonLoadPVM.Location = new System.Drawing.Point(10, 71);
+            this.buttonLoadPVM.Location = new System.Drawing.Point(11, 89);
+            this.buttonLoadPVM.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonLoadPVM.Name = "buttonLoadPVM";
-            this.buttonLoadPVM.Size = new System.Drawing.Size(135, 37);
+            this.buttonLoadPVM.Size = new System.Drawing.Size(150, 46);
             this.buttonLoadPVM.TabIndex = 13;
             this.buttonLoadPVM.Text = "Load PVM...";
             this.buttonLoadPVM.UseVisualStyleBackColor = true;
@@ -1062,9 +1090,10 @@ namespace VMSEditor
             this.checkBoxEnableTextures.AutoSize = true;
             this.checkBoxEnableTextures.Checked = true;
             this.checkBoxEnableTextures.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnableTextures.Location = new System.Drawing.Point(18, 38);
+            this.checkBoxEnableTextures.Location = new System.Drawing.Point(20, 48);
+            this.checkBoxEnableTextures.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxEnableTextures.Name = "checkBoxEnableTextures";
-            this.checkBoxEnableTextures.Size = new System.Drawing.Size(96, 24);
+            this.checkBoxEnableTextures.Size = new System.Drawing.Size(101, 29);
             this.checkBoxEnableTextures.TabIndex = 10;
             this.checkBoxEnableTextures.Text = "Textures";
             this.checkBoxEnableTextures.UseVisualStyleBackColor = true;
@@ -1081,28 +1110,30 @@ namespace VMSEditor
             this.tabPageModel.Controls.Add(this.label10);
             this.tabPageModel.Controls.Add(this.buttonSaveModel);
             this.tabPageModel.Controls.Add(this.buttonImportRawModel);
-            this.tabPageModel.Location = new System.Drawing.Point(4, 29);
+            this.tabPageModel.Location = new System.Drawing.Point(4, 34);
+            this.tabPageModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabPageModel.Name = "tabPageModel";
-            this.tabPageModel.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageModel.Size = new System.Drawing.Size(788, 258);
+            this.tabPageModel.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabPageModel.Size = new System.Drawing.Size(876, 326);
             this.tabPageModel.TabIndex = 3;
             this.tabPageModel.Text = "Model";
             // 
             // labelModelInfo
             // 
             this.labelModelInfo.AutoSize = true;
-            this.labelModelInfo.Location = new System.Drawing.Point(10, 172);
+            this.labelModelInfo.Location = new System.Drawing.Point(11, 215);
             this.labelModelInfo.Name = "labelModelInfo";
-            this.labelModelInfo.Size = new System.Drawing.Size(84, 20);
+            this.labelModelInfo.Size = new System.Drawing.Size(100, 25);
             this.labelModelInfo.TabIndex = 29;
             this.labelModelInfo.Text = "Model Info";
             // 
             // checkBoxEnableModel
             // 
             this.checkBoxEnableModel.AutoSize = true;
-            this.checkBoxEnableModel.Location = new System.Drawing.Point(18, 38);
+            this.checkBoxEnableModel.Location = new System.Drawing.Point(20, 48);
+            this.checkBoxEnableModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxEnableModel.Name = "checkBoxEnableModel";
-            this.checkBoxEnableModel.Size = new System.Drawing.Size(132, 24);
+            this.checkBoxEnableModel.Size = new System.Drawing.Size(146, 29);
             this.checkBoxEnableModel.TabIndex = 11;
             this.checkBoxEnableModel.Text = "Enable Model";
             this.checkBoxEnableModel.UseVisualStyleBackColor = true;
@@ -1110,9 +1141,10 @@ namespace VMSEditor
             // 
             // buttonLoadModel
             // 
-            this.buttonLoadModel.Location = new System.Drawing.Point(10, 71);
+            this.buttonLoadModel.Location = new System.Drawing.Point(11, 89);
+            this.buttonLoadModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonLoadModel.Name = "buttonLoadModel";
-            this.buttonLoadModel.Size = new System.Drawing.Size(126, 37);
+            this.buttonLoadModel.Size = new System.Drawing.Size(140, 46);
             this.buttonLoadModel.TabIndex = 14;
             this.buttonLoadModel.Text = "Load...";
             this.buttonLoadModel.UseVisualStyleBackColor = true;
@@ -1121,17 +1153,18 @@ namespace VMSEditor
             // labelModelSectionSize
             // 
             this.labelModelSectionSize.AutoSize = true;
-            this.labelModelSectionSize.Location = new System.Drawing.Point(10, 211);
+            this.labelModelSectionSize.Location = new System.Drawing.Point(11, 264);
             this.labelModelSectionSize.Name = "labelModelSectionSize";
-            this.labelModelSectionSize.Size = new System.Drawing.Size(154, 20);
+            this.labelModelSectionSize.Size = new System.Drawing.Size(171, 25);
             this.labelModelSectionSize.TabIndex = 15;
             this.labelModelSectionSize.Text = "Section size: 0 bytes";
             // 
             // buttonSaveRawModel
             // 
-            this.buttonSaveRawModel.Location = new System.Drawing.Point(142, 114);
+            this.buttonSaveRawModel.Location = new System.Drawing.Point(158, 142);
+            this.buttonSaveRawModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonSaveRawModel.Name = "buttonSaveRawModel";
-            this.buttonSaveRawModel.Size = new System.Drawing.Size(126, 37);
+            this.buttonSaveRawModel.Size = new System.Drawing.Size(140, 46);
             this.buttonSaveRawModel.TabIndex = 27;
             this.buttonSaveRawModel.Text = "Export Binary...";
             this.buttonSaveRawModel.UseVisualStyleBackColor = true;
@@ -1140,18 +1173,19 @@ namespace VMSEditor
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 6);
+            this.label10.Location = new System.Drawing.Point(16, 8);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(284, 20);
+            this.label10.Size = new System.Drawing.Size(324, 25);
             this.label10.TabIndex = 24;
             this.label10.Text = "Manage the 3D model used by objects.";
             // 
             // buttonSaveModel
             // 
-            this.buttonSaveModel.Location = new System.Drawing.Point(10, 114);
+            this.buttonSaveModel.Location = new System.Drawing.Point(11, 142);
+            this.buttonSaveModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonSaveModel.Name = "buttonSaveModel";
-            this.buttonSaveModel.Size = new System.Drawing.Size(126, 37);
+            this.buttonSaveModel.Size = new System.Drawing.Size(140, 46);
             this.buttonSaveModel.TabIndex = 26;
             this.buttonSaveModel.Text = "Save...";
             this.buttonSaveModel.UseVisualStyleBackColor = true;
@@ -1159,9 +1193,10 @@ namespace VMSEditor
             // 
             // buttonImportRawModel
             // 
-            this.buttonImportRawModel.Location = new System.Drawing.Point(142, 71);
+            this.buttonImportRawModel.Location = new System.Drawing.Point(158, 89);
+            this.buttonImportRawModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonImportRawModel.Name = "buttonImportRawModel";
-            this.buttonImportRawModel.Size = new System.Drawing.Size(126, 37);
+            this.buttonImportRawModel.Size = new System.Drawing.Size(140, 46);
             this.buttonImportRawModel.TabIndex = 16;
             this.buttonImportRawModel.Text = "Import Binary...";
             this.buttonImportRawModel.UseVisualStyleBackColor = true;
@@ -1175,19 +1210,20 @@ namespace VMSEditor
             this.tabPageSound.Controls.Add(this.labelSoundSectionSize);
             this.tabPageSound.Controls.Add(this.checkBoxEnableSound);
             this.tabPageSound.Controls.Add(this.buttonLoadMLT);
-            this.tabPageSound.Location = new System.Drawing.Point(4, 29);
-            this.tabPageSound.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabPageSound.Location = new System.Drawing.Point(4, 34);
+            this.tabPageSound.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.tabPageSound.Name = "tabPageSound";
-            this.tabPageSound.Size = new System.Drawing.Size(788, 258);
+            this.tabPageSound.Size = new System.Drawing.Size(876, 326);
             this.tabPageSound.TabIndex = 5;
             this.tabPageSound.Text = "Sound";
             // 
             // buttonSaveMLT
             // 
             this.buttonSaveMLT.Enabled = false;
-            this.buttonSaveMLT.Location = new System.Drawing.Point(10, 114);
+            this.buttonSaveMLT.Location = new System.Drawing.Point(11, 142);
+            this.buttonSaveMLT.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonSaveMLT.Name = "buttonSaveMLT";
-            this.buttonSaveMLT.Size = new System.Drawing.Size(135, 37);
+            this.buttonSaveMLT.Size = new System.Drawing.Size(150, 46);
             this.buttonSaveMLT.TabIndex = 27;
             this.buttonSaveMLT.Text = "Save MLT...";
             this.buttonSaveMLT.UseVisualStyleBackColor = true;
@@ -1196,10 +1232,10 @@ namespace VMSEditor
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(14, 6);
+            this.label14.Location = new System.Drawing.Point(16, 8);
             this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(721, 20);
+            this.label14.Size = new System.Drawing.Size(825, 25);
             this.label14.TabIndex = 26;
             this.label14.Text = "Manage sequenced sounds or music. At the moment only import and export of MLT fil" +
     "es is supported.";
@@ -1207,18 +1243,19 @@ namespace VMSEditor
             // labelSoundSectionSize
             // 
             this.labelSoundSectionSize.AutoSize = true;
-            this.labelSoundSectionSize.Location = new System.Drawing.Point(10, 211);
+            this.labelSoundSectionSize.Location = new System.Drawing.Point(11, 264);
             this.labelSoundSectionSize.Name = "labelSoundSectionSize";
-            this.labelSoundSectionSize.Size = new System.Drawing.Size(154, 20);
+            this.labelSoundSectionSize.Size = new System.Drawing.Size(171, 25);
             this.labelSoundSectionSize.TabIndex = 16;
             this.labelSoundSectionSize.Text = "Section size: 0 bytes";
             // 
             // checkBoxEnableSound
             // 
             this.checkBoxEnableSound.AutoSize = true;
-            this.checkBoxEnableSound.Location = new System.Drawing.Point(18, 38);
+            this.checkBoxEnableSound.Location = new System.Drawing.Point(20, 48);
+            this.checkBoxEnableSound.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxEnableSound.Name = "checkBoxEnableSound";
-            this.checkBoxEnableSound.Size = new System.Drawing.Size(171, 24);
+            this.checkBoxEnableSound.Size = new System.Drawing.Size(186, 29);
             this.checkBoxEnableSound.TabIndex = 12;
             this.checkBoxEnableSound.Text = "Enable Soundbank";
             this.checkBoxEnableSound.UseVisualStyleBackColor = true;
@@ -1227,9 +1264,10 @@ namespace VMSEditor
             // buttonLoadMLT
             // 
             this.buttonLoadMLT.Enabled = false;
-            this.buttonLoadMLT.Location = new System.Drawing.Point(10, 71);
+            this.buttonLoadMLT.Location = new System.Drawing.Point(11, 89);
+            this.buttonLoadMLT.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonLoadMLT.Name = "buttonLoadMLT";
-            this.buttonLoadMLT.Size = new System.Drawing.Size(135, 37);
+            this.buttonLoadMLT.Size = new System.Drawing.Size(150, 46);
             this.buttonLoadMLT.TabIndex = 15;
             this.buttonLoadMLT.Text = "Load MLT...";
             this.buttonLoadMLT.UseVisualStyleBackColor = true;
@@ -1242,10 +1280,10 @@ namespace VMSEditor
             this.toolStripStatusFile,
             this.toolStripStatusSize,
             this.toolStripStatusHint});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 334);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 426);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(796, 32);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 16, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(884, 32);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
@@ -1270,15 +1308,16 @@ namespace VMSEditor
             // 
             // EditorDLC
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(796, 366);
+            this.ClientSize = new System.Drawing.Size(884, 458);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MaximizeBox = false;
             this.Name = "EditorDLC";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;

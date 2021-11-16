@@ -1,40 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>WinExe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\build\</OutputPath>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>sadxtweaker.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="FileListControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="LevelActControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="TimeControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="sadxtweaker.ico" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\..\build\tools\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	</PropertyGroup>
+	<PropertyGroup>
+		<ApplicationIcon>sadxtweaker.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Update="FileListControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="LevelActControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="TimeControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="sadxtweaker.ico" />
+	</ItemGroup>
 </Project>

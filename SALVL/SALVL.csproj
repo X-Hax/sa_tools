@@ -1,50 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>SAModel.SALVL</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <OutputPath>..\build\</OutputPath>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon_dxLvl2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<RootNamespace>SAModel.SALVL</RootNamespace>
+		<UseWindowsForms>true</UseWindowsForms>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<OutputPath>..\build\tools\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj">
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="icon_dxLvl2.ico" />
+	</ItemGroup>
+	<ItemGroup>
+		<Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+		<Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
+	</ItemGroup>
 </Project>

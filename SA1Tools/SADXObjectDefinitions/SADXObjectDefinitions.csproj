@@ -1,28 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\..\build\</OutputPath>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-   <DebugType>embedded</DebugType>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Speed Highway\BasicDisplayXYZ.cs" />
-    <Compile Remove="Speed Highway\BasicDisplay_Y.cs" />
-    <Compile Remove="Speed Highway\O Ev.cs" />
-    <Compile Remove="Speed Highway\O FlyS.cs" />
-    <Compile Remove="Speed Highway\O Fount.cs" />
-    <Compile Remove="Speed Highway\O TankA.cs" />
-    <Compile Remove="Speed Highway\OPoster.cs" />
-    <Compile Remove="Speed Highway\Sign B.cs" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<OutputPath>..\..\build\lib\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<DebugType>embedded</DebugType>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel.Direct3D\SAModel.Direct3D.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Speed Highway\BasicDisplayXYZ.cs" />
+		<Compile Remove="Speed Highway\BasicDisplay_Y.cs" />
+		<Compile Remove="Speed Highway\O Ev.cs" />
+		<Compile Remove="Speed Highway\O FlyS.cs" />
+		<Compile Remove="Speed Highway\O Fount.cs" />
+		<Compile Remove="Speed Highway\O TankA.cs" />
+		<Compile Remove="Speed Highway\OPoster.cs" />
+		<Compile Remove="Speed Highway\Sign B.cs" />
+	</ItemGroup>
 </Project>

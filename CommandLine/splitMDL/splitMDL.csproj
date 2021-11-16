@@ -1,20 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>Exe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\build\</OutputPath>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-   <DebugType>embedded</DebugType>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
-    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
-    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\..\build\tools\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+	</ItemGroup>
 </Project>

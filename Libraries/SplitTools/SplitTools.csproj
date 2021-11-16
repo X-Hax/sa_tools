@@ -1,27 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <OutputPath>..\..\build\</OutputPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
-    <ProjectReference Include="..\SAModel\SAModel.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="EndianReader.cs" />
-    <Compile Remove="EndianWriter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
-  </ItemGroup>
-  <PropertyGroup>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<OutputPath>..\..\build\lib\</OutputPath>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+		<ProjectReference Include="..\SAModel\SAModel.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="EndianReader.cs" />
+		<Compile Remove="EndianWriter.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+	</ItemGroup>
 </Project>

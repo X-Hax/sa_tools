@@ -1,50 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <OutputType>Library</OutputType>
-    <RootNamespace>SAModel.SAEditorCommon</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
-    <UseWPF>true</UseWPF>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-<NoWarn>1701;1702;CA1416</NoWarn>
-<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-   <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="UI\HexNumericUpDown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="UI\ModelLibraryControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="UI\MultiSelectTreeview.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="UI\SceneGraphControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="UI\IDSelector.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NvTriStripDotNet\NvTriStripDotNet.csproj" />
-    <ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj" />
-    <ProjectReference Include="..\SAModel\SAModel.csproj" />
-    <ProjectReference Include="..\SplitTools\SplitTools.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AssimpNet" Version="4.1.0" />
-    <PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
-    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;CA1416</NoWarn>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<OutputPath>..\..\build\lib\</OutputPath>
+		<RootNamespace>SAModel.SAEditorCommon</RootNamespace>
+		<UseWindowsForms>true</UseWindowsForms>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Update="UI\HexNumericUpDown.cs">
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Update="UI\ModelLibraryControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="UI\MultiSelectTreeview.cs">
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Update="UI\SceneGraphControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="UI\IDSelector.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\NvTriStripDotNet\NvTriStripDotNet.csproj" />
+		<ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj" />
+		<ProjectReference Include="..\SAModel\SAModel.csproj" />
+		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AssimpNet" Version="4.1.0" />
+		<PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
+		<PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+	</ItemGroup>
 </Project>
