@@ -967,9 +967,34 @@ namespace TextureEditor
                     scale = 16.0f;
                     break;
             }
-            int newwidth = Math.Min(2048, Math.Max((int)((float)image.Width * scale), 1));
-            int newheight = Math.Min(2048, Math.Max((int)((float)image.Height * scale), 1));
-            Bitmap bmp = new Bitmap(newwidth, newheight);
+            float newwidth = ((float)image.Width * scale);
+            float newheight = ((float)image.Height * scale);
+            if (newwidth < 1)
+            {
+                float ratio = 1.0f / newwidth;
+                newwidth = newwidth * ratio;
+                newheight = newheight * ratio;
+            }
+            if (newheight < 1)
+            {
+                float ratio = 1.0f / newheight;
+                newwidth = newwidth * ratio;
+                newheight = newheight * ratio;
+            }
+            if (newwidth > 2048)
+            {
+                float ratio = newwidth / 2048.0f;
+                newwidth = newwidth / ratio;
+                newheight = newheight / ratio;
+            }
+            if (newheight > 2048)
+            {
+                float ratio = newheight / 2048.0f;
+                newwidth = newwidth / ratio;
+                newheight = newheight / ratio;
+            }
+            labelZoomInfo.Text = "Zoom: " + (newwidth / (float)image.Width).ToString() + "x (" + newwidth.ToString() + "x" + newheight.ToString() + ")";
+            Bitmap bmp = new Bitmap((int)newwidth, (int)newheight);
             using (Graphics gfx = Graphics.FromImage(bmp))
             {
                 gfx.InterpolationMode = mode;
