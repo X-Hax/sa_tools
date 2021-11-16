@@ -9,6 +9,7 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<ApplicationIcon>sadxfontedit.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
+		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
