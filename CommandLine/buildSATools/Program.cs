@@ -13,6 +13,11 @@ namespace buildSATools
             // Check if the build was already rearranged
             if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "build", "SAToolsHub.deps.json")))
                 goto package;
+            // Clean up leftovers from previous build
+            if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib")))
+                Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"), true);
+            if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib")))
+                Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"), true);
             Console.WriteLine("Patching EXE files...");
             DirectoryInfo d = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "build"));
             FileInfo[] files = d.GetFiles("*.exe", SearchOption.AllDirectories);
