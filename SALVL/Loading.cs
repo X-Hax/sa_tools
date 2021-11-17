@@ -879,61 +879,63 @@ namespace SAModel.SALVL
                         modDate = File.GetLastWriteTime(dllfile);
 
                     string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
-                    if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+                    if (File.Exists(fp))
                     {
-                        def =
-                            (LevelDefinition)
-                                Activator.CreateInstance(
-                                    Assembly.LoadFile(Path.Combine(modFolder, dllfile)).GetType(ty));
-                    }
-                    else
-                    {
-
-                        SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
-
-                        CSharpCompilation compilation =
-                                CSharpCompilation.Create(ty, st, objectDefinitionReferences, objectDefinitionOptions);
-
-                        try
+                        if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
                         {
-                            EmitResult result = compilation.Emit(dllfile, pdbfile);
+                            def =
+                                (LevelDefinition)
+                                    Activator.CreateInstance(
+                                        Assembly.LoadFile(Path.Combine(modFolder, dllfile)).GetType(ty));
+                        }
+                        else
+                        {
 
-                            if (!result.Success)
+                            SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
+
+                            CSharpCompilation compilation =
+                                    CSharpCompilation.Create(ty, st, objectDefinitionReferences, objectDefinitionOptions);
+
+                            try
                             {
-                                log.Add("Error loading level background:");
-                                foreach (Diagnostic diagnostic in result.Diagnostics)
+                                EmitResult result = compilation.Emit(dllfile, pdbfile);
+
+                                if (!result.Success)
                                 {
-                                    log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+                                    log.Add("Error loading level background:");
+                                    foreach (Diagnostic diagnostic in result.Diagnostics)
+                                    {
+                                        log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+                                    }
+
+                                    File.Delete(dllfile);
+                                    File.Delete(pdbfile);
+
+                                    def = null;
                                 }
+                                else
+                                {
+                                    def =
+                                        (LevelDefinition)
+                                            Activator.CreateInstance(
+                                                Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+                                                    .GetType(ty));
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
 
                                 File.Delete(dllfile);
                                 File.Delete(pdbfile);
 
                                 def = null;
                             }
-                            else
-                            {
-                                def =
-                                    (LevelDefinition)
-                                        Activator.CreateInstance(
-                                            Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-                                                .GetType(ty));
-                            }
                         }
-                        catch (Exception e)
-                        {
-                            log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
 
-                            File.Delete(dllfile);
-                            File.Delete(pdbfile);
-
-                            def = null;
-                        }
+                        if (def != null)
+                            def.Init(level, levelact.Act);
                     }
-
-                    if (def != null)
-                        def.Init(level, levelact.Act);
-
                     LevelData.leveleff = def;
                 }
 
