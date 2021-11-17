@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<OutputType>Exe</OutputType>
-		<OutputPath>..\..\build\</OutputPath>
+		<OutputPath>..\..\</OutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<DebugType>embedded</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

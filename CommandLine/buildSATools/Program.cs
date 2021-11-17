@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace buildSATools
@@ -8,13 +10,84 @@ namespace buildSATools
 	{
         static void Main(string[] args)
         {
-            MainPatcher(args);
-            return;
-            // Set output directory
-            int retries = 0;
+            // Check if the build was already rearranged
+            if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "build", "SAToolsHub.deps.json")))
+                goto package;
+            Console.WriteLine("Patching EXE files...");
+            DirectoryInfo d = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "build"));
+            FileInfo[] files = d.GetFiles("*.exe", SearchOption.AllDirectories);
+            foreach (FileInfo exefile in files)
+            {
+                switch (exefile.Name.ToLowerInvariant())
+                {
+                    case "buildsatools.exe":
+                        break;
+                    case "satoolshub.exe":
+                        PatchExe(exefile.FullName, "tools/lib");
+                        break;
+                    default:
+                        PatchExe(exefile.FullName, "lib");
+                        break;
+                }
+            }
+            Console.WriteLine("Deleting reference assemblies");
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "ref"), true);
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "lib", "ref"), true);
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "tools", "ref"), true);
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "bin", "ref"), true);
+            Console.WriteLine("Moving all DLL files to the lib folder");
+            FileInfo[] dllfiles = d.GetFiles("*.dll", SearchOption.AllDirectories);
+            foreach (FileInfo dllfile in dllfiles)
+            {
+                string fn = dllfile.FullName.ToLowerInvariant();
+                if (fn.Contains("buildsatools"))
+                    continue;
+                // Skip platform-specific runtimes in the runtimes folder
+                if (fn.Contains("runtimes"))
+                    continue;
+                Console.WriteLine("Moving: {0}", dllfile.FullName);
+                File.Move(dllfile.FullName, Path.Combine(Environment.CurrentDirectory, "build", "lib", dllfile.Name), true);
+            }
+            Console.WriteLine("Moving all JSON files to the lib folder");
+            FileInfo[] jsonfiles = d.GetFiles("*.json", SearchOption.AllDirectories);
+            foreach (FileInfo jsonfile in jsonfiles)
+            {
+                Console.WriteLine("Moving: {0}", jsonfile.FullName);
+                File.Move(jsonfile.FullName, Path.Combine(Environment.CurrentDirectory, "build", "lib", jsonfile.Name), true);
+            }
+            Console.WriteLine("Copying lib folder to bin and tools");
+            DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "tools", "runtimes"), Path.Combine(Environment.CurrentDirectory, "build", "lib", "runtimes"), true);
+            DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "lib"), Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"), true);
+            DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "lib"), Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"), true);
+            Console.WriteLine("Deleting runtimes folders");
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "runtimes"), true);
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "bin", "runtimes"), true);
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "tools", "runtimes"), true);
+            Console.WriteLine("Deleting original lib folder");
+            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "lib"), true);
+            Console.WriteLine("Deleting runtimeconfig.dev.json files and irrelevant runtimes");
+            DirectoryInfo newd = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "build"));
+            FileInfo[] devf = newd.GetFiles("*.*", SearchOption.AllDirectories);
+            foreach (FileInfo devfile in devf)
+            {
+                string f = devfile.FullName.ToLowerInvariant();
+                if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64"))
+                    File.Delete(devfile.FullName);
+                else if (Environment.Is64BitProcess && f.Contains("win-x86"))
+                    File.Delete(devfile.FullName);
+                else if (!Environment.Is64BitProcess && f.Contains("win-x64"))
+                    File.Delete(devfile.FullName);
+            }
+            // Proceed to create the end user package
+            package:
             string outdir = "output";
             if (args.Length > 0)
+            {
+                if (args[0] == "-noout") return;
                 outdir = args[0];
+            }
+            // Set output directory
+            int retries = 0;
             Console.WriteLine("Output directory: {0}", Path.GetFullPath(outdir));
             while (true)
                 try
@@ -105,5 +178,60 @@ namespace buildSATools
 			}
 		}
 
-	}
+        // Patches an EXE file to load the assembly from the "lib" folder
+        private static int PatchExe(string apphostExe, string libDirPath)
+        {
+            Console.WriteLine("Patching {0} to use {1}", Path.GetFileName(apphostExe), libDirPath);
+            try
+            {
+                string origPath = Path.GetFileName(ChangeExecutableExtension(apphostExe));
+                string newPath = libDirPath + GetPathSeparator(apphostExe) + origPath;
+                if (!File.Exists(apphostExe))
+                {
+                    Console.WriteLine($"Apphost '{apphostExe}' does not exist");
+                    return 1;
+                }
+                if (origPath == string.Empty)
+                {
+                    Console.WriteLine("Original path is empty");
+                    return 1;
+                }
+                var origPathBytes = Encoding.UTF8.GetBytes(origPath + "\0");
+                Debug.Assert(origPathBytes.Length > 0);
+                var newPathBytes = Encoding.UTF8.GetBytes(newPath + "\0");
+                if (origPathBytes.Length > maxPathBytes)
+                {
+                    Console.WriteLine($"Original path is too long");
+                    return 1;
+                }
+                if (newPathBytes.Length > maxPathBytes)
+                {
+                    Console.WriteLine($"New path is too long");
+                    return 1;
+                }
+                var apphostExeBytes = File.ReadAllBytes(apphostExe);
+                int offset = GetOffset(apphostExeBytes, origPathBytes);
+                if (offset < 0)
+                {
+                    Console.WriteLine($"Could not find original path '{origPath}'");
+                    return 1;
+                }
+                if (offset + newPathBytes.Length > apphostExeBytes.Length)
+                {
+                    Console.WriteLine($"New path is too long: {newPath}");
+                    return 1;
+                }
+                for (int i = 0; i < newPathBytes.Length; i++)
+                    apphostExeBytes[offset + i] = newPathBytes[i];
+                File.WriteAllBytes(apphostExe, apphostExeBytes);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return 1;
+            }
+        }
+
+    }
 }
