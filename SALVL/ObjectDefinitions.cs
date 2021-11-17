@@ -38,13 +38,13 @@ namespace SAModel.SALVL
             MetadataReference.CreateFromFile(typeof(SA1LevelAct).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(ObjectDefinition).Assembly.Location)
             };
+            Assembly.GetEntryAssembly().GetReferencedAssemblies().ToList().ForEach(a => objectDefinitionReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
         }
 
         // Load a level's object list and compile object definitions
         private void LoadObjectList(string objectList, bool Mission = false)
         {
             List<ObjectData> objectErrors = new List<ObjectData>();
-            InitObjDefReferences();
             ObjectListEntry[] objlstini = ObjectList.Load(objectList, false);
             if (Mission)
                 LevelData.MisnObjDefs = new List<ObjectDefinition>();
@@ -81,7 +81,6 @@ namespace SAModel.SALVL
                     string errorText = "";
 
                     def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
-
                     if (errorOccured)
                     {
                         KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
@@ -191,7 +190,6 @@ namespace SAModel.SALVL
             else
             {
                 SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
-                Assembly.GetEntryAssembly().GetReferencedAssemblies().ToList().ForEach(a => objectDefinitionReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
                 CSharpCompilation compilation =
                         CSharpCompilation.Create(codeType, st, objectDefinitionReferences, objectDefinitionOptions);
 
