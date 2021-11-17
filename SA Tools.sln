@@ -77,13 +77,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SADXFontEdit", "SA1Tools\SA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMSEditor", "SA1Tools\VMSEditor\VMSEditor.csproj", "{9B049A04-35C8-4B63-8095-330DD07E903F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Split", "CommandLine\Split\Split.csproj", "{2DC86B9B-D691-4D64-9F74-65420B56F6A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "split", "CommandLine\Split\split.csproj", "{2DC86B9B-D691-4D64-9F74-65420B56F6A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "buildMiniEvent", "CommandLine\buildMiniEvent\buildMiniEvent.csproj", "{CB3DA377-29F7-45F3-A451-5B5999AD7D7D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splitMiniEvent", "CommandLine\splitMiniEvent\splitMiniEvent.csproj", "{8D0AB53A-E4CA-4D1A-92BD-DB1EAA3B53D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SplitShapeMotion", "CommandLine\SplitShapeMotion\SplitShapeMotion.csproj", "{45799202-AFC0-4EC0-AE8E-974DBFA19A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splitShapeMotion", "CommandLine\SplitShapeMotion\splitShapeMotion.csproj", "{45799202-AFC0-4EC0-AE8E-974DBFA19A0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildShapeMotion", "CommandLine\BuildShapeMotion\BuildShapeMotion.csproj", "{27223DD0-71BC-4D77-90AB-6E6FBB475B34}"
 EndProject
