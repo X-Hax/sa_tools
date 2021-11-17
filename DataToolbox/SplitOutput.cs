@@ -57,7 +57,7 @@ namespace SAModel.DataToolbox
                 {
                     SplitData splitdata = new SplitData();
                     splitdata.dataFile = file;
-                    string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)).ToString();
+                    string folder_parent = Directory.GetParent(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName)).ToString();
                     templateFolder = Path.Combine(folder_parent, "GameConfig");
                     if (!Directory.Exists(templateFolder))
                         templateFolder = Path.Combine(Directory.GetParent(folder_parent).ToString(), "GameConfig");

@@ -87,7 +87,7 @@ namespace SAToolsHub
 			}
 			else
 			{
-				string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAToolsHub.log";
+				string logPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SAToolsHub.log";
 				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA Tools Hub Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

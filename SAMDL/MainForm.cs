@@ -23,8 +23,8 @@ namespace SAModel.SAMDL
 	{
 		SettingsFile settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
-		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
-		System.Drawing.Rectangle mouseBounds;
+        Logger log = new Logger(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SAMDL.log");
+        System.Drawing.Rectangle mouseBounds;
 		bool mouseWrapScreen = false;
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
@@ -37,7 +37,7 @@ namespace SAModel.SAMDL
 			InitializeComponent();
 			AddMouseMoveHandler(this);
 
-			this.AllowDrop = true;
+            this.AllowDrop = true;
 			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
 			this.DragDrop += new DragEventHandler(SAMDL_DragDrop);
 		}
@@ -253,8 +253,8 @@ namespace SAModel.SAMDL
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
 			settingsfile = SettingsFile.Load();
-
-			if (settingsfile.SAMDL.ShowWelcomeScreen)
+            
+            if (settingsfile.SAMDL.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}

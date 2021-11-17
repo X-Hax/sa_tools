@@ -67,7 +67,7 @@ namespace VMSEditor
             }
             else
             {
-                string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\VMSEditor.log";
+                string logPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\VMSEditor.log";
                 System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
                 MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "VMS Editor Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

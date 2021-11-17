@@ -106,7 +106,7 @@ namespace Split
                     if (dataFolder == "")
                         dataFolder = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
                     Console.WriteLine("Data folder: {0}", dataFolder);
-                    string iniFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "..\\GameConfig", template.GameInfo.DataFolder));
+                    string iniFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName), "..\\GameConfig", template.GameInfo.DataFolder));
                     Console.WriteLine("Splitting using template for {0} located at {1}", template.GameInfo.GameName, Path.GetFullPath(args[1]));
                     if (!Directory.Exists(dataFolder))
                     {

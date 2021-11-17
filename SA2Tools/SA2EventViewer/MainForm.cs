@@ -21,7 +21,7 @@ namespace SA2EventViewer
 	{
 		SettingsFile settingsfile; //For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SA2EventViewer.config
-		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SA2EventViewer.log");
+		Logger log = new Logger(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SA2EventViewer.log");
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
 		public MainForm()

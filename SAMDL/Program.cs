@@ -45,7 +45,7 @@ namespace SAModel.SAMDL
 			}
 			else
 			{
-				string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log";
+				string logPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SAMDL.log";
 				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SAMDL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

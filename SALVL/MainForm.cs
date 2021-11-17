@@ -78,7 +78,7 @@ namespace SAModel.SALVL
 
 		#region Editor-Specific Variables
 		SAEditorCommon.IniData sadxlvlini;
-		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SALVL.log");
+		Logger log = new Logger(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SALVL.log");
 		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
