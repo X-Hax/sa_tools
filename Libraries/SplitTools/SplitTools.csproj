@@ -21,4 +21,7 @@
 	<ItemGroup>
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\bin\&quot;" />
+	</Target>
 </Project>
