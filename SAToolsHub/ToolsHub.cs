@@ -77,7 +77,7 @@ namespace SAToolsHub
         ProcessStartInfo sa2evtexteditStartInfo;
         ProcessStartInfo sa2streditStartInfo;
         ProcessStartInfo sa2stgselStartInfo;
-        ProcessStartInfo SAEditorCommonStartInfo;
+        ProcessStartInfo dataToolboxStartInfo;
         ProcessStartInfo sadlctoolStartInfo;
 
         public SAToolsHub()
@@ -327,7 +327,7 @@ namespace SAToolsHub
             sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));
             sa2streditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2MessageFileEditor.exe")));
             sa2stgselStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2StageSelEdit.exe")));
-            SAEditorCommonStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAEditorCommon.exe")));
+            dataToolboxStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "DataToolbox.exe")));
             sadlctoolStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "VMSEditor.exe")));
         }
 
@@ -896,7 +896,7 @@ namespace SAToolsHub
         //Data Extractor/Convert (new Split UI)
         private void splitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process proc = Process.Start(SAEditorCommonStartInfo);
+            Process proc = Process.Start(dataToolboxStartInfo);
         }
 
         private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
