@@ -88,6 +88,7 @@ namespace SAToolsHub
             Application.ThreadException += Application_ThreadException;
 
             hubSettings = ProjectSettings.Load();
+            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             resplit = false;
             projXML = "";
 
@@ -1351,7 +1352,7 @@ namespace SAToolsHub
 
         private void browseOpenExplorer_Click(object sender, EventArgs e)
         {
-            Process.Start($"{((DirectoryInfo)treeView1.SelectedNode.Tag).FullName}");
+            Process.Start("explorer.exe", $"{((DirectoryInfo)treeView1.SelectedNode.Tag).FullName}");
         }
         #endregion
 
