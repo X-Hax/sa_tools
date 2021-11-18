@@ -66,6 +66,9 @@ namespace SAToolsHub
             if (fsd.ShowDialog() == DialogResult.OK)
             {
                 txtProjFolder.Text = fsd.SelectedPath;
+                // If a game template is selected, enable the Create button
+                if (comboBox1.SelectedIndex != -1)
+                    btnCreate.Enabled = true; //
             }
         }
 
@@ -89,7 +92,7 @@ namespace SAToolsHub
 			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			saveFileDialog1.RestoreDirectory = true;
 
-			if (checkBox1.Checked && (txtProjFolder.Text != null))
+			if (checkBox1.Checked && txtProjFolder.Text != "")
 			{
 				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
 			}
@@ -121,7 +124,7 @@ namespace SAToolsHub
 					projInfo.CheckFile = checkFile;
 					projInfo.GameFolder = gamePath;
 					projInfo.GameDataFolder = gameDataFolder;
-					projInfo.ProjectFolder = projFolder;
+					projInfo.ProjectFolder = (checkBox1.Checked && txtProjFolder.Text != "") ? projFolder : Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
 					projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
 
 					projectFile.GameInfo = projInfo;
