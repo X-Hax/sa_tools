@@ -206,6 +206,7 @@ namespace SAToolsHub
                         {
                             gameDirectory = fsd.SelectedPath;
                             projFile.GameInfo.GameFolder = gameDirectory;
+                            gameSystemDirectory = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
                             sapChanged = true;
                         }
                         else
