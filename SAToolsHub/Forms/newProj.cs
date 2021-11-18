@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using SAModel.SAEditorCommon.ModManagement;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools.Split;
 using SplitTools.SAArc;
 using System.Xml;
@@ -122,7 +122,6 @@ namespace SAToolsHub
 
 					projInfo.GameName = gameName;
 					projInfo.CheckFile = checkFile;
-					projInfo.GameFolder = gamePath;
 					projInfo.GameDataFolder = gameDataFolder;
 					projInfo.ProjectFolder = (checkBox1.Checked && txtProjFolder.Text != "") ? projFolder : Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
 					projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");

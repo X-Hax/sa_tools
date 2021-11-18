@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 
 namespace SADXTweaker2

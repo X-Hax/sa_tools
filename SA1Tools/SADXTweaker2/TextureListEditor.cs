@@ -43,7 +43,7 @@ namespace SADXTweaker2
 			}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;
-			textureName.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder);
+			textureName.Directory = Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder);
 		}
 
 		private void TextureListEditor_FormClosing(object sender, FormClosingEventArgs e)

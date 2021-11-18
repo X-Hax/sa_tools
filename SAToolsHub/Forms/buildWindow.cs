@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using SAModel.SAEditorCommon.ModManagement;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools.SAArc;
 
 namespace SAToolsHub

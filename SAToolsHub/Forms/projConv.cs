@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
 {
@@ -107,7 +107,6 @@ namespace SAToolsHub
 						case "sadx":
 							projInfo.GameName = "SADXPC";
 							projInfo.CanBuild = true;
-							projInfo.GameFolder = gamePath;
 							projInfo.ProjectFolder = projPath;
 
 							List<Templates.SplitEntry> dxsplitEntries = new List<Templates.SplitEntry>()
@@ -132,7 +131,6 @@ namespace SAToolsHub
 						case "sa2":
 							projInfo.GameName = "SA2PC";
 							projInfo.CanBuild = true;
-							projInfo.GameFolder = gamePath;
 							projInfo.ProjectFolder = projPath;
 
 							List<Templates.SplitEntry> sa2splitEntries = new List<Templates.SplitEntry>()

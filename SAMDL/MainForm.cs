@@ -15,7 +15,7 @@ using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 using SplitTools;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace SAModel.SAMDL
 {

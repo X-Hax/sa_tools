@@ -18,7 +18,6 @@ using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Text;
 using SharpDX.Mathematics.Interop;
-using SAEditorCommon.ProjectManagement;
 
 namespace SAModel.SALVL
 {

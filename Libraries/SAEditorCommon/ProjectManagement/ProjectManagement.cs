@@ -9,7 +9,7 @@ using SplitTools;
 using SplitTools.SAArc;
 using SplitTools.Split;
 
-namespace SAEditorCommon.ProjectManagement
+namespace SAModel.SAEditorCommon.ProjectManagement
 {
 	public class Templates
 	{
@@ -132,11 +132,6 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("checkFile")]
             public string CheckFile { get; set; }
-            /// <summary>
-            /// The directory for the main game stored in the *.sap file.
-            /// </summary>
-            [XmlAttribute("gameFolder")]
-			public string GameFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
 			/// <summary>
 			/// The file folder used by the game stored in the *.sap file. e.g. system, gd_PC, etc
 			/// </summary>

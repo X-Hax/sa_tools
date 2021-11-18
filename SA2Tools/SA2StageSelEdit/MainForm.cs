@@ -10,7 +10,7 @@ using SAModel.Direct3D.TextureSystem;
 using SplitTools;
 using Pfim;
 using System.Linq;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace SA2StageSelEdit
 {
@@ -58,9 +58,9 @@ namespace SA2StageSelEdit
 					string projFolder = projFile.GameInfo.ProjectFolder;
 					string gameFolder = "";
 					if (projFile.GameInfo.GameDataFolder != null)
-						gameFolder = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
+						gameFolder = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), projFile.GameInfo.GameDataFolder);
 					else
-						gameFolder = Path.Combine(projFile.GameInfo.GameFolder, "resource\\gd_PC");
+						gameFolder = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), "resource", "gd_PC");
 
 					if (File.Exists(Path.Combine(projFolder, "ADVERTISE_data.ini")))
 					{
@@ -70,23 +70,23 @@ namespace SA2StageSelEdit
 						string socFilePath = "";
 						string prsFilePath = "";
 
-						if (projFile.GameInfo.GameName == "SA2PC")
-						{
-							if (File.Exists(Path.Combine(projFolder, "gd_PC\\SOC\\stageMapBG.pak")))
-								socFilePath = Path.Combine(projFolder, "gd_PC\\SOC\\stageMapBG.pak");
-							else
-								socFilePath = Path.Combine(gameFolder, "SOC\\stageMapBG.pak");
+                        if (projFile.GameInfo.GameName == "SA2PC")
+                        {
+                            if (File.Exists(Path.Combine(projFolder, "gd_PC", "SOC", "stageMapBG.pak")))
+                                socFilePath = Path.Combine(projFolder, "gd_PC", "SOC", "stageMapBG.pak");
+                            else
+                                socFilePath = Path.Combine(gameFolder, "SOC", "stageMapBG.pak");
 
-							if (File.Exists(Path.Combine(projFolder, "gd_PC\\PRS\\stageMap.pak")))
-								prsFilePath = Path.Combine(projFolder, "gd_PC\\PRS\\stageMap.pak");
-							else
-								prsFilePath = Path.Combine(gameFolder, "PRS\\stageMap.pak");
-						}
-						else
-						{
-							socFilePath = Path.Combine(gameFolder, "stageMapBG.prs");
-							prsFilePath = Path.Combine(gameFolder, "stageMap.prs");
-						}
+                            if (File.Exists(Path.Combine(projFolder, "gd_PC", "PRS", "stageMap.pak")))
+                                prsFilePath = Path.Combine(projFolder, "gd_PC", "PRS", "stageMap.pak");
+                            else
+                                prsFilePath = Path.Combine(gameFolder, "PRS", "stageMap.pak");
+                        }
+                        else
+                        {
+                            socFilePath = Path.Combine(gameFolder, "stageMapBG.prs");
+                            prsFilePath = Path.Combine(gameFolder, "stageMap.prs");
+                        }
 
 						PAKFile socpak = new PAKFile(socFilePath);
 						using (MemoryStream str = new MemoryStream(socpak.Entries.Find((a) => a.Name.Equals("stagemap.dds")).Data))

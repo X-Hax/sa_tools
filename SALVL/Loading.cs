@@ -1,10 +1,10 @@
-﻿using SAEditorCommon.ProjectManagement;
-using SAModel.Direct3D;
+﻿using SAModel.Direct3D;
 using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SplitTools;
@@ -124,7 +124,7 @@ namespace SAModel.SALVL
         private void LoadTemplate(Templates.ProjectTemplate projFile)
         {
             sadxlvlini = SAEditorCommon.IniData.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
-            systemFallback = Path.Combine(projFile.GameInfo.GameFolder, sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
+            systemFallback = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
             modFolder = projFile.GameInfo.ProjectFolder;
             modSystemFolder = Path.Combine(modFolder, sadxlvlini.SystemPath);
             //MessageBox.Show("Fallback: " + systemFallback + "\n Mod: " + modFolder);

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using SAModel.SAEditorCommon.ModManagement;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools.SAArc;
 using System.Xml;
 

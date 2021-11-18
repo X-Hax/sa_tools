@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.Net;
 using System.ComponentModel;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using SplitTools.SplitDLL;
 using System.Net.Http;
@@ -168,10 +168,10 @@ namespace SAToolsHub
             setGame = projFile.GameInfo.GameName;
 
             projectDirectory = projFile.GameInfo.ProjectFolder;
-            gameDirectory = projFile.GameInfo.GameFolder;
-            gameSystemDirectory = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
+            gameDirectory = ProjectFunctions.GetGamePath(projFile.GameInfo.GameName);
+            gameSystemDirectory = Path.Combine(gameDirectory, projFile.GameInfo.GameDataFolder);
             // Check for valid paths just in case the user moved folders.
-            if (!Directory.Exists(projectDirectory))
+            if (!Directory.Exists(projectDirectory) || projectDirectory == "")
             {
             MissingProjectFolder:
                 DialogResult projDirMissing = MessageBox.Show(("Project Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -195,7 +195,7 @@ namespace SAToolsHub
                 }
             }
 
-            if (!Directory.Exists(gameDirectory))
+            if (!Directory.Exists(gameDirectory) || gameDirectory == "")
             {
             MissingGameFolder:
                 DialogResult gameDirMissing = MessageBox.Show(("Game Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -207,8 +207,8 @@ namespace SAToolsHub
                         if (File.Exists(Path.Combine(fsd.SelectedPath, projFile.GameInfo.CheckFile)))
                         {
                             gameDirectory = fsd.SelectedPath;
-                            projFile.GameInfo.GameFolder = gameDirectory;
-                            gameSystemDirectory = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder);
+                            ProjectFunctions.SetGamePath(projFile.GameInfo.GameName, gameDirectory);
+                            gameSystemDirectory = Path.Combine(gameDirectory, projFile.GameInfo.GameDataFolder);
                             sapChanged = true;
                         }
                         else

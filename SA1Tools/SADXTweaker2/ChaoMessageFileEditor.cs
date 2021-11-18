@@ -36,7 +36,7 @@ namespace SADXTweaker2
 		private void field_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (filename.SelectedIndex == -1 | language.SelectedIndex == -1) return;
-			loadButton.Enabled = File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)) || File.Exists(Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
+			loadButton.Enabled = File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)) || File.Exists(Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, CurrentFile));
 		}
 
 		private void loadButton_Click(object sender, EventArgs e)
@@ -46,7 +46,7 @@ namespace SADXTweaker2
 			if (File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)))
 				file = File.ReadAllBytes(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
 			else
-				file = File.ReadAllBytes(Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
+				file = File.ReadAllBytes(Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, CurrentFile));
 			int address = 0;
 			int off = ReadInt32BE(file, 0);
 			while (off != -1)
