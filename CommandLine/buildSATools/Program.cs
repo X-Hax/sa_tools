@@ -236,7 +236,7 @@ namespace buildSATools
 
                 // Don't patch if the string already has the lib folder in it
                 string originalName = System.Text.Encoding.UTF8.GetString(apphostExeBytes, 0, apphostExeBytes.Length);
-                if (originalName.Contains("lib"))
+                if (originalName.Contains("lib\\"))
                 {
                     Console.WriteLine("File is already patched");
                     return 1;
