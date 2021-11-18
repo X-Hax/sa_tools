@@ -509,6 +509,7 @@ namespace SAToolsHub
                             subItemType = "Sega VR Image";
                             tagType = "vr";
                             item.ImageIndex = (int)item_icons.texture;
+                            item.ToolTipText = "Double click to open in Texture Editor";
                             break;
                         }
                     case ".dds":
@@ -694,6 +695,7 @@ namespace SAToolsHub
                         salvlStartInfo.Arguments = "";
                         break;
                     case "tex":
+                    case "vr":
                         texeditStartInfo.Arguments = $"\"{itemPath}\"";
                         Process.Start(texeditStartInfo);
                         texeditStartInfo.Arguments = "";
