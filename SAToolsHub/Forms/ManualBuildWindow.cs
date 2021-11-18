@@ -125,8 +125,11 @@ namespace SAModel.SAEditorCommon
 
 				for (int i = 0; i < tabListView.Columns.Count; i++)
 				{
-					tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
-				}
+                    if (i != tabListView.Columns.Count - 1) // Don't auto resize the "Changed" column
+					    tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
+                    else
+                        tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.HeaderSize);
+                }
 			}
 		}
 
