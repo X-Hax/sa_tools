@@ -286,6 +286,9 @@ namespace SAEditorCommon.ProjectManagement
                 var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 				var projFileStream = File.OpenRead(fileName);
 				projectFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+                // Check if project data folder path is relative
+                if (!projectFile.GameInfo.ProjectFolder.Contains(":"))
+                    projectFile.GameInfo.ProjectFolder = Path.Combine(Path.GetDirectoryName(fileName), projectFile.GameInfo.ProjectFolder);
 				projFileStream.Close();
 				return projectFile;
 			}
