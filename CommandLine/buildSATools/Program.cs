@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -14,10 +15,10 @@ namespace buildSATools
             if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "build", "SAToolsHub.deps.json")))
                 goto package;
             // Clean up leftovers from previous build
-            if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib")))
-                Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"), true);
-            if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib")))
-                Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"), true);
+            List<string> refdirlist = new List<string>();
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"));
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"));
+            DeleteDirs(refdirlist);
             Console.WriteLine("Patching EXE files...");
             DirectoryInfo d = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "build"));
             FileInfo[] files = d.GetFiles("*.exe", SearchOption.AllDirectories);
@@ -28,7 +29,7 @@ namespace buildSATools
                     case "buildsatools.exe":
                         break;
                     case "satoolshub.exe":
-                        PatchExe(exefile.FullName, "tools/lib");
+                        PatchExe(exefile.FullName, "tools\\lib");
                         break;
                     default:
                         PatchExe(exefile.FullName, "lib");
@@ -36,10 +37,12 @@ namespace buildSATools
                 }
             }
             Console.WriteLine("Deleting reference assemblies");
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "ref"), true);
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "lib", "ref"), true);
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "tools", "ref"), true);
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "bin", "ref"), true);
+            refdirlist = new List<string>();
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "ref"));
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "lib", "ref"));
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "tools", "ref"));
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "bin", "ref"));
+            DeleteDirs(refdirlist);
             Console.WriteLine("Moving all DLL files to the lib folder");
             FileInfo[] dllfiles = d.GetFiles("*.dll", SearchOption.AllDirectories);
             foreach (FileInfo dllfile in dllfiles)
@@ -65,9 +68,11 @@ namespace buildSATools
             DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "lib"), Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"), true);
             DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "lib"), Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"), true);
             Console.WriteLine("Deleting runtimes folders");
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "runtimes"), true);
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "bin", "runtimes"), true);
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "tools", "runtimes"), true);
+            refdirlist = new List<string>();
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "runtimes"));
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "bin", "runtimes"));
+            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "tools", "runtimes"));
+            DeleteDirs(refdirlist);
             Console.WriteLine("Deleting original lib folder");
             Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "lib"), true);
             Console.WriteLine("Deleting runtimeconfig.dev.json files and irrelevant runtimes");
@@ -111,6 +116,13 @@ namespace buildSATools
                     else
                         throw;
                 }
+        }
+
+        private static void DeleteDirs(List<string> refdirlist)
+        {
+            foreach (string refd in refdirlist)
+                if (Directory.Exists(refd))
+                    Directory.Delete(refd, true);
         }
 
         private static void DoStuff(string outdir)
@@ -221,6 +233,15 @@ namespace buildSATools
                     Console.WriteLine($"Could not find original path '{origPath}'");
                     return 1;
                 }
+
+                // Don't patch if the string already has the lib folder in it
+                string originalName = System.Text.Encoding.UTF8.GetString(apphostExeBytes, 0, apphostExeBytes.Length);
+                if (originalName.Contains("lib"))
+                {
+                    Console.WriteLine("File is already patched");
+                    return 1;
+                }
+
                 if (offset + newPathBytes.Length > apphostExeBytes.Length)
                 {
                     Console.WriteLine($"New path is too long: {newPath}");
