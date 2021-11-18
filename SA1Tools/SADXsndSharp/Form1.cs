@@ -246,7 +246,7 @@ namespace SADXsndSharp
 		{
 			string fp = Path.Combine(Path.GetTempPath(), archive.Entries[int.Parse(listView1.SelectedItems[0].SubItems[2].Text)].Name);
 			File.WriteAllBytes(fp, archive.GetFile(int.Parse(listView1.SelectedItems[0].SubItems[2].Text)));
-			System.Diagnostics.Process.Start(fp);
+			System.Diagnostics.Process.Start("explorer.exe", fp);
 		}
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)

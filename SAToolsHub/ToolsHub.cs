@@ -709,12 +709,12 @@ namespace SAToolsHub
                                 projectEditorDiag.ShowDialog();
                                 break;
                             default:
-                                Process.Start($"\"{itemPath}\"");
+                                Process.Start("explorer.exe", $"\"{itemPath}\"");
                                 break;
                         }
                         break;
                     case "img":
-                        Process.Start($"\"{itemPath}\"");
+                        Process.Start("explorer.exe", $"\"{itemPath}\"");
                         break;
                     case "snd":
                         if (itemName.Contains("dat"))
@@ -724,10 +724,10 @@ namespace SAToolsHub
                             sadxsndsharpStartInfo.Arguments = "";
                         }
                         else
-                            Process.Start($"\"{itemPath}\"");
+                            Process.Start("explorer.exe", $"\"{itemPath}\"");
                         break;
                     case "vid":
-                        Process.Start($"\"{itemPath}\"");
+                        Process.Start("explorer.exe", $"\"{itemPath}\"");
                         break;
                 }
             }
