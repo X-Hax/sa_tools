@@ -42,7 +42,6 @@ namespace SAToolsHub
 			this.checkedListBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.checkedListBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.checkedListBox1.FormattingEnabled = true;
 			this.checkedListBox1.Location = new System.Drawing.Point(0, 0);
 			this.checkedListBox1.Name = "checkedListBox1";
@@ -53,7 +52,6 @@ namespace SAToolsHub
 			// 
 			this.btnSplit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSplit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnSplit.Location = new System.Drawing.Point(12, 430);
 			this.btnSplit.Name = "btnSplit";
 			this.btnSplit.Size = new System.Drawing.Size(326, 23);
@@ -66,7 +64,6 @@ namespace SAToolsHub
 			// 
 			this.chkOverwrite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.chkOverwrite.AutoSize = true;
-			this.chkOverwrite.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.chkOverwrite.Location = new System.Drawing.Point(12, 404);
 			this.chkOverwrite.Name = "chkOverwrite";
 			this.chkOverwrite.Size = new System.Drawing.Size(115, 20);

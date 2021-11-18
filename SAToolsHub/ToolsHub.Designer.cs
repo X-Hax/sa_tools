@@ -149,7 +149,6 @@
 			// menuStrip1
 			// 
 			this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
-			this.menuStrip1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectsToolStripMenuItem,
             this.buildToolStripMenuItem,
@@ -1000,7 +999,6 @@
 			// treeView1
 			// 
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.treeView1.HideSelection = false;
 			this.treeView1.HotTracking = true;
 			this.treeView1.Location = new System.Drawing.Point(0, 0);
@@ -1017,7 +1015,6 @@
             this.columnHeader3,
             this.columnHeader4});
 			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.listView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.listView1.HideSelection = false;
 			this.listView1.Location = new System.Drawing.Point(0, 0);
 			this.listView1.Name = "listView1";
@@ -1084,7 +1081,6 @@
 			// cmsOpen
 			// 
 			this.cmsOpen.Enabled = false;
-			this.cmsOpen.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cmsOpen.Name = "cmsOpen";
 			this.cmsOpen.Size = new System.Drawing.Size(151, 22);
 			this.cmsOpen.Text = "Open";
@@ -1097,7 +1093,6 @@
             this.cmsToData,
             this.cmsToJson});
 			this.cmsConvert.Enabled = false;
-			this.cmsConvert.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cmsConvert.Name = "cmsConvert";
 			this.cmsConvert.Size = new System.Drawing.Size(151, 22);
 			this.cmsConvert.Text = "Convert File";
@@ -1126,7 +1121,6 @@
 			// cmsCopy
 			// 
 			this.cmsCopy.Enabled = false;
-			this.cmsCopy.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cmsCopy.Name = "cmsCopy";
 			this.cmsCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
 			this.cmsCopy.Size = new System.Drawing.Size(151, 22);
@@ -1137,7 +1131,6 @@
 			// cmsPaste
 			// 
 			this.cmsPaste.Enabled = false;
-			this.cmsPaste.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cmsPaste.Name = "cmsPaste";
 			this.cmsPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
 			this.cmsPaste.Size = new System.Drawing.Size(151, 22);
@@ -1148,7 +1141,6 @@
 			// cmsDelete
 			// 
 			this.cmsDelete.Enabled = false;
-            this.cmsDelete.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmsDelete.Name = "cmsDelete";
 			this.cmsDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
 			this.cmsDelete.Size = new System.Drawing.Size(151, 22);
@@ -1205,7 +1197,6 @@
 			// 
 			this.browseOpenExplorer.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.browseOpenExplorer.Enabled = false;
-			this.browseOpenExplorer.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.browseOpenExplorer.Image = ((System.Drawing.Image)(resources.GetObject("browseOpenExplorer.Image")));
 			this.browseOpenExplorer.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.browseOpenExplorer.Name = "browseOpenExplorer";

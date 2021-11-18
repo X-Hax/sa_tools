@@ -48,7 +48,6 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.assemblyItemTabs.Controls.Add(this.tabPage1);
-			this.assemblyItemTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.assemblyItemTabs.Location = new System.Drawing.Point(12, 12);
 			this.assemblyItemTabs.Name = "assemblyItemTabs";
 			this.assemblyItemTabs.SelectedIndex = 0;
@@ -69,7 +68,6 @@
 			// LoadingLabel
 			// 
 			this.LoadingLabel.AutoSize = true;
-			this.LoadingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.LoadingLabel.Location = new System.Drawing.Point(309, 154);
 			this.LoadingLabel.Name = "LoadingLabel";
 			this.LoadingLabel.Size = new System.Drawing.Size(159, 42);
@@ -79,7 +77,6 @@
 			// IniExportButton
 			// 
 			this.IniExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.IniExportButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.IniExportButton.Location = new System.Drawing.Point(474, 408);
 			this.IniExportButton.Name = "IniExportButton";
 			this.IniExportButton.Size = new System.Drawing.Size(152, 30);
@@ -92,7 +89,6 @@
 			// CPPExportButton
 			// 
 			this.CPPExportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.CPPExportButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.CPPExportButton.Location = new System.Drawing.Point(632, 408);
 			this.CPPExportButton.Name = "CPPExportButton";
 			this.CPPExportButton.Size = new System.Drawing.Size(152, 30);
@@ -105,7 +101,6 @@
 			// CheckAllButton
 			// 
 			this.CheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.CheckAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.CheckAllButton.Location = new System.Drawing.Point(12, 408);
 			this.CheckAllButton.Name = "CheckAllButton";
 			this.CheckAllButton.Size = new System.Drawing.Size(115, 30);
@@ -118,7 +113,6 @@
 			// UncheckAllButton
 			// 
 			this.UncheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.UncheckAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.UncheckAllButton.Location = new System.Drawing.Point(133, 408);
 			this.UncheckAllButton.Name = "UncheckAllButton";
 			this.UncheckAllButton.Size = new System.Drawing.Size(127, 30);
@@ -131,7 +125,6 @@
 			// CheckModifiedButton
 			// 
 			this.CheckModifiedButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.CheckModifiedButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.CheckModifiedButton.Location = new System.Drawing.Point(266, 408);
 			this.CheckModifiedButton.Name = "CheckModifiedButton";
 			this.CheckModifiedButton.Size = new System.Drawing.Size(147, 30);

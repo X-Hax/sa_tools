@@ -38,7 +38,6 @@ namespace SAToolsHub
 			// radModManager
 			// 
 			this.radModManager.AutoSize = true;
-			this.radModManager.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.radModManager.Location = new System.Drawing.Point(12, 12);
 			this.radModManager.Name = "radModManager";
 			this.radModManager.Size = new System.Drawing.Size(146, 20);
@@ -51,7 +50,6 @@ namespace SAToolsHub
 			// radRunGame
 			// 
 			this.radRunGame.AutoSize = true;
-			this.radRunGame.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.radRunGame.Location = new System.Drawing.Point(12, 38);
 			this.radRunGame.Name = "radRunGame";
 			this.radRunGame.Size = new System.Drawing.Size(109, 20);
@@ -63,7 +61,6 @@ namespace SAToolsHub
 			// 
 			// btnOK
 			// 
-			this.btnOK.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnOK.Location = new System.Drawing.Point(93, 66);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
@@ -74,7 +71,6 @@ namespace SAToolsHub
 			// 
 			// button1
 			// 
-			this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.button1.Location = new System.Drawing.Point(12, 66);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(75, 23);
