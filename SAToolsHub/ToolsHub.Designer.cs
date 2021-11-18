@@ -135,7 +135,8 @@
 			this.browseCurDirectory = new System.Windows.Forms.ToolStripTextBox();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.browseOpenExplorer = new System.Windows.Forms.ToolStripButton();
-			this.menuStrip1.SuspendLayout();
+            this.toolStripLabelBuildDate = new System.Windows.Forms.ToolStripLabel();
+            this.menuStrip1.SuspendLayout();
 			this.rightToolStrip.SuspendLayout();
 			this.topToolStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -893,8 +894,9 @@
             this.toolStripSeparator6,
             this.tsBuild,
             this.tsGameRun,
-            this.tsUpdate});
-			this.topToolStrip.Location = new System.Drawing.Point(0, 25);
+            this.tsUpdate,
+            this.toolStripLabelBuildDate});
+            this.topToolStrip.Location = new System.Drawing.Point(0, 25);
 			this.topToolStrip.Name = "topToolStrip";
 			this.topToolStrip.Padding = new System.Windows.Forms.Padding(0);
 			this.topToolStrip.Size = new System.Drawing.Size(899, 55);
@@ -1203,10 +1205,17 @@
 			this.browseOpenExplorer.Size = new System.Drawing.Size(85, 29);
 			this.browseOpenExplorer.Text = "Open Folder";
 			this.browseOpenExplorer.Click += new System.EventHandler(this.browseOpenExplorer_Click);
-			// 
-			// SAToolsHub
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            // 
+            // toolStripLabelBuildDate
+            // 
+            this.toolStripLabelBuildDate.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripLabelBuildDate.Name = "toolStripLabelBuildDate";
+            this.toolStripLabelBuildDate.Size = new System.Drawing.Size(17, 52);
+            this.toolStripLabelBuildDate.Text = " ";
+            // 
+            // SAToolsHub
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(899, 573);
@@ -1346,5 +1355,6 @@
 		private System.Windows.Forms.ToolStripMenuItem tsProjUtils;
 		private System.Windows.Forms.ToolStripMenuItem updateMetadataToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem replitItemsToolStripMenuItem;
-	}
+        private System.Windows.Forms.ToolStripLabel toolStripLabelBuildDate;
+    }
 }
