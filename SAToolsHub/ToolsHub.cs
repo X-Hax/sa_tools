@@ -83,7 +83,7 @@ namespace SAToolsHub
         public SAToolsHub()
         {
             InitializeComponent();
-            toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
+			toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
             lvwColumnSorter = new ListViewColumnSorter();
             this.listView1.ListViewItemSorter = lvwColumnSorter;
             Application.ThreadException += Application_ThreadException;
@@ -433,7 +433,7 @@ namespace SAToolsHub
                             subItemType = "Model File";
                             tagType = "mdl";
                             item.ImageIndex = (int)item_icons.model;
-                            item.ToolTipText = "Double click to open in SAMDL";
+                            item.ToolTipText = "Double click to open in SAMDL.";
                             break;
                         }
                     case ".sa1lvl":
@@ -443,7 +443,7 @@ namespace SAToolsHub
                             subItemType = "Level File";
                             tagType = "lvl";
                             item.ImageIndex = (int)item_icons.level;
-                            item.ToolTipText = "Double click to open in SALVL";
+                            item.ToolTipText = "Double click to open in SALVL.";
                             break;
                         }
                     case ".ini":
@@ -454,10 +454,10 @@ namespace SAToolsHub
                             switch (fileName)
                             {
                                 case "mod":
-                                    item.ToolTipText = "Double click to open Mod Info Editor";
+                                    item.ToolTipText = "Double click to open Mod Info Editor.";
                                     break;
                                 case "sadxlvl":
-                                    item.ToolTipText = "Double click to open SALVL";
+                                    item.ToolTipText = "Double click to open SALVL.";
                                     break;
                                 default:
                                     item.ToolTipText = "Double click to open in the default text editor.";
@@ -500,7 +500,7 @@ namespace SAToolsHub
                             subItemType = "Texture Archive";
                             tagType = "tex";
                             item.ImageIndex = (int)item_icons.texture;
-                            item.ToolTipText = "Double click to open in Texture Editor";
+                            item.ToolTipText = "Double click to open in Texture Editor.";
                             break;
                         }
                     case ".pvr":
@@ -509,7 +509,7 @@ namespace SAToolsHub
                             subItemType = "Sega VR Image";
                             tagType = "vr";
                             item.ImageIndex = (int)item_icons.texture;
-                            item.ToolTipText = "Double click to open in Texture Editor";
+                            item.ToolTipText = "Double click to open in Texture Editor.";
                             break;
                         }
                     case ".dds":
@@ -538,13 +538,13 @@ namespace SAToolsHub
                             {
                                 subItemType = "Compressed Model Archive";
                                 tagType = "mdl";
-                                item.ToolTipText = "Double click to open in SAMDL";
+                                item.ToolTipText = "Double click to open in SAMDL.";
                             }
                             else if (fileName.Contains("tex") || fileName.Contains("tx") || fileName.Contains("bg"))
                             {
                                 subItemType = "Compressed Texture Archive";
                                 tagType = "tex";
-                                item.ToolTipText = "Double click to open in Texture Editor";
+                                item.ToolTipText = "Double click to open in Texture Editor.";
                             }
                             else if (fileName.Contains("mtn"))
                             {
@@ -1098,16 +1098,22 @@ namespace SAToolsHub
                 cmsConvert.Enabled = false;
                 cmsToData.Enabled = false;
                 cmsToJson.Enabled = false;
-            }
+				toolStripStatusLabelFileType.Text = "No file selected";
+				toolStripStatusLabelFileTip.Text = "";
+			}
             else if (((itemTags)listView1.SelectedItems[0].Tag).Type == "dir")
             {
                 editOpen.Enabled = true;
                 cmsOpen.Enabled = true;
-            }
+				toolStripStatusLabelFileType.Text = "Folder";
+				toolStripStatusLabelFileTip.Text = "Double click to view.";
+			}
             else
             {
                 string itemPath = ((itemTags)listView1.SelectedItems[0].Tag).Path;
-                string itemExt = Path.GetExtension(itemPath);
+				toolStripStatusLabelFileType.Text = listView1.SelectedItems[0].SubItems[1].Text;
+				toolStripStatusLabelFileTip.Text = listView1.SelectedItems[0].ToolTipText;
+				string itemExt = Path.GetExtension(itemPath);
                 switch (itemExt)
                 {
                     case ".sa1mdl":
