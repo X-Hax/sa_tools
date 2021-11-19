@@ -44,7 +44,7 @@
 			this.listView.Location = new System.Drawing.Point(0, 0);
 			this.listView.MultiSelect = false;
 			this.listView.Name = "listView";
-			this.listView.Size = new System.Drawing.Size(453, 429);
+			this.listView.Size = new System.Drawing.Size(500, 429);
 			this.listView.TabIndex = 0;
 			this.listView.UseCompatibleStateImageBehavior = false;
 			this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
@@ -85,7 +85,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(453, 465);
+			this.ClientSize = new System.Drawing.Size(500, 465);
 			this.ControlBox = false;
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
