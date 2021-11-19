@@ -746,7 +746,7 @@ namespace VMSEditor
         private void CreateVMI(string filename, byte[] data)
         {
             VMIFile vmi = new VMIFile();
-            if (Path.GetFileName(filename).Length > 8)
+            if (Path.GetFileNameWithoutExtension(filename).Length > 8)
                 System.Windows.Forms.MessageBox.Show("For the VMI file to work correctly, the VMS filename should be 8 characters or less.", "Chao Editor Warning", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             vmi.Description = "Chao Download";
             vmi.Copyright = "VMSEditor";
@@ -891,7 +891,7 @@ namespace VMSEditor
             currentFilename = filename;
             toolStripStatusLabelFilename.Text = Path.GetFileName(currentFilename);
             if (generateAVMIFileToolStripMenuItem.Checked)
-                CreateVMI(Path.GetFileNameWithoutExtension(filename), data);
+                CreateVMI(filename, data);
         }
 
         private void chaoDownloadDataToolStripMenuItem_Click(object sender, EventArgs e)

@@ -75,10 +75,10 @@ namespace VMSEditor
             this.label39 = new System.Windows.Forms.Label();
             this.numericUpDownY = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownZ = new System.Windows.Forms.NumericUpDown();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBoxMain = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label71 = new System.Windows.Forms.Label();
-            this.numericUpDownID = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownID = new System.Windows.Forms.NumericUpDown();
             this.tabPageAppearance = new System.Windows.Forms.TabPage();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.pictureBoxEyeRight = new System.Windows.Forms.PictureBox();
@@ -90,18 +90,18 @@ namespace VMSEditor
             this.numericUpDownKindness = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownAggressive = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownCurious = new System.Windows.Forms.NumericUpDown();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.groupBoxColorData = new System.Windows.Forms.GroupBox();
             this.checkBoxColorFlag0x20 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagGold = new System.Windows.Forms.CheckBox();
             this.label72 = new System.Windows.Forms.Label();
             this.checkBoxColorFlag0x10 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagJewel = new System.Windows.Forms.CheckBox();
-            this.numericUpDown_ColorFlags = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.checkBoxColorFlag0x80 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagSilver = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlag0x1 = new System.Windows.Forms.CheckBox();
             this.checkBoxColorFlagBlack = new System.Windows.Forms.CheckBox();
             this.comboBoxJewelColor = new System.Windows.Forms.ComboBox();
+            this.numericUpDown_ColorFlags = new System.Windows.Forms.NumericUpDown();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.pictureBoxTail = new System.Windows.Forms.PictureBox();
             this.pictureBoxFeet = new System.Windows.Forms.PictureBox();
@@ -279,60 +279,60 @@ namespace VMSEditor
             this.label97 = new System.Windows.Forms.Label();
             this.groupBoxMemories_7 = new System.Windows.Forms.GroupBox();
             this.label94 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_7 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label95 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_7 = new System.Windows.Forms.NumericUpDown();
             this.label96 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_7 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_7 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_6 = new System.Windows.Forms.GroupBox();
             this.label91 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_6 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label92 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_6 = new System.Windows.Forms.NumericUpDown();
             this.label93 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_6 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_6 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_5 = new System.Windows.Forms.GroupBox();
             this.label88 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_5 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label89 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_5 = new System.Windows.Forms.NumericUpDown();
             this.label90 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_5 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_5 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_4 = new System.Windows.Forms.GroupBox();
             this.label85 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_4 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label86 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_4 = new System.Windows.Forms.NumericUpDown();
             this.label87 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_4 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_4 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_3 = new System.Windows.Forms.GroupBox();
             this.label82 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_3 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label83 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_3 = new System.Windows.Forms.NumericUpDown();
             this.label84 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_3 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_3 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_2 = new System.Windows.Forms.GroupBox();
             this.label79 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_2 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label80 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_2 = new System.Windows.Forms.NumericUpDown();
             this.label81 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_2 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_1 = new System.Windows.Forms.GroupBox();
             this.label76 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_1 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label77 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_1 = new System.Windows.Forms.NumericUpDown();
             this.label78 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_1 = new System.Windows.Forms.NumericUpDown();
             this.groupBoxMemories_0 = new System.Windows.Forms.GroupBox();
             this.label66 = new System.Windows.Forms.Label();
-            this.numericUpDownMemoriesID_0 = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
             this.label65 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesMeet_0 = new System.Windows.Forms.NumericUpDown();
             this.label64 = new System.Windows.Forms.Label();
             this.numericUpDownMemoriesLike_0 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMemoriesID_0 = new System.Windows.Forms.NumericUpDown();
             this.tabPageRace = new System.Windows.Forms.TabPage();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.label75 = new System.Windows.Forms.Label();
@@ -401,13 +401,13 @@ namespace VMSEditor
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateAVMIFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.japaneseHeaderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chaoEditorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelFilename = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelHint = new System.Windows.Forms.ToolStripStatusLabel();
             this.listBoxDataSlots = new System.Windows.Forms.ListBox();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.chaoEditorHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPageGeneral.SuspendLayout();
             this.groupBox15.SuspendLayout();
@@ -431,7 +431,7 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZ)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            this.groupBoxMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).BeginInit();
             this.tabPageAppearance.SuspendLayout();
             this.groupBox9.SuspendLayout();
@@ -441,7 +441,7 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKindness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAggressive)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCurious)).BeginInit();
-            this.groupBox10.SuspendLayout();
+            this.groupBoxColorData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).BeginInit();
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTail)).BeginInit();
@@ -542,37 +542,37 @@ namespace VMSEditor
             this.tabPageChaoMemories.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesPage)).BeginInit();
             this.groupBoxMemories_7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).BeginInit();
             this.groupBoxMemories_6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).BeginInit();
             this.groupBoxMemories_5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).BeginInit();
             this.groupBoxMemories_4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).BeginInit();
             this.groupBoxMemories_3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).BeginInit();
             this.groupBoxMemories_2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).BeginInit();
             this.groupBoxMemories_1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).BeginInit();
             this.groupBoxMemories_0.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).BeginInit();
             this.tabPageRace.SuspendLayout();
             this.groupBox16.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRaceTrack)).BeginInit();
@@ -621,9 +621,10 @@ namespace VMSEditor
             "Chaos Chao",
             "Chao Egg",
             "None"});
-            this.comboBoxType.Location = new System.Drawing.Point(88, 62);
+            this.comboBoxType.Location = new System.Drawing.Point(68, 46);
+            this.comboBoxType.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxType.Name = "comboBoxType";
-            this.comboBoxType.Size = new System.Drawing.Size(130, 28);
+            this.comboBoxType.Size = new System.Drawing.Size(102, 23);
             this.comboBoxType.TabIndex = 0;
             this.comboBoxType.Click += new System.EventHandler(this.comboBoxType_Click);
             // 
@@ -635,28 +636,31 @@ namespace VMSEditor
             "St. Square",
             "Egg Carrier",
             "M. Ruins"});
-            this.comboBoxGarden.Location = new System.Drawing.Point(82, 31);
+            this.comboBoxGarden.Location = new System.Drawing.Point(64, 23);
+            this.comboBoxGarden.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxGarden.Name = "comboBoxGarden";
-            this.comboBoxGarden.Size = new System.Drawing.Size(118, 28);
+            this.comboBoxGarden.Size = new System.Drawing.Size(93, 23);
             this.comboBoxGarden.TabIndex = 1;
             this.comboBoxGarden.SelectedIndexChanged += new System.EventHandler(this.comboBoxGarden_SelectedIndexChanged);
             this.comboBoxGarden.Click += new System.EventHandler(this.comboBoxGarden_Click);
             // 
             // textBoxName
             // 
-            this.textBoxName.Location = new System.Drawing.Point(88, 25);
+            this.textBoxName.Location = new System.Drawing.Point(68, 19);
+            this.textBoxName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxName.MaxLength = 8;
             this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(130, 26);
+            this.textBoxName.Size = new System.Drawing.Size(102, 23);
             this.textBoxName.TabIndex = 3;
             this.textBoxName.Click += new System.EventHandler(this.textBoxName_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(26, 29);
+            this.label1.Location = new System.Drawing.Point(20, 22);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 20);
+            this.label1.Size = new System.Drawing.Size(42, 15);
             this.label1.TabIndex = 4;
             this.label1.Text = "Name:";
             // 
@@ -670,10 +674,11 @@ namespace VMSEditor
             this.tabControl1.Controls.Add(this.tabPageCharacters);
             this.tabControl1.Controls.Add(this.tabPageChaoMemories);
             this.tabControl1.Controls.Add(this.tabPageRace);
-            this.tabControl1.Location = new System.Drawing.Point(340, 35);
+            this.tabControl1.Location = new System.Drawing.Point(264, 26);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(816, 505);
+            this.tabControl1.Size = new System.Drawing.Size(694, 379);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPageGeneral
@@ -684,11 +689,12 @@ namespace VMSEditor
             this.tabPageGeneral.Controls.Add(this.groupBox7);
             this.tabPageGeneral.Controls.Add(this.groupBox6);
             this.tabPageGeneral.Controls.Add(this.groupBox12);
-            this.tabPageGeneral.Controls.Add(this.groupBox2);
-            this.tabPageGeneral.Location = new System.Drawing.Point(4, 29);
+            this.tabPageGeneral.Controls.Add(this.groupBoxMain);
+            this.tabPageGeneral.Location = new System.Drawing.Point(4, 24);
+            this.tabPageGeneral.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageGeneral.Name = "tabPageGeneral";
-            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(808, 472);
+            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPageGeneral.Size = new System.Drawing.Size(661, 351);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
             // 
@@ -702,16 +708,19 @@ namespace VMSEditor
             this.groupBox15.Controls.Add(this.label41);
             this.groupBox15.Controls.Add(this.numericUpDownAgingFactor);
             this.groupBox15.Controls.Add(this.label40);
-            this.groupBox15.Location = new System.Drawing.Point(8, 157);
+            this.groupBox15.Location = new System.Drawing.Point(6, 118);
+            this.groupBox15.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(236, 192);
+            this.groupBox15.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox15.Size = new System.Drawing.Size(184, 144);
             this.groupBox15.TabIndex = 59;
             this.groupBox15.TabStop = false;
             this.groupBox15.Text = "Vitality";
             // 
             // numericUpDownCocoonTimer
             // 
-            this.numericUpDownCocoonTimer.Location = new System.Drawing.Point(132, 143);
+            this.numericUpDownCocoonTimer.Location = new System.Drawing.Point(103, 105);
+            this.numericUpDownCocoonTimer.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCocoonTimer.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -723,39 +732,43 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownCocoonTimer.Name = "numericUpDownCocoonTimer";
-            this.numericUpDownCocoonTimer.Size = new System.Drawing.Size(88, 26);
+            this.numericUpDownCocoonTimer.Size = new System.Drawing.Size(68, 23);
             this.numericUpDownCocoonTimer.TabIndex = 60;
             this.numericUpDownCocoonTimer.Click += new System.EventHandler(this.numericUpDownCocoonTimer_Click);
             // 
             // label63
             // 
             this.label63.AutoSize = true;
-            this.label63.Location = new System.Drawing.Point(12, 146);
+            this.label63.Location = new System.Drawing.Point(9, 105);
+            this.label63.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label63.Name = "label63";
-            this.label63.Size = new System.Drawing.Size(111, 20);
+            this.label63.Size = new System.Drawing.Size(85, 15);
             this.label63.TabIndex = 59;
             this.label63.Text = "Cocoon Timer:";
             // 
             // label73
             // 
             this.label73.AutoSize = true;
-            this.label73.Location = new System.Drawing.Point(15, 109);
+            this.label73.Location = new System.Drawing.Point(15, 80);
+            this.label73.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label73.Name = "label73";
-            this.label73.Size = new System.Drawing.Size(109, 20);
+            this.label73.Size = new System.Drawing.Size(79, 15);
             this.label73.TabIndex = 58;
             this.label73.Text = "Reincarnated:";
             // 
             // numericUpDownReincarnations
             // 
-            this.numericUpDownReincarnations.Location = new System.Drawing.Point(132, 106);
+            this.numericUpDownReincarnations.Location = new System.Drawing.Point(103, 78);
+            this.numericUpDownReincarnations.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownReincarnations.Name = "numericUpDownReincarnations";
-            this.numericUpDownReincarnations.Size = new System.Drawing.Size(88, 26);
+            this.numericUpDownReincarnations.Size = new System.Drawing.Size(68, 23);
             this.numericUpDownReincarnations.TabIndex = 57;
             this.numericUpDownReincarnations.Click += new System.EventHandler(this.numericUpDownReincarnations_Click);
             // 
             // numericUpDownLifeSpan
             // 
-            this.numericUpDownLifeSpan.Location = new System.Drawing.Point(132, 32);
+            this.numericUpDownLifeSpan.Location = new System.Drawing.Point(103, 24);
+            this.numericUpDownLifeSpan.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownLifeSpan.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -767,22 +780,24 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownLifeSpan.Name = "numericUpDownLifeSpan";
-            this.numericUpDownLifeSpan.Size = new System.Drawing.Size(88, 26);
+            this.numericUpDownLifeSpan.Size = new System.Drawing.Size(68, 23);
             this.numericUpDownLifeSpan.TabIndex = 28;
             this.numericUpDownLifeSpan.Click += new System.EventHandler(this.numericUpDownLifeSpan_Click);
             // 
             // label41
             // 
             this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(8, 72);
+            this.label41.Location = new System.Drawing.Point(7, 53);
+            this.label41.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(116, 20);
+            this.label41.Size = new System.Drawing.Size(87, 15);
             this.label41.TabIndex = 46;
             this.label41.Text = "Life Deduction:";
             // 
             // numericUpDownAgingFactor
             // 
-            this.numericUpDownAgingFactor.Location = new System.Drawing.Point(132, 69);
+            this.numericUpDownAgingFactor.Location = new System.Drawing.Point(103, 51);
+            this.numericUpDownAgingFactor.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAgingFactor.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -794,16 +809,17 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownAgingFactor.Name = "numericUpDownAgingFactor";
-            this.numericUpDownAgingFactor.Size = new System.Drawing.Size(88, 26);
+            this.numericUpDownAgingFactor.Size = new System.Drawing.Size(68, 23);
             this.numericUpDownAgingFactor.TabIndex = 29;
             this.numericUpDownAgingFactor.Click += new System.EventHandler(this.numericUpDownAgingFactor_Click);
             // 
             // label40
             // 
             this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(51, 35);
+            this.label40.Location = new System.Drawing.Point(40, 26);
+            this.label40.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(74, 20);
+            this.label40.Size = new System.Drawing.Size(54, 15);
             this.label40.TabIndex = 45;
             this.label40.Text = "Lifespan:";
             // 
@@ -813,16 +829,19 @@ namespace VMSEditor
             this.groupBox18.Controls.Add(this.label14);
             this.groupBox18.Controls.Add(this.numericUpDownAge);
             this.groupBox18.Controls.Add(this.label34);
-            this.groupBox18.Location = new System.Drawing.Point(6, 355);
+            this.groupBox18.Location = new System.Drawing.Point(5, 266);
+            this.groupBox18.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox18.Name = "groupBox18";
-            this.groupBox18.Size = new System.Drawing.Size(237, 100);
+            this.groupBox18.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox18.Size = new System.Drawing.Size(184, 75);
             this.groupBox18.TabIndex = 58;
             this.groupBox18.TabStop = false;
             this.groupBox18.Text = "Miscellaneous";
             // 
             // numericUpDownExists
             // 
-            this.numericUpDownExists.Location = new System.Drawing.Point(134, 22);
+            this.numericUpDownExists.Location = new System.Drawing.Point(104, 16);
+            this.numericUpDownExists.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownExists.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -834,22 +853,24 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownExists.Name = "numericUpDownExists";
-            this.numericUpDownExists.Size = new System.Drawing.Size(88, 26);
+            this.numericUpDownExists.Size = new System.Drawing.Size(68, 23);
             this.numericUpDownExists.TabIndex = 58;
             this.numericUpDownExists.Click += new System.EventHandler(this.numericUpDownExists_Click);
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(50, 25);
+            this.label14.Location = new System.Drawing.Point(39, 19);
+            this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(78, 20);
+            this.label14.Size = new System.Drawing.Size(55, 15);
             this.label14.TabIndex = 57;
             this.label14.Text = "Exists (?):";
             // 
             // numericUpDownAge
             // 
-            this.numericUpDownAge.Location = new System.Drawing.Point(134, 58);
+            this.numericUpDownAge.Location = new System.Drawing.Point(104, 44);
+            this.numericUpDownAge.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAge.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -861,16 +882,17 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownAge.Name = "numericUpDownAge";
-            this.numericUpDownAge.Size = new System.Drawing.Size(88, 26);
+            this.numericUpDownAge.Size = new System.Drawing.Size(68, 23);
             this.numericUpDownAge.TabIndex = 30;
             this.numericUpDownAge.Click += new System.EventHandler(this.numericUpDownAge_Click);
             // 
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(84, 62);
+            this.label34.Location = new System.Drawing.Point(65, 46);
+            this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(42, 20);
+            this.label34.Size = new System.Drawing.Size(31, 15);
             this.label34.TabIndex = 28;
             this.label34.Text = "Age:";
             // 
@@ -884,9 +906,11 @@ namespace VMSEditor
             this.groupBox7.Controls.Add(this.numericUpDownKey3);
             this.groupBox7.Controls.Add(this.label67);
             this.groupBox7.Controls.Add(this.numericUpDownKey4);
-            this.groupBox7.Location = new System.Drawing.Point(592, 263);
+            this.groupBox7.Location = new System.Drawing.Point(460, 197);
+            this.groupBox7.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(144, 192);
+            this.groupBox7.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox7.Size = new System.Drawing.Size(112, 144);
             this.groupBox7.TabIndex = 57;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Check Bytes (?)";
@@ -894,68 +918,76 @@ namespace VMSEditor
             // label70
             // 
             this.label70.AutoSize = true;
-            this.label70.Location = new System.Drawing.Point(14, 146);
+            this.label70.Location = new System.Drawing.Point(11, 110);
+            this.label70.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(22, 20);
+            this.label70.Size = new System.Drawing.Size(16, 15);
             this.label70.TabIndex = 54;
             this.label70.Text = "4:";
             // 
             // label69
             // 
             this.label69.AutoSize = true;
-            this.label69.Location = new System.Drawing.Point(14, 109);
+            this.label69.Location = new System.Drawing.Point(11, 82);
+            this.label69.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label69.Name = "label69";
-            this.label69.Size = new System.Drawing.Size(22, 20);
+            this.label69.Size = new System.Drawing.Size(16, 15);
             this.label69.TabIndex = 53;
             this.label69.Text = "3:";
             // 
             // numericUpDownKey1
             // 
-            this.numericUpDownKey1.Location = new System.Drawing.Point(44, 32);
+            this.numericUpDownKey1.Location = new System.Drawing.Point(34, 24);
+            this.numericUpDownKey1.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownKey1.Name = "numericUpDownKey1";
-            this.numericUpDownKey1.Size = new System.Drawing.Size(70, 26);
+            this.numericUpDownKey1.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey1.TabIndex = 46;
             this.numericUpDownKey1.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // label68
             // 
             this.label68.AutoSize = true;
-            this.label68.Location = new System.Drawing.Point(14, 72);
+            this.label68.Location = new System.Drawing.Point(11, 54);
+            this.label68.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(22, 20);
+            this.label68.Size = new System.Drawing.Size(16, 15);
             this.label68.TabIndex = 52;
             this.label68.Text = "2:";
             // 
             // numericUpDownKey2
             // 
-            this.numericUpDownKey2.Location = new System.Drawing.Point(44, 69);
+            this.numericUpDownKey2.Location = new System.Drawing.Point(34, 52);
+            this.numericUpDownKey2.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownKey2.Name = "numericUpDownKey2";
-            this.numericUpDownKey2.Size = new System.Drawing.Size(70, 26);
+            this.numericUpDownKey2.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey2.TabIndex = 47;
             this.numericUpDownKey2.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // numericUpDownKey3
             // 
-            this.numericUpDownKey3.Location = new System.Drawing.Point(44, 106);
+            this.numericUpDownKey3.Location = new System.Drawing.Point(34, 80);
+            this.numericUpDownKey3.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownKey3.Name = "numericUpDownKey3";
-            this.numericUpDownKey3.Size = new System.Drawing.Size(70, 26);
+            this.numericUpDownKey3.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey3.TabIndex = 48;
             this.numericUpDownKey3.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
             // label67
             // 
             this.label67.AutoSize = true;
-            this.label67.Location = new System.Drawing.Point(14, 35);
+            this.label67.Location = new System.Drawing.Point(11, 26);
+            this.label67.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label67.Name = "label67";
-            this.label67.Size = new System.Drawing.Size(22, 20);
+            this.label67.Size = new System.Drawing.Size(16, 15);
             this.label67.TabIndex = 50;
             this.label67.Text = "1:";
             // 
             // numericUpDownKey4
             // 
-            this.numericUpDownKey4.Location = new System.Drawing.Point(44, 143);
+            this.numericUpDownKey4.Location = new System.Drawing.Point(34, 107);
+            this.numericUpDownKey4.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownKey4.Name = "numericUpDownKey4";
-            this.numericUpDownKey4.Size = new System.Drawing.Size(70, 26);
+            this.numericUpDownKey4.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey4.TabIndex = 49;
             this.numericUpDownKey4.Click += new System.EventHandler(this.numericUpDownKey1_Click);
             // 
@@ -967,9 +999,11 @@ namespace VMSEditor
             this.groupBox6.Controls.Add(this.labelHappyValue);
             this.groupBox6.Controls.Add(this.trackBarHappy);
             this.groupBox6.Controls.Add(this.label10);
-            this.groupBox6.Location = new System.Drawing.Point(249, 8);
+            this.groupBox6.Location = new System.Drawing.Point(194, 6);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(488, 249);
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox6.Size = new System.Drawing.Size(459, 187);
             this.groupBox6.TabIndex = 43;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Condition";
@@ -977,19 +1011,21 @@ namespace VMSEditor
             // labelAffectionValue
             // 
             this.labelAffectionValue.AutoSize = true;
-            this.labelAffectionValue.Location = new System.Drawing.Point(438, 140);
+            this.labelAffectionValue.Location = new System.Drawing.Point(421, 105);
+            this.labelAffectionValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAffectionValue.Name = "labelAffectionValue";
-            this.labelAffectionValue.Size = new System.Drawing.Size(18, 20);
+            this.labelAffectionValue.Size = new System.Drawing.Size(13, 15);
             this.labelAffectionValue.TabIndex = 42;
             this.labelAffectionValue.Text = "0";
             // 
             // trackBarAffection
             // 
             this.trackBarAffection.LargeChange = 10;
-            this.trackBarAffection.Location = new System.Drawing.Point(105, 140);
+            this.trackBarAffection.Location = new System.Drawing.Point(82, 105);
+            this.trackBarAffection.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarAffection.Maximum = 65535;
             this.trackBarAffection.Name = "trackBarAffection";
-            this.trackBarAffection.Size = new System.Drawing.Size(327, 69);
+            this.trackBarAffection.Size = new System.Drawing.Size(320, 45);
             this.trackBarAffection.SmallChange = 10;
             this.trackBarAffection.TabIndex = 40;
             this.trackBarAffection.TickFrequency = 0;
@@ -999,29 +1035,32 @@ namespace VMSEditor
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(22, 143);
+            this.label16.Location = new System.Drawing.Point(17, 107);
+            this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(77, 20);
+            this.label16.Size = new System.Drawing.Size(59, 15);
             this.label16.TabIndex = 41;
             this.label16.Text = "Affection:";
             // 
             // labelHappyValue
             // 
             this.labelHappyValue.AutoSize = true;
-            this.labelHappyValue.Location = new System.Drawing.Point(438, 42);
+            this.labelHappyValue.Location = new System.Drawing.Point(421, 32);
+            this.labelHappyValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelHappyValue.Name = "labelHappyValue";
-            this.labelHappyValue.Size = new System.Drawing.Size(18, 20);
+            this.labelHappyValue.Size = new System.Drawing.Size(13, 15);
             this.labelHappyValue.TabIndex = 39;
             this.labelHappyValue.Text = "0";
             // 
             // trackBarHappy
             // 
             this.trackBarHappy.LargeChange = 10;
-            this.trackBarHappy.Location = new System.Drawing.Point(105, 42);
+            this.trackBarHappy.Location = new System.Drawing.Point(82, 32);
+            this.trackBarHappy.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarHappy.Maximum = 100;
             this.trackBarHappy.Minimum = -100;
             this.trackBarHappy.Name = "trackBarHappy";
-            this.trackBarHappy.Size = new System.Drawing.Size(327, 69);
+            this.trackBarHappy.Size = new System.Drawing.Size(320, 45);
             this.trackBarHappy.TabIndex = 31;
             this.trackBarHappy.TickFrequency = 5;
             this.trackBarHappy.Click += new System.EventHandler(this.trackBarHappy_Click);
@@ -1030,9 +1069,10 @@ namespace VMSEditor
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(10, 45);
+            this.label10.Location = new System.Drawing.Point(8, 34);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(89, 20);
+            this.label10.Size = new System.Drawing.Size(65, 15);
             this.label10.TabIndex = 32;
             this.label10.Text = "Happiness:";
             // 
@@ -1047,9 +1087,11 @@ namespace VMSEditor
             this.groupBox12.Controls.Add(this.label39);
             this.groupBox12.Controls.Add(this.numericUpDownY);
             this.groupBox12.Controls.Add(this.numericUpDownZ);
-            this.groupBox12.Location = new System.Drawing.Point(249, 263);
+            this.groupBox12.Location = new System.Drawing.Point(194, 197);
+            this.groupBox12.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(338, 192);
+            this.groupBox12.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox12.Size = new System.Drawing.Size(263, 144);
             this.groupBox12.TabIndex = 22;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Location";
@@ -1057,9 +1099,10 @@ namespace VMSEditor
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(9, 35);
+            this.label9.Location = new System.Drawing.Point(7, 26);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(67, 20);
+            this.label9.Size = new System.Drawing.Size(48, 15);
             this.label9.TabIndex = 29;
             this.label9.Text = "Garden:";
             // 
@@ -1067,10 +1110,10 @@ namespace VMSEditor
             // 
             this.pictureBoxGarden.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBoxGarden.Image = global::VMSEditor.Properties.Resources.ss_panel;
-            this.pictureBoxGarden.Location = new System.Drawing.Point(225, 52);
-            this.pictureBoxGarden.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxGarden.Location = new System.Drawing.Point(175, 39);
+            this.pictureBoxGarden.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBoxGarden.Name = "pictureBoxGarden";
-            this.pictureBoxGarden.Size = new System.Drawing.Size(94, 96);
+            this.pictureBoxGarden.Size = new System.Drawing.Size(74, 73);
             this.pictureBoxGarden.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxGarden.TabIndex = 28;
             this.pictureBoxGarden.TabStop = false;
@@ -1078,24 +1121,27 @@ namespace VMSEditor
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(51, 109);
+            this.label38.Location = new System.Drawing.Point(40, 82);
+            this.label38.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(24, 20);
+            this.label38.Size = new System.Drawing.Size(17, 15);
             this.label38.TabIndex = 23;
             this.label38.Text = "Y:";
             // 
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(51, 74);
+            this.label37.Location = new System.Drawing.Point(40, 56);
+            this.label37.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(24, 20);
+            this.label37.Size = new System.Drawing.Size(17, 15);
             this.label37.TabIndex = 21;
             this.label37.Text = "X:";
             // 
             // numericUpDownX
             // 
-            this.numericUpDownX.Location = new System.Drawing.Point(82, 69);
+            this.numericUpDownX.Location = new System.Drawing.Point(64, 52);
+            this.numericUpDownX.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownX.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -1107,22 +1153,24 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownX.Name = "numericUpDownX";
-            this.numericUpDownX.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownX.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownX.TabIndex = 27;
             this.numericUpDownX.Click += new System.EventHandler(this.numericUpDownX_Click);
             // 
             // label39
             // 
             this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(51, 146);
+            this.label39.Location = new System.Drawing.Point(40, 110);
+            this.label39.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(23, 20);
+            this.label39.Size = new System.Drawing.Size(17, 15);
             this.label39.TabIndex = 24;
             this.label39.Text = "Z:";
             // 
             // numericUpDownY
             // 
-            this.numericUpDownY.Location = new System.Drawing.Point(82, 106);
+            this.numericUpDownY.Location = new System.Drawing.Point(64, 80);
+            this.numericUpDownY.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownY.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -1134,13 +1182,14 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownY.Name = "numericUpDownY";
-            this.numericUpDownY.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownY.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownY.TabIndex = 25;
             this.numericUpDownY.Click += new System.EventHandler(this.numericUpDownX_Click);
             // 
             // numericUpDownZ
             // 
-            this.numericUpDownZ.Location = new System.Drawing.Point(82, 143);
+            this.numericUpDownZ.Location = new System.Drawing.Point(64, 107);
+            this.numericUpDownZ.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownZ.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -1152,62 +1201,71 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownZ.Name = "numericUpDownZ";
-            this.numericUpDownZ.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownZ.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownZ.TabIndex = 26;
             this.numericUpDownZ.Click += new System.EventHandler(this.numericUpDownX_Click);
             // 
-            // groupBox2
+            // groupBoxMain
             // 
-            this.groupBox2.Controls.Add(this.comboBoxType);
-            this.groupBox2.Controls.Add(this.textBoxName);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.label8);
-            this.groupBox2.Controls.Add(this.label71);
-            this.groupBox2.Controls.Add(this.numericUpDownID);
-            this.groupBox2.Location = new System.Drawing.Point(8, 8);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(236, 143);
-            this.groupBox2.TabIndex = 22;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Main";
+            this.groupBoxMain.Controls.Add(this.comboBoxType);
+            this.groupBoxMain.Controls.Add(this.textBoxName);
+            this.groupBoxMain.Controls.Add(this.label1);
+            this.groupBoxMain.Controls.Add(this.label8);
+            this.groupBoxMain.Controls.Add(this.label71);
+            this.groupBoxMain.Controls.Add(this.numericUpDownID);
+            this.groupBoxMain.Location = new System.Drawing.Point(6, 6);
+            this.groupBoxMain.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBoxMain.Name = "groupBoxMain";
+            this.groupBoxMain.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMain.Size = new System.Drawing.Size(184, 107);
+            this.groupBoxMain.TabIndex = 22;
+            this.groupBoxMain.TabStop = false;
+            this.groupBoxMain.Text = "Main";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(32, 66);
+            this.label8.Location = new System.Drawing.Point(28, 49);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(47, 20);
+            this.label8.Size = new System.Drawing.Size(34, 15);
             this.label8.TabIndex = 18;
             this.label8.Text = "Type:";
             // 
             // label71
             // 
             this.label71.AutoSize = true;
-            this.label71.Location = new System.Drawing.Point(51, 103);
+            this.label71.Location = new System.Drawing.Point(41, 75);
+            this.label71.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(30, 20);
+            this.label71.Size = new System.Drawing.Size(21, 15);
             this.label71.TabIndex = 56;
             this.label71.Text = "ID:";
             // 
             // numericUpDownID
             // 
             this.numericUpDownID.Hexadecimal = true;
-            this.numericUpDownID.Location = new System.Drawing.Point(88, 100);
+            this.numericUpDownID.Location = new System.Drawing.Point(68, 74);
+            this.numericUpDownID.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
             this.numericUpDownID.Name = "numericUpDownID";
-            this.numericUpDownID.Size = new System.Drawing.Size(132, 26);
-            this.numericUpDownID.TabIndex = 55;
-            this.numericUpDownID.Click += new System.EventHandler(this.numericUpDownID_Click);
+            this.numericUpDownID.Size = new System.Drawing.Size(102, 23);
+            this.numericUpDownID.TabIndex = 57;
             // 
             // tabPageAppearance
             // 
             this.tabPageAppearance.BackColor = System.Drawing.SystemColors.Control;
             this.tabPageAppearance.Controls.Add(this.groupBox9);
-            this.tabPageAppearance.Controls.Add(this.groupBox10);
+            this.tabPageAppearance.Controls.Add(this.groupBoxColorData);
             this.tabPageAppearance.Controls.Add(this.groupBox8);
-            this.tabPageAppearance.Location = new System.Drawing.Point(4, 29);
+            this.tabPageAppearance.Location = new System.Drawing.Point(4, 24);
+            this.tabPageAppearance.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageAppearance.Name = "tabPageAppearance";
-            this.tabPageAppearance.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageAppearance.Size = new System.Drawing.Size(808, 472);
+            this.tabPageAppearance.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPageAppearance.Size = new System.Drawing.Size(661, 351);
             this.tabPageAppearance.TabIndex = 1;
             this.tabPageAppearance.Text = "Appearance";
             // 
@@ -1222,39 +1280,41 @@ namespace VMSEditor
             this.groupBox9.Controls.Add(this.numericUpDownKindness);
             this.groupBox9.Controls.Add(this.numericUpDownAggressive);
             this.groupBox9.Controls.Add(this.numericUpDownCurious);
-            this.groupBox9.Location = new System.Drawing.Point(8, 202);
+            this.groupBox9.Location = new System.Drawing.Point(6, 152);
+            this.groupBox9.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(284, 257);
+            this.groupBox9.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox9.Size = new System.Drawing.Size(221, 193);
             this.groupBox9.TabIndex = 72;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Face Settings";
             // 
             // pictureBoxEyeRight
             // 
-            this.pictureBoxEyeRight.Location = new System.Drawing.Point(160, 133);
-            this.pictureBoxEyeRight.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxEyeRight.Location = new System.Drawing.Point(124, 100);
+            this.pictureBoxEyeRight.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBoxEyeRight.Name = "pictureBoxEyeRight";
-            this.pictureBoxEyeRight.Size = new System.Drawing.Size(48, 64);
+            this.pictureBoxEyeRight.Size = new System.Drawing.Size(37, 48);
             this.pictureBoxEyeRight.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxEyeRight.TabIndex = 10;
             this.pictureBoxEyeRight.TabStop = false;
             // 
             // pictureBoxMouth
             // 
-            this.pictureBoxMouth.Location = new System.Drawing.Point(89, 207);
-            this.pictureBoxMouth.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxMouth.Location = new System.Drawing.Point(69, 155);
+            this.pictureBoxMouth.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBoxMouth.Name = "pictureBoxMouth";
-            this.pictureBoxMouth.Size = new System.Drawing.Size(96, 32);
+            this.pictureBoxMouth.Size = new System.Drawing.Size(75, 24);
             this.pictureBoxMouth.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxMouth.TabIndex = 9;
             this.pictureBoxMouth.TabStop = false;
             // 
             // pictureBoxEyeLeft
             // 
-            this.pictureBoxEyeLeft.Location = new System.Drawing.Point(65, 133);
-            this.pictureBoxEyeLeft.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxEyeLeft.Location = new System.Drawing.Point(51, 100);
+            this.pictureBoxEyeLeft.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBoxEyeLeft.Name = "pictureBoxEyeLeft";
-            this.pictureBoxEyeLeft.Size = new System.Drawing.Size(48, 64);
+            this.pictureBoxEyeLeft.Size = new System.Drawing.Size(37, 48);
             this.pictureBoxEyeLeft.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxEyeLeft.TabIndex = 8;
             this.pictureBoxEyeLeft.TabStop = false;
@@ -1262,33 +1322,37 @@ namespace VMSEditor
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(34, 91);
+            this.label33.Location = new System.Drawing.Point(26, 68);
+            this.label33.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(67, 20);
+            this.label33.Size = new System.Drawing.Size(51, 15);
             this.label33.TabIndex = 7;
             this.label33.Text = "Curious:";
             // 
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(57, 28);
+            this.label31.Location = new System.Drawing.Point(44, 21);
+            this.label31.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(44, 20);
+            this.label31.Size = new System.Drawing.Size(34, 15);
             this.label31.TabIndex = 5;
             this.label31.Text = "Kind:";
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(10, 58);
+            this.label32.Location = new System.Drawing.Point(8, 44);
+            this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(91, 20);
+            this.label32.Size = new System.Drawing.Size(67, 15);
             this.label32.TabIndex = 6;
             this.label32.Text = "Aggressive:";
             // 
             // numericUpDownKindness
             // 
-            this.numericUpDownKindness.Location = new System.Drawing.Point(106, 25);
+            this.numericUpDownKindness.Location = new System.Drawing.Point(82, 19);
+            this.numericUpDownKindness.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownKindness.Maximum = new decimal(new int[] {
             127,
             0,
@@ -1300,14 +1364,15 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownKindness.Name = "numericUpDownKindness";
-            this.numericUpDownKindness.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownKindness.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownKindness.TabIndex = 2;
             this.numericUpDownKindness.ValueChanged += new System.EventHandler(this.numericUpDownKindness_ValueChanged);
             this.numericUpDownKindness.Click += new System.EventHandler(this.numericUpDownKindness_Click);
             // 
             // numericUpDownAggressive
             // 
-            this.numericUpDownAggressive.Location = new System.Drawing.Point(106, 57);
+            this.numericUpDownAggressive.Location = new System.Drawing.Point(82, 43);
+            this.numericUpDownAggressive.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAggressive.Maximum = new decimal(new int[] {
             127,
             0,
@@ -1319,14 +1384,15 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownAggressive.Name = "numericUpDownAggressive";
-            this.numericUpDownAggressive.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownAggressive.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownAggressive.TabIndex = 3;
             this.numericUpDownAggressive.ValueChanged += new System.EventHandler(this.numericUpDownKindness_ValueChanged);
             this.numericUpDownAggressive.Click += new System.EventHandler(this.numericUpDownKindness_Click);
             // 
             // numericUpDownCurious
             // 
-            this.numericUpDownCurious.Location = new System.Drawing.Point(106, 89);
+            this.numericUpDownCurious.Location = new System.Drawing.Point(82, 67);
+            this.numericUpDownCurious.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCurious.Maximum = new decimal(new int[] {
             127,
             0,
@@ -1338,37 +1404,40 @@ namespace VMSEditor
             0,
             -2147483648});
             this.numericUpDownCurious.Name = "numericUpDownCurious";
-            this.numericUpDownCurious.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownCurious.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownCurious.TabIndex = 4;
             this.numericUpDownCurious.ValueChanged += new System.EventHandler(this.numericUpDownKindness_ValueChanged);
             this.numericUpDownCurious.Click += new System.EventHandler(this.numericUpDownKindness_Click);
             // 
-            // groupBox10
+            // groupBoxColorData
             // 
-            this.groupBox10.Controls.Add(this.checkBoxColorFlag0x20);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlagGold);
-            this.groupBox10.Controls.Add(this.label72);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlag0x10);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlagJewel);
-            this.groupBox10.Controls.Add(this.numericUpDown_ColorFlags);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlag0x80);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlagSilver);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlag0x1);
-            this.groupBox10.Controls.Add(this.checkBoxColorFlagBlack);
-            this.groupBox10.Controls.Add(this.comboBoxJewelColor);
-            this.groupBox10.Location = new System.Drawing.Point(8, 8);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(284, 188);
-            this.groupBox10.TabIndex = 2;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "Color Data";
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlag0x20);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlagGold);
+            this.groupBoxColorData.Controls.Add(this.label72);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlag0x10);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlagJewel);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlag0x80);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlagSilver);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlag0x1);
+            this.groupBoxColorData.Controls.Add(this.checkBoxColorFlagBlack);
+            this.groupBoxColorData.Controls.Add(this.comboBoxJewelColor);
+            this.groupBoxColorData.Controls.Add(this.numericUpDown_ColorFlags);
+            this.groupBoxColorData.Location = new System.Drawing.Point(6, 6);
+            this.groupBoxColorData.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBoxColorData.Name = "groupBoxColorData";
+            this.groupBoxColorData.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxColorData.Size = new System.Drawing.Size(221, 141);
+            this.groupBoxColorData.TabIndex = 2;
+            this.groupBoxColorData.TabStop = false;
+            this.groupBoxColorData.Text = "Color Data";
             // 
             // checkBoxColorFlag0x20
             // 
             this.checkBoxColorFlag0x20.AutoSize = true;
-            this.checkBoxColorFlag0x20.Location = new System.Drawing.Point(25, 85);
+            this.checkBoxColorFlag0x20.Location = new System.Drawing.Point(19, 64);
+            this.checkBoxColorFlag0x20.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlag0x20.Name = "checkBoxColorFlag0x20";
-            this.checkBoxColorFlag0x20.Size = new System.Drawing.Size(92, 24);
+            this.checkBoxColorFlag0x20.Size = new System.Drawing.Size(66, 19);
             this.checkBoxColorFlag0x20.TabIndex = 80;
             this.checkBoxColorFlag0x20.Text = "0x20 (?)";
             this.checkBoxColorFlag0x20.UseVisualStyleBackColor = true;
@@ -1378,9 +1447,10 @@ namespace VMSEditor
             // checkBoxColorFlagGold
             // 
             this.checkBoxColorFlagGold.AutoSize = true;
-            this.checkBoxColorFlagGold.Location = new System.Drawing.Point(161, 85);
+            this.checkBoxColorFlagGold.Location = new System.Drawing.Point(125, 64);
+            this.checkBoxColorFlagGold.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlagGold.Name = "checkBoxColorFlagGold";
-            this.checkBoxColorFlagGold.Size = new System.Drawing.Size(69, 24);
+            this.checkBoxColorFlagGold.Size = new System.Drawing.Size(51, 19);
             this.checkBoxColorFlagGold.TabIndex = 77;
             this.checkBoxColorFlagGold.Text = "Gold";
             this.checkBoxColorFlagGold.UseVisualStyleBackColor = true;
@@ -1390,18 +1460,20 @@ namespace VMSEditor
             // label72
             // 
             this.label72.AutoSize = true;
-            this.label72.Location = new System.Drawing.Point(8, 148);
+            this.label72.Location = new System.Drawing.Point(6, 111);
+            this.label72.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label72.Name = "label72";
-            this.label72.Size = new System.Drawing.Size(52, 20);
+            this.label72.Size = new System.Drawing.Size(37, 15);
             this.label72.TabIndex = 6;
             this.label72.Text = "Flags:";
             // 
             // checkBoxColorFlag0x10
             // 
             this.checkBoxColorFlag0x10.AutoSize = true;
-            this.checkBoxColorFlag0x10.Location = new System.Drawing.Point(25, 55);
+            this.checkBoxColorFlag0x10.Location = new System.Drawing.Point(19, 41);
+            this.checkBoxColorFlag0x10.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlag0x10.Name = "checkBoxColorFlag0x10";
-            this.checkBoxColorFlag0x10.Size = new System.Drawing.Size(92, 24);
+            this.checkBoxColorFlag0x10.Size = new System.Drawing.Size(66, 19);
             this.checkBoxColorFlag0x10.TabIndex = 79;
             this.checkBoxColorFlag0x10.Text = "0x10 (?)";
             this.checkBoxColorFlag0x10.UseVisualStyleBackColor = true;
@@ -1411,31 +1483,23 @@ namespace VMSEditor
             // checkBoxColorFlagJewel
             // 
             this.checkBoxColorFlagJewel.AutoSize = true;
-            this.checkBoxColorFlagJewel.Location = new System.Drawing.Point(161, 112);
+            this.checkBoxColorFlagJewel.Location = new System.Drawing.Point(125, 84);
+            this.checkBoxColorFlagJewel.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlagJewel.Name = "checkBoxColorFlagJewel";
-            this.checkBoxColorFlagJewel.Size = new System.Drawing.Size(79, 24);
+            this.checkBoxColorFlagJewel.Size = new System.Drawing.Size(57, 19);
             this.checkBoxColorFlagJewel.TabIndex = 76;
             this.checkBoxColorFlagJewel.Text = "Jewel:";
             this.checkBoxColorFlagJewel.UseVisualStyleBackColor = true;
             this.checkBoxColorFlagJewel.CheckedChanged += new System.EventHandler(this.checkBoxColorFlag0x1_CheckedChanged);
             this.checkBoxColorFlagJewel.Click += new System.EventHandler(this.checkBoxColorFlagBlack_Click);
             // 
-            // numericUpDown_ColorFlags
-            // 
-            this.numericUpDown_ColorFlags.Enabled = false;
-            this.numericUpDown_ColorFlags.Hexadecimal = true;
-            this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(67, 147);
-            this.numericUpDown_ColorFlags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
-            this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 26);
-            this.numericUpDown_ColorFlags.TabIndex = 73;
-            // 
             // checkBoxColorFlag0x80
             // 
             this.checkBoxColorFlag0x80.AutoSize = true;
-            this.checkBoxColorFlag0x80.Location = new System.Drawing.Point(25, 115);
+            this.checkBoxColorFlag0x80.Location = new System.Drawing.Point(19, 86);
+            this.checkBoxColorFlag0x80.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlag0x80.Name = "checkBoxColorFlag0x80";
-            this.checkBoxColorFlag0x80.Size = new System.Drawing.Size(92, 24);
+            this.checkBoxColorFlag0x80.Size = new System.Drawing.Size(66, 19);
             this.checkBoxColorFlag0x80.TabIndex = 81;
             this.checkBoxColorFlag0x80.Text = "0x80 (?)";
             this.checkBoxColorFlag0x80.UseVisualStyleBackColor = true;
@@ -1445,9 +1509,10 @@ namespace VMSEditor
             // checkBoxColorFlagSilver
             // 
             this.checkBoxColorFlagSilver.AutoSize = true;
-            this.checkBoxColorFlagSilver.Location = new System.Drawing.Point(161, 55);
+            this.checkBoxColorFlagSilver.Location = new System.Drawing.Point(125, 41);
+            this.checkBoxColorFlagSilver.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlagSilver.Name = "checkBoxColorFlagSilver";
-            this.checkBoxColorFlagSilver.Size = new System.Drawing.Size(73, 24);
+            this.checkBoxColorFlagSilver.Size = new System.Drawing.Size(54, 19);
             this.checkBoxColorFlagSilver.TabIndex = 75;
             this.checkBoxColorFlagSilver.Text = "Silver";
             this.checkBoxColorFlagSilver.UseVisualStyleBackColor = true;
@@ -1457,9 +1522,10 @@ namespace VMSEditor
             // checkBoxColorFlag0x1
             // 
             this.checkBoxColorFlag0x1.AutoSize = true;
-            this.checkBoxColorFlag0x1.Location = new System.Drawing.Point(25, 25);
+            this.checkBoxColorFlag0x1.Location = new System.Drawing.Point(19, 19);
+            this.checkBoxColorFlag0x1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlag0x1.Name = "checkBoxColorFlag0x1";
-            this.checkBoxColorFlag0x1.Size = new System.Drawing.Size(83, 24);
+            this.checkBoxColorFlag0x1.Size = new System.Drawing.Size(60, 19);
             this.checkBoxColorFlag0x1.TabIndex = 78;
             this.checkBoxColorFlag0x1.Text = "0x1 (?)";
             this.checkBoxColorFlag0x1.UseVisualStyleBackColor = true;
@@ -1469,9 +1535,10 @@ namespace VMSEditor
             // checkBoxColorFlagBlack
             // 
             this.checkBoxColorFlagBlack.AutoSize = true;
-            this.checkBoxColorFlagBlack.Location = new System.Drawing.Point(161, 25);
+            this.checkBoxColorFlagBlack.Location = new System.Drawing.Point(125, 19);
+            this.checkBoxColorFlagBlack.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxColorFlagBlack.Name = "checkBoxColorFlagBlack";
-            this.checkBoxColorFlagBlack.Size = new System.Drawing.Size(74, 24);
+            this.checkBoxColorFlagBlack.Size = new System.Drawing.Size(54, 19);
             this.checkBoxColorFlagBlack.TabIndex = 74;
             this.checkBoxColorFlagBlack.Text = "Black";
             this.checkBoxColorFlagBlack.UseVisualStyleBackColor = true;
@@ -1487,11 +1554,25 @@ namespace VMSEditor
             "Emerald",
             "Ruby",
             "Sapphire"});
-            this.comboBoxJewelColor.Location = new System.Drawing.Point(161, 145);
+            this.comboBoxJewelColor.Location = new System.Drawing.Point(125, 109);
+            this.comboBoxJewelColor.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxJewelColor.Name = "comboBoxJewelColor";
-            this.comboBoxJewelColor.Size = new System.Drawing.Size(110, 28);
+            this.comboBoxJewelColor.Size = new System.Drawing.Size(86, 23);
             this.comboBoxJewelColor.TabIndex = 1;
             this.comboBoxJewelColor.Click += new System.EventHandler(this.comboBoxJewelColor_Click);
+            // 
+            // numericUpDown_ColorFlags
+            // 
+            this.numericUpDown_ColorFlags.Hexadecimal = true;
+            this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(48, 109);
+            this.numericUpDown_ColorFlags.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
+            this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 23);
+            this.numericUpDown_ColorFlags.TabIndex = 82;
             // 
             // groupBox8
             // 
@@ -1516,9 +1597,11 @@ namespace VMSEditor
             this.groupBox8.Controls.Add(this.comboBoxAnimalEars);
             this.groupBox8.Controls.Add(this.comboBoxAnimalHeadBack);
             this.groupBox8.Controls.Add(this.comboBoxAnimalHeadFront);
-            this.groupBox8.Location = new System.Drawing.Point(298, 8);
+            this.groupBox8.Location = new System.Drawing.Point(232, 6);
+            this.groupBox8.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(324, 451);
+            this.groupBox8.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox8.Size = new System.Drawing.Size(252, 338);
             this.groupBox8.TabIndex = 0;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Animal Parts";
@@ -1526,10 +1609,10 @@ namespace VMSEditor
             // pictureBoxTail
             // 
             this.pictureBoxTail.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxTail.Location = new System.Drawing.Point(255, 392);
-            this.pictureBoxTail.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxTail.Location = new System.Drawing.Point(198, 294);
+            this.pictureBoxTail.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxTail.Name = "pictureBoxTail";
-            this.pictureBoxTail.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxTail.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxTail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxTail.TabIndex = 79;
             this.pictureBoxTail.TabStop = false;
@@ -1537,10 +1620,10 @@ namespace VMSEditor
             // pictureBoxFeet
             // 
             this.pictureBoxFeet.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFeet.Location = new System.Drawing.Point(255, 331);
-            this.pictureBoxFeet.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxFeet.Location = new System.Drawing.Point(198, 248);
+            this.pictureBoxFeet.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxFeet.Name = "pictureBoxFeet";
-            this.pictureBoxFeet.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFeet.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFeet.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFeet.TabIndex = 78;
             this.pictureBoxFeet.TabStop = false;
@@ -1548,10 +1631,10 @@ namespace VMSEditor
             // pictureBoxArms
             // 
             this.pictureBoxArms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxArms.Location = new System.Drawing.Point(255, 269);
-            this.pictureBoxArms.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxArms.Location = new System.Drawing.Point(198, 202);
+            this.pictureBoxArms.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxArms.Name = "pictureBoxArms";
-            this.pictureBoxArms.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxArms.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxArms.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxArms.TabIndex = 77;
             this.pictureBoxArms.TabStop = false;
@@ -1559,10 +1642,10 @@ namespace VMSEditor
             // pictureBoxWings
             // 
             this.pictureBoxWings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxWings.Location = new System.Drawing.Point(255, 208);
-            this.pictureBoxWings.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxWings.Location = new System.Drawing.Point(198, 156);
+            this.pictureBoxWings.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxWings.Name = "pictureBoxWings";
-            this.pictureBoxWings.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxWings.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxWings.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxWings.TabIndex = 76;
             this.pictureBoxWings.TabStop = false;
@@ -1570,10 +1653,10 @@ namespace VMSEditor
             // pictureBoxEars
             // 
             this.pictureBoxEars.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxEars.Location = new System.Drawing.Point(255, 146);
-            this.pictureBoxEars.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxEars.Location = new System.Drawing.Point(198, 110);
+            this.pictureBoxEars.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxEars.Name = "pictureBoxEars";
-            this.pictureBoxEars.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxEars.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxEars.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxEars.TabIndex = 75;
             this.pictureBoxEars.TabStop = false;
@@ -1581,10 +1664,10 @@ namespace VMSEditor
             // pictureBoxHeadBack
             // 
             this.pictureBoxHeadBack.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxHeadBack.Location = new System.Drawing.Point(255, 85);
-            this.pictureBoxHeadBack.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxHeadBack.Location = new System.Drawing.Point(198, 64);
+            this.pictureBoxHeadBack.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxHeadBack.Name = "pictureBoxHeadBack";
-            this.pictureBoxHeadBack.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxHeadBack.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxHeadBack.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxHeadBack.TabIndex = 74;
             this.pictureBoxHeadBack.TabStop = false;
@@ -1592,10 +1675,10 @@ namespace VMSEditor
             // pictureBoxHeadFront
             // 
             this.pictureBoxHeadFront.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxHeadFront.Location = new System.Drawing.Point(255, 23);
-            this.pictureBoxHeadFront.Margin = new System.Windows.Forms.Padding(6);
+            this.pictureBoxHeadFront.Location = new System.Drawing.Point(198, 17);
+            this.pictureBoxHeadFront.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.pictureBoxHeadFront.Name = "pictureBoxHeadFront";
-            this.pictureBoxHeadFront.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxHeadFront.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxHeadFront.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxHeadFront.TabIndex = 73;
             this.pictureBoxHeadFront.TabStop = false;
@@ -1603,63 +1686,70 @@ namespace VMSEditor
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(69, 405);
+            this.label30.Location = new System.Drawing.Point(54, 304);
+            this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(37, 20);
+            this.label30.Size = new System.Drawing.Size(27, 15);
             this.label30.TabIndex = 13;
             this.label30.Text = "Tail:";
             // 
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(60, 342);
+            this.label29.Location = new System.Drawing.Point(47, 256);
+            this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(46, 20);
+            this.label29.Size = new System.Drawing.Size(32, 15);
             this.label29.TabIndex = 12;
             this.label29.Text = "Feet:";
             // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(56, 280);
+            this.label28.Location = new System.Drawing.Point(44, 210);
+            this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(50, 20);
+            this.label28.Size = new System.Drawing.Size(38, 15);
             this.label28.TabIndex = 11;
             this.label28.Text = "Arms:";
             // 
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(48, 218);
+            this.label27.Location = new System.Drawing.Point(37, 164);
+            this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(57, 20);
+            this.label27.Size = new System.Drawing.Size(43, 15);
             this.label27.TabIndex = 10;
             this.label27.Text = "Wings:";
             // 
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(60, 158);
+            this.label26.Location = new System.Drawing.Point(47, 118);
+            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(46, 20);
+            this.label26.Size = new System.Drawing.Size(31, 15);
             this.label26.TabIndex = 9;
             this.label26.Text = "Ears:";
             // 
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(14, 98);
+            this.label25.Location = new System.Drawing.Point(11, 74);
+            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(92, 20);
+            this.label25.Size = new System.Drawing.Size(66, 15);
             this.label25.TabIndex = 8;
             this.label25.Text = "Head Back:";
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(12, 35);
+            this.label24.Location = new System.Drawing.Point(9, 26);
+            this.label24.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(94, 20);
+            this.label24.Size = new System.Drawing.Size(69, 15);
             this.label24.TabIndex = 7;
             this.label24.Text = "Head Front:";
             // 
@@ -1685,9 +1775,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalTail.Location = new System.Drawing.Point(111, 402);
+            this.comboBoxAnimalTail.Location = new System.Drawing.Point(86, 302);
+            this.comboBoxAnimalTail.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalTail.Name = "comboBoxAnimalTail";
-            this.comboBoxAnimalTail.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalTail.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalTail.TabIndex = 6;
             this.comboBoxAnimalTail.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalTail.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1714,9 +1805,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalFeet.Location = new System.Drawing.Point(111, 338);
+            this.comboBoxAnimalFeet.Location = new System.Drawing.Point(86, 254);
+            this.comboBoxAnimalFeet.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalFeet.Name = "comboBoxAnimalFeet";
-            this.comboBoxAnimalFeet.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalFeet.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalFeet.TabIndex = 5;
             this.comboBoxAnimalFeet.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalFeet.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1743,9 +1835,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalArms.Location = new System.Drawing.Point(111, 277);
+            this.comboBoxAnimalArms.Location = new System.Drawing.Point(86, 208);
+            this.comboBoxAnimalArms.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalArms.Name = "comboBoxAnimalArms";
-            this.comboBoxAnimalArms.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalArms.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalArms.TabIndex = 4;
             this.comboBoxAnimalArms.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalArms.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1772,9 +1865,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalWings.Location = new System.Drawing.Point(111, 215);
+            this.comboBoxAnimalWings.Location = new System.Drawing.Point(86, 161);
+            this.comboBoxAnimalWings.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalWings.Name = "comboBoxAnimalWings";
-            this.comboBoxAnimalWings.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalWings.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalWings.TabIndex = 3;
             this.comboBoxAnimalWings.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalWings.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1801,9 +1895,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalEars.Location = new System.Drawing.Point(111, 155);
+            this.comboBoxAnimalEars.Location = new System.Drawing.Point(86, 116);
+            this.comboBoxAnimalEars.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalEars.Name = "comboBoxAnimalEars";
-            this.comboBoxAnimalEars.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalEars.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalEars.TabIndex = 2;
             this.comboBoxAnimalEars.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalEars.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1830,9 +1925,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalHeadBack.Location = new System.Drawing.Point(111, 95);
+            this.comboBoxAnimalHeadBack.Location = new System.Drawing.Point(86, 71);
+            this.comboBoxAnimalHeadBack.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalHeadBack.Name = "comboBoxAnimalHeadBack";
-            this.comboBoxAnimalHeadBack.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalHeadBack.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalHeadBack.TabIndex = 1;
             this.comboBoxAnimalHeadBack.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalHeadBack.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1859,9 +1955,10 @@ namespace VMSEditor
             "Skunk",
             "Empty",
             "Unset"});
-            this.comboBoxAnimalHeadFront.Location = new System.Drawing.Point(111, 31);
+            this.comboBoxAnimalHeadFront.Location = new System.Drawing.Point(86, 23);
+            this.comboBoxAnimalHeadFront.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxAnimalHeadFront.Name = "comboBoxAnimalHeadFront";
-            this.comboBoxAnimalHeadFront.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxAnimalHeadFront.Size = new System.Drawing.Size(95, 23);
             this.comboBoxAnimalHeadFront.TabIndex = 0;
             this.comboBoxAnimalHeadFront.SelectedIndexChanged += new System.EventHandler(this.RefreshAnimalParts);
             this.comboBoxAnimalHeadFront.Click += new System.EventHandler(this.comboBoxAnimalHeadFront_Click);
@@ -1872,9 +1969,10 @@ namespace VMSEditor
             this.tabPageStats.Controls.Add(this.groupBox19);
             this.tabPageStats.Controls.Add(this.groupBox1);
             this.tabPageStats.Controls.Add(this.groupBox3);
-            this.tabPageStats.Location = new System.Drawing.Point(4, 29);
+            this.tabPageStats.Location = new System.Drawing.Point(4, 24);
+            this.tabPageStats.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageStats.Name = "tabPageStats";
-            this.tabPageStats.Size = new System.Drawing.Size(808, 472);
+            this.tabPageStats.Size = new System.Drawing.Size(661, 351);
             this.tabPageStats.TabIndex = 4;
             this.tabPageStats.Text = "Evolution";
             // 
@@ -1883,45 +1981,50 @@ namespace VMSEditor
             this.groupBox19.Controls.Add(this.numericUpDownMaxHP);
             this.groupBox19.Controls.Add(this.label6);
             this.groupBox19.Controls.Add(this.numericUpDownHP);
-            this.groupBox19.Location = new System.Drawing.Point(452, 200);
+            this.groupBox19.Location = new System.Drawing.Point(352, 150);
+            this.groupBox19.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox19.Name = "groupBox19";
-            this.groupBox19.Size = new System.Drawing.Size(350, 65);
+            this.groupBox19.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox19.Size = new System.Drawing.Size(272, 49);
             this.groupBox19.TabIndex = 33;
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Health / Max Health (multiplied by 100)";
             // 
             // numericUpDownMaxHP
             // 
-            this.numericUpDownMaxHP.Location = new System.Drawing.Point(212, 25);
+            this.numericUpDownMaxHP.Location = new System.Drawing.Point(165, 19);
+            this.numericUpDownMaxHP.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMaxHP.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownMaxHP.Name = "numericUpDownMaxHP";
-            this.numericUpDownMaxHP.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownMaxHP.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownMaxHP.TabIndex = 14;
             this.numericUpDownMaxHP.Click += new System.EventHandler(this.numericUpDownMaxHP_Click);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(41, 28);
+            this.label6.Location = new System.Drawing.Point(32, 21);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 20);
+            this.label6.Size = new System.Drawing.Size(26, 15);
             this.label6.TabIndex = 15;
             this.label6.Text = "HP:";
             // 
             // numericUpDownHP
             // 
-            this.numericUpDownHP.Location = new System.Drawing.Point(82, 26);
+            this.numericUpDownHP.Location = new System.Drawing.Point(64, 20);
+            this.numericUpDownHP.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownHP.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownHP.Name = "numericUpDownHP";
-            this.numericUpDownHP.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownHP.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownHP.TabIndex = 13;
             this.numericUpDownHP.Click += new System.EventHandler(this.numericUpDownHP_Click);
             // 
@@ -1939,150 +2042,164 @@ namespace VMSEditor
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Location = new System.Drawing.Point(452, 8);
+            this.groupBox1.Location = new System.Drawing.Point(352, 6);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(350, 186);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Size = new System.Drawing.Size(272, 140);
             this.groupBox1.TabIndex = 31;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Skills (multiplied by 10) / Ability Points";
             // 
             // numericUpDownPointsPower
             // 
-            this.numericUpDownPointsPower.Location = new System.Drawing.Point(212, 142);
+            this.numericUpDownPointsPower.Location = new System.Drawing.Point(165, 106);
+            this.numericUpDownPointsPower.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownPointsPower.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownPointsPower.Name = "numericUpDownPointsPower";
-            this.numericUpDownPointsPower.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownPointsPower.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownPointsPower.TabIndex = 7;
             this.numericUpDownPointsPower.Click += new System.EventHandler(this.numericUpDownPointsPower_Click);
             // 
             // numericUpDownPointsFly
             // 
-            this.numericUpDownPointsFly.Location = new System.Drawing.Point(212, 68);
+            this.numericUpDownPointsFly.Location = new System.Drawing.Point(165, 51);
+            this.numericUpDownPointsFly.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownPointsFly.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownPointsFly.Name = "numericUpDownPointsFly";
-            this.numericUpDownPointsFly.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownPointsFly.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownPointsFly.TabIndex = 6;
             this.numericUpDownPointsFly.Click += new System.EventHandler(this.numericUpDownPointsFly_Click);
             // 
             // numericUpDownPointsRun
             // 
-            this.numericUpDownPointsRun.Location = new System.Drawing.Point(212, 105);
+            this.numericUpDownPointsRun.Location = new System.Drawing.Point(165, 79);
+            this.numericUpDownPointsRun.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownPointsRun.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownPointsRun.Name = "numericUpDownPointsRun";
-            this.numericUpDownPointsRun.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownPointsRun.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownPointsRun.TabIndex = 8;
             this.numericUpDownPointsRun.Click += new System.EventHandler(this.numericUpDownPointsRun_Click);
             // 
             // numericUpDownPointsSwim
             // 
-            this.numericUpDownPointsSwim.Location = new System.Drawing.Point(212, 31);
+            this.numericUpDownPointsSwim.Location = new System.Drawing.Point(165, 23);
+            this.numericUpDownPointsSwim.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownPointsSwim.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownPointsSwim.Name = "numericUpDownPointsSwim";
-            this.numericUpDownPointsSwim.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownPointsSwim.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownPointsSwim.TabIndex = 5;
             this.numericUpDownPointsSwim.Click += new System.EventHandler(this.numericUpDownPointsSwim_Click);
             // 
             // numericUpDownSwim
             // 
-            this.numericUpDownSwim.Location = new System.Drawing.Point(82, 31);
+            this.numericUpDownSwim.Location = new System.Drawing.Point(64, 23);
+            this.numericUpDownSwim.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownSwim.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownSwim.Name = "numericUpDownSwim";
-            this.numericUpDownSwim.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownSwim.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownSwim.TabIndex = 5;
             this.numericUpDownSwim.Click += new System.EventHandler(this.numericUpDownSwim_Click);
             // 
             // numericUpDownFly
             // 
-            this.numericUpDownFly.Location = new System.Drawing.Point(82, 68);
+            this.numericUpDownFly.Location = new System.Drawing.Point(64, 51);
+            this.numericUpDownFly.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownFly.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownFly.Name = "numericUpDownFly";
-            this.numericUpDownFly.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownFly.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownFly.TabIndex = 6;
             this.numericUpDownFly.Click += new System.EventHandler(this.numericUpDownFly_Click);
             // 
             // numericUpDownRun
             // 
-            this.numericUpDownRun.Location = new System.Drawing.Point(82, 105);
+            this.numericUpDownRun.Location = new System.Drawing.Point(64, 79);
+            this.numericUpDownRun.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRun.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownRun.Name = "numericUpDownRun";
-            this.numericUpDownRun.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownRun.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownRun.TabIndex = 7;
             this.numericUpDownRun.Click += new System.EventHandler(this.numericUpDownRun_Click);
             // 
             // numericUpDownPower
             // 
-            this.numericUpDownPower.Location = new System.Drawing.Point(82, 142);
+            this.numericUpDownPower.Location = new System.Drawing.Point(64, 106);
+            this.numericUpDownPower.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownPower.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownPower.Name = "numericUpDownPower";
-            this.numericUpDownPower.Size = new System.Drawing.Size(90, 26);
+            this.numericUpDownPower.Size = new System.Drawing.Size(70, 23);
             this.numericUpDownPower.TabIndex = 8;
             this.numericUpDownPower.Click += new System.EventHandler(this.numericUpDownPower_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(25, 33);
+            this.label2.Location = new System.Drawing.Point(19, 25);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 20);
+            this.label2.Size = new System.Drawing.Size(39, 15);
             this.label2.TabIndex = 9;
             this.label2.Text = "Swim:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(43, 70);
+            this.label3.Location = new System.Drawing.Point(33, 52);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(33, 20);
+            this.label3.Size = new System.Drawing.Size(25, 15);
             this.label3.TabIndex = 10;
             this.label3.Text = "Fly:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 144);
+            this.label5.Location = new System.Drawing.Point(15, 108);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 20);
+            this.label5.Size = new System.Drawing.Size(43, 15);
             this.label5.TabIndex = 12;
             this.label5.Text = "Power:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(33, 107);
+            this.label4.Location = new System.Drawing.Point(26, 80);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(43, 20);
+            this.label4.Size = new System.Drawing.Size(31, 15);
             this.label4.TabIndex = 11;
             this.label4.Text = "Run:";
             // 
@@ -2100,9 +2217,11 @@ namespace VMSEditor
             this.groupBox3.Controls.Add(this.trackBarRunPower);
             this.groupBox3.Controls.Add(this.trackBarSwimFly);
             this.groupBox3.Controls.Add(this.label12);
-            this.groupBox3.Location = new System.Drawing.Point(8, 8);
+            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(436, 440);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Size = new System.Drawing.Size(339, 330);
             this.groupBox3.TabIndex = 30;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Evolution";
@@ -2110,27 +2229,30 @@ namespace VMSEditor
             // labelMagnitudeValue
             // 
             this.labelMagnitudeValue.AutoSize = true;
-            this.labelMagnitudeValue.Location = new System.Drawing.Point(384, 366);
+            this.labelMagnitudeValue.Location = new System.Drawing.Point(299, 274);
+            this.labelMagnitudeValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelMagnitudeValue.Name = "labelMagnitudeValue";
-            this.labelMagnitudeValue.Size = new System.Drawing.Size(31, 20);
+            this.labelMagnitudeValue.Size = new System.Drawing.Size(22, 15);
             this.labelMagnitudeValue.TabIndex = 42;
             this.labelMagnitudeValue.Text = "0.0";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(368, 142);
+            this.label20.Location = new System.Drawing.Point(286, 106);
+            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(53, 20);
+            this.label20.Size = new System.Drawing.Size(40, 15);
             this.label20.TabIndex = 44;
             this.label20.Text = "Power";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(237, 18);
+            this.label17.Location = new System.Drawing.Point(184, 14);
+            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(29, 20);
+            this.label17.Size = new System.Drawing.Size(22, 15);
             this.label17.TabIndex = 43;
             this.label17.Text = "Fly";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -2138,10 +2260,10 @@ namespace VMSEditor
             // pictureBoxEvolution
             // 
             this.pictureBoxEvolution.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxEvolution.Location = new System.Drawing.Point(135, 43);
-            this.pictureBoxEvolution.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pictureBoxEvolution.Location = new System.Drawing.Point(105, 32);
+            this.pictureBoxEvolution.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pictureBoxEvolution.Name = "pictureBoxEvolution";
-            this.pictureBoxEvolution.Size = new System.Drawing.Size(224, 230);
+            this.pictureBoxEvolution.Size = new System.Drawing.Size(175, 173);
             this.pictureBoxEvolution.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxEvolution.TabIndex = 42;
             this.pictureBoxEvolution.TabStop = false;
@@ -2149,46 +2271,51 @@ namespace VMSEditor
             // labelSwimFlyValue
             // 
             this.labelSwimFlyValue.AutoSize = true;
-            this.labelSwimFlyValue.Location = new System.Drawing.Point(6, 277);
+            this.labelSwimFlyValue.Location = new System.Drawing.Point(5, 208);
+            this.labelSwimFlyValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelSwimFlyValue.Name = "labelSwimFlyValue";
-            this.labelSwimFlyValue.Size = new System.Drawing.Size(31, 20);
+            this.labelSwimFlyValue.Size = new System.Drawing.Size(22, 15);
             this.labelSwimFlyValue.TabIndex = 41;
             this.labelSwimFlyValue.Text = "0.0";
             // 
             // labelRunPowerValue
             // 
             this.labelRunPowerValue.AutoSize = true;
-            this.labelRunPowerValue.Location = new System.Drawing.Point(362, 291);
+            this.labelRunPowerValue.Location = new System.Drawing.Point(282, 218);
+            this.labelRunPowerValue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelRunPowerValue.Name = "labelRunPowerValue";
-            this.labelRunPowerValue.Size = new System.Drawing.Size(31, 20);
+            this.labelRunPowerValue.Size = new System.Drawing.Size(22, 15);
             this.labelRunPowerValue.TabIndex = 40;
             this.labelRunPowerValue.Text = "0.0";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(4, 366);
+            this.label13.Location = new System.Drawing.Point(3, 274);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(88, 20);
+            this.label13.Size = new System.Drawing.Size(68, 15);
             this.label13.TabIndex = 28;
             this.label13.Text = "Magnitude:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(87, 142);
+            this.label11.Location = new System.Drawing.Point(68, 106);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(39, 20);
+            this.label11.Size = new System.Drawing.Size(28, 15);
             this.label11.TabIndex = 24;
             this.label11.Text = "Run";
             // 
             // trackBarMagnitude
             // 
             this.trackBarMagnitude.LargeChange = 10;
-            this.trackBarMagnitude.Location = new System.Drawing.Point(100, 363);
+            this.trackBarMagnitude.Location = new System.Drawing.Point(78, 272);
+            this.trackBarMagnitude.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarMagnitude.Maximum = 150;
             this.trackBarMagnitude.Name = "trackBarMagnitude";
-            this.trackBarMagnitude.Size = new System.Drawing.Size(278, 69);
+            this.trackBarMagnitude.Size = new System.Drawing.Size(216, 45);
             this.trackBarMagnitude.TabIndex = 27;
             this.trackBarMagnitude.TickFrequency = 5;
             this.trackBarMagnitude.Click += new System.EventHandler(this.trackBarMagnitude_Click);
@@ -2198,11 +2325,12 @@ namespace VMSEditor
             // trackBarRunPower
             // 
             this.trackBarRunPower.LargeChange = 10;
-            this.trackBarRunPower.Location = new System.Drawing.Point(135, 302);
+            this.trackBarRunPower.Location = new System.Drawing.Point(105, 226);
+            this.trackBarRunPower.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarRunPower.Maximum = 150;
             this.trackBarRunPower.Minimum = -150;
             this.trackBarRunPower.Name = "trackBarRunPower";
-            this.trackBarRunPower.Size = new System.Drawing.Size(225, 69);
+            this.trackBarRunPower.Size = new System.Drawing.Size(175, 45);
             this.trackBarRunPower.TabIndex = 23;
             this.trackBarRunPower.TickFrequency = 5;
             this.trackBarRunPower.Click += new System.EventHandler(this.trackBarRunPower_Click);
@@ -2212,12 +2340,13 @@ namespace VMSEditor
             // trackBarSwimFly
             // 
             this.trackBarSwimFly.LargeChange = 10;
-            this.trackBarSwimFly.Location = new System.Drawing.Point(10, 43);
+            this.trackBarSwimFly.Location = new System.Drawing.Point(8, 32);
+            this.trackBarSwimFly.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarSwimFly.Maximum = 150;
             this.trackBarSwimFly.Minimum = -150;
             this.trackBarSwimFly.Name = "trackBarSwimFly";
             this.trackBarSwimFly.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBarSwimFly.Size = new System.Drawing.Size(69, 231);
+            this.trackBarSwimFly.Size = new System.Drawing.Size(45, 173);
             this.trackBarSwimFly.TabIndex = 25;
             this.trackBarSwimFly.TickFrequency = 5;
             this.trackBarSwimFly.Click += new System.EventHandler(this.trackBarSwimFly_Click);
@@ -2227,9 +2356,10 @@ namespace VMSEditor
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(225, 278);
+            this.label12.Location = new System.Drawing.Point(175, 208);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(47, 20);
+            this.label12.Size = new System.Drawing.Size(36, 15);
             this.label12.TabIndex = 26;
             this.label12.Text = "Swim";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -2238,9 +2368,10 @@ namespace VMSEditor
             // 
             this.tabPagePersonality.BackColor = System.Drawing.SystemColors.Control;
             this.tabPagePersonality.Controls.Add(this.groupBox11);
-            this.tabPagePersonality.Location = new System.Drawing.Point(4, 29);
+            this.tabPagePersonality.Location = new System.Drawing.Point(4, 24);
+            this.tabPagePersonality.Margin = new System.Windows.Forms.Padding(2);
             this.tabPagePersonality.Name = "tabPagePersonality";
-            this.tabPagePersonality.Size = new System.Drawing.Size(808, 472);
+            this.tabPagePersonality.Size = new System.Drawing.Size(661, 351);
             this.tabPagePersonality.TabIndex = 2;
             this.tabPagePersonality.Text = "Personality";
             // 
@@ -2272,296 +2403,324 @@ namespace VMSEditor
             this.groupBox11.Controls.Add(this.numericUpDownBored);
             this.groupBox11.Controls.Add(this.numericUpDownHorny);
             this.groupBox11.Controls.Add(this.numericUpDownSleepy);
-            this.groupBox11.Location = new System.Drawing.Point(8, 8);
+            this.groupBox11.Location = new System.Drawing.Point(6, 6);
+            this.groupBox11.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(471, 305);
+            this.groupBox11.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox11.Size = new System.Drawing.Size(366, 229);
             this.groupBox11.TabIndex = 70;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Emotions";
             // 
             // numericUpDownHungry
             // 
-            this.numericUpDownHungry.Location = new System.Drawing.Point(112, 137);
+            this.numericUpDownHungry.Location = new System.Drawing.Point(87, 103);
+            this.numericUpDownHungry.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownHungry.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownHungry.Name = "numericUpDownHungry";
-            this.numericUpDownHungry.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownHungry.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownHungry.TabIndex = 71;
             this.numericUpDownHungry.Click += new System.EventHandler(this.numericUpDownHungry_Click);
             // 
             // label62
             // 
             this.label62.AutoSize = true;
-            this.label62.Location = new System.Drawing.Point(40, 140);
+            this.label62.Location = new System.Drawing.Point(31, 105);
+            this.label62.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(64, 20);
+            this.label62.Size = new System.Drawing.Size(50, 15);
             this.label62.TabIndex = 70;
             this.label62.Text = "Hungry:";
             // 
             // label59
             // 
             this.label59.AutoSize = true;
-            this.label59.Location = new System.Drawing.Point(24, 29);
+            this.label59.Location = new System.Drawing.Point(19, 22);
+            this.label59.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(83, 20);
+            this.label59.Size = new System.Drawing.Size(62, 15);
             this.label59.TabIndex = 63;
             this.label59.Text = "Charm (?):";
             // 
             // numericUpDownLonely
             // 
-            this.numericUpDownLonely.Location = new System.Drawing.Point(326, 211);
+            this.numericUpDownLonely.Location = new System.Drawing.Point(254, 158);
+            this.numericUpDownLonely.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownLonely.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownLonely.Name = "numericUpDownLonely";
-            this.numericUpDownLonely.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownLonely.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownLonely.TabIndex = 69;
             this.numericUpDownLonely.Click += new System.EventHandler(this.numericUpDownLonely_Click);
             // 
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(44, 103);
+            this.label48.Location = new System.Drawing.Point(34, 77);
+            this.label48.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(61, 20);
+            this.label48.Size = new System.Drawing.Size(44, 15);
             this.label48.TabIndex = 44;
             this.label48.Text = "Sleepy:";
             // 
             // numericUpDownFearful
             // 
-            this.numericUpDownFearful.Location = new System.Drawing.Point(326, 174);
+            this.numericUpDownFearful.Location = new System.Drawing.Point(254, 130);
+            this.numericUpDownFearful.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownFearful.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownFearful.Name = "numericUpDownFearful";
-            this.numericUpDownFearful.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownFearful.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownFearful.TabIndex = 68;
             this.numericUpDownFearful.Click += new System.EventHandler(this.numericUpDownFearful_Click);
             // 
             // numericUpDownSad
             // 
-            this.numericUpDownSad.Location = new System.Drawing.Point(326, 137);
+            this.numericUpDownSad.Location = new System.Drawing.Point(254, 103);
+            this.numericUpDownSad.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownSad.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownSad.Name = "numericUpDownSad";
-            this.numericUpDownSad.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownSad.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownSad.TabIndex = 67;
             this.numericUpDownSad.Click += new System.EventHandler(this.numericUpDownSad_Click);
             // 
             // label50
             // 
             this.label50.AutoSize = true;
-            this.label50.Location = new System.Drawing.Point(50, 177);
+            this.label50.Location = new System.Drawing.Point(39, 133);
+            this.label50.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label50.Name = "label50";
-            this.label50.Size = new System.Drawing.Size(56, 20);
+            this.label50.Size = new System.Drawing.Size(41, 15);
             this.label50.TabIndex = 46;
             this.label50.Text = "Bored:";
             // 
             // numericUpDownAngry
             // 
-            this.numericUpDownAngry.Location = new System.Drawing.Point(326, 100);
+            this.numericUpDownAngry.Location = new System.Drawing.Point(254, 75);
+            this.numericUpDownAngry.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAngry.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownAngry.Name = "numericUpDownAngry";
-            this.numericUpDownAngry.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownAngry.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownAngry.TabIndex = 66;
             this.numericUpDownAngry.Click += new System.EventHandler(this.numericUpDownAngry_Click);
             // 
             // label51
             // 
             this.label51.AutoSize = true;
-            this.label51.Location = new System.Drawing.Point(56, 214);
+            this.label51.Location = new System.Drawing.Point(44, 160);
+            this.label51.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(48, 20);
+            this.label51.Size = new System.Drawing.Size(36, 15);
             this.label51.TabIndex = 47;
             this.label51.Text = "Tired:";
             // 
             // numericUpDownCharm
             // 
-            this.numericUpDownCharm.Location = new System.Drawing.Point(112, 26);
+            this.numericUpDownCharm.Location = new System.Drawing.Point(87, 20);
+            this.numericUpDownCharm.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCharm.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownCharm.Name = "numericUpDownCharm";
-            this.numericUpDownCharm.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownCharm.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownCharm.TabIndex = 65;
             this.numericUpDownCharm.Click += new System.EventHandler(this.numericUpDownCharm_Click);
             // 
             // label52
             // 
             this.label52.AutoSize = true;
-            this.label52.Location = new System.Drawing.Point(243, 29);
+            this.label52.Location = new System.Drawing.Point(189, 22);
+            this.label52.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label52.Name = "label52";
-            this.label52.Size = new System.Drawing.Size(77, 20);
+            this.label52.Size = new System.Drawing.Size(53, 15);
             this.label52.TabIndex = 48;
             this.label52.Text = "Stressed:";
             // 
             // label60
             // 
             this.label60.AutoSize = true;
-            this.label60.Location = new System.Drawing.Point(44, 66);
+            this.label60.Location = new System.Drawing.Point(34, 50);
+            this.label60.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(61, 20);
+            this.label60.Size = new System.Drawing.Size(48, 15);
             this.label60.TabIndex = 64;
             this.label60.Text = "Mating:";
             // 
             // label53
             // 
             this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(18, 251);
+            this.label53.Location = new System.Drawing.Point(14, 188);
+            this.label53.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(86, 20);
+            this.label53.Size = new System.Drawing.Size(65, 15);
             this.label53.TabIndex = 49;
             this.label53.Text = "Narrow (?):";
             // 
             // label54
             // 
             this.label54.AutoSize = true;
-            this.label54.Location = new System.Drawing.Point(264, 66);
+            this.label54.Location = new System.Drawing.Point(205, 50);
+            this.label54.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label54.Name = "label54";
-            this.label54.Size = new System.Drawing.Size(54, 20);
+            this.label54.Size = new System.Drawing.Size(41, 15);
             this.label54.TabIndex = 50;
             this.label54.Text = "Joyful:";
             // 
             // numericUpDownJoyful
             // 
-            this.numericUpDownJoyful.Location = new System.Drawing.Point(326, 63);
+            this.numericUpDownJoyful.Location = new System.Drawing.Point(254, 47);
+            this.numericUpDownJoyful.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownJoyful.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownJoyful.Name = "numericUpDownJoyful";
-            this.numericUpDownJoyful.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownJoyful.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownJoyful.TabIndex = 62;
             this.numericUpDownJoyful.Click += new System.EventHandler(this.numericUpDownJoyful_Click);
             // 
             // label55
             // 
             this.label55.AutoSize = true;
-            this.label55.Location = new System.Drawing.Point(264, 103);
+            this.label55.Location = new System.Drawing.Point(205, 77);
+            this.label55.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label55.Name = "label55";
-            this.label55.Size = new System.Drawing.Size(54, 20);
+            this.label55.Size = new System.Drawing.Size(42, 15);
             this.label55.TabIndex = 51;
             this.label55.Text = "Angry:";
             // 
             // numericUpDownNarrow
             // 
-            this.numericUpDownNarrow.Location = new System.Drawing.Point(112, 248);
+            this.numericUpDownNarrow.Location = new System.Drawing.Point(87, 186);
+            this.numericUpDownNarrow.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownNarrow.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownNarrow.Name = "numericUpDownNarrow";
-            this.numericUpDownNarrow.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownNarrow.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownNarrow.TabIndex = 61;
             this.numericUpDownNarrow.Click += new System.EventHandler(this.numericUpDownNarrow_Click);
             // 
             // label56
             // 
             this.label56.AutoSize = true;
-            this.label56.Location = new System.Drawing.Point(276, 140);
+            this.label56.Location = new System.Drawing.Point(215, 105);
+            this.label56.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label56.Name = "label56";
-            this.label56.Size = new System.Drawing.Size(42, 20);
+            this.label56.Size = new System.Drawing.Size(29, 15);
             this.label56.TabIndex = 52;
             this.label56.Text = "Sad:";
             // 
             // numericUpDownStressed
             // 
-            this.numericUpDownStressed.Location = new System.Drawing.Point(326, 26);
+            this.numericUpDownStressed.Location = new System.Drawing.Point(254, 20);
+            this.numericUpDownStressed.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownStressed.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownStressed.Name = "numericUpDownStressed";
-            this.numericUpDownStressed.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownStressed.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownStressed.TabIndex = 60;
             this.numericUpDownStressed.Click += new System.EventHandler(this.numericUpDownStressed_Click);
             // 
             // label57
             // 
             this.label57.AutoSize = true;
-            this.label57.Location = new System.Drawing.Point(256, 177);
+            this.label57.Location = new System.Drawing.Point(199, 133);
+            this.label57.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(63, 20);
+            this.label57.Size = new System.Drawing.Size(46, 15);
             this.label57.TabIndex = 53;
             this.label57.Text = "Fearful:";
             // 
             // numericUpDownTired
             // 
-            this.numericUpDownTired.Location = new System.Drawing.Point(112, 211);
+            this.numericUpDownTired.Location = new System.Drawing.Point(87, 158);
+            this.numericUpDownTired.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownTired.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownTired.Name = "numericUpDownTired";
-            this.numericUpDownTired.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownTired.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownTired.TabIndex = 59;
             this.numericUpDownTired.Click += new System.EventHandler(this.numericUpDownTired_Click);
             // 
             // label58
             // 
             this.label58.AutoSize = true;
-            this.label58.Location = new System.Drawing.Point(258, 214);
+            this.label58.Location = new System.Drawing.Point(201, 160);
+            this.label58.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(59, 20);
+            this.label58.Size = new System.Drawing.Size(45, 15);
             this.label58.TabIndex = 54;
             this.label58.Text = "Lonely:";
             // 
             // numericUpDownBored
             // 
-            this.numericUpDownBored.Location = new System.Drawing.Point(112, 174);
+            this.numericUpDownBored.Location = new System.Drawing.Point(87, 130);
+            this.numericUpDownBored.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownBored.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownBored.Name = "numericUpDownBored";
-            this.numericUpDownBored.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownBored.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownBored.TabIndex = 58;
             this.numericUpDownBored.Click += new System.EventHandler(this.numericUpDownBored_Click);
             // 
             // numericUpDownHorny
             // 
-            this.numericUpDownHorny.Location = new System.Drawing.Point(112, 63);
+            this.numericUpDownHorny.Location = new System.Drawing.Point(87, 47);
+            this.numericUpDownHorny.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownHorny.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownHorny.Name = "numericUpDownHorny";
-            this.numericUpDownHorny.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownHorny.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownHorny.TabIndex = 55;
             this.numericUpDownHorny.Click += new System.EventHandler(this.numericUpDownHorny_Click);
             // 
             // numericUpDownSleepy
             // 
-            this.numericUpDownSleepy.Location = new System.Drawing.Point(112, 100);
+            this.numericUpDownSleepy.Location = new System.Drawing.Point(87, 75);
+            this.numericUpDownSleepy.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownSleepy.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numericUpDownSleepy.Name = "numericUpDownSleepy";
-            this.numericUpDownSleepy.Size = new System.Drawing.Size(120, 26);
+            this.numericUpDownSleepy.Size = new System.Drawing.Size(93, 23);
             this.numericUpDownSleepy.TabIndex = 56;
             this.numericUpDownSleepy.Click += new System.EventHandler(this.numericUpDownSleepy_Click);
             // 
@@ -2574,9 +2733,10 @@ namespace VMSEditor
             this.tabPageInventory.Controls.Add(this.groupBox28);
             this.tabPageInventory.Controls.Add(this.groupBox27);
             this.tabPageInventory.Controls.Add(this.groupBox4);
-            this.tabPageInventory.Location = new System.Drawing.Point(4, 29);
+            this.tabPageInventory.Location = new System.Drawing.Point(4, 24);
+            this.tabPageInventory.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageInventory.Name = "tabPageInventory";
-            this.tabPageInventory.Size = new System.Drawing.Size(808, 472);
+            this.tabPageInventory.Size = new System.Drawing.Size(686, 351);
             this.tabPageInventory.TabIndex = 3;
             this.tabPageInventory.Text = "Inventory & Abilities";
             // 
@@ -2588,9 +2748,11 @@ namespace VMSEditor
             this.groupBox25.Controls.Add(this.pictureBox11);
             this.groupBox25.Controls.Add(this.checkBoxElephantSumo);
             this.groupBox25.Controls.Add(this.pictureBox10);
-            this.groupBox25.Location = new System.Drawing.Point(420, 211);
+            this.groupBox25.Location = new System.Drawing.Point(367, 6);
+            this.groupBox25.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox25.Name = "groupBox25";
-            this.groupBox25.Size = new System.Drawing.Size(186, 197);
+            this.groupBox25.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox25.Size = new System.Drawing.Size(157, 157);
             this.groupBox25.TabIndex = 22;
             this.groupBox25.TabStop = false;
             this.groupBox25.Text = "Power";
@@ -2598,9 +2760,10 @@ namespace VMSEditor
             // checkBoxGorillaChest
             // 
             this.checkBoxGorillaChest.AutoSize = true;
-            this.checkBoxGorillaChest.Location = new System.Drawing.Point(68, 94);
+            this.checkBoxGorillaChest.Location = new System.Drawing.Point(53, 70);
+            this.checkBoxGorillaChest.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxGorillaChest.Name = "checkBoxGorillaChest";
-            this.checkBoxGorillaChest.Size = new System.Drawing.Size(74, 24);
+            this.checkBoxGorillaChest.Size = new System.Drawing.Size(56, 19);
             this.checkBoxGorillaChest.TabIndex = 20;
             this.checkBoxGorillaChest.Text = "Drum";
             this.checkBoxGorillaChest.UseVisualStyleBackColor = true;
@@ -2609,9 +2772,10 @@ namespace VMSEditor
             // checkBoxLionWash
             // 
             this.checkBoxLionWash.AutoSize = true;
-            this.checkBoxLionWash.Location = new System.Drawing.Point(68, 37);
+            this.checkBoxLionWash.Location = new System.Drawing.Point(53, 28);
+            this.checkBoxLionWash.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxLionWash.Name = "checkBoxLionWash";
-            this.checkBoxLionWash.Size = new System.Drawing.Size(116, 24);
+            this.checkBoxLionWash.Size = new System.Drawing.Size(82, 19);
             this.checkBoxLionWash.TabIndex = 18;
             this.checkBoxLionWash.Text = "Wash Face";
             this.checkBoxLionWash.UseVisualStyleBackColor = true;
@@ -2621,9 +2785,10 @@ namespace VMSEditor
             // 
             this.pictureBox12.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox12.Image = global::VMSEditor.Properties.Resources.icon_lion;
-            this.pictureBox12.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox12.Location = new System.Drawing.Point(12, 19);
+            this.pictureBox12.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox12.Name = "pictureBox12";
-            this.pictureBox12.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox12.Size = new System.Drawing.Size(37, 36);
             this.pictureBox12.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox12.TabIndex = 19;
             this.pictureBox12.TabStop = false;
@@ -2632,9 +2797,10 @@ namespace VMSEditor
             // 
             this.pictureBox11.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox11.Image = global::VMSEditor.Properties.Resources.icon_gori;
-            this.pictureBox11.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox11.Location = new System.Drawing.Point(12, 60);
+            this.pictureBox11.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox11.Name = "pictureBox11";
-            this.pictureBox11.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox11.Size = new System.Drawing.Size(37, 36);
             this.pictureBox11.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox11.TabIndex = 21;
             this.pictureBox11.TabStop = false;
@@ -2642,9 +2808,10 @@ namespace VMSEditor
             // checkBoxElephantSumo
             // 
             this.checkBoxElephantSumo.AutoSize = true;
-            this.checkBoxElephantSumo.Location = new System.Drawing.Point(68, 148);
+            this.checkBoxElephantSumo.Location = new System.Drawing.Point(53, 111);
+            this.checkBoxElephantSumo.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxElephantSumo.Name = "checkBoxElephantSumo";
-            this.checkBoxElephantSumo.Size = new System.Drawing.Size(77, 24);
+            this.checkBoxElephantSumo.Size = new System.Drawing.Size(57, 19);
             this.checkBoxElephantSumo.TabIndex = 22;
             this.checkBoxElephantSumo.Text = "Sumo";
             this.checkBoxElephantSumo.UseVisualStyleBackColor = true;
@@ -2654,9 +2821,10 @@ namespace VMSEditor
             // 
             this.pictureBox10.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox10.Image = global::VMSEditor.Properties.Resources.icon_zou;
-            this.pictureBox10.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox10.Location = new System.Drawing.Point(12, 101);
+            this.pictureBox10.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox10.Name = "pictureBox10";
-            this.pictureBox10.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox10.Size = new System.Drawing.Size(37, 36);
             this.pictureBox10.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox10.TabIndex = 23;
             this.pictureBox10.TabStop = false;
@@ -2669,9 +2837,11 @@ namespace VMSEditor
             this.groupBox29.Controls.Add(this.checkBoxMoleDig);
             this.groupBox29.Controls.Add(this.pictureBox8);
             this.groupBox29.Controls.Add(this.checkBoxKoalaTrumpet);
-            this.groupBox29.Location = new System.Drawing.Point(612, 8);
+            this.groupBox29.Location = new System.Drawing.Point(367, 167);
+            this.groupBox29.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox29.Name = "groupBox29";
-            this.groupBox29.Size = new System.Drawing.Size(186, 197);
+            this.groupBox29.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox29.Size = new System.Drawing.Size(157, 157);
             this.groupBox29.TabIndex = 46;
             this.groupBox29.TabStop = false;
             this.groupBox29.Text = "Random";
@@ -2680,9 +2850,10 @@ namespace VMSEditor
             // 
             this.pictureBox9.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox9.Image = global::VMSEditor.Properties.Resources.icon_suka;
-            this.pictureBox9.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox9.Location = new System.Drawing.Point(12, 101);
+            this.pictureBox9.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox9.Name = "pictureBox9";
-            this.pictureBox9.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox9.Size = new System.Drawing.Size(37, 36);
             this.pictureBox9.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox9.TabIndex = 17;
             this.pictureBox9.TabStop = false;
@@ -2691,9 +2862,10 @@ namespace VMSEditor
             // 
             this.pictureBox7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox7.Image = global::VMSEditor.Properties.Resources.icon_mog;
-            this.pictureBox7.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox7.Location = new System.Drawing.Point(12, 19);
+            this.pictureBox7.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox7.Name = "pictureBox7";
-            this.pictureBox7.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox7.Size = new System.Drawing.Size(37, 36);
             this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox7.TabIndex = 13;
             this.pictureBox7.TabStop = false;
@@ -2701,9 +2873,10 @@ namespace VMSEditor
             // checkBoxSkunkDraw
             // 
             this.checkBoxSkunkDraw.AutoSize = true;
-            this.checkBoxSkunkDraw.Location = new System.Drawing.Point(68, 148);
+            this.checkBoxSkunkDraw.Location = new System.Drawing.Point(53, 111);
+            this.checkBoxSkunkDraw.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxSkunkDraw.Name = "checkBoxSkunkDraw";
-            this.checkBoxSkunkDraw.Size = new System.Drawing.Size(72, 24);
+            this.checkBoxSkunkDraw.Size = new System.Drawing.Size(53, 19);
             this.checkBoxSkunkDraw.TabIndex = 16;
             this.checkBoxSkunkDraw.Text = "Draw";
             this.checkBoxSkunkDraw.UseVisualStyleBackColor = true;
@@ -2712,9 +2885,10 @@ namespace VMSEditor
             // checkBoxMoleDig
             // 
             this.checkBoxMoleDig.AutoSize = true;
-            this.checkBoxMoleDig.Location = new System.Drawing.Point(68, 37);
+            this.checkBoxMoleDig.Location = new System.Drawing.Point(53, 28);
+            this.checkBoxMoleDig.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxMoleDig.Name = "checkBoxMoleDig";
-            this.checkBoxMoleDig.Size = new System.Drawing.Size(59, 24);
+            this.checkBoxMoleDig.Size = new System.Drawing.Size(44, 19);
             this.checkBoxMoleDig.TabIndex = 6;
             this.checkBoxMoleDig.Text = "Dig";
             this.checkBoxMoleDig.UseVisualStyleBackColor = true;
@@ -2724,9 +2898,10 @@ namespace VMSEditor
             // 
             this.pictureBox8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox8.Image = global::VMSEditor.Properties.Resources.icon_koa;
-            this.pictureBox8.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox8.Location = new System.Drawing.Point(12, 60);
+            this.pictureBox8.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox8.Name = "pictureBox8";
-            this.pictureBox8.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox8.Size = new System.Drawing.Size(37, 36);
             this.pictureBox8.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox8.TabIndex = 15;
             this.pictureBox8.TabStop = false;
@@ -2734,9 +2909,10 @@ namespace VMSEditor
             // checkBoxKoalaTrumpet
             // 
             this.checkBoxKoalaTrumpet.AutoSize = true;
-            this.checkBoxKoalaTrumpet.Location = new System.Drawing.Point(68, 94);
+            this.checkBoxKoalaTrumpet.Location = new System.Drawing.Point(53, 70);
+            this.checkBoxKoalaTrumpet.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxKoalaTrumpet.Name = "checkBoxKoalaTrumpet";
-            this.checkBoxKoalaTrumpet.Size = new System.Drawing.Size(94, 24);
+            this.checkBoxKoalaTrumpet.Size = new System.Drawing.Size(70, 19);
             this.checkBoxKoalaTrumpet.TabIndex = 14;
             this.checkBoxKoalaTrumpet.Text = "Trumpet";
             this.checkBoxKoalaTrumpet.UseVisualStyleBackColor = true;
@@ -2750,9 +2926,11 @@ namespace VMSEditor
             this.groupBox26.Controls.Add(this.pictureBox6);
             this.groupBox26.Controls.Add(this.checkBoxOtterSwim);
             this.groupBox26.Controls.Add(this.checkBoxPenguinSkate);
-            this.groupBox26.Location = new System.Drawing.Point(228, 8);
+            this.groupBox26.Location = new System.Drawing.Point(177, 6);
+            this.groupBox26.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox26.Name = "groupBox26";
-            this.groupBox26.Size = new System.Drawing.Size(186, 197);
+            this.groupBox26.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox26.Size = new System.Drawing.Size(186, 157);
             this.groupBox26.TabIndex = 44;
             this.groupBox26.TabStop = false;
             this.groupBox26.Text = "Swim";
@@ -2761,9 +2939,10 @@ namespace VMSEditor
             // 
             this.pictureBox4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox4.Image = global::VMSEditor.Properties.Resources.icon_goma;
-            this.pictureBox4.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox4.Location = new System.Drawing.Point(12, 19);
+            this.pictureBox4.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox4.Size = new System.Drawing.Size(37, 36);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox4.TabIndex = 10;
             this.pictureBox4.TabStop = false;
@@ -2771,9 +2950,10 @@ namespace VMSEditor
             // checkBoxSealDance
             // 
             this.checkBoxSealDance.AutoSize = true;
-            this.checkBoxSealDance.Location = new System.Drawing.Point(68, 37);
+            this.checkBoxSealDance.Location = new System.Drawing.Point(53, 28);
+            this.checkBoxSealDance.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxSealDance.Name = "checkBoxSealDance";
-            this.checkBoxSealDance.Size = new System.Drawing.Size(82, 24);
+            this.checkBoxSealDance.Size = new System.Drawing.Size(59, 19);
             this.checkBoxSealDance.TabIndex = 3;
             this.checkBoxSealDance.Text = "Dance";
             this.checkBoxSealDance.UseVisualStyleBackColor = true;
@@ -2783,9 +2963,10 @@ namespace VMSEditor
             // 
             this.pictureBox5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox5.Image = global::VMSEditor.Properties.Resources.icon_rak;
-            this.pictureBox5.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox5.Location = new System.Drawing.Point(12, 60);
+            this.pictureBox5.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox5.Size = new System.Drawing.Size(37, 36);
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox5.TabIndex = 11;
             this.pictureBox5.TabStop = false;
@@ -2794,9 +2975,10 @@ namespace VMSEditor
             // 
             this.pictureBox6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox6.Image = global::VMSEditor.Properties.Resources.icon_pen;
-            this.pictureBox6.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox6.Location = new System.Drawing.Point(12, 101);
+            this.pictureBox6.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox6.Name = "pictureBox6";
-            this.pictureBox6.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox6.Size = new System.Drawing.Size(37, 36);
             this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox6.TabIndex = 12;
             this.pictureBox6.TabStop = false;
@@ -2804,9 +2986,10 @@ namespace VMSEditor
             // checkBoxOtterSwim
             // 
             this.checkBoxOtterSwim.AutoSize = true;
-            this.checkBoxOtterSwim.Location = new System.Drawing.Point(68, 94);
+            this.checkBoxOtterSwim.Location = new System.Drawing.Point(53, 70);
+            this.checkBoxOtterSwim.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxOtterSwim.Name = "checkBoxOtterSwim";
-            this.checkBoxOtterSwim.Size = new System.Drawing.Size(115, 24);
+            this.checkBoxOtterSwim.Size = new System.Drawing.Size(83, 19);
             this.checkBoxOtterSwim.TabIndex = 4;
             this.checkBoxOtterSwim.Text = "Backstroke";
             this.checkBoxOtterSwim.UseVisualStyleBackColor = true;
@@ -2815,9 +2998,10 @@ namespace VMSEditor
             // checkBoxPenguinSkate
             // 
             this.checkBoxPenguinSkate.AutoSize = true;
-            this.checkBoxPenguinSkate.Location = new System.Drawing.Point(68, 148);
+            this.checkBoxPenguinSkate.Location = new System.Drawing.Point(53, 111);
+            this.checkBoxPenguinSkate.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxPenguinSkate.Name = "checkBoxPenguinSkate";
-            this.checkBoxPenguinSkate.Size = new System.Drawing.Size(94, 24);
+            this.checkBoxPenguinSkate.Size = new System.Drawing.Size(69, 19);
             this.checkBoxPenguinSkate.TabIndex = 5;
             this.checkBoxPenguinSkate.Text = "Snuggle";
             this.checkBoxPenguinSkate.UseVisualStyleBackColor = true;
@@ -2831,9 +3015,11 @@ namespace VMSEditor
             this.groupBox28.Controls.Add(this.checkBoxDeerBow);
             this.groupBox28.Controls.Add(this.pictureBox14);
             this.groupBox28.Controls.Add(this.checkBoxRabbitSomersault);
-            this.groupBox28.Location = new System.Drawing.Point(228, 211);
+            this.groupBox28.Location = new System.Drawing.Point(177, 167);
+            this.groupBox28.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox28.Name = "groupBox28";
-            this.groupBox28.Size = new System.Drawing.Size(186, 197);
+            this.groupBox28.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox28.Size = new System.Drawing.Size(186, 157);
             this.groupBox28.TabIndex = 45;
             this.groupBox28.TabStop = false;
             this.groupBox28.Text = "Run";
@@ -2842,9 +3028,10 @@ namespace VMSEditor
             // 
             this.pictureBox13.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox13.Image = global::VMSEditor.Properties.Resources.icon_wara;
-            this.pictureBox13.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox13.Location = new System.Drawing.Point(12, 101);
+            this.pictureBox13.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox13.Name = "pictureBox13";
-            this.pictureBox13.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox13.Size = new System.Drawing.Size(37, 36);
             this.pictureBox13.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox13.TabIndex = 29;
             this.pictureBox13.TabStop = false;
@@ -2853,9 +3040,10 @@ namespace VMSEditor
             // 
             this.pictureBox15.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox15.Image = global::VMSEditor.Properties.Resources.icon_banb;
-            this.pictureBox15.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox15.Location = new System.Drawing.Point(12, 19);
+            this.pictureBox15.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox15.Name = "pictureBox15";
-            this.pictureBox15.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox15.Size = new System.Drawing.Size(37, 36);
             this.pictureBox15.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox15.TabIndex = 25;
             this.pictureBox15.TabStop = false;
@@ -2863,9 +3051,10 @@ namespace VMSEditor
             // checkBoxWallabyPunch
             // 
             this.checkBoxWallabyPunch.AutoSize = true;
-            this.checkBoxWallabyPunch.Location = new System.Drawing.Point(68, 148);
+            this.checkBoxWallabyPunch.Location = new System.Drawing.Point(53, 111);
+            this.checkBoxWallabyPunch.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxWallabyPunch.Name = "checkBoxWallabyPunch";
-            this.checkBoxWallabyPunch.Size = new System.Drawing.Size(83, 24);
+            this.checkBoxWallabyPunch.Size = new System.Drawing.Size(63, 19);
             this.checkBoxWallabyPunch.TabIndex = 28;
             this.checkBoxWallabyPunch.Text = "Boxing";
             this.checkBoxWallabyPunch.UseVisualStyleBackColor = true;
@@ -2874,9 +3063,10 @@ namespace VMSEditor
             // checkBoxDeerBow
             // 
             this.checkBoxDeerBow.AutoSize = true;
-            this.checkBoxDeerBow.Location = new System.Drawing.Point(68, 37);
+            this.checkBoxDeerBow.Location = new System.Drawing.Point(53, 28);
+            this.checkBoxDeerBow.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxDeerBow.Name = "checkBoxDeerBow";
-            this.checkBoxDeerBow.Size = new System.Drawing.Size(66, 24);
+            this.checkBoxDeerBow.Size = new System.Drawing.Size(49, 19);
             this.checkBoxDeerBow.TabIndex = 24;
             this.checkBoxDeerBow.Text = "Bow";
             this.checkBoxDeerBow.UseVisualStyleBackColor = true;
@@ -2886,9 +3076,10 @@ namespace VMSEditor
             // 
             this.pictureBox14.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox14.Image = global::VMSEditor.Properties.Resources.icon_usa;
-            this.pictureBox14.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox14.Location = new System.Drawing.Point(12, 60);
+            this.pictureBox14.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox14.Name = "pictureBox14";
-            this.pictureBox14.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox14.Size = new System.Drawing.Size(37, 36);
             this.pictureBox14.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox14.TabIndex = 27;
             this.pictureBox14.TabStop = false;
@@ -2896,9 +3087,10 @@ namespace VMSEditor
             // checkBoxRabbitSomersault
             // 
             this.checkBoxRabbitSomersault.AutoSize = true;
-            this.checkBoxRabbitSomersault.Location = new System.Drawing.Point(68, 94);
+            this.checkBoxRabbitSomersault.Location = new System.Drawing.Point(53, 70);
+            this.checkBoxRabbitSomersault.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxRabbitSomersault.Name = "checkBoxRabbitSomersault";
-            this.checkBoxRabbitSomersault.Size = new System.Drawing.Size(116, 24);
+            this.checkBoxRabbitSomersault.Size = new System.Drawing.Size(85, 19);
             this.checkBoxRabbitSomersault.TabIndex = 26;
             this.checkBoxRabbitSomersault.Text = "Somersault";
             this.checkBoxRabbitSomersault.UseVisualStyleBackColor = true;
@@ -2912,9 +3104,11 @@ namespace VMSEditor
             this.groupBox27.Controls.Add(this.checkBoxSwallowTwirl);
             this.groupBox27.Controls.Add(this.pictureBox1);
             this.groupBox27.Controls.Add(this.pictureBox3);
-            this.groupBox27.Location = new System.Drawing.Point(420, 8);
+            this.groupBox27.Location = new System.Drawing.Point(528, 6);
+            this.groupBox27.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox27.Name = "groupBox27";
-            this.groupBox27.Size = new System.Drawing.Size(186, 197);
+            this.groupBox27.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox27.Size = new System.Drawing.Size(156, 157);
             this.groupBox27.TabIndex = 44;
             this.groupBox27.TabStop = false;
             this.groupBox27.Text = "Fly";
@@ -2923,9 +3117,10 @@ namespace VMSEditor
             // 
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox2.Image = global::VMSEditor.Properties.Resources.icon_oum;
-            this.pictureBox2.Location = new System.Drawing.Point(15, 80);
+            this.pictureBox2.Location = new System.Drawing.Point(12, 60);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox2.Size = new System.Drawing.Size(37, 36);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 8;
             this.pictureBox2.TabStop = false;
@@ -2933,9 +3128,10 @@ namespace VMSEditor
             // checkBoxPeacockPose
             // 
             this.checkBoxPeacockPose.AutoSize = true;
-            this.checkBoxPeacockPose.Location = new System.Drawing.Point(68, 37);
+            this.checkBoxPeacockPose.Location = new System.Drawing.Point(53, 28);
+            this.checkBoxPeacockPose.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxPeacockPose.Name = "checkBoxPeacockPose";
-            this.checkBoxPeacockPose.Size = new System.Drawing.Size(71, 24);
+            this.checkBoxPeacockPose.Size = new System.Drawing.Size(51, 19);
             this.checkBoxPeacockPose.TabIndex = 0;
             this.checkBoxPeacockPose.Text = "Pose";
             this.checkBoxPeacockPose.UseVisualStyleBackColor = true;
@@ -2944,9 +3140,10 @@ namespace VMSEditor
             // checkBoxParrotSing
             // 
             this.checkBoxParrotSing.AutoSize = true;
-            this.checkBoxParrotSing.Location = new System.Drawing.Point(68, 94);
+            this.checkBoxParrotSing.Location = new System.Drawing.Point(53, 70);
+            this.checkBoxParrotSing.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxParrotSing.Name = "checkBoxParrotSing";
-            this.checkBoxParrotSing.Size = new System.Drawing.Size(67, 24);
+            this.checkBoxParrotSing.Size = new System.Drawing.Size(49, 19);
             this.checkBoxParrotSing.TabIndex = 1;
             this.checkBoxParrotSing.Text = "Sing";
             this.checkBoxParrotSing.UseVisualStyleBackColor = true;
@@ -2955,9 +3152,10 @@ namespace VMSEditor
             // checkBoxSwallowTwirl
             // 
             this.checkBoxSwallowTwirl.AutoSize = true;
-            this.checkBoxSwallowTwirl.Location = new System.Drawing.Point(68, 148);
+            this.checkBoxSwallowTwirl.Location = new System.Drawing.Point(53, 111);
+            this.checkBoxSwallowTwirl.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxSwallowTwirl.Name = "checkBoxSwallowTwirl";
-            this.checkBoxSwallowTwirl.Size = new System.Drawing.Size(66, 24);
+            this.checkBoxSwallowTwirl.Size = new System.Drawing.Size(50, 19);
             this.checkBoxSwallowTwirl.TabIndex = 2;
             this.checkBoxSwallowTwirl.Text = "Twirl";
             this.checkBoxSwallowTwirl.UseVisualStyleBackColor = true;
@@ -2967,9 +3165,10 @@ namespace VMSEditor
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox1.Image = global::VMSEditor.Properties.Resources.icon_kuj;
-            this.pictureBox1.Location = new System.Drawing.Point(15, 25);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 19);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox1.Size = new System.Drawing.Size(37, 36);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 7;
             this.pictureBox1.TabStop = false;
@@ -2978,9 +3177,10 @@ namespace VMSEditor
             // 
             this.pictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox3.Image = global::VMSEditor.Properties.Resources.icon_tuba;
-            this.pictureBox3.Location = new System.Drawing.Point(15, 135);
+            this.pictureBox3.Location = new System.Drawing.Point(12, 101);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(46, 47);
+            this.pictureBox3.Size = new System.Drawing.Size(37, 36);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox3.TabIndex = 9;
             this.pictureBox3.TabStop = false;
@@ -3003,9 +3203,11 @@ namespace VMSEditor
             this.groupBox4.Controls.Add(this.comboBoxFruit5);
             this.groupBox4.Controls.Add(this.comboBoxFruit3);
             this.groupBox4.Controls.Add(this.comboBoxFruit4);
-            this.groupBox4.Location = new System.Drawing.Point(8, 8);
+            this.groupBox4.Location = new System.Drawing.Point(6, 6);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(214, 454);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox4.Size = new System.Drawing.Size(166, 340);
             this.groupBox4.TabIndex = 41;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Fruits";
@@ -3013,9 +3215,10 @@ namespace VMSEditor
             // pictureBoxFruit7
             // 
             this.pictureBoxFruit7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit7.Location = new System.Drawing.Point(153, 402);
+            this.pictureBoxFruit7.Location = new System.Drawing.Point(119, 302);
+            this.pictureBoxFruit7.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit7.Name = "pictureBoxFruit7";
-            this.pictureBoxFruit7.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit7.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit7.TabIndex = 20;
             this.pictureBoxFruit7.TabStop = false;
@@ -3023,9 +3226,10 @@ namespace VMSEditor
             // pictureBoxFruit6
             // 
             this.pictureBoxFruit6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit6.Location = new System.Drawing.Point(153, 346);
+            this.pictureBoxFruit6.Location = new System.Drawing.Point(119, 260);
+            this.pictureBoxFruit6.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit6.Name = "pictureBoxFruit6";
-            this.pictureBoxFruit6.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit6.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit6.TabIndex = 19;
             this.pictureBoxFruit6.TabStop = false;
@@ -3033,9 +3237,10 @@ namespace VMSEditor
             // pictureBoxFruit5
             // 
             this.pictureBoxFruit5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit5.Location = new System.Drawing.Point(153, 291);
+            this.pictureBoxFruit5.Location = new System.Drawing.Point(119, 218);
+            this.pictureBoxFruit5.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit5.Name = "pictureBoxFruit5";
-            this.pictureBoxFruit5.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit5.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit5.TabIndex = 18;
             this.pictureBoxFruit5.TabStop = false;
@@ -3043,9 +3248,10 @@ namespace VMSEditor
             // pictureBoxFruit4
             // 
             this.pictureBoxFruit4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit4.Location = new System.Drawing.Point(153, 235);
+            this.pictureBoxFruit4.Location = new System.Drawing.Point(119, 176);
+            this.pictureBoxFruit4.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit4.Name = "pictureBoxFruit4";
-            this.pictureBoxFruit4.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit4.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit4.TabIndex = 17;
             this.pictureBoxFruit4.TabStop = false;
@@ -3053,9 +3259,10 @@ namespace VMSEditor
             // pictureBoxFruit3
             // 
             this.pictureBoxFruit3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit3.Location = new System.Drawing.Point(153, 180);
+            this.pictureBoxFruit3.Location = new System.Drawing.Point(119, 135);
+            this.pictureBoxFruit3.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit3.Name = "pictureBoxFruit3";
-            this.pictureBoxFruit3.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit3.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit3.TabIndex = 16;
             this.pictureBoxFruit3.TabStop = false;
@@ -3063,9 +3270,10 @@ namespace VMSEditor
             // pictureBoxFruit2
             // 
             this.pictureBoxFruit2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit2.Location = new System.Drawing.Point(153, 125);
+            this.pictureBoxFruit2.Location = new System.Drawing.Point(119, 94);
+            this.pictureBoxFruit2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit2.Name = "pictureBoxFruit2";
-            this.pictureBoxFruit2.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit2.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit2.TabIndex = 15;
             this.pictureBoxFruit2.TabStop = false;
@@ -3073,9 +3281,10 @@ namespace VMSEditor
             // pictureBoxFruit1
             // 
             this.pictureBoxFruit1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit1.Location = new System.Drawing.Point(153, 69);
+            this.pictureBoxFruit1.Location = new System.Drawing.Point(119, 52);
+            this.pictureBoxFruit1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit1.Name = "pictureBoxFruit1";
-            this.pictureBoxFruit1.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit1.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit1.TabIndex = 14;
             this.pictureBoxFruit1.TabStop = false;
@@ -3083,9 +3292,10 @@ namespace VMSEditor
             // pictureBoxFruit0
             // 
             this.pictureBoxFruit0.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxFruit0.Location = new System.Drawing.Point(153, 14);
+            this.pictureBoxFruit0.Location = new System.Drawing.Point(119, 10);
+            this.pictureBoxFruit0.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxFruit0.Name = "pictureBoxFruit0";
-            this.pictureBoxFruit0.Size = new System.Drawing.Size(46, 47);
+            this.pictureBoxFruit0.Size = new System.Drawing.Size(37, 36);
             this.pictureBoxFruit0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxFruit0.TabIndex = 13;
             this.pictureBoxFruit0.TabStop = false;
@@ -3106,9 +3316,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit0.Location = new System.Drawing.Point(16, 22);
+            this.comboBoxFruit0.Location = new System.Drawing.Point(12, 16);
+            this.comboBoxFruit0.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit0.Name = "comboBoxFruit0";
-            this.comboBoxFruit0.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit0.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit0.TabIndex = 0;
             this.comboBoxFruit0.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit0.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3129,9 +3340,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit7.Location = new System.Drawing.Point(16, 409);
+            this.comboBoxFruit7.Location = new System.Drawing.Point(12, 307);
+            this.comboBoxFruit7.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit7.Name = "comboBoxFruit7";
-            this.comboBoxFruit7.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit7.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit7.TabIndex = 7;
             this.comboBoxFruit7.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit7.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3152,9 +3364,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit1.Location = new System.Drawing.Point(16, 78);
+            this.comboBoxFruit1.Location = new System.Drawing.Point(12, 58);
+            this.comboBoxFruit1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit1.Name = "comboBoxFruit1";
-            this.comboBoxFruit1.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit1.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit1.TabIndex = 1;
             this.comboBoxFruit1.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit1.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3175,9 +3388,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit6.Location = new System.Drawing.Point(16, 355);
+            this.comboBoxFruit6.Location = new System.Drawing.Point(12, 266);
+            this.comboBoxFruit6.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit6.Name = "comboBoxFruit6";
-            this.comboBoxFruit6.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit6.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit6.TabIndex = 6;
             this.comboBoxFruit6.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit6.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3198,9 +3412,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit2.Location = new System.Drawing.Point(16, 132);
+            this.comboBoxFruit2.Location = new System.Drawing.Point(12, 99);
+            this.comboBoxFruit2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit2.Name = "comboBoxFruit2";
-            this.comboBoxFruit2.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit2.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit2.TabIndex = 2;
             this.comboBoxFruit2.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit2.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3221,9 +3436,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit5.Location = new System.Drawing.Point(16, 300);
+            this.comboBoxFruit5.Location = new System.Drawing.Point(12, 225);
+            this.comboBoxFruit5.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit5.Name = "comboBoxFruit5";
-            this.comboBoxFruit5.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit5.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit5.TabIndex = 5;
             this.comboBoxFruit5.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit5.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3244,9 +3460,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit3.Location = new System.Drawing.Point(16, 188);
+            this.comboBoxFruit3.Location = new System.Drawing.Point(12, 141);
+            this.comboBoxFruit3.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit3.Name = "comboBoxFruit3";
-            this.comboBoxFruit3.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit3.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit3.TabIndex = 3;
             this.comboBoxFruit3.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit3.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3267,9 +3484,10 @@ namespace VMSEditor
             "Starnut",
             "Lazynut",
             "Coconut"});
-            this.comboBoxFruit4.Location = new System.Drawing.Point(16, 243);
+            this.comboBoxFruit4.Location = new System.Drawing.Point(12, 182);
+            this.comboBoxFruit4.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFruit4.Name = "comboBoxFruit4";
-            this.comboBoxFruit4.Size = new System.Drawing.Size(121, 28);
+            this.comboBoxFruit4.Size = new System.Drawing.Size(95, 23);
             this.comboBoxFruit4.TabIndex = 4;
             this.comboBoxFruit4.SelectedIndexChanged += new System.EventHandler(this.comboBoxFruit0_SelectedIndexChanged);
             this.comboBoxFruit4.Click += new System.EventHandler(this.comboBoxFruit0_Click);
@@ -3283,9 +3501,10 @@ namespace VMSEditor
             this.tabPageCharacters.Controls.Add(this.groupBox20);
             this.tabPageCharacters.Controls.Add(this.groupBox22);
             this.tabPageCharacters.Controls.Add(this.groupBox14);
-            this.tabPageCharacters.Location = new System.Drawing.Point(4, 29);
+            this.tabPageCharacters.Location = new System.Drawing.Point(4, 24);
+            this.tabPageCharacters.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageCharacters.Name = "tabPageCharacters";
-            this.tabPageCharacters.Size = new System.Drawing.Size(808, 472);
+            this.tabPageCharacters.Size = new System.Drawing.Size(661, 351);
             this.tabPageCharacters.TabIndex = 5;
             this.tabPageCharacters.Text = "Bonds";
             // 
@@ -3296,9 +3515,11 @@ namespace VMSEditor
             this.groupBox23.Controls.Add(this.numericUpDownMeetBig);
             this.groupBox23.Controls.Add(this.labelBondBig);
             this.groupBox23.Controls.Add(this.label22);
-            this.groupBox23.Location = new System.Drawing.Point(398, 151);
+            this.groupBox23.Location = new System.Drawing.Point(310, 113);
+            this.groupBox23.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox23.Name = "groupBox23";
-            this.groupBox23.Size = new System.Drawing.Size(384, 134);
+            this.groupBox23.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox23.Size = new System.Drawing.Size(299, 100);
             this.groupBox23.TabIndex = 23;
             this.groupBox23.TabStop = false;
             this.groupBox23.Text = "Big";
@@ -3306,11 +3527,12 @@ namespace VMSEditor
             // trackBarBondBig
             // 
             this.trackBarBondBig.LargeChange = 10;
-            this.trackBarBondBig.Location = new System.Drawing.Point(76, 25);
+            this.trackBarBondBig.Location = new System.Drawing.Point(59, 19);
+            this.trackBarBondBig.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBondBig.Maximum = 120;
             this.trackBarBondBig.Minimum = -120;
             this.trackBarBondBig.Name = "trackBarBondBig";
-            this.trackBarBondBig.Size = new System.Drawing.Size(250, 69);
+            this.trackBarBondBig.Size = new System.Drawing.Size(194, 45);
             this.trackBarBondBig.TabIndex = 33;
             this.trackBarBondBig.TickFrequency = 10;
             this.trackBarBondBig.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
@@ -3320,41 +3542,45 @@ namespace VMSEditor
             // 
             this.pictureBox20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox20.Image = global::VMSEditor.Properties.Resources.r_big3;
-            this.pictureBox20.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox20.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox20.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox20.Name = "pictureBox20";
-            this.pictureBox20.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox20.Size = new System.Drawing.Size(50, 48);
             this.pictureBox20.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox20.TabIndex = 62;
             this.pictureBox20.TabStop = false;
             // 
             // numericUpDownMeetBig
             // 
-            this.numericUpDownMeetBig.Location = new System.Drawing.Point(80, 97);
+            this.numericUpDownMeetBig.Location = new System.Drawing.Point(62, 73);
+            this.numericUpDownMeetBig.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMeetBig.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMeetBig.Name = "numericUpDownMeetBig";
-            this.numericUpDownMeetBig.Size = new System.Drawing.Size(96, 26);
+            this.numericUpDownMeetBig.Size = new System.Drawing.Size(75, 23);
             this.numericUpDownMeetBig.TabIndex = 53;
             this.numericUpDownMeetBig.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // labelBondBig
             // 
             this.labelBondBig.AutoSize = true;
-            this.labelBondBig.Location = new System.Drawing.Point(332, 31);
+            this.labelBondBig.Location = new System.Drawing.Point(258, 23);
+            this.labelBondBig.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBondBig.Name = "labelBondBig";
-            this.labelBondBig.Size = new System.Drawing.Size(18, 20);
+            this.labelBondBig.Size = new System.Drawing.Size(13, 15);
             this.labelBondBig.TabIndex = 61;
             this.labelBondBig.Text = "0";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(22, 102);
+            this.label22.Location = new System.Drawing.Point(17, 76);
+            this.label22.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(49, 20);
+            this.label22.Size = new System.Drawing.Size(37, 15);
             this.label22.TabIndex = 49;
             this.label22.Text = "Meet:";
             // 
@@ -3365,9 +3591,11 @@ namespace VMSEditor
             this.groupBox24.Controls.Add(this.numericUpDownMeetGamma);
             this.groupBox24.Controls.Add(this.label42);
             this.groupBox24.Controls.Add(this.labelBondGamma);
-            this.groupBox24.Location = new System.Drawing.Point(398, 291);
+            this.groupBox24.Location = new System.Drawing.Point(310, 218);
+            this.groupBox24.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox24.Name = "groupBox24";
-            this.groupBox24.Size = new System.Drawing.Size(384, 134);
+            this.groupBox24.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox24.Size = new System.Drawing.Size(299, 100);
             this.groupBox24.TabIndex = 23;
             this.groupBox24.TabStop = false;
             this.groupBox24.Text = "Gamma";
@@ -3376,9 +3604,10 @@ namespace VMSEditor
             // 
             this.pictureBox21.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox21.Image = global::VMSEditor.Properties.Resources.r_e102;
-            this.pictureBox21.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox21.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox21.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox21.Name = "pictureBox21";
-            this.pictureBox21.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox21.Size = new System.Drawing.Size(50, 48);
             this.pictureBox21.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox21.TabIndex = 63;
             this.pictureBox21.TabStop = false;
@@ -3386,11 +3615,12 @@ namespace VMSEditor
             // trackBarBondGamma
             // 
             this.trackBarBondGamma.LargeChange = 10;
-            this.trackBarBondGamma.Location = new System.Drawing.Point(76, 20);
+            this.trackBarBondGamma.Location = new System.Drawing.Point(59, 15);
+            this.trackBarBondGamma.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBondGamma.Maximum = 120;
             this.trackBarBondGamma.Minimum = -120;
             this.trackBarBondGamma.Name = "trackBarBondGamma";
-            this.trackBarBondGamma.Size = new System.Drawing.Size(250, 69);
+            this.trackBarBondGamma.Size = new System.Drawing.Size(194, 45);
             this.trackBarBondGamma.TabIndex = 33;
             this.trackBarBondGamma.TickFrequency = 10;
             this.trackBarBondGamma.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
@@ -3398,32 +3628,35 @@ namespace VMSEditor
             // 
             // numericUpDownMeetGamma
             // 
-            this.numericUpDownMeetGamma.Location = new System.Drawing.Point(80, 97);
+            this.numericUpDownMeetGamma.Location = new System.Drawing.Point(62, 73);
+            this.numericUpDownMeetGamma.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMeetGamma.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMeetGamma.Name = "numericUpDownMeetGamma";
-            this.numericUpDownMeetGamma.Size = new System.Drawing.Size(96, 26);
+            this.numericUpDownMeetGamma.Size = new System.Drawing.Size(75, 23);
             this.numericUpDownMeetGamma.TabIndex = 53;
             this.numericUpDownMeetGamma.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // label42
             // 
             this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(22, 102);
+            this.label42.Location = new System.Drawing.Point(17, 76);
+            this.label42.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(49, 20);
+            this.label42.Size = new System.Drawing.Size(37, 15);
             this.label42.TabIndex = 49;
             this.label42.Text = "Meet:";
             // 
             // labelBondGamma
             // 
             this.labelBondGamma.AutoSize = true;
-            this.labelBondGamma.Location = new System.Drawing.Point(332, 26);
+            this.labelBondGamma.Location = new System.Drawing.Point(258, 20);
+            this.labelBondGamma.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBondGamma.Name = "labelBondGamma";
-            this.labelBondGamma.Size = new System.Drawing.Size(18, 20);
+            this.labelBondGamma.Size = new System.Drawing.Size(13, 15);
             this.labelBondGamma.TabIndex = 63;
             this.labelBondGamma.Text = "0";
             // 
@@ -3434,9 +3667,11 @@ namespace VMSEditor
             this.groupBox21.Controls.Add(this.label43);
             this.groupBox21.Controls.Add(this.trackBarBondKnuckles);
             this.groupBox21.Controls.Add(this.labelBondKnuckles);
-            this.groupBox21.Location = new System.Drawing.Point(8, 291);
+            this.groupBox21.Location = new System.Drawing.Point(6, 218);
+            this.groupBox21.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox21.Name = "groupBox21";
-            this.groupBox21.Size = new System.Drawing.Size(384, 134);
+            this.groupBox21.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox21.Size = new System.Drawing.Size(299, 100);
             this.groupBox21.TabIndex = 66;
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Knuckles";
@@ -3445,43 +3680,47 @@ namespace VMSEditor
             // 
             this.pictureBox18.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox18.Image = global::VMSEditor.Properties.Resources.r_nuckles2;
-            this.pictureBox18.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox18.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox18.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox18.Name = "pictureBox18";
-            this.pictureBox18.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox18.Size = new System.Drawing.Size(50, 48);
             this.pictureBox18.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox18.TabIndex = 59;
             this.pictureBox18.TabStop = false;
             // 
             // numericUpDownMeetKnuckles
             // 
-            this.numericUpDownMeetKnuckles.Location = new System.Drawing.Point(80, 97);
+            this.numericUpDownMeetKnuckles.Location = new System.Drawing.Point(62, 73);
+            this.numericUpDownMeetKnuckles.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMeetKnuckles.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMeetKnuckles.Name = "numericUpDownMeetKnuckles";
-            this.numericUpDownMeetKnuckles.Size = new System.Drawing.Size(96, 26);
+            this.numericUpDownMeetKnuckles.Size = new System.Drawing.Size(75, 23);
             this.numericUpDownMeetKnuckles.TabIndex = 53;
             this.numericUpDownMeetKnuckles.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // label43
             // 
             this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(22, 102);
+            this.label43.Location = new System.Drawing.Point(17, 76);
+            this.label43.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(49, 20);
+            this.label43.Size = new System.Drawing.Size(37, 15);
             this.label43.TabIndex = 49;
             this.label43.Text = "Meet:";
             // 
             // trackBarBondKnuckles
             // 
             this.trackBarBondKnuckles.LargeChange = 10;
-            this.trackBarBondKnuckles.Location = new System.Drawing.Point(76, 25);
+            this.trackBarBondKnuckles.Location = new System.Drawing.Point(59, 19);
+            this.trackBarBondKnuckles.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBondKnuckles.Maximum = 120;
             this.trackBarBondKnuckles.Minimum = -120;
             this.trackBarBondKnuckles.Name = "trackBarBondKnuckles";
-            this.trackBarBondKnuckles.Size = new System.Drawing.Size(250, 69);
+            this.trackBarBondKnuckles.Size = new System.Drawing.Size(194, 45);
             this.trackBarBondKnuckles.TabIndex = 33;
             this.trackBarBondKnuckles.TickFrequency = 10;
             this.trackBarBondKnuckles.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
@@ -3490,9 +3729,10 @@ namespace VMSEditor
             // labelBondKnuckles
             // 
             this.labelBondKnuckles.AutoSize = true;
-            this.labelBondKnuckles.Location = new System.Drawing.Point(332, 29);
+            this.labelBondKnuckles.Location = new System.Drawing.Point(258, 22);
+            this.labelBondKnuckles.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBondKnuckles.Name = "labelBondKnuckles";
-            this.labelBondKnuckles.Size = new System.Drawing.Size(18, 20);
+            this.labelBondKnuckles.Size = new System.Drawing.Size(13, 15);
             this.labelBondKnuckles.TabIndex = 60;
             this.labelBondKnuckles.Text = "0";
             // 
@@ -3503,9 +3743,11 @@ namespace VMSEditor
             this.groupBox20.Controls.Add(this.label19);
             this.groupBox20.Controls.Add(this.numericUpDownMeetTails);
             this.groupBox20.Controls.Add(this.trackBarBondTails);
-            this.groupBox20.Location = new System.Drawing.Point(8, 149);
+            this.groupBox20.Location = new System.Drawing.Point(6, 112);
+            this.groupBox20.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox20.Name = "groupBox20";
-            this.groupBox20.Size = new System.Drawing.Size(384, 134);
+            this.groupBox20.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox20.Size = new System.Drawing.Size(299, 100);
             this.groupBox20.TabIndex = 65;
             this.groupBox20.TabStop = false;
             this.groupBox20.Text = "Tails";
@@ -3514,9 +3756,10 @@ namespace VMSEditor
             // 
             this.pictureBox17.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox17.Image = global::VMSEditor.Properties.Resources.r_tailes2;
-            this.pictureBox17.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox17.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox17.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox17.Name = "pictureBox17";
-            this.pictureBox17.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox17.Size = new System.Drawing.Size(50, 48);
             this.pictureBox17.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox17.TabIndex = 57;
             this.pictureBox17.TabStop = false;
@@ -3524,42 +3767,46 @@ namespace VMSEditor
             // labelBondTails
             // 
             this.labelBondTails.AutoSize = true;
-            this.labelBondTails.Location = new System.Drawing.Point(332, 29);
+            this.labelBondTails.Location = new System.Drawing.Point(258, 22);
+            this.labelBondTails.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBondTails.Name = "labelBondTails";
-            this.labelBondTails.Size = new System.Drawing.Size(18, 20);
+            this.labelBondTails.Size = new System.Drawing.Size(13, 15);
             this.labelBondTails.TabIndex = 58;
             this.labelBondTails.Text = "0";
             // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(22, 102);
+            this.label19.Location = new System.Drawing.Point(17, 76);
+            this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(49, 20);
+            this.label19.Size = new System.Drawing.Size(37, 15);
             this.label19.TabIndex = 49;
             this.label19.Text = "Meet:";
             // 
             // numericUpDownMeetTails
             // 
-            this.numericUpDownMeetTails.Location = new System.Drawing.Point(80, 97);
+            this.numericUpDownMeetTails.Location = new System.Drawing.Point(62, 73);
+            this.numericUpDownMeetTails.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMeetTails.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMeetTails.Name = "numericUpDownMeetTails";
-            this.numericUpDownMeetTails.Size = new System.Drawing.Size(96, 26);
+            this.numericUpDownMeetTails.Size = new System.Drawing.Size(75, 23);
             this.numericUpDownMeetTails.TabIndex = 53;
             this.numericUpDownMeetTails.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // trackBarBondTails
             // 
             this.trackBarBondTails.LargeChange = 10;
-            this.trackBarBondTails.Location = new System.Drawing.Point(76, 25);
+            this.trackBarBondTails.Location = new System.Drawing.Point(59, 19);
+            this.trackBarBondTails.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBondTails.Maximum = 120;
             this.trackBarBondTails.Minimum = -120;
             this.trackBarBondTails.Name = "trackBarBondTails";
-            this.trackBarBondTails.Size = new System.Drawing.Size(250, 69);
+            this.trackBarBondTails.Size = new System.Drawing.Size(194, 45);
             this.trackBarBondTails.TabIndex = 33;
             this.trackBarBondTails.TickFrequency = 10;
             this.trackBarBondTails.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
@@ -3572,9 +3819,11 @@ namespace VMSEditor
             this.groupBox22.Controls.Add(this.numericUpDownMeetAmy);
             this.groupBox22.Controls.Add(this.label18);
             this.groupBox22.Controls.Add(this.labelBondAmy);
-            this.groupBox22.Location = new System.Drawing.Point(398, 8);
+            this.groupBox22.Location = new System.Drawing.Point(310, 6);
+            this.groupBox22.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox22.Name = "groupBox22";
-            this.groupBox22.Size = new System.Drawing.Size(384, 134);
+            this.groupBox22.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox22.Size = new System.Drawing.Size(299, 100);
             this.groupBox22.TabIndex = 22;
             this.groupBox22.TabStop = false;
             this.groupBox22.Text = "Amy";
@@ -3583,9 +3832,10 @@ namespace VMSEditor
             // 
             this.pictureBox19.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox19.Image = global::VMSEditor.Properties.Resources.r_amy;
-            this.pictureBox19.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox19.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox19.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox19.Name = "pictureBox19";
-            this.pictureBox19.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox19.Size = new System.Drawing.Size(50, 48);
             this.pictureBox19.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox19.TabIndex = 61;
             this.pictureBox19.TabStop = false;
@@ -3593,11 +3843,12 @@ namespace VMSEditor
             // trackBarBondAmy
             // 
             this.trackBarBondAmy.LargeChange = 10;
-            this.trackBarBondAmy.Location = new System.Drawing.Point(76, 25);
+            this.trackBarBondAmy.Location = new System.Drawing.Point(59, 19);
+            this.trackBarBondAmy.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBondAmy.Maximum = 120;
             this.trackBarBondAmy.Minimum = -120;
             this.trackBarBondAmy.Name = "trackBarBondAmy";
-            this.trackBarBondAmy.Size = new System.Drawing.Size(250, 69);
+            this.trackBarBondAmy.Size = new System.Drawing.Size(194, 45);
             this.trackBarBondAmy.TabIndex = 33;
             this.trackBarBondAmy.TickFrequency = 10;
             this.trackBarBondAmy.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
@@ -3605,32 +3856,35 @@ namespace VMSEditor
             // 
             // numericUpDownMeetAmy
             // 
-            this.numericUpDownMeetAmy.Location = new System.Drawing.Point(80, 97);
+            this.numericUpDownMeetAmy.Location = new System.Drawing.Point(62, 73);
+            this.numericUpDownMeetAmy.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMeetAmy.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMeetAmy.Name = "numericUpDownMeetAmy";
-            this.numericUpDownMeetAmy.Size = new System.Drawing.Size(96, 26);
+            this.numericUpDownMeetAmy.Size = new System.Drawing.Size(75, 23);
             this.numericUpDownMeetAmy.TabIndex = 53;
             this.numericUpDownMeetAmy.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(22, 102);
+            this.label18.Location = new System.Drawing.Point(17, 76);
+            this.label18.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(49, 20);
+            this.label18.Size = new System.Drawing.Size(37, 15);
             this.label18.TabIndex = 49;
             this.label18.Text = "Meet:";
             // 
             // labelBondAmy
             // 
             this.labelBondAmy.AutoSize = true;
-            this.labelBondAmy.Location = new System.Drawing.Point(332, 31);
+            this.labelBondAmy.Location = new System.Drawing.Point(258, 23);
+            this.labelBondAmy.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBondAmy.Name = "labelBondAmy";
-            this.labelBondAmy.Size = new System.Drawing.Size(18, 20);
+            this.labelBondAmy.Size = new System.Drawing.Size(13, 15);
             this.labelBondAmy.TabIndex = 61;
             this.labelBondAmy.Text = "0";
             // 
@@ -3641,43 +3895,48 @@ namespace VMSEditor
             this.groupBox14.Controls.Add(this.trackBarBondSonic);
             this.groupBox14.Controls.Add(this.pictureBox16);
             this.groupBox14.Controls.Add(this.label15);
-            this.groupBox14.Location = new System.Drawing.Point(8, 8);
+            this.groupBox14.Location = new System.Drawing.Point(6, 6);
+            this.groupBox14.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(384, 134);
+            this.groupBox14.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox14.Size = new System.Drawing.Size(299, 100);
             this.groupBox14.TabIndex = 64;
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "Sonic";
             // 
             // numericUpDownMeetSonic
             // 
-            this.numericUpDownMeetSonic.Location = new System.Drawing.Point(80, 97);
+            this.numericUpDownMeetSonic.Location = new System.Drawing.Point(62, 73);
+            this.numericUpDownMeetSonic.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMeetSonic.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMeetSonic.Name = "numericUpDownMeetSonic";
-            this.numericUpDownMeetSonic.Size = new System.Drawing.Size(96, 26);
+            this.numericUpDownMeetSonic.Size = new System.Drawing.Size(75, 23);
             this.numericUpDownMeetSonic.TabIndex = 47;
             this.numericUpDownMeetSonic.Click += new System.EventHandler(this.numericUpDownMeetSonic_Click);
             // 
             // labelBondSonic
             // 
             this.labelBondSonic.AutoSize = true;
-            this.labelBondSonic.Location = new System.Drawing.Point(334, 31);
+            this.labelBondSonic.Location = new System.Drawing.Point(260, 23);
+            this.labelBondSonic.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelBondSonic.Name = "labelBondSonic";
-            this.labelBondSonic.Size = new System.Drawing.Size(18, 20);
+            this.labelBondSonic.Size = new System.Drawing.Size(13, 15);
             this.labelBondSonic.TabIndex = 49;
             this.labelBondSonic.Text = "0";
             // 
             // trackBarBondSonic
             // 
             this.trackBarBondSonic.LargeChange = 10;
-            this.trackBarBondSonic.Location = new System.Drawing.Point(78, 25);
+            this.trackBarBondSonic.Location = new System.Drawing.Point(61, 19);
+            this.trackBarBondSonic.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBondSonic.Maximum = 120;
             this.trackBarBondSonic.Minimum = -120;
             this.trackBarBondSonic.Name = "trackBarBondSonic";
-            this.trackBarBondSonic.Size = new System.Drawing.Size(250, 69);
+            this.trackBarBondSonic.Size = new System.Drawing.Size(194, 45);
             this.trackBarBondSonic.TabIndex = 31;
             this.trackBarBondSonic.TickFrequency = 10;
             this.trackBarBondSonic.Scroll += new System.EventHandler(this.trackBarBondSonic_Scroll);
@@ -3687,9 +3946,10 @@ namespace VMSEditor
             // 
             this.pictureBox16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox16.Image = global::VMSEditor.Properties.Resources.r_sonic2;
-            this.pictureBox16.Location = new System.Drawing.Point(8, 25);
+            this.pictureBox16.Location = new System.Drawing.Point(6, 19);
+            this.pictureBox16.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox16.Name = "pictureBox16";
-            this.pictureBox16.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox16.Size = new System.Drawing.Size(50, 48);
             this.pictureBox16.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox16.TabIndex = 56;
             this.pictureBox16.TabStop = false;
@@ -3697,9 +3957,10 @@ namespace VMSEditor
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(22, 102);
+            this.label15.Location = new System.Drawing.Point(17, 76);
+            this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(49, 20);
+            this.label15.Size = new System.Drawing.Size(37, 15);
             this.label15.TabIndex = 48;
             this.label15.Text = "Meet:";
             // 
@@ -3716,24 +3977,27 @@ namespace VMSEditor
             this.tabPageChaoMemories.Controls.Add(this.groupBoxMemories_2);
             this.tabPageChaoMemories.Controls.Add(this.groupBoxMemories_1);
             this.tabPageChaoMemories.Controls.Add(this.groupBoxMemories_0);
-            this.tabPageChaoMemories.Location = new System.Drawing.Point(4, 29);
+            this.tabPageChaoMemories.Location = new System.Drawing.Point(4, 24);
+            this.tabPageChaoMemories.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageChaoMemories.Name = "tabPageChaoMemories";
-            this.tabPageChaoMemories.Size = new System.Drawing.Size(808, 472);
+            this.tabPageChaoMemories.Size = new System.Drawing.Size(661, 351);
             this.tabPageChaoMemories.TabIndex = 7;
             this.tabPageChaoMemories.Text = "Memories";
             // 
             // label98
             // 
             this.label98.AutoSize = true;
-            this.label98.Location = new System.Drawing.Point(128, 406);
+            this.label98.Location = new System.Drawing.Point(99, 306);
+            this.label98.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label98.Name = "label98";
-            this.label98.Size = new System.Drawing.Size(36, 20);
+            this.label98.Size = new System.Drawing.Size(27, 15);
             this.label98.TabIndex = 10;
             this.label98.Text = "of 4";
             // 
             // numericUpDownMemoriesPage
             // 
-            this.numericUpDownMemoriesPage.Location = new System.Drawing.Point(66, 405);
+            this.numericUpDownMemoriesPage.Location = new System.Drawing.Point(51, 304);
+            this.numericUpDownMemoriesPage.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesPage.Maximum = new decimal(new int[] {
             4,
             0,
@@ -3745,7 +4009,7 @@ namespace VMSEditor
             0,
             0});
             this.numericUpDownMemoriesPage.Name = "numericUpDownMemoriesPage";
-            this.numericUpDownMemoriesPage.Size = new System.Drawing.Size(56, 26);
+            this.numericUpDownMemoriesPage.Size = new System.Drawing.Size(44, 23);
             this.numericUpDownMemoriesPage.TabIndex = 9;
             this.numericUpDownMemoriesPage.Value = new decimal(new int[] {
             1,
@@ -3758,65 +4022,61 @@ namespace VMSEditor
             // label97
             // 
             this.label97.AutoSize = true;
-            this.label97.Location = new System.Drawing.Point(10, 406);
+            this.label97.Location = new System.Drawing.Point(12, 306);
+            this.label97.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label97.Name = "label97";
-            this.label97.Size = new System.Drawing.Size(50, 20);
+            this.label97.Size = new System.Drawing.Size(36, 15);
             this.label97.TabIndex = 8;
             this.label97.Text = "Page:";
             // 
             // groupBoxMemories_7
             // 
             this.groupBoxMemories_7.Controls.Add(this.label94);
-            this.groupBoxMemories_7.Controls.Add(this.numericUpDownMemoriesID_7);
             this.groupBoxMemories_7.Controls.Add(this.label95);
             this.groupBoxMemories_7.Controls.Add(this.numericUpDownMemoriesMeet_7);
             this.groupBoxMemories_7.Controls.Add(this.label96);
             this.groupBoxMemories_7.Controls.Add(this.numericUpDownMemoriesLike_7);
-            this.groupBoxMemories_7.Location = new System.Drawing.Point(602, 162);
+            this.groupBoxMemories_7.Controls.Add(this.numericUpDownMemoriesID_7);
+            this.groupBoxMemories_7.Location = new System.Drawing.Point(468, 122);
+            this.groupBoxMemories_7.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_7.Name = "groupBoxMemories_7";
-            this.groupBoxMemories_7.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_7.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_7.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_7.TabIndex = 7;
             this.groupBoxMemories_7.TabStop = false;
-            this.groupBoxMemories_7.Text = "Memory 0";
+            this.groupBoxMemories_7.Text = "Memory 7";
             // 
             // label94
             // 
             this.label94.AutoSize = true;
-            this.label94.Location = new System.Drawing.Point(6, 106);
+            this.label94.Location = new System.Drawing.Point(5, 80);
+            this.label94.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label94.Name = "label94";
-            this.label94.Size = new System.Drawing.Size(49, 20);
+            this.label94.Size = new System.Drawing.Size(37, 15);
             this.label94.TabIndex = 6;
             this.label94.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_7
-            // 
-            this.numericUpDownMemoriesID_7.Hexadecimal = true;
-            this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
-            this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_7.TabIndex = 1;
-            this.numericUpDownMemoriesID_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label95
             // 
             this.label95.AutoSize = true;
-            this.label95.Location = new System.Drawing.Point(12, 69);
+            this.label95.Location = new System.Drawing.Point(9, 52);
+            this.label95.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label95.Name = "label95";
-            this.label95.Size = new System.Drawing.Size(42, 20);
+            this.label95.Size = new System.Drawing.Size(31, 15);
             this.label95.TabIndex = 5;
             this.label95.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_7
             // 
-            this.numericUpDownMemoriesMeet_7.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_7.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_7.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_7.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_7.Name = "numericUpDownMemoriesMeet_7";
-            this.numericUpDownMemoriesMeet_7.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_7.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_7.TabIndex = 2;
             this.numericUpDownMemoriesMeet_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -3824,79 +4084,89 @@ namespace VMSEditor
             // label96
             // 
             this.label96.AutoSize = true;
-            this.label96.Location = new System.Drawing.Point(26, 32);
+            this.label96.Location = new System.Drawing.Point(20, 24);
+            this.label96.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label96.Name = "label96";
-            this.label96.Size = new System.Drawing.Size(30, 20);
+            this.label96.Size = new System.Drawing.Size(21, 15);
             this.label96.TabIndex = 4;
             this.label96.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_7
             // 
-            this.numericUpDownMemoriesLike_7.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_7.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_7.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_7.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_7.Name = "numericUpDownMemoriesLike_7";
-            this.numericUpDownMemoriesLike_7.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_7.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_7.TabIndex = 3;
             this.numericUpDownMemoriesLike_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_7
+            // 
+            this.numericUpDownMemoriesID_7.Hexadecimal = true;
+            this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_7.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
+            this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_7.TabIndex = 7;
+            // 
             // groupBoxMemories_6
             // 
             this.groupBoxMemories_6.Controls.Add(this.label91);
-            this.groupBoxMemories_6.Controls.Add(this.numericUpDownMemoriesID_6);
             this.groupBoxMemories_6.Controls.Add(this.label92);
             this.groupBoxMemories_6.Controls.Add(this.numericUpDownMemoriesMeet_6);
             this.groupBoxMemories_6.Controls.Add(this.label93);
             this.groupBoxMemories_6.Controls.Add(this.numericUpDownMemoriesLike_6);
-            this.groupBoxMemories_6.Location = new System.Drawing.Point(404, 162);
+            this.groupBoxMemories_6.Controls.Add(this.numericUpDownMemoriesID_6);
+            this.groupBoxMemories_6.Location = new System.Drawing.Point(314, 122);
+            this.groupBoxMemories_6.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_6.Name = "groupBoxMemories_6";
-            this.groupBoxMemories_6.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_6.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_6.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_6.TabIndex = 7;
             this.groupBoxMemories_6.TabStop = false;
-            this.groupBoxMemories_6.Text = "Memory 0";
+            this.groupBoxMemories_6.Text = "Memory 6";
             // 
             // label91
             // 
             this.label91.AutoSize = true;
-            this.label91.Location = new System.Drawing.Point(6, 106);
+            this.label91.Location = new System.Drawing.Point(5, 80);
+            this.label91.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label91.Name = "label91";
-            this.label91.Size = new System.Drawing.Size(49, 20);
+            this.label91.Size = new System.Drawing.Size(37, 15);
             this.label91.TabIndex = 6;
             this.label91.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_6
-            // 
-            this.numericUpDownMemoriesID_6.Hexadecimal = true;
-            this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
-            this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_6.TabIndex = 1;
-            this.numericUpDownMemoriesID_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label92
             // 
             this.label92.AutoSize = true;
-            this.label92.Location = new System.Drawing.Point(12, 69);
+            this.label92.Location = new System.Drawing.Point(9, 52);
+            this.label92.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label92.Name = "label92";
-            this.label92.Size = new System.Drawing.Size(42, 20);
+            this.label92.Size = new System.Drawing.Size(31, 15);
             this.label92.TabIndex = 5;
             this.label92.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_6
             // 
-            this.numericUpDownMemoriesMeet_6.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_6.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_6.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_6.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_6.Name = "numericUpDownMemoriesMeet_6";
-            this.numericUpDownMemoriesMeet_6.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_6.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_6.TabIndex = 2;
             this.numericUpDownMemoriesMeet_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -3904,79 +4174,89 @@ namespace VMSEditor
             // label93
             // 
             this.label93.AutoSize = true;
-            this.label93.Location = new System.Drawing.Point(26, 32);
+            this.label93.Location = new System.Drawing.Point(20, 24);
+            this.label93.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label93.Name = "label93";
-            this.label93.Size = new System.Drawing.Size(30, 20);
+            this.label93.Size = new System.Drawing.Size(21, 15);
             this.label93.TabIndex = 4;
             this.label93.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_6
             // 
-            this.numericUpDownMemoriesLike_6.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_6.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_6.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_6.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_6.Name = "numericUpDownMemoriesLike_6";
-            this.numericUpDownMemoriesLike_6.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_6.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_6.TabIndex = 3;
             this.numericUpDownMemoriesLike_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_6
+            // 
+            this.numericUpDownMemoriesID_6.Hexadecimal = true;
+            this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_6.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
+            this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_6.TabIndex = 7;
+            // 
             // groupBoxMemories_5
             // 
             this.groupBoxMemories_5.Controls.Add(this.label88);
-            this.groupBoxMemories_5.Controls.Add(this.numericUpDownMemoriesID_5);
             this.groupBoxMemories_5.Controls.Add(this.label89);
             this.groupBoxMemories_5.Controls.Add(this.numericUpDownMemoriesMeet_5);
             this.groupBoxMemories_5.Controls.Add(this.label90);
             this.groupBoxMemories_5.Controls.Add(this.numericUpDownMemoriesLike_5);
-            this.groupBoxMemories_5.Location = new System.Drawing.Point(206, 162);
+            this.groupBoxMemories_5.Controls.Add(this.numericUpDownMemoriesID_5);
+            this.groupBoxMemories_5.Location = new System.Drawing.Point(160, 122);
+            this.groupBoxMemories_5.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_5.Name = "groupBoxMemories_5";
-            this.groupBoxMemories_5.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_5.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_5.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_5.TabIndex = 7;
             this.groupBoxMemories_5.TabStop = false;
-            this.groupBoxMemories_5.Text = "Memory 0";
+            this.groupBoxMemories_5.Text = "Memory 5";
             // 
             // label88
             // 
             this.label88.AutoSize = true;
-            this.label88.Location = new System.Drawing.Point(6, 106);
+            this.label88.Location = new System.Drawing.Point(5, 80);
+            this.label88.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label88.Name = "label88";
-            this.label88.Size = new System.Drawing.Size(49, 20);
+            this.label88.Size = new System.Drawing.Size(37, 15);
             this.label88.TabIndex = 6;
             this.label88.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_5
-            // 
-            this.numericUpDownMemoriesID_5.Hexadecimal = true;
-            this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
-            this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_5.TabIndex = 1;
-            this.numericUpDownMemoriesID_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label89
             // 
             this.label89.AutoSize = true;
-            this.label89.Location = new System.Drawing.Point(12, 69);
+            this.label89.Location = new System.Drawing.Point(9, 52);
+            this.label89.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label89.Name = "label89";
-            this.label89.Size = new System.Drawing.Size(42, 20);
+            this.label89.Size = new System.Drawing.Size(31, 15);
             this.label89.TabIndex = 5;
             this.label89.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_5
             // 
-            this.numericUpDownMemoriesMeet_5.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_5.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_5.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_5.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_5.Name = "numericUpDownMemoriesMeet_5";
-            this.numericUpDownMemoriesMeet_5.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_5.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_5.TabIndex = 2;
             this.numericUpDownMemoriesMeet_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -3984,79 +4264,89 @@ namespace VMSEditor
             // label90
             // 
             this.label90.AutoSize = true;
-            this.label90.Location = new System.Drawing.Point(26, 32);
+            this.label90.Location = new System.Drawing.Point(20, 24);
+            this.label90.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label90.Name = "label90";
-            this.label90.Size = new System.Drawing.Size(30, 20);
+            this.label90.Size = new System.Drawing.Size(21, 15);
             this.label90.TabIndex = 4;
             this.label90.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_5
             // 
-            this.numericUpDownMemoriesLike_5.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_5.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_5.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_5.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_5.Name = "numericUpDownMemoriesLike_5";
-            this.numericUpDownMemoriesLike_5.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_5.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_5.TabIndex = 3;
             this.numericUpDownMemoriesLike_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_5
+            // 
+            this.numericUpDownMemoriesID_5.Hexadecimal = true;
+            this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_5.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
+            this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_5.TabIndex = 7;
+            // 
             // groupBoxMemories_4
             // 
             this.groupBoxMemories_4.Controls.Add(this.label85);
-            this.groupBoxMemories_4.Controls.Add(this.numericUpDownMemoriesID_4);
             this.groupBoxMemories_4.Controls.Add(this.label86);
             this.groupBoxMemories_4.Controls.Add(this.numericUpDownMemoriesMeet_4);
             this.groupBoxMemories_4.Controls.Add(this.label87);
             this.groupBoxMemories_4.Controls.Add(this.numericUpDownMemoriesLike_4);
-            this.groupBoxMemories_4.Location = new System.Drawing.Point(8, 162);
+            this.groupBoxMemories_4.Controls.Add(this.numericUpDownMemoriesID_4);
+            this.groupBoxMemories_4.Location = new System.Drawing.Point(6, 122);
+            this.groupBoxMemories_4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_4.Name = "groupBoxMemories_4";
-            this.groupBoxMemories_4.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_4.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_4.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_4.TabIndex = 7;
             this.groupBoxMemories_4.TabStop = false;
-            this.groupBoxMemories_4.Text = "Memory 0";
+            this.groupBoxMemories_4.Text = "Memory 4";
             // 
             // label85
             // 
             this.label85.AutoSize = true;
-            this.label85.Location = new System.Drawing.Point(6, 106);
+            this.label85.Location = new System.Drawing.Point(5, 80);
+            this.label85.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label85.Name = "label85";
-            this.label85.Size = new System.Drawing.Size(49, 20);
+            this.label85.Size = new System.Drawing.Size(37, 15);
             this.label85.TabIndex = 6;
             this.label85.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_4
-            // 
-            this.numericUpDownMemoriesID_4.Hexadecimal = true;
-            this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
-            this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_4.TabIndex = 1;
-            this.numericUpDownMemoriesID_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label86
             // 
             this.label86.AutoSize = true;
-            this.label86.Location = new System.Drawing.Point(12, 69);
+            this.label86.Location = new System.Drawing.Point(9, 52);
+            this.label86.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label86.Name = "label86";
-            this.label86.Size = new System.Drawing.Size(42, 20);
+            this.label86.Size = new System.Drawing.Size(31, 15);
             this.label86.TabIndex = 5;
             this.label86.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_4
             // 
-            this.numericUpDownMemoriesMeet_4.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_4.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_4.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_4.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_4.Name = "numericUpDownMemoriesMeet_4";
-            this.numericUpDownMemoriesMeet_4.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_4.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_4.TabIndex = 2;
             this.numericUpDownMemoriesMeet_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -4064,79 +4354,89 @@ namespace VMSEditor
             // label87
             // 
             this.label87.AutoSize = true;
-            this.label87.Location = new System.Drawing.Point(26, 32);
+            this.label87.Location = new System.Drawing.Point(20, 24);
+            this.label87.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label87.Name = "label87";
-            this.label87.Size = new System.Drawing.Size(30, 20);
+            this.label87.Size = new System.Drawing.Size(21, 15);
             this.label87.TabIndex = 4;
             this.label87.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_4
             // 
-            this.numericUpDownMemoriesLike_4.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_4.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_4.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_4.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_4.Name = "numericUpDownMemoriesLike_4";
-            this.numericUpDownMemoriesLike_4.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_4.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_4.TabIndex = 3;
             this.numericUpDownMemoriesLike_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_4
+            // 
+            this.numericUpDownMemoriesID_4.Hexadecimal = true;
+            this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_4.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
+            this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_4.TabIndex = 7;
+            // 
             // groupBoxMemories_3
             // 
             this.groupBoxMemories_3.Controls.Add(this.label82);
-            this.groupBoxMemories_3.Controls.Add(this.numericUpDownMemoriesID_3);
             this.groupBoxMemories_3.Controls.Add(this.label83);
             this.groupBoxMemories_3.Controls.Add(this.numericUpDownMemoriesMeet_3);
             this.groupBoxMemories_3.Controls.Add(this.label84);
             this.groupBoxMemories_3.Controls.Add(this.numericUpDownMemoriesLike_3);
-            this.groupBoxMemories_3.Location = new System.Drawing.Point(602, 8);
+            this.groupBoxMemories_3.Controls.Add(this.numericUpDownMemoriesID_3);
+            this.groupBoxMemories_3.Location = new System.Drawing.Point(468, 6);
+            this.groupBoxMemories_3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_3.Name = "groupBoxMemories_3";
-            this.groupBoxMemories_3.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_3.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_3.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_3.TabIndex = 7;
             this.groupBoxMemories_3.TabStop = false;
-            this.groupBoxMemories_3.Text = "Memory 0";
+            this.groupBoxMemories_3.Text = "Memory 3";
             // 
             // label82
             // 
             this.label82.AutoSize = true;
-            this.label82.Location = new System.Drawing.Point(6, 106);
+            this.label82.Location = new System.Drawing.Point(5, 80);
+            this.label82.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label82.Name = "label82";
-            this.label82.Size = new System.Drawing.Size(49, 20);
+            this.label82.Size = new System.Drawing.Size(37, 15);
             this.label82.TabIndex = 6;
             this.label82.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_3
-            // 
-            this.numericUpDownMemoriesID_3.Hexadecimal = true;
-            this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
-            this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_3.TabIndex = 1;
-            this.numericUpDownMemoriesID_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label83
             // 
             this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(12, 69);
+            this.label83.Location = new System.Drawing.Point(9, 52);
+            this.label83.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label83.Name = "label83";
-            this.label83.Size = new System.Drawing.Size(42, 20);
+            this.label83.Size = new System.Drawing.Size(31, 15);
             this.label83.TabIndex = 5;
             this.label83.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_3
             // 
-            this.numericUpDownMemoriesMeet_3.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_3.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_3.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_3.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_3.Name = "numericUpDownMemoriesMeet_3";
-            this.numericUpDownMemoriesMeet_3.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_3.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_3.TabIndex = 2;
             this.numericUpDownMemoriesMeet_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -4144,79 +4444,89 @@ namespace VMSEditor
             // label84
             // 
             this.label84.AutoSize = true;
-            this.label84.Location = new System.Drawing.Point(26, 32);
+            this.label84.Location = new System.Drawing.Point(20, 24);
+            this.label84.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label84.Name = "label84";
-            this.label84.Size = new System.Drawing.Size(30, 20);
+            this.label84.Size = new System.Drawing.Size(21, 15);
             this.label84.TabIndex = 4;
             this.label84.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_3
             // 
-            this.numericUpDownMemoriesLike_3.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_3.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_3.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_3.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_3.Name = "numericUpDownMemoriesLike_3";
-            this.numericUpDownMemoriesLike_3.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_3.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_3.TabIndex = 3;
             this.numericUpDownMemoriesLike_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_3
+            // 
+            this.numericUpDownMemoriesID_3.Hexadecimal = true;
+            this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_3.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
+            this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_3.TabIndex = 7;
+            // 
             // groupBoxMemories_2
             // 
             this.groupBoxMemories_2.Controls.Add(this.label79);
-            this.groupBoxMemories_2.Controls.Add(this.numericUpDownMemoriesID_2);
             this.groupBoxMemories_2.Controls.Add(this.label80);
             this.groupBoxMemories_2.Controls.Add(this.numericUpDownMemoriesMeet_2);
             this.groupBoxMemories_2.Controls.Add(this.label81);
             this.groupBoxMemories_2.Controls.Add(this.numericUpDownMemoriesLike_2);
-            this.groupBoxMemories_2.Location = new System.Drawing.Point(404, 8);
+            this.groupBoxMemories_2.Controls.Add(this.numericUpDownMemoriesID_2);
+            this.groupBoxMemories_2.Location = new System.Drawing.Point(314, 6);
+            this.groupBoxMemories_2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_2.Name = "groupBoxMemories_2";
-            this.groupBoxMemories_2.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_2.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_2.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_2.TabIndex = 7;
             this.groupBoxMemories_2.TabStop = false;
-            this.groupBoxMemories_2.Text = "Memory 0";
+            this.groupBoxMemories_2.Text = "Memory 2";
             // 
             // label79
             // 
             this.label79.AutoSize = true;
-            this.label79.Location = new System.Drawing.Point(6, 106);
+            this.label79.Location = new System.Drawing.Point(5, 80);
+            this.label79.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label79.Name = "label79";
-            this.label79.Size = new System.Drawing.Size(49, 20);
+            this.label79.Size = new System.Drawing.Size(37, 15);
             this.label79.TabIndex = 6;
             this.label79.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_2
-            // 
-            this.numericUpDownMemoriesID_2.Hexadecimal = true;
-            this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
-            this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_2.TabIndex = 1;
-            this.numericUpDownMemoriesID_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label80
             // 
             this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(12, 69);
+            this.label80.Location = new System.Drawing.Point(9, 52);
+            this.label80.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label80.Name = "label80";
-            this.label80.Size = new System.Drawing.Size(42, 20);
+            this.label80.Size = new System.Drawing.Size(31, 15);
             this.label80.TabIndex = 5;
             this.label80.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_2
             // 
-            this.numericUpDownMemoriesMeet_2.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_2.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_2.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_2.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_2.Name = "numericUpDownMemoriesMeet_2";
-            this.numericUpDownMemoriesMeet_2.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_2.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_2.TabIndex = 2;
             this.numericUpDownMemoriesMeet_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -4224,79 +4534,89 @@ namespace VMSEditor
             // label81
             // 
             this.label81.AutoSize = true;
-            this.label81.Location = new System.Drawing.Point(26, 32);
+            this.label81.Location = new System.Drawing.Point(20, 24);
+            this.label81.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label81.Name = "label81";
-            this.label81.Size = new System.Drawing.Size(30, 20);
+            this.label81.Size = new System.Drawing.Size(21, 15);
             this.label81.TabIndex = 4;
             this.label81.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_2
             // 
-            this.numericUpDownMemoriesLike_2.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_2.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_2.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_2.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_2.Name = "numericUpDownMemoriesLike_2";
-            this.numericUpDownMemoriesLike_2.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_2.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_2.TabIndex = 3;
             this.numericUpDownMemoriesLike_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_2
+            // 
+            this.numericUpDownMemoriesID_2.Hexadecimal = true;
+            this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_2.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
+            this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_2.TabIndex = 7;
+            // 
             // groupBoxMemories_1
             // 
             this.groupBoxMemories_1.Controls.Add(this.label76);
-            this.groupBoxMemories_1.Controls.Add(this.numericUpDownMemoriesID_1);
             this.groupBoxMemories_1.Controls.Add(this.label77);
             this.groupBoxMemories_1.Controls.Add(this.numericUpDownMemoriesMeet_1);
             this.groupBoxMemories_1.Controls.Add(this.label78);
             this.groupBoxMemories_1.Controls.Add(this.numericUpDownMemoriesLike_1);
-            this.groupBoxMemories_1.Location = new System.Drawing.Point(206, 8);
+            this.groupBoxMemories_1.Controls.Add(this.numericUpDownMemoriesID_1);
+            this.groupBoxMemories_1.Location = new System.Drawing.Point(160, 6);
+            this.groupBoxMemories_1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_1.Name = "groupBoxMemories_1";
-            this.groupBoxMemories_1.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_1.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_1.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_1.TabIndex = 7;
             this.groupBoxMemories_1.TabStop = false;
-            this.groupBoxMemories_1.Text = "Memory 0";
+            this.groupBoxMemories_1.Text = "Memory 1";
             // 
             // label76
             // 
             this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(6, 106);
+            this.label76.Location = new System.Drawing.Point(5, 80);
+            this.label76.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label76.Name = "label76";
-            this.label76.Size = new System.Drawing.Size(49, 20);
+            this.label76.Size = new System.Drawing.Size(37, 15);
             this.label76.TabIndex = 6;
             this.label76.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_1
-            // 
-            this.numericUpDownMemoriesID_1.Hexadecimal = true;
-            this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
-            this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_1.TabIndex = 1;
-            this.numericUpDownMemoriesID_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label77
             // 
             this.label77.AutoSize = true;
-            this.label77.Location = new System.Drawing.Point(12, 69);
+            this.label77.Location = new System.Drawing.Point(9, 52);
+            this.label77.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label77.Name = "label77";
-            this.label77.Size = new System.Drawing.Size(42, 20);
+            this.label77.Size = new System.Drawing.Size(31, 15);
             this.label77.TabIndex = 5;
             this.label77.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_1
             // 
-            this.numericUpDownMemoriesMeet_1.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_1.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_1.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_1.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_1.Name = "numericUpDownMemoriesMeet_1";
-            this.numericUpDownMemoriesMeet_1.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_1.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_1.TabIndex = 2;
             this.numericUpDownMemoriesMeet_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -4304,37 +4624,54 @@ namespace VMSEditor
             // label78
             // 
             this.label78.AutoSize = true;
-            this.label78.Location = new System.Drawing.Point(26, 32);
+            this.label78.Location = new System.Drawing.Point(20, 24);
+            this.label78.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label78.Name = "label78";
-            this.label78.Size = new System.Drawing.Size(30, 20);
+            this.label78.Size = new System.Drawing.Size(21, 15);
             this.label78.TabIndex = 4;
             this.label78.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_1
             // 
-            this.numericUpDownMemoriesLike_1.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_1.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_1.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_1.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_1.Name = "numericUpDownMemoriesLike_1";
-            this.numericUpDownMemoriesLike_1.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_1.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_1.TabIndex = 3;
             this.numericUpDownMemoriesLike_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
+            // numericUpDownMemoriesID_1
+            // 
+            this.numericUpDownMemoriesID_1.Hexadecimal = true;
+            this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_1.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
+            this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_1.TabIndex = 7;
+            // 
             // groupBoxMemories_0
             // 
             this.groupBoxMemories_0.Controls.Add(this.label66);
-            this.groupBoxMemories_0.Controls.Add(this.numericUpDownMemoriesID_0);
             this.groupBoxMemories_0.Controls.Add(this.label65);
             this.groupBoxMemories_0.Controls.Add(this.numericUpDownMemoriesMeet_0);
             this.groupBoxMemories_0.Controls.Add(this.label64);
             this.groupBoxMemories_0.Controls.Add(this.numericUpDownMemoriesLike_0);
-            this.groupBoxMemories_0.Location = new System.Drawing.Point(8, 8);
+            this.groupBoxMemories_0.Controls.Add(this.numericUpDownMemoriesID_0);
+            this.groupBoxMemories_0.Location = new System.Drawing.Point(6, 6);
+            this.groupBoxMemories_0.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMemories_0.Name = "groupBoxMemories_0";
-            this.groupBoxMemories_0.Size = new System.Drawing.Size(192, 148);
+            this.groupBoxMemories_0.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxMemories_0.Size = new System.Drawing.Size(149, 111);
             this.groupBoxMemories_0.TabIndex = 0;
             this.groupBoxMemories_0.TabStop = false;
             this.groupBoxMemories_0.Text = "Memory 0";
@@ -4342,41 +4679,34 @@ namespace VMSEditor
             // label66
             // 
             this.label66.AutoSize = true;
-            this.label66.Location = new System.Drawing.Point(6, 106);
+            this.label66.Location = new System.Drawing.Point(5, 80);
+            this.label66.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label66.Name = "label66";
-            this.label66.Size = new System.Drawing.Size(49, 20);
+            this.label66.Size = new System.Drawing.Size(37, 15);
             this.label66.TabIndex = 6;
             this.label66.Text = "Meet:";
-            // 
-            // numericUpDownMemoriesID_0
-            // 
-            this.numericUpDownMemoriesID_0.Hexadecimal = true;
-            this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(63, 29);
-            this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
-            this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(108, 26);
-            this.numericUpDownMemoriesID_0.TabIndex = 1;
-            this.numericUpDownMemoriesID_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesID_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label65
             // 
             this.label65.AutoSize = true;
-            this.label65.Location = new System.Drawing.Point(12, 69);
+            this.label65.Location = new System.Drawing.Point(9, 52);
+            this.label65.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(42, 20);
+            this.label65.Size = new System.Drawing.Size(31, 15);
             this.label65.TabIndex = 5;
             this.label65.Text = "Like:";
             // 
             // numericUpDownMemoriesMeet_0
             // 
-            this.numericUpDownMemoriesMeet_0.Location = new System.Drawing.Point(63, 103);
+            this.numericUpDownMemoriesMeet_0.Location = new System.Drawing.Point(49, 77);
+            this.numericUpDownMemoriesMeet_0.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesMeet_0.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesMeet_0.Name = "numericUpDownMemoriesMeet_0";
-            this.numericUpDownMemoriesMeet_0.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesMeet_0.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_0.TabIndex = 2;
             this.numericUpDownMemoriesMeet_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesMeet_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
@@ -4384,34 +4714,50 @@ namespace VMSEditor
             // label64
             // 
             this.label64.AutoSize = true;
-            this.label64.Location = new System.Drawing.Point(26, 32);
+            this.label64.Location = new System.Drawing.Point(20, 24);
+            this.label64.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label64.Name = "label64";
-            this.label64.Size = new System.Drawing.Size(30, 20);
+            this.label64.Size = new System.Drawing.Size(21, 15);
             this.label64.TabIndex = 4;
             this.label64.Text = "ID:";
             // 
             // numericUpDownMemoriesLike_0
             // 
-            this.numericUpDownMemoriesLike_0.Location = new System.Drawing.Point(63, 66);
+            this.numericUpDownMemoriesLike_0.Location = new System.Drawing.Point(49, 50);
+            this.numericUpDownMemoriesLike_0.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownMemoriesLike_0.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownMemoriesLike_0.Name = "numericUpDownMemoriesLike_0";
-            this.numericUpDownMemoriesLike_0.Size = new System.Drawing.Size(108, 26);
+            this.numericUpDownMemoriesLike_0.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_0.TabIndex = 3;
             this.numericUpDownMemoriesLike_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
             this.numericUpDownMemoriesLike_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+            // 
+            // numericUpDownMemoriesID_0
+            // 
+            this.numericUpDownMemoriesID_0.Hexadecimal = true;
+            this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(49, 22);
+            this.numericUpDownMemoriesID_0.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
+            this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(84, 23);
+            this.numericUpDownMemoriesID_0.TabIndex = 7;
             // 
             // tabPageRace
             // 
             this.tabPageRace.Controls.Add(this.groupBox16);
             this.tabPageRace.Controls.Add(this.groupBox17);
             this.tabPageRace.Controls.Add(this.groupBox5);
-            this.tabPageRace.Location = new System.Drawing.Point(4, 29);
+            this.tabPageRace.Location = new System.Drawing.Point(4, 24);
+            this.tabPageRace.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageRace.Name = "tabPageRace";
-            this.tabPageRace.Size = new System.Drawing.Size(808, 472);
+            this.tabPageRace.Size = new System.Drawing.Size(661, 351);
             this.tabPageRace.TabIndex = 6;
             this.tabPageRace.Text = "Chao Race";
             // 
@@ -4419,9 +4765,11 @@ namespace VMSEditor
             // 
             this.groupBox16.Controls.Add(this.label75);
             this.groupBox16.Controls.Add(this.numericUpDownRaceTrack);
-            this.groupBox16.Location = new System.Drawing.Point(312, 263);
+            this.groupBox16.Location = new System.Drawing.Point(243, 197);
+            this.groupBox16.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox16.Name = "groupBox16";
-            this.groupBox16.Size = new System.Drawing.Size(188, 69);
+            this.groupBox16.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox16.Size = new System.Drawing.Size(146, 52);
             this.groupBox16.TabIndex = 45;
             this.groupBox16.TabStop = false;
             this.groupBox16.Text = "Flags";
@@ -4429,17 +4777,19 @@ namespace VMSEditor
             // label75
             // 
             this.label75.AutoSize = true;
-            this.label75.Location = new System.Drawing.Point(10, 28);
+            this.label75.Location = new System.Drawing.Point(8, 21);
+            this.label75.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label75.Name = "label75";
-            this.label75.Size = new System.Drawing.Size(72, 20);
+            this.label75.Size = new System.Drawing.Size(51, 15);
             this.label75.TabIndex = 49;
             this.label75.Text = "Lane (?):";
             // 
             // numericUpDownRaceTrack
             // 
-            this.numericUpDownRaceTrack.Location = new System.Drawing.Point(88, 25);
+            this.numericUpDownRaceTrack.Location = new System.Drawing.Point(68, 19);
+            this.numericUpDownRaceTrack.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRaceTrack.Name = "numericUpDownRaceTrack";
-            this.numericUpDownRaceTrack.Size = new System.Drawing.Size(74, 26);
+            this.numericUpDownRaceTrack.Size = new System.Drawing.Size(58, 23);
             this.numericUpDownRaceTrack.TabIndex = 47;
             this.numericUpDownRaceTrack.Click += new System.EventHandler(this.numericUpDownRaceTrack_Click);
             // 
@@ -4485,9 +4835,11 @@ namespace VMSEditor
             this.groupBox17.Controls.Add(this.numericUpDownRace8);
             this.groupBox17.Controls.Add(this.numericUpDownRace10);
             this.groupBox17.Controls.Add(this.numericUpDownRace9);
-            this.groupBox17.Location = new System.Drawing.Point(8, 8);
+            this.groupBox17.Location = new System.Drawing.Point(6, 6);
+            this.groupBox17.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(298, 418);
+            this.groupBox17.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox17.Size = new System.Drawing.Size(232, 314);
             this.groupBox17.TabIndex = 44;
             this.groupBox17.TabStop = false;
             this.groupBox17.Text = "Race Results";
@@ -4495,460 +4847,460 @@ namespace VMSEditor
             // label107
             // 
             this.label107.AutoSize = true;
-            this.label107.Location = new System.Drawing.Point(147, 371);
-            this.label107.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label107.Location = new System.Drawing.Point(114, 278);
             this.label107.Name = "label107";
-            this.label107.Size = new System.Drawing.Size(31, 20);
+            this.label107.Size = new System.Drawing.Size(22, 15);
             this.label107.TabIndex = 39;
             this.label107.Text = "19:";
             // 
             // label106
             // 
             this.label106.AutoSize = true;
-            this.label106.Location = new System.Drawing.Point(147, 334);
-            this.label106.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label106.Location = new System.Drawing.Point(114, 250);
             this.label106.Name = "label106";
-            this.label106.Size = new System.Drawing.Size(31, 20);
+            this.label106.Size = new System.Drawing.Size(22, 15);
             this.label106.TabIndex = 38;
             this.label106.Text = "18:";
             // 
             // label105
             // 
             this.label105.AutoSize = true;
-            this.label105.Location = new System.Drawing.Point(147, 297);
-            this.label105.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label105.Location = new System.Drawing.Point(114, 223);
             this.label105.Name = "label105";
-            this.label105.Size = new System.Drawing.Size(31, 20);
+            this.label105.Size = new System.Drawing.Size(22, 15);
             this.label105.TabIndex = 37;
             this.label105.Text = "17:";
             // 
             // label104
             // 
             this.label104.AutoSize = true;
-            this.label104.Location = new System.Drawing.Point(147, 260);
-            this.label104.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label104.Location = new System.Drawing.Point(114, 195);
             this.label104.Name = "label104";
-            this.label104.Size = new System.Drawing.Size(31, 20);
+            this.label104.Size = new System.Drawing.Size(22, 15);
             this.label104.TabIndex = 36;
             this.label104.Text = "16:";
             // 
             // label103
             // 
             this.label103.AutoSize = true;
-            this.label103.Location = new System.Drawing.Point(147, 220);
-            this.label103.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label103.Location = new System.Drawing.Point(114, 165);
             this.label103.Name = "label103";
-            this.label103.Size = new System.Drawing.Size(31, 20);
+            this.label103.Size = new System.Drawing.Size(22, 15);
             this.label103.TabIndex = 35;
             this.label103.Text = "15:";
             // 
             // label102
             // 
             this.label102.AutoSize = true;
-            this.label102.Location = new System.Drawing.Point(147, 186);
-            this.label102.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label102.Location = new System.Drawing.Point(114, 140);
             this.label102.Name = "label102";
-            this.label102.Size = new System.Drawing.Size(31, 20);
+            this.label102.Size = new System.Drawing.Size(22, 15);
             this.label102.TabIndex = 34;
             this.label102.Text = "14:";
             // 
             // label101
             // 
             this.label101.AutoSize = true;
-            this.label101.Location = new System.Drawing.Point(147, 149);
-            this.label101.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label101.Location = new System.Drawing.Point(114, 112);
             this.label101.Name = "label101";
-            this.label101.Size = new System.Drawing.Size(31, 20);
+            this.label101.Size = new System.Drawing.Size(22, 15);
             this.label101.TabIndex = 33;
             this.label101.Text = "13:";
             // 
             // label100
             // 
             this.label100.AutoSize = true;
-            this.label100.Location = new System.Drawing.Point(147, 112);
-            this.label100.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label100.Location = new System.Drawing.Point(114, 84);
             this.label100.Name = "label100";
-            this.label100.Size = new System.Drawing.Size(31, 20);
+            this.label100.Size = new System.Drawing.Size(22, 15);
             this.label100.TabIndex = 32;
             this.label100.Text = "12:";
             // 
             // label99
             // 
             this.label99.AutoSize = true;
-            this.label99.Location = new System.Drawing.Point(147, 75);
-            this.label99.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label99.Location = new System.Drawing.Point(114, 56);
             this.label99.Name = "label99";
-            this.label99.Size = new System.Drawing.Size(31, 20);
+            this.label99.Size = new System.Drawing.Size(22, 15);
             this.label99.TabIndex = 31;
             this.label99.Text = "11:";
             // 
             // label74
             // 
             this.label74.AutoSize = true;
-            this.label74.Location = new System.Drawing.Point(147, 38);
-            this.label74.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label74.Location = new System.Drawing.Point(114, 28);
             this.label74.Name = "label74";
-            this.label74.Size = new System.Drawing.Size(31, 20);
+            this.label74.Size = new System.Drawing.Size(22, 15);
             this.label74.TabIndex = 30;
             this.label74.Text = "10:";
             // 
             // label61
             // 
             this.label61.AutoSize = true;
-            this.label61.Location = new System.Drawing.Point(16, 371);
-            this.label61.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label61.Location = new System.Drawing.Point(12, 278);
             this.label61.Name = "label61";
-            this.label61.Size = new System.Drawing.Size(22, 20);
+            this.label61.Size = new System.Drawing.Size(16, 15);
             this.label61.TabIndex = 29;
             this.label61.Text = "9:";
             // 
             // label49
             // 
             this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(16, 186);
-            this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label49.Location = new System.Drawing.Point(12, 140);
             this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(22, 20);
+            this.label49.Size = new System.Drawing.Size(16, 15);
             this.label49.TabIndex = 28;
             this.label49.Text = "4:";
             // 
             // label47
             // 
             this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(16, 297);
-            this.label47.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label47.Location = new System.Drawing.Point(12, 223);
             this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(22, 20);
+            this.label47.Size = new System.Drawing.Size(16, 15);
             this.label47.TabIndex = 27;
             this.label47.Text = "7:";
             // 
             // label46
             // 
             this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(16, 334);
-            this.label46.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label46.Location = new System.Drawing.Point(12, 250);
             this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(22, 20);
+            this.label46.Size = new System.Drawing.Size(16, 15);
             this.label46.TabIndex = 26;
             this.label46.Text = "8:";
             // 
             // label45
             // 
             this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(16, 223);
-            this.label45.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label45.Location = new System.Drawing.Point(12, 167);
             this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(22, 20);
+            this.label45.Size = new System.Drawing.Size(16, 15);
             this.label45.TabIndex = 25;
             this.label45.Text = "5:";
             // 
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(16, 260);
-            this.label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label44.Location = new System.Drawing.Point(12, 195);
             this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(22, 20);
+            this.label44.Size = new System.Drawing.Size(16, 15);
             this.label44.TabIndex = 24;
             this.label44.Text = "6:";
             // 
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(16, 112);
-            this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label36.Location = new System.Drawing.Point(12, 84);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(22, 20);
+            this.label36.Size = new System.Drawing.Size(16, 15);
             this.label36.TabIndex = 23;
             this.label36.Text = "2:";
             // 
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(16, 149);
-            this.label35.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label35.Location = new System.Drawing.Point(12, 112);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(22, 20);
+            this.label35.Size = new System.Drawing.Size(16, 15);
             this.label35.TabIndex = 22;
             this.label35.Text = "3:";
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(16, 75);
-            this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label23.Location = new System.Drawing.Point(12, 56);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(22, 20);
+            this.label23.Size = new System.Drawing.Size(16, 15);
             this.label23.TabIndex = 21;
             this.label23.Text = "1:";
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(16, 38);
-            this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label21.Location = new System.Drawing.Point(12, 28);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(22, 20);
+            this.label21.Size = new System.Drawing.Size(16, 15);
             this.label21.TabIndex = 20;
             this.label21.Text = "0:";
             // 
             // numericUpDownRace15
             // 
-            this.numericUpDownRace15.Location = new System.Drawing.Point(188, 220);
+            this.numericUpDownRace15.Location = new System.Drawing.Point(146, 165);
+            this.numericUpDownRace15.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace15.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace15.Name = "numericUpDownRace15";
-            this.numericUpDownRace15.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace15.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace15.TabIndex = 15;
             this.numericUpDownRace15.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace19
             // 
-            this.numericUpDownRace19.Location = new System.Drawing.Point(188, 368);
+            this.numericUpDownRace19.Location = new System.Drawing.Point(146, 276);
+            this.numericUpDownRace19.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace19.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace19.Name = "numericUpDownRace19";
-            this.numericUpDownRace19.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace19.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace19.TabIndex = 19;
             this.numericUpDownRace19.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace0
             // 
-            this.numericUpDownRace0.Location = new System.Drawing.Point(48, 35);
+            this.numericUpDownRace0.Location = new System.Drawing.Point(37, 26);
+            this.numericUpDownRace0.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace0.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace0.Name = "numericUpDownRace0";
-            this.numericUpDownRace0.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace0.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace0.TabIndex = 0;
             this.numericUpDownRace0.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace18
             // 
-            this.numericUpDownRace18.Location = new System.Drawing.Point(188, 331);
+            this.numericUpDownRace18.Location = new System.Drawing.Point(146, 248);
+            this.numericUpDownRace18.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace18.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace18.Name = "numericUpDownRace18";
-            this.numericUpDownRace18.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace18.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace18.TabIndex = 18;
             this.numericUpDownRace18.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace1
             // 
-            this.numericUpDownRace1.Location = new System.Drawing.Point(48, 72);
+            this.numericUpDownRace1.Location = new System.Drawing.Point(37, 54);
+            this.numericUpDownRace1.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace1.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace1.Name = "numericUpDownRace1";
-            this.numericUpDownRace1.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace1.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace1.TabIndex = 1;
             this.numericUpDownRace1.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace17
             // 
-            this.numericUpDownRace17.Location = new System.Drawing.Point(188, 294);
+            this.numericUpDownRace17.Location = new System.Drawing.Point(146, 220);
+            this.numericUpDownRace17.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace17.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace17.Name = "numericUpDownRace17";
-            this.numericUpDownRace17.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace17.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace17.TabIndex = 17;
             this.numericUpDownRace17.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace2
             // 
-            this.numericUpDownRace2.Location = new System.Drawing.Point(48, 109);
+            this.numericUpDownRace2.Location = new System.Drawing.Point(37, 82);
+            this.numericUpDownRace2.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace2.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace2.Name = "numericUpDownRace2";
-            this.numericUpDownRace2.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace2.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace2.TabIndex = 2;
             this.numericUpDownRace2.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace16
             // 
-            this.numericUpDownRace16.Location = new System.Drawing.Point(188, 257);
+            this.numericUpDownRace16.Location = new System.Drawing.Point(146, 193);
+            this.numericUpDownRace16.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace16.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace16.Name = "numericUpDownRace16";
-            this.numericUpDownRace16.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace16.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace16.TabIndex = 16;
             this.numericUpDownRace16.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace3
             // 
-            this.numericUpDownRace3.Location = new System.Drawing.Point(48, 146);
+            this.numericUpDownRace3.Location = new System.Drawing.Point(37, 110);
+            this.numericUpDownRace3.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace3.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace3.Name = "numericUpDownRace3";
-            this.numericUpDownRace3.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace3.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace3.TabIndex = 3;
             this.numericUpDownRace3.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace4
             // 
-            this.numericUpDownRace4.Location = new System.Drawing.Point(48, 183);
+            this.numericUpDownRace4.Location = new System.Drawing.Point(37, 137);
+            this.numericUpDownRace4.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace4.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace4.Name = "numericUpDownRace4";
-            this.numericUpDownRace4.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace4.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace4.TabIndex = 4;
             this.numericUpDownRace4.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace14
             // 
-            this.numericUpDownRace14.Location = new System.Drawing.Point(188, 183);
+            this.numericUpDownRace14.Location = new System.Drawing.Point(146, 137);
+            this.numericUpDownRace14.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace14.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace14.Name = "numericUpDownRace14";
-            this.numericUpDownRace14.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace14.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace14.TabIndex = 14;
             this.numericUpDownRace14.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace5
             // 
-            this.numericUpDownRace5.Location = new System.Drawing.Point(48, 220);
+            this.numericUpDownRace5.Location = new System.Drawing.Point(37, 165);
+            this.numericUpDownRace5.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace5.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace5.Name = "numericUpDownRace5";
-            this.numericUpDownRace5.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace5.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace5.TabIndex = 5;
             this.numericUpDownRace5.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace13
             // 
-            this.numericUpDownRace13.Location = new System.Drawing.Point(188, 146);
+            this.numericUpDownRace13.Location = new System.Drawing.Point(146, 110);
+            this.numericUpDownRace13.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace13.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace13.Name = "numericUpDownRace13";
-            this.numericUpDownRace13.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace13.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace13.TabIndex = 13;
             this.numericUpDownRace13.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace6
             // 
-            this.numericUpDownRace6.Location = new System.Drawing.Point(48, 257);
+            this.numericUpDownRace6.Location = new System.Drawing.Point(37, 193);
+            this.numericUpDownRace6.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace6.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace6.Name = "numericUpDownRace6";
-            this.numericUpDownRace6.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace6.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace6.TabIndex = 6;
             this.numericUpDownRace6.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace12
             // 
-            this.numericUpDownRace12.Location = new System.Drawing.Point(188, 109);
+            this.numericUpDownRace12.Location = new System.Drawing.Point(146, 82);
+            this.numericUpDownRace12.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace12.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace12.Name = "numericUpDownRace12";
-            this.numericUpDownRace12.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace12.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace12.TabIndex = 12;
             this.numericUpDownRace12.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace7
             // 
-            this.numericUpDownRace7.Location = new System.Drawing.Point(48, 294);
+            this.numericUpDownRace7.Location = new System.Drawing.Point(37, 220);
+            this.numericUpDownRace7.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace7.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace7.Name = "numericUpDownRace7";
-            this.numericUpDownRace7.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace7.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace7.TabIndex = 7;
             this.numericUpDownRace7.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace11
             // 
-            this.numericUpDownRace11.Location = new System.Drawing.Point(188, 72);
+            this.numericUpDownRace11.Location = new System.Drawing.Point(146, 54);
+            this.numericUpDownRace11.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace11.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace11.Name = "numericUpDownRace11";
-            this.numericUpDownRace11.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace11.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace11.TabIndex = 11;
             this.numericUpDownRace11.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace8
             // 
-            this.numericUpDownRace8.Location = new System.Drawing.Point(48, 331);
+            this.numericUpDownRace8.Location = new System.Drawing.Point(37, 248);
+            this.numericUpDownRace8.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace8.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace8.Name = "numericUpDownRace8";
-            this.numericUpDownRace8.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace8.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace8.TabIndex = 8;
             this.numericUpDownRace8.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace10
             // 
-            this.numericUpDownRace10.Location = new System.Drawing.Point(188, 35);
+            this.numericUpDownRace10.Location = new System.Drawing.Point(146, 26);
+            this.numericUpDownRace10.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace10.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace10.Name = "numericUpDownRace10";
-            this.numericUpDownRace10.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace10.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace10.TabIndex = 10;
             this.numericUpDownRace10.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
             // numericUpDownRace9
             // 
-            this.numericUpDownRace9.Location = new System.Drawing.Point(48, 368);
+            this.numericUpDownRace9.Location = new System.Drawing.Point(37, 276);
+            this.numericUpDownRace9.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRace9.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownRace9.Name = "numericUpDownRace9";
-            this.numericUpDownRace9.Size = new System.Drawing.Size(84, 26);
+            this.numericUpDownRace9.Size = new System.Drawing.Size(65, 23);
             this.numericUpDownRace9.TabIndex = 9;
             this.numericUpDownRace9.Click += new System.EventHandler(this.numericUpDownRace0_Click);
             // 
@@ -4964,9 +5316,11 @@ namespace VMSEditor
             this.groupBox5.Controls.Add(this.pictureBox25);
             this.groupBox5.Controls.Add(this.pictureBox23);
             this.groupBox5.Controls.Add(this.pictureBox24);
-            this.groupBox5.Location = new System.Drawing.Point(312, 8);
+            this.groupBox5.Location = new System.Drawing.Point(243, 6);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(188, 249);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Size = new System.Drawing.Size(146, 187);
             this.groupBox5.TabIndex = 43;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Jewels";
@@ -4975,9 +5329,10 @@ namespace VMSEditor
             // 
             this.pictureBox26.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox26.Image = global::VMSEditor.Properties.Resources.eme;
-            this.pictureBox26.Location = new System.Drawing.Point(16, 200);
+            this.pictureBox26.Location = new System.Drawing.Point(12, 150);
+            this.pictureBox26.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox26.Name = "pictureBox26";
-            this.pictureBox26.Size = new System.Drawing.Size(34, 35);
+            this.pictureBox26.Size = new System.Drawing.Size(27, 27);
             this.pictureBox26.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox26.TabIndex = 44;
             this.pictureBox26.TabStop = false;
@@ -4986,9 +5341,10 @@ namespace VMSEditor
             // 
             this.pictureBox22.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox22.Image = global::VMSEditor.Properties.Resources.pal;
-            this.pictureBox22.Location = new System.Drawing.Point(16, 28);
+            this.pictureBox22.Location = new System.Drawing.Point(12, 21);
+            this.pictureBox22.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox22.Name = "pictureBox22";
-            this.pictureBox22.Size = new System.Drawing.Size(34, 35);
+            this.pictureBox22.Size = new System.Drawing.Size(27, 27);
             this.pictureBox22.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox22.TabIndex = 40;
             this.pictureBox22.TabStop = false;
@@ -4996,9 +5352,10 @@ namespace VMSEditor
             // checkBoxPearl
             // 
             this.checkBoxPearl.AutoSize = true;
-            this.checkBoxPearl.Location = new System.Drawing.Point(64, 34);
+            this.checkBoxPearl.Location = new System.Drawing.Point(50, 26);
+            this.checkBoxPearl.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxPearl.Name = "checkBoxPearl";
-            this.checkBoxPearl.Size = new System.Drawing.Size(71, 24);
+            this.checkBoxPearl.Size = new System.Drawing.Size(52, 19);
             this.checkBoxPearl.TabIndex = 35;
             this.checkBoxPearl.Text = "Pearl";
             this.checkBoxPearl.UseVisualStyleBackColor = true;
@@ -5007,9 +5364,10 @@ namespace VMSEditor
             // checkBoxEmerald
             // 
             this.checkBoxEmerald.AutoSize = true;
-            this.checkBoxEmerald.Location = new System.Drawing.Point(64, 206);
+            this.checkBoxEmerald.Location = new System.Drawing.Point(50, 154);
+            this.checkBoxEmerald.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxEmerald.Name = "checkBoxEmerald";
-            this.checkBoxEmerald.Size = new System.Drawing.Size(94, 24);
+            this.checkBoxEmerald.Size = new System.Drawing.Size(69, 19);
             this.checkBoxEmerald.TabIndex = 39;
             this.checkBoxEmerald.Text = "Emerald";
             this.checkBoxEmerald.UseVisualStyleBackColor = true;
@@ -5018,9 +5376,10 @@ namespace VMSEditor
             // checkBoxRuby
             // 
             this.checkBoxRuby.AutoSize = true;
-            this.checkBoxRuby.Location = new System.Drawing.Point(64, 163);
+            this.checkBoxRuby.Location = new System.Drawing.Point(50, 122);
+            this.checkBoxRuby.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxRuby.Name = "checkBoxRuby";
-            this.checkBoxRuby.Size = new System.Drawing.Size(72, 24);
+            this.checkBoxRuby.Size = new System.Drawing.Size(53, 19);
             this.checkBoxRuby.TabIndex = 38;
             this.checkBoxRuby.Text = "Ruby";
             this.checkBoxRuby.UseVisualStyleBackColor = true;
@@ -5029,9 +5388,10 @@ namespace VMSEditor
             // checkBoxSapphire
             // 
             this.checkBoxSapphire.AutoSize = true;
-            this.checkBoxSapphire.Location = new System.Drawing.Point(64, 120);
+            this.checkBoxSapphire.Location = new System.Drawing.Point(50, 90);
+            this.checkBoxSapphire.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxSapphire.Name = "checkBoxSapphire";
-            this.checkBoxSapphire.Size = new System.Drawing.Size(99, 24);
+            this.checkBoxSapphire.Size = new System.Drawing.Size(72, 19);
             this.checkBoxSapphire.TabIndex = 37;
             this.checkBoxSapphire.Text = "Sapphire";
             this.checkBoxSapphire.UseVisualStyleBackColor = true;
@@ -5040,9 +5400,10 @@ namespace VMSEditor
             // checkBoxAmethyst
             // 
             this.checkBoxAmethyst.AutoSize = true;
-            this.checkBoxAmethyst.Location = new System.Drawing.Point(64, 77);
+            this.checkBoxAmethyst.Location = new System.Drawing.Point(50, 58);
+            this.checkBoxAmethyst.Margin = new System.Windows.Forms.Padding(2);
             this.checkBoxAmethyst.Name = "checkBoxAmethyst";
-            this.checkBoxAmethyst.Size = new System.Drawing.Size(102, 24);
+            this.checkBoxAmethyst.Size = new System.Drawing.Size(77, 19);
             this.checkBoxAmethyst.TabIndex = 36;
             this.checkBoxAmethyst.Text = "Amethyst";
             this.checkBoxAmethyst.UseVisualStyleBackColor = true;
@@ -5052,9 +5413,10 @@ namespace VMSEditor
             // 
             this.pictureBox25.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox25.Image = global::VMSEditor.Properties.Resources.rub;
-            this.pictureBox25.Location = new System.Drawing.Point(16, 157);
+            this.pictureBox25.Location = new System.Drawing.Point(12, 118);
+            this.pictureBox25.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox25.Name = "pictureBox25";
-            this.pictureBox25.Size = new System.Drawing.Size(34, 35);
+            this.pictureBox25.Size = new System.Drawing.Size(27, 27);
             this.pictureBox25.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox25.TabIndex = 43;
             this.pictureBox25.TabStop = false;
@@ -5063,9 +5425,10 @@ namespace VMSEditor
             // 
             this.pictureBox23.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox23.Image = global::VMSEditor.Properties.Resources.ame;
-            this.pictureBox23.Location = new System.Drawing.Point(16, 71);
+            this.pictureBox23.Location = new System.Drawing.Point(12, 53);
+            this.pictureBox23.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox23.Name = "pictureBox23";
-            this.pictureBox23.Size = new System.Drawing.Size(34, 35);
+            this.pictureBox23.Size = new System.Drawing.Size(27, 27);
             this.pictureBox23.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox23.TabIndex = 41;
             this.pictureBox23.TabStop = false;
@@ -5074,9 +5437,10 @@ namespace VMSEditor
             // 
             this.pictureBox24.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox24.Image = global::VMSEditor.Properties.Resources.saf;
-            this.pictureBox24.Location = new System.Drawing.Point(16, 114);
+            this.pictureBox24.Location = new System.Drawing.Point(12, 86);
+            this.pictureBox24.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox24.Name = "pictureBox24";
-            this.pictureBox24.Size = new System.Drawing.Size(34, 35);
+            this.pictureBox24.Size = new System.Drawing.Size(27, 27);
             this.pictureBox24.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox24.TabIndex = 42;
             this.pictureBox24.TabStop = false;
@@ -5084,7 +5448,6 @@ namespace VMSEditor
             // menuStrip1
             // 
             this.menuStrip1.BackColor = System.Drawing.Color.Transparent;
-            this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -5092,7 +5455,8 @@ namespace VMSEditor
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1162, 33);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(969, 24);
             this.menuStrip1.TabIndex = 19;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -5103,14 +5467,14 @@ namespace VMSEditor
             this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openAVMSFileToolStripMenuItem
             // 
             this.openAVMSFileToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.open;
             this.openAVMSFileToolStripMenuItem.Name = "openAVMSFileToolStripMenuItem";
-            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.openAVMSFileToolStripMenuItem.Text = "Open a VMS File...";
             this.openAVMSFileToolStripMenuItem.Click += new System.EventHandler(this.openAVMSFileToolStripMenuItem_Click);
             // 
@@ -5123,14 +5487,14 @@ namespace VMSEditor
             this.chaoUploadDataToolStripMenuItem});
             this.saveAsToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.saveAsToolStripMenuItem.Text = "Save as";
             // 
             // chaoDownloadDataToolStripMenuItem
             // 
             this.chaoDownloadDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.chaoDownload;
             this.chaoDownloadDataToolStripMenuItem.Name = "chaoDownloadDataToolStripMenuItem";
-            this.chaoDownloadDataToolStripMenuItem.Size = new System.Drawing.Size(296, 34);
+            this.chaoDownloadDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.chaoDownloadDataToolStripMenuItem.Text = "Chao Download Data...";
             this.chaoDownloadDataToolStripMenuItem.ToolTipText = "Chao that can be loaded from the transfer machine. Can contain a Chao and an Egg." +
     "";
@@ -5141,7 +5505,7 @@ namespace VMSEditor
             this.gardenFileToolStripMenuItem.Enabled = false;
             this.gardenFileToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.editorChao;
             this.gardenFileToolStripMenuItem.Name = "gardenFileToolStripMenuItem";
-            this.gardenFileToolStripMenuItem.Size = new System.Drawing.Size(296, 34);
+            this.gardenFileToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.gardenFileToolStripMenuItem.Text = "Garden Save...";
             this.gardenFileToolStripMenuItem.ToolTipText = "Regular SA1 garden save. Can contain up to 24 Chao.";
             this.gardenFileToolStripMenuItem.Visible = false;
@@ -5150,7 +5514,7 @@ namespace VMSEditor
             // 
             this.chaoAdventureDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.chaoAdv;
             this.chaoAdventureDataToolStripMenuItem.Name = "chaoAdventureDataToolStripMenuItem";
-            this.chaoAdventureDataToolStripMenuItem.Size = new System.Drawing.Size(296, 34);
+            this.chaoAdventureDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.chaoAdventureDataToolStripMenuItem.Text = "Chao Adventure Data...";
             this.chaoAdventureDataToolStripMenuItem.ToolTipText = "Chao Adventure with Chao data embedded. Can contain a Chao and an egg.";
             this.chaoAdventureDataToolStripMenuItem.Click += new System.EventHandler(this.chaoAdventureDataToolStripMenuItem_Click);
@@ -5160,7 +5524,7 @@ namespace VMSEditor
             this.chaoUploadDataToolStripMenuItem.Enabled = false;
             this.chaoUploadDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.chaoUpload;
             this.chaoUploadDataToolStripMenuItem.Name = "chaoUploadDataToolStripMenuItem";
-            this.chaoUploadDataToolStripMenuItem.Size = new System.Drawing.Size(296, 34);
+            this.chaoUploadDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.chaoUploadDataToolStripMenuItem.Text = "Chao Upload Data...";
             this.chaoUploadDataToolStripMenuItem.ToolTipText = "Chao data that can be uploaded using the browser. Can only contain one Chao.";
             this.chaoUploadDataToolStripMenuItem.Visible = false;
@@ -5168,7 +5532,7 @@ namespace VMSEditor
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -5178,7 +5542,7 @@ namespace VMSEditor
             this.generateAVMIFileToolStripMenuItem,
             this.japaneseHeaderToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // generateAVMIFileToolStripMenuItem
@@ -5187,7 +5551,7 @@ namespace VMSEditor
             this.generateAVMIFileToolStripMenuItem.CheckOnClick = true;
             this.generateAVMIFileToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.generateAVMIFileToolStripMenuItem.Name = "generateAVMIFileToolStripMenuItem";
-            this.generateAVMIFileToolStripMenuItem.Size = new System.Drawing.Size(289, 34);
+            this.generateAVMIFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.generateAVMIFileToolStripMenuItem.Text = "Generate a VMI File";
             this.generateAVMIFileToolStripMenuItem.ToolTipText = "Create a VMI file required by the Dreamcast browser and some emulators.";
             // 
@@ -5195,45 +5559,9 @@ namespace VMSEditor
             // 
             this.japaneseHeaderToolStripMenuItem.CheckOnClick = true;
             this.japaneseHeaderToolStripMenuItem.Name = "japaneseHeaderToolStripMenuItem";
-            this.japaneseHeaderToolStripMenuItem.Size = new System.Drawing.Size(289, 34);
+            this.japaneseHeaderToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.japaneseHeaderToolStripMenuItem.Text = "Use Japanese Headers";
             this.japaneseHeaderToolStripMenuItem.ToolTipText = "Make output files compatible with the original Japanese version of SA1.";
-            // 
-            // statusStrip
-            // 
-            this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabelFilename,
-            this.toolStripStatusLabelHint});
-            this.statusStrip.Location = new System.Drawing.Point(0, 543);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1162, 32);
-            this.statusStrip.SizingGrip = false;
-            this.statusStrip.TabIndex = 20;
-            // 
-            // toolStripStatusLabelFilename
-            // 
-            this.toolStripStatusLabelFilename.Name = "toolStripStatusLabelFilename";
-            this.toolStripStatusLabelFilename.Size = new System.Drawing.Size(124, 25);
-            this.toolStripStatusLabelFilename.Text = "No file loaded";
-            // 
-            // toolStripStatusLabelHint
-            // 
-            this.toolStripStatusLabelHint.Name = "toolStripStatusLabelHint";
-            this.toolStripStatusLabelHint.Size = new System.Drawing.Size(285, 25);
-            this.toolStripStatusLabelHint.Text = "Click an item to see its description.";
-            // 
-            // listBoxDataSlots
-            // 
-            this.listBoxDataSlots.FormattingEnabled = true;
-            this.listBoxDataSlots.ItemHeight = 20;
-            this.listBoxDataSlots.Location = new System.Drawing.Point(12, 35);
-            this.listBoxDataSlots.Name = "listBoxDataSlots";
-            this.listBoxDataSlots.Size = new System.Drawing.Size(322, 504);
-            this.listBoxDataSlots.TabIndex = 21;
-            this.listBoxDataSlots.Click += new System.EventHandler(this.listBoxDataSlots_Click);
-            this.listBoxDataSlots.SelectedIndexChanged += new System.EventHandler(this.listBoxDataSlots_SelectedIndexChanged);
             // 
             // helpToolStripMenuItem
             // 
@@ -5241,14 +5569,14 @@ namespace VMSEditor
             this.chaoEditorHelpToolStripMenuItem,
             this.reportABugToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(65, 29);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // chaoEditorHelpToolStripMenuItem
             // 
             this.chaoEditorHelpToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.help;
             this.chaoEditorHelpToolStripMenuItem.Name = "chaoEditorHelpToolStripMenuItem";
-            this.chaoEditorHelpToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.chaoEditorHelpToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.chaoEditorHelpToolStripMenuItem.Text = "Chao Editor Help";
             this.chaoEditorHelpToolStripMenuItem.Click += new System.EventHandler(this.chaoEditorHelpToolStripMenuItem_Click);
             // 
@@ -5256,21 +5584,60 @@ namespace VMSEditor
             // 
             this.reportABugToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.bug;
             this.reportABugToolStripMenuItem.Name = "reportABugToolStripMenuItem";
-            this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.reportABugToolStripMenuItem.Text = "Issue Tracker";
             this.reportABugToolStripMenuItem.Click += new System.EventHandler(this.reportABugToolStripMenuItem_Click);
             // 
+            // statusStrip
+            // 
+            this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabelFilename,
+            this.toolStripStatusLabelHint});
+            this.statusStrip.Location = new System.Drawing.Point(0, 407);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 11, 0);
+            this.statusStrip.Size = new System.Drawing.Size(969, 24);
+            this.statusStrip.SizingGrip = false;
+            this.statusStrip.TabIndex = 20;
+            // 
+            // toolStripStatusLabelFilename
+            // 
+            this.toolStripStatusLabelFilename.Name = "toolStripStatusLabelFilename";
+            this.toolStripStatusLabelFilename.Size = new System.Drawing.Size(81, 19);
+            this.toolStripStatusLabelFilename.Text = "No file loaded";
+            // 
+            // toolStripStatusLabelHint
+            // 
+            this.toolStripStatusLabelHint.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.toolStripStatusLabelHint.Name = "toolStripStatusLabelHint";
+            this.toolStripStatusLabelHint.Size = new System.Drawing.Size(194, 19);
+            this.toolStripStatusLabelHint.Text = "Click an item to see its description.";
+            // 
+            // listBoxDataSlots
+            // 
+            this.listBoxDataSlots.FormattingEnabled = true;
+            this.listBoxDataSlots.ItemHeight = 15;
+            this.listBoxDataSlots.Location = new System.Drawing.Point(9, 26);
+            this.listBoxDataSlots.Margin = new System.Windows.Forms.Padding(2);
+            this.listBoxDataSlots.Name = "listBoxDataSlots";
+            this.listBoxDataSlots.Size = new System.Drawing.Size(251, 379);
+            this.listBoxDataSlots.TabIndex = 21;
+            this.listBoxDataSlots.Click += new System.EventHandler(this.listBoxDataSlots_Click);
+            this.listBoxDataSlots.SelectedIndexChanged += new System.EventHandler(this.listBoxDataSlots_SelectedIndexChanged);
+            // 
             // EditorChao
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1162, 575);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(969, 431);
             this.Controls.Add(this.listBoxDataSlots);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "EditorChao";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sonic Adventure Chao Editor";
@@ -5303,8 +5670,8 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownZ)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.groupBoxMain.ResumeLayout(false);
+            this.groupBoxMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownID)).EndInit();
             this.tabPageAppearance.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
@@ -5315,8 +5682,8 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKindness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAggressive)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCurious)).EndInit();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
+            this.groupBoxColorData.ResumeLayout(false);
+            this.groupBoxColorData.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ColorFlags)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
@@ -5435,44 +5802,44 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesPage)).EndInit();
             this.groupBoxMemories_7.ResumeLayout(false);
             this.groupBoxMemories_7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_7)).EndInit();
             this.groupBoxMemories_6.ResumeLayout(false);
             this.groupBoxMemories_6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_6)).EndInit();
             this.groupBoxMemories_5.ResumeLayout(false);
             this.groupBoxMemories_5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_5)).EndInit();
             this.groupBoxMemories_4.ResumeLayout(false);
             this.groupBoxMemories_4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_4)).EndInit();
             this.groupBoxMemories_3.ResumeLayout(false);
             this.groupBoxMemories_3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_3)).EndInit();
             this.groupBoxMemories_2.ResumeLayout(false);
             this.groupBoxMemories_2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_2)).EndInit();
             this.groupBoxMemories_1.ResumeLayout(false);
             this.groupBoxMemories_1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_1)).EndInit();
             this.groupBoxMemories_0.ResumeLayout(false);
             this.groupBoxMemories_0.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesMeet_0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesLike_0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMemoriesID_0)).EndInit();
             this.tabPageRace.ResumeLayout(false);
             this.groupBox16.ResumeLayout(false);
             this.groupBox16.PerformLayout();
@@ -5523,7 +5890,7 @@ namespace VMSEditor
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.TabPage tabPageGeneral;
-		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.GroupBox groupBoxMain;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TabPage tabPageAppearance;
 		private System.Windows.Forms.TabPage tabPagePersonality;
@@ -5554,7 +5921,7 @@ namespace VMSEditor
 		private System.Windows.Forms.Label label26;
 		private System.Windows.Forms.Label label25;
 		private System.Windows.Forms.Label label24;
-		private System.Windows.Forms.GroupBox groupBox10;
+		private System.Windows.Forms.GroupBox groupBoxColorData;
 		private System.Windows.Forms.ComboBox comboBoxJewelColor;
 		private System.Windows.Forms.TabPage tabPageStats;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -5657,7 +6024,7 @@ namespace VMSEditor
 		private System.Windows.Forms.GroupBox groupBox7;
 		private System.Windows.Forms.Label label71;
 		private System.Windows.Forms.Label label70;
-        internal SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownID;
+		private System.Windows.Forms.NumericUpDown numericUpDownID;
 		private System.Windows.Forms.Label label69;
 		private System.Windows.Forms.Label label68;
 		private System.Windows.Forms.Label label72;
@@ -5706,7 +6073,7 @@ namespace VMSEditor
 		private System.Windows.Forms.NumericUpDown numericUpDownKindness;
 		private System.Windows.Forms.NumericUpDown numericUpDownAggressive;
 		private System.Windows.Forms.NumericUpDown numericUpDownCurious;
-		internal SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDown_ColorFlags;
+		private System.Windows.Forms.NumericUpDown numericUpDown_ColorFlags;
 		private System.Windows.Forms.ToolStripMenuItem openAVMSFileToolStripMenuItem;
 		private System.Windows.Forms.NumericUpDown numericUpDownExists;
 		private System.Windows.Forms.Label label14;
@@ -5786,14 +6153,14 @@ namespace VMSEditor
 		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesMeet_0;
 		private System.Windows.Forms.Label label64;
 		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesLike_0;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_7;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_6;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_5;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_4;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_3;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_2;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_1;
-		private SAModel.SAEditorCommon.UI.HexNumericUpdown numericUpDownMemoriesID_0;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_7;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_6;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_5;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_4;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_3;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_2;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_1;
+		private System.Windows.Forms.NumericUpDown numericUpDownMemoriesID_0;
 		private System.Windows.Forms.CheckBox checkBoxColorFlag0x20;
 		private System.Windows.Forms.CheckBox checkBoxColorFlagGold;
 		private System.Windows.Forms.CheckBox checkBoxColorFlag0x10;
