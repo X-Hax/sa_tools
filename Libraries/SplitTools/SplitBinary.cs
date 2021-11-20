@@ -265,8 +265,11 @@ namespace SplitTools.Split
                                 mdlformat = modelfmt_def;
                                 break;
                         }
+						bool rev = ByteConverter.Reverse;
                         if (data.CustomProperties.ContainsKey("format"))
                             mdlformat = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
+						if (data.CustomProperties.ContainsKey("reverse"))
+							ByteConverter.Reverse = true;
                         NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>());
                         string[] mdlanis = new string[0];
                         if (customProperties.ContainsKey("animations"))
@@ -275,6 +278,8 @@ namespace SplitTools.Split
                         if (customProperties.ContainsKey("morphs"))
                             mdlmorphs = customProperties["morphs"].Split(',');
                         ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, itemName, null, mdlformat, nometa);
+						if (data.CustomProperties.ContainsKey("reverse")) 
+							ByteConverter.Reverse = rev;
                     }
                     break;
                 case "morph":
