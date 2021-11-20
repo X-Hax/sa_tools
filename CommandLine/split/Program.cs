@@ -45,7 +45,8 @@ namespace Split
 				if (args[u] == "-nolabel") nolabel = true;
 			}
 			mode = args[0];
-            switch (mode.ToLowerInvariant())
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			switch (mode.ToLowerInvariant())
             {
                 case "binary":
                     string fullpath_bin = Path.GetFullPath(args[1]);

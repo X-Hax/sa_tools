@@ -11,6 +11,9 @@
 		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
