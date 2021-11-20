@@ -53,14 +53,14 @@ namespace buildSATools
                 // Skip platform-specific runtimes in the runtimes folder
                 if (fn.Contains("runtimes"))
                     continue;
-                Console.WriteLine("Moving: {0}", dllfile.FullName);
+                Console.WriteLine("\tMoving: {0}", dllfile.FullName);
                 File.Move(dllfile.FullName, Path.Combine(Environment.CurrentDirectory, "build", "lib", dllfile.Name), true);
             }
             Console.WriteLine("Moving all JSON files to the lib folder");
             FileInfo[] jsonfiles = d.GetFiles("*.json", SearchOption.AllDirectories);
             foreach (FileInfo jsonfile in jsonfiles)
             {
-                Console.WriteLine("Moving: {0}", jsonfile.FullName);
+                Console.WriteLine("\tMoving: {0}", jsonfile.FullName);
                 File.Move(jsonfile.FullName, Path.Combine(Environment.CurrentDirectory, "build", "lib", jsonfile.Name), true);
             }
             Console.WriteLine("Copying lib folder to bin and tools");
@@ -198,19 +198,19 @@ namespace buildSATools
         // Patches an EXE file to load the assembly from the "lib" folder
         private static int PatchExe(string apphostExe, string libDirPath)
         {
-            Console.WriteLine("Patching {0} to use {1}", Path.GetFileName(apphostExe), libDirPath);
+			Console.WriteLine("\tPatching {0} to use {1}", apphostExe, libDirPath);
             try
             {
                 string origPath = Path.GetFileName(ChangeExecutableExtension(apphostExe));
                 string newPath = libDirPath + GetPathSeparator(apphostExe) + origPath;
                 if (!File.Exists(apphostExe))
                 {
-                    Console.WriteLine($"Apphost '{apphostExe}' does not exist");
+                    Console.WriteLine($"\t\tApphost '{apphostExe}' does not exist");
                     return 1;
                 }
                 if (origPath == string.Empty)
                 {
-                    Console.WriteLine("Original path is empty");
+                    Console.WriteLine("\t\tOriginal path is empty");
                     return 1;
                 }
                 var origPathBytes = Encoding.UTF8.GetBytes(origPath + "\0");
@@ -218,19 +218,19 @@ namespace buildSATools
                 var newPathBytes = Encoding.UTF8.GetBytes(newPath + "\0");
                 if (origPathBytes.Length > maxPathBytes)
                 {
-                    Console.WriteLine($"Original path is too long");
+                    Console.WriteLine($"\t\tOriginal path is too long");
                     return 1;
                 }
                 if (newPathBytes.Length > maxPathBytes)
                 {
-                    Console.WriteLine($"New path is too long");
+                    Console.WriteLine($"\t\tNew path is too long");
                     return 1;
                 }
                 var apphostExeBytes = File.ReadAllBytes(apphostExe);
                 int offset = GetOffset(apphostExeBytes, origPathBytes);
                 if (offset < 0)
                 {
-                    Console.WriteLine($"Could not find original path '{origPath}'");
+                    Console.WriteLine($"\t\tCould not find original path '{origPath}'");
                     return 1;
                 }
 
@@ -238,13 +238,13 @@ namespace buildSATools
                 string originalName = System.Text.Encoding.UTF8.GetString(apphostExeBytes, 0, apphostExeBytes.Length);
                 if (originalName.Contains("lib\\"))
                 {
-                    Console.WriteLine("File is already patched");
+                    Console.WriteLine("\t\tFile is already patched");
                     return 1;
                 }
 
                 if (offset + newPathBytes.Length > apphostExeBytes.Length)
                 {
-                    Console.WriteLine($"New path is too long: {newPath}");
+                    Console.WriteLine($"\t\tNew path is too long: {newPath}");
                     return 1;
                 }
                 for (int i = 0; i < newPathBytes.Length; i++)
