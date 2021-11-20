@@ -6,7 +6,6 @@
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<OutputPath>..\..\build\tools\</OutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>iconVMSEditor.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
