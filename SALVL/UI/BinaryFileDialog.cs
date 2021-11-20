@@ -51,5 +51,18 @@ namespace SAModel.SALVL
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/Working-with-Binary-Files") { CreateNoWindow = true });
         }
-    }
+
+		private void NumericAddress_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericAddress.Value < 0)
+				numericAddress.Value = unchecked((uint)int.Parse(numericAddress.Value.ToString()));
+		}
+
+		private void NumericKey_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericKey.Value < 0)
+				numericKey.Value = unchecked((uint)int.Parse(numericKey.Value.ToString()));
+		}
+
+	}
 }

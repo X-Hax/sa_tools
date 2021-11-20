@@ -42,6 +42,24 @@ namespace SAModel.SAMDL
 			NumericUpDown_ObjectAddress.Hexadecimal = CheckBox_Hex_Object.Checked;
 		}
 
+		private void NumericUpDown_ObjectAddress_ValueChanged(object sender, EventArgs e)
+		{
+			if (NumericUpDown_ObjectAddress.Value < 0)
+				NumericUpDown_ObjectAddress.Value = unchecked((uint)int.Parse(NumericUpDown_ObjectAddress.Value.ToString()));
+		}
+
+		private void NumericUpDown_MotionAddress_ValueChanged(object sender, EventArgs e)
+		{
+			if (NumericUpDown_MotionAddress.Value < 0)
+				NumericUpDown_MotionAddress.Value = unchecked((uint)int.Parse(NumericUpDown_MotionAddress.Value.ToString()));
+		}
+
+		private void NumericUpDown_Key_ValueChanged(object sender, EventArgs e)
+		{
+			if (NumericUpDown_Key.Value < 0)
+				NumericUpDown_Key.Value = unchecked((uint)int.Parse(NumericUpDown_Key.Value.ToString()));
+		}
+
 		private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			NumericUpDown_Key.Value = ModelFileTypes[ComboBox_FileType.SelectedIndex].key;

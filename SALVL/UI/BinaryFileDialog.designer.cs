@@ -43,8 +43,8 @@ namespace SAModel.SALVL
             this.comboLevelFormat = new System.Windows.Forms.ComboBox();
             this.labelFormat = new System.Windows.Forms.Label();
             this.checkBoxBigEndian = new System.Windows.Forms.CheckBox();
-            this.numericKey = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericKey = new System.Windows.Forms.NumericUpDown();
+            this.numericAddress = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.numericKey)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericAddress)).BeginInit();
             this.SuspendLayout();
@@ -142,23 +142,29 @@ namespace SAModel.SALVL
             // 
             // numericKey
             // 
-            this.numericKey.Hexadecimal = true;
             this.numericKey.Location = new System.Drawing.Point(66, 11);
             this.numericKey.Name = "numericKey";
             this.numericKey.Size = new System.Drawing.Size(98, 20);
             this.numericKey.TabIndex = 15;
-            // 
-            // numericAddress
-            // 
-            this.numericAddress.Hexadecimal = true;
+			this.numericKey.Maximum = 4294967295;
+			this.numericKey.Minimum = -4294967295;
+			this.numericKey.Hexadecimal = true;
+			this.numericKey.ValueChanged += NumericKey_ValueChanged;
+			// 
+			// numericAddress
+			// 
             this.numericAddress.Location = new System.Drawing.Point(66, 37);
             this.numericAddress.Name = "numericAddress";
             this.numericAddress.Size = new System.Drawing.Size(98, 20);
             this.numericAddress.TabIndex = 3;
-            // 
-            // BinaryFileDialog
-            // 
-            this.AcceptButton = this.buttonOK;
+			this.numericAddress.Maximum = 4294967295;
+			this.numericAddress.Minimum = -4294967295;
+			this.numericAddress.Hexadecimal = true;
+			this.numericAddress.ValueChanged += NumericAddress_ValueChanged;
+			// 
+			// BinaryFileDialog
+			// 
+			this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(304, 91);
@@ -194,10 +200,10 @@ namespace SAModel.SALVL
         internal ComboBox comboFileKeyHint;
         internal Label labelAddress;
         internal CheckBox checkboxHex;
-        internal SAEditorCommon.UI.HexNumericUpdown numericKey;
+        internal System.Windows.Forms.NumericUpDown numericKey;
         internal ComboBox comboLevelFormat;
         internal Label labelFormat;
 		internal CheckBox checkBoxBigEndian;
-		internal SAEditorCommon.UI.HexNumericUpdown numericAddress;
+		internal System.Windows.Forms.NumericUpDown numericAddress;
 	}
 }

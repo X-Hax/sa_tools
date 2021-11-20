@@ -343,6 +343,25 @@ namespace SAModel.DataToolbox
 				}
 			}
 		}
+
+		private void NumericUpDownBinaryKey_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownBinaryKey.Value < 0)
+				numericUpDownBinaryKey.Value = unchecked((uint)int.Parse(numericUpDownBinaryKey.Value.ToString()));
+		}
+
+		private void NumericUpDownBinaryAddress_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownBinaryAddress.Value < 0)
+				numericUpDownBinaryAddress.Value = unchecked((uint)int.Parse(numericUpDownBinaryAddress.Value.ToString()));
+		}
+
+		private void NumericUpDownBinaryOffset_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownBinaryOffset.Value < 0)
+				numericUpDownBinaryOffset.Value = unchecked((uint)int.Parse(numericUpDownBinaryOffset.Value.ToString()));
+		}
+
 		#endregion
 
 		#region Struct Converter Tab

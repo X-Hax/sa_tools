@@ -1244,20 +1244,18 @@ namespace VMSEditor
             // 
             // numericUpDownID
             // 
-            this.numericUpDownID.Hexadecimal = true;
             this.numericUpDownID.Location = new System.Drawing.Point(68, 74);
-            this.numericUpDownID.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownID.Name = "numericUpDownID";
             this.numericUpDownID.Size = new System.Drawing.Size(102, 23);
             this.numericUpDownID.TabIndex = 57;
-            // 
-            // tabPageAppearance
-            // 
-            this.tabPageAppearance.BackColor = System.Drawing.SystemColors.Control;
+			this.numericUpDownID.Maximum = 4294967295;
+			this.numericUpDownID.Minimum = -4294967295;
+			this.numericUpDownID.Hexadecimal = true;
+			this.numericUpDownID.ValueChanged += NumericUpDownID_ValueChanged;
+			// 
+			// tabPageAppearance
+			// 
+			this.tabPageAppearance.BackColor = System.Drawing.SystemColors.Control;
             this.tabPageAppearance.Controls.Add(this.groupBox9);
             this.tabPageAppearance.Controls.Add(this.groupBoxColorData);
             this.tabPageAppearance.Controls.Add(this.groupBox8);
@@ -1563,20 +1561,18 @@ namespace VMSEditor
             // 
             // numericUpDown_ColorFlags
             // 
-            this.numericUpDown_ColorFlags.Hexadecimal = true;
             this.numericUpDown_ColorFlags.Location = new System.Drawing.Point(48, 109);
-            this.numericUpDown_ColorFlags.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDown_ColorFlags.Name = "numericUpDown_ColorFlags";
             this.numericUpDown_ColorFlags.Size = new System.Drawing.Size(72, 23);
             this.numericUpDown_ColorFlags.TabIndex = 82;
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Controls.Add(this.pictureBoxTail);
+			this.numericUpDown_ColorFlags.Maximum = 65535;
+			this.numericUpDown_ColorFlags.Minimum = -4294967295;
+			this.numericUpDown_ColorFlags.Hexadecimal = true;
+			this.numericUpDown_ColorFlags.ValueChanged += NumericUpDown_ColorFlags_ValueChanged;
+			// 
+			// groupBox8
+			// 
+			this.groupBox8.Controls.Add(this.pictureBoxTail);
             this.groupBox8.Controls.Add(this.pictureBoxFeet);
             this.groupBox8.Controls.Add(this.pictureBoxArms);
             this.groupBox8.Controls.Add(this.pictureBoxWings);
@@ -4078,8 +4074,8 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_7.Name = "numericUpDownMemoriesMeet_7";
             this.numericUpDownMemoriesMeet_7.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_7.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
-            this.numericUpDownMemoriesMeet_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
+			this.numericUpDownMemoriesMeet_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
+			this.numericUpDownMemoriesMeet_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label96
             // 
@@ -4103,25 +4099,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_7.Name = "numericUpDownMemoriesLike_7";
             this.numericUpDownMemoriesLike_7.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_7.TabIndex = 3;
-            this.numericUpDownMemoriesLike_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_7.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_7.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_7
             // 
-            this.numericUpDownMemoriesID_7.Hexadecimal = true;
             this.numericUpDownMemoriesID_7.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_7.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownMemoriesID_7.Name = "numericUpDownMemoriesID_7";
             this.numericUpDownMemoriesID_7.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_7.TabIndex = 7;
-            // 
-            // groupBoxMemories_6
-            // 
-            this.groupBoxMemories_6.Controls.Add(this.label91);
+			this.numericUpDownMemoriesID_7.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_7.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_7.Hexadecimal = true;
+			this.numericUpDownMemoriesID_7.ValueChanged += numericUpDownMemoriesID_7_ValueChanged;
+			// 
+			// groupBoxMemories_6
+			// 
+			this.groupBoxMemories_6.Controls.Add(this.label91);
             this.groupBoxMemories_6.Controls.Add(this.label92);
             this.groupBoxMemories_6.Controls.Add(this.numericUpDownMemoriesMeet_6);
             this.groupBoxMemories_6.Controls.Add(this.label93);
@@ -4168,7 +4162,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_6.Name = "numericUpDownMemoriesMeet_6";
             this.numericUpDownMemoriesMeet_6.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_6.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label93
@@ -4193,25 +4187,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_6.Name = "numericUpDownMemoriesLike_6";
             this.numericUpDownMemoriesLike_6.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_6.TabIndex = 3;
-            this.numericUpDownMemoriesLike_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_6.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_6.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_6
             // 
-            this.numericUpDownMemoriesID_6.Hexadecimal = true;
             this.numericUpDownMemoriesID_6.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_6.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
+			this.numericUpDownMemoriesID_6.Name = "numericUpDownMemoriesID_6";
             this.numericUpDownMemoriesID_6.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_6.TabIndex = 7;
-            // 
-            // groupBoxMemories_5
-            // 
-            this.groupBoxMemories_5.Controls.Add(this.label88);
+			this.numericUpDownMemoriesID_6.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_6.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_6.Hexadecimal = true;
+			this.numericUpDownMemoriesID_6.ValueChanged += numericUpDownMemoriesID_6_ValueChanged;
+			// 
+			// groupBoxMemories_5
+			// 
+			this.groupBoxMemories_5.Controls.Add(this.label88);
             this.groupBoxMemories_5.Controls.Add(this.label89);
             this.groupBoxMemories_5.Controls.Add(this.numericUpDownMemoriesMeet_5);
             this.groupBoxMemories_5.Controls.Add(this.label90);
@@ -4258,7 +4250,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_5.Name = "numericUpDownMemoriesMeet_5";
             this.numericUpDownMemoriesMeet_5.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_5.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label90
@@ -4283,25 +4275,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_5.Name = "numericUpDownMemoriesLike_5";
             this.numericUpDownMemoriesLike_5.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_5.TabIndex = 3;
-            this.numericUpDownMemoriesLike_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_5.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_5.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_5
             // 
-            this.numericUpDownMemoriesID_5.Hexadecimal = true;
             this.numericUpDownMemoriesID_5.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_5.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownMemoriesID_5.Name = "numericUpDownMemoriesID_5";
             this.numericUpDownMemoriesID_5.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_5.TabIndex = 7;
-            // 
-            // groupBoxMemories_4
-            // 
-            this.groupBoxMemories_4.Controls.Add(this.label85);
+			this.numericUpDownMemoriesID_5.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_5.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_5.Hexadecimal = true;
+			this.numericUpDownMemoriesID_5.ValueChanged += numericUpDownMemoriesID_5_ValueChanged;
+			// 
+			// groupBoxMemories_4
+			// 
+			this.groupBoxMemories_4.Controls.Add(this.label85);
             this.groupBoxMemories_4.Controls.Add(this.label86);
             this.groupBoxMemories_4.Controls.Add(this.numericUpDownMemoriesMeet_4);
             this.groupBoxMemories_4.Controls.Add(this.label87);
@@ -4348,7 +4338,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_4.Name = "numericUpDownMemoriesMeet_4";
             this.numericUpDownMemoriesMeet_4.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_4.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label87
@@ -4373,19 +4363,17 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_4.Name = "numericUpDownMemoriesLike_4";
             this.numericUpDownMemoriesLike_4.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_4.TabIndex = 3;
-            this.numericUpDownMemoriesLike_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_4.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_4.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_4
             // 
-            this.numericUpDownMemoriesID_4.Hexadecimal = true;
             this.numericUpDownMemoriesID_4.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_4.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
+			this.numericUpDownMemoriesID_4.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_4.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_4.Hexadecimal = true;
+			this.numericUpDownMemoriesID_4.ValueChanged += numericUpDownMemoriesID_4_ValueChanged;
+			this.numericUpDownMemoriesID_4.Name = "numericUpDownMemoriesID_4";
             this.numericUpDownMemoriesID_4.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_4.TabIndex = 7;
             // 
@@ -4438,7 +4426,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_3.Name = "numericUpDownMemoriesMeet_3";
             this.numericUpDownMemoriesMeet_3.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_3.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label84
@@ -4463,25 +4451,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_3.Name = "numericUpDownMemoriesLike_3";
             this.numericUpDownMemoriesLike_3.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_3.TabIndex = 3;
-            this.numericUpDownMemoriesLike_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_3.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_3.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_3
             // 
-            this.numericUpDownMemoriesID_3.Hexadecimal = true;
             this.numericUpDownMemoriesID_3.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_3.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownMemoriesID_3.Name = "numericUpDownMemoriesID_3";
             this.numericUpDownMemoriesID_3.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_3.TabIndex = 7;
-            // 
-            // groupBoxMemories_2
-            // 
-            this.groupBoxMemories_2.Controls.Add(this.label79);
+			this.numericUpDownMemoriesID_3.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_3.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_3.Hexadecimal = true;
+			this.numericUpDownMemoriesID_3.ValueChanged += numericUpDownMemoriesID_3_ValueChanged;
+			// 
+			// groupBoxMemories_2
+			// 
+			this.groupBoxMemories_2.Controls.Add(this.label79);
             this.groupBoxMemories_2.Controls.Add(this.label80);
             this.groupBoxMemories_2.Controls.Add(this.numericUpDownMemoriesMeet_2);
             this.groupBoxMemories_2.Controls.Add(this.label81);
@@ -4528,7 +4514,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_2.Name = "numericUpDownMemoriesMeet_2";
             this.numericUpDownMemoriesMeet_2.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_2.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label81
@@ -4553,25 +4539,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_2.Name = "numericUpDownMemoriesLike_2";
             this.numericUpDownMemoriesLike_2.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_2.TabIndex = 3;
-            this.numericUpDownMemoriesLike_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_2.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_2.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_2
             // 
-            this.numericUpDownMemoriesID_2.Hexadecimal = true;
             this.numericUpDownMemoriesID_2.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_2.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownMemoriesID_2.Name = "numericUpDownMemoriesID_2";
             this.numericUpDownMemoriesID_2.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_2.TabIndex = 7;
-            // 
-            // groupBoxMemories_1
-            // 
-            this.groupBoxMemories_1.Controls.Add(this.label76);
+			this.numericUpDownMemoriesID_2.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_2.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_2.Hexadecimal = true;
+			this.numericUpDownMemoriesID_2.ValueChanged += numericUpDownMemoriesID_2_ValueChanged;
+			// 
+			// groupBoxMemories_1
+			// 
+			this.groupBoxMemories_1.Controls.Add(this.label76);
             this.groupBoxMemories_1.Controls.Add(this.label77);
             this.groupBoxMemories_1.Controls.Add(this.numericUpDownMemoriesMeet_1);
             this.groupBoxMemories_1.Controls.Add(this.label78);
@@ -4618,7 +4602,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_1.Name = "numericUpDownMemoriesMeet_1";
             this.numericUpDownMemoriesMeet_1.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_1.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label78
@@ -4643,25 +4627,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_1.Name = "numericUpDownMemoriesLike_1";
             this.numericUpDownMemoriesLike_1.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_1.TabIndex = 3;
-            this.numericUpDownMemoriesLike_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_1.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_1.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_1
             // 
-            this.numericUpDownMemoriesID_1.Hexadecimal = true;
             this.numericUpDownMemoriesID_1.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_1.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownMemoriesID_1.Name = "numericUpDownMemoriesID_1";
             this.numericUpDownMemoriesID_1.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_1.TabIndex = 7;
-            // 
-            // groupBoxMemories_0
-            // 
-            this.groupBoxMemories_0.Controls.Add(this.label66);
+			this.numericUpDownMemoriesID_1.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_1.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_1.Hexadecimal = true;
+			this.numericUpDownMemoriesID_1.ValueChanged += numericUpDownMemoriesID_1_ValueChanged;
+			// 
+			// groupBoxMemories_0
+			// 
+			this.groupBoxMemories_0.Controls.Add(this.label66);
             this.groupBoxMemories_0.Controls.Add(this.label65);
             this.groupBoxMemories_0.Controls.Add(this.numericUpDownMemoriesMeet_0);
             this.groupBoxMemories_0.Controls.Add(this.label64);
@@ -4708,7 +4690,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesMeet_0.Name = "numericUpDownMemoriesMeet_0";
             this.numericUpDownMemoriesMeet_0.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesMeet_0.TabIndex = 2;
-            this.numericUpDownMemoriesMeet_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesMeet_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesMeet_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // label64
@@ -4733,25 +4715,23 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_0.Name = "numericUpDownMemoriesLike_0";
             this.numericUpDownMemoriesLike_0.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesLike_0.TabIndex = 3;
-            this.numericUpDownMemoriesLike_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesID_0_ValueChanged);
+            this.numericUpDownMemoriesLike_0.ValueChanged += new System.EventHandler(this.numericUpDownMemoriesMeet_ValueChanged);
             this.numericUpDownMemoriesLike_0.Click += new System.EventHandler(this.numericUpDownMemoriesID_0_Click);
             // 
             // numericUpDownMemoriesID_0
             // 
-            this.numericUpDownMemoriesID_0.Hexadecimal = true;
             this.numericUpDownMemoriesID_0.Location = new System.Drawing.Point(49, 22);
-            this.numericUpDownMemoriesID_0.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
             this.numericUpDownMemoriesID_0.Name = "numericUpDownMemoriesID_0";
             this.numericUpDownMemoriesID_0.Size = new System.Drawing.Size(84, 23);
             this.numericUpDownMemoriesID_0.TabIndex = 7;
-            // 
-            // tabPageRace
-            // 
-            this.tabPageRace.Controls.Add(this.groupBox16);
+			this.numericUpDownMemoriesID_0.Maximum = 4294967295;
+			this.numericUpDownMemoriesID_0.Minimum = -4294967295;
+			this.numericUpDownMemoriesID_0.Hexadecimal = true;
+			this.numericUpDownMemoriesID_0.ValueChanged += numericUpDownMemoriesID_0_ValueChanged;
+			// 
+			// tabPageRace
+			// 
+			this.tabPageRace.Controls.Add(this.groupBox16);
             this.tabPageRace.Controls.Add(this.groupBox17);
             this.tabPageRace.Controls.Add(this.groupBox5);
             this.tabPageRace.Location = new System.Drawing.Point(4, 24);

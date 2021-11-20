@@ -54,9 +54,9 @@ namespace SAModel.SAMDL
             this.CheckBox_Hex_Motion = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.RadioButton_Attach = new System.Windows.Forms.RadioButton();
-            this.NumericUpDown_Key = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.NumericUpDown_MotionAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.NumericUpDown_ObjectAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+			this.NumericUpDown_Key = new System.Windows.Forms.NumericUpDown();
+            this.NumericUpDown_MotionAddress = new System.Windows.Forms.NumericUpDown();
+            this.NumericUpDown_ObjectAddress = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).BeginInit();
@@ -324,32 +324,41 @@ namespace SAModel.SAMDL
             // 
             // NumericUpDown_Key
             // 
-            this.NumericUpDown_Key.Hexadecimal = true;
             this.NumericUpDown_Key.Location = new System.Drawing.Point(66, 19);
             this.NumericUpDown_Key.Name = "NumericUpDown_Key";
             this.NumericUpDown_Key.Size = new System.Drawing.Size(98, 20);
             this.NumericUpDown_Key.TabIndex = 15;
-            // 
-            // NumericUpDown_MotionAddress
-            // 
-            this.NumericUpDown_MotionAddress.Enabled = false;
-            this.NumericUpDown_MotionAddress.Hexadecimal = true;
+			this.NumericUpDown_Key.Maximum = 4294967295;
+			this.NumericUpDown_Key.Minimum = -4294967295;
+			this.NumericUpDown_Key.Hexadecimal = true;
+			this.NumericUpDown_Key.ValueChanged += NumericUpDown_Key_ValueChanged;
+			// 
+			// NumericUpDown_MotionAddress
+			// 
+			this.NumericUpDown_MotionAddress.Enabled = false;
             this.NumericUpDown_MotionAddress.Location = new System.Drawing.Point(64, 178);
             this.NumericUpDown_MotionAddress.Name = "NumericUpDown_MotionAddress";
             this.NumericUpDown_MotionAddress.Size = new System.Drawing.Size(98, 20);
             this.NumericUpDown_MotionAddress.TabIndex = 19;
-            // 
-            // NumericUpDown_ObjectAddress
-            // 
-            this.NumericUpDown_ObjectAddress.Hexadecimal = true;
-            this.NumericUpDown_ObjectAddress.Location = new System.Drawing.Point(66, 55);
+			this.NumericUpDown_MotionAddress.Maximum = 4294967295;
+			this.NumericUpDown_MotionAddress.Minimum = -4294967295;
+			this.NumericUpDown_MotionAddress.Hexadecimal = true;
+			this.NumericUpDown_MotionAddress.ValueChanged += NumericUpDown_MotionAddress_ValueChanged;
+			// 
+			// NumericUpDown_ObjectAddress
+			// 
+			this.NumericUpDown_ObjectAddress.Location = new System.Drawing.Point(66, 55);
             this.NumericUpDown_ObjectAddress.Name = "NumericUpDown_ObjectAddress";
             this.NumericUpDown_ObjectAddress.Size = new System.Drawing.Size(98, 20);
             this.NumericUpDown_ObjectAddress.TabIndex = 3;
-            // 
-            // ModelFileDialog
-            // 
-            this.AcceptButton = this.OK_Button;
+			this.NumericUpDown_ObjectAddress.Maximum = 4294967295;
+			this.NumericUpDown_ObjectAddress.Minimum = -4294967295;
+			this.NumericUpDown_ObjectAddress.Hexadecimal = true;
+			this.NumericUpDown_ObjectAddress.ValueChanged += NumericUpDown_ObjectAddress_ValueChanged;
+			// 
+			// ModelFileDialog
+			// 
+			this.AcceptButton = this.OK_Button;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(342, 297);
@@ -382,7 +391,7 @@ namespace SAModel.SAMDL
         internal ComboBox ComboBox_FileType;
         internal Label Label_ModelAddress;
         internal CheckBox CheckBox_Hex_Object;
-        internal SAEditorCommon.UI.HexNumericUpdown NumericUpDown_Key;
+        internal System.Windows.Forms.NumericUpDown NumericUpDown_Key;
         internal ComboBox ComboBox_Format;
         internal Label Label_Format;
         internal CheckBox CheckBox_LoadMotion;
@@ -400,7 +409,7 @@ namespace SAModel.SAMDL
 		internal CheckBox CheckBox_Hex_Motion;
 		private GroupBox groupBox1;
 		internal RadioButton RadioButton_Attach;
-		internal SAEditorCommon.UI.HexNumericUpdown NumericUpDown_ObjectAddress;
-		internal SAEditorCommon.UI.HexNumericUpdown NumericUpDown_MotionAddress;
+		internal System.Windows.Forms.NumericUpDown NumericUpDown_ObjectAddress;
+		internal System.Windows.Forms.NumericUpDown NumericUpDown_MotionAddress;
 	}
 }

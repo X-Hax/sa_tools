@@ -917,12 +917,68 @@ namespace VMSEditor
             comboBoxJewelColor.Enabled = checkBoxColorFlagJewel.Checked;
         }
 
-        private void numericUpDownMemoriesID_0_ValueChanged(object sender, EventArgs e)
-        {
-            WriteChaoMemories();
-        }
+		private void numericUpDownMemoriesMeet_ValueChanged(object sender, EventArgs e)
+		{
+			WriteChaoMemories();
+		}
 
-        private void checkBoxColorFlag0x1_CheckedChanged(object sender, EventArgs e)
+		private void numericUpDownMemoriesID_0_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_0.Value < 0)
+				numericUpDownMemoriesID_0.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_0.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_1_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_1.Value < 0)
+				numericUpDownMemoriesID_1.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_1.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_2_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_2.Value < 0)
+				numericUpDownMemoriesID_2.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_2.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_3_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_3.Value < 0)
+				numericUpDownMemoriesID_3.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_3.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_4_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_4.Value < 0)
+				numericUpDownMemoriesID_4.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_4.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_5_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_5.Value < 0)
+				numericUpDownMemoriesID_5.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_5.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_6_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_6.Value < 0)
+				numericUpDownMemoriesID_6.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_6.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_7_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_7.Value < 0)
+				numericUpDownMemoriesID_7.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_7.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void checkBoxColorFlag0x1_CheckedChanged(object sender, EventArgs e)
         {
             ChaoColorFlagsSA1 colorFlags = 0;
             comboBoxJewelColor.Enabled = false;
@@ -1537,5 +1593,17 @@ namespace VMSEditor
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/VMS-Editor#chao-editor") { CreateNoWindow = true });
         }
-    }
+
+		private void NumericUpDownID_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownID.Value < 0)
+				numericUpDownID.Value = unchecked((uint)int.Parse(numericUpDownID.Value.ToString()));
+		}
+
+		private void NumericUpDown_ColorFlags_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDown_ColorFlags.Value < 0)
+				numericUpDown_ColorFlags.Value = unchecked((uint)int.Parse(numericUpDown_ColorFlags.Value.ToString()));
+		}
+	}
 }
