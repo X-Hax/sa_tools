@@ -14,14 +14,12 @@ build:
 after_build:
 - cmd: >-
    
-    C:\projects\sa-tools\buildSATools.exe
+    cd C:\projects\sa-tools\
+
+    buildSATools
 
     cd C:\projects\sa-tools\output
     
-    rmdir tools\runtimes /s /q
-    
-    rmdir tools\lib\runtimes /s /q
-
     7z a "C:\projects\sa-tools\SA Tools.7z" *
 artifacts:
 - path: SA Tools.7z
