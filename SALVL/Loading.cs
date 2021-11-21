@@ -255,20 +255,24 @@ namespace SAModel.SALVL
                         default:
                             break;
                     }
-                    bool bigendianbk = ByteConverter.BigEndian;
+					ByteConverter.Reverse = bd.checkBoxReverse.Checked;
                     ByteConverter.BigEndian = bd.checkBoxBigEndian.Checked;
-                    // PRS and REL hacks
-                    byte[] datafile = File.ReadAllBytes(filename);
-                    uint key = (uint)bd.numericKey.Value;
+					uint key = (uint)bd.numericKey.Value;
+					// PRS
+					byte[] datafile = File.ReadAllBytes(filename);
                     if (ext == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
-                    else if (ext == ".rel")
+					// Trim
+					if (bd.numericStartOffset.Value != 0)
+					{
+						byte[] datafile_new = new byte[datafile.Length + (uint)bd.numericStartOffset.Value];
+						datafile.CopyTo(datafile_new, (int)bd.numericStartOffset.Value);
+						datafile = datafile_new;
+					}
+					// REL
+					if (bd.comboFileKeyHint.SelectedIndex == 3)
                     {
-                        ByteConverter.BigEndian = true;
                         datafile = SplitTools.HelperFunctions.DecompressREL(datafile);
                         SplitTools.HelperFunctions.FixRELPointers(datafile, 0xC900000);
-                        if (bd.comboLevelFormat.SelectedIndex == 0)
-                            ByteConverter.Reverse = true; // SADX GC
-                        key = 0xC900000; // Key always the same for REL pointers
                     }
                     land = new LandTable(datafile, (int)bd.numericAddress.Value, key, fmt);
                     break;
