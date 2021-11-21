@@ -124,10 +124,10 @@ namespace SAModel.SALVL
             this.comboLevelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboLevelFormat.FormattingEnabled = true;
             this.comboLevelFormat.Items.AddRange(new object[] {
-            "SA1/SADX Gamecube",
+            "SA1/SADX GC",
             "SADX PC",
             "SA2",
-            "SA2B/SA2PC"});
+            "SA2B/SA2 PC"});
             this.comboLevelFormat.Location = new System.Drawing.Point(83, 103);
             this.comboLevelFormat.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboLevelFormat.Name = "comboLevelFormat";

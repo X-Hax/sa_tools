@@ -1840,7 +1840,7 @@ namespace SAModel.SALVL
             using (OpenFileDialog fileDialog = new OpenFileDialog()
             {
                 DefaultExt = "sa1lvl",
-                Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
+                Filter = "All Supported Files|*.sa1lvl;*.sa2lvl;*.sa2blvl;*.exe;*.dll;*.bin;*.rel;*.prs|Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
                 InitialDirectory = modFolder,
                 Multiselect = false
             })
