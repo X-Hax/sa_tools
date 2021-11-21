@@ -490,7 +490,6 @@ namespace SAModel.SAMDL
 						int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
 						int texListOffset = POF0Offset + POF0Size + 0x8;
 						ninjaDataOffset = texListOffset + 0x8;
-						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, ninjaDataOffset);
 						int texCount = ByteConverter.ToInt32(file, 0xC);
 						int texOffset = 0;
 						List<string> texNames = new List<string>();
@@ -531,32 +530,31 @@ namespace SAModel.SAMDL
                 }
 
 				// Set modelinfo parameters
-				modelinfo.CheckBox_BigEndian.Checked = ByteConverter.BigEndian;
-				modelinfo.RadioButton_Object.Checked = true;
-				modelinfo.NumericUpDown_ObjectAddress.Value = 0;
+				modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
+				modelinfo.radioButtonObject.Checked = true;
+				modelinfo.numericUpDownModelAddress.Value = 0;
 				if (basicModel)
 				{
-					modelinfo.ComboBox_Format.SelectedIndex = 0;
+					modelinfo.comboBoxModelFormat.SelectedIndex = 0;
 				}
 				else if (extension.Equals(".nj"))
 				{
-					modelinfo.ComboBox_Format.SelectedIndex = 2;
+					modelinfo.comboBoxModelFormat.SelectedIndex = 2;
 				}
 				else if (extension.Equals(".gj"))
 				{
-					modelinfo.ComboBox_Format.SelectedIndex = 3;
+					modelinfo.comboBoxModelFormat.SelectedIndex = 3;
 				}
 
-				modelinfo.NumericUpDown_MotionAddress.Value = 0;
-				modelinfo.CheckBox_Memory_Object.Checked = false;
-				modelinfo.CheckBox_Memory_Motion.Checked = false;
+				modelinfo.numericUpDownMotionAddress.Value = 0;
+				modelinfo.checkBoxMemoryObject.Checked = false;
+				modelinfo.checkBoxMemoryMotion.Checked = false;
 
-				modelinfo.NumericUpDown_Key.Value = 0;
-				modelinfo.NumericUpDown_Key.Value = 0;
+				modelinfo.numericUpDownKey.Value = 0;
+				modelinfo.numericUpDownKey.Value = 0;
 
 
 				// Get rid of the junk so that we can treat it like what SAMDL expects
-
 				byte[] newFile = new byte[file.Length - ninjaDataOffset];
                 Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 
@@ -574,27 +572,39 @@ namespace SAModel.SAMDL
             else
             {
 				byte[] file = File.ReadAllBytes(filename);
-                if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
                     file = FraGag.Compression.Prs.Decompress(file);
                 ByteConverter.BigEndian = false;
 				modelinfo.CheckFilename(filename);
-                uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
+				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
                 if (baseaddr.HasValue)
-                    modelinfo.NumericUpDown_Key.Value = baseaddr.Value;
-                modelinfo.ShowDialog(this);
+                    modelinfo.numericUpDownKey.Value = baseaddr.Value;
+				modelinfo.ShowDialog(this);
                 if (modelinfo.DialogResult == DialogResult.OK)
                 {
-					if (modelinfo.RadioButton_Binary.Checked)
+					if (modelinfo.radioButtonBinary.Checked)
 					{
-						if (modelinfo.ComboBox_FileType.SelectedIndex == 2) // REL file
+						if (modelinfo.comboBoxBinaryFileType.SelectedIndex == 2) // REL file
+						{
+							MessageBox.Show("REK");
+							ByteConverter.BigEndian = true;
 							SplitTools.HelperFunctions.FixRELPointers(file, 0xC900000);
-						log.Add("Loading model from binary file " + filename + ", key: " + uint.Parse(modelinfo.NumericUpDown_Key.Value.ToString()).ToCHex() + ", address: " + uint.Parse(modelinfo.NumericUpDown_ObjectAddress.Value.ToString()).ToCHex() + ", motion at: " + uint.Parse(modelinfo.NumericUpDown_MotionAddress.Value.ToString()).ToCHex());
+						}
+						log.Add("Loading model from binary file " + filename);
+						log.Add("\tKey: " + uint.Parse(modelinfo.numericUpDownKey.Value.ToString()).ToCHex());
+						log.Add("\tAddress: " + uint.Parse(modelinfo.numericUpDownModelAddress.Value.ToString()).ToCHex());
+						if (modelinfo.numericUpDownStartOffset.Value != 0)
+							log.Add("\tOffset: " + uint.Parse(modelinfo.numericUpDownStartOffset.Value.ToString()).ToCHex());
+						if (modelinfo.numericUpDownMotionAddress.Value != 0)
+							log.Add("\tMotion at: " + uint.Parse(modelinfo.numericUpDownMotionAddress.Value.ToString()).ToCHex());
+						log.Add("\tBig Endian: " + modelinfo.checkBoxBigEndian.Checked.ToString()); ;
+						log.WriteLog();
 						LoadBinFile(file);
 					}
 					else
 					{
 						ModelFormat fmt = outfmt = ModelFormat.Chunk;
-						ByteConverter.BigEndian = modelinfo.RadioButton_SA2BMDL.Checked;
+						ByteConverter.BigEndian = modelinfo.radioButtonSA2BMDL.Checked;
 						using (SA2MDLDialog dlg = new SA2MDLDialog())
 						{
 							int address = 0;
@@ -673,14 +683,22 @@ namespace SAModel.SAMDL
 		}
 		private void LoadBinFile(byte[] file)
 		{
-			uint objectaddress = (uint)modelinfo.NumericUpDown_ObjectAddress.Value;
-			uint motionaddress = (uint)modelinfo.NumericUpDown_MotionAddress.Value;
-			if (modelinfo.CheckBox_Memory_Object.Checked) objectaddress -= (uint)modelinfo.NumericUpDown_Key.Value;
-			if (modelinfo.CheckBox_Memory_Motion.Checked) motionaddress -= (uint)modelinfo.NumericUpDown_Key.Value;
-			ByteConverter.BigEndian = modelinfo.CheckBox_BigEndian.Checked;
-			if (modelinfo.RadioButton_Object.Checked)
+			// Start offset for X360 exe
+			if (modelinfo.numericUpDownStartOffset.Value != 0)
 			{
-				tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				byte[] datafile_new = new byte[file.Length + (uint)modelinfo.numericUpDownStartOffset.Value];
+				file.CopyTo(datafile_new, (int)modelinfo.numericUpDownStartOffset.Value);
+				file = datafile_new;
+			}
+			uint objectaddress = (uint)modelinfo.numericUpDownModelAddress.Value;
+			uint motionaddress = (uint)modelinfo.numericUpDownMotionAddress.Value;
+			if (modelinfo.checkBoxMemoryObject.Checked) objectaddress -= (uint)modelinfo.numericUpDownKey.Value;
+			if (modelinfo.checkBoxMemoryMotion.Checked) motionaddress -= (uint)modelinfo.numericUpDownKey.Value;
+			ByteConverter.BigEndian = modelinfo.checkBoxBigEndian.Checked;
+			ByteConverter.Reverse = modelinfo.checkBoxReverse.Checked;
+			if (modelinfo.radioButtonObject.Checked)
+			{
+				tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				if (tempmodel.Sibling != null)
 				{
 					model = new NJS_OBJECT { Name = "Root" };
@@ -692,37 +710,37 @@ namespace SAModel.SAMDL
 					model = tempmodel;
 					rootSiblingMode = false;
 				}
-				if (modelinfo.CheckBox_LoadMotion.Checked)
-					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, null) };
+				if (modelinfo.checkBoxLoadMotion.Checked)
+					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
 					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
-			else if (modelinfo.RadioButton_Action.Checked)
+			else if (modelinfo.radioButtonAction.Checked)
 			{
-				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				model = action.Model;
-				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null) };
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else
 			{
 				model = new NJS_OBJECT { Name = "Model" };
-				switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
+				switch ((ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex)
 				{
 					case ModelFormat.Basic:
-						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, false);
+						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, false);
 						break;
 					case ModelFormat.BasicDX:
-						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, true);
+						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, true);
 						break;
 					case ModelFormat.Chunk:
-						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value);
+						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
 						break;
 					case ModelFormat.GC:
-						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, null);
+						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, null);
 						break;
 				}
 			}
-			switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
+			switch ((ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex)
 			{
 				case ModelFormat.Basic:
 				case ModelFormat.BasicDX:

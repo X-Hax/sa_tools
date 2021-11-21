@@ -33,374 +33,496 @@ namespace SAModel.SAMDL
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelFileDialog));
             this.OK_Button = new System.Windows.Forms.Button();
-            this.Label_Key = new System.Windows.Forms.Label();
-            this.ComboBox_FileType = new System.Windows.Forms.ComboBox();
-            this.Label_ModelAddress = new System.Windows.Forms.Label();
-            this.CheckBox_Hex_Object = new System.Windows.Forms.CheckBox();
-            this.ComboBox_Format = new System.Windows.Forms.ComboBox();
-            this.Label_Format = new System.Windows.Forms.Label();
-            this.CheckBox_LoadMotion = new System.Windows.Forms.CheckBox();
-            this.Label_MotionAddress = new System.Windows.Forms.Label();
-            this.CheckBox_BigEndian = new System.Windows.Forms.CheckBox();
-            this.RadioButton_Binary = new System.Windows.Forms.RadioButton();
-            this.RadioButton_SA2MDL = new System.Windows.Forms.RadioButton();
-            this.RadioButton_SA2BMDL = new System.Windows.Forms.RadioButton();
-            this.Label_Type = new System.Windows.Forms.Label();
-            this.CheckBox_Memory_Object = new System.Windows.Forms.CheckBox();
-            this.Label_Structure = new System.Windows.Forms.Label();
-            this.RadioButton_Object = new System.Windows.Forms.RadioButton();
-            this.RadioButton_Action = new System.Windows.Forms.RadioButton();
-            this.CheckBox_Memory_Motion = new System.Windows.Forms.CheckBox();
-            this.CheckBox_Hex_Motion = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.RadioButton_Attach = new System.Windows.Forms.RadioButton();
-			this.NumericUpDown_Key = new System.Windows.Forms.NumericUpDown();
-            this.NumericUpDown_MotionAddress = new System.Windows.Forms.NumericUpDown();
-            this.NumericUpDown_ObjectAddress = new System.Windows.Forms.NumericUpDown();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).BeginInit();
+            this.labelKey = new System.Windows.Forms.Label();
+            this.comboBoxBinaryFileType = new System.Windows.Forms.ComboBox();
+            this.labelModelAddress = new System.Windows.Forms.Label();
+            this.checkBoxHexObject = new System.Windows.Forms.CheckBox();
+            this.comboBoxModelFormat = new System.Windows.Forms.ComboBox();
+            this.labelModelFormat = new System.Windows.Forms.Label();
+            this.checkBoxLoadMotion = new System.Windows.Forms.CheckBox();
+            this.labelMotionAddress = new System.Windows.Forms.Label();
+            this.checkBoxBigEndian = new System.Windows.Forms.CheckBox();
+            this.radioButtonBinary = new System.Windows.Forms.RadioButton();
+            this.radioButtonSA2MDL = new System.Windows.Forms.RadioButton();
+            this.radioButtonSA2BMDL = new System.Windows.Forms.RadioButton();
+            this.labelType = new System.Windows.Forms.Label();
+            this.checkBoxMemoryObject = new System.Windows.Forms.CheckBox();
+            this.labelStructure = new System.Windows.Forms.Label();
+            this.radioButtonObject = new System.Windows.Forms.RadioButton();
+            this.radioButtonAction = new System.Windows.Forms.RadioButton();
+            this.checkBoxMemoryMotion = new System.Windows.Forms.CheckBox();
+            this.checkBoxHexMotion = new System.Windows.Forms.CheckBox();
+            this.groupBoxBinaryData = new System.Windows.Forms.GroupBox();
+            this.checkBoxHexStartOffset = new System.Windows.Forms.CheckBox();
+            this.numericUpDownStartOffset = new System.Windows.Forms.NumericUpDown();
+            this.labelStartOffset = new System.Windows.Forms.Label();
+            this.checkBoxReverse = new System.Windows.Forms.CheckBox();
+            this.radioButtonAttach = new System.Windows.Forms.RadioButton();
+            this.numericUpDownKey = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownMotionAddress = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownModelAddress = new System.Windows.Forms.NumericUpDown();
+            this.groupBoxBinaryData.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartOffset)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMotionAddress)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownModelAddress)).BeginInit();
             this.SuspendLayout();
             // 
             // OK_Button
             // 
             this.OK_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OK_Button.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OK_Button.Location = new System.Drawing.Point(263, 261);
+            this.OK_Button.Location = new System.Drawing.Point(318, 308);
+            this.OK_Button.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.OK_Button.Name = "OK_Button";
-            this.OK_Button.Size = new System.Drawing.Size(67, 23);
+            this.OK_Button.Size = new System.Drawing.Size(78, 27);
             this.OK_Button.TabIndex = 0;
             this.OK_Button.Text = "&OK";
             // 
-            // Label_Key
+            // labelKey
             // 
-            this.Label_Key.AutoSize = true;
-            this.Label_Key.Location = new System.Drawing.Point(32, 21);
-            this.Label_Key.Name = "Label_Key";
-            this.Label_Key.Size = new System.Drawing.Size(28, 13);
-            this.Label_Key.TabIndex = 1;
-            this.Label_Key.Text = "Key:";
+            this.labelKey.AutoSize = true;
+            this.labelKey.Location = new System.Drawing.Point(49, 25);
+            this.labelKey.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelKey.Name = "labelKey";
+            this.labelKey.Size = new System.Drawing.Size(29, 15);
+            this.labelKey.TabIndex = 1;
+            this.labelKey.Text = "Key:";
             // 
-            // ComboBox_FileType
+            // comboBoxBinaryFileType
             // 
-            this.ComboBox_FileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboBox_FileType.FormattingEnabled = true;
-            this.ComboBox_FileType.Location = new System.Drawing.Point(182, 19);
-            this.ComboBox_FileType.Name = "ComboBox_FileType";
-            this.ComboBox_FileType.Size = new System.Drawing.Size(121, 21);
-            this.ComboBox_FileType.TabIndex = 2;
-            this.ComboBox_FileType.SelectedIndexChanged += new System.EventHandler(this.ComboBox_FileType_SelectedIndexChanged);
+            this.comboBoxBinaryFileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxBinaryFileType.FormattingEnabled = true;
+            this.comboBoxBinaryFileType.Location = new System.Drawing.Point(212, 22);
+            this.comboBoxBinaryFileType.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.comboBoxBinaryFileType.Name = "comboBoxBinaryFileType";
+            this.comboBoxBinaryFileType.Size = new System.Drawing.Size(140, 23);
+            this.comboBoxBinaryFileType.TabIndex = 2;
+            this.comboBoxBinaryFileType.SelectedIndexChanged += new System.EventHandler(this.ComboBox_FileType_SelectedIndexChanged);
             // 
-            // Label_ModelAddress
+            // labelModelAddress
             // 
-            this.Label_ModelAddress.AutoSize = true;
-            this.Label_ModelAddress.Location = new System.Drawing.Point(12, 57);
-            this.Label_ModelAddress.Name = "Label_ModelAddress";
-            this.Label_ModelAddress.Size = new System.Drawing.Size(48, 13);
-            this.Label_ModelAddress.TabIndex = 4;
-            this.Label_ModelAddress.Text = "Address:";
+            this.labelModelAddress.AutoSize = true;
+            this.labelModelAddress.Location = new System.Drawing.Point(26, 57);
+            this.labelModelAddress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelModelAddress.Name = "labelModelAddress";
+            this.labelModelAddress.Size = new System.Drawing.Size(52, 15);
+            this.labelModelAddress.TabIndex = 4;
+            this.labelModelAddress.Text = "Address:";
             // 
-            // CheckBox_Hex_Object
+            // checkBoxHexObject
             // 
-            this.CheckBox_Hex_Object.AutoSize = true;
-            this.CheckBox_Hex_Object.Checked = true;
-            this.CheckBox_Hex_Object.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckBox_Hex_Object.Location = new System.Drawing.Point(183, 56);
-            this.CheckBox_Hex_Object.Name = "CheckBox_Hex_Object";
-            this.CheckBox_Hex_Object.Size = new System.Drawing.Size(45, 17);
-            this.CheckBox_Hex_Object.TabIndex = 9;
-            this.CheckBox_Hex_Object.Text = "Hex";
-            this.CheckBox_Hex_Object.UseVisualStyleBackColor = true;
-            this.CheckBox_Hex_Object.CheckedChanged += new System.EventHandler(this.CheckBox_Hex_Object_CheckedChanged);
+            this.checkBoxHexObject.AutoSize = true;
+            this.checkBoxHexObject.Checked = true;
+            this.checkBoxHexObject.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxHexObject.Location = new System.Drawing.Point(212, 59);
+            this.checkBoxHexObject.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxHexObject.Name = "checkBoxHexObject";
+            this.checkBoxHexObject.Size = new System.Drawing.Size(47, 19);
+            this.checkBoxHexObject.TabIndex = 9;
+            this.checkBoxHexObject.Text = "Hex";
+            this.checkBoxHexObject.UseVisualStyleBackColor = true;
+            this.checkBoxHexObject.CheckedChanged += new System.EventHandler(this.CheckBox_Hex_Object_CheckedChanged);
             // 
-            // ComboBox_Format
+            // comboBoxModelFormat
             // 
-            this.ComboBox_Format.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboBox_Format.FormattingEnabled = true;
-            this.ComboBox_Format.Items.AddRange(new object[] {
+            this.comboBoxModelFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxModelFormat.FormattingEnabled = true;
+            this.comboBoxModelFormat.Items.AddRange(new object[] {
             "Basic",
             "SADX Basic",
             "Chunk",
             "GC"});
-            this.ComboBox_Format.Location = new System.Drawing.Point(66, 92);
-            this.ComboBox_Format.Name = "ComboBox_Format";
-            this.ComboBox_Format.Size = new System.Drawing.Size(98, 21);
-            this.ComboBox_Format.TabIndex = 17;
+            this.comboBoxModelFormat.Location = new System.Drawing.Point(86, 121);
+            this.comboBoxModelFormat.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.comboBoxModelFormat.Name = "comboBoxModelFormat";
+            this.comboBoxModelFormat.Size = new System.Drawing.Size(114, 23);
+            this.comboBoxModelFormat.TabIndex = 17;
             // 
-            // Label_Format
+            // labelModelFormat
             // 
-            this.Label_Format.AutoSize = true;
-            this.Label_Format.Location = new System.Drawing.Point(18, 95);
-            this.Label_Format.Name = "Label_Format";
-            this.Label_Format.Size = new System.Drawing.Size(42, 13);
-            this.Label_Format.TabIndex = 16;
-            this.Label_Format.Text = "Format:";
+            this.labelModelFormat.AutoSize = true;
+            this.labelModelFormat.Location = new System.Drawing.Point(30, 124);
+            this.labelModelFormat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelModelFormat.Name = "labelModelFormat";
+            this.labelModelFormat.Size = new System.Drawing.Size(48, 15);
+            this.labelModelFormat.TabIndex = 16;
+            this.labelModelFormat.Text = "Format:";
             // 
-            // CheckBox_LoadMotion
+            // checkBoxLoadMotion
             // 
-            this.CheckBox_LoadMotion.AutoSize = true;
-            this.CheckBox_LoadMotion.Location = new System.Drawing.Point(10, 155);
-            this.CheckBox_LoadMotion.Name = "CheckBox_LoadMotion";
-            this.CheckBox_LoadMotion.Size = new System.Drawing.Size(85, 17);
-            this.CheckBox_LoadMotion.TabIndex = 18;
-            this.CheckBox_LoadMotion.Text = "Load Motion";
-            this.CheckBox_LoadMotion.UseVisualStyleBackColor = true;
-            this.CheckBox_LoadMotion.CheckedChanged += new System.EventHandler(this.CheckBox_LoadMotion_CheckedChanged);
+            this.checkBoxLoadMotion.AutoSize = true;
+            this.checkBoxLoadMotion.Location = new System.Drawing.Point(21, 193);
+            this.checkBoxLoadMotion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxLoadMotion.Name = "checkBoxLoadMotion";
+            this.checkBoxLoadMotion.Size = new System.Drawing.Size(94, 19);
+            this.checkBoxLoadMotion.TabIndex = 18;
+            this.checkBoxLoadMotion.Text = "Load Motion";
+            this.checkBoxLoadMotion.UseVisualStyleBackColor = true;
+            this.checkBoxLoadMotion.CheckedChanged += new System.EventHandler(this.CheckBox_LoadMotion_CheckedChanged);
             // 
-            // Label_MotionAddress
+            // labelMotionAddress
             // 
-            this.Label_MotionAddress.AutoSize = true;
-            this.Label_MotionAddress.Location = new System.Drawing.Point(10, 180);
-            this.Label_MotionAddress.Name = "Label_MotionAddress";
-            this.Label_MotionAddress.Size = new System.Drawing.Size(48, 13);
-            this.Label_MotionAddress.TabIndex = 20;
-            this.Label_MotionAddress.Text = "Address:";
+            this.labelMotionAddress.AutoSize = true;
+            this.labelMotionAddress.Location = new System.Drawing.Point(21, 222);
+            this.labelMotionAddress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelMotionAddress.Name = "labelMotionAddress";
+            this.labelMotionAddress.Size = new System.Drawing.Size(52, 15);
+            this.labelMotionAddress.TabIndex = 20;
+            this.labelMotionAddress.Text = "Address:";
             // 
-            // CheckBox_BigEndian
+            // checkBoxBigEndian
             // 
-            this.CheckBox_BigEndian.AutoSize = true;
-            this.CheckBox_BigEndian.Location = new System.Drawing.Point(183, 94);
-            this.CheckBox_BigEndian.Name = "CheckBox_BigEndian";
-            this.CheckBox_BigEndian.Size = new System.Drawing.Size(77, 17);
-            this.CheckBox_BigEndian.TabIndex = 21;
-            this.CheckBox_BigEndian.Text = "Big Endian";
-            this.CheckBox_BigEndian.UseVisualStyleBackColor = true;
+            this.checkBoxBigEndian.AutoSize = true;
+            this.checkBoxBigEndian.Location = new System.Drawing.Point(212, 123);
+            this.checkBoxBigEndian.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxBigEndian.Name = "checkBoxBigEndian";
+            this.checkBoxBigEndian.Size = new System.Drawing.Size(82, 19);
+            this.checkBoxBigEndian.TabIndex = 21;
+            this.checkBoxBigEndian.Text = "Big Endian";
+            this.checkBoxBigEndian.UseVisualStyleBackColor = true;
             // 
-            // RadioButton_Binary
+            // radioButtonBinary
             // 
-            this.RadioButton_Binary.AutoSize = true;
-            this.RadioButton_Binary.Checked = true;
-            this.RadioButton_Binary.Location = new System.Drawing.Point(52, 12);
-            this.RadioButton_Binary.Name = "RadioButton_Binary";
-            this.RadioButton_Binary.Size = new System.Drawing.Size(54, 17);
-            this.RadioButton_Binary.TabIndex = 22;
-            this.RadioButton_Binary.TabStop = true;
-            this.RadioButton_Binary.Text = "Binary";
-            this.RadioButton_Binary.UseVisualStyleBackColor = true;
-            this.RadioButton_Binary.CheckedChanged += new System.EventHandler(this.RadioButton_Binary_CheckedChanged);
+            this.radioButtonBinary.AutoSize = true;
+            this.radioButtonBinary.Checked = true;
+            this.radioButtonBinary.Location = new System.Drawing.Point(61, 14);
+            this.radioButtonBinary.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.radioButtonBinary.Name = "radioButtonBinary";
+            this.radioButtonBinary.Size = new System.Drawing.Size(58, 19);
+            this.radioButtonBinary.TabIndex = 22;
+            this.radioButtonBinary.TabStop = true;
+            this.radioButtonBinary.Text = "Binary";
+            this.radioButtonBinary.UseVisualStyleBackColor = true;
+            this.radioButtonBinary.CheckedChanged += new System.EventHandler(this.RadioButton_Binary_CheckedChanged);
             // 
-            // RadioButton_SA2MDL
+            // radioButtonSA2MDL
             // 
-            this.RadioButton_SA2MDL.AutoSize = true;
-            this.RadioButton_SA2MDL.Location = new System.Drawing.Point(112, 12);
-            this.RadioButton_SA2MDL.Name = "RadioButton_SA2MDL";
-            this.RadioButton_SA2MDL.Size = new System.Drawing.Size(90, 17);
-            this.RadioButton_SA2MDL.TabIndex = 23;
-            this.RadioButton_SA2MDL.Text = "SA2 MDL File";
-            this.RadioButton_SA2MDL.UseVisualStyleBackColor = true;
+            this.radioButtonSA2MDL.AutoSize = true;
+            this.radioButtonSA2MDL.Location = new System.Drawing.Point(131, 14);
+            this.radioButtonSA2MDL.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.radioButtonSA2MDL.Name = "radioButtonSA2MDL";
+            this.radioButtonSA2MDL.Size = new System.Drawing.Size(94, 19);
+            this.radioButtonSA2MDL.TabIndex = 23;
+            this.radioButtonSA2MDL.Text = "SA2 MDL File";
+            this.radioButtonSA2MDL.UseVisualStyleBackColor = true;
             // 
-            // RadioButton_SA2BMDL
+            // radioButtonSA2BMDL
             // 
-            this.RadioButton_SA2BMDL.AutoSize = true;
-            this.RadioButton_SA2BMDL.Location = new System.Drawing.Point(205, 12);
-            this.RadioButton_SA2BMDL.Name = "RadioButton_SA2BMDL";
-            this.RadioButton_SA2BMDL.Size = new System.Drawing.Size(97, 17);
-            this.RadioButton_SA2BMDL.TabIndex = 24;
-            this.RadioButton_SA2BMDL.Text = "SA2B MDL File";
-            this.RadioButton_SA2BMDL.UseVisualStyleBackColor = true;
+            this.radioButtonSA2BMDL.AutoSize = true;
+            this.radioButtonSA2BMDL.Location = new System.Drawing.Point(239, 14);
+            this.radioButtonSA2BMDL.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.radioButtonSA2BMDL.Name = "radioButtonSA2BMDL";
+            this.radioButtonSA2BMDL.Size = new System.Drawing.Size(101, 19);
+            this.radioButtonSA2BMDL.TabIndex = 24;
+            this.radioButtonSA2BMDL.Text = "SA2B MDL File";
+            this.radioButtonSA2BMDL.UseVisualStyleBackColor = true;
             // 
-            // Label_Type
+            // labelType
             // 
-            this.Label_Type.AutoSize = true;
-            this.Label_Type.Location = new System.Drawing.Point(12, 14);
-            this.Label_Type.Name = "Label_Type";
-            this.Label_Type.Size = new System.Drawing.Size(34, 13);
-            this.Label_Type.TabIndex = 25;
-            this.Label_Type.Text = "Type:";
+            this.labelType.AutoSize = true;
+            this.labelType.Location = new System.Drawing.Point(14, 16);
+            this.labelType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelType.Name = "labelType";
+            this.labelType.Size = new System.Drawing.Size(34, 15);
+            this.labelType.TabIndex = 25;
+            this.labelType.Text = "Type:";
             // 
-            // CheckBox_Memory_Object
+            // checkBoxMemoryObject
             // 
-            this.CheckBox_Memory_Object.AutoSize = true;
-            this.CheckBox_Memory_Object.Location = new System.Drawing.Point(229, 56);
-            this.CheckBox_Memory_Object.Name = "CheckBox_Memory_Object";
-            this.CheckBox_Memory_Object.Size = new System.Drawing.Size(63, 17);
-            this.CheckBox_Memory_Object.TabIndex = 26;
-            this.CheckBox_Memory_Object.Text = "Memory";
-            this.CheckBox_Memory_Object.UseVisualStyleBackColor = true;
+            this.checkBoxMemoryObject.AutoSize = true;
+            this.checkBoxMemoryObject.Location = new System.Drawing.Point(267, 59);
+            this.checkBoxMemoryObject.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxMemoryObject.Name = "checkBoxMemoryObject";
+            this.checkBoxMemoryObject.Size = new System.Drawing.Size(71, 19);
+            this.checkBoxMemoryObject.TabIndex = 26;
+            this.checkBoxMemoryObject.Text = "Memory";
+            this.checkBoxMemoryObject.UseVisualStyleBackColor = true;
             // 
-            // Label_Structure
+            // labelStructure
             // 
-            this.Label_Structure.AutoSize = true;
-            this.Label_Structure.Location = new System.Drawing.Point(7, 128);
-            this.Label_Structure.Name = "Label_Structure";
-            this.Label_Structure.Size = new System.Drawing.Size(53, 13);
-            this.Label_Structure.TabIndex = 27;
-            this.Label_Structure.Text = "Structure:";
+            this.labelStructure.AutoSize = true;
+            this.labelStructure.Location = new System.Drawing.Point(17, 162);
+            this.labelStructure.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelStructure.Name = "labelStructure";
+            this.labelStructure.Size = new System.Drawing.Size(58, 15);
+            this.labelStructure.TabIndex = 27;
+            this.labelStructure.Text = "Structure:";
             // 
-            // RadioButton_Object
+            // radioButtonObject
             // 
-            this.RadioButton_Object.AutoSize = true;
-            this.RadioButton_Object.Checked = true;
-            this.RadioButton_Object.Location = new System.Drawing.Point(64, 126);
-            this.RadioButton_Object.Name = "RadioButton_Object";
-            this.RadioButton_Object.Size = new System.Drawing.Size(56, 17);
-            this.RadioButton_Object.TabIndex = 28;
-            this.RadioButton_Object.TabStop = true;
-            this.RadioButton_Object.Text = "Object";
-            this.RadioButton_Object.UseVisualStyleBackColor = true;
-            this.RadioButton_Object.CheckedChanged += new System.EventHandler(this.RadioButton_Object_CheckedChanged);
+            this.radioButtonObject.AutoSize = true;
+            this.radioButtonObject.Checked = true;
+            this.radioButtonObject.Location = new System.Drawing.Point(84, 159);
+            this.radioButtonObject.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.radioButtonObject.Name = "radioButtonObject";
+            this.radioButtonObject.Size = new System.Drawing.Size(60, 19);
+            this.radioButtonObject.TabIndex = 28;
+            this.radioButtonObject.TabStop = true;
+            this.radioButtonObject.Text = "Object";
+            this.radioButtonObject.UseVisualStyleBackColor = true;
+            this.radioButtonObject.CheckedChanged += new System.EventHandler(this.RadioButton_Object_CheckedChanged);
             // 
-            // RadioButton_Action
+            // radioButtonAction
             // 
-            this.RadioButton_Action.AutoSize = true;
-            this.RadioButton_Action.Location = new System.Drawing.Point(126, 126);
-            this.RadioButton_Action.Name = "RadioButton_Action";
-            this.RadioButton_Action.Size = new System.Drawing.Size(55, 17);
-            this.RadioButton_Action.TabIndex = 29;
-            this.RadioButton_Action.Text = "Action";
-            this.RadioButton_Action.UseVisualStyleBackColor = true;
+            this.radioButtonAction.AutoSize = true;
+            this.radioButtonAction.Location = new System.Drawing.Point(156, 159);
+            this.radioButtonAction.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.radioButtonAction.Name = "radioButtonAction";
+            this.radioButtonAction.Size = new System.Drawing.Size(60, 19);
+            this.radioButtonAction.TabIndex = 29;
+            this.radioButtonAction.Text = "Action";
+            this.radioButtonAction.UseVisualStyleBackColor = true;
             // 
-            // CheckBox_Memory_Motion
+            // checkBoxMemoryMotion
             // 
-            this.CheckBox_Memory_Motion.AutoSize = true;
-			this.CheckBox_Memory_Motion.Enabled = false;
-			this.CheckBox_Memory_Motion.Location = new System.Drawing.Point(228, 180);
-            this.CheckBox_Memory_Motion.Name = "CheckBox_Memory_Motion";
-            this.CheckBox_Memory_Motion.Size = new System.Drawing.Size(63, 17);
-            this.CheckBox_Memory_Motion.TabIndex = 30;
-            this.CheckBox_Memory_Motion.Text = "Memory";
-            this.CheckBox_Memory_Motion.UseVisualStyleBackColor = true;
+            this.checkBoxMemoryMotion.AutoSize = true;
+            this.checkBoxMemoryMotion.Enabled = false;
+            this.checkBoxMemoryMotion.Location = new System.Drawing.Point(267, 223);
+            this.checkBoxMemoryMotion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxMemoryMotion.Name = "checkBoxMemoryMotion";
+            this.checkBoxMemoryMotion.Size = new System.Drawing.Size(71, 19);
+            this.checkBoxMemoryMotion.TabIndex = 30;
+            this.checkBoxMemoryMotion.Text = "Memory";
+            this.checkBoxMemoryMotion.UseVisualStyleBackColor = true;
             // 
-            // CheckBox_Hex_Motion
+            // checkBoxHexMotion
             // 
-            this.CheckBox_Hex_Motion.AutoSize = true;
-            this.CheckBox_Hex_Motion.Checked = true;
-			this.CheckBox_Hex_Motion.Enabled = false;
-			this.CheckBox_Hex_Motion.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckBox_Hex_Motion.Location = new System.Drawing.Point(181, 180);
-            this.CheckBox_Hex_Motion.Name = "CheckBox_Hex_Motion";
-            this.CheckBox_Hex_Motion.Size = new System.Drawing.Size(45, 17);
-            this.CheckBox_Hex_Motion.TabIndex = 31;
-            this.CheckBox_Hex_Motion.Text = "Hex";
-            this.CheckBox_Hex_Motion.UseVisualStyleBackColor = true;
-            this.CheckBox_Hex_Motion.CheckedChanged += new System.EventHandler(this.CheckBox_Hex_Motion_CheckedChanged);
+            this.checkBoxHexMotion.AutoSize = true;
+            this.checkBoxHexMotion.Checked = true;
+            this.checkBoxHexMotion.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxHexMotion.Enabled = false;
+            this.checkBoxHexMotion.Location = new System.Drawing.Point(212, 223);
+            this.checkBoxHexMotion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxHexMotion.Name = "checkBoxHexMotion";
+            this.checkBoxHexMotion.Size = new System.Drawing.Size(47, 19);
+            this.checkBoxHexMotion.TabIndex = 31;
+            this.checkBoxHexMotion.Text = "Hex";
+            this.checkBoxHexMotion.UseVisualStyleBackColor = true;
+            this.checkBoxHexMotion.CheckedChanged += new System.EventHandler(this.CheckBox_Hex_Motion_CheckedChanged);
             // 
-            // groupBox1
+            // groupBoxBinaryData
             // 
-            this.groupBox1.Controls.Add(this.RadioButton_Attach);
-            this.groupBox1.Controls.Add(this.CheckBox_Hex_Motion);
-            this.groupBox1.Controls.Add(this.ComboBox_Format);
-            this.groupBox1.Controls.Add(this.CheckBox_LoadMotion);
-            this.groupBox1.Controls.Add(this.NumericUpDown_Key);
-            this.groupBox1.Controls.Add(this.CheckBox_Memory_Motion);
-            this.groupBox1.Controls.Add(this.Label_Format);
-            this.groupBox1.Controls.Add(this.NumericUpDown_MotionAddress);
-            this.groupBox1.Controls.Add(this.Label_MotionAddress);
-            this.groupBox1.Controls.Add(this.RadioButton_Action);
-            this.groupBox1.Controls.Add(this.Label_Key);
-            this.groupBox1.Controls.Add(this.CheckBox_Memory_Object);
-            this.groupBox1.Controls.Add(this.RadioButton_Object);
-            this.groupBox1.Controls.Add(this.ComboBox_FileType);
-            this.groupBox1.Controls.Add(this.CheckBox_BigEndian);
-            this.groupBox1.Controls.Add(this.Label_Structure);
-            this.groupBox1.Controls.Add(this.NumericUpDown_ObjectAddress);
-            this.groupBox1.Controls.Add(this.Label_ModelAddress);
-            this.groupBox1.Controls.Add(this.CheckBox_Hex_Object);
-            this.groupBox1.Location = new System.Drawing.Point(12, 35);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(315, 215);
-            this.groupBox1.TabIndex = 32;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Binary data";
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxHexStartOffset);
+            this.groupBoxBinaryData.Controls.Add(this.numericUpDownStartOffset);
+            this.groupBoxBinaryData.Controls.Add(this.labelStartOffset);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxReverse);
+            this.groupBoxBinaryData.Controls.Add(this.radioButtonAttach);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxHexMotion);
+            this.groupBoxBinaryData.Controls.Add(this.comboBoxModelFormat);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxLoadMotion);
+            this.groupBoxBinaryData.Controls.Add(this.numericUpDownKey);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxMemoryMotion);
+            this.groupBoxBinaryData.Controls.Add(this.labelModelFormat);
+            this.groupBoxBinaryData.Controls.Add(this.numericUpDownMotionAddress);
+            this.groupBoxBinaryData.Controls.Add(this.labelMotionAddress);
+            this.groupBoxBinaryData.Controls.Add(this.radioButtonAction);
+            this.groupBoxBinaryData.Controls.Add(this.labelKey);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxMemoryObject);
+            this.groupBoxBinaryData.Controls.Add(this.radioButtonObject);
+            this.groupBoxBinaryData.Controls.Add(this.comboBoxBinaryFileType);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxBigEndian);
+            this.groupBoxBinaryData.Controls.Add(this.labelStructure);
+            this.groupBoxBinaryData.Controls.Add(this.numericUpDownModelAddress);
+            this.groupBoxBinaryData.Controls.Add(this.labelModelAddress);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxHexObject);
+            this.groupBoxBinaryData.Location = new System.Drawing.Point(14, 40);
+            this.groupBoxBinaryData.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBoxBinaryData.Name = "groupBoxBinaryData";
+            this.groupBoxBinaryData.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBoxBinaryData.Size = new System.Drawing.Size(380, 258);
+            this.groupBoxBinaryData.TabIndex = 32;
+            this.groupBoxBinaryData.TabStop = false;
+            this.groupBoxBinaryData.Text = "Binary data";
             // 
-            // RadioButton_Attach
+            // checkBoxHexStartOffset
             // 
-            this.RadioButton_Attach.AutoSize = true;
-            this.RadioButton_Attach.Location = new System.Drawing.Point(187, 126);
-            this.RadioButton_Attach.Name = "RadioButton_Attach";
-            this.RadioButton_Attach.Size = new System.Drawing.Size(94, 17);
-            this.RadioButton_Attach.TabIndex = 32;
-            this.RadioButton_Attach.Text = "Model (Attach)";
-            this.RadioButton_Attach.UseVisualStyleBackColor = true;
+            this.checkBoxHexStartOffset.AutoSize = true;
+            this.checkBoxHexStartOffset.Checked = true;
+            this.checkBoxHexStartOffset.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxHexStartOffset.Location = new System.Drawing.Point(212, 91);
+            this.checkBoxHexStartOffset.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxHexStartOffset.Name = "checkBoxHexStartOffset";
+            this.checkBoxHexStartOffset.Size = new System.Drawing.Size(47, 19);
+            this.checkBoxHexStartOffset.TabIndex = 36;
+            this.checkBoxHexStartOffset.Text = "Hex";
+            this.checkBoxHexStartOffset.UseVisualStyleBackColor = true;
+            this.checkBoxHexStartOffset.CheckedChanged += new System.EventHandler(this.checkBoxHexStartOffset_CheckedChanged);
             // 
-            // NumericUpDown_Key
+            // numericUpDownStartOffset
             // 
-            this.NumericUpDown_Key.Location = new System.Drawing.Point(66, 19);
-            this.NumericUpDown_Key.Name = "NumericUpDown_Key";
-            this.NumericUpDown_Key.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDown_Key.TabIndex = 15;
-			this.NumericUpDown_Key.Maximum = 4294967295;
-			this.NumericUpDown_Key.Minimum = -4294967295;
-			this.NumericUpDown_Key.Hexadecimal = true;
-			this.NumericUpDown_Key.ValueChanged += NumericUpDown_Key_ValueChanged;
-			// 
-			// NumericUpDown_MotionAddress
-			// 
-			this.NumericUpDown_MotionAddress.Enabled = false;
-            this.NumericUpDown_MotionAddress.Location = new System.Drawing.Point(64, 178);
-            this.NumericUpDown_MotionAddress.Name = "NumericUpDown_MotionAddress";
-            this.NumericUpDown_MotionAddress.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDown_MotionAddress.TabIndex = 19;
-			this.NumericUpDown_MotionAddress.Maximum = 4294967295;
-			this.NumericUpDown_MotionAddress.Minimum = -4294967295;
-			this.NumericUpDown_MotionAddress.Hexadecimal = true;
-			this.NumericUpDown_MotionAddress.ValueChanged += NumericUpDown_MotionAddress_ValueChanged;
-			// 
-			// NumericUpDown_ObjectAddress
-			// 
-			this.NumericUpDown_ObjectAddress.Location = new System.Drawing.Point(66, 55);
-            this.NumericUpDown_ObjectAddress.Name = "NumericUpDown_ObjectAddress";
-            this.NumericUpDown_ObjectAddress.Size = new System.Drawing.Size(98, 20);
-            this.NumericUpDown_ObjectAddress.TabIndex = 3;
-			this.NumericUpDown_ObjectAddress.Maximum = 4294967295;
-			this.NumericUpDown_ObjectAddress.Minimum = -4294967295;
-			this.NumericUpDown_ObjectAddress.Hexadecimal = true;
-			this.NumericUpDown_ObjectAddress.ValueChanged += NumericUpDown_ObjectAddress_ValueChanged;
-			// 
-			// ModelFileDialog
-			// 
-			this.AcceptButton = this.OK_Button;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.numericUpDownStartOffset.Hexadecimal = true;
+            this.numericUpDownStartOffset.Location = new System.Drawing.Point(86, 88);
+            this.numericUpDownStartOffset.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.numericUpDownStartOffset.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.numericUpDownStartOffset.Minimum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownStartOffset.Name = "numericUpDownStartOffset";
+            this.numericUpDownStartOffset.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownStartOffset.TabIndex = 35;
+            this.numericUpDownStartOffset.ValueChanged += new System.EventHandler(this.numericUpDownStartOffset_ValueChanged);
+            // 
+            // labelStartOffset
+            // 
+            this.labelStartOffset.AutoSize = true;
+            this.labelStartOffset.Location = new System.Drawing.Point(9, 90);
+            this.labelStartOffset.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelStartOffset.Name = "labelStartOffset";
+            this.labelStartOffset.Size = new System.Drawing.Size(69, 15);
+            this.labelStartOffset.TabIndex = 34;
+            this.labelStartOffset.Text = "Start Offset:";
+            // 
+            // checkBoxReverse
+            // 
+            this.checkBoxReverse.AutoSize = true;
+            this.checkBoxReverse.Location = new System.Drawing.Point(303, 123);
+            this.checkBoxReverse.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBoxReverse.Name = "checkBoxReverse";
+            this.checkBoxReverse.Size = new System.Drawing.Size(66, 19);
+            this.checkBoxReverse.TabIndex = 33;
+            this.checkBoxReverse.Text = "Reverse";
+            this.checkBoxReverse.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonAttach
+            // 
+            this.radioButtonAttach.AutoSize = true;
+            this.radioButtonAttach.Location = new System.Drawing.Point(227, 159);
+            this.radioButtonAttach.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.radioButtonAttach.Name = "radioButtonAttach";
+            this.radioButtonAttach.Size = new System.Drawing.Size(105, 19);
+            this.radioButtonAttach.TabIndex = 32;
+            this.radioButtonAttach.Text = "Model (Attach)";
+            this.radioButtonAttach.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownKey
+            // 
+            this.numericUpDownKey.Hexadecimal = true;
+            this.numericUpDownKey.Location = new System.Drawing.Point(86, 22);
+            this.numericUpDownKey.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.numericUpDownKey.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.numericUpDownKey.Minimum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownKey.Name = "numericUpDownKey";
+            this.numericUpDownKey.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownKey.TabIndex = 15;
+            this.numericUpDownKey.ValueChanged += new System.EventHandler(this.numericUpDownKey_ValueChanged);
+            // 
+            // numericUpDownMotionAddress
+            // 
+            this.numericUpDownMotionAddress.Enabled = false;
+            this.numericUpDownMotionAddress.Hexadecimal = true;
+            this.numericUpDownMotionAddress.Location = new System.Drawing.Point(84, 219);
+            this.numericUpDownMotionAddress.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.numericUpDownMotionAddress.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.numericUpDownMotionAddress.Minimum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownMotionAddress.Name = "numericUpDownMotionAddress";
+            this.numericUpDownMotionAddress.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownMotionAddress.TabIndex = 19;
+            this.numericUpDownMotionAddress.ValueChanged += new System.EventHandler(this.numericUpDownMotionAddress_ValueChanged);
+            // 
+            // numericUpDownModelAddress
+            // 
+            this.numericUpDownModelAddress.Hexadecimal = true;
+            this.numericUpDownModelAddress.Location = new System.Drawing.Point(86, 55);
+            this.numericUpDownModelAddress.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.numericUpDownModelAddress.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.numericUpDownModelAddress.Minimum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            -2147483648});
+            this.numericUpDownModelAddress.Name = "numericUpDownModelAddress";
+            this.numericUpDownModelAddress.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownModelAddress.TabIndex = 3;
+            this.numericUpDownModelAddress.ValueChanged += new System.EventHandler(this.numericUpDownModelAddress_ValueChanged);
+            // 
+            // ModelFileDialog
+            // 
+            this.AcceptButton = this.OK_Button;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(342, 297);
-            this.Controls.Add(this.Label_Type);
-            this.Controls.Add(this.RadioButton_Binary);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.RadioButton_SA2MDL);
-            this.Controls.Add(this.RadioButton_SA2BMDL);
+            this.ClientSize = new System.Drawing.Size(409, 347);
+            this.Controls.Add(this.labelType);
+            this.Controls.Add(this.radioButtonBinary);
+            this.Controls.Add(this.groupBoxBinaryData);
+            this.Controls.Add(this.radioButtonSA2MDL);
+            this.Controls.Add(this.radioButtonSA2BMDL);
             this.Controls.Add(this.OK_Button);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ModelFileDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Load from a Binary File";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_MotionAddress)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_ObjectAddress)).EndInit();
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.ModelFileDialog_HelpButtonClicked);
+            this.groupBoxBinaryData.ResumeLayout(false);
+            this.groupBoxBinaryData.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartOffset)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKey)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMotionAddress)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownModelAddress)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
         internal Button OK_Button;
-        internal Label Label_Key;
-        internal ComboBox ComboBox_FileType;
-        internal Label Label_ModelAddress;
-        internal CheckBox CheckBox_Hex_Object;
-        internal System.Windows.Forms.NumericUpDown NumericUpDown_Key;
-        internal ComboBox ComboBox_Format;
-        internal Label Label_Format;
-        internal CheckBox CheckBox_LoadMotion;
-        private Label Label_MotionAddress;
-		internal CheckBox CheckBox_BigEndian;
-		internal RadioButton RadioButton_Binary;
-		internal RadioButton RadioButton_SA2MDL;
-		internal RadioButton RadioButton_SA2BMDL;
-		private Label Label_Type;
-		internal CheckBox CheckBox_Memory_Object;
-		internal Label Label_Structure;
-		internal RadioButton RadioButton_Object;
-		internal RadioButton RadioButton_Action;
-		internal CheckBox CheckBox_Memory_Motion;
-		internal CheckBox CheckBox_Hex_Motion;
-		private GroupBox groupBox1;
-		internal RadioButton RadioButton_Attach;
-		internal System.Windows.Forms.NumericUpDown NumericUpDown_ObjectAddress;
-		internal System.Windows.Forms.NumericUpDown NumericUpDown_MotionAddress;
+        internal Label labelKey;
+        internal ComboBox comboBoxBinaryFileType;
+        internal Label labelModelAddress;
+        internal CheckBox checkBoxHexObject;
+        internal System.Windows.Forms.NumericUpDown numericUpDownKey;
+        internal ComboBox comboBoxModelFormat;
+        internal Label labelModelFormat;
+        internal CheckBox checkBoxLoadMotion;
+        private Label labelMotionAddress;
+		internal CheckBox checkBoxBigEndian;
+		internal RadioButton radioButtonBinary;
+		internal RadioButton radioButtonSA2MDL;
+		internal RadioButton radioButtonSA2BMDL;
+		private Label labelType;
+		internal CheckBox checkBoxMemoryObject;
+		internal Label labelStructure;
+		internal RadioButton radioButtonObject;
+		internal RadioButton radioButtonAction;
+		internal CheckBox checkBoxMemoryMotion;
+		internal CheckBox checkBoxHexMotion;
+		private GroupBox groupBoxBinaryData;
+		internal RadioButton radioButtonAttach;
+		internal System.Windows.Forms.NumericUpDown numericUpDownModelAddress;
+		internal System.Windows.Forms.NumericUpDown numericUpDownMotionAddress;
+		internal CheckBox checkBoxReverse;
+		internal CheckBox checkBoxHexStartOffset;
+		internal NumericUpDown numericUpDownStartOffset;
+		internal Label labelStartOffset;
 	}
 }
