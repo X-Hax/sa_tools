@@ -86,21 +86,11 @@ namespace SAModel.SAMDL
             // 
             this.ComboBox_FileType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ComboBox_FileType.FormattingEnabled = true;
-            this.ComboBox_FileType.Items.AddRange(new object[] {
-            "EXE",
-            "DLL",
-            "1st_read.bin",
-            "SA1 Level",
-            "SA2 Level",
-            "SA1 Event File",
-            "SA2 Event File",
-            "SA2PC Event File",
-            "Model File"});
             this.ComboBox_FileType.Location = new System.Drawing.Point(182, 19);
             this.ComboBox_FileType.Name = "ComboBox_FileType";
             this.ComboBox_FileType.Size = new System.Drawing.Size(121, 21);
             this.ComboBox_FileType.TabIndex = 2;
-            this.ComboBox_FileType.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
+            this.ComboBox_FileType.SelectedIndexChanged += new System.EventHandler(this.ComboBox_FileType_SelectedIndexChanged);
             // 
             // Label_ModelAddress
             // 
@@ -122,7 +112,7 @@ namespace SAModel.SAMDL
             this.CheckBox_Hex_Object.TabIndex = 9;
             this.CheckBox_Hex_Object.Text = "Hex";
             this.CheckBox_Hex_Object.UseVisualStyleBackColor = true;
-            this.CheckBox_Hex_Object.CheckedChanged += new System.EventHandler(this.CheckBox3_CheckedChanged);
+            this.CheckBox_Hex_Object.CheckedChanged += new System.EventHandler(this.CheckBox_Hex_Object_CheckedChanged);
             // 
             // ComboBox_Format
             // 
@@ -188,7 +178,7 @@ namespace SAModel.SAMDL
             this.RadioButton_Binary.TabStop = true;
             this.RadioButton_Binary.Text = "Binary";
             this.RadioButton_Binary.UseVisualStyleBackColor = true;
-            this.RadioButton_Binary.CheckedChanged += new System.EventHandler(this.typBinary_CheckedChanged);
+            this.RadioButton_Binary.CheckedChanged += new System.EventHandler(this.RadioButton_Binary_CheckedChanged);
             // 
             // RadioButton_SA2MDL
             // 
@@ -264,7 +254,8 @@ namespace SAModel.SAMDL
             // CheckBox_Memory_Motion
             // 
             this.CheckBox_Memory_Motion.AutoSize = true;
-            this.CheckBox_Memory_Motion.Location = new System.Drawing.Point(228, 180);
+			this.CheckBox_Memory_Motion.Enabled = false;
+			this.CheckBox_Memory_Motion.Location = new System.Drawing.Point(228, 180);
             this.CheckBox_Memory_Motion.Name = "CheckBox_Memory_Motion";
             this.CheckBox_Memory_Motion.Size = new System.Drawing.Size(63, 17);
             this.CheckBox_Memory_Motion.TabIndex = 30;
@@ -275,7 +266,8 @@ namespace SAModel.SAMDL
             // 
             this.CheckBox_Hex_Motion.AutoSize = true;
             this.CheckBox_Hex_Motion.Checked = true;
-            this.CheckBox_Hex_Motion.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.CheckBox_Hex_Motion.Enabled = false;
+			this.CheckBox_Hex_Motion.CheckState = System.Windows.Forms.CheckState.Checked;
             this.CheckBox_Hex_Motion.Location = new System.Drawing.Point(181, 180);
             this.CheckBox_Hex_Motion.Name = "CheckBox_Hex_Motion";
             this.CheckBox_Hex_Motion.Size = new System.Drawing.Size(45, 17);
@@ -376,7 +368,6 @@ namespace SAModel.SAMDL
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Load from a Binary File";
-            this.Load += new System.EventHandler(this.Dialog1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUpDown_Key)).EndInit();
