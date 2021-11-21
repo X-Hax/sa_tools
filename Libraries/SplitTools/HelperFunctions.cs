@@ -34,15 +34,18 @@ namespace SplitTools
 				ptr += 0x14;
 				int PEHead = ptr;
 				uint imageBase = ByteConverter.ToUInt32(exefile, ptr + 28);
-				byte[] result = new byte[ByteConverter.ToUInt32(exefile, ptr + 56)];
-				Array.Copy(exefile, result, ByteConverter.ToUInt32(exefile, ptr + 60));
-				ptr += 0xe0;
-				for (int i = 0; i < numsects; i++)
+				if (imageBase != 0x82000000) // SADX X360 EXE doesn't like this
 				{
-					Array.Copy(exefile, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FAddr), result, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.VAddr), ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FSize));
-					ptr += (int)SectOffs.Size;
+					byte[] result = new byte[ByteConverter.ToUInt32(exefile, ptr + 56)];
+					Array.Copy(exefile, result, ByteConverter.ToUInt32(exefile, ptr + 60));
+					ptr += 0xe0;
+					for (int i = 0; i < numsects; i++)
+					{
+						Array.Copy(exefile, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FAddr), result, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.VAddr), ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FSize));
+						ptr += (int)SectOffs.Size;
+					}
+					exefile = result;
 				}
-				exefile = result;
 				return imageBase;
 			}
 			catch 
