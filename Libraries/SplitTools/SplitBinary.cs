@@ -1339,7 +1339,7 @@ namespace SplitTools.Split
             return 1;
         }
 
-        public static void SplitManual(string game, string dataFileName, uint imageBase, int address, string itemType, string outputFilename, string customProperties, string itemname = "", bool nometa = false, bool nolabel = false)
+		public static void SplitManual(string game, string dataFileName, uint imageBase, int address, string itemType, string outputFilename, string customProperties, string itemname = "", bool nometa = false, bool nolabel = false, int offset = 0)
         {
             Game gameBase;
             // Get game
@@ -1420,7 +1420,15 @@ namespace SplitTools.Split
                 }
                 Console.WriteLine();
             }
-            SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, File.ReadAllBytes(dataFileName), imageBase, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
+			byte[] datafile = File.ReadAllBytes(dataFileName);
+			// Trim file if a start offset is specified
+			if (offset != 0)
+			{
+				byte[] datafile_new = new byte[offset + datafile.Length];
+				datafile.CopyTo(datafile_new, offset);
+				datafile = datafile_new;
+			}
+			SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, datafile, imageBase, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
         }
     }
 
