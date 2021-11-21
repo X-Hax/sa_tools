@@ -586,8 +586,8 @@ namespace SAModel.SAMDL
 					{
 						if (modelinfo.comboBoxBinaryFileType.SelectedIndex == 2) // REL file
 						{
-							MessageBox.Show("REK");
 							ByteConverter.BigEndian = true;
+							file = SplitTools.HelperFunctions.DecompressREL(file);
 							SplitTools.HelperFunctions.FixRELPointers(file, 0xC900000);
 						}
 						log.Add("Loading model from binary file " + filename);
