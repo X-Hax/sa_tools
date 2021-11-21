@@ -115,7 +115,7 @@ namespace SAModel.SAMDL
             this.checkBoxHexObject.AutoSize = true;
             this.checkBoxHexObject.Checked = true;
             this.checkBoxHexObject.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxHexObject.Location = new System.Drawing.Point(212, 59);
+            this.checkBoxHexObject.Location = new System.Drawing.Point(212, 57);
             this.checkBoxHexObject.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxHexObject.Name = "checkBoxHexObject";
             this.checkBoxHexObject.Size = new System.Drawing.Size(47, 19);
@@ -174,7 +174,7 @@ namespace SAModel.SAMDL
             // checkBoxBigEndian
             // 
             this.checkBoxBigEndian.AutoSize = true;
-            this.checkBoxBigEndian.Location = new System.Drawing.Point(212, 123);
+            this.checkBoxBigEndian.Location = new System.Drawing.Point(212, 124);
             this.checkBoxBigEndian.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxBigEndian.Name = "checkBoxBigEndian";
             this.checkBoxBigEndian.Size = new System.Drawing.Size(82, 19);
@@ -231,7 +231,7 @@ namespace SAModel.SAMDL
             // checkBoxMemoryObject
             // 
             this.checkBoxMemoryObject.AutoSize = true;
-            this.checkBoxMemoryObject.Location = new System.Drawing.Point(267, 59);
+            this.checkBoxMemoryObject.Location = new System.Drawing.Point(267, 57);
             this.checkBoxMemoryObject.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxMemoryObject.Name = "checkBoxMemoryObject";
             this.checkBoxMemoryObject.Size = new System.Drawing.Size(71, 19);
@@ -278,7 +278,7 @@ namespace SAModel.SAMDL
             // 
             this.checkBoxMemoryMotion.AutoSize = true;
             this.checkBoxMemoryMotion.Enabled = false;
-            this.checkBoxMemoryMotion.Location = new System.Drawing.Point(267, 223);
+            this.checkBoxMemoryMotion.Location = new System.Drawing.Point(267, 220);
             this.checkBoxMemoryMotion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxMemoryMotion.Name = "checkBoxMemoryMotion";
             this.checkBoxMemoryMotion.Size = new System.Drawing.Size(71, 19);
@@ -292,7 +292,7 @@ namespace SAModel.SAMDL
             this.checkBoxHexMotion.Checked = true;
             this.checkBoxHexMotion.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxHexMotion.Enabled = false;
-            this.checkBoxHexMotion.Location = new System.Drawing.Point(212, 223);
+            this.checkBoxHexMotion.Location = new System.Drawing.Point(212, 220);
             this.checkBoxHexMotion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxHexMotion.Name = "checkBoxHexMotion";
             this.checkBoxHexMotion.Size = new System.Drawing.Size(47, 19);
@@ -310,6 +310,7 @@ namespace SAModel.SAMDL
             this.groupBoxBinaryData.Controls.Add(this.radioButtonAttach);
             this.groupBoxBinaryData.Controls.Add(this.checkBoxHexMotion);
             this.groupBoxBinaryData.Controls.Add(this.comboBoxModelFormat);
+            this.groupBoxBinaryData.Controls.Add(this.checkBoxBigEndian);
             this.groupBoxBinaryData.Controls.Add(this.checkBoxLoadMotion);
             this.groupBoxBinaryData.Controls.Add(this.numericUpDownKey);
             this.groupBoxBinaryData.Controls.Add(this.checkBoxMemoryMotion);
@@ -321,7 +322,6 @@ namespace SAModel.SAMDL
             this.groupBoxBinaryData.Controls.Add(this.checkBoxMemoryObject);
             this.groupBoxBinaryData.Controls.Add(this.radioButtonObject);
             this.groupBoxBinaryData.Controls.Add(this.comboBoxBinaryFileType);
-            this.groupBoxBinaryData.Controls.Add(this.checkBoxBigEndian);
             this.groupBoxBinaryData.Controls.Add(this.labelStructure);
             this.groupBoxBinaryData.Controls.Add(this.numericUpDownModelAddress);
             this.groupBoxBinaryData.Controls.Add(this.labelModelAddress);
@@ -340,7 +340,7 @@ namespace SAModel.SAMDL
             this.checkBoxHexStartOffset.AutoSize = true;
             this.checkBoxHexStartOffset.Checked = true;
             this.checkBoxHexStartOffset.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxHexStartOffset.Location = new System.Drawing.Point(212, 91);
+            this.checkBoxHexStartOffset.Location = new System.Drawing.Point(212, 90);
             this.checkBoxHexStartOffset.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxHexStartOffset.Name = "checkBoxHexStartOffset";
             this.checkBoxHexStartOffset.Size = new System.Drawing.Size(47, 19);
@@ -382,7 +382,7 @@ namespace SAModel.SAMDL
             // checkBoxReverse
             // 
             this.checkBoxReverse.AutoSize = true;
-            this.checkBoxReverse.Location = new System.Drawing.Point(303, 123);
+            this.checkBoxReverse.Location = new System.Drawing.Point(302, 124);
             this.checkBoxReverse.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxReverse.Name = "checkBoxReverse";
             this.checkBoxReverse.Size = new System.Drawing.Size(66, 19);
