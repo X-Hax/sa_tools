@@ -79,12 +79,6 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		private struct ModelFileType
-		{
-			public string ModelNameOrType;
-			public UInt32 Key;
-		};
-
 		private enum BinaryModelFileType
 		{
 			EXE,
