@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using SAModel.SAEditorCommon;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SA2CutsceneTextEditor
 {
@@ -32,18 +32,18 @@ namespace SA2CutsceneTextEditor
 		bool useSJIS;
 		SearchCriteria currentSearch;
 		int searchScene, searchMessage;
-		SettingsFile settingsFile;
+		Settings_SA2CutsceneTextEditor settingsFile;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			settingsFile = SettingsFile.Load();
-			if (settingsFile.SA2CutsceneTextEditor.RecentFiles != null)
-				recentFiles = new List<string>(settingsFile.SA2CutsceneTextEditor.RecentFiles.Where(a => File.Exists(a)));
+			settingsFile = Settings_SA2CutsceneTextEditor.Load();
+			if (settingsFile.RecentFiles != null)
+				recentFiles = new List<string>(settingsFile.RecentFiles.Where(a => File.Exists(a)));
 			if (recentFiles.Count > 0)
 				UpdateRecentFiles();
-			bigEndian = settingsFile.SA2CutsceneTextEditor.BigEndian;
+			bigEndian = settingsFile.BigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			useSJIS = settingsFile.SA2CutsceneTextEditor.UseSJIS;
+			useSJIS = settingsFile.UseSJIS;
 			shiftJISToolStripMenuItem.Checked = useSJIS;
 			windows1252ToolStripMenuItem.Checked = !useSJIS;
 			if (filename != null)

@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using SAModel.SAEditorCommon;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SA2MessageFileEditor
 {
@@ -32,18 +32,18 @@ namespace SA2MessageFileEditor
 		bool useSJIS;
 		SearchCriteria currentSearch;
 		int searchMessage, searchLine;
-		SettingsFile settingsFile;
+		Settings_SA2MessageFileEditor settingsFile;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			settingsFile = SettingsFile.Load();
-			if (settingsFile.SA2MessageFileEditor.RecentFiles != null)
-				recentFiles = new List<string>(settingsFile.SA2MessageFileEditor.RecentFiles.Where(a => File.Exists(a)));
+			settingsFile = Settings_SA2MessageFileEditor.Load();
+			if (settingsFile.RecentFiles != null)
+				recentFiles = new List<string>(settingsFile.RecentFiles.Where(a => File.Exists(a)));
 			if (recentFiles.Count > 0)
 				UpdateRecentFiles();
-			bigEndian = settingsFile.SA2MessageFileEditor.BigEndian;
+			bigEndian = settingsFile.BigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			useSJIS = settingsFile.SA2MessageFileEditor.UseSJIS;
+			useSJIS = settingsFile.UseSJIS;
 			shiftJISToolStripMenuItem.Checked = useSJIS;
 			windows1252ToolStripMenuItem.Checked = !useSJIS;
 			if (filename != null)

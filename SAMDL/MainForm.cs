@@ -16,12 +16,13 @@ using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 using SplitTools;
 using SAModel.SAEditorCommon.ProjectManagement;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
-		SettingsFile settingsfile; // For user editable settings
+		Settings_SAMDL settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
         Logger log = new Logger();
         System.Drawing.Rectangle mouseBounds;
@@ -252,19 +253,19 @@ namespace SAModel.SAMDL
 				});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
-			settingsfile = SettingsFile.Load();
+			settingsfile = Settings_SAMDL.Load();
             
-            if (settingsfile.SAMDL.ShowWelcomeScreen)
+            if (settingsfile.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
-			EditorOptions.RenderDrawDistance = settingsfile.SAMDL.DrawDistance;			
+			EditorOptions.RenderDrawDistance = settingsfile.DrawDistance;			
 			EditorOptions.Initialize(d3ddevice);
-			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
-			cam.ModifierKey = settingsfile.SAMDL.CameraModifier;
-			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.SAMDL.AlternativeCamera;
-			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SAMDL.ini"),
+			cam.MoveSpeed = settingsfile.CamMoveSpeed;
+			cam.ModifierKey = settingsfile.CameraModifier;
+			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAMDL_keys.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -303,12 +304,12 @@ namespace SAModel.SAMDL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SAMDL.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				settingsfile.SAMDL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				settingsfile.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SAMDL Documentation";
@@ -676,9 +677,9 @@ namespace SAModel.SAMDL
 			}
 			AddModelToLibrary(model, false);
 			unsaved = false;
-			EditorOptions.backLight.Ambient.R = settingsfile.SAMDL.BackLightAmbientR;
-			EditorOptions.backLight.Ambient.G = settingsfile.SAMDL.BackLightAmbientG;
-			EditorOptions.backLight.Ambient.B = settingsfile.SAMDL.BackLightAmbientB;
+			EditorOptions.backLight.Ambient.R = settingsfile.BackLightAmbientR;
+			EditorOptions.backLight.Ambient.G = settingsfile.BackLightAmbientG;
+			EditorOptions.backLight.Ambient.B = settingsfile.BackLightAmbientB;
 			EditorOptions.UpdateDefaultLights(d3ddevice);
 		}
 		private void LoadBinFile(byte[] file)
@@ -790,7 +791,7 @@ namespace SAModel.SAMDL
 
 			try
 			{
-				settingsfile.SAMDL.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
+				settingsfile.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
 			catch { };
@@ -1370,7 +1371,7 @@ namespace SAModel.SAMDL
 			foreach (ActionKeyMapping mapping in newMappings)
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SAMDL.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAMDL_keys.ini");
 			actionList.Save(saveControlsPath);
 			// Settings
 			optionsEditor_FormUpdated();
@@ -1535,7 +1536,7 @@ namespace SAModel.SAMDL
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1543,7 +1544,7 @@ namespace SAModel.SAMDL
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1551,7 +1552,7 @@ namespace SAModel.SAMDL
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1610,9 +1611,9 @@ namespace SAModel.SAMDL
 					EditorOptions.backLight.Ambient.G = Math.Min(1.0f, EditorOptions.backLight.Ambient.G + 0.1f);
 					EditorOptions.backLight.Ambient.B = Math.Min(1.0f, EditorOptions.backLight.Ambient.B + 0.1f);
 					EditorOptions.UpdateDefaultLights(d3ddevice);
-					settingsfile.SAMDL.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
-					settingsfile.SAMDL.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
-					settingsfile.SAMDL.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					settingsfile.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
+					settingsfile.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
+					settingsfile.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
 					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
@@ -1621,9 +1622,9 @@ namespace SAModel.SAMDL
 					EditorOptions.backLight.Ambient.G = Math.Max(0.0f, EditorOptions.backLight.Ambient.G - 0.1f);
 					EditorOptions.backLight.Ambient.B = Math.Max(0.0f, EditorOptions.backLight.Ambient.B - 0.1f);
 					EditorOptions.UpdateDefaultLights(d3ddevice);
-					settingsfile.SAMDL.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
-					settingsfile.SAMDL.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
-					settingsfile.SAMDL.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					settingsfile.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
+					settingsfile.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
+					settingsfile.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
 					osd.UpdateOSDItem("Darken Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
@@ -2085,8 +2086,8 @@ namespace SAModel.SAMDL
 
 		void optionsEditor_FormUpdated()
 		{
-			settingsfile.SAMDL.DrawDistance = EditorOptions.RenderDrawDistance;
-			settingsfile.SAMDL.CameraModifier = cam.ModifierKey;
+			settingsfile.DrawDistance = EditorOptions.RenderDrawDistance;
+			settingsfile.CameraModifier = cam.ModifierKey;
 			DrawEntireModel();
 		}
 

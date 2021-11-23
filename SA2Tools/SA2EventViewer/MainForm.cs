@@ -7,19 +7,19 @@ using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.UI;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using BoundingSphere = SAModel.BoundingSphere;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SA2EventViewer
 {
 	public partial class MainForm : Form
 	{
-		SettingsFile settingsfile; // For user editable settings
+		Settings_SA2EventViewer settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SA2EventViewer.config
 		Logger log = new Logger();
 		bool FormResizing;
@@ -104,12 +104,12 @@ namespace SA2EventViewer
 					AutoDepthStencilFormat = Format.D24X8
 				});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
-			settingsfile = SettingsFile.Load();
+			settingsfile = Settings_SA2EventViewer.Load();
 
 			EditorOptions.Initialize(d3ddevice);
-			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.SA2EventViewer.DrawDistance_General;
-			cam.ModifierKey = settingsfile.SA2EventViewer.CameraModifier;
-			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SA2EventViewer.ini"),
+			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.DrawDistance_General;
+			cam.ModifierKey = settingsfile.CameraModifier;
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SA2EventViewer_keys.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -933,8 +933,8 @@ namespace SA2EventViewer
 
 		void optionsEditor_FormUpdated()
 		{
-			settingsfile.SA2EventViewer.CameraModifier = cam.ModifierKey;
-			settingsfile.SA2EventViewer.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			settingsfile.CameraModifier = cam.ModifierKey;
+			settingsfile.DrawDistance_General = EditorOptions.RenderDrawDistance;
 			DrawEntireModel();
 		}
 
@@ -946,7 +946,7 @@ namespace SA2EventViewer
 			foreach (ActionKeyMapping mapping in newMappings) 
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SA2EventViewer.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools",  "SA2EventViewer_keys.ini");
 			actionList.Save(saveControlsPath);
 			// Other settings
 			optionsEditor_FormUpdated();

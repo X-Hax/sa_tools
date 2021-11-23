@@ -13,38 +13,9 @@ namespace SAModel.SAEditorCommon
     /// </summary>
     public class SettingsFile
 	{
-		public Settings_SALVL SALVL;
-		public Settings_SAMDL SAMDL;
-		public Settings_SA2EventViewer SA2EventViewer;
-        public Settings_TextureEditor TextureEditor;
-		public Settings_SA2CutsceneTextEditor SA2CutsceneTextEditor;
-		public Settings_SA2MessageFileEditor SA2MessageFileEditor;
-
-		private static string GetSettingsPath()
+		public static string GetSettingsPath()
 		{
-			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "EditorPreferences.ini");
-		}
-
-		public static SettingsFile Load()
-		{
-			string path = GetSettingsPath();
-			if (File.Exists(path))
-			{
-				return IniSerializer.Deserialize<SettingsFile>(path);
-			}
-			else
-			{
-				SettingsFile settings = new SettingsFile
-				{
-					SALVL = new Settings_SALVL(),
-					SAMDL = new Settings_SAMDL(),
-					SA2EventViewer = new Settings_SA2EventViewer(),
-                    TextureEditor = new Settings_TextureEditor(),
-					SA2CutsceneTextEditor = new Settings_SA2CutsceneTextEditor(),
-					SA2MessageFileEditor = new Settings_SA2MessageFileEditor()
-				};
-				return settings;
-			}
+			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".ini");
 		}
 
 		public void Save()
@@ -55,7 +26,7 @@ namespace SAModel.SAEditorCommon
 			IniSerializer.Serialize(this, path);
 		}
 
-		public class Settings_SALVL
+		public class Settings_SALVL : SettingsFile
 		{
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
@@ -77,6 +48,7 @@ namespace SAModel.SAEditorCommon
 			public int CameraModifier { get; set; }
 			public bool AlternativeCamera { get; set; }
 			public bool MouseWrapScreen { get; set; }
+
 			public Settings_SALVL()
 			{
 				ShowWelcomeScreen = true;
@@ -91,9 +63,18 @@ namespace SAModel.SAEditorCommon
 				AlternativeCamera = false;
 				MouseWrapScreen = false;
 			}
+
+			public static Settings_SALVL Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SALVL>(path);
+				else
+					return new Settings_SALVL();
+			}
 		}
 
-		public class Settings_SAMDL
+		public class Settings_SAMDL : SettingsFile
 		{
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
@@ -131,57 +112,115 @@ namespace SAModel.SAEditorCommon
 				BackLightAmbientB = 0.0f;
 			}
 
+			public static Settings_SAMDL Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SAMDL>(path);
+				else
+					return new Settings_SAMDL();
+			}
 		}
 
-		public class Settings_SA2EventViewer
+		public class Settings_SA2EventViewer : SettingsFile
 		{
 			[DefaultValue(55000.0f)]
 			public float DrawDistance_General { get; set; }
 			[DefaultValue(1)]
 			public int CameraModifier { get; set; }
+
 			public Settings_SA2EventViewer()
 			{
 				DrawDistance_General = 55000.0f;
 				CameraModifier = 1;
 			}
+
+			public static Settings_SA2EventViewer Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2EventViewer>(path);
+				else
+					return new Settings_SA2EventViewer();
+			}
 		}
 
-        public class Settings_TextureEditor
-        {
+        public class Settings_TextureEditor : SettingsFile
+		{
             [DefaultValue(false)]
             public bool HighQualityGVM { get; set; }
             [DefaultValue(true)]
             public bool SACompatiblePalettes { get; set; }
             [DefaultValue(true)]
             public bool EnableFiltering { get; set; }
+
             public Settings_TextureEditor()
             {
                 HighQualityGVM = false;
                 SACompatiblePalettes = true;
                 EnableFiltering = true;
             }
-        }
 
-		public class Settings_SA2CutsceneTextEditor
+			public static Settings_TextureEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_TextureEditor>(path);
+				else
+					return new Settings_TextureEditor();
+			}
+		}
+
+		public class Settings_SA2CutsceneTextEditor : SettingsFile
 		{
-			[IniAlwaysInclude]
+			[DefaultValue(false)]
 			public bool BigEndian { get; set; }
-			[IniAlwaysInclude]
+			[DefaultValue(false)]
 			public bool UseSJIS { get; set; }
 			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 			public List<string> RecentFiles { get; set; } = new List<string>();
 
+			public Settings_SA2CutsceneTextEditor()
+			{
+				BigEndian = false;
+				UseSJIS = false;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2CutsceneTextEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2CutsceneTextEditor>(path);
+				else
+					return new Settings_SA2CutsceneTextEditor();
+			}
 		}
 
-		public class Settings_SA2MessageFileEditor
+		public class Settings_SA2MessageFileEditor : SettingsFile
 		{
-			[IniAlwaysInclude]
+			[DefaultValue(false)]
 			public bool BigEndian { get; set; }
-			[IniAlwaysInclude]
+			[DefaultValue(false)]
 			public bool UseSJIS { get; set; }
 			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 			public List<string> RecentFiles { get; set; } = new List<string>();
-		}
 
+			public Settings_SA2MessageFileEditor()
+			{
+				BigEndian = false;
+				UseSJIS = false;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2MessageFileEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2MessageFileEditor>(path);
+				else
+					return new Settings_SA2MessageFileEditor();
+			}
+		}
 	}
 }
