@@ -1492,7 +1492,8 @@ namespace SAToolsHub
                                     catch (Exception ex)
                                     {
                                         result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
-                                                                       + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel);
+											+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admin."
+																	   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
                                         if (result == DialogResult.Cancel) return false;
                                     }
                                 } while (result == DialogResult.Retry);
