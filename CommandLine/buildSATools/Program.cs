@@ -9,114 +9,165 @@ namespace buildSATools
 {
     partial class Program
 	{
-        static void Main(string[] args)
-        {
-            // Check if the build was already rearranged
-            if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "build", "SAToolsHub.deps.json")))
-                goto package;
-            // Clean up leftovers from previous build
-            List<string> refdirlist = new List<string>();
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"));
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"));
-            DeleteDirs(refdirlist);
-            Console.WriteLine("Patching EXE files...");
-            DirectoryInfo d = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "build"));
-            FileInfo[] files = d.GetFiles("*.exe", SearchOption.AllDirectories);
-            foreach (FileInfo exefile in files)
-            {
-                switch (exefile.Name.ToLowerInvariant())
-                {
-                    case "buildsatools.exe":
-                        break;
-                    case "satoolshub.exe":
-                        PatchExe(exefile.FullName, "tools\\lib");
-                        break;
-                    default:
-                        PatchExe(exefile.FullName, "lib");
-                        break;
-                }
-            }
-            Console.WriteLine("Deleting reference assemblies");
-            refdirlist = new List<string>();
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "ref"));
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "lib", "ref"));
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "tools", "ref"));
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "bin", "ref"));
-            DeleteDirs(refdirlist);
-            Console.WriteLine("Moving all DLL files to the lib folder");
-            FileInfo[] dllfiles = d.GetFiles("*.dll", SearchOption.AllDirectories);
-            foreach (FileInfo dllfile in dllfiles)
-            {
-                string fn = dllfile.FullName.ToLowerInvariant();
-                if (fn.Contains("buildsatools"))
-                    continue;
-                // Skip platform-specific runtimes in the runtimes folder
-                if (fn.Contains("runtimes"))
-                    continue;
-                Console.WriteLine("\tMoving: {0}", dllfile.FullName);
-                File.Move(dllfile.FullName, Path.Combine(Environment.CurrentDirectory, "build", "lib", dllfile.Name), true);
-            }
-            Console.WriteLine("Moving all JSON files to the lib folder");
-            FileInfo[] jsonfiles = d.GetFiles("*.json", SearchOption.AllDirectories);
-            foreach (FileInfo jsonfile in jsonfiles)
-            {
-                Console.WriteLine("\tMoving: {0}", jsonfile.FullName);
-                File.Move(jsonfile.FullName, Path.Combine(Environment.CurrentDirectory, "build", "lib", jsonfile.Name), true);
-            }
-            Console.WriteLine("Copying lib folder to bin and tools");
-            DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "tools", "runtimes"), Path.Combine(Environment.CurrentDirectory, "build", "lib", "runtimes"), true);
-            DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "lib"), Path.Combine(Environment.CurrentDirectory, "build", "bin", "lib"), true);
-            DirectoryCopy(Path.Combine(Environment.CurrentDirectory, "build", "lib"), Path.Combine(Environment.CurrentDirectory, "build", "tools", "lib"), true);
-            Console.WriteLine("Deleting runtimes folders");
-            refdirlist = new List<string>();
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "runtimes"));
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "bin", "runtimes"));
-            refdirlist.Add(Path.Combine(Environment.CurrentDirectory, "build", "tools", "runtimes"));
-            DeleteDirs(refdirlist);
-            Console.WriteLine("Deleting original lib folder");
-            Directory.Delete(Path.Combine(Environment.CurrentDirectory, "build", "lib"), true);
-            Console.WriteLine("Deleting runtimeconfig.dev.json files and irrelevant runtimes");
-            DirectoryInfo newd = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "build"));
-            FileInfo[] devf = newd.GetFiles("*.*", SearchOption.AllDirectories);
-            foreach (FileInfo devfile in devf)
-            {
-                string f = devfile.FullName.ToLowerInvariant();
-                if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64"))
-                    File.Delete(devfile.FullName);
-                else if (Environment.Is64BitProcess && f.Contains("win-x86"))
-                    File.Delete(devfile.FullName);
-                else if (!Environment.Is64BitProcess && f.Contains("win-x64"))
-                    File.Delete(devfile.FullName);
-            }
-            // Proceed to create the end user package
-            package:
-            string outdir = "output";
-            if (args.Length > 0)
-            {
-                if (args[0] == "-noout") return;
-                outdir = args[0];
-            }
-            // Set output directory
-            int retries = 0;
-            Console.WriteLine("Output directory: {0}", Path.GetFullPath(outdir));
-            while (true)
-                try
-                {
-                    DoStuff(outdir);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Thread.Sleep(1000);
-                    if (retries < 1000)
-                    {
-                        retries++;
-                        Console.Write(ex.Message + " Trying again...\n");
-                    }
-                    else
-                        throw;
-                }
-        }
+		private enum ProgramMode
+		{
+			Normal,
+			NoBuildScript,
+			NoPackage
+		};
+
+		static void Main(string[] args)
+		{
+			ProgramMode mode = ProgramMode.Normal;
+			string builddir = Path.Combine(Environment.CurrentDirectory, "build");
+			string outdir = Path.Combine(Environment.CurrentDirectory, "output");
+			// Process command line arguments
+			if (args.Length == 0)
+				Console.WriteLine("For usage, run buildsatools.exe -help\n");
+			else
+				for (int a = 0; a < args.Length; a++)
+				{
+					switch (args[a])
+					{
+						case "-help":
+							Console.WriteLine("This program creates a ready to use SA Tools package.");
+							Console.WriteLine("It requires a 'build' folder, which is produced by building the SA Tools solution in Visual Studio.");
+							Console.WriteLine("\nUsage: buildtools.exe [-noscript] [-nopackage] [output folder]");
+							Console.WriteLine("\nArguments:");
+							Console.WriteLine("-nopackage : Only process BuildScript.ini");
+							Console.WriteLine("-noscript : Do not process BuildScript.ini");
+							Console.WriteLine("output folder : Put the complete package in the specified folder (defaults to 'output' in the current folder)");
+							Console.WriteLine("\nPress ENTER to exit.");
+							Console.ReadLine();
+							return;
+						case "-nopackage":
+							mode = ProgramMode.NoPackage;
+							break;
+						case "-noscript":
+							mode = ProgramMode.NoBuildScript;
+							break;
+						default:
+							outdir = args[a];
+							break;
+					}
+				}
+			Console.WriteLine("Build folder: {0}", builddir);
+			if (!Directory.Exists(builddir))
+			{
+				Console.WriteLine("Build directory doesn't exist!");
+				return;
+			}
+			// Process build script
+			if (mode != ProgramMode.NoBuildScript)
+			{
+				int retries = 0;
+				Console.WriteLine("\nProcessing build script...");
+				while (true)
+					try
+					{
+						DoStuff(outdir);
+						break;
+					}
+					catch (Exception ex)
+					{
+						Thread.Sleep(1000);
+						if (retries < 1000)
+						{
+							retries++;
+							Console.Write(ex.Message + " Trying again...\n");
+						}
+						else
+							throw;
+					}
+			}
+			// Create package
+			if (mode == ProgramMode.NoPackage)
+			{
+				Console.WriteLine("\nFinished!");
+				return;
+			}
+			// Check if the build was already rearranged
+			if (!File.Exists(Path.Combine(outdir, "SAToolsHub.deps.json")))
+			{
+				Console.WriteLine("Build is already packaged or output folder is missing files.");
+				return;
+			}
+			// Clean up leftovers from previous build
+			List<string> refdirlist = new List<string>();
+			refdirlist.Add(Path.Combine(outdir, "bin", "lib"));
+			refdirlist.Add(Path.Combine(outdir, "tools", "lib"));
+			DeleteDirs(refdirlist);
+			Console.WriteLine("\nPatching EXE files...");
+			DirectoryInfo d = new DirectoryInfo(Path.Combine(outdir));
+			FileInfo[] files = d.GetFiles("*.exe", SearchOption.AllDirectories);
+			foreach (FileInfo exefile in files)
+			{
+				switch (exefile.Name.ToLowerInvariant())
+				{
+					case "buildsatools.exe":
+						break;
+					case "satoolshub.exe":
+						PatchExe(exefile.FullName, "tools\\lib");
+						break;
+					default:
+						PatchExe(exefile.FullName, "lib");
+						break;
+				}
+			}
+			Console.WriteLine("\nDeleting reference assemblies...");
+			refdirlist = new List<string>();
+			refdirlist.Add(Path.Combine(outdir, "ref"));
+			refdirlist.Add(Path.Combine(outdir, "lib", "ref"));
+			refdirlist.Add(Path.Combine(outdir, "tools", "ref"));
+			refdirlist.Add(Path.Combine(outdir, "bin", "ref"));
+			DeleteDirs(refdirlist);
+			Console.WriteLine("\nMoving all DLL files to the lib folder...");
+			FileInfo[] dllfiles = d.GetFiles("*.dll", SearchOption.AllDirectories);
+			foreach (FileInfo dllfile in dllfiles)
+			{
+				string fn = dllfile.FullName.ToLowerInvariant();
+				if (fn.Contains("buildsatools"))
+					continue;
+				// Skip platform-specific runtimes in the runtimes folder
+				if (fn.Contains("runtimes"))
+					continue;
+				Console.WriteLine("\tMoving: {0}", dllfile.FullName);
+				File.Move(dllfile.FullName, Path.Combine(outdir, "lib", dllfile.Name), true);
+			}
+			Console.WriteLine("\nMoving all JSON files to the lib folder...");
+			FileInfo[] jsonfiles = d.GetFiles("*.json", SearchOption.AllDirectories);
+			foreach (FileInfo jsonfile in jsonfiles)
+			{
+				Console.WriteLine("\tMoving: {0}", jsonfile.FullName);
+				File.Move(jsonfile.FullName, Path.Combine(outdir, "lib", jsonfile.Name), true);
+			}
+			Console.WriteLine("\nCopying lib folder to bin and tools...");
+			DirectoryCopy(Path.Combine(outdir, "tools", "runtimes"), Path.Combine(outdir, "lib", "runtimes"), true);
+			DirectoryCopy(Path.Combine(outdir, "lib"), Path.Combine(outdir, "bin", "lib"), true);
+			DirectoryCopy(Path.Combine(outdir, "lib"), Path.Combine(outdir, "tools", "lib"), true);
+			Console.WriteLine("\nDeleting runtimes folders...");
+			refdirlist = new List<string>();
+			refdirlist.Add(Path.Combine(outdir, "runtimes"));
+			refdirlist.Add(Path.Combine(outdir, "bin", "runtimes"));
+			refdirlist.Add(Path.Combine(outdir, "tools", "runtimes"));
+			DeleteDirs(refdirlist);
+			Console.WriteLine("\nDeleting original lib folder...");
+			Directory.Delete(Path.Combine(outdir, "lib"), true);
+			Console.WriteLine("\nDeleting runtimeconfig.dev.json files and irrelevant runtimes...");
+			DirectoryInfo newd = new DirectoryInfo(Path.Combine(outdir));
+			FileInfo[] devf = newd.GetFiles("*.*", SearchOption.AllDirectories);
+			foreach (FileInfo devfile in devf)
+			{
+				string f = devfile.FullName.ToLowerInvariant();
+				if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64"))
+					File.Delete(devfile.FullName);
+				else if (Environment.Is64BitProcess && f.Contains("win-x86"))
+					File.Delete(devfile.FullName);
+				else if (!Environment.Is64BitProcess && f.Contains("win-x64"))
+					File.Delete(devfile.FullName);
+			}
+			Console.WriteLine("\nFinished!");
+		}
 
         private static void DeleteDirs(List<string> refdirlist)
         {
@@ -166,7 +217,6 @@ namespace buildSATools
 			{
 				Directory.CreateDirectory(destDirName);
 			}
-
 
 			// Get the file contents of the directory to copy.
 			System.IO.FileInfo[] files = dir.GetFiles();
@@ -258,6 +308,5 @@ namespace buildSATools
                 return 1;
             }
         }
-
     }
 }
