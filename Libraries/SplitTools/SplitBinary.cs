@@ -191,14 +191,13 @@ namespace SplitTools.Split
             return (int)SplitERRORVALUE.Success;
         }
 
-		public static int SplitSingle(string itemName, SplitTools.FileInfo itemFileInfo, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
+		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
         {
             if (string.IsNullOrEmpty(itemName))
                 return 0;
 			if (File.Exists(fileOutputPath) && overwrite == false)
 				return 0;
             string filedesc = itemName;
-            SplitTools.FileInfo data = itemFileInfo;
             Dictionary<string, string> customProperties = data.CustomProperties;
             string type = data.Type;
             int address = data.Address;
@@ -1421,6 +1420,7 @@ namespace SplitTools.Split
                 Console.WriteLine();
             }
 			byte[] datafile = File.ReadAllBytes(dataFileName);
+			uint imageBase_new = HelperFunctions.SetupEXE(ref datafile) ?? imageBase;
 			// Trim file if a start offset is specified
 			if (offset != 0)
 			{
@@ -1428,7 +1428,7 @@ namespace SplitTools.Split
 				datafile.CopyTo(datafile_new, offset);
 				datafile = datafile_new;
 			}
-			SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, datafile, imageBase, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
+			SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, datafile, imageBase_new, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
         }
     }
 
