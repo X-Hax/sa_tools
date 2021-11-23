@@ -111,9 +111,11 @@ namespace PLTool
             this.groupBoxCO1.Controls.Add(this.numericUpDownCO1R);
             this.groupBoxCO1.Controls.Add(this.pictureBoxColor1);
             this.groupBoxCO1.Controls.Add(this.trackBarCO1Pow);
-            this.groupBoxCO1.Location = new System.Drawing.Point(12, 12);
+            this.groupBoxCO1.Location = new System.Drawing.Point(9, 9);
+            this.groupBoxCO1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxCO1.Name = "groupBoxCO1";
-            this.groupBoxCO1.Size = new System.Drawing.Size(268, 285);
+            this.groupBoxCO1.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxCO1.Size = new System.Drawing.Size(208, 214);
             this.groupBoxCO1.TabIndex = 0;
             this.groupBoxCO1.TabStop = false;
             this.groupBoxCO1.Text = "Color 1";
@@ -121,130 +123,143 @@ namespace PLTool
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(73, 251);
+            this.label4.Location = new System.Drawing.Point(57, 188);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(57, 20);
+            this.label4.Size = new System.Drawing.Size(43, 15);
             this.label4.TabIndex = 15;
             this.label4.Text = "Power:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(42, 149);
+            this.label3.Location = new System.Drawing.Point(33, 112);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 20);
+            this.label3.Size = new System.Drawing.Size(33, 15);
             this.label3.TabIndex = 14;
             this.label3.Text = "Blue:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(29, 117);
+            this.label2.Location = new System.Drawing.Point(23, 88);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 20);
+            this.label2.Size = new System.Drawing.Size(41, 15);
             this.label2.TabIndex = 13;
             this.label2.Text = "Green:";
             // 
             // labelCO1POW
             // 
             this.labelCO1POW.AutoSize = true;
-            this.labelCO1POW.Location = new System.Drawing.Point(136, 251);
+            this.labelCO1POW.Location = new System.Drawing.Point(106, 188);
+            this.labelCO1POW.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO1POW.Name = "labelCO1POW";
-            this.labelCO1POW.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1POW.Size = new System.Drawing.Size(34, 15);
             this.labelCO1POW.TabIndex = 11;
             this.labelCO1POW.Text = "1.000";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(44, 89);
+            this.label1.Location = new System.Drawing.Point(34, 67);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(43, 20);
+            this.label1.Size = new System.Drawing.Size(30, 15);
             this.label1.TabIndex = 12;
             this.label1.Text = "Red:";
             // 
             // labelCO1B
             // 
             this.labelCO1B.AutoSize = true;
-            this.labelCO1B.Location = new System.Drawing.Point(191, 149);
+            this.labelCO1B.Location = new System.Drawing.Point(149, 112);
+            this.labelCO1B.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO1B.Name = "labelCO1B";
-            this.labelCO1B.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1B.Size = new System.Drawing.Size(34, 15);
             this.labelCO1B.TabIndex = 10;
             this.labelCO1B.Text = "1.000";
             // 
             // labelCO1G
             // 
             this.labelCO1G.AutoSize = true;
-            this.labelCO1G.Location = new System.Drawing.Point(191, 117);
+            this.labelCO1G.Location = new System.Drawing.Point(149, 88);
+            this.labelCO1G.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO1G.Name = "labelCO1G";
-            this.labelCO1G.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1G.Size = new System.Drawing.Size(34, 15);
             this.labelCO1G.TabIndex = 9;
             this.labelCO1G.Text = "1.000";
             // 
             // labelCO1R
             // 
             this.labelCO1R.AutoSize = true;
-            this.labelCO1R.Location = new System.Drawing.Point(191, 85);
+            this.labelCO1R.Location = new System.Drawing.Point(149, 64);
+            this.labelCO1R.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO1R.Name = "labelCO1R";
-            this.labelCO1R.Size = new System.Drawing.Size(49, 20);
+            this.labelCO1R.Size = new System.Drawing.Size(34, 15);
             this.labelCO1R.TabIndex = 8;
             this.labelCO1R.Text = "1.000";
             // 
             // numericUpDownCO1B
             // 
-            this.numericUpDownCO1B.Location = new System.Drawing.Point(106, 147);
+            this.numericUpDownCO1B.Location = new System.Drawing.Point(82, 110);
+            this.numericUpDownCO1B.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCO1B.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownCO1B.Name = "numericUpDownCO1B";
-            this.numericUpDownCO1B.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO1B.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownCO1B.TabIndex = 7;
             this.numericUpDownCO1B.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // numericUpDownCO1G
             // 
-            this.numericUpDownCO1G.Location = new System.Drawing.Point(106, 115);
+            this.numericUpDownCO1G.Location = new System.Drawing.Point(82, 86);
+            this.numericUpDownCO1G.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCO1G.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownCO1G.Name = "numericUpDownCO1G";
-            this.numericUpDownCO1G.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO1G.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownCO1G.TabIndex = 6;
             this.numericUpDownCO1G.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // numericUpDownCO1R
             // 
-            this.numericUpDownCO1R.Location = new System.Drawing.Point(106, 83);
+            this.numericUpDownCO1R.Location = new System.Drawing.Point(82, 62);
+            this.numericUpDownCO1R.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCO1R.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownCO1R.Name = "numericUpDownCO1R";
-            this.numericUpDownCO1R.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO1R.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownCO1R.TabIndex = 5;
             this.numericUpDownCO1R.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // pictureBoxColor1
             // 
             this.pictureBoxColor1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColor1.Location = new System.Drawing.Point(110, 25);
+            this.pictureBoxColor1.Location = new System.Drawing.Point(86, 19);
+            this.pictureBoxColor1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxColor1.Name = "pictureBoxColor1";
-            this.pictureBoxColor1.Size = new System.Drawing.Size(41, 42);
+            this.pictureBoxColor1.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxColor1.TabIndex = 4;
             this.pictureBoxColor1.TabStop = false;
             this.pictureBoxColor1.Click += new System.EventHandler(this.pictureBoxColor1_Click);
             // 
             // trackBarCO1Pow
             // 
-            this.trackBarCO1Pow.Location = new System.Drawing.Point(6, 179);
+            this.trackBarCO1Pow.Location = new System.Drawing.Point(5, 134);
+            this.trackBarCO1Pow.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarCO1Pow.Maximum = 9900;
             this.trackBarCO1Pow.Name = "trackBarCO1Pow";
-            this.trackBarCO1Pow.Size = new System.Drawing.Size(256, 69);
+            this.trackBarCO1Pow.Size = new System.Drawing.Size(199, 45);
             this.trackBarCO1Pow.TabIndex = 3;
             this.trackBarCO1Pow.TickFrequency = 0;
             this.trackBarCO1Pow.Value = 100;
@@ -265,9 +280,11 @@ namespace PLTool
             this.groupBoxCO2.Controls.Add(this.numericUpDownCO2R);
             this.groupBoxCO2.Controls.Add(this.pictureBoxColor2);
             this.groupBoxCO2.Controls.Add(this.trackBarCO2Pow);
-            this.groupBoxCO2.Location = new System.Drawing.Point(286, 12);
+            this.groupBoxCO2.Location = new System.Drawing.Point(222, 9);
+            this.groupBoxCO2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxCO2.Name = "groupBoxCO2";
-            this.groupBoxCO2.Size = new System.Drawing.Size(268, 285);
+            this.groupBoxCO2.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxCO2.Size = new System.Drawing.Size(208, 214);
             this.groupBoxCO2.TabIndex = 16;
             this.groupBoxCO2.TabStop = false;
             this.groupBoxCO2.Text = "Color 2";
@@ -275,130 +292,143 @@ namespace PLTool
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(73, 251);
+            this.label5.Location = new System.Drawing.Point(57, 188);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 20);
+            this.label5.Size = new System.Drawing.Size(43, 15);
             this.label5.TabIndex = 15;
             this.label5.Text = "Power:";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(42, 149);
+            this.label6.Location = new System.Drawing.Point(33, 112);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(45, 20);
+            this.label6.Size = new System.Drawing.Size(33, 15);
             this.label6.TabIndex = 14;
             this.label6.Text = "Blue:";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(29, 117);
+            this.label7.Location = new System.Drawing.Point(23, 88);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(58, 20);
+            this.label7.Size = new System.Drawing.Size(41, 15);
             this.label7.TabIndex = 13;
             this.label7.Text = "Green:";
             // 
             // labelCO2POW
             // 
             this.labelCO2POW.AutoSize = true;
-            this.labelCO2POW.Location = new System.Drawing.Point(136, 251);
+            this.labelCO2POW.Location = new System.Drawing.Point(106, 188);
+            this.labelCO2POW.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO2POW.Name = "labelCO2POW";
-            this.labelCO2POW.Size = new System.Drawing.Size(49, 20);
+            this.labelCO2POW.Size = new System.Drawing.Size(34, 15);
             this.labelCO2POW.TabIndex = 11;
             this.labelCO2POW.Text = "1.000";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(44, 89);
+            this.label9.Location = new System.Drawing.Point(34, 67);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(43, 20);
+            this.label9.Size = new System.Drawing.Size(30, 15);
             this.label9.TabIndex = 12;
             this.label9.Text = "Red:";
             // 
             // labelCO2B
             // 
             this.labelCO2B.AutoSize = true;
-            this.labelCO2B.Location = new System.Drawing.Point(191, 149);
+            this.labelCO2B.Location = new System.Drawing.Point(149, 112);
+            this.labelCO2B.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO2B.Name = "labelCO2B";
-            this.labelCO2B.Size = new System.Drawing.Size(49, 20);
+            this.labelCO2B.Size = new System.Drawing.Size(34, 15);
             this.labelCO2B.TabIndex = 10;
             this.labelCO2B.Text = "1.000";
             // 
             // labelCO2G
             // 
             this.labelCO2G.AutoSize = true;
-            this.labelCO2G.Location = new System.Drawing.Point(191, 117);
+            this.labelCO2G.Location = new System.Drawing.Point(149, 88);
+            this.labelCO2G.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO2G.Name = "labelCO2G";
-            this.labelCO2G.Size = new System.Drawing.Size(49, 20);
+            this.labelCO2G.Size = new System.Drawing.Size(34, 15);
             this.labelCO2G.TabIndex = 9;
             this.labelCO2G.Text = "1.000";
             // 
             // labelCO2R
             // 
             this.labelCO2R.AutoSize = true;
-            this.labelCO2R.Location = new System.Drawing.Point(191, 85);
+            this.labelCO2R.Location = new System.Drawing.Point(149, 64);
+            this.labelCO2R.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelCO2R.Name = "labelCO2R";
-            this.labelCO2R.Size = new System.Drawing.Size(49, 20);
+            this.labelCO2R.Size = new System.Drawing.Size(34, 15);
             this.labelCO2R.TabIndex = 8;
             this.labelCO2R.Text = "1.000";
             // 
             // numericUpDownCO2B
             // 
-            this.numericUpDownCO2B.Location = new System.Drawing.Point(106, 147);
+            this.numericUpDownCO2B.Location = new System.Drawing.Point(82, 110);
+            this.numericUpDownCO2B.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCO2B.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownCO2B.Name = "numericUpDownCO2B";
-            this.numericUpDownCO2B.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO2B.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownCO2B.TabIndex = 7;
             this.numericUpDownCO2B.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // numericUpDownCO2G
             // 
-            this.numericUpDownCO2G.Location = new System.Drawing.Point(106, 115);
+            this.numericUpDownCO2G.Location = new System.Drawing.Point(82, 86);
+            this.numericUpDownCO2G.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCO2G.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownCO2G.Name = "numericUpDownCO2G";
-            this.numericUpDownCO2G.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO2G.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownCO2G.TabIndex = 6;
             this.numericUpDownCO2G.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // numericUpDownCO2R
             // 
-            this.numericUpDownCO2R.Location = new System.Drawing.Point(106, 83);
+            this.numericUpDownCO2R.Location = new System.Drawing.Point(82, 62);
+            this.numericUpDownCO2R.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownCO2R.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownCO2R.Name = "numericUpDownCO2R";
-            this.numericUpDownCO2R.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownCO2R.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownCO2R.TabIndex = 5;
             this.numericUpDownCO2R.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // pictureBoxColor2
             // 
             this.pictureBoxColor2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColor2.Location = new System.Drawing.Point(110, 25);
+            this.pictureBoxColor2.Location = new System.Drawing.Point(86, 19);
+            this.pictureBoxColor2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxColor2.Name = "pictureBoxColor2";
-            this.pictureBoxColor2.Size = new System.Drawing.Size(41, 42);
+            this.pictureBoxColor2.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxColor2.TabIndex = 4;
             this.pictureBoxColor2.TabStop = false;
             this.pictureBoxColor2.Click += new System.EventHandler(this.pictureBoxColor2_Click);
             // 
             // trackBarCO2Pow
             // 
-            this.trackBarCO2Pow.Location = new System.Drawing.Point(6, 179);
+            this.trackBarCO2Pow.Location = new System.Drawing.Point(5, 134);
+            this.trackBarCO2Pow.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarCO2Pow.Maximum = 9900;
             this.trackBarCO2Pow.Name = "trackBarCO2Pow";
-            this.trackBarCO2Pow.Size = new System.Drawing.Size(256, 69);
+            this.trackBarCO2Pow.Size = new System.Drawing.Size(199, 45);
             this.trackBarCO2Pow.TabIndex = 3;
             this.trackBarCO2Pow.TickFrequency = 0;
             this.trackBarCO2Pow.Value = 100;
@@ -416,9 +446,11 @@ namespace PLTool
             this.groupBoxAmbient.Controls.Add(this.numericUpDownAmbientG);
             this.groupBoxAmbient.Controls.Add(this.numericUpDownAmbientR);
             this.groupBoxAmbient.Controls.Add(this.pictureBoxAmbient);
-            this.groupBoxAmbient.Location = new System.Drawing.Point(12, 303);
+            this.groupBoxAmbient.Location = new System.Drawing.Point(9, 227);
+            this.groupBoxAmbient.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxAmbient.Name = "groupBoxAmbient";
-            this.groupBoxAmbient.Size = new System.Drawing.Size(268, 205);
+            this.groupBoxAmbient.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBoxAmbient.Size = new System.Drawing.Size(208, 154);
             this.groupBoxAmbient.TabIndex = 17;
             this.groupBoxAmbient.TabStop = false;
             this.groupBoxAmbient.Text = "Ambient Color";
@@ -426,102 +458,112 @@ namespace PLTool
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(42, 149);
+            this.label10.Location = new System.Drawing.Point(33, 112);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(45, 20);
+            this.label10.Size = new System.Drawing.Size(33, 15);
             this.label10.TabIndex = 14;
             this.label10.Text = "Blue:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(29, 117);
+            this.label11.Location = new System.Drawing.Point(23, 88);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(58, 20);
+            this.label11.Size = new System.Drawing.Size(41, 15);
             this.label11.TabIndex = 13;
             this.label11.Text = "Green:";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(44, 89);
+            this.label13.Location = new System.Drawing.Point(34, 67);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(43, 20);
+            this.label13.Size = new System.Drawing.Size(30, 15);
             this.label13.TabIndex = 12;
             this.label13.Text = "Red:";
             // 
             // labelAmbientB
             // 
             this.labelAmbientB.AutoSize = true;
-            this.labelAmbientB.Location = new System.Drawing.Point(191, 149);
+            this.labelAmbientB.Location = new System.Drawing.Point(149, 112);
+            this.labelAmbientB.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAmbientB.Name = "labelAmbientB";
-            this.labelAmbientB.Size = new System.Drawing.Size(49, 20);
+            this.labelAmbientB.Size = new System.Drawing.Size(34, 15);
             this.labelAmbientB.TabIndex = 10;
             this.labelAmbientB.Text = "1.000";
             // 
             // labelAmbientG
             // 
             this.labelAmbientG.AutoSize = true;
-            this.labelAmbientG.Location = new System.Drawing.Point(191, 117);
+            this.labelAmbientG.Location = new System.Drawing.Point(149, 88);
+            this.labelAmbientG.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAmbientG.Name = "labelAmbientG";
-            this.labelAmbientG.Size = new System.Drawing.Size(49, 20);
+            this.labelAmbientG.Size = new System.Drawing.Size(34, 15);
             this.labelAmbientG.TabIndex = 9;
             this.labelAmbientG.Text = "1.000";
             // 
             // labelAmbientR
             // 
             this.labelAmbientR.AutoSize = true;
-            this.labelAmbientR.Location = new System.Drawing.Point(191, 85);
+            this.labelAmbientR.Location = new System.Drawing.Point(149, 64);
+            this.labelAmbientR.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAmbientR.Name = "labelAmbientR";
-            this.labelAmbientR.Size = new System.Drawing.Size(49, 20);
+            this.labelAmbientR.Size = new System.Drawing.Size(34, 15);
             this.labelAmbientR.TabIndex = 8;
             this.labelAmbientR.Text = "1.000";
             // 
             // numericUpDownAmbientB
             // 
-            this.numericUpDownAmbientB.Location = new System.Drawing.Point(106, 147);
+            this.numericUpDownAmbientB.Location = new System.Drawing.Point(82, 110);
+            this.numericUpDownAmbientB.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAmbientB.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownAmbientB.Name = "numericUpDownAmbientB";
-            this.numericUpDownAmbientB.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownAmbientB.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownAmbientB.TabIndex = 7;
             this.numericUpDownAmbientB.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // numericUpDownAmbientG
             // 
-            this.numericUpDownAmbientG.Location = new System.Drawing.Point(106, 115);
+            this.numericUpDownAmbientG.Location = new System.Drawing.Point(82, 86);
+            this.numericUpDownAmbientG.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAmbientG.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownAmbientG.Name = "numericUpDownAmbientG";
-            this.numericUpDownAmbientG.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownAmbientG.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownAmbientG.TabIndex = 6;
             this.numericUpDownAmbientG.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // numericUpDownAmbientR
             // 
-            this.numericUpDownAmbientR.Location = new System.Drawing.Point(106, 83);
+            this.numericUpDownAmbientR.Location = new System.Drawing.Point(82, 62);
+            this.numericUpDownAmbientR.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownAmbientR.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.numericUpDownAmbientR.Name = "numericUpDownAmbientR";
-            this.numericUpDownAmbientR.Size = new System.Drawing.Size(79, 26);
+            this.numericUpDownAmbientR.Size = new System.Drawing.Size(61, 23);
             this.numericUpDownAmbientR.TabIndex = 5;
             this.numericUpDownAmbientR.ValueChanged += new System.EventHandler(this.numericUpDownCO1R_ValueChanged);
             // 
             // pictureBoxAmbient
             // 
             this.pictureBoxAmbient.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxAmbient.Location = new System.Drawing.Point(110, 25);
+            this.pictureBoxAmbient.Location = new System.Drawing.Point(86, 19);
+            this.pictureBoxAmbient.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxAmbient.Name = "pictureBoxAmbient";
-            this.pictureBoxAmbient.Size = new System.Drawing.Size(41, 42);
+            this.pictureBoxAmbient.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxAmbient.TabIndex = 4;
             this.pictureBoxAmbient.TabStop = false;
             this.pictureBoxAmbient.Click += new System.EventHandler(this.pictureBoxAmbient_Click);
@@ -529,45 +571,50 @@ namespace PLTool
             // pictureBoxOriginal
             // 
             this.pictureBoxOriginal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxOriginal.Location = new System.Drawing.Point(292, 351);
+            this.pictureBoxOriginal.Location = new System.Drawing.Point(227, 263);
+            this.pictureBoxOriginal.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxOriginal.Name = "pictureBoxOriginal";
-            this.pictureBoxOriginal.Size = new System.Drawing.Size(256, 32);
+            this.pictureBoxOriginal.Size = new System.Drawing.Size(200, 24);
             this.pictureBoxOriginal.TabIndex = 18;
             this.pictureBoxOriginal.TabStop = false;
             // 
             // pictureBoxResult
             // 
             this.pictureBoxResult.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxResult.Location = new System.Drawing.Point(292, 420);
+            this.pictureBoxResult.Location = new System.Drawing.Point(227, 315);
+            this.pictureBoxResult.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxResult.Name = "pictureBoxResult";
-            this.pictureBoxResult.Size = new System.Drawing.Size(256, 32);
+            this.pictureBoxResult.Size = new System.Drawing.Size(200, 24);
             this.pictureBoxResult.TabIndex = 19;
             this.pictureBoxResult.TabStop = false;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(288, 319);
+            this.label8.Location = new System.Drawing.Point(224, 239);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(120, 20);
+            this.label8.Size = new System.Drawing.Size(91, 15);
             this.label8.TabIndex = 15;
             this.label8.Text = "Original Palette:";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(288, 392);
+            this.label12.Location = new System.Drawing.Point(224, 294);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(59, 20);
+            this.label12.Size = new System.Drawing.Size(42, 15);
             this.label12.TabIndex = 20;
             this.label12.Text = "Result:";
             // 
             // buttonSave
             // 
             this.buttonSave.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonSave.Location = new System.Drawing.Point(292, 469);
+            this.buttonSave.Location = new System.Drawing.Point(227, 352);
+            this.buttonSave.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(120, 36);
+            this.buttonSave.Size = new System.Drawing.Size(93, 27);
             this.buttonSave.TabIndex = 21;
             this.buttonSave.Text = "Save";
             this.buttonSave.UseVisualStyleBackColor = true;
@@ -575,9 +622,10 @@ namespace PLTool
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(428, 469);
+            this.buttonCancel.Location = new System.Drawing.Point(333, 352);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(120, 36);
+            this.buttonCancel.Size = new System.Drawing.Size(93, 27);
             this.buttonCancel.TabIndex = 22;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
@@ -589,9 +637,9 @@ namespace PLTool
             // 
             // GradientDX
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(569, 517);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(443, 388);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.label12);
@@ -602,6 +650,7 @@ namespace PLTool
             this.Controls.Add(this.groupBoxCO2);
             this.Controls.Add(this.groupBoxCO1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GradientDX";

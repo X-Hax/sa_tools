@@ -18,11 +18,25 @@ namespace PLTool
             pictureBoxAmbient.BackColor = Color.Black;
             UpdateNumerics();
             RefreshAllLabels();
-            pictureBoxOriginal.Image = DrawGradientFromList(original);
+            pictureBoxOriginal.Image = DrawGradientFromList(original, pictureBoxOriginal);
             freeze = false;
         }
 
-        private void UpdateColors()
+		private Bitmap DrawStretchedBitmap(Bitmap bitmap, int width, int height)
+		{
+			Bitmap result = new Bitmap(width, height);
+			using (Graphics gfx = Graphics.FromImage(result))
+			{
+				gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+				gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+				gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+				gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+				gfx.DrawImage(bitmap, 0, 0, width, height);
+			}
+			return result;
+		}
+
+		private void UpdateColors()
         {
             if (freeze)
                 return;
@@ -69,21 +83,21 @@ namespace PLTool
             labelAmbientB.Text = ((float)numericUpDownAmbientB.Value / 255.0f).ToString("0.000");
         }
 
-        private Bitmap DrawGradientFromList(List<Color> list)
+        private Bitmap DrawGradientFromList(List<Color> list, PictureBox box)
         {
             Bitmap image = new Bitmap(256, 32);
             using (Graphics gfx = Graphics.FromImage(image))
             {
                 gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                 gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
                 gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 for (int i = 0; i < 256; i++)
                 {
                     gfx.FillRectangle(new SolidBrush(list[i]), i, 0, 1, 32);
                 }
             }
-            return image;
+            return DrawStretchedBitmap(image, box.Width, box.Height);
         }
 
         private void ApplyPalette()
@@ -106,7 +120,7 @@ namespace PLTool
                 double b = Math.Min(255, b1 + b2 + (float)numericUpDownAmbientB.Value);
                 result.Add(Color.FromArgb(255, (int)r, (int)g, (int)b));
             }
-            pictureBoxResult.Image = DrawGradientFromList(result);
+            pictureBoxResult.Image = DrawGradientFromList(result, pictureBoxResult);
         }
 
 		private void numericUpDownCO1R_ValueChanged(object sender, EventArgs e)
