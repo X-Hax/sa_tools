@@ -19,8 +19,9 @@ namespace buildSATools
 		static void Main(string[] args)
 		{
 			ProgramMode mode = ProgramMode.Normal;
-			string builddir = Path.Combine(Environment.CurrentDirectory, "build");
+			string srcdir = Environment.CurrentDirectory;
 			string outdir = Path.Combine(Environment.CurrentDirectory, "output");
+			bool clean = false;
 			// Process command line arguments
 			if (args.Length == 0)
 				Console.WriteLine("For usage, run buildsatools.exe -help\n");
@@ -31,15 +32,24 @@ namespace buildSATools
 					{
 						case "-help":
 							Console.WriteLine("This program creates a ready to use SA Tools package.");
-							Console.WriteLine("It requires a 'build' folder, which is produced by building the SA Tools solution in Visual Studio.");
-							Console.WriteLine("\nUsage: buildtools.exe [-noscript] [-nopackage] [output folder]");
+							Console.WriteLine("It requires a folder containing the SA Tools solution which has been built at least once.");
+							Console.WriteLine("\nUsage: buildtools.exe [-root <folder>] [-clean] [-noscript] [-nopackage] [output folder]");
 							Console.WriteLine("\nArguments:");
+							Console.WriteLine("-root : Specify the solution's root folder (default is current folder)");
+							Console.WriteLine("-clean : Empty the output folder before copying files to it");
 							Console.WriteLine("-nopackage : Only process BuildScript.ini");
 							Console.WriteLine("-noscript : Do not process BuildScript.ini");
-							Console.WriteLine("output folder : Put the complete package in the specified folder (defaults to 'output' in the current folder)");
+							Console.WriteLine("output folder : Put the complete package in the specified folder (default is 'output' in the current folder)");
 							Console.WriteLine("\nPress ENTER to exit.");
 							Console.ReadLine();
 							return;
+						case "-root":
+							srcdir = (args[a + 1]);
+							a++;
+							break;
+						case "-clean":
+							clean = true;
+							break;
 						case "-nopackage":
 							mode = ProgramMode.NoPackage;
 							break;
@@ -51,11 +61,19 @@ namespace buildSATools
 							break;
 					}
 				}
+			string builddir = Path.Combine(srcdir, "build");
 			Console.WriteLine("Build folder: {0}", builddir);
 			if (!Directory.Exists(builddir))
 			{
 				Console.WriteLine("Build directory doesn't exist!");
 				return;
+			}
+			// Clean the output folder
+			if (clean && Directory.Exists(outdir))
+			{
+				Directory.Delete(outdir, true);
+				Directory.CreateDirectory(outdir);
+				Console.WriteLine("Output folder cleaned.");
 			}
 			// Process build script
 			if (mode != ProgramMode.NoBuildScript)
@@ -65,7 +83,7 @@ namespace buildSATools
 				while (true)
 					try
 					{
-						DoStuff(outdir);
+						ProcessBuildScript(srcdir, outdir);
 						break;
 					}
 					catch (Exception ex)
@@ -166,7 +184,8 @@ namespace buildSATools
 				else if (!Environment.Is64BitProcess && f.Contains("win-x64"))
 					File.Delete(devfile.FullName);
 			}
-			Console.WriteLine("\nFinished!");
+			Console.WriteLine("\nOutput folder: {0}", outdir);
+			Console.WriteLine("Finished!");
 		}
 
         private static void DeleteDirs(List<string> refdirlist)
@@ -176,26 +195,24 @@ namespace buildSATools
                     Directory.Delete(refd, true);
         }
 
-        private static void DoStuff(string outdir)
+        private static void ProcessBuildScript(string startdir, string outdir)
         {
-            string[] script = File.ReadAllLines("BuildScript.ini");
+			Console.WriteLine("Source folder: {0}", startdir);
+            string[] script = File.ReadAllLines(Path.Combine(startdir, "BuildScript.ini"));
             Directory.CreateDirectory(outdir);
             for (int i = 0; i < script.Length; i++)
             {
                 string[] srcdest = script[i].Split('=');
-                Console.WriteLine("Source: {1}, Destination: {0}", srcdest[0], srcdest[1]);
-                if (File.Exists(srcdest[1]))
-                {
-                    File.Copy(srcdest[1], Path.Combine(outdir, srcdest[0]), true);
-                }
-                else if (Directory.Exists(srcdest[1]))
-                {
-                    DirectoryCopy(srcdest[1], Path.Combine(outdir, srcdest[0]), true);
-                }
+                Console.WriteLine("\tSource: {1}, Destination: {0}", srcdest[0], srcdest[1]);
+				// Copy file
+                if (File.Exists(Path.Combine(startdir, srcdest[1])))
+                    File.Copy(Path.Combine(startdir, srcdest[1]), Path.Combine(outdir, srcdest[0]), true);
+				// Copy folder
+                else if (Directory.Exists(Path.Combine(startdir, srcdest[1])))
+                    DirectoryCopy(Path.Combine(startdir, srcdest[1]), Path.Combine(outdir, srcdest[0]), true);
+				// If neither exist
                 else
-                {
-                    Console.WriteLine("{0} does not exist", srcdest[1]);
-                }
+                    Console.WriteLine("\t\t{0} does not exist", srcdest[1]);
             }
         }
 
