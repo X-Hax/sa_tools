@@ -77,7 +77,7 @@ namespace SAModel.SALVL
 
 		#region Editor-Specific Variables
 		SAEditorCommon.IniData sadxlvlini;
-		Logger log = new Logger(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SALVL.log");
+		Logger log = new Logger();
 		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
@@ -175,7 +175,7 @@ namespace SAModel.SALVL
             }
             AppConfig.MRUList = newlist;
 
-            actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SALVL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -910,7 +910,7 @@ namespace SAModel.SALVL
 			foreach (ActionKeyMapping mapping in newMappings)
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SALVL.ini");
 			actionList.Save(saveControlsPath);
 			// Other settings
 			optionsEditor_FormUpdated();

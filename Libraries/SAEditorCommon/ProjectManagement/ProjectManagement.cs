@@ -244,7 +244,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		}
 		private static string GetSettingsPath()
 		{
-			return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
+			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "ProjectSettings.ini");
 		}
 		public void Save()
 		{
@@ -448,20 +448,9 @@ namespace SAModel.SAEditorCommon.ProjectManagement
         /// <returns>Path string</returns>
         public static string GetGamePath(string gameName)
         {
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            // Release mode
-            string gamePathsFile = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
-            if (File.Exists(gamePathsFile))
-                goto getpath;
-            // Visual Studio mode
-            else
-            {
-                gamePathsFile = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
-                if (File.Exists(gamePathsFile))
-                    goto getpath;
-            }
-            return "";
-        getpath:
+			string gamePathsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "GamePaths.ini");
+			if (!File.Exists(gamePathsFile))
+				return "";
             Dictionary<string, string> gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFile);
             return gamePathsList.ContainsKey(gameName) ? gamePathsList[gameName] : "";
         }
@@ -472,14 +461,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
         public static void SetGamePath(string gameName, string gamePath)
         {
             Dictionary<string, string> gamePathsList;
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            string gamePathsFilePath;
-            // Release mode
-            if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
-                gamePathsFilePath = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
-            // Visual Studio mode
-            else
-                gamePathsFilePath = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
+			string gamePathsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "GamePaths.ini");
             if (File.Exists(gamePathsFilePath))
                 gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
             else 

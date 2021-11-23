@@ -23,7 +23,7 @@ namespace SAModel.SAMDL
 	{
 		SettingsFile settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
-        Logger log = new Logger(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SAMDL.log");
+        Logger log = new Logger();
         System.Drawing.Rectangle mouseBounds;
 		bool mouseWrapScreen = false;
 		bool FormResizing;
@@ -264,7 +264,7 @@ namespace SAModel.SAMDL
 			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
 			cam.ModifierKey = settingsfile.SAMDL.CameraModifier;
 			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.SAMDL.AlternativeCamera;
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SAMDL.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -1370,7 +1370,7 @@ namespace SAModel.SAMDL
 			foreach (ActionKeyMapping mapping in newMappings)
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SAMDL.ini");
 			actionList.Save(saveControlsPath);
 			// Settings
 			optionsEditor_FormUpdated();

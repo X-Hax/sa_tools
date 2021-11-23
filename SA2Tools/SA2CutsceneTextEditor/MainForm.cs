@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SAModel.SAEditorCommon;
 
 namespace SA2CutsceneTextEditor
 {
@@ -22,7 +23,6 @@ namespace SA2CutsceneTextEditor
 		Scene CurrentScene { get { return scenes[sceneNum.SelectedIndex]; } }
 		Message CurrentMessage { get { return CurrentScene.Messages[messageNum.SelectedIndex]; } }
 
-		static readonly string settingsPath = Path.ChangeExtension(Application.ExecutablePath, ".ini");
 		static readonly Encoding jpenc = Encoding.GetEncoding(932);
 		static readonly Encoding euenc = Encoding.GetEncoding(1252);
 		List<string> recentFiles = new List<string>();
@@ -32,22 +32,20 @@ namespace SA2CutsceneTextEditor
 		bool useSJIS;
 		SearchCriteria currentSearch;
 		int searchScene, searchMessage;
+		SettingsFile settingsFile;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			if (File.Exists(settingsPath))
-			{
-				Settings settings = Settings.Load(settingsPath);
-				if (settings.RecentFiles != null)
-					recentFiles = new List<string>(settings.RecentFiles.Where(a => File.Exists(a)));
-				if (recentFiles.Count > 0)
-					UpdateRecentFiles();
-				bigEndian = settings.BigEndian;
-				bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-				useSJIS = settings.UseSJIS;
-				shiftJISToolStripMenuItem.Checked = useSJIS;
-				windows1252ToolStripMenuItem.Checked = !useSJIS;
-			}
+			settingsFile = SettingsFile.Load();
+			if (settingsFile.SA2CutsceneTextEditor.RecentFiles != null)
+				recentFiles = new List<string>(settingsFile.SA2CutsceneTextEditor.RecentFiles.Where(a => File.Exists(a)));
+			if (recentFiles.Count > 0)
+				UpdateRecentFiles();
+			bigEndian = settingsFile.SA2CutsceneTextEditor.BigEndian;
+			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
+			useSJIS = settingsFile.SA2CutsceneTextEditor.UseSJIS;
+			shiftJISToolStripMenuItem.Checked = useSJIS;
+			windows1252ToolStripMenuItem.Checked = !useSJIS;
 			if (filename != null)
 				LoadFile(filename);
 		}
@@ -69,7 +67,7 @@ namespace SA2CutsceneTextEditor
 					e.Cancel = true;
 					return;
 			}
-			new Settings() { RecentFiles = recentFiles, BigEndian = bigEndian, UseSJIS = useSJIS }.Save(settingsPath);
+			settingsFile.Save();
 		}
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -457,25 +455,5 @@ namespace SA2CutsceneTextEditor
 	{
 		public string Text { get; set; }
 		public int? Character { get; set; }
-	}
-
-	public class Settings
-	{
-		[IniAlwaysInclude]
-		public bool BigEndian { get; set; }
-		[IniAlwaysInclude]
-		public bool UseSJIS { get; set; }
-		[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
-		public List<string> RecentFiles { get; set; } = new List<string>();
-
-		public static Settings Load(string filename)
-		{
-			return IniSerializer.Deserialize<Settings>(filename);
-		}
-
-		public void Save(string filename)
-		{
-			IniSerializer.Serialize(this, filename);
-		}
 	}
 }

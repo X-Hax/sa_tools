@@ -19,9 +19,9 @@ namespace SA2EventViewer
 {
 	public partial class MainForm : Form
 	{
-		SettingsFile settingsfile; //For user editable settings
+		SettingsFile settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SA2EventViewer.config
-		Logger log = new Logger(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName) + "\\SA2EventViewer.log");
+		Logger log = new Logger();
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
 		public MainForm()
@@ -44,15 +44,17 @@ namespace SA2EventViewer
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
-			File.WriteAllText("SA2EventViewer.log", e.Exception.ToString());
-			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved.\n\nDo you want to try to continue running?", "SA2 Event Viewer Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+			string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SA2EventViewer.log");
+			File.WriteAllText(logPath, e.Exception.ToString());
+			if (MessageBox.Show("Unhandled " + e.Exception.GetType().Name + "\nLog file has been saved to:\n" + logPath + "\n\nDo you want to try to continue running?", "SA2 Event Viewer Fatal Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
 				Close();
 		}
 
 		void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			File.WriteAllText("SA2EventViewer.log", e.ExceptionObject.ToString());
-			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved.", "SA2 Event Viewer Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SA2EventViewer.log");
+			File.WriteAllText(logPath, e.ExceptionObject.ToString());
+			MessageBox.Show("Unhandled Exception: " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA2 Event Viewer Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		internal Device d3ddevice;
@@ -107,7 +109,7 @@ namespace SA2EventViewer
 			EditorOptions.Initialize(d3ddevice);
 			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.SA2EventViewer.DrawDistance_General;
 			cam.ModifierKey = settingsfile.SA2EventViewer.CameraModifier;
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SA2EventViewer.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -944,7 +946,7 @@ namespace SA2EventViewer
 			foreach (ActionKeyMapping mapping in newMappings) 
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SA2EventViewer.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "keybinds", "SA2EventViewer.ini");
 			actionList.Save(saveControlsPath);
 			// Other settings
 			optionsEditor_FormUpdated();

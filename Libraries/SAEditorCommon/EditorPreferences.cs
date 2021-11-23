@@ -1,4 +1,6 @@
 ﻿using SplitTools;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
@@ -15,10 +17,12 @@ namespace SAModel.SAEditorCommon
 		public Settings_SAMDL SAMDL;
 		public Settings_SA2EventViewer SA2EventViewer;
         public Settings_TextureEditor TextureEditor;
+		public Settings_SA2CutsceneTextEditor SA2CutsceneTextEditor;
+		public Settings_SA2MessageFileEditor SA2MessageFileEditor;
 
-        private static string GetSettingsPath()
+		private static string GetSettingsPath()
 		{
-			return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "EditorPreferences.ini");
+			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "EditorPreferences.ini");
 		}
 
 		public static SettingsFile Load()
@@ -35,15 +39,20 @@ namespace SAModel.SAEditorCommon
 					SALVL = new Settings_SALVL(),
 					SAMDL = new Settings_SAMDL(),
 					SA2EventViewer = new Settings_SA2EventViewer(),
-                    TextureEditor = new Settings_TextureEditor()
-                };
+                    TextureEditor = new Settings_TextureEditor(),
+					SA2CutsceneTextEditor = new Settings_SA2CutsceneTextEditor(),
+					SA2MessageFileEditor = new Settings_SA2MessageFileEditor()
+				};
 				return settings;
 			}
 		}
 
 		public void Save()
 		{
-			IniSerializer.Serialize(this, GetSettingsPath());
+			string path = GetSettingsPath();
+			if (!Directory.Exists(Path.GetDirectoryName(path)))
+				Directory.CreateDirectory(Path.GetDirectoryName(path));
+			IniSerializer.Serialize(this, path);
 		}
 
 		public class Settings_SALVL
@@ -152,5 +161,27 @@ namespace SAModel.SAEditorCommon
                 EnableFiltering = true;
             }
         }
-    }
+
+		public class Settings_SA2CutsceneTextEditor
+		{
+			[IniAlwaysInclude]
+			public bool BigEndian { get; set; }
+			[IniAlwaysInclude]
+			public bool UseSJIS { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+		}
+
+		public class Settings_SA2MessageFileEditor
+		{
+			[IniAlwaysInclude]
+			public bool BigEndian { get; set; }
+			[IniAlwaysInclude]
+			public bool UseSJIS { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+		}
+
+	}
 }
