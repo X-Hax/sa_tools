@@ -1909,5 +1909,10 @@ namespace SAToolsHub
 
             return Path.Combine(templatePath, templateFile);
         }
-    }
+
+		private void openSettingsLogsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start("explorer.exe", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools"));
+		}
+	}
 }

@@ -82,6 +82,7 @@
             this.alwaysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dailyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.weeklyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openSettingsLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resourcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sAToolsWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -588,7 +589,8 @@
             this.checkForUpdatesToolStripMenuItem,
             this.toolStripSeparator2,
             this.autoUpdateToolStripMenuItem,
-            this.frequencyToolStripMenuItem});
+            this.frequencyToolStripMenuItem,
+            this.openSettingsLogsToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -598,7 +600,7 @@
             this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
             this.checkForUpdatesToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(203, 54);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
             this.checkForUpdatesToolStripMenuItem.ToolTipText = "Checks for updates to any of the SA Tools programs.";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
@@ -606,12 +608,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(200, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
             // 
             // autoUpdateToolStripMenuItem
             // 
             this.autoUpdateToolStripMenuItem.Name = "autoUpdateToolStripMenuItem";
-            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(203, 54);
+            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.autoUpdateToolStripMenuItem.Text = "Check on Statup";
             this.autoUpdateToolStripMenuItem.ToolTipText = "Enables update checks every time you start the program.";
             this.autoUpdateToolStripMenuItem.Click += new System.EventHandler(this.autoUpdateToolStripMenuItem_Click);
@@ -623,7 +625,7 @@
             this.dailyToolStripMenuItem,
             this.weeklyToolStripMenuItem});
             this.frequencyToolStripMenuItem.Name = "frequencyToolStripMenuItem";
-            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(203, 54);
+            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.frequencyToolStripMenuItem.Text = "Update Frequency";
             this.frequencyToolStripMenuItem.ToolTipText = "Choose the frequency at which the program checks for updates.";
             // 
@@ -649,6 +651,14 @@
             this.weeklyToolStripMenuItem.Text = "Weekly";
             this.weeklyToolStripMenuItem.ToolTipText = "Checks weekly for updates.";
             this.weeklyToolStripMenuItem.Click += new System.EventHandler(this.weeklyToolStripMenuItem_Click);
+            // 
+            // openSettingsLogsToolStripMenuItem
+            // 
+            this.openSettingsLogsToolStripMenuItem.Name = "openSettingsLogsToolStripMenuItem";
+            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.openSettingsLogsToolStripMenuItem.Text = "Open Settings/Logs";
+            this.openSettingsLogsToolStripMenuItem.ToolTipText = "Opens the folder where SA Tools store logs and preferences.";
+            this.openSettingsLogsToolStripMenuItem.Click += new System.EventHandler(this.openSettingsLogsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1399,5 +1409,6 @@
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFileType;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFileTip;
+		private System.Windows.Forms.ToolStripMenuItem openSettingsLogsToolStripMenuItem;
 	}
 }
