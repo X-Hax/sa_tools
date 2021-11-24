@@ -14,9 +14,11 @@
   <SplitEntry SourceFile="STG09.PRS" IniFile="STG09" />
   <SplitEntry SourceFile="STG10.PRS" IniFile="STG10" />
   <SplitEntry SourceFile="ADV00.PRS" IniFile="ADV00" />
+  <SplitEntry SourceFile="ADV00OBJ.PRS" IniFile="ADV00OBJ" />
   <SplitEntry SourceFile="ADV0100.PRS" IniFile="ADV0100" />
   <SplitEntry SourceFile="ADV0130.PRS" IniFile="ADV0130" />
   <SplitEntry SourceFile="ADV02.PRS" IniFile="ADV02" />
+  <SplitEntry SourceFile="ADV02OBJ.PRS" IniFile="ADV02" />
   <SplitEntry SourceFile="AL_GARDEN00.PRS" IniFile="AL_GARDEN00" />
   <SplitEntry SourceFile="AL_GARDEN01.PRS" IniFile="AL_GARDEN01" />
   <SplitEntry SourceFile="AL_GARDEN02.PRS" IniFile="AL_GARDEN02" />
@@ -32,6 +34,7 @@
   <SplitEntry SourceFile="LAND1800.BIN" IniFile="LAND1800" />
   <SplitEntry SourceFile="MINICART.PRS" IniFile="MINICART" />
   <SplitEntry SourceFile="SBOARD.PRS" IniFile="SBOARD" />
+  <SplitEntry SourceFile="SHOOTING.PRS" IniFile="SHOOTING" />
   <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" />
   <SplitEntry SourceFile="A_MOT.PRS" IniFile="A_MOT" />
   <SplitEntry SourceFile="B_MOT.PRS" IniFile="B_MOT" />
