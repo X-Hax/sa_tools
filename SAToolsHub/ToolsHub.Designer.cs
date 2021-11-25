@@ -668,7 +668,7 @@
             this.disableOSWarningToolStripMenuItem.Name = "disableOSWarningToolStripMenuItem";
             this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.disableOSWarningToolStripMenuItem.Text = "Disable OS Warning";
-            this.disableOSWarningToolStripMenuItem.ToolTipText = "Disable the warning that appears when trying to update an X86 version of SA Tools" +
+            this.disableOSWarningToolStripMenuItem.ToolTipText = "Disables the warning that appears when trying to update an x86 version of SA Tools" +
     " on an x64 version of Windows.";
             this.disableOSWarningToolStripMenuItem.Click += new System.EventHandler(this.disableOSWarningToolStripMenuItem_Click);
             // 

@@ -1,12 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.IO.Pipes;
-using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using System.Diagnostics;
 using SAToolsHub.Updater;
 
 namespace SAToolsHub
@@ -17,7 +12,7 @@ namespace SAToolsHub
 		private const string pipeName = "sa-tools";
 
 		static internal string[] Arguments { get; set; }
-		public static SAToolsHub toolsHub; // Unused?
+		public static Form mainForm;
         private static readonly Mutex mutex = new Mutex(true, pipeName);
 
 		[STAThread]
@@ -39,7 +34,8 @@ namespace SAToolsHub
 				Application.EnableVisualStyles();
 				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
                 Application.SetCompatibleTextRenderingDefault(false);
-				Application.Run(new LoaderManifestDialog(args[1]));
+				mainForm = new LoaderManifestDialog(args[1]);
+				Application.Run(mainForm);
 				return;
 			}
 
@@ -64,19 +60,19 @@ namespace SAToolsHub
 			}
 
 			Arguments = args;
-
-			Application.Run(new SAToolsHub());
+			mainForm = new SAToolsHub();
+			Application.Run(mainForm);
 		}
 
 		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			if (toolsHub != null)
+			if (mainForm != null)
 			{
 				Exception ex = (Exception)e.ExceptionObject;
 				string errDesc = "SA Tools Hub has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
 					"If you wish to report a bug, please include the following in your report:";
 				SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("SA Tools Hub", errDesc, ex.ToString());
-				DialogResult dgresult = report.ShowDialog(toolsHub);
+				DialogResult dgresult = report.ShowDialog(mainForm);
 				switch (dgresult)
 				{
 					case DialogResult.Abort:
@@ -87,7 +83,7 @@ namespace SAToolsHub
 			}
 			else
 			{
-				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "TextureEditor.log");
+				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAToolsHub.log");
 				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA Tools Hub Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
