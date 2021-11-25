@@ -139,7 +139,9 @@ namespace SAToolsHub
                     weeklyToolStripMenuItem.Checked = true;
                     break;
             }
-        }
+
+			disableOSWarningToolStripMenuItem.Checked = hubSettings.DisableX86Warning;
+		}
 
         // TODO: ToolsHub - Migrate some Additional Functions out.
         #region Additional Functions
@@ -1507,7 +1509,7 @@ namespace SAToolsHub
 									// If the system is 64 bit but the process is 32 bit, ask the user what to do
 									else if (!Environment.Is64BitProcess && !hubSettings.DisableX86Warning)
 									{
-										DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+										DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\n\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 										switch (updateX86)
 										{
 											case DialogResult.Yes:
@@ -1940,6 +1942,12 @@ namespace SAToolsHub
 		private void openSettingsLogsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			System.Diagnostics.Process.Start("explorer.exe", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools"));
+		}
+
+		private void disableOSWarningToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			hubSettings.DisableX86Warning = disableOSWarningToolStripMenuItem.Checked;
+			hubSettings.Save();
 		}
 	}
 }

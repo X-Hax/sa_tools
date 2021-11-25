@@ -83,6 +83,7 @@
             this.dailyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.weeklyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSettingsLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disableOSWarningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resourcesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sAToolsWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -590,7 +591,8 @@
             this.toolStripSeparator2,
             this.autoUpdateToolStripMenuItem,
             this.frequencyToolStripMenuItem,
-            this.openSettingsLogsToolStripMenuItem});
+            this.openSettingsLogsToolStripMenuItem,
+            this.disableOSWarningToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -659,6 +661,16 @@
             this.openSettingsLogsToolStripMenuItem.Text = "Open Settings/Logs";
             this.openSettingsLogsToolStripMenuItem.ToolTipText = "Opens the folder where SA Tools store logs and preferences.";
             this.openSettingsLogsToolStripMenuItem.Click += new System.EventHandler(this.openSettingsLogsToolStripMenuItem_Click);
+            // 
+            // disableOSWarningToolStripMenuItem
+            // 
+            this.disableOSWarningToolStripMenuItem.CheckOnClick = true;
+            this.disableOSWarningToolStripMenuItem.Name = "disableOSWarningToolStripMenuItem";
+            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.disableOSWarningToolStripMenuItem.Text = "Disable OS Warning";
+            this.disableOSWarningToolStripMenuItem.ToolTipText = "Disable the warning that appears when trying to update an X86 version of SA Tools" +
+    " on an x64 version of Windows.";
+            this.disableOSWarningToolStripMenuItem.Click += new System.EventHandler(this.disableOSWarningToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1410,5 +1422,6 @@
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFileType;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFileTip;
 		private System.Windows.Forms.ToolStripMenuItem openSettingsLogsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem disableOSWarningToolStripMenuItem;
 	}
 }
