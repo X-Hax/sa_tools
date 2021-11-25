@@ -1546,10 +1546,16 @@ namespace SAToolsHub
 				Dictionary<string, string> metadataList = new Dictionary<string, string>();
 
 				Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(GetTemplate(), true);
+				string iniFolder;
+				string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+				if (Directory.Exists(Path.Combine(appPath, "GameConfig", splitFile.GameInfo.DataFolder)))
+					iniFolder = Path.Combine(appPath, "GameConfig", splitFile.GameInfo.DataFolder);
+				else
+					iniFolder = Path.Combine(appPath, "..\\GameConfig", splitFile.GameInfo.DataFolder);
 
 				foreach (Templates.SplitEntry entry in splitFile.SplitEntries)
 				{
-					string iniFile = Path.Combine("../GameConfig", splitFile.GameInfo.DataFolder, entry.IniFile + ".ini");
+					string iniFile = Path.Combine(iniFolder, entry.IniFile + ".ini");
 					string srcExt = Path.GetExtension(entry.SourceFile).ToLowerInvariant();
 					
 					switch (srcExt)
