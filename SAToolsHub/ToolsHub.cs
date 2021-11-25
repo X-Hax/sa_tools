@@ -53,7 +53,7 @@ namespace SAToolsHub
         public static string gameSystemDirectory { get; set; }
         public static List<Templates.SplitEntry> projSplitEntries { get; set; }
         public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
-        public static ProjectSettings hubSettings { get; set; }
+        public static SAToolsHubSettings hubSettings { get; set; }
         List<string> copyPaths;
         public static bool resplit { get; set; }
 
@@ -83,12 +83,12 @@ namespace SAToolsHub
         public SAToolsHub()
         {
             InitializeComponent();
-			toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
+			toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
             lvwColumnSorter = new ListViewColumnSorter();
             this.listView1.ListViewItemSorter = lvwColumnSorter;
             Application.ThreadException += Application_ThreadException;
 
-            hubSettings = ProjectSettings.Load();
+            hubSettings = SAToolsHubSettings.Load();
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             resplit = false;
             projXML = "";
@@ -123,17 +123,17 @@ namespace SAToolsHub
 
             switch (hubSettings.UpdateUnit)
             {
-                case ProjectSettings.UpdateUnits.Always:
+                case SAToolsHubSettings.UpdateUnits.Always:
                     alwaysToolStripMenuItem.Checked = true;
                     dailyToolStripMenuItem.Checked = false;
                     weeklyToolStripMenuItem.Checked = false;
                     break;
-                case ProjectSettings.UpdateUnits.Days:
+                case SAToolsHubSettings.UpdateUnits.Days:
                     alwaysToolStripMenuItem.Checked = false;
                     dailyToolStripMenuItem.Checked = true;
                     weeklyToolStripMenuItem.Checked = false;
                     break;
-                case ProjectSettings.UpdateUnits.Weeks:
+                case SAToolsHubSettings.UpdateUnits.Weeks:
                     alwaysToolStripMenuItem.Checked = false;
                     dailyToolStripMenuItem.Checked = false;
                     weeklyToolStripMenuItem.Checked = true;
@@ -1394,7 +1394,7 @@ namespace SAToolsHub
             dailyToolStripMenuItem.Checked = false;
             weeklyToolStripMenuItem.Checked = false;
 
-            hubSettings.UpdateUnit = ProjectSettings.UpdateUnits.Always;
+            hubSettings.UpdateUnit = SAToolsHubSettings.UpdateUnits.Always;
             hubSettings.Save();
         }
 
@@ -1404,7 +1404,7 @@ namespace SAToolsHub
             dailyToolStripMenuItem.Checked = true;
             weeklyToolStripMenuItem.Checked = false;
 
-            hubSettings.UpdateUnit = ProjectSettings.UpdateUnits.Days;
+            hubSettings.UpdateUnit = SAToolsHubSettings.UpdateUnits.Days;
             hubSettings.Save();
         }
 
@@ -1414,7 +1414,7 @@ namespace SAToolsHub
             dailyToolStripMenuItem.Checked = false;
             weeklyToolStripMenuItem.Checked = true;
 
-            hubSettings.UpdateUnit = ProjectSettings.UpdateUnits.Weeks;
+            hubSettings.UpdateUnit = SAToolsHubSettings.UpdateUnits.Weeks;
             hubSettings.Save();
         }
         #endregion
@@ -1423,9 +1423,9 @@ namespace SAToolsHub
         private bool checkedForUpdates; // Unused?
         const string updatePath = ".updates";
 
-        private static bool UpdateTimeElapsed(ProjectSettings.UpdateUnits unit, int amount, DateTime start)
+        private static bool UpdateTimeElapsed(SAToolsHubSettings.UpdateUnits unit, int amount, DateTime start)
         {
-            if (unit == ProjectSettings.UpdateUnits.Always)
+            if (unit == SAToolsHubSettings.UpdateUnits.Always)
             {
                 return true;
             }
@@ -1434,13 +1434,13 @@ namespace SAToolsHub
 
             switch (unit)
             {
-                case ProjectSettings.UpdateUnits.Hours:
+                case SAToolsHubSettings.UpdateUnits.Hours:
                     return span.TotalHours >= amount;
 
-                case ProjectSettings.UpdateUnits.Days:
+                case SAToolsHubSettings.UpdateUnits.Days:
                     return span.TotalDays >= amount;
 
-                case ProjectSettings.UpdateUnits.Weeks:
+                case SAToolsHubSettings.UpdateUnits.Weeks:
                     return span.TotalDays / 7.0 >= amount;
 
                 default:
@@ -1497,13 +1497,35 @@ namespace SAToolsHub
                                         if (result == DialogResult.Cancel) return false;
                                     }
                                 } while (result == DialogResult.Retry);
-
-                                using (var dlg2 = new Updater.LoaderDownloadDialog("http://mm.reimuhakurei.net/SA%20Tools.7z", updatePath))
-                                    if (dlg2.ShowDialog(this) == DialogResult.OK)
-                                    {
-                                        Close();
-                                        return true;
-                                    }
+								// 64 bit check
+								string toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools.7z";
+								if (Environment.Is64BitOperatingSystem)
+								{
+									// If the system and the process are both 64 bit, get the 64 bit archive
+									if (Environment.Is64BitProcess)
+										toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x64.7z";
+									// If the system is 64 bit but the process is 32 bit, ask the user what to do
+									else if (!Environment.Is64BitProcess && !hubSettings.DisableX86Warning)
+									{
+										DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+										switch (updateX86)
+										{
+											case DialogResult.Yes:
+												toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x64.7z";
+												break;
+											case DialogResult.No:
+												break;
+											case DialogResult.Cancel:
+												return false;
+										}
+									}
+								}
+								using (var dlg2 = new Updater.LoaderDownloadDialog(toolsArchiveFilename, updatePath))
+									if (dlg2.ShowDialog(this) == DialogResult.OK)
+									{
+										Close();
+										return true;
+									}
                             }
                         }
                     }

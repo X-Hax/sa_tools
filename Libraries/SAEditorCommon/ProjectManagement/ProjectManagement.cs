@@ -194,7 +194,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		}
 	}
 
-	public class ProjectSettings
+	public class SAToolsHubSettings
 	{
 		public enum UpdateUnits
 		{
@@ -217,18 +217,20 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		public Themes HubTheme { get; set; }
 		[DefaultValue(1)]
 		public int UpdateFrequency { get; set; } = 1;
+		[DefaultValue(false)]
+		public bool DisableX86Warning { get; set; } = false;
 
 		[DefaultValue(0)] public long UpdateTime { get; set; }
 
-		public static ProjectSettings Load(string iniPath)
+		public static SAToolsHubSettings Load(string iniPath)
 		{
 			if (File.Exists(iniPath))
 			{
-				return (ProjectSettings)IniSerializer.Deserialize(typeof(ProjectSettings), iniPath);
+				return (SAToolsHubSettings)IniSerializer.Deserialize(typeof(SAToolsHubSettings), iniPath);
 			}
 			else
 			{
-				ProjectSettings result = new ProjectSettings()
+				SAToolsHubSettings result = new SAToolsHubSettings()
 				{
 					UpdateCheck = false,
 					UpdateUnit = UpdateUnits.Weeks,
@@ -238,13 +240,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 				return result;
 			}
 		}
-		public static ProjectSettings Load()
+		public static SAToolsHubSettings Load()
 		{
 			return Load(GetSettingsPath());
 		}
 		private static string GetSettingsPath()
 		{
-			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "ProjectSettings.ini");
+			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAToolsHub.ini");
 		}
 		public void Save()
 		{
