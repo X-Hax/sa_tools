@@ -1555,13 +1555,18 @@ namespace SAToolsHub
             DialogResult updateMData = MessageBox.Show(("This will update the metadata inside of your project's *_data.ini files.\n\nThis process may take a few moments.\n\nDo you wish to continue?"), "Update Metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (updateMData == DialogResult.Yes)
             {
-                Dictionary<string, string> metadataList = new Dictionary<string, string>();
-
+				Dictionary<string, string> metadataList = new Dictionary<string, string>();
                 Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(GetTemplate(), true);
+				string iniFolder;
+				string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+				if (Directory.Exists(Path.Combine(appPath, "GameConfig", splitFile.GameInfo.DataFolder)))
+					iniFolder = Path.Combine(appPath, "GameConfig", splitFile.GameInfo.DataFolder);
+				else
+					iniFolder = Path.Combine(appPath, "..\\GameConfig", splitFile.GameInfo.DataFolder);
 
-                foreach (Templates.SplitEntry entry in splitFile.SplitEntries)
+				foreach (Templates.SplitEntry entry in splitFile.SplitEntries)
                 {
-                    string iniFile = Path.Combine("../GameConfig", splitFile.GameInfo.DataFolder, entry.IniFile + ".ini");
+                    string iniFile = Path.Combine(Path.Combine(iniFolder, entry.IniFile + ".ini"));
                     string srcExt = Path.GetExtension(entry.SourceFile).ToLowerInvariant();
 
                     switch (srcExt)
@@ -1697,8 +1702,7 @@ namespace SAToolsHub
 
                         case ".nb":
                             Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(iniFile);
-
-                            foreach (var nbFile in nbFilenames)
+							foreach (var nbFile in nbFilenames)
                             {
                                 List<string> nbMData = new List<string>();
                                 string[] nbMeta = nbFile.Value.Split('|');
@@ -1809,25 +1813,25 @@ namespace SAToolsHub
 
                         case ".nb":
                             Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(iniFilePath);
-                            bool nbModified = false;
+							Dictionary<int, string> nbFilenamesNew = new Dictionary<int, string>();
+							bool nbModified = false;
                             foreach (var file in nbFilenames)
                             {
                                 string[] meta = file.Value.Split('|');
 
                                 if (metadataList.ContainsKey(NormalizePath(meta[0] + ".sa1mdl")))
                                 {
-
                                     List<string> nbNames = new List<string>();
                                     nbNames.Add(NormalizePath(meta[0]));
                                     nbNames.Add(metadataList[NormalizePath(meta[0] + ".sa1mdl")]);
-                                    nbFilenames.Add(file.Key, string.Join("|", nbNames));
+									nbFilenamesNew.Add(file.Key, string.Join("|", nbNames));
                                 }
                                 else
-                                    nbFilenames.Add(file.Key, NormalizePath(meta[0]));
+									nbFilenamesNew.Add(file.Key, NormalizePath(meta[0]));
                             }
 
                             if (nbModified)
-                                IniSerializer.Serialize(nbFilenames, iniFilePath);
+                                IniSerializer.Serialize(nbFilenamesNew, iniFilePath);
                             break;
                     }
                 }
