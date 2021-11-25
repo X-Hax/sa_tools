@@ -191,14 +191,13 @@ namespace SplitTools.Split
             return (int)SplitERRORVALUE.Success;
         }
 
-		public static int SplitSingle(string itemName, SplitTools.FileInfo itemFileInfo, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
+		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
         {
             if (string.IsNullOrEmpty(itemName))
                 return 0;
 			if (File.Exists(fileOutputPath) && overwrite == false)
 				return 0;
             string filedesc = itemName;
-            SplitTools.FileInfo data = itemFileInfo;
             Dictionary<string, string> customProperties = data.CustomProperties;
             string type = data.Type;
             int address = data.Address;
@@ -265,8 +264,11 @@ namespace SplitTools.Split
                                 mdlformat = modelfmt_def;
                                 break;
                         }
+						bool rev = ByteConverter.Reverse;
                         if (data.CustomProperties.ContainsKey("format"))
                             mdlformat = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
+						if (data.CustomProperties.ContainsKey("reverse"))
+							ByteConverter.Reverse = true;
                         NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>());
                         string[] mdlanis = new string[0];
                         if (customProperties.ContainsKey("animations"))
@@ -275,6 +277,8 @@ namespace SplitTools.Split
                         if (customProperties.ContainsKey("morphs"))
                             mdlmorphs = customProperties["morphs"].Split(',');
                         ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, itemName, null, mdlformat, nometa);
+						if (data.CustomProperties.ContainsKey("reverse")) 
+							ByteConverter.Reverse = rev;
                     }
                     break;
                 case "morph":
@@ -1334,7 +1338,7 @@ namespace SplitTools.Split
             return 1;
         }
 
-        public static void SplitManual(string game, string dataFileName, uint imageBase, int address, string itemType, string outputFilename, string customProperties, string itemname = "", bool nometa = false, bool nolabel = false)
+		public static void SplitManual(string game, string dataFileName, uint imageBase, int address, string itemType, string outputFilename, string customProperties, string itemname = "", bool nometa = false, bool nolabel = false, int offset = 0)
         {
             Game gameBase;
             // Get game
@@ -1415,7 +1419,16 @@ namespace SplitTools.Split
                 }
                 Console.WriteLine();
             }
-            SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, File.ReadAllBytes(dataFileName), imageBase, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
+			byte[] datafile = File.ReadAllBytes(dataFileName);
+			uint imageBase_new = HelperFunctions.SetupEXE(ref datafile) ?? imageBase;
+			// Trim file if a start offset is specified
+			if (offset != 0)
+			{
+				byte[] datafile_new = new byte[offset + datafile.Length];
+				datafile.CopyTo(datafile_new, offset);
+				datafile = datafile_new;
+			}
+			SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, datafile, imageBase_new, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
         }
     }
 

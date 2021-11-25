@@ -13,12 +13,14 @@ using ArchiveLib;
 using SAModel.SAEditorCommon;
 using static ArchiveLib.GenericArchive;
 using static TextureEditor.TexturePalette;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace TextureEditor
 {
     public partial class MainForm : Form
     {
-        readonly Properties.Settings Settings = Properties.Settings.Default;
+        readonly Properties.Settings Settings = Properties.Settings.Default; // MRU list
+        Settings_TextureEditor settingsfile; // User settings
         bool unsaved;
         int currentTextureID = -1;
         TextureFormat currentFormat;
@@ -426,6 +428,7 @@ namespace TextureEditor
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+			settingsfile = Settings_TextureEditor.Load();
             System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
 
             if (Settings.MRUList != null)
@@ -442,9 +445,9 @@ namespace TextureEditor
 
             Settings.MRUList = newlist;
 
-            highQualityGVMsToolStripMenuItem.Checked = Settings.HighQualityGVM;
-            textureFilteringToolStripMenuItem.Checked = Settings.EnableFiltering;
-            compatibleGVPToolStripMenuItem.Checked = Settings.SACompatiblePalettes;
+            highQualityGVMsToolStripMenuItem.Checked = settingsfile.HighQualityGVM;
+            textureFilteringToolStripMenuItem.Checked = settingsfile.EnableFiltering;
+            compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
 
             if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
                 Close();
@@ -548,7 +551,7 @@ namespace TextureEditor
         {
             if (tex.TextureData != null)
                 return TextureFunctions.UpdateGBIX(tex.TextureData, tex.GlobalIndex, true);
-            tex.DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(tex.Image, Settings.HighQualityGVM, true);
+            tex.DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(tex.Image, settingsfile.HighQualityGVM, true);
             tex.PixelFormat = TextureFunctions.GetGvrPixelFormatFromBitmap(tex.Image);
             GvrTextureEncoder encoder = new GvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
             encoder.GlobalIndex = tex.GlobalIndex;
@@ -1459,7 +1462,7 @@ namespace TextureEditor
 
         private void highQualityGVMsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
+            settingsfile.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1480,6 +1483,11 @@ namespace TextureEditor
                         break;
                 }
             }
+            try
+            {
+                settingsfile.Save();
+            }
+            catch { };
         }
 
         private void numericUpDownOrigSizeX_ValueChanged(object sender, EventArgs e)
@@ -1938,12 +1946,12 @@ namespace TextureEditor
 
 		private void textureFilteringToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-            Settings.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
+            settingsfile.EnableFiltering = textureFilteringToolStripMenuItem.Checked;
         }
 
 		private void compatibleGVPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-            Settings.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
+            settingsfile.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
         }
 	}
 }

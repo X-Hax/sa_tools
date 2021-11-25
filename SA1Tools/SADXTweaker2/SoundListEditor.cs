@@ -43,7 +43,7 @@ namespace SADXTweaker2
 			}
 			levelList.EndUpdate();
 			levelList.SelectedIndex = 0;
-			soundName.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\se"); ;
+			soundName.Directory = Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, "sounddata", "se"); ;
 		}
 
 		private void SoundListEditor_FormClosing(object sender, FormClosingEventArgs e)

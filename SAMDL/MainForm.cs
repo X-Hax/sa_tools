@@ -15,16 +15,17 @@ using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
 using Point = System.Drawing.Point;
 using SplitTools;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SAModel.SAMDL
 {
 	public partial class MainForm : Form
 	{
-		SettingsFile settingsfile; //For user editable settings
+		Settings_SAMDL settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
-		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAMDL.log");
-		System.Drawing.Rectangle mouseBounds;
+        Logger log = new Logger();
+        System.Drawing.Rectangle mouseBounds;
 		bool mouseWrapScreen = false;
 		bool FormResizing;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
@@ -37,7 +38,7 @@ namespace SAModel.SAMDL
 			InitializeComponent();
 			AddMouseMoveHandler(this);
 
-			this.AllowDrop = true;
+            this.AllowDrop = true;
 			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
 			this.DragDrop += new DragEventHandler(SAMDL_DragDrop);
 		}
@@ -212,7 +213,7 @@ namespace SAModel.SAMDL
         BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
         BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
         Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
-        ModelFileDialog modelinfo = new ModelFileDialog();
+		ModelFileDialog modelinfo = new ModelFileDialog();
 		NJS_OBJECT selectedObject;
 		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
 		OnScreenDisplay osd;
@@ -252,19 +253,19 @@ namespace SAModel.SAMDL
 				});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
-			settingsfile = SettingsFile.Load();
-
-			if (settingsfile.SAMDL.ShowWelcomeScreen)
+			settingsfile = Settings_SAMDL.Load();
+            
+            if (settingsfile.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
-			EditorOptions.RenderDrawDistance = settingsfile.SAMDL.DrawDistance;			
+			EditorOptions.RenderDrawDistance = settingsfile.DrawDistance;			
 			EditorOptions.Initialize(d3ddevice);
-			cam.MoveSpeed = settingsfile.SAMDL.CamMoveSpeed;
-			cam.ModifierKey = settingsfile.SAMDL.CameraModifier;
-			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.SAMDL.AlternativeCamera;
-			actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini"),
+			cam.MoveSpeed = settingsfile.CamMoveSpeed;
+			cam.ModifierKey = settingsfile.CameraModifier;
+			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAMDL_keys.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -303,12 +304,12 @@ namespace SAModel.SAMDL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SAMDL.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				settingsfile.SAMDL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				settingsfile.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SAMDL Documentation";
@@ -372,135 +373,6 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		public static readonly string[] SA2BMDLFiles =
-		{
-			"DWALKMDL",
-			"EWALK2MDL",
-			"SHADOW1MDL",
-			"SONIC1MDL",
-		};
-
-		public static readonly string[] SA2MDLFiles =
-		{
-			"BKNUCKMDL",
-			"BROUGEMDL",
-			"BWALKMDL",
-			"CHAOS0MDL",
-			"CWALKMDL",
-			"EGGMDL",
-			"EWALK1MDL",
-			"EWALKMDL",
-			"HEWALKMDL",
-			"HKNUCKMDL",
-			"HROUGEMDL",
-			"HSHADOWMDL",
-			"HSONICMDL",
-			"HTWALKMDL",
-			"KNUCKMDL",
-			"METALSONICMDL",
-			"MILESMDL",
-			"PSOSHADOWMDL",
-			"PSOSONICMDL",
-			"ROUGEMDL",
-			"SONICMDL",
-			"SSHADOWMDL",
-			"SSONICMDL",
-			"TERIOSMDL",
-			"TICALMDL",
-			"TWALK1MDL",
-			"TWALKMDL",
-			"XEWALKMDL",
-			"XKNUCKMDL",
-			"XROUGEMDL",
-			"XSHADOWMDL",
-			"XSONICMDL",
-			"XTWALKMDL",
-		};
-
-		public struct BinaryModelType
-		{
-			public string name_or_type;
-			public UInt32 key;
-			public int data_type;
-		};
-
-		public static readonly BinaryModelType[] KnownBinaryFiles = new[] {
-		new BinaryModelType { name_or_type = "1ST_READ", key = 0x8C010000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADV00", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADV02", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADV03", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADV0100", key = 0x0C920000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADV01OBJ", key = 0x0C920000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADV0130", key = 0x0C920000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "AL_GARDEN00", key = 0x0CB80000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "AL_GARDEN01", key = 0x0CB80000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "AL_GARDEN02", key = 0x0CB80000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "AL_RACE", key = 0x0CB80000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "AL_MAIN", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_CHAOS0", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_CHAOS2", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_CHAOS4", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_CHAOS6", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_CHAOS7", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_E101", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_E101R", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_EGM1", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_EGM2", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_EGM3", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_ROBO", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "SBOARD", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "SHOOTING", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "TIKAL_PROG", key = 0x0CB00000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "MINICART", key = 0x0C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "A_MOT", key = 0x0CC00000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "B_MOT", key = 0x0CC00000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "E_MOT", key = 0x0CC00000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "S_MOT", key = 0x0CC00000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "S_SBMOT", key = 0x0CB08000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "ADVERTISE", key = 0x8C900000u, data_type = 0 },
-		new BinaryModelType { name_or_type = "MOVIE", key = 0x8CEB0000u, data_type = 0 },
-		};
-
-		private int CheckKnownFile(string filename)
-		{
-			string name = Path.GetFileNameWithoutExtension(filename);
-			if (name.Length > 3 && name.Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
-			{
-				return -4;
-			}
-
-			else if (name.Length > 2 && name.Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
-			{
-				return -5;
-			}
-
-			for (int i = 0; i < SA2BMDLFiles.Length; i++)
-			{
-				if (name.Equals(SA2BMDLFiles[i], StringComparison.OrdinalIgnoreCase))
-				{
-					return -3;
-				}
-			}
-
-			for (int i = 0; i < SA2MDLFiles.Length; i++)
-			{
-				if (name.Equals(SA2MDLFiles[i], StringComparison.OrdinalIgnoreCase))
-				{
-					return -2;
-				}
-			}
-
-			for (int i = 0; i < KnownBinaryFiles.Length; i++)
-			{
-				if (name.Equals(KnownBinaryFiles[i].name_or_type, StringComparison.OrdinalIgnoreCase))
-				{
-					return i;
-				}
-			}
-
-			return -1;
-		}
-		
 		/*
 		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)
 		{
@@ -608,26 +480,26 @@ namespace SAModel.SAMDL
                 int ninjaDataOffset = 0;
                 bool basicModel = false;
 
-                string magic = System.Text.Encoding.UTF8.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
+                string magic = System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
 
-                switch (magic)
-                {
-                    case "GJTL":
-                    case "NJTL":
-                        ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-                        int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
-                        int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
-                        int texListOffset = POF0Offset + POF0Size + 0x8;
-                        ninjaDataOffset = texListOffset + 0x8;
-                        //Get Texture Listings for if SA Tools gets that implemented
-                        int texCount = ByteConverter.ToInt32(file, 0xC);
-                        int texOffset = 0;
-                        List<string> texNames = new List<string>();
-
-                        for (int i = 0; i < texCount; i++)
+				switch (magic)
+				{
+					case "GJTL":
+					case "NJTL":
+						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
+						int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
+						int texListOffset = POF0Offset + POF0Size + 0x8;
+						ninjaDataOffset = texListOffset + 0x8;
+						int texCount = ByteConverter.ToInt32(file, 0xC);
+						int texOffset = 0;
+						List<string> texNames = new List<string>();
+						// Check if it's a basic model
+						if (System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, texListOffset))) == "NJBM")
+							basicModel = true;
+						for (int i = 0; i < texCount; i++)
                         {
                             int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
-
                             // Read null terminated string
                             List<byte> namestring = new List<byte>();
                             byte namechar = (file[textAddress]);
@@ -639,12 +511,10 @@ namespace SAModel.SAMDL
                                 namechar = (file[textAddress + j]);
                             }
                             texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
-
                             texOffset += 0xC;
                         }
                         TexList = new TexnameArray(texNames.ToArray());
-
-                        break;
+						break;
                     case "GJCM":
                     case "NJCM":
                         ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
@@ -660,33 +530,33 @@ namespace SAModel.SAMDL
                         return;
                 }
 
-                //Set modelinfo parameters
-                modelinfo.CheckBox_BigEndian.Checked = ByteConverter.BigEndian;
-                modelinfo.RadioButton_Object.Checked = true;
-                modelinfo.NumericUpDown_ObjectAddress.Value = 0;
-                if (basicModel)
-                {
-                    modelinfo.ComboBox_Format.SelectedIndex = 0;
-                }
-                else if (extension.Equals(".nj"))
-                {
-                    modelinfo.ComboBox_Format.SelectedIndex = 2;
-                }
-                else if (extension.Equals(".gj"))
-                {
-                    modelinfo.ComboBox_Format.SelectedIndex = 3;
-                }
+				// Set modelinfo parameters
+				modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
+				modelinfo.radioButtonObject.Checked = true;
+				modelinfo.numericUpDownModelAddress.Value = 0;
+				if (basicModel)
+				{
+					modelinfo.comboBoxModelFormat.SelectedIndex = 0;
+				}
+				else if (extension.Equals(".nj"))
+				{
+					modelinfo.comboBoxModelFormat.SelectedIndex = 2;
+				}
+				else if (extension.Equals(".gj"))
+				{
+					modelinfo.comboBoxModelFormat.SelectedIndex = 3;
+				}
 
-                modelinfo.NumericUpDown_MotionAddress.Value = 0;
-                modelinfo.CheckBox_Memory_Object.Checked = false;
-                modelinfo.CheckBox_Memory_Motion.Checked = false;
+				modelinfo.numericUpDownMotionAddress.Value = 0;
+				modelinfo.checkBoxMemoryObject.Checked = false;
+				modelinfo.checkBoxMemoryMotion.Checked = false;
 
-                modelinfo.NumericUpDown_Key.Value = 0;
-                modelinfo.NumericUpDown_Key.Value = 0;
+				modelinfo.numericUpDownKey.Value = 0;
+				modelinfo.numericUpDownKey.Value = 0;
 
-                //Get rid of the junk so that we can treat it like what SAMDL expects
 
-                byte[] newFile = new byte[file.Length - ninjaDataOffset];
+				// Get rid of the junk so that we can treat it like what SAMDL expects
+				byte[] newFile = new byte[file.Length - ninjaDataOffset];
                 Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 
                 LoadBinFile(newFile);
@@ -702,128 +572,93 @@ namespace SAModel.SAMDL
             // Generic binary
             else
             {
-                byte[] file = File.ReadAllBytes(filename);
-                if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				byte[] file = File.ReadAllBytes(filename);
+				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
                     file = FraGag.Compression.Prs.Decompress(file);
                 ByteConverter.BigEndian = false;
-                uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
+				modelinfo.CheckFilename(filename);
+				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
                 if (baseaddr.HasValue)
-                {
-                    modelinfo.NumericUpDown_Key.Value = baseaddr.Value;
-                    modelinfo.NumericUpDown_Key.Enabled = false;
-                    modelinfo.ComboBox_FileType.Enabled = false;
-                    modelinfo.CheckBox_BigEndian.Checked = modelinfo.CheckBox_BigEndian.Enabled = false;
-                    modelinfo.ComboBox_Format.SelectedIndex = 1;
-                }
-                else if (extension.Equals(".rel", StringComparison.OrdinalIgnoreCase))
-                {
-                    ByteConverter.BigEndian = true;
-                    SplitTools.HelperFunctions.FixRELPointers(file);
-                    modelinfo.NumericUpDown_Key.Value = 0;
-                    modelinfo.NumericUpDown_Key.Enabled = false;
-                    modelinfo.ComboBox_FileType.Enabled = false;
-                    modelinfo.CheckBox_BigEndian.Enabled = false;
-                    modelinfo.CheckBox_BigEndian.Checked = true;
-                }
-                else
-                {
-                    int u = CheckKnownFile(filename);
-                    if (u == -5)
-                    {
-                        modelinfo.NumericUpDown_Key.Value = 0xC600000u;
-                        modelinfo.ComboBox_Format.SelectedIndex = 2;
-                    }
-                    else if (u == -4)
-                    {
-                        modelinfo.NumericUpDown_Key.Value = 0xCB80000u;
-                        modelinfo.ComboBox_Format.SelectedIndex = 0;
-                    }
-                    else if (u == -3)
-                    {
-                        modelinfo.RadioButton_SA2BMDL.Checked = true;
-                    }
-                    else if (u == -2)
-                    {
-                        modelinfo.RadioButton_SA2MDL.Checked = true;
-                    }
-                    else if (u != -1)
-                    {
-                        modelinfo.NumericUpDown_Key.Value = KnownBinaryFiles[u].key;
-                        modelinfo.ComboBox_Format.SelectedIndex = KnownBinaryFiles[u].data_type;
-                    }
-                    else modelinfo.ComboBox_Format.SelectedIndex = 1;
-                    if (modelinfo.RadioButton_Binary.Checked)
-                    {
-                        modelinfo.NumericUpDown_Key.Enabled = true;
-                        modelinfo.ComboBox_FileType.Enabled = true;
-                        modelinfo.CheckBox_BigEndian.Enabled = true;
-                    }
-                }
-                modelinfo.ShowDialog(this);
+                    modelinfo.numericUpDownKey.Value = baseaddr.Value;
+				modelinfo.ShowDialog(this);
                 if (modelinfo.DialogResult == DialogResult.OK)
                 {
-                    if (modelinfo.RadioButton_Binary.Checked)
-                    {
-                        log.Add("Loading model from binary file " + filename + ", key: " + uint.Parse(modelinfo.NumericUpDown_Key.Value.ToString()).ToCHex() + ", address: " + uint.Parse(modelinfo.NumericUpDown_ObjectAddress.Value.ToString()).ToCHex() + ", motion at: " + uint.Parse(modelinfo.NumericUpDown_MotionAddress.Value.ToString()).ToCHex());
-                        LoadBinFile(file);
-                    }
-                    else
-                    {
-                        ModelFormat fmt = outfmt = ModelFormat.Chunk;
-                        ByteConverter.BigEndian = modelinfo.RadioButton_SA2BMDL.Checked;
-                        using (SA2MDLDialog dlg = new SA2MDLDialog())
-                        {
-                            int address = 0;
-                            SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
-                            int i = ByteConverter.ToInt32(file, address);
-                            while (i != -1)
-                            {
-                                sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
-                                address += 8;
-                                i = ByteConverter.ToInt32(file, address);
-                            }
-                            foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-                                dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
-                            dlg.ShowDialog(this);
-                            i = 0;
-                            foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-                            {
-                                if (i == dlg.modelChoice.SelectedIndex)
-                                {
-                                    model = item.Value;
-                                    break;
-                                }
-                                i++;
-                            }
-                            if (dlg.checkBox1.Checked)
-                            {
-                                using (OpenFileDialog anidlg = new OpenFileDialog()
-                                {
-                                    DefaultExt = "bin",
-                                    Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
-                                })
-                                {
-                                    if (anidlg.ShowDialog(this) == DialogResult.OK)
-                                    {
-                                        byte[] anifile = File.ReadAllBytes(anidlg.FileName);
-                                        if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-                                            anifile = FraGag.Compression.Prs.Decompress(anifile);
-                                        address = 0;
-                                        SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
-                                        i = ByteConverter.ToInt32(file, address);
-                                        while (i != -1)
-                                        {
-                                            anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
-                                            address += 8;
-                                            i = ByteConverter.ToInt32(file, address);
-                                        }
-                                        animations = new List<NJS_MOTION>(anis.Values);
-                                        if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
+					if (modelinfo.radioButtonBinary.Checked)
+					{
+						if (modelinfo.comboBoxBinaryFileType.SelectedIndex == 2) // REL file
+						{
+							ByteConverter.BigEndian = true;
+							file = SplitTools.HelperFunctions.DecompressREL(file);
+							SplitTools.HelperFunctions.FixRELPointers(file, 0xC900000);
+						}
+						log.Add("Loading model from binary file " + filename);
+						log.Add("\tKey: " + uint.Parse(modelinfo.numericUpDownKey.Value.ToString()).ToCHex());
+						log.Add("\tAddress: " + uint.Parse(modelinfo.numericUpDownModelAddress.Value.ToString()).ToCHex());
+						if (modelinfo.numericUpDownStartOffset.Value != 0)
+							log.Add("\tOffset: " + uint.Parse(modelinfo.numericUpDownStartOffset.Value.ToString()).ToCHex());
+						if (modelinfo.numericUpDownMotionAddress.Value != 0)
+							log.Add("\tMotion at: " + uint.Parse(modelinfo.numericUpDownMotionAddress.Value.ToString()).ToCHex());
+						log.Add("\tBig Endian: " + modelinfo.checkBoxBigEndian.Checked.ToString()); ;
+						log.WriteLog();
+						LoadBinFile(file);
+					}
+					else
+					{
+						ModelFormat fmt = outfmt = ModelFormat.Chunk;
+						ByteConverter.BigEndian = modelinfo.radioButtonSA2BMDL.Checked;
+						using (SA2MDLDialog dlg = new SA2MDLDialog())
+						{
+							int address = 0;
+							SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
+							int i = ByteConverter.ToInt32(file, address);
+							while (i != -1)
+							{
+								sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
+								address += 8;
+								i = ByteConverter.ToInt32(file, address);
+							}
+							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+								dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
+							dlg.ShowDialog(this);
+							i = 0;
+							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+							{
+								if (i == dlg.modelChoice.SelectedIndex)
+								{
+									model = item.Value;
+									break;
+								}
+								i++;
+							}
+							if (dlg.checkBox1.Checked)
+							{
+								using (OpenFileDialog anidlg = new OpenFileDialog()
+								{
+									DefaultExt = "bin",
+									Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
+								})
+								{
+									if (anidlg.ShowDialog(this) == DialogResult.OK)
+									{
+										byte[] anifile = File.ReadAllBytes(anidlg.FileName);
+										if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+											anifile = FraGag.Compression.Prs.Decompress(anifile);
+										address = 0;
+										SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
+										i = ByteConverter.ToInt32(file, address);
+										while (i != -1)
+										{
+											anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
+											address += 8;
+											i = ByteConverter.ToInt32(file, address);
+										}
+										animations = new List<NJS_MOTION>(anis.Values);
+										if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+									}
+								}
+							}
+						}
+					}
                 }
                 else return;
             }
@@ -842,21 +677,29 @@ namespace SAModel.SAMDL
 			}
 			AddModelToLibrary(model, false);
 			unsaved = false;
-			EditorOptions.backLight.Ambient.R = settingsfile.SAMDL.BackLightAmbientR;
-			EditorOptions.backLight.Ambient.G = settingsfile.SAMDL.BackLightAmbientG;
-			EditorOptions.backLight.Ambient.B = settingsfile.SAMDL.BackLightAmbientB;
+			EditorOptions.backLight.Ambient.R = settingsfile.BackLightAmbientR;
+			EditorOptions.backLight.Ambient.G = settingsfile.BackLightAmbientG;
+			EditorOptions.backLight.Ambient.B = settingsfile.BackLightAmbientB;
 			EditorOptions.UpdateDefaultLights(d3ddevice);
 		}
 		private void LoadBinFile(byte[] file)
 		{
-			uint objectaddress = (uint)modelinfo.NumericUpDown_ObjectAddress.Value;
-			uint motionaddress = (uint)modelinfo.NumericUpDown_MotionAddress.Value;
-			if (modelinfo.CheckBox_Memory_Object.Checked) objectaddress -= (uint)modelinfo.NumericUpDown_Key.Value;
-			if (modelinfo.CheckBox_Memory_Motion.Checked) motionaddress -= (uint)modelinfo.NumericUpDown_Key.Value;
-			ByteConverter.BigEndian = modelinfo.CheckBox_BigEndian.Checked;
-			if (modelinfo.RadioButton_Object.Checked)
+			// Start offset for X360 exe
+			if (modelinfo.numericUpDownStartOffset.Value != 0)
 			{
-				tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				byte[] datafile_new = new byte[file.Length + (uint)modelinfo.numericUpDownStartOffset.Value];
+				file.CopyTo(datafile_new, (int)modelinfo.numericUpDownStartOffset.Value);
+				file = datafile_new;
+			}
+			uint objectaddress = (uint)modelinfo.numericUpDownModelAddress.Value;
+			uint motionaddress = (uint)modelinfo.numericUpDownMotionAddress.Value;
+			if (modelinfo.checkBoxMemoryObject.Checked) objectaddress -= (uint)modelinfo.numericUpDownKey.Value;
+			if (modelinfo.checkBoxMemoryMotion.Checked) motionaddress -= (uint)modelinfo.numericUpDownKey.Value;
+			ByteConverter.BigEndian = modelinfo.checkBoxBigEndian.Checked;
+			ByteConverter.Reverse = modelinfo.checkBoxReverse.Checked;
+			if (modelinfo.radioButtonObject.Checked)
+			{
+				tempmodel = new NJS_OBJECT(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				if (tempmodel.Sibling != null)
 				{
 					model = new NJS_OBJECT { Name = "Root" };
@@ -868,37 +711,37 @@ namespace SAModel.SAMDL
 					model = tempmodel;
 					rootSiblingMode = false;
 				}
-				if (modelinfo.CheckBox_LoadMotion.Checked)
-					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.NumericUpDown_Key.Value, null) };
+				if (modelinfo.checkBoxLoadMotion.Checked)
+					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
 					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
-			else if (modelinfo.RadioButton_Action.Checked)
+			else if (modelinfo.radioButtonAction.Checked)
 			{
-				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null);
+				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				model = action.Model;
-				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, (ModelFormat)modelinfo.ComboBox_Format.SelectedIndex, null) };
+				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null) };
 				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
 			}
 			else
 			{
 				model = new NJS_OBJECT { Name = "Model" };
-				switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
+				switch ((ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex)
 				{
 					case ModelFormat.Basic:
-						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, false);
+						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, false);
 						break;
 					case ModelFormat.BasicDX:
-						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, true);
+						model.Attach = new BasicAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, true);
 						break;
 					case ModelFormat.Chunk:
-						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value);
+						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
 						break;
 					case ModelFormat.GC:
-						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.NumericUpDown_Key.Value, null);
+						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, null);
 						break;
 				}
 			}
-			switch ((ModelFormat)modelinfo.ComboBox_Format.SelectedIndex)
+			switch ((ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex)
 			{
 				case ModelFormat.Basic:
 				case ModelFormat.BasicDX:
@@ -948,7 +791,7 @@ namespace SAModel.SAMDL
 
 			try
 			{
-				settingsfile.SAMDL.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
+				settingsfile.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
 			catch { };
@@ -1528,7 +1371,7 @@ namespace SAModel.SAMDL
 			foreach (ActionKeyMapping mapping in newMappings)
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SAMDL.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAMDL_keys.ini");
 			actionList.Save(saveControlsPath);
 			// Settings
 			optionsEditor_FormUpdated();
@@ -1693,7 +1536,7 @@ namespace SAModel.SAMDL
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1701,7 +1544,7 @@ namespace SAModel.SAMDL
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1709,7 +1552,7 @@ namespace SAModel.SAMDL
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
-					settingsfile.SAMDL.CamMoveSpeed = cam.MoveSpeed;
+					settingsfile.CamMoveSpeed = cam.MoveSpeed;
 					draw = true;
 					break;
 
@@ -1768,9 +1611,9 @@ namespace SAModel.SAMDL
 					EditorOptions.backLight.Ambient.G = Math.Min(1.0f, EditorOptions.backLight.Ambient.G + 0.1f);
 					EditorOptions.backLight.Ambient.B = Math.Min(1.0f, EditorOptions.backLight.Ambient.B + 0.1f);
 					EditorOptions.UpdateDefaultLights(d3ddevice);
-					settingsfile.SAMDL.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
-					settingsfile.SAMDL.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
-					settingsfile.SAMDL.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					settingsfile.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
+					settingsfile.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
+					settingsfile.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
 					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
@@ -1779,9 +1622,9 @@ namespace SAModel.SAMDL
 					EditorOptions.backLight.Ambient.G = Math.Max(0.0f, EditorOptions.backLight.Ambient.G - 0.1f);
 					EditorOptions.backLight.Ambient.B = Math.Max(0.0f, EditorOptions.backLight.Ambient.B - 0.1f);
 					EditorOptions.UpdateDefaultLights(d3ddevice);
-					settingsfile.SAMDL.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
-					settingsfile.SAMDL.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
-					settingsfile.SAMDL.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					settingsfile.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
+					settingsfile.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
+					settingsfile.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
 					osd.UpdateOSDItem("Darken Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
@@ -2243,8 +2086,8 @@ namespace SAModel.SAMDL
 
 		void optionsEditor_FormUpdated()
 		{
-			settingsfile.SAMDL.DrawDistance = EditorOptions.RenderDrawDistance;
-			settingsfile.SAMDL.CameraModifier = cam.ModifierKey;
+			settingsfile.DrawDistance = EditorOptions.RenderDrawDistance;
+			settingsfile.CameraModifier = cam.ModifierKey;
 			DrawEntireModel();
 		}
 

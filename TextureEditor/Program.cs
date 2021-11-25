@@ -17,6 +17,7 @@ namespace TextureEditor
 		{
 			Arguments = args;
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             primaryForm = new MainForm();
@@ -45,8 +46,8 @@ namespace TextureEditor
             }
             else
             {
-                string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\TextureEditor.log";
-                System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
+				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "TextureEditor.log");
+				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
                 MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "Texture Editor Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

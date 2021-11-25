@@ -55,9 +55,10 @@ namespace PLTool
             // patternColor1
             // 
             this.patternColor1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor1.Location = new System.Drawing.Point(41, 20);
+            this.patternColor1.Location = new System.Drawing.Point(32, 15);
+            this.patternColor1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor1.Name = "patternColor1";
-            this.patternColor1.Size = new System.Drawing.Size(32, 32);
+            this.patternColor1.Size = new System.Drawing.Size(25, 24);
             this.patternColor1.TabIndex = 1;
             this.patternColor1.TabStop = false;
             this.patternColor1.Click += new System.EventHandler(this.patternColor1_Click);
@@ -65,9 +66,10 @@ namespace PLTool
             // patternColor2
             // 
             this.patternColor2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor2.Location = new System.Drawing.Point(95, 20);
+            this.patternColor2.Location = new System.Drawing.Point(74, 15);
+            this.patternColor2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor2.Name = "patternColor2";
-            this.patternColor2.Size = new System.Drawing.Size(32, 32);
+            this.patternColor2.Size = new System.Drawing.Size(25, 24);
             this.patternColor2.TabIndex = 2;
             this.patternColor2.TabStop = false;
             this.patternColor2.Click += new System.EventHandler(this.patternColor1_Click);
@@ -75,9 +77,10 @@ namespace PLTool
             // patternColor3
             // 
             this.patternColor3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor3.Location = new System.Drawing.Point(149, 20);
+            this.patternColor3.Location = new System.Drawing.Point(116, 15);
+            this.patternColor3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor3.Name = "patternColor3";
-            this.patternColor3.Size = new System.Drawing.Size(32, 32);
+            this.patternColor3.Size = new System.Drawing.Size(25, 24);
             this.patternColor3.TabIndex = 3;
             this.patternColor3.TabStop = false;
             this.patternColor3.Click += new System.EventHandler(this.patternColor1_Click);
@@ -85,9 +88,10 @@ namespace PLTool
             // patternColor4
             // 
             this.patternColor4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor4.Location = new System.Drawing.Point(203, 20);
+            this.patternColor4.Location = new System.Drawing.Point(158, 15);
+            this.patternColor4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor4.Name = "patternColor4";
-            this.patternColor4.Size = new System.Drawing.Size(32, 32);
+            this.patternColor4.Size = new System.Drawing.Size(25, 24);
             this.patternColor4.TabIndex = 4;
             this.patternColor4.TabStop = false;
             this.patternColor4.Click += new System.EventHandler(this.patternColor1_Click);
@@ -95,9 +99,10 @@ namespace PLTool
             // patternColor8
             // 
             this.patternColor8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor8.Location = new System.Drawing.Point(203, 82);
+            this.patternColor8.Location = new System.Drawing.Point(158, 62);
+            this.patternColor8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor8.Name = "patternColor8";
-            this.patternColor8.Size = new System.Drawing.Size(32, 32);
+            this.patternColor8.Size = new System.Drawing.Size(25, 24);
             this.patternColor8.TabIndex = 8;
             this.patternColor8.TabStop = false;
             this.patternColor8.Click += new System.EventHandler(this.patternColor1_Click);
@@ -105,9 +110,10 @@ namespace PLTool
             // patternColor7
             // 
             this.patternColor7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor7.Location = new System.Drawing.Point(149, 82);
+            this.patternColor7.Location = new System.Drawing.Point(116, 62);
+            this.patternColor7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor7.Name = "patternColor7";
-            this.patternColor7.Size = new System.Drawing.Size(32, 32);
+            this.patternColor7.Size = new System.Drawing.Size(25, 24);
             this.patternColor7.TabIndex = 7;
             this.patternColor7.TabStop = false;
             this.patternColor7.Click += new System.EventHandler(this.patternColor1_Click);
@@ -115,9 +121,10 @@ namespace PLTool
             // patternColor6
             // 
             this.patternColor6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor6.Location = new System.Drawing.Point(95, 82);
+            this.patternColor6.Location = new System.Drawing.Point(74, 62);
+            this.patternColor6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor6.Name = "patternColor6";
-            this.patternColor6.Size = new System.Drawing.Size(32, 32);
+            this.patternColor6.Size = new System.Drawing.Size(25, 24);
             this.patternColor6.TabIndex = 6;
             this.patternColor6.TabStop = false;
             this.patternColor6.Click += new System.EventHandler(this.patternColor1_Click);
@@ -125,9 +132,10 @@ namespace PLTool
             // patternColor5
             // 
             this.patternColor5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.patternColor5.Location = new System.Drawing.Point(41, 82);
+            this.patternColor5.Location = new System.Drawing.Point(32, 62);
+            this.patternColor5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.patternColor5.Name = "patternColor5";
-            this.patternColor5.Size = new System.Drawing.Size(32, 32);
+            this.patternColor5.Size = new System.Drawing.Size(25, 24);
             this.patternColor5.TabIndex = 5;
             this.patternColor5.TabStop = false;
             this.patternColor5.Click += new System.EventHandler(this.patternColor1_Click);
@@ -135,18 +143,20 @@ namespace PLTool
             // pictureBoxPreview
             // 
             this.pictureBoxPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxPreview.Location = new System.Drawing.Point(12, 129);
+            this.pictureBoxPreview.Location = new System.Drawing.Point(9, 97);
+            this.pictureBoxPreview.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxPreview.Name = "pictureBoxPreview";
-            this.pictureBoxPreview.Size = new System.Drawing.Size(256, 32);
+            this.pictureBoxPreview.Size = new System.Drawing.Size(200, 24);
             this.pictureBoxPreview.TabIndex = 9;
             this.pictureBoxPreview.TabStop = false;
             // 
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(39, 176);
+            this.button1.Location = new System.Drawing.Point(30, 132);
+            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 35);
+            this.button1.Size = new System.Drawing.Size(58, 26);
             this.button1.TabIndex = 10;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
@@ -154,9 +164,10 @@ namespace PLTool
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button2.Location = new System.Drawing.Point(158, 176);
+            this.button2.Location = new System.Drawing.Point(123, 132);
+            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 35);
+            this.button2.Size = new System.Drawing.Size(58, 26);
             this.button2.TabIndex = 11;
             this.button2.Text = "Cancel";
             this.button2.UseVisualStyleBackColor = true;
@@ -168,9 +179,9 @@ namespace PLTool
             // 
             // ColorPattern
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(281, 223);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(219, 167);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBoxPreview);
@@ -183,6 +194,7 @@ namespace PLTool
             this.Controls.Add(this.patternColor2);
             this.Controls.Add(this.patternColor1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ColorPattern";

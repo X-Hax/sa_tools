@@ -319,7 +319,7 @@ namespace VMSEditor
             chaoData.Position.Y = (float)numericUpDownY.Value;
             chaoData.Position.Z = (float)numericUpDownZ.Value;
             chaoData.Age = (uint)numericUpDownAge.Value;
-            chaoData.ID=(uint)numericUpDownID.Value;
+            chaoData.ID = (uint)numericUpDownID.Value;
             chaoData.AnimalParts[0] = comboBoxAnimalHeadFront.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalHeadFront.SelectedIndex : AnimalPartsSA1.None;
             chaoData.AnimalParts[1] = comboBoxAnimalHeadBack.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalHeadBack.SelectedIndex : AnimalPartsSA1.None;
             chaoData.AnimalParts[2] = comboBoxAnimalEars.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalEars.SelectedIndex : AnimalPartsSA1.None;
@@ -328,8 +328,8 @@ namespace VMSEditor
             chaoData.AnimalParts[5] = comboBoxAnimalFeet.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalFeet.SelectedIndex : AnimalPartsSA1.None;
             chaoData.AnimalParts[6] = comboBoxAnimalTail.SelectedIndex != 16 ? (AnimalPartsSA1)comboBoxAnimalTail.SelectedIndex : AnimalPartsSA1.None;
             // Face
-            chaoData.Kindness=(sbyte)numericUpDownKindness.Value;
-            chaoData.Aggressive=(sbyte)numericUpDownAggressive.Value;
+            chaoData.Kindness = (sbyte)numericUpDownKindness.Value;
+            chaoData.Aggressive = (sbyte)numericUpDownAggressive.Value;
             chaoData.Curiosity = (sbyte)numericUpDownCurious.Value;
             // Emotion
             chaoData.Charm = (byte)numericUpDownCharm.Value;
@@ -337,12 +337,12 @@ namespace VMSEditor
             chaoData.Sleep = (byte)numericUpDownSleepy.Value;
             chaoData.Hunger = (byte)numericUpDownHungry.Value;
             chaoData.Tedious = (byte)numericUpDownBored.Value;
-            chaoData.Tiredness=(byte)numericUpDownTired.Value;
+            chaoData.Tiredness = (byte)numericUpDownTired.Value;
             chaoData.Stress = (byte)numericUpDownStressed.Value;
             chaoData.Narrow = (byte)numericUpDownNarrow.Value;
-            chaoData.Pleasure=(byte)numericUpDownJoyful.Value;
-            chaoData.Anger=(byte)numericUpDownAngry.Value;
-            chaoData.Sorrow=(byte)numericUpDownSad.Value;
+            chaoData.Pleasure = (byte)numericUpDownJoyful.Value;
+            chaoData.Anger = (byte)numericUpDownAngry.Value;
+            chaoData.Sorrow = (byte)numericUpDownSad.Value;
             chaoData.Fear = (byte)numericUpDownFearful.Value;
             chaoData.Loneliness = (byte)numericUpDownLonely.Value;
             // Character memories
@@ -746,7 +746,7 @@ namespace VMSEditor
         private void CreateVMI(string filename, byte[] data)
         {
             VMIFile vmi = new VMIFile();
-            if (Path.GetFileName(filename).Length > 8)
+            if (Path.GetFileNameWithoutExtension(filename).Length > 8)
                 System.Windows.Forms.MessageBox.Show("For the VMI file to work correctly, the VMS filename should be 8 characters or less.", "Chao Editor Warning", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             vmi.Description = "Chao Download";
             vmi.Copyright = "VMSEditor";
@@ -802,21 +802,21 @@ namespace VMSEditor
                 case ChaoSaveMode.ChaoAdventure:
                     switch (chaoDataList.Count)
                     {
-                            // Nothing
+                        // Nothing
                         case 0:
                             return;
-                            // Just Chao
+                        // Just Chao
                         case 1:
                             chao1 = chaoDataList[0];
                             chao2 = new VMS_Chao(new byte[512]);
                             break;
-                            // Chao + Egg
+                        // Chao + Egg
                         case 2:
                             chao1 = chaoDataList[0];
                             chao2 = chaoDataList[1];
                             hasEgg = true;
                             break;
-                            // More than 2 slots
+                        // More than 2 slots
                         default:
                             using (EditorChaoSelectChao selectChao = new EditorChaoSelectChao(chaoDataList))
                             {
@@ -834,7 +834,7 @@ namespace VMSEditor
                             break;
                     }
                     break;
-                    // TODO
+                // TODO
                 case ChaoSaveMode.GardenFile:
                 case ChaoSaveMode.UploadData:
                 default:
@@ -885,15 +885,15 @@ namespace VMSEditor
                 case ChaoSaveMode.UploadData:
                 default:
                     return;
-            }    
+            }
             byte[] data = output.ToArray();
             File.WriteAllBytes(filename, data);
             currentFilename = filename;
             toolStripStatusLabelFilename.Text = Path.GetFileName(currentFilename);
             if (generateAVMIFileToolStripMenuItem.Checked)
-                CreateVMI(Path.GetFileNameWithoutExtension(filename), data);
+                CreateVMI(filename, data);
         }
-    
+
         private void chaoDownloadDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog sv = new SaveFileDialog() { FileName = Path.ChangeExtension(Path.GetFileName(currentFilename), "vms"), Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
@@ -917,12 +917,68 @@ namespace VMSEditor
             comboBoxJewelColor.Enabled = checkBoxColorFlagJewel.Checked;
         }
 
-        private void numericUpDownMemoriesID_0_ValueChanged(object sender, EventArgs e)
-        {
-            WriteChaoMemories();
-        }
+		private void numericUpDownMemoriesMeet_ValueChanged(object sender, EventArgs e)
+		{
+			WriteChaoMemories();
+		}
 
-        private void checkBoxColorFlag0x1_CheckedChanged(object sender, EventArgs e)
+		private void numericUpDownMemoriesID_0_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_0.Value < 0)
+				numericUpDownMemoriesID_0.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_0.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_1_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_1.Value < 0)
+				numericUpDownMemoriesID_1.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_1.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_2_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_2.Value < 0)
+				numericUpDownMemoriesID_2.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_2.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_3_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_3.Value < 0)
+				numericUpDownMemoriesID_3.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_3.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_4_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_4.Value < 0)
+				numericUpDownMemoriesID_4.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_4.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_5_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_5.Value < 0)
+				numericUpDownMemoriesID_5.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_5.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_6_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_6.Value < 0)
+				numericUpDownMemoriesID_6.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_6.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void numericUpDownMemoriesID_7_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownMemoriesID_7.Value < 0)
+				numericUpDownMemoriesID_7.Value = unchecked((uint)int.Parse(numericUpDownMemoriesID_7.Value.ToString()));
+			WriteChaoMemories();
+		}
+
+		private void checkBoxColorFlag0x1_CheckedChanged(object sender, EventArgs e)
         {
             ChaoColorFlagsSA1 colorFlags = 0;
             comboBoxJewelColor.Enabled = false;
@@ -969,18 +1025,18 @@ namespace VMSEditor
                 Color pencolor = Color.White;
                 if (Math.Abs(trackBarRunPower.Value) > 100 || Math.Abs(trackBarSwimFly.Value) > 100)
                     pencolor = Color.Red;
-                gfx.DrawRectangle(new Pen(pencolor, 4.0f), new Rectangle(new Point((trackBarRunPower.Value + 150)/2 - 2, (trackBarSwimFly.Value + 150)/2 - 2), new Size(4, 4)));
+                gfx.DrawRectangle(new Pen(pencolor, 4.0f), new Rectangle(new Point((trackBarRunPower.Value + 150) / 2 - 2, (trackBarSwimFly.Value + 150) / 2 - 2), new Size(4, 4)));
             }
         }
 
-		private void trackBarSwimFly_Scroll(object sender, EventArgs e)
-		{
+        private void trackBarSwimFly_Scroll(object sender, EventArgs e)
+        {
             trackBarSwimFly_Click(sender, e);
             DrawChaoEvolution();
         }
 
-		private void trackBarRunPower_Scroll(object sender, EventArgs e)
-		{
+        private void trackBarRunPower_Scroll(object sender, EventArgs e)
+        {
             trackBarRunPower_Click(sender, e);
             DrawChaoEvolution();
         }
@@ -1015,8 +1071,8 @@ namespace VMSEditor
             }
         }
 
-		private void comboBoxFruit0_SelectedIndexChanged(object sender, EventArgs e)
-		{
+        private void comboBoxFruit0_SelectedIndexChanged(object sender, EventArgs e)
+        {
             pictureBoxFruit0.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit0.SelectedIndex);
             pictureBoxFruit1.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit1.SelectedIndex);
             pictureBoxFruit2.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit2.SelectedIndex);
@@ -1027,8 +1083,8 @@ namespace VMSEditor
             pictureBoxFruit7.Image = GetFruitPreview((ChaoFruitsSA1)comboBoxFruit7.SelectedIndex);
         }
 
-		private void comboBoxGarden_SelectedIndexChanged(object sender, EventArgs e)
-		{
+        private void comboBoxGarden_SelectedIndexChanged(object sender, EventArgs e)
+        {
             switch ((ChaoLocationSA1)comboBoxGarden.SelectedIndex)
             {
                 case ChaoLocationSA1.EggCarrier:
@@ -1042,7 +1098,7 @@ namespace VMSEditor
                     pictureBoxGarden.Image = Properties.Resources.ss_panel;
                     break;
             }
-		}
+        }
 
         private int GetFaceValue(int src)
         {
@@ -1063,7 +1119,7 @@ namespace VMSEditor
         };
 
         private Bitmap GetMouthPart(int part)
-		{
+        {
             switch (part)
             {
                 case 0:
@@ -1086,10 +1142,10 @@ namespace VMSEditor
                 case 8:
                     return Properties.Resources.al_kuchi08;
             }
-		}
+        }
 
         private Bitmap ComposeMouthTexture(int m1, int m2)
-		{
+        {
             Bitmap result = new Bitmap(96, 32);
             using (Graphics gfx = Graphics.FromImage(result))
             {
@@ -1164,7 +1220,7 @@ namespace VMSEditor
         }
 
         private void CreateFacePreview()
-		{
+        {
             int kindness = GetFaceValue((int)numericUpDownKindness.Value);
             int aggressive = GetFaceValue((int)numericUpDownAggressive.Value);
             int curious = GetFaceValue((int)numericUpDownCurious.Value);
@@ -1172,63 +1228,63 @@ namespace VMSEditor
             pictureBoxMouth.Image = GetMouthPreview(mouse_default_num_0[aggressive, kindness, curious]);
         }
 
-		private void numericUpDownKindness_ValueChanged(object sender, EventArgs e)
-		{
+        private void numericUpDownKindness_ValueChanged(object sender, EventArgs e)
+        {
             CreateFacePreview();
         }
 
-		private void listBoxDataSlots_Click(object sender, EventArgs e)
-		{
+        private void listBoxDataSlots_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "List of all Chao in the currently open file.";
-		}
+        }
 
-		private void textBoxName_Click(object sender, EventArgs e)
-		{
+        private void textBoxName_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "A Chao's name (up to 8 characters).";
         }
 
-		private void comboBoxType_Click(object sender, EventArgs e)
-		{
+        private void comboBoxType_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Type of Chao.";
         }
 
-		private void numericUpDownID_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownID_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unique identifier used to tell whether Chao data is a copy or not.";
         }
 
-		private void numericUpDownLifeSpan_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownLifeSpan_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Counts upwards when the Chao is a baby, then counts downwards when it is an adult. When it reaches 0, the Chao dies.";
         }
 
-		private void numericUpDownAgingFactor_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownAgingFactor_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls how fast Lifespan decreases.";
         }
 
-		private void numericUpDownReincarnations_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownReincarnations_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Number of times the Chao has reincarnated.";
         }
 
-		private void numericUpDownCocoonTimer_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownCocoonTimer_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void numericUpDownExists_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownExists_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void numericUpDownAge_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownAge_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao age as reported by Chao Doctor.";
         }
 
-		private void trackBarHappy_Click(object sender, EventArgs e)
-		{
+        private void trackBarHappy_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao need at least 67 Happiness to reincarnate, and 91 Happiness in order to be able to evolve into a Chaos Chao.";
         }
 
@@ -1254,288 +1310,300 @@ namespace VMSEditor
 
 
         private void comboBoxGarden_Click(object sender, EventArgs e)
-		{
+        {
             toolStripStatusLabelHint.Text = "Location of the Chao.";
         }
 
-		private void numericUpDownX_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownX_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Location of the Chao.";
         }
 
-		private void numericUpDownKey1_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownKey1_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown. Possibly used for a download integrity check.";
         }
 
-		private void checkBoxColorFlag0x1_Click(object sender, EventArgs e)
-		{
+        private void checkBoxColorFlag0x1_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Probably unused.";
         }
 
-		private void checkBoxColorFlagBlack_Click(object sender, EventArgs e)
-		{
+        private void checkBoxColorFlagBlack_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Sets the Chao color. Multiple color flags can be mixed.";
         }
 
-		private void comboBoxJewelColor_Click(object sender, EventArgs e)
-		{
+        private void comboBoxJewelColor_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Sets the jewel color for Jewel Chao.";
         }
 
-		private void numericUpDownKindness_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownKindness_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "The Chao's eye and mouth textures are determined by these values.";
         }
 
-		private void comboBoxAnimalHeadFront_Click(object sender, EventArgs e)
-		{
+        private void comboBoxAnimalHeadFront_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Select Chao animal body parts.";
         }
 
-		private void numericUpDownSwim_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownSwim_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Swim skill (0-999) multiplied by 10.";
         }
 
-		private void numericUpDownFly_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownFly_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Fly skill (0-999) multiplied by 10.";
         }
 
-		private void numericUpDownRun_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownRun_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Run skill (0-999) multiplied by 10.";
         }
 
-		private void numericUpDownPower_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownPower_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Power skill (0-999) multiplied by 10.";
         }
 
-		private void numericUpDownPointsSwim_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownPointsSwim_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "This value controls the increase of the Swim stat when Magnitude increases.";
         }
 
-		private void numericUpDownHP_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownHP_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Current amount of the Chao's health.";
         }
 
-		private void numericUpDownMaxHP_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownMaxHP_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Total amount of the Chao's health.";
         }
 
-		private void numericUpDownPointsFly_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownPointsFly_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "This value controls the increase of the Fly stat when Magnitude increases.";
         }
 
-		private void numericUpDownPointsRun_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownPointsRun_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "This value controls the increase of the Run stat when Magnitude increases.";
         }
 
-		private void numericUpDownPointsPower_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownPointsPower_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "This value controls the increase of the Power stat when Magnitude increases.";
         }
 
-		private void trackBarMagnitude_Scroll(object sender, EventArgs e)
-		{
+        private void trackBarMagnitude_Scroll(object sender, EventArgs e)
+        {
             trackBarMagnitude_Click(sender, e);
         }
 
-		private void numericUpDownCharm_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownCharm_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void numericUpDownHorny_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownHorny_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls the Chao's desire to mate.";
         }
 
-		private void numericUpDownSleepy_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownSleepy_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls how likely the Chao is to fall asleep. A sleeping Chao will wake up when this reaches 0.";
         }
 
-		private void numericUpDownHungry_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownHungry_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls the Chao's hunger level.";
         }
 
-		private void numericUpDownBored_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownBored_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls how likely the Chao will use animal abilities.";
         }
 
-		private void numericUpDownTired_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownTired_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "The Chao's tiredness level, increases during Chao Race.";
         }
 
-		private void numericUpDownStressed_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownStressed_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls how likely the Chao is to stop or trip during the race.";
         }
 
-		private void numericUpDownNarrow_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownNarrow_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void numericUpDownJoyful_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownJoyful_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "When set to a high value, the Chao will show a heart emoticon.";
         }
 
-		private void numericUpDownAngry_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownAngry_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown. Increased by giving the Chao a Starnut or attacking the Chao if it has positive aggression.";
         }
 
-		private void numericUpDownSad_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownSad_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls how likely the Chao is to cry. Increased by giving the Chao a Lazynut.";
         }
 
-		private void numericUpDownFearful_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownFearful_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown. Increased by giving the Chao a Lazynut or by attacking the Chao if it has negative aggression.";
         }
 
-		private void numericUpDownLonely_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownLonely_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void comboBoxFruit0_Click(object sender, EventArgs e)
-		{
+        private void comboBoxFruit0_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "A Chao can have up to 8 Fruit in its inventory.";
         }
 
-		private void checkBoxSealDance_Click(object sender, EventArgs e)
-		{
+        private void checkBoxSealDance_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can perform a shake dance.";
         }
 
-		private void checkBoxOtterSwim_Click(object sender, EventArgs e)
-		{
+        private void checkBoxOtterSwim_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can backstroke swim.";
         }
 
-		private void checkBoxPenguinSkate_Click(object sender, EventArgs e)
-		{
+        private void checkBoxPenguinSkate_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can snuggle up to the character.";
         }
 
-		private void checkBoxPeacockPose_Click(object sender, EventArgs e)
-		{
+        private void checkBoxPeacockPose_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can lie down on a side.";
         }
 
-		private void checkBoxParrotSing_Click(object sender, EventArgs e)
-		{
+        private void checkBoxParrotSing_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can sing.";
         }
 
-		private void checkBoxSwallowTwirl_Click(object sender, EventArgs e)
-		{
+        private void checkBoxSwallowTwirl_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can perform the spin dance.";
         }
 
-		private void checkBoxMoleDig_Click(object sender, EventArgs e)
-		{
+        private void checkBoxMoleDig_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can use the shovel.";
         }
 
-		private void checkBoxKoalaTrumpet_Click(object sender, EventArgs e)
-		{
+        private void checkBoxKoalaTrumpet_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can play the trumpet.";
         }
 
-		private void checkBoxSkunkDraw_Click(object sender, EventArgs e)
-		{
+        private void checkBoxSkunkDraw_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can draw its favorite character.";
         }
 
-		private void checkBoxDeerBow_Click(object sender, EventArgs e)
-		{
+        private void checkBoxDeerBow_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can bow.";
         }
 
-		private void checkBoxRabbitSomersault_Click(object sender, EventArgs e)
-		{
+        private void checkBoxRabbitSomersault_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can do a somersault.";
         }
 
-		private void checkBoxWallabyPunch_Click(object sender, EventArgs e)
-		{
+        private void checkBoxWallabyPunch_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can box.";
         }
 
-		private void checkBoxGorillaChest_Click(object sender, EventArgs e)
-		{
+        private void checkBoxGorillaChest_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can play drums.";
         }
 
-		private void checkBoxLionWash_Click(object sender, EventArgs e)
-		{
+        private void checkBoxLionWash_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can wash its face.";
         }
 
-		private void checkBoxElephantSumo_Click(object sender, EventArgs e)
-		{
+        private void checkBoxElephantSumo_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Chao can wrestle.";
         }
 
-		private void numericUpDownMeetSonic_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownMeetSonic_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void trackBarBondSonic_Scroll(object sender, EventArgs e)
-		{
+        private void trackBarBondSonic_Scroll(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "When this value is high, the Chao will approach the character on its own. When it is low, the Chao will try to run away.";
         }
 
-		private void numericUpDownRace0_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownRace0_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void checkBoxPearl_Click(object sender, EventArgs e)
-		{
+        private void checkBoxPearl_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Controls which jewels the Chao has won in Chao Race.";
         }
 
-		private void numericUpDownRaceTrack_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownRaceTrack_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-		private void numericUpDownMemoriesID_0_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownMemoriesID_0_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "Likely unused.";
         }
 
-		private void numericUpDownMemoriesPage_Click(object sender, EventArgs e)
-		{
+        private void numericUpDownMemoriesPage_Click(object sender, EventArgs e)
+        {
             toolStripStatusLabelHint.Text = "There are 32 records of Chao memories, and 8 of them can be displayed at once.";
         }
 
-		private void reportABugToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/issues");
+        private void reportABugToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/issues") { CreateNoWindow = true });
         }
 
-		private void chaoEditorHelpToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-            System.Diagnostics.Process.Start("https://github.com/X-Hax/sa_tools/wiki/Dreamcast-Chao-Editor");
+        private void chaoEditorHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/VMS-Editor#chao-editor") { CreateNoWindow = true });
         }
+
+		private void NumericUpDownID_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownID.Value < 0)
+				numericUpDownID.Value = unchecked((uint)int.Parse(numericUpDownID.Value.ToString()));
+		}
+
+		private void NumericUpDown_ColorFlags_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDown_ColorFlags.Value < 0)
+				numericUpDown_ColorFlags.Value = unchecked((uint)int.Parse(numericUpDown_ColorFlags.Value.ToString()));
+		}
 	}
 }

@@ -16,20 +16,22 @@ namespace SAModel
 			{
 				case ColorType.ARGB8888_32:
 					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
+					// "Reverse" mode is for SADX Gamecube/SA2B/SA2PC where the color order is ABGR
 					if (ByteConverter.BigEndian)
 					{
-						//"Reverse" is for the order used in SADX Gamecube
-						if (ByteConverter.Reverse) 
+						if (ByteConverter.Reverse)
 							return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 						else
 							return Color.FromArgb(file[address], file[address + 1], file[address + 2], file[address + 3]);
 					}
+					else if (ByteConverter.Reverse)
+						return Color.FromArgb(file[address], file[address + 3], file[address + 2], file[address + 1]);
 					else
 						return Color.FromArgb(file[address + 3], file[address + 2], file[address + 1], file[address]);
 				case ColorType.XRGB8888_32:
 					return Color.FromArgb(unchecked((int)(ByteConverter.ToUInt32(file, address) | 0xFF000000u)));
 				case ColorType.ARGB8888_16:
-					return Color.FromArgb((ByteConverter.ToUInt16(file, address + 2) << 16) | ByteConverter.ToUInt16(file, address));
+						return Color.FromArgb((ByteConverter.ToUInt16(file, address + 2) << 16) | ByteConverter.ToUInt16(file, address));
 				case ColorType.XRGB8888_16:
 					return Color.FromArgb(unchecked((int)((uint)((ByteConverter.ToUInt16(file, address + 2) << 16) | ByteConverter.ToUInt16(file, address)) | 0xFF000000u)));
 				case ColorType.ARGB4444:

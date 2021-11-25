@@ -6,9 +6,10 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using SAModel.SAEditorCommon.ModManagement;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools.Split;
 using SplitTools.SAArc;
+using System.Xml;
 
 namespace SAToolsHub
 {
@@ -59,15 +60,17 @@ namespace SAToolsHub
 			btnCreate.Enabled = false;
 		}
 
-		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
-		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select the path for split data to be stored at";
-			if (fsd.ShowDialog(IntPtr.Zero))
-			{
-				txtProjFolder.Text = fsd.FileName;
-			}
-		}
+        private void btnAltFolderBrowse_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fsd = new FolderBrowserDialog { Description = "Please select the path for split data to be stored at", UseDescriptionForTitle = true };
+            if (fsd.ShowDialog() == DialogResult.OK)
+            {
+                txtProjFolder.Text = fsd.SelectedPath;
+                // If a game template is selected, enable the Create button
+                if (comboBox1.SelectedIndex != -1)
+                    btnCreate.Enabled = true; //
+            }
+        }
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
@@ -89,7 +92,7 @@ namespace SAToolsHub
 			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			saveFileDialog1.RestoreDirectory = true;
 
-			if (checkBox1.Checked && (txtProjFolder.Text != null))
+			if (checkBox1.Checked && txtProjFolder.Text != "")
 			{
 				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
 			}
@@ -98,8 +101,8 @@ namespace SAToolsHub
 			{
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
-					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
+                    XmlSerializer serializer = new(typeof(Templates.ProjectTemplate));
+                    XmlWriter xmlWriter = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
 					if (checkBox1.Checked && (txtProjFolder.Text != null))
 					{
 						projFolder = txtProjFolder.Text;
@@ -119,9 +122,8 @@ namespace SAToolsHub
 
 					projInfo.GameName = gameName;
 					projInfo.CheckFile = checkFile;
-					projInfo.GameFolder = gamePath;
 					projInfo.GameDataFolder = gameDataFolder;
-					projInfo.ProjectFolder = projFolder;
+					projInfo.ProjectFolder = (checkBox1.Checked && txtProjFolder.Text != "") ? projFolder : Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
 					projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
 
 					projectFile.GameInfo = projInfo;
@@ -129,7 +131,7 @@ namespace SAToolsHub
                     if (splitMdlEntries != null)
 						projectFile.SplitMDLEntries = splitMdlEntries;
 
-					serializer.Serialize(writer, projectFile);
+					serializer.Serialize(xmlWriter, projectFile);
 					projFileStream.Close();
 
 #if !DEBUG

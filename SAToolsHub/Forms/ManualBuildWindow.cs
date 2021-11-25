@@ -125,8 +125,11 @@ namespace SAModel.SAEditorCommon
 
 				for (int i = 0; i < tabListView.Columns.Count; i++)
 				{
-					tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
-				}
+                    if (i != tabListView.Columns.Count - 1) // Don't auto resize the "Changed" column
+					    tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
+                    else
+                        tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.HeaderSize);
+                }
 			}
 		}
 
@@ -231,10 +234,10 @@ namespace SAModel.SAEditorCommon
 
 		private void CPPExportButton_Click(object sender, EventArgs e)
 		{
-			var folderDialog = new FolderSelect.FolderSelectDialog();
-			if (folderDialog.ShowDialog(IntPtr.Zero))
+			var folderDialog = new FolderBrowserDialog();
+			if (folderDialog.ShowDialog() == DialogResult.OK)
 			{
-				string outputFolder = folderDialog.FileName;
+				string outputFolder = folderDialog.SelectedPath;
 
 				foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 				{
@@ -264,10 +267,10 @@ namespace SAModel.SAEditorCommon
 
 		private void IniExportButton_Click(object sender, EventArgs e)
 		{
-			var folderDialog = new FolderSelect.FolderSelectDialog();
-			if (folderDialog.ShowDialog(IntPtr.Zero))
+			var folderDialog = new FolderBrowserDialog();
+			if (folderDialog.ShowDialog() == DialogResult.OK)
 			{
-				string outputFolder = folderDialog.FileName;
+				string outputFolder = folderDialog.SelectedPath;
                 List<string> listIni_exe = new List<string>();
                 Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
                 foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
@@ -284,7 +287,7 @@ namespace SAModel.SAEditorCommon
 
 						case AssemblyType.DLL:
                             DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
-								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.FileName, assembly.Key + "_data.ini"));
+								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 
 						default:

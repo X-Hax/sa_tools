@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Linq;
 using System.Collections.Generic;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace SAModel.DataToolbox
 {
@@ -343,6 +343,25 @@ namespace SAModel.DataToolbox
 				}
 			}
 		}
+
+		private void NumericUpDownBinaryKey_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownBinaryKey.Value < 0)
+				numericUpDownBinaryKey.Value = unchecked((uint)int.Parse(numericUpDownBinaryKey.Value.ToString()));
+		}
+
+		private void NumericUpDownBinaryAddress_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownBinaryAddress.Value < 0)
+				numericUpDownBinaryAddress.Value = unchecked((uint)int.Parse(numericUpDownBinaryAddress.Value.ToString()));
+		}
+
+		private void NumericUpDownBinaryOffset_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownBinaryOffset.Value < 0)
+				numericUpDownBinaryOffset.Value = unchecked((uint)int.Parse(numericUpDownBinaryOffset.Value.ToString()));
+		}
+
 		#endregion
 
 		#region Struct Converter Tab
@@ -365,17 +384,17 @@ namespace SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
+                SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outpath + outext, dx, false);
             }
 			if (NJA)
 			{
 				outext = ".nja";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false);
+				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.NJA, outpath + outext, dx, false);
 			}
 			if (JSON)
 			{
 				outext = ".json";
-				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.JSON, outpath + outext, dx, false);
+				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.JSON, outpath + outext, dx, false);
 			}
 		}
 

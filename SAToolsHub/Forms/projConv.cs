@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Serialization;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
 {
@@ -71,11 +72,10 @@ namespace SAToolsHub
 		#region Form Functions
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			var fsd = new FolderSelect.FolderSelectDialog();
-			fsd.Title = "Please select an old project folder.";
-			if (fsd.ShowDialog(IntPtr.Zero))
+            var fsd = new FolderBrowserDialog { Description = "Please select an old project folder.", UseDescriptionForTitle = true };
+			if (fsd.ShowDialog() == DialogResult.OK)
 			{
-				txtProjFolder.Text = fsd.FileName;
+				txtProjFolder.Text = fsd.SelectedPath;
 				projPath = txtProjFolder.Text;
 				setGame();
 			}
@@ -96,8 +96,9 @@ namespace SAToolsHub
 				{
 					gamePath = GetSystemPath();
 
+
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
+					XmlWriter writer = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
 
 					Templates.ProjectInfo projInfo = new Templates.ProjectInfo(); ;
 
@@ -106,7 +107,6 @@ namespace SAToolsHub
 						case "sadx":
 							projInfo.GameName = "SADXPC";
 							projInfo.CanBuild = true;
-							projInfo.GameFolder = gamePath;
 							projInfo.ProjectFolder = projPath;
 
 							List<Templates.SplitEntry> dxsplitEntries = new List<Templates.SplitEntry>()
@@ -131,7 +131,6 @@ namespace SAToolsHub
 						case "sa2":
 							projInfo.GameName = "SA2PC";
 							projInfo.CanBuild = true;
-							projInfo.GameFolder = gamePath;
 							projInfo.ProjectFolder = projPath;
 
 							List<Templates.SplitEntry> sa2splitEntries = new List<Templates.SplitEntry>()

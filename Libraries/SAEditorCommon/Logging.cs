@@ -6,6 +6,8 @@ using SAModel.Direct3D;
 using Color = System.Drawing.Color;
 using System.Text;
 using SharpDX.Mathematics.Interop;
+using System;
+using System.Windows.Forms;
 
 namespace SAModel.SAEditorCommon
 {
@@ -17,12 +19,11 @@ namespace SAModel.SAEditorCommon
 		private string file;
 		public List<string> LogQueue { get; set; }
 		/// <summary>
-		/// Initializes a logger that collects log information and writes it out in a specified file.
+		/// Initializes a logger that collects log information and writes it out in a file. The filename is EXEName.log.
 		/// </summary>
-		/// <param name="filename">Path to the log file</param>
-		public Logger(string filename)
+		public Logger()
 		{
-			file = filename;
+			file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log");
 			LogQueue = new List<string>();
 		}
 		/// <summary>
@@ -55,6 +56,8 @@ namespace SAModel.SAEditorCommon
 		{
 			try
 			{
+				if (!Directory.Exists(Path.GetDirectoryName(file)))
+					Directory.CreateDirectory(Path.GetDirectoryName(file));
 				File.AppendAllLines(file, LogQueue);
 				LogQueue.Clear();
 			}
@@ -65,6 +68,8 @@ namespace SAModel.SAEditorCommon
 		/// </summary>
 		public void ClearLogFile()
 		{
+			if (!File.Exists(file))
+				return;
 			try
 			{
 				File.WriteAllText(file, "");
@@ -76,6 +81,8 @@ namespace SAModel.SAEditorCommon
 		/// </summary>
 		public void DeleteLogFile()
 		{
+			if (!File.Exists(file))
+				return;
 			try
 			{
 				File.Delete(file);
@@ -120,15 +127,15 @@ namespace SAModel.SAEditorCommon
 		public void ProcessMessages()
 		{
 			StringBuilder MessageString = new StringBuilder();
-			//Update timers on render because the form's timer freezes when stuff is rendered
+			// Update timers on render because the form's timer freezes when stuff is rendered
 			UpdateTimer();
-			//Create the full log string
+			// Create the full log string
 			foreach (var key in MessageList.Keys.ToList())
 			{
 				MessageString.AppendFormat(key + "\n");
 			}
 			textSprite.Begin(SpriteFlags.AlphaBlend);
-			//Process OSD items
+			// Process OSD items
 			if (show_osd)
 			{
 				foreach (OSDItem osd in OSDItems.ToList())
@@ -141,7 +148,7 @@ namespace SAModel.SAEditorCommon
 					EditorOptions.OnscreenFont.DrawText(textSprite, osd.text, osd.pos_x + rec.X, osd.pos_y, osd.color);
 				}
 			}
-			//Process messages
+			// Process messages
 			if (MessageList.Count > 0 && d3ddevice != null)
 			{
 				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 9, 9, Color.Black.ToRawColorBGRA());
@@ -151,7 +158,7 @@ namespace SAModel.SAEditorCommon
 				EditorOptions.OnscreenFont.DrawText(textSprite, MessageString.ToString(), 8, 8, logcolor);
 			}
 			textSprite.End();
-			//Refresh messages after drawing
+			// Refresh messages after drawing
 			MessageString.Clear();
 		}
 		/// <summary>

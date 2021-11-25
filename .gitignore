@@ -222,3 +222,9 @@ pip-log.txt
 /SAToolsHub.exe
 /SAToolsHub.exe.config
 /GameConfig/GamePaths.ini
+/ref
+/buildSATools.runtimeconfig.json
+/buildSATools.runtimeconfig.dev.json
+/buildSATools.exe
+/buildSATools.dll
+/buildSATools.deps.json

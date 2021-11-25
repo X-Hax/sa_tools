@@ -1,10 +1,11 @@
-﻿using SplitTools;
+﻿using SAModel.SAEditorCommon.ProjectManagement;
+using SplitTools;
 using SplitTools.SplitDLL;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using static SAEditorCommon.ProjectManagement.Templates;
+using static SAModel.SAEditorCommon.ProjectManagement.Templates;
 using IniDictionary = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
 
 namespace SAModel.SAMDL
@@ -93,7 +94,7 @@ namespace SAModel.SAMDL
         {
             modFolder = projFile.GameInfo.ProjectFolder;
             modSystemFolder = Path.Combine(modFolder, projFile.GameInfo.GameDataFolder);
-            gameSystemFolder = Path.Combine(projFile.GameInfo.GameFolder, projFile.GameInfo.GameDataFolder); // To get a path like "SADX\system" or "SA1\SONICADV"
+            gameSystemFolder = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), projFile.GameInfo.GameDataFolder); // To get a path like "SADX\system" or "SA1\SONICADV"
             InitializeComponent();
 
             // Find valid INI files

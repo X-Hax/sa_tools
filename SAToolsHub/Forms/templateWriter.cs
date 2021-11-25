@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Serialization;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace SAToolsHub
 {
@@ -26,7 +27,7 @@ namespace SAToolsHub
 				if ((projFileStream = saveFileDialog1.OpenFile()) != null)
 				{
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.SplitTemplate));
-					TextWriter writer = new StreamWriter(projFileStream);
+					XmlWriter writer = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
 
 					Templates.SplitTemplate splitTemplateFile = new Templates.SplitTemplate();
 

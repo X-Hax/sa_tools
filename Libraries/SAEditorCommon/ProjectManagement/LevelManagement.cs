@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using SplitTools;
 
-namespace SAEditorCommon.LevelManagement
+namespace SAModel.SAEditorCommon.LevelManagement
 {
 	#region Stage Management
 	public class StageManager

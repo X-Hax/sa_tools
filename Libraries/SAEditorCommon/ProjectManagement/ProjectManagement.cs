@@ -9,7 +9,7 @@ using SplitTools;
 using SplitTools.SAArc;
 using SplitTools.Split;
 
-namespace SAEditorCommon.ProjectManagement
+namespace SAModel.SAEditorCommon.ProjectManagement
 {
 	public class Templates
 	{
@@ -132,11 +132,6 @@ namespace SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("checkFile")]
             public string CheckFile { get; set; }
-            /// <summary>
-            /// The directory for the main game stored in the *.sap file.
-            /// </summary>
-            [XmlAttribute("gameFolder")]
-			public string GameFolder { get; set; } // The game's main folder, e.g. SONICADVENTUREDX
 			/// <summary>
 			/// The file folder used by the game stored in the *.sap file. e.g. system, gd_PC, etc
 			/// </summary>
@@ -199,7 +194,7 @@ namespace SAEditorCommon.ProjectManagement
 		}
 	}
 
-	public class ProjectSettings
+	public class SAToolsHubSettings
 	{
 		public enum UpdateUnits
 		{
@@ -222,18 +217,20 @@ namespace SAEditorCommon.ProjectManagement
 		public Themes HubTheme { get; set; }
 		[DefaultValue(1)]
 		public int UpdateFrequency { get; set; } = 1;
+		[DefaultValue(false)]
+		public bool DisableX86Warning { get; set; } = false;
 
 		[DefaultValue(0)] public long UpdateTime { get; set; }
 
-		public static ProjectSettings Load(string iniPath)
+		public static SAToolsHubSettings Load(string iniPath)
 		{
 			if (File.Exists(iniPath))
 			{
-				return (ProjectSettings)IniSerializer.Deserialize(typeof(ProjectSettings), iniPath);
+				return (SAToolsHubSettings)IniSerializer.Deserialize(typeof(SAToolsHubSettings), iniPath);
 			}
 			else
 			{
-				ProjectSettings result = new ProjectSettings()
+				SAToolsHubSettings result = new SAToolsHubSettings()
 				{
 					UpdateCheck = false,
 					UpdateUnit = UpdateUnits.Weeks,
@@ -243,13 +240,13 @@ namespace SAEditorCommon.ProjectManagement
 				return result;
 			}
 		}
-		public static ProjectSettings Load()
+		public static SAToolsHubSettings Load()
 		{
 			return Load(GetSettingsPath());
 		}
 		private static string GetSettingsPath()
 		{
-			return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Settings.ini");
+			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAToolsHub.ini");
 		}
 		public void Save()
 		{
@@ -283,9 +280,12 @@ namespace SAEditorCommon.ProjectManagement
 
 			if (fileName != null)
 			{
-				var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
+                var projFileSerializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
 				var projFileStream = File.OpenRead(fileName);
 				projectFile = (Templates.ProjectTemplate)projFileSerializer.Deserialize(projFileStream);
+                // Check if project data folder path is relative
+                if (!projectFile.GameInfo.ProjectFolder.Contains(":"))
+                    projectFile.GameInfo.ProjectFolder = Path.Combine(Path.GetDirectoryName(fileName), projectFile.GameInfo.ProjectFolder);
 				projFileStream.Close();
 				return projectFile;
 			}
@@ -332,21 +332,18 @@ namespace SAEditorCommon.ProjectManagement
                 if (gamePathWarning == DialogResult.OK)
                 {
                 FolderSelectionNew:
-                    var fsd = new FolderSelect.FolderSelectDialog();
-                    fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+                    var fsd = new FolderBrowserDialog
+                    { Description = "Please select path for " + templateFile.GameInfo.GameName, UseDescriptionForTitle = true };
                     fsd.ShowDialog();
-                    if (Directory.Exists(fsd.FileName))
+                    if (Directory.Exists(fsd.SelectedPath))
                     {
-                        string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+                        string checkFile = Path.Combine(fsd.SelectedPath, templateFile.GameInfo.CheckFile);
                         if (File.Exists(checkFile))
                         {
                             string checkFileHash = HelperFunctions.FileHash(checkFile);
                             if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                             {
-                                TextWriter splitsWriter = File.CreateText(templateFilePath);
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
-                                templateFileSerializer.Serialize(splitsWriter, templateFile);
-
+                                SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
                                 return templateFile;
                             }
                             else
@@ -392,18 +389,18 @@ namespace SAEditorCommon.ProjectManagement
                 if (gamePathWarning == DialogResult.OK)
                 {
                 FolderSelectionMissing:
-                    var fsd = new FolderSelect.FolderSelectDialog();
-                    fsd.Title = "Please select path for " + templateFile.GameInfo.GameName;
+                    var fsd = new FolderBrowserDialog
+                    { Description = "Please select path for " + templateFile.GameInfo.GameName, UseDescriptionForTitle = true };
                     fsd.ShowDialog();
-                    if (Directory.Exists(fsd.FileName))
+                    if (Directory.Exists(fsd.SelectedPath))
                     {
-                        string checkFile = Path.Combine(fsd.FileName, templateFile.GameInfo.CheckFile);
+                        string checkFile = Path.Combine(fsd.SelectedPath, templateFile.GameInfo.CheckFile);
                         if (File.Exists(checkFile))
                         {
                             string checkFileHash = HelperFunctions.FileHash(checkFile);
                             if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
                             {
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.FileName);
+                                SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
                                 return templateFile;
                             }
                             else
@@ -453,20 +450,9 @@ namespace SAEditorCommon.ProjectManagement
         /// <returns>Path string</returns>
         public static string GetGamePath(string gameName)
         {
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            // Release mode
-            string gamePathsFile = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
-            if (File.Exists(gamePathsFile))
-                goto getpath;
-            // Visual Studio mode
-            else
-            {
-                gamePathsFile = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
-                if (File.Exists(gamePathsFile))
-                    goto getpath;
-            }
-            return "";
-        getpath:
+			string gamePathsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "GamePaths.ini");
+			if (!File.Exists(gamePathsFile))
+				return "";
             Dictionary<string, string> gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFile);
             return gamePathsList.ContainsKey(gameName) ? gamePathsList[gameName] : "";
         }
@@ -477,14 +463,7 @@ namespace SAEditorCommon.ProjectManagement
         public static void SetGamePath(string gameName, string gamePath)
         {
             Dictionary<string, string> gamePathsList;
-            string appPath = Path.GetDirectoryName(Application.ExecutablePath);
-            string gamePathsFilePath;
-            // Release mode
-            if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
-                gamePathsFilePath = Path.Combine(appPath, "GameConfig", "GamePaths.ini");
-            // Visual Studio mode
-            else
-                gamePathsFilePath = Path.Combine(appPath, "..\\GameConfig", "GamePaths.ini");
+			string gamePathsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "GamePaths.ini");
             if (File.Exists(gamePathsFilePath))
                 gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
             else 

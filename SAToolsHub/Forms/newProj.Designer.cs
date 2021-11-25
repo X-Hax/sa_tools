@@ -40,7 +40,6 @@
 			// checkBox1
 			// 
 			this.checkBox1.AutoSize = true;
-			this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.checkBox1.Location = new System.Drawing.Point(12, 42);
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(210, 20);
@@ -51,7 +50,6 @@
 			// 
 			// btnCreate
 			// 
-			this.btnCreate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnCreate.Location = new System.Drawing.Point(12, 93);
 			this.btnCreate.Name = "btnCreate";
 			this.btnCreate.Size = new System.Drawing.Size(360, 23);
@@ -63,7 +61,6 @@
 			// btnBrowse
 			// 
 			this.btnBrowse.Enabled = false;
-			this.btnBrowse.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnBrowse.Location = new System.Drawing.Point(285, 64);
 			this.btnBrowse.Name = "btnBrowse";
 			this.btnBrowse.Size = new System.Drawing.Size(87, 23);
@@ -75,7 +72,6 @@
 			// txtProjFolder
 			// 
 			this.txtProjFolder.Enabled = false;
-			this.txtProjFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.txtProjFolder.Location = new System.Drawing.Point(12, 65);
 			this.txtProjFolder.Name = "txtProjFolder";
 			this.txtProjFolder.Size = new System.Drawing.Size(267, 22);
@@ -84,7 +80,6 @@
 			// lblTemplate
 			// 
 			this.lblTemplate.AutoSize = true;
-			this.lblTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblTemplate.Location = new System.Drawing.Point(12, 15);
 			this.lblTemplate.Name = "lblTemplate";
 			this.lblTemplate.Size = new System.Drawing.Size(161, 16);
@@ -94,7 +89,6 @@
 			// comboBox1
 			// 
 			this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.comboBox1.FormattingEnabled = true;
 			this.comboBox1.Location = new System.Drawing.Point(179, 12);
 			this.comboBox1.Name = "comboBox1";

@@ -43,9 +43,10 @@ namespace PLTool
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(57, 128);
+            this.button1.Location = new System.Drawing.Point(44, 96);
+            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 32);
+            this.button1.Size = new System.Drawing.Size(58, 24);
             this.button1.TabIndex = 0;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
@@ -53,9 +54,10 @@ namespace PLTool
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button2.Location = new System.Drawing.Point(155, 128);
+            this.button2.Location = new System.Drawing.Point(121, 96);
+            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 32);
+            this.button2.Size = new System.Drawing.Size(58, 24);
             this.button2.TabIndex = 1;
             this.button2.Text = "Cancel";
             this.button2.UseVisualStyleBackColor = true;
@@ -63,9 +65,10 @@ namespace PLTool
             // pictureBoxColor1
             // 
             this.pictureBoxColor1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColor1.Location = new System.Drawing.Point(21, 21);
+            this.pictureBoxColor1.Location = new System.Drawing.Point(16, 16);
+            this.pictureBoxColor1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxColor1.Name = "pictureBoxColor1";
-            this.pictureBoxColor1.Size = new System.Drawing.Size(32, 32);
+            this.pictureBoxColor1.Size = new System.Drawing.Size(25, 24);
             this.pictureBoxColor1.TabIndex = 2;
             this.pictureBoxColor1.TabStop = false;
             this.pictureBoxColor1.Click += new System.EventHandler(this.pictureBoxColor1_Click);
@@ -73,9 +76,10 @@ namespace PLTool
             // pictureBoxColor2
             // 
             this.pictureBoxColor2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColor2.Location = new System.Drawing.Point(245, 21);
+            this.pictureBoxColor2.Location = new System.Drawing.Point(191, 16);
+            this.pictureBoxColor2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxColor2.Name = "pictureBoxColor2";
-            this.pictureBoxColor2.Size = new System.Drawing.Size(32, 32);
+            this.pictureBoxColor2.Size = new System.Drawing.Size(25, 24);
             this.pictureBoxColor2.TabIndex = 3;
             this.pictureBoxColor2.TabStop = false;
             this.pictureBoxColor2.Click += new System.EventHandler(this.pictureBoxColor2_Click);
@@ -83,23 +87,25 @@ namespace PLTool
             // pictureBoxPreview
             // 
             this.pictureBoxPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxPreview.Location = new System.Drawing.Point(21, 76);
+            this.pictureBoxPreview.Location = new System.Drawing.Point(16, 57);
+            this.pictureBoxPreview.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pictureBoxPreview.Name = "pictureBoxPreview";
-            this.pictureBoxPreview.Size = new System.Drawing.Size(256, 32);
+            this.pictureBoxPreview.Size = new System.Drawing.Size(200, 24);
             this.pictureBoxPreview.TabIndex = 4;
             this.pictureBoxPreview.TabStop = false;
             // 
             // GradientBasic
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(300, 175);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(233, 131);
             this.Controls.Add(this.pictureBoxPreview);
             this.Controls.Add(this.pictureBoxColor2);
             this.Controls.Add(this.pictureBoxColor1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GradientBasic";

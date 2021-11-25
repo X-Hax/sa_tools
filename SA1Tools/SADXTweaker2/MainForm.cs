@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using SplitTools;
 using SAModel.SAEditorCommon.UI;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 using System.Linq;
 
 namespace SADXTweaker2

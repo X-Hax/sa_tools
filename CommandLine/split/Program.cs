@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using SAEditorCommon.ProjectManagement;
+using SAModel.SAEditorCommon.ProjectManagement;
 
 namespace Split
 {
@@ -45,7 +45,8 @@ namespace Split
 				if (args[u] == "-nolabel") nolabel = true;
 			}
 			mode = args[0];
-            switch (mode.ToLowerInvariant())
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			switch (mode.ToLowerInvariant())
             {
                 case "binary":
                     string fullpath_bin = Path.GetFullPath(args[1]);
@@ -106,7 +107,7 @@ namespace Split
                     if (dataFolder == "")
                         dataFolder = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
                     Console.WriteLine("Data folder: {0}", dataFolder);
-                    string iniFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "..\\GameConfig", template.GameInfo.DataFolder));
+                    string iniFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName), "..\\GameConfig", template.GameInfo.DataFolder));
                     Console.WriteLine("Splitting using template for {0} located at {1}", template.GameInfo.GameName, Path.GetFullPath(args[1]));
                     if (!Directory.Exists(dataFolder))
                     {
@@ -143,6 +144,7 @@ namespace Split
                         }
                     break;
                 case "single":
+					int startoffset = 0;
                     string game = args[1];
                     string filepath = args[2];
                     string outPath = "";
@@ -160,7 +162,11 @@ namespace Split
                                     entryName = args[a + 1];
                                     a++;
                                     break;
-                                case "-p":
+								case "-offset":
+									startoffset = int.Parse(args[a + 1], System.Globalization.NumberStyles.HexNumber);
+									a++;
+									break;
+								case "-p":
                                     props= args[a + 1];
                                     a++;
                                     break;
@@ -169,8 +175,8 @@ namespace Split
                                     break;
                             }
                     }
-                    // If no output filename is specified
-                    if (outPath == "")
+					// If no output filename is specified
+					if (outPath == "")
                         outPath = Path.Combine(Environment.CurrentDirectory, eaddress.ToString("X8"));
                     // If an output name is specified without a path
                     else if (Path.GetDirectoryName(outPath) == "")
@@ -178,9 +184,9 @@ namespace Split
                     // If a path is specified without a filename
                     else if (Path.GetFileName(outPath) == "")
                         outPath = Path.Combine(outPath, eaddress.ToString("X8"));
-                    Console.WriteLine("Splitting from {0} (key: {1}) in {2}: {3} at {4}", Path.GetFileName(filepath), key.ToString("X"), game.ToUpperInvariant(), etype, eaddress.ToString("X"), Path.GetFullPath(outPath));
+                    Console.WriteLine("Splitting from {0} (key: {1}) in {2}: {3} at {4}, offset: {5}", Path.GetFileName(filepath), key.ToString("X"), game.ToUpperInvariant(), etype, eaddress.ToString("X"), startoffset.ToString("X"));
                     Console.WriteLine("Output path: {0}", Path.GetFullPath(outPath));
-                    SplitTools.Split.SplitBinary.SplitManual(game, filepath, key, eaddress, etype, outPath, props, entryName, nometa, nolabel);
+                    SplitTools.Split.SplitBinary.SplitManual(game, filepath, key, eaddress, etype, outPath, props, entryName, nometa, nolabel, startoffset);
                     break;
 				case "nb":
 				case "nb_b":

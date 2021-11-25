@@ -1,315 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2A43E17A-5BE4-40FE-8C3A-0C0C79240AD3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SADXTweaker2</RootNamespace>
-    <AssemblyName>SADXTweaker2</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\build\tools\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\build\tools\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>sadxtweaker.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BossLevelListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="BossLevelListEditor.Designer.cs">
-      <DependentUpon>BossLevelListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChaoMessageFileEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChaoMessageFileEditor.Designer.cs">
-      <DependentUpon>ChaoMessageFileEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NPCMessageEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NPCMessageEditor.Designer.cs">
-      <DependentUpon>NPCMessageEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MessageFileEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MessageFileEditor.Designer.cs">
-      <DependentUpon>MessageFileEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ObjectSearchDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ObjectSearchDialog.Designer.cs">
-      <DependentUpon>ObjectSearchDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="RecapScreenEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="RecapScreenEditor.Designer.cs">
-      <DependentUpon>RecapScreenEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CutsceneTextEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CutsceneTextEditor.Designer.cs">
-      <DependentUpon>CutsceneTextEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileList.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FileList.Designer.cs">
-      <DependentUpon>FileList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileListControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FileListControl.Designer.cs">
-      <DependentUpon>FileListControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LevelActControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="LevelActControl.designer.cs">
-      <DependentUpon>LevelActControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LevelClearFlagListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LevelClearFlagListEditor.Designer.cs">
-      <DependentUpon>LevelClearFlagListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LevelTextureListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LevelTextureListEditor.Designer.cs">
-      <DependentUpon>LevelTextureListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MusicListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MusicListEditor.Designer.cs">
-      <DependentUpon>MusicListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="NextLevelListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NextLevelListEditor.Designer.cs">
-      <DependentUpon>NextLevelListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ObjectListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ObjectListEditor.Designer.cs">
-      <DependentUpon>ObjectListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SoundListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SoundListEditor.Designer.cs">
-      <DependentUpon>SoundListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SoundTestListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SoundTestListEditor.Designer.cs">
-      <DependentUpon>SoundTestListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="StringListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="StringListEditor.Designer.cs">
-      <DependentUpon>StringListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TextSearchDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TextSearchDialog.Designer.cs">
-      <DependentUpon>TextSearchDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TextureListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TextureListEditor.Designer.cs">
-      <DependentUpon>TextureListEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TimeControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TimeControl.designer.cs">
-      <DependentUpon>TimeControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="TrialLevelListEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TrialLevelListEditor.Designer.cs">
-      <DependentUpon>TrialLevelListEditor.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="BossLevelListEditor.resx">
-      <DependentUpon>BossLevelListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChaoMessageFileEditor.resx">
-      <DependentUpon>ChaoMessageFileEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NPCMessageEditor.resx">
-      <DependentUpon>NPCMessageEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MessageFileEditor.resx">
-      <DependentUpon>MessageFileEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ObjectSearchDialog.resx">
-      <DependentUpon>ObjectSearchDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="RecapScreenEditor.resx">
-      <DependentUpon>RecapScreenEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CutsceneTextEditor.resx">
-      <DependentUpon>CutsceneTextEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FileList.resx">
-      <DependentUpon>FileList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FileListControl.resx">
-      <DependentUpon>FileListControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LevelActControl.resx">
-      <DependentUpon>LevelActControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LevelClearFlagListEditor.resx">
-      <DependentUpon>LevelClearFlagListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LevelTextureListEditor.resx">
-      <DependentUpon>LevelTextureListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MusicListEditor.resx">
-      <DependentUpon>MusicListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NextLevelListEditor.resx">
-      <DependentUpon>NextLevelListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ObjectListEditor.resx">
-      <DependentUpon>ObjectListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="SoundListEditor.resx">
-      <DependentUpon>SoundListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SoundTestListEditor.resx">
-      <DependentUpon>SoundTestListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="StringListEditor.resx">
-      <DependentUpon>StringListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TextSearchDialog.resx">
-      <DependentUpon>TextSearchDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TextureListEditor.resx">
-      <DependentUpon>TextureListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TimeControl.resx">
-      <DependentUpon>TimeControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TrialLevelListEditor.resx">
-      <DependentUpon>TrialLevelListEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj">
-      <Project>{50847BDB-699D-4A2E-AAF7-1EA58E1EC48E}</Project>
-      <Name>SplitTools</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj">
-      <Project>{0D72870C-29A2-4B16-B016-2F2E266A0E64}</Project>
-      <Name>SAEditorCommon</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj">
-      <Project>{0EE5D36F-CACF-41E9-8C9A-76FFD946B22D}</Project>
-      <Name>SAModel</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\open.png" />
-    <None Include="Resources\bug.png" />
-    <Content Include="sadxtweaker.ico" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\..\build\tools\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<Platforms>x64;x86</Platforms>
+	</PropertyGroup>
+	<PropertyGroup>
+		<ApplicationIcon>sadxtweaker.ico</ApplicationIcon>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Update="FileListControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="LevelActControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="TimeControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
+		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="sadxtweaker.ico" />
+	</ItemGroup>
 </Project>

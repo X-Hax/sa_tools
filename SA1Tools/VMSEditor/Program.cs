@@ -37,7 +37,9 @@ namespace VMSEditor
             Program.args = args;
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             // No arguments: Select program mode
             if (args.Length == 0)
                 primaryForm = new ProgramModeSelector();
@@ -65,8 +67,8 @@ namespace VMSEditor
             }
             else
             {
-                string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\VMSEditor.log";
-                System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
+				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SA2EventViewer.log");
+				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
                 MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "VMS Editor Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

@@ -50,7 +50,6 @@
 			// 
 			// btnManual
 			// 
-			this.btnManual.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnManual.Location = new System.Drawing.Point(16, 406);
 			this.btnManual.Margin = new System.Windows.Forms.Padding(4);
 			this.btnManual.Name = "btnManual";
@@ -64,7 +63,6 @@
 			// 
 			// btnAuto
 			// 
-			this.btnAuto.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnAuto.Location = new System.Drawing.Point(204, 406);
 			this.btnAuto.Margin = new System.Windows.Forms.Padding(4);
 			this.btnAuto.Name = "btnAuto";
@@ -77,7 +75,6 @@
 			// 
 			// btnChkAll
 			// 
-			this.btnChkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnChkAll.Location = new System.Drawing.Point(16, 370);
 			this.btnChkAll.Margin = new System.Windows.Forms.Padding(4);
 			this.btnChkAll.Name = "btnChkAll";
@@ -90,7 +87,6 @@
 			// 
 			// btnUnchkAll
 			// 
-			this.btnUnchkAll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnUnchkAll.Location = new System.Drawing.Point(204, 370);
 			this.btnUnchkAll.Margin = new System.Windows.Forms.Padding(4);
 			this.btnUnchkAll.Name = "btnUnchkAll";
@@ -121,7 +117,6 @@
 			// 
 			this.chkBoxEXE.CheckOnClick = true;
 			this.chkBoxEXE.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.chkBoxEXE.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.chkBoxEXE.FormattingEnabled = true;
 			this.chkBoxEXE.HorizontalScrollbar = true;
 			this.chkBoxEXE.Location = new System.Drawing.Point(4, 4);
@@ -136,7 +131,6 @@
 			this.tabControl1.Controls.Add(this.tabEXE);
 			this.tabControl1.Controls.Add(this.tabDLL);
 			this.tabControl1.Controls.Add(this.tabMDL);
-			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.tabControl1.Location = new System.Drawing.Point(16, 15);
 			this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
 			this.tabControl1.Name = "tabControl1";
@@ -160,7 +154,6 @@
 			// 
 			this.chkBoxDLL.CheckOnClick = true;
 			this.chkBoxDLL.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.chkBoxDLL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.chkBoxDLL.FormattingEnabled = true;
 			this.chkBoxDLL.HorizontalScrollbar = true;
 			this.chkBoxDLL.Location = new System.Drawing.Point(4, 4);
@@ -186,7 +179,6 @@
 			// 
 			this.chkBoxMDL.CheckOnClick = true;
 			this.chkBoxMDL.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.chkBoxMDL.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.chkBoxMDL.FormattingEnabled = true;
 			this.chkBoxMDL.HorizontalScrollbar = true;
 			this.chkBoxMDL.Location = new System.Drawing.Point(4, 4);
@@ -206,7 +198,6 @@
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.btnAuto);
 			this.Controls.Add(this.btnManual);
-			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "buildWindow";

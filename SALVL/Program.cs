@@ -18,6 +18,7 @@ namespace SAModel.SALVL
 			Program.args = args;
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			primaryForm = new MainForm();
@@ -43,7 +44,7 @@ namespace SAModel.SALVL
 			}
 			else
 			{
-				string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SALVL.log";
+				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SALVL.log");
 				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SALVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

@@ -18,7 +18,7 @@ using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Text;
 using SharpDX.Mathematics.Interop;
-using SAEditorCommon.ProjectManagement;
+using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SAModel.SALVL
 {
@@ -28,7 +28,7 @@ namespace SAModel.SALVL
 	// (Example: sETItemsToolStripMenuItem1 is a dropdown menu. sETITemsToolStripMenuItem is a toggle.)
 	public partial class MainForm : Form
 	{
-		SettingsFile settingsfile; //For user editable settings
+		Settings_SALVL settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SALVL.config
         ProgressDialog progress;
         bool initerror = false;
@@ -78,7 +78,7 @@ namespace SAModel.SALVL
 
 		#region Editor-Specific Variables
 		SAEditorCommon.IniData sadxlvlini;
-		Logger log = new Logger(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SALVL.log");
+		Logger log = new Logger();
 		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
@@ -136,7 +136,7 @@ namespace SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			settingsfile = SettingsFile.Load();
+			settingsfile = Settings_SALVL.Load();
 			progress = new ProgressDialog("SALVL", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
 			InitGUISettings();
@@ -152,13 +152,13 @@ namespace SAModel.SALVL
 			log.Add("OS Version: ");
 			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
 			AppConfig.Reload();
-			EditorOptions.RenderDrawDistance = settingsfile.SALVL.DrawDistance_General;
-			EditorOptions.LevelDrawDistance = settingsfile.SALVL.DrawDistance_Geometry;
-			EditorOptions.SetItemDrawDistance = settingsfile.SALVL.DrawDistance_SET;
-			disableModelLibraryToolStripMenuItem.Checked = settingsfile.SALVL.DisableModelLibrary;
-			hideCursorDuringCameraMovementToolStripMenuItem.Checked = settingsfile.SALVL.AlternativeCamera;
-			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.SALVL.MouseWrapScreen;
-			if (settingsfile.SALVL.ShowWelcomeScreen)
+			EditorOptions.RenderDrawDistance = settingsfile.DrawDistance_General;
+			EditorOptions.LevelDrawDistance = settingsfile.DrawDistance_Geometry;
+			EditorOptions.SetItemDrawDistance = settingsfile.DrawDistance_SET;
+			disableModelLibraryToolStripMenuItem.Checked = settingsfile.DisableModelLibrary;
+			hideCursorDuringCameraMovementToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
+			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.MouseWrapScreen;
+			if (settingsfile.ShowWelcomeScreen)
 				ShowWelcomeScreen();
 
             // MRU list
@@ -176,7 +176,7 @@ namespace SAModel.SALVL
             }
             AppConfig.MRUList = newlist;
 
-            actionList = ActionMappingList.Load(Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini"),
+			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SALVL_keys.ini"),
 				DefaultActionList.DefaultActionMapping);
 
 			actionInputCollector = new ActionInputCollector();
@@ -184,7 +184,7 @@ namespace SAModel.SALVL
 			actionInputCollector.OnActionStart += ActionInputCollector_OnActionStart;
 			actionInputCollector.OnActionRelease += ActionInputCollector_OnActionRelease;
 
-			cam.ModifierKey = settingsfile.SALVL.CameraModifier;
+			cam.ModifierKey = settingsfile.CameraModifier;
 			optionsEditor = new EditorOptionsEditor(cam, actionList.ActionKeyMappings.ToArray(), DefaultActionList.DefaultActionMapping, true, true);
 			optionsEditor.FormUpdated += optionsEditor_FormUpdated;
 			optionsEditor.FormUpdatedKeys += optionsEditor_UpdateKeys;
@@ -197,9 +197,9 @@ namespace SAModel.SALVL
 
 		private void InitGUISettings()
 		{
-			if (settingsfile.SALVL.PropertiesSplitterPosition != 0) PropertiesSplitter.SplitterDistance = settingsfile.SALVL.PropertiesSplitterPosition;
-			if (settingsfile.SALVL.LibrarySplitterPosition != 0) LibrarySplitter.SplitterDistance = settingsfile.SALVL.LibrarySplitterPosition;
-			if (settingsfile.SALVL.ItemsSplitterPosition != 0) ItemsSplitter.SplitterDistance = settingsfile.SALVL.ItemsSplitterPosition;
+			if (settingsfile.PropertiesSplitterPosition != 0) PropertiesSplitter.SplitterDistance = settingsfile.PropertiesSplitterPosition;
+			if (settingsfile.LibrarySplitterPosition != 0) LibrarySplitter.SplitterDistance = settingsfile.LibrarySplitterPosition;
+			if (settingsfile.ItemsSplitterPosition != 0) ItemsSplitter.SplitterDistance = settingsfile.ItemsSplitterPosition;
 			ItemsSplitter.SplitterMoved += new SplitterEventHandler(ItemsSplitter_SplitterMoved);
 			LibrarySplitter.SplitterMoved += new SplitterEventHandler(LibrarySplitter_SplitterMoved);
 			PropertiesSplitter.SplitterMoved += new SplitterEventHandler(PropertiesSplitter_SplitterMoved);
@@ -269,12 +269,12 @@ namespace SAModel.SALVL
 		void ShowWelcomeScreen()
 		{
 			WelcomeForm welcomeForm = new WelcomeForm();
-			welcomeForm.showOnStartCheckbox.Checked = settingsfile.SALVL.ShowWelcomeScreen;
+			welcomeForm.showOnStartCheckbox.Checked = settingsfile.ShowWelcomeScreen;
 
 			// subscribe to our checkchanged event
 			welcomeForm.showOnStartCheckbox.CheckedChanged += (object form, EventArgs eventArg) =>
 			{
-				settingsfile.SALVL.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
+				settingsfile.ShowWelcomeScreen = welcomeForm.showOnStartCheckbox.Checked;
 			};
 
 			welcomeForm.ThisToolLink.Text = "SALVL Documentation";
@@ -367,8 +367,8 @@ namespace SAModel.SALVL
 			}
 			try
 			{
-				settingsfile.SALVL.AlternativeCamera = hideCursorDuringCameraMovementToolStripMenuItem.Checked;
-				settingsfile.SALVL.MouseWrapScreen = wrapAroundScreenEdgesToolStripMenuItem.Checked;
+				settingsfile.AlternativeCamera = hideCursorDuringCameraMovementToolStripMenuItem.Checked;
+				settingsfile.MouseWrapScreen = wrapAroundScreenEdgesToolStripMenuItem.Checked;
 				settingsfile.Save();
 				if (log != null) log.WriteLog();
 			}
@@ -911,7 +911,7 @@ namespace SAModel.SALVL
 			foreach (ActionKeyMapping mapping in newMappings)
 				actionList.ActionKeyMappings.Add(mapping);
 			actionInputCollector.SetActions(newMappings);
-			string saveControlsPath = Path.Combine(Application.StartupPath, "keybinds", "SALVL.ini");
+			string saveControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SALVL_keys.ini");
 			actionList.Save(saveControlsPath);
 			// Other settings
 			optionsEditor_FormUpdated();
@@ -919,10 +919,10 @@ namespace SAModel.SALVL
 
 		void optionsEditor_FormUpdated()
 		{
-			settingsfile.SALVL.DrawDistance_General = EditorOptions.RenderDrawDistance;
-			settingsfile.SALVL.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
-			settingsfile.SALVL.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
-			settingsfile.SALVL.CameraModifier = cam.ModifierKey;
+			settingsfile.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			settingsfile.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
+			settingsfile.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
+			settingsfile.CameraModifier = cam.ModifierKey;
 			DrawLevel();
 		}
 
@@ -1405,17 +1405,17 @@ namespace SAModel.SALVL
 
 		private void PropertiesSplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) settingsfile.SALVL.PropertiesSplitterPosition = PropertiesSplitter.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.PropertiesSplitterPosition = PropertiesSplitter.SplitterDistance;
 		}
 
 		private void ItemsSplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) settingsfile.SALVL.ItemsSplitterPosition = ItemsSplitter.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.ItemsSplitterPosition = ItemsSplitter.SplitterDistance;
 		}
 
 		private void LibrarySplitter_SplitterMoved(object sender, SplitterEventArgs e)
 		{
-			if (WindowState == FormWindowState.Maximized) settingsfile.SALVL.LibrarySplitterPosition = LibrarySplitter.SplitterDistance;
+			if (WindowState == FormWindowState.Maximized) settingsfile.LibrarySplitterPosition = LibrarySplitter.SplitterDistance;
 		}
 
 		private StringCollection GetRecentFiles()
@@ -1626,7 +1626,7 @@ namespace SAModel.SALVL
 				LibrarySplitter.Panel2Collapsed = false;
 				LibrarySplitter.Panel2.Show();
 			}
-			settingsfile.SALVL.DisableModelLibrary = disableModelLibraryToolStripMenuItem.Checked;
+			settingsfile.DisableModelLibrary = disableModelLibraryToolStripMenuItem.Checked;
 			modelLibraryToolStripMenuItem.Visible = !disableModelLibraryToolStripMenuItem.Checked;
 			DrawLevel();
 		}
@@ -1841,7 +1841,7 @@ namespace SAModel.SALVL
             using (OpenFileDialog fileDialog = new OpenFileDialog()
             {
                 DefaultExt = "sa1lvl",
-                Filter = "Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
+                Filter = "All Supported Files|*.sa1lvl;*.sa2lvl;*.sa2blvl;*.exe;*.dll;*.bin;*.rel;*.prs|Landtable Files|*.sa1lvl;*.sa2lvl;*.sa2blvl|Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*",
                 InitialDirectory = modFolder,
                 Multiselect = false
             })

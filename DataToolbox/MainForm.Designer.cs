@@ -90,16 +90,16 @@
             this.listBoxMDLAnimationFiles = new System.Windows.Forms.ListBox();
             this.label9 = new System.Windows.Forms.Label();
             this.comboBoxLabels = new System.Windows.Forms.ComboBox();
-            this.hexNumericBinaryOffset = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownBinaryKey = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
-            this.numericUpDownBinaryAddress = new SAModel.SAEditorCommon.UI.HexNumericUpdown();
+            this.numericUpDownBinaryOffset = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBinaryKey = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownBinaryAddress = new System.Windows.Forms.NumericUpDown();
             this.groupBoxBinary.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageBinaryData.SuspendLayout();
             this.tabPageStructConverter.SuspendLayout();
             this.tabPageSplit.SuspendLayout();
             this.tabPageSplitMDL.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.hexNumericBinaryOffset)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryAddress)).BeginInit();
             this.SuspendLayout();
@@ -277,7 +277,7 @@
             // groupBoxBinary
             // 
             this.groupBoxBinary.Controls.Add(this.label6);
-            this.groupBoxBinary.Controls.Add(this.hexNumericBinaryOffset);
+            this.groupBoxBinary.Controls.Add(this.numericUpDownBinaryOffset);
             this.groupBoxBinary.Controls.Add(this.comboBoxBinaryFormat);
             this.groupBoxBinary.Controls.Add(this.labelKey);
             this.groupBoxBinary.Controls.Add(this.numericUpDownBinaryKey);
@@ -845,33 +845,42 @@
             this.comboBoxLabels.Size = new System.Drawing.Size(183, 21);
             this.comboBoxLabels.TabIndex = 53;
             // 
-            // hexNumericBinaryOffset
+            // numericUpDownBinaryOffset
             // 
-            this.hexNumericBinaryOffset.Hexadecimal = true;
-            this.hexNumericBinaryOffset.Location = new System.Drawing.Point(65, 72);
-            this.hexNumericBinaryOffset.Name = "hexNumericBinaryOffset";
-            this.hexNumericBinaryOffset.Size = new System.Drawing.Size(98, 20);
-            this.hexNumericBinaryOffset.TabIndex = 36;
-            // 
-            // numericUpDownBinaryKey
-            // 
-            this.numericUpDownBinaryKey.Hexadecimal = true;
+            this.numericUpDownBinaryOffset.Location = new System.Drawing.Point(65, 72);
+            this.numericUpDownBinaryOffset.Name = "numericUpDownBinaryOffset";
+            this.numericUpDownBinaryOffset.Size = new System.Drawing.Size(98, 20);
+            this.numericUpDownBinaryOffset.TabIndex = 36;
+			this.numericUpDownBinaryOffset.Maximum = 4294967295;
+			this.numericUpDownBinaryOffset.Minimum = -4294967295;
+			this.numericUpDownBinaryOffset.Hexadecimal = true;
+			this.numericUpDownBinaryOffset.ValueChanged += NumericUpDownBinaryOffset_ValueChanged;
+			// 
+			// numericUpDownBinaryKey
+			// 
             this.numericUpDownBinaryKey.Location = new System.Drawing.Point(64, 20);
             this.numericUpDownBinaryKey.Name = "numericUpDownBinaryKey";
             this.numericUpDownBinaryKey.Size = new System.Drawing.Size(98, 20);
             this.numericUpDownBinaryKey.TabIndex = 24;
-            // 
-            // numericUpDownBinaryAddress
-            // 
-            this.numericUpDownBinaryAddress.Hexadecimal = true;
+			this.numericUpDownBinaryKey.Maximum = 4294967295;
+			this.numericUpDownBinaryKey.Minimum = -4294967295;
+			this.numericUpDownBinaryKey.Hexadecimal = true;
+			this.numericUpDownBinaryKey.ValueChanged += NumericUpDownBinaryKey_ValueChanged;
+			// 
+			// numericUpDownBinaryAddress
+			// 
             this.numericUpDownBinaryAddress.Location = new System.Drawing.Point(64, 46);
             this.numericUpDownBinaryAddress.Name = "numericUpDownBinaryAddress";
             this.numericUpDownBinaryAddress.Size = new System.Drawing.Size(98, 20);
             this.numericUpDownBinaryAddress.TabIndex = 21;
-            // 
-            // MainForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.numericUpDownBinaryAddress.Maximum = 4294967295;
+			this.numericUpDownBinaryAddress.Minimum = -4294967295;
+			this.numericUpDownBinaryAddress.Hexadecimal = true;
+			this.numericUpDownBinaryAddress.ValueChanged += NumericUpDownBinaryAddress_ValueChanged;
+			// 
+			// MainForm
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(437, 415);
             this.Controls.Add(this.tabControl1);
@@ -893,7 +902,7 @@
             this.tabPageSplit.PerformLayout();
             this.tabPageSplitMDL.ResumeLayout(false);
             this.tabPageSplitMDL.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.hexNumericBinaryOffset)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryOffset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryAddress)).EndInit();
             this.ResumeLayout(false);
@@ -919,8 +928,8 @@
 		internal System.Windows.Forms.CheckBox checkBoxBinaryMemory;
 		internal System.Windows.Forms.Label labelFile;
 		private System.Windows.Forms.GroupBox groupBoxBinary;
-        internal SAEditorCommon.UI.HexNumericUpdown numericUpDownBinaryKey;
-        internal SAEditorCommon.UI.HexNumericUpdown numericUpDownBinaryAddress;
+        internal System.Windows.Forms.NumericUpDown numericUpDownBinaryKey;
+        internal System.Windows.Forms.NumericUpDown numericUpDownBinaryAddress;
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.TabPage tabPageBinaryData;
 		private System.Windows.Forms.Label label1;
@@ -947,7 +956,7 @@
 		private System.Windows.Forms.CheckBox checkBoxBinaryStructs;
 		private System.Windows.Forms.CheckBox checkBoxBinarySAModel;
 		internal System.Windows.Forms.Label label6;
-		internal SAEditorCommon.UI.HexNumericUpdown hexNumericBinaryOffset;
+		internal System.Windows.Forms.NumericUpDown numericUpDownBinaryOffset;
 		private System.Windows.Forms.CheckBox checkBoxStructConvJSON;
 		private System.Windows.Forms.CheckBox checkBoxStructConvStructs;
 		private System.Windows.Forms.TabPage tabPageSplitMDL;

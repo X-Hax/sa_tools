@@ -1,23 +1,25 @@
-﻿using SAEditorCommon.ProjectManagement;
-using SAModel.Direct3D;
+﻿using SAModel.Direct3D;
 using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SharpDX;
 using SharpDX.Direct3D9;
 using SplitTools;
 using System;
-using System.CodeDom.Compiler;
+using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 
 namespace SAModel.SALVL
 {
@@ -122,7 +124,7 @@ namespace SAModel.SALVL
         private void LoadTemplate(Templates.ProjectTemplate projFile)
         {
             sadxlvlini = SAEditorCommon.IniData.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
-            systemFallback = Path.Combine(projFile.GameInfo.GameFolder, sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
+            systemFallback = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
             modFolder = projFile.GameInfo.ProjectFolder;
             modSystemFolder = Path.Combine(modFolder, sadxlvlini.SystemPath);
             //MessageBox.Show("Fallback: " + systemFallback + "\n Mod: " + modFolder);
@@ -145,8 +147,8 @@ namespace SAModel.SALVL
 #if !DEBUG
             backgroundWorker1.RunWorkerAsync();
 #else
-			backgroundWorker1_DoWork(null, null);
-			backgroundWorker1_RunWorkerCompleted(null, null);
+            backgroundWorker1_DoWork(null, null);
+            backgroundWorker1_RunWorkerCompleted(null, null);
 #endif
             unsaved = false;
         }
@@ -203,7 +205,7 @@ namespace SAModel.SALVL
                         extension = ".GVM";
                     texturePath = Path.Combine(systemPath, pvmName) + extension;
                 }
-                string  textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
+                string textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
                 BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
                 Texture[] d3dTextures;
                 if (textureBitmaps != null)
@@ -253,20 +255,24 @@ namespace SAModel.SALVL
                         default:
                             break;
                     }
-                    bool bigendianbk = ByteConverter.BigEndian;
+					ByteConverter.Reverse = bd.checkBoxReverse.Checked;
                     ByteConverter.BigEndian = bd.checkBoxBigEndian.Checked;
-                    // PRS and REL hacks
-                    byte[] datafile = File.ReadAllBytes(filename);
-                    uint key = (uint)bd.numericKey.Value;
+					uint key = (uint)bd.numericKey.Value;
+					// PRS
+					byte[] datafile = File.ReadAllBytes(filename);
                     if (ext == ".prs") datafile = FraGag.Compression.Prs.Decompress(datafile);
-                    else if (ext == ".rel")
+					// Trim
+					if (bd.numericStartOffset.Value != 0)
+					{
+						byte[] datafile_new = new byte[datafile.Length + (uint)bd.numericStartOffset.Value];
+						datafile.CopyTo(datafile_new, (int)bd.numericStartOffset.Value);
+						datafile = datafile_new;
+					}
+					// REL
+					if (bd.comboFileKeyHint.SelectedIndex == 3)
                     {
-                        ByteConverter.BigEndian = true;
                         datafile = SplitTools.HelperFunctions.DecompressREL(datafile);
                         SplitTools.HelperFunctions.FixRELPointers(datafile, 0xC900000);
-                        if (bd.comboLevelFormat.SelectedIndex == 0)
-                            ByteConverter.Reverse = true; // SADX GC
-                        key = 0xC900000; // Key always the same for REL pointers
                     }
                     land = new LandTable(datafile, (int)bd.numericAddress.Value, key, fmt);
                     break;
@@ -701,7 +707,7 @@ namespace SAModel.SALVL
                     objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(sadxlvlini.ObjectDefinitions);
                 LevelData.ObjDefs = new List<ObjectDefinition>();
                 LevelData.MisnObjDefs = new List<ObjectDefinition>();
-
+                InitObjDefReferences();
                 // Load SET items
                 if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
                 {
@@ -871,63 +877,69 @@ namespace SAModel.SALVL
                     LevelDefinition def = null;
                     string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
                     string dllfile = Path.Combine("dllcache", ty + ".dll");
+                    string pdbfile = Path.Combine("dllcache", ty + ".pdb");
                     DateTime modDate = DateTime.MinValue;
-
                     if (File.Exists(dllfile))
                         modDate = File.GetLastWriteTime(dllfile);
 
                     string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
-                    if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+                    if (File.Exists(fp))
                     {
-                        def =
-                            (LevelDefinition)
-                                Activator.CreateInstance(
-                                    Assembly.LoadFile(Path.Combine(modFolder, dllfile)).GetType(ty));
-                    }
-                    else
-                    {
-                        string ext = Path.GetExtension(fp);
-                        CodeDomProvider pr = null;
-                        switch (ext.ToLowerInvariant())
+                        if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
                         {
-                            case ".cs":
-                                pr = new Microsoft.CSharp.CSharpCodeProvider(new Dictionary<string, string>());
-                                break;
-                            case ".vb":
-                                pr = new Microsoft.VisualBasic.VBCodeProvider(new Dictionary<string, string>());
-                                break;
+                            def =
+                                (LevelDefinition)
+                                    Activator.CreateInstance(
+                                        Assembly.LoadFile(Path.Combine(modFolder, dllfile)).GetType(ty));
                         }
-                        if (pr != null)
+                        else
                         {
-                            // System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-                            // SALVL, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-                            CompilerParameters para =
-                                new CompilerParameters(new string[]
-                                {
-                                                "System.dll", "System.Core.dll", "System.Drawing.dll", Assembly.GetAssembly(typeof(SharpDX.Mathematics.Interop.RawBool)).Location,
-                                                Assembly.GetAssembly(typeof(Vector3)).Location, Assembly.GetAssembly(typeof(Device)).Location,
-                                                Assembly.GetExecutingAssembly().Location, Assembly.GetAssembly(typeof(LandTable)).Location,
-                                                Assembly.GetAssembly(typeof(EditorCamera)).Location, Assembly.GetAssembly(typeof(SA1LevelAct)).Location,
-                                                Assembly.GetAssembly(typeof(ObjectDefinition)).Location
-                                })
-                                {
-                                    GenerateExecutable = false,
-                                    GenerateInMemory = false,
-                                    IncludeDebugInformation = true,
-                                    OutputAssembly = Path.Combine(modFolder, dllfile)
-                                };
-                            if (File.Exists(fp))
+
+                            SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
+
+                            CSharpCompilation compilation =
+                                    CSharpCompilation.Create(ty, st, objectDefinitionReferences, objectDefinitionOptions);
+
+                            try
                             {
-                                CompilerResults res = pr.CompileAssemblyFromFile(para, fp);
-                                if (!res.Errors.HasErrors)
-                                    def = (LevelDefinition)Activator.CreateInstance(res.CompiledAssembly.GetType(ty));
+                                EmitResult result = compilation.Emit(dllfile, pdbfile);
+
+                                if (!result.Success)
+                                {
+                                    log.Add("Error loading level background:");
+                                    foreach (Diagnostic diagnostic in result.Diagnostics)
+                                    {
+                                        log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+                                    }
+
+                                    File.Delete(dllfile);
+                                    File.Delete(pdbfile);
+
+                                    def = null;
+                                }
+                                else
+                                {
+                                    def =
+                                        (LevelDefinition)
+                                            Activator.CreateInstance(
+                                                Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+                                                    .GetType(ty));
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
+
+                                File.Delete(dllfile);
+                                File.Delete(pdbfile);
+
+                                def = null;
                             }
                         }
+
+                        if (def != null)
+                            def.Init(level, levelact.Act);
                     }
-
-                    if (def != null)
-                        def.Init(level, levelact.Act);
-
                     LevelData.leveleff = def;
                 }
 

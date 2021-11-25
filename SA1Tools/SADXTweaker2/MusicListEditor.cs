@@ -33,7 +33,7 @@ namespace SADXTweaker2
 					musicfiles = MusicList.Load(musiclistfile);
 					break;
 				}
-			filename.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\bgm\\wma");
+            filename.Directory = Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, "sounddata", "bgm", "wma");
 			trackNum.SelectedIndex = 0;
 		}
 

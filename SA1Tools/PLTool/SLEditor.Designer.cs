@@ -121,10 +121,10 @@ namespace PLTool
             this.toolStripStatusLabelFilename,
             this.toolStripStatusLabelLevelName,
             this.toolStripStatusLabelDirection});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 279);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 325);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 9, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(589, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(687, 22);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
@@ -150,10 +150,10 @@ namespace PLTool
             // buttonClose
             // 
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonClose.Location = new System.Drawing.Point(520, 246);
+            this.buttonClose.Location = new System.Drawing.Point(607, 284);
             this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(59, 24);
+            this.buttonClose.Size = new System.Drawing.Size(69, 28);
             this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
@@ -167,8 +167,8 @@ namespace PLTool
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(589, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(687, 24);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -274,7 +274,7 @@ namespace PLTool
             // 
             this.pLToolHelpToolStripMenuItem.Image = global::PLTool.Properties.Resources.help;
             this.pLToolHelpToolStripMenuItem.Name = "pLToolHelpToolStripMenuItem";
-            this.pLToolHelpToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.pLToolHelpToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.pLToolHelpToolStripMenuItem.Text = "PL Tool Help";
             this.pLToolHelpToolStripMenuItem.Click += new System.EventHandler(this.pLToolHelpToolStripMenuItem_Click);
             // 
@@ -282,7 +282,7 @@ namespace PLTool
             // 
             this.issueTrackerToolStripMenuItem.Image = global::PLTool.Properties.Resources.bug;
             this.issueTrackerToolStripMenuItem.Name = "issueTrackerToolStripMenuItem";
-            this.issueTrackerToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.issueTrackerToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.issueTrackerToolStripMenuItem.Text = "Issue Tracker";
             this.issueTrackerToolStripMenuItem.Click += new System.EventHandler(this.issueTrackerToolStripMenuItem_Click);
             // 
@@ -307,11 +307,11 @@ namespace PLTool
             this.groupBoxCO1.Controls.Add(this.numericUpDownEnvR);
             this.groupBoxCO1.Controls.Add(this.pictureBoxColorEnv);
             this.groupBoxCO1.Controls.Add(this.trackBarSPC);
-            this.groupBoxCO1.Location = new System.Drawing.Point(11, 26);
+            this.groupBoxCO1.Location = new System.Drawing.Point(13, 30);
             this.groupBoxCO1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxCO1.Name = "groupBoxCO1";
             this.groupBoxCO1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxCO1.Size = new System.Drawing.Size(294, 247);
+            this.groupBoxCO1.Size = new System.Drawing.Size(343, 285);
             this.groupBoxCO1.TabIndex = 6;
             this.groupBoxCO1.TabStop = false;
             this.groupBoxCO1.Text = "Environment Data";
@@ -319,60 +319,60 @@ namespace PLTool
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 197);
+            this.label8.Location = new System.Drawing.Point(10, 227);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(48, 13);
+            this.label8.Size = new System.Drawing.Size(56, 15);
             this.label8.TabIndex = 17;
             this.label8.Text = "Ambient:";
             // 
             // labelAMB
             // 
             this.labelAMB.AutoSize = true;
-            this.labelAMB.Location = new System.Drawing.Point(246, 197);
+            this.labelAMB.Location = new System.Drawing.Point(287, 227);
             this.labelAMB.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelAMB.Name = "labelAMB";
-            this.labelAMB.Size = new System.Drawing.Size(34, 13);
+            this.labelAMB.Size = new System.Drawing.Size(34, 15);
             this.labelAMB.TabIndex = 18;
             this.labelAMB.Text = "1.000";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 149);
+            this.label7.Location = new System.Drawing.Point(16, 172);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(43, 13);
+            this.label7.Size = new System.Drawing.Size(47, 15);
             this.label7.TabIndex = 16;
             this.label7.Text = "Diffuse:";
             // 
             // labelDIF
             // 
             this.labelDIF.AutoSize = true;
-            this.labelDIF.Location = new System.Drawing.Point(246, 149);
+            this.labelDIF.Location = new System.Drawing.Point(287, 172);
             this.labelDIF.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelDIF.Name = "labelDIF";
-            this.labelDIF.Size = new System.Drawing.Size(34, 13);
+            this.labelDIF.Size = new System.Drawing.Size(34, 15);
             this.labelDIF.TabIndex = 17;
             this.labelDIF.Text = "1.000";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 99);
+            this.label4.Location = new System.Drawing.Point(10, 114);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(52, 13);
+            this.label4.Size = new System.Drawing.Size(55, 15);
             this.label4.TabIndex = 15;
             this.label4.Text = "Specular:";
             // 
             // trackBarAMB
             // 
-            this.trackBarAMB.Location = new System.Drawing.Point(69, 194);
+            this.trackBarAMB.Location = new System.Drawing.Point(80, 224);
             this.trackBarAMB.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarAMB.Maximum = 9900;
             this.trackBarAMB.Name = "trackBarAMB";
-            this.trackBarAMB.Size = new System.Drawing.Size(171, 45);
+            this.trackBarAMB.Size = new System.Drawing.Size(200, 45);
             this.trackBarAMB.TabIndex = 16;
             this.trackBarAMB.TickFrequency = 0;
             this.trackBarAMB.Value = 100;
@@ -381,11 +381,11 @@ namespace PLTool
             // 
             // trackBarDIF
             // 
-            this.trackBarDIF.Location = new System.Drawing.Point(69, 146);
+            this.trackBarDIF.Location = new System.Drawing.Point(80, 168);
             this.trackBarDIF.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarDIF.Maximum = 9900;
             this.trackBarDIF.Name = "trackBarDIF";
-            this.trackBarDIF.Size = new System.Drawing.Size(171, 45);
+            this.trackBarDIF.Size = new System.Drawing.Size(200, 45);
             this.trackBarDIF.TabIndex = 15;
             this.trackBarDIF.TickFrequency = 0;
             this.trackBarDIF.Value = 100;
@@ -395,76 +395,76 @@ namespace PLTool
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 64);
+            this.label3.Location = new System.Drawing.Point(31, 74);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(31, 13);
+            this.label3.Size = new System.Drawing.Size(33, 15);
             this.label3.TabIndex = 14;
             this.label3.Text = "Blue:";
             // 
             // labelSPC
             // 
             this.labelSPC.AutoSize = true;
-            this.labelSPC.Location = new System.Drawing.Point(246, 99);
+            this.labelSPC.Location = new System.Drawing.Point(287, 114);
             this.labelSPC.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelSPC.Name = "labelSPC";
-            this.labelSPC.Size = new System.Drawing.Size(34, 13);
+            this.labelSPC.Size = new System.Drawing.Size(34, 15);
             this.labelSPC.TabIndex = 11;
             this.labelSPC.Text = "1.000";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(18, 43);
+            this.label2.Location = new System.Drawing.Point(21, 50);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.Size = new System.Drawing.Size(41, 15);
             this.label2.TabIndex = 13;
             this.label2.Text = "Green:";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(28, 25);
+            this.label1.Location = new System.Drawing.Point(33, 29);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 13);
+            this.label1.Size = new System.Drawing.Size(30, 15);
             this.label1.TabIndex = 12;
             this.label1.Text = "Red:";
             // 
             // labelEnvB
             // 
             this.labelEnvB.AutoSize = true;
-            this.labelEnvB.Location = new System.Drawing.Point(126, 64);
+            this.labelEnvB.Location = new System.Drawing.Point(147, 74);
             this.labelEnvB.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEnvB.Name = "labelEnvB";
-            this.labelEnvB.Size = new System.Drawing.Size(34, 13);
+            this.labelEnvB.Size = new System.Drawing.Size(34, 15);
             this.labelEnvB.TabIndex = 10;
             this.labelEnvB.Text = "1.000";
             // 
             // labelEnvG
             // 
             this.labelEnvG.AutoSize = true;
-            this.labelEnvG.Location = new System.Drawing.Point(126, 43);
+            this.labelEnvG.Location = new System.Drawing.Point(147, 50);
             this.labelEnvG.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEnvG.Name = "labelEnvG";
-            this.labelEnvG.Size = new System.Drawing.Size(34, 13);
+            this.labelEnvG.Size = new System.Drawing.Size(34, 15);
             this.labelEnvG.TabIndex = 9;
             this.labelEnvG.Text = "1.000";
             // 
             // labelEnvR
             // 
             this.labelEnvR.AutoSize = true;
-            this.labelEnvR.Location = new System.Drawing.Point(126, 22);
+            this.labelEnvR.Location = new System.Drawing.Point(147, 25);
             this.labelEnvR.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelEnvR.Name = "labelEnvR";
-            this.labelEnvR.Size = new System.Drawing.Size(34, 13);
+            this.labelEnvR.Size = new System.Drawing.Size(34, 15);
             this.labelEnvR.TabIndex = 8;
             this.labelEnvR.Text = "1.000";
             // 
             // numericUpDownEnvB
             // 
-            this.numericUpDownEnvB.Location = new System.Drawing.Point(69, 62);
+            this.numericUpDownEnvB.Location = new System.Drawing.Point(80, 72);
             this.numericUpDownEnvB.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownEnvB.Maximum = new decimal(new int[] {
             255,
@@ -472,13 +472,13 @@ namespace PLTool
             0,
             0});
             this.numericUpDownEnvB.Name = "numericUpDownEnvB";
-            this.numericUpDownEnvB.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownEnvB.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownEnvB.TabIndex = 7;
             this.numericUpDownEnvB.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // numericUpDownEnvG
             // 
-            this.numericUpDownEnvG.Location = new System.Drawing.Point(69, 42);
+            this.numericUpDownEnvG.Location = new System.Drawing.Point(80, 48);
             this.numericUpDownEnvG.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownEnvG.Maximum = new decimal(new int[] {
             255,
@@ -486,13 +486,13 @@ namespace PLTool
             0,
             0});
             this.numericUpDownEnvG.Name = "numericUpDownEnvG";
-            this.numericUpDownEnvG.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownEnvG.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownEnvG.TabIndex = 6;
             this.numericUpDownEnvG.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // numericUpDownEnvR
             // 
-            this.numericUpDownEnvR.Location = new System.Drawing.Point(69, 21);
+            this.numericUpDownEnvR.Location = new System.Drawing.Point(80, 24);
             this.numericUpDownEnvR.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownEnvR.Maximum = new decimal(new int[] {
             255,
@@ -500,28 +500,28 @@ namespace PLTool
             0,
             0});
             this.numericUpDownEnvR.Name = "numericUpDownEnvR";
-            this.numericUpDownEnvR.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownEnvR.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownEnvR.TabIndex = 5;
             this.numericUpDownEnvR.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // pictureBoxColorEnv
             // 
             this.pictureBoxColorEnv.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColorEnv.Location = new System.Drawing.Point(213, 31);
+            this.pictureBoxColorEnv.Location = new System.Drawing.Point(248, 36);
             this.pictureBoxColorEnv.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxColorEnv.Name = "pictureBoxColorEnv";
-            this.pictureBoxColorEnv.Size = new System.Drawing.Size(28, 28);
+            this.pictureBoxColorEnv.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxColorEnv.TabIndex = 4;
             this.pictureBoxColorEnv.TabStop = false;
             this.pictureBoxColorEnv.Click += new System.EventHandler(this.pictureBoxColorEnv_Click);
             // 
             // trackBarSPC
             // 
-            this.trackBarSPC.Location = new System.Drawing.Point(69, 97);
+            this.trackBarSPC.Location = new System.Drawing.Point(80, 112);
             this.trackBarSPC.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarSPC.Maximum = 9900;
             this.trackBarSPC.Name = "trackBarSPC";
-            this.trackBarSPC.Size = new System.Drawing.Size(171, 45);
+            this.trackBarSPC.Size = new System.Drawing.Size(200, 45);
             this.trackBarSPC.TabIndex = 3;
             this.trackBarSPC.TickFrequency = 0;
             this.trackBarSPC.Value = 100;
@@ -545,11 +545,11 @@ namespace PLTool
             this.groupBox1.Controls.Add(this.numericUpDownFreeR);
             this.groupBox1.Controls.Add(this.pictureBoxColorFree);
             this.groupBox1.Controls.Add(this.trackBarRD);
-            this.groupBox1.Location = new System.Drawing.Point(309, 86);
+            this.groupBox1.Location = new System.Drawing.Point(360, 99);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(273, 187);
+            this.groupBox1.Size = new System.Drawing.Size(318, 216);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Free/Slave Data";
@@ -557,26 +557,26 @@ namespace PLTool
             // labelRT
             // 
             this.labelRT.AutoSize = true;
-            this.labelRT.Location = new System.Drawing.Point(113, 149);
+            this.labelRT.Location = new System.Drawing.Point(132, 172);
             this.labelRT.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelRT.Name = "labelRT";
-            this.labelRT.Size = new System.Drawing.Size(34, 13);
+            this.labelRT.Size = new System.Drawing.Size(34, 15);
             this.labelRT.TabIndex = 20;
             this.labelRT.Text = "1.000";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 149);
+            this.label5.Location = new System.Drawing.Point(24, 172);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(25, 13);
+            this.label5.Size = new System.Drawing.Size(22, 15);
             this.label5.TabIndex = 19;
             this.label5.Text = "RT:";
             // 
             // numericUpDownRT
             // 
-            this.numericUpDownRT.Location = new System.Drawing.Point(57, 148);
+            this.numericUpDownRT.Location = new System.Drawing.Point(66, 171);
             this.numericUpDownRT.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownRT.Maximum = new decimal(new int[] {
             255,
@@ -584,93 +584,93 @@ namespace PLTool
             0,
             0});
             this.numericUpDownRT.Name = "numericUpDownRT";
-            this.numericUpDownRT.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownRT.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownRT.TabIndex = 18;
             this.numericUpDownRT.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(19, 99);
+            this.label9.Location = new System.Drawing.Point(22, 114);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(26, 13);
+            this.label9.Size = new System.Drawing.Size(25, 15);
             this.label9.TabIndex = 15;
             this.label9.Text = "RD:";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 64);
+            this.label10.Location = new System.Drawing.Point(16, 74);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(31, 13);
+            this.label10.Size = new System.Drawing.Size(33, 15);
             this.label10.TabIndex = 14;
             this.label10.Text = "Blue:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(5, 43);
+            this.label11.Location = new System.Drawing.Point(6, 50);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(39, 13);
+            this.label11.Size = new System.Drawing.Size(41, 15);
             this.label11.TabIndex = 13;
             this.label11.Text = "Green:";
             // 
             // labelRD
             // 
             this.labelRD.AutoSize = true;
-            this.labelRD.Location = new System.Drawing.Point(233, 99);
+            this.labelRD.Location = new System.Drawing.Point(272, 114);
             this.labelRD.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelRD.Name = "labelRD";
-            this.labelRD.Size = new System.Drawing.Size(34, 13);
+            this.labelRD.Size = new System.Drawing.Size(34, 15);
             this.labelRD.TabIndex = 11;
             this.labelRD.Text = "1.000";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(15, 25);
+            this.label13.Location = new System.Drawing.Point(18, 29);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(30, 13);
+            this.label13.Size = new System.Drawing.Size(30, 15);
             this.label13.TabIndex = 12;
             this.label13.Text = "Red:";
             // 
             // labelFreeB
             // 
             this.labelFreeB.AutoSize = true;
-            this.labelFreeB.Location = new System.Drawing.Point(113, 64);
+            this.labelFreeB.Location = new System.Drawing.Point(132, 74);
             this.labelFreeB.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelFreeB.Name = "labelFreeB";
-            this.labelFreeB.Size = new System.Drawing.Size(34, 13);
+            this.labelFreeB.Size = new System.Drawing.Size(34, 15);
             this.labelFreeB.TabIndex = 10;
             this.labelFreeB.Text = "1.000";
             // 
             // labelFreeG
             // 
             this.labelFreeG.AutoSize = true;
-            this.labelFreeG.Location = new System.Drawing.Point(113, 43);
+            this.labelFreeG.Location = new System.Drawing.Point(132, 50);
             this.labelFreeG.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelFreeG.Name = "labelFreeG";
-            this.labelFreeG.Size = new System.Drawing.Size(34, 13);
+            this.labelFreeG.Size = new System.Drawing.Size(34, 15);
             this.labelFreeG.TabIndex = 9;
             this.labelFreeG.Text = "1.000";
             // 
             // labelFreeR
             // 
             this.labelFreeR.AutoSize = true;
-            this.labelFreeR.Location = new System.Drawing.Point(113, 22);
+            this.labelFreeR.Location = new System.Drawing.Point(132, 25);
             this.labelFreeR.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelFreeR.Name = "labelFreeR";
-            this.labelFreeR.Size = new System.Drawing.Size(34, 13);
+            this.labelFreeR.Size = new System.Drawing.Size(34, 15);
             this.labelFreeR.TabIndex = 8;
             this.labelFreeR.Text = "1.000";
             // 
             // numericUpDownFreeB
             // 
-            this.numericUpDownFreeB.Location = new System.Drawing.Point(57, 62);
+            this.numericUpDownFreeB.Location = new System.Drawing.Point(66, 72);
             this.numericUpDownFreeB.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownFreeB.Maximum = new decimal(new int[] {
             255,
@@ -678,13 +678,13 @@ namespace PLTool
             0,
             0});
             this.numericUpDownFreeB.Name = "numericUpDownFreeB";
-            this.numericUpDownFreeB.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownFreeB.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownFreeB.TabIndex = 7;
             this.numericUpDownFreeB.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // numericUpDownFreeG
             // 
-            this.numericUpDownFreeG.Location = new System.Drawing.Point(57, 42);
+            this.numericUpDownFreeG.Location = new System.Drawing.Point(66, 48);
             this.numericUpDownFreeG.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownFreeG.Maximum = new decimal(new int[] {
             255,
@@ -692,13 +692,13 @@ namespace PLTool
             0,
             0});
             this.numericUpDownFreeG.Name = "numericUpDownFreeG";
-            this.numericUpDownFreeG.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownFreeG.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownFreeG.TabIndex = 6;
             this.numericUpDownFreeG.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // numericUpDownFreeR
             // 
-            this.numericUpDownFreeR.Location = new System.Drawing.Point(57, 21);
+            this.numericUpDownFreeR.Location = new System.Drawing.Point(66, 24);
             this.numericUpDownFreeR.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownFreeR.Maximum = new decimal(new int[] {
             255,
@@ -706,28 +706,28 @@ namespace PLTool
             0,
             0});
             this.numericUpDownFreeR.Name = "numericUpDownFreeR";
-            this.numericUpDownFreeR.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownFreeR.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownFreeR.TabIndex = 5;
             this.numericUpDownFreeR.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // pictureBoxColorFree
             // 
             this.pictureBoxColorFree.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBoxColorFree.Location = new System.Drawing.Point(191, 31);
+            this.pictureBoxColorFree.Location = new System.Drawing.Point(223, 36);
             this.pictureBoxColorFree.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxColorFree.Name = "pictureBoxColorFree";
-            this.pictureBoxColorFree.Size = new System.Drawing.Size(28, 28);
+            this.pictureBoxColorFree.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxColorFree.TabIndex = 4;
             this.pictureBoxColorFree.TabStop = false;
             this.pictureBoxColorFree.Click += new System.EventHandler(this.pictureBoxColorFree_Click);
             // 
             // trackBarRD
             // 
-            this.trackBarRD.Location = new System.Drawing.Point(57, 97);
+            this.trackBarRD.Location = new System.Drawing.Point(66, 112);
             this.trackBarRD.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarRD.Maximum = 9900;
             this.trackBarRD.Name = "trackBarRD";
-            this.trackBarRD.Size = new System.Drawing.Size(171, 45);
+            this.trackBarRD.Size = new System.Drawing.Size(200, 45);
             this.trackBarRD.TabIndex = 3;
             this.trackBarRD.TickFrequency = 0;
             this.trackBarRD.Value = 100;
@@ -739,62 +739,68 @@ namespace PLTool
             this.groupBox2.Controls.Add(this.numericUpDownAngleY);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(309, 26);
+            this.groupBox2.Location = new System.Drawing.Point(360, 30);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(273, 55);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox2.Size = new System.Drawing.Size(318, 63);
             this.groupBox2.TabIndex = 20;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Light Direction";
             // 
             // numericUpDownAngleZ
             // 
-            this.numericUpDownAngleZ.Location = new System.Drawing.Point(196, 22);
+            this.numericUpDownAngleZ.Location = new System.Drawing.Point(229, 25);
+            this.numericUpDownAngleZ.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDownAngleZ.Maximum = new decimal(new int[] {
             65535,
             0,
             0,
             0});
             this.numericUpDownAngleZ.Name = "numericUpDownAngleZ";
-            this.numericUpDownAngleZ.Size = new System.Drawing.Size(73, 20);
+            this.numericUpDownAngleZ.Size = new System.Drawing.Size(85, 23);
             this.numericUpDownAngleZ.TabIndex = 3;
             this.numericUpDownAngleZ.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // numericUpDownAngleY
             // 
-            this.numericUpDownAngleY.Location = new System.Drawing.Point(60, 22);
+            this.numericUpDownAngleY.Location = new System.Drawing.Point(70, 25);
+            this.numericUpDownAngleY.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDownAngleY.Maximum = new decimal(new int[] {
             65535,
             0,
             0,
             0});
             this.numericUpDownAngleY.Name = "numericUpDownAngleY";
-            this.numericUpDownAngleY.Size = new System.Drawing.Size(73, 20);
+            this.numericUpDownAngleY.Size = new System.Drawing.Size(85, 23);
             this.numericUpDownAngleY.TabIndex = 2;
             this.numericUpDownAngleY.ValueChanged += new System.EventHandler(this.numericUpDownEnvR_ValueChanged);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(143, 25);
+            this.label12.Location = new System.Drawing.Point(167, 29);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(47, 13);
+            this.label12.Size = new System.Drawing.Size(51, 15);
             this.label12.TabIndex = 1;
             this.label12.Text = "Angle Z:";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(7, 25);
+            this.label6.Location = new System.Drawing.Point(8, 29);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(47, 13);
+            this.label6.Size = new System.Drawing.Size(51, 15);
             this.label6.TabIndex = 0;
             this.label6.Text = "Angle Y:";
             // 
             // SLEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(589, 301);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(687, 347);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxCO1);

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 
 namespace SADXTweaker2
@@ -34,7 +35,7 @@ namespace SADXTweaker2
 
 		private void MessageFileEditor_Load(object sender, EventArgs e)
 		{
-			voiceNum.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\voice_us\\wma");
+			voiceNum.Directory = Path.Combine(ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, "sounddata", "voice_us", "wma");
 			field.SelectedIndex = character.SelectedIndex = 0;
 			language.SelectedIndex = 1;
 		}
@@ -42,7 +43,7 @@ namespace SADXTweaker2
 		private void field_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (field.SelectedIndex == -1 | character.SelectedIndex == -1 | language.SelectedIndex == -1) return;
-			loadButton.Enabled = File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)) || File.Exists(Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
+			loadButton.Enabled = File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)) || File.Exists(Path.Combine(ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, CurrentFile));
 		}
 
 		private void loadButton_Click(object sender, EventArgs e)
@@ -51,7 +52,7 @@ namespace SADXTweaker2
 			if (File.Exists(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile)))
 				file = File.ReadAllBytes(Path.Combine(Program.project.GameInfo.ProjectFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
 			else
-				file = File.ReadAllBytes(Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, CurrentFile));
+				file = File.ReadAllBytes(Path.Combine(ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, CurrentFile));
 			NPCs = new List<NPCText>(NPCTextList.Load(file, file.GetPointer(4, baseaddrs[field.SelectedIndex]), baseaddrs[field.SelectedIndex],
 				BitConverter.ToInt32(file, 0) + basecounts[field.SelectedIndex], (Languages)language.SelectedIndex, false));
 			npcID.Items.Clear();

@@ -35,7 +35,7 @@ namespace SADXTweaker2
 				level.Items.Add(item.Key);
 			}
 			level.EndUpdate();
-			voiceNum.Directory = Path.Combine(Program.project.GameInfo.GameFolder, Program.project.GameInfo.GameDataFolder, "sounddata\\voice_us\\wma");
+            voiceNum.Directory = Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, "sounddata", "voice_us", "wma");
 			language.SelectedIndex = 1;
 			level.SelectedIndex = 0;
 		}

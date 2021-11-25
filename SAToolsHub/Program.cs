@@ -24,9 +24,10 @@ namespace SAToolsHub
 		static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
-
-			bool alreadyRunning;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            bool alreadyRunning;
 			try { alreadyRunning = !mutex.WaitOne(0, true); }
 			catch (AbandonedMutexException) { alreadyRunning = false; }
 
@@ -36,7 +37,8 @@ namespace SAToolsHub
 					try { mutex.WaitOne(); }
 					catch (AbandonedMutexException) { }
 				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
+				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                Application.SetCompatibleTextRenderingDefault(false);
 				Application.Run(new LoaderManifestDialog(args[1]));
 				return;
 			}
@@ -85,7 +87,7 @@ namespace SAToolsHub
 			}
 			else
 			{
-				string logPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\SAToolsHub.log";
+				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "TextureEditor.log");
 				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA Tools Hub Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}

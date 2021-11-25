@@ -49,10 +49,10 @@ namespace SAModel.SAEditorCommon
 				Height = 24,
 				FaceName = "Verdana",
 				Weight = FontWeight.Black,
-				CharacterSet = FontCharacterSet.Oem,
+				CharacterSet = FontCharacterSet.Default,
 				PitchAndFamily = FontPitchAndFamily.Default,
-				OutputPrecision = FontPrecision.TrueType,
-				Quality = FontQuality.ClearType
+				OutputPrecision = FontPrecision.Default,
+				Quality = FontQuality.Default
 			});
 			#endregion
 		}

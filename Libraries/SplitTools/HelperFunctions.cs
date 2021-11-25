@@ -27,21 +27,31 @@ namespace SplitTools
 			int ptr = ByteConverter.ToInt32(exefile, 0x3c);
 			if (ByteConverter.ToInt32(exefile, (int)ptr) != 0x4550) //PE\0\0
 				return null;
-			ptr += 4;
-			UInt16 numsects = ByteConverter.ToUInt16(exefile, (int)ptr + 2);
-			ptr += 0x14;
-			int PEHead = ptr;
-			uint imageBase = ByteConverter.ToUInt32(exefile, ptr + 28);
-			byte[] result = new byte[ByteConverter.ToUInt32(exefile, ptr + 56)];
-			Array.Copy(exefile, result, ByteConverter.ToUInt32(exefile, ptr + 60));
-			ptr += 0xe0;
-			for (int i = 0; i < numsects; i++)
+			try
 			{
-				Array.Copy(exefile, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FAddr), result, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.VAddr), ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FSize));
-				ptr += (int)SectOffs.Size;
+				ptr += 4;
+				UInt16 numsects = ByteConverter.ToUInt16(exefile, (int)ptr + 2);
+				ptr += 0x14;
+				int PEHead = ptr;
+				uint imageBase = ByteConverter.ToUInt32(exefile, ptr + 28);
+				if (imageBase != 0x82000000) // SADX X360 EXE doesn't like this
+				{
+					byte[] result = new byte[ByteConverter.ToUInt32(exefile, ptr + 56)];
+					Array.Copy(exefile, result, ByteConverter.ToUInt32(exefile, ptr + 60));
+					ptr += 0xe0;
+					for (int i = 0; i < numsects; i++)
+					{
+						Array.Copy(exefile, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FAddr), result, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.VAddr), ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FSize));
+						ptr += (int)SectOffs.Size;
+					}
+					exefile = result;
+				}
+				return imageBase;
 			}
-			exefile = result;
-			return imageBase;
+			catch 
+			{
+				return null;
+			}
 		}
 
 		public static uint GetNewSectionAddress(byte[] exefile)

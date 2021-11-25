@@ -13,11 +13,34 @@ using SharpDX.Direct3D9;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using System.Linq;
 
 namespace SAModel.SALVL
 {
     public partial class MainForm
     {
+        private static List<MetadataReference> objectDefinitionReferences;
+
+        // Initializes the list of references used to compile object definitions
+        private void InitObjDefReferences()
+        {
+            // System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
+            // SALVL, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
+            objectDefinitionReferences = new List<MetadataReference>
+            {
+            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Drawing.Bitmap).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(SharpDX.Mathematics.Interop.RawBool).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Vector3).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Device).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(LandTable).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(EditorCamera).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(SA1LevelAct).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(ObjectDefinition).Assembly.Location)
+            };
+            Assembly.GetEntryAssembly().GetReferencedAssemblies().ToList().ForEach(a => objectDefinitionReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
+        }
+
         // Load a level's object list and compile object definitions
         private void LoadObjectList(string objectList, bool Mission = false)
         {
@@ -58,12 +81,11 @@ namespace SAModel.SALVL
                     string errorText = "";
 
                     def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
-
                     if (errorOccured)
                     {
                         KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
                             defgroup.CodeFile, errorText);
-
+                        log.Add(errorValue.Value);
                         compileErrors.Add(errorValue);
                     }
                 }
@@ -141,22 +163,6 @@ namespace SAModel.SALVL
 
         }
 
-        // System, System.Core, System.Drawing, SharpDX, SharpDX.Mathematics, SharpDX.Direct3D9,
-        // SALVL, SAModel, SAModel.Direct3D, SA Tools, SAEditorCommon
-        private static readonly MetadataReference[] objectDefinitionReferences =
-        new[]
-        {
-            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(System.Drawing.Bitmap).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(SharpDX.Mathematics.Interop.RawBool).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Vector3).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Device).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(LandTable).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(EditorCamera).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(SA1LevelAct).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(ObjectDefinition).Assembly.Location)
-        };
-
         private static readonly CSharpCompilationOptions objectDefinitionOptions =
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 .WithOverflowChecks(true)
@@ -184,7 +190,6 @@ namespace SAModel.SALVL
             else
             {
                 SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
-
                 CSharpCompilation compilation =
                         CSharpCompilation.Create(codeType, st, objectDefinitionReferences, objectDefinitionOptions);
 
