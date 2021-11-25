@@ -41,6 +41,7 @@ namespace ArchiveLib
         public bool PaletteRequired;
         public PuyoArchiveType Type;
 
+		[FlagsAttribute]
         public enum PuyoArchiveFlags : ushort
         {
             GlobalIndex = 0x1,
