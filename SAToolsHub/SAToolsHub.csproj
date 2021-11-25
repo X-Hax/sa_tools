@@ -24,14 +24,13 @@
 		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="7z\7z.dll" />
-		<Content Include="7z\7z.exe" />
-	</ItemGroup>
-	<ItemGroup>
 		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="Updater\SizeSuffix.cs" />
 	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\7z*.*&quot; &quot;$(ProjectDir)..\build\lib\&quot;" />
+	</Target>
 </Project>
