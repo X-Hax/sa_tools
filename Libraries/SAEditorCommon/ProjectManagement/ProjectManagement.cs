@@ -463,11 +463,16 @@ namespace SAModel.SAEditorCommon.ProjectManagement
         public static void SetGamePath(string gameName, string gamePath)
         {
             Dictionary<string, string> gamePathsList;
-			string gamePathsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "GamePaths.ini");
-            if (File.Exists(gamePathsFilePath))
-                gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
-            else 
-                gamePathsList = new Dictionary<string, string>();
+			string appdata = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools");
+			string gamePathsFilePath = Path.Combine(appdata, "GamePaths.ini");
+			if (File.Exists(gamePathsFilePath))
+				gamePathsList = IniSerializer.Deserialize<Dictionary<string, string>>(gamePathsFilePath);
+			else
+			{
+				if (!Directory.Exists(appdata))
+					Directory.CreateDirectory(appdata);
+				gamePathsList = new Dictionary<string, string>();
+			}
             if (gamePathsList.ContainsKey(gameName))
                 gamePathsList[gameName] = gamePath;
             else
