@@ -1,10 +1,15 @@
 # Sonic Adventure Toolset
 SA Tools is a toolkit for modifying and extracting data from the Sonic Adventure series of games. Before using these tools, we recommend having an understanding of basic 3d theory. If you're unfamiliar with the topic, read this overview [here](https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/Basic_theory).
 
-[Download SA Tools here](http://mm.reimuhakurei.net/SA%20Tools.7z)
+## Download SA Tools
 
-[Backup download link](https://ci.appveyor.com/api/projects/PiKeyAr/sa-tools/artifacts/SA%20Tools.7z)
+[Download SA Tools - x64 version (recommended)](http://mm.reimuhakurei.net/SA%20Tools%20x64.7z)
 
+[Download SA Tools - x86 version](http://mm.reimuhakurei.net/SA%20Tools.7z)
+
+[.NET Desktop Runtime 5.0](https://dotnet.microsoft.com/download/dotnet/5.0)
+
+Development build (x64 only): 
 [![Build status](https://ci.appveyor.com/api/projects/status/hobk9b466cvfrhov?svg=true)](https://ci.appveyor.com/project/PiKeyAr/sa-tools)
 
 ## Quick Links
