@@ -18,7 +18,7 @@
   <SplitEntry SourceFile="ADV0100.PRS" IniFile="ADV0100" />
   <SplitEntry SourceFile="ADV0130.PRS" IniFile="ADV0130" />
   <SplitEntry SourceFile="ADV02.PRS" IniFile="ADV02" />
-  <SplitEntry SourceFile="ADV02OBJ.PRS" IniFile="ADV02" />
+  <SplitEntry SourceFile="ADV02OBJ.PRS" IniFile="ADV02OBJ" />
   <SplitEntry SourceFile="AL_GARDEN00.PRS" IniFile="AL_GARDEN00" />
   <SplitEntry SourceFile="AL_GARDEN01.PRS" IniFile="AL_GARDEN01" />
   <SplitEntry SourceFile="AL_GARDEN02.PRS" IniFile="AL_GARDEN02" />
