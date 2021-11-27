@@ -1465,16 +1465,19 @@ namespace SAToolsHub
             checkedForUpdates = true;
             hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
 
-            if (!File.Exists("satoolsver.txt"))
+			string stringdl = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
+
+			if (!File.Exists("satoolsver.txt"))
             {
-                return false;
+				if (MessageBox.Show(this, "Unable to find local version information. Would you like to download the latest version?", "SA Tools Hub", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+					return false;
             }
 
             using (var wc = new WebClient())
             {
                 try
                 {
-                    string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + File.ReadAllText("satoolsver.txt"));
+                    string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + stringdl);
                     if (msg.Length > 0)
                     {
                         using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))
