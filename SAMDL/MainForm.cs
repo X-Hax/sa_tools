@@ -157,7 +157,6 @@ namespace SAModel.SAMDL
 			using (AssimpImportDialog dialog = new AssimpImportDialog(outfmt, Path.GetExtension(modelFilename).ToLowerInvariant() == ".obj"))
 				switch (dialog.ShowDialog())
 				{
-
 					case DialogResult.OK:
 						outfmt = dialog.Format;
 						if (dialog.LegacyOBJImport)
@@ -224,7 +223,8 @@ namespace SAModel.SAMDL
 		ModelFile modelFile;
 		ModelFormat outfmt;
 		int animnum = -1;
-		int animframe = 0;
+		float animframe = 0;
+		float animspeed = 1.0f;
 		Mesh[] meshes;
 		string TexturePackName;
         TexnameArray TexList; // Current texlist
@@ -282,6 +282,7 @@ namespace SAModel.SAMDL
 			EditorOptions.Initialize(d3ddevice);
 			cam.MoveSpeed = settingsfile.CamMoveSpeed;
 			cam.ModifierKey = settingsfile.CameraModifier;
+			animspeed = settingsfile.AnimSpeed;
 			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
 			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAMDL_keys.ini"),
 				DefaultActionList.DefaultActionMapping);
@@ -1153,7 +1154,7 @@ namespace SAModel.SAMDL
 				cameraModeLabel.Text = "";
 			}
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
-			animFrameLabel.Text = $"Frame: {animframe}";
+			animFrameLabel.Text = $"Frame: {animframe.ToString("0.00")}";
 			statusStrip1.Update();
 		}
 
@@ -1453,7 +1454,7 @@ namespace SAModel.SAMDL
 		private void NextFrame()
 		{
 			if (animations == null || animation == null) return;
-			animframe++;
+			animframe = (float)Math.Floor(animframe + 1);
 			if (animframe == animation.Frames) animframe = 0;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
@@ -1463,7 +1464,7 @@ namespace SAModel.SAMDL
 		private void PrevFrame()
 		{
 			if (animations == null || animation == null) return;
-			animframe--;
+			animframe = (float)Math.Floor(animframe - 1);
 			if (animframe < 0) animframe = animation.Frames - 1;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			UpdateWeightedModel();
@@ -1516,7 +1517,7 @@ namespace SAModel.SAMDL
 					draw = true;
 					break;
 
-				case ("Zoom to target"):
+				case ("Zoom to Target"):
 					if (selectedObject != null)
 					{
 						BoundingSphere bounds = (selectedObject.Attach != null) ? 
@@ -1559,7 +1560,7 @@ namespace SAModel.SAMDL
 					draw = true;
 					break;
 
-				case ("Increase camera move speed"):
+				case ("Increase Camera Speed"):
 					cam.MoveSpeed += 0.0625f;
 					UpdateStatusString();
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
@@ -1567,7 +1568,7 @@ namespace SAModel.SAMDL
 					draw = true;
 					break;
 
-				case ("Decrease camera move speed"):
+				case ("Decrease Camera Speed"):
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
@@ -1575,7 +1576,7 @@ namespace SAModel.SAMDL
 					draw = true;
 					break;
 
-				case ("Reset camera move speed"):
+				case ("Reset Camera Speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					UpdateStatusString();
@@ -1633,6 +1634,27 @@ namespace SAModel.SAMDL
 				case ("Play/Pause Animation"):
 					PlayPause();
 					break;
+
+				case ("Increase Animation Speed"):
+					animspeed += 0.1f;
+					settingsfile.AnimSpeed = animspeed;
+					osd.UpdateOSDItem("Animation speed: " + animspeed.ToString("0.00"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
+					draw = true;
+					break;
+
+				case ("Decrease Animation Speed"):
+					animspeed -= 0.1f;
+					settingsfile.AnimSpeed = animspeed;
+					osd.UpdateOSDItem("Animation speed: " + animspeed.ToString("0.00"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
+					draw = true;
+					break;
+
+				case ("Reset Animation Speed"):
+					settingsfile.AnimSpeed = animspeed = 1.0f;
+					osd.UpdateOSDItem("Reset animation speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 60);
+					draw = true;
+					break;
+
 				case ("Brighten Ambient"):
 					EditorOptions.backLight.Ambient.R = Math.Min(1.0f, EditorOptions.backLight.Ambient.R + 0.1f);
 					EditorOptions.backLight.Ambient.G = Math.Min(1.0f, EditorOptions.backLight.Ambient.G + 0.1f);
@@ -1644,6 +1666,7 @@ namespace SAModel.SAMDL
 					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
+
 				case ("Darken Ambient"):
 					EditorOptions.backLight.Ambient.R = Math.Max(0.0f, EditorOptions.backLight.Ambient.R - 0.1f);
 					EditorOptions.backLight.Ambient.G = Math.Max(0.0f, EditorOptions.backLight.Ambient.G - 0.1f);
@@ -1683,6 +1706,20 @@ namespace SAModel.SAMDL
 				case ("Camera Look"):
 					osd.UpdateOSDItem("Camera mode: Look", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					lookKeyDown = true;
+					break;
+
+				case ("Play Animation (Hold)"):
+					animframe += animspeed;
+					if (animframe >= animation.Frames)
+						animframe = 0;
+					DrawEntireModel();
+					break;
+
+				case ("Play Animation in Reverse (Hold)"):
+					animframe -= animspeed;
+					if (animframe < 0)
+						animframe = animation.Frames;
+					DrawEntireModel();
 					break;
 
 				default:
@@ -1792,8 +1829,11 @@ namespace SAModel.SAMDL
 		private void timer1_Tick(object sender, EventArgs e)
 		{
 			if (animation == null) return;
-			animframe++;
-			if (animframe == animation.Frames) animframe = 0;
+			animframe += animspeed;
+			if (animframe >= animation.Frames) 
+				animframe = 0;
+			else if (animframe < 0)
+				animframe = animation.Frames;
 			UpdateWeightedModel();
 			DrawEntireModel();
 		}

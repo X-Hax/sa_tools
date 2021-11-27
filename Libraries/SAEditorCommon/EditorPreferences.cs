@@ -81,6 +81,9 @@ namespace SAModel.SAEditorCommon
 
 			[DefaultValue(1.125f)]
 			public float CamMoveSpeed { get; set; }
+			
+			[DefaultValue(1.0f)]
+			public float AnimSpeed { get; set; }
 
 			[DefaultValue(10000.0f)]
 			public float DrawDistance { get; set; }
@@ -104,6 +107,7 @@ namespace SAModel.SAEditorCommon
 			{
 				ShowWelcomeScreen = true;
 				CamMoveSpeed = 1.125f;
+				AnimSpeed = 1.0f;
 				DrawDistance = 10000.0f;
 				CameraModifier = 1;
 				AlternativeCamera = false;
