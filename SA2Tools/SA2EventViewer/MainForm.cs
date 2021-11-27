@@ -66,8 +66,8 @@ namespace SA2EventViewer
 		string currentFileName = "";
 		Event @event;
 		int scenenum = 0;
-		int animframe = -1;
-		decimal decframe = -1;
+		float animframe = -1;
+		float decframe = -1;
 		List<List<Mesh[]>> meshes;
 		List<Mesh[]> bigmeshes;
 		NJS_OBJECT cammodel;
@@ -331,7 +331,7 @@ namespace SA2EventViewer
 					else
 					{
 						int an = 0;
-						int fr = animframe;
+						float fr = animframe;
 						while (an < @event.Scenes[scenenum].Big.Motions.Count && @event.Scenes[scenenum].Big.Motions[an].a.Frames < fr)
 						{
 							fr -= @event.Scenes[scenenum].Big.Motions[an].a.Frames;
@@ -391,7 +391,7 @@ namespace SA2EventViewer
 						else
 						{
 							int an = 0;
-							int fr = animframe;
+							float fr = animframe;
 							while (an < @event.Scenes[scenenum].Big.Motions.Count && @event.Scenes[scenenum].Big.Motions[an].a.Frames < fr)
 							{
 								fr -= @event.Scenes[scenenum].Big.Motions[an].a.Frames;
@@ -405,7 +405,7 @@ namespace SA2EventViewer
 				{
 					cam.mode = 2;
 					int an = 0;
-					int fr = animframe;
+					float fr = animframe;
 					while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
 					{
 						fr -= @event.Scenes[scenenum].CameraMotions[an].Frames;
@@ -429,7 +429,7 @@ namespace SA2EventViewer
 					if (animframe != -1 && @event.Scenes[scenenum].CameraMotions != null)
 					{
 						int an = 0;
-						int fr = animframe;
+						float fr = animframe;
 						while (@event.Scenes[scenenum].CameraMotions[an].Frames < fr)
 						{
 							fr -= @event.Scenes[scenenum].CameraMotions[an].Frames;
@@ -552,8 +552,8 @@ namespace SA2EventViewer
 		{
 			if (scenenum > 0 && !timer1.Enabled)
 			{
-				animframe--;
-				if (animframe < -1)
+				animframe = (float)Math.Floor(animframe - 1);
+				if (animframe <= -1)
 				{
 					scenenum--;
 					if (scenenum == 0)
@@ -571,7 +571,7 @@ namespace SA2EventViewer
 		{
 			if (scenenum > 0 && !timer1.Enabled)
 			{
-				animframe++;
+				animframe = (float)Math.Floor(animframe + 1);
 				if (animframe == @event.Scenes[scenenum].FrameCount)
 				{
 					scenenum++;
@@ -797,9 +797,9 @@ namespace SA2EventViewer
 
 		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			decframe += numericUpDown1.Value;
-			int oldanimframe = animframe;
-			animframe = (int)decframe;
+			decframe += (float)numericUpDown1.Value / 2.0f;
+			float oldanimframe = animframe;
+			animframe = decframe;
 			if (animframe != oldanimframe)
 			{
 				if (animframe < 0)
@@ -808,7 +808,7 @@ namespace SA2EventViewer
 					if (scenenum == 0)
 						scenenum = @event.Scenes.Count - 1;
 					animframe = @event.Scenes[scenenum].FrameCount - 1;
-					decframe = animframe + 0.99m;
+					decframe = (float)Math.Floor(animframe + 1);
 				}
 				else if (animframe >= @event.Scenes[scenenum].FrameCount)
 				{
