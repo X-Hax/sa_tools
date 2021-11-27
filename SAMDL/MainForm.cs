@@ -147,28 +147,45 @@ namespace SAModel.SAMDL
 				}
 			}
 			if (modelFiles.Count > 0) { LoadFile(modelFiles[0], cmdLoad); }
-			if (modelImportFiles.Count > 0) 
-            {
-                if (Path.GetExtension(modelImportFiles[0]).ToLowerInvariant() == ".dae")
-                {
-                    // Ask which model format to import
-                    DialogResult res = MessageBox.Show("Would you like to import a GC model?\nClick No to import as Chunk, Cancel to import as Basic.", "Select Import Format", MessageBoxButtons.YesNoCancel);
-                    switch (res)
-                    {
-                        case DialogResult.Yes:
-                            outfmt = ModelFormat.GC;
-                            break;
-                        case DialogResult.No:
-                            outfmt = ModelFormat.Chunk;
-                            break;
-                        default:
-                            outfmt = ModelFormat.Basic;
-                            break;
-                    }
-                }
-                ImportModel_Assimp(modelImportFiles[0], false); 
-            }
+			if (modelImportFiles.Count > 0)
+				ImportModelFromFile(modelImportFiles[0]);
 			if (animFiles.Count > 0) { LoadAnimation(animFiles.ToArray()); }
+		}
+
+		private void ImportModelFromFile(string modelFilename)
+		{
+			using (AssimpImportDialog dialog = new AssimpImportDialog(outfmt, Path.GetExtension(modelFilename).ToLowerInvariant() == ".obj"))
+				switch (dialog.ShowDialog())
+				{
+					case DialogResult.Cancel:
+						return;
+					case DialogResult.OK:
+					default:
+						outfmt = dialog.Format;
+						if (dialog.LegacyOBJImport)
+						{
+							NewFile(ModelFormat.BasicDX);
+							// Load textures if there is a texlist file
+							string rootPath = Path.GetDirectoryName(modelFilename);
+							string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(modelFilename) + ".tls");
+							if (File.Exists(texlistFilename))
+							{
+								UnloadTextures();
+								List<string> texturesPngFilenames = new List<string>();
+								TexList = new TexnameArray(texlistFilename);
+								foreach (string texture in TexList.TextureNames)
+								{
+									texturesPngFilenames.Add(Path.Combine(rootPath, Path.ChangeExtension(texture, ".png")));
+								}
+								AddTextures(texturesPngFilenames.ToArray());
+								UpdateTexlist();
+							}
+							ImportOBJLegacy(model, modelFilename);
+						}
+						else
+							ImportModel_Assimp(modelFilename, !dialog.ImportAsNodes, false, dialog.ImportColladaRootNode);
+						break;
+				}
 		}
 
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -340,7 +357,7 @@ namespace SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "All supported files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel;*.sap|All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|All Files|*.*"
+				Filter = "All supported files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel;*.sap;*.dae;*.fbx;*.obj|All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|Other Model Formats|*.obj;*.fbx;*.dae|All Files|*.*"
             };
 			goto loadfiledlg;
 		loadfiledlg:
@@ -439,230 +456,238 @@ namespace SAModel.SAMDL
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
 			animnum = -1;
 			animframe = 0;
-            // Model file
-            if (ModelFile.CheckModelFile(filename))
-            {
-                try
-                {
-                    modelFile = new ModelFile(filename);
-                    outfmt = modelFile.Format;
-                    if (modelFile.Model.Sibling != null)
-                    {
-                        model = new NJS_OBJECT { Name = "Root" };
-                        model.AddChild(modelFile.Model);
-                        rootSiblingMode = true;
-                    }
-                    else
-                    {
-                        model = modelFile.Model;
-                        rootSiblingMode = false;
-                    }
-                    animations = new List<NJS_MOTION>(modelFile.Animations);
-                    if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
-                    string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
-                        "Please check the model's type and address and try again.\n\n" +
-                        "If you wish to report a bug, please include the model file and this information\n" +
-                        "in your report.";
-                    ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
-                    log.WriteLog();
-                    report.ShowDialog();
-                    return;
-                }
-            }
-            // Ninja/Ginja model file
-            else if (extension.Equals(".nj") || extension.Equals(".gj"))
-            {
-                byte[] file = File.ReadAllBytes(filename);
-                int ninjaDataOffset = 0;
-                bool basicModel = false;
-
-                string magic = System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
-
-				switch (magic)
+			// Model file
+			if (ModelFile.CheckModelFile(filename))
+			{
+				try
 				{
-					case "GJTL":
-					case "NJTL":
-						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-						int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
-						int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
-						int texListOffset = POF0Offset + POF0Size + 0x8;
-						ninjaDataOffset = texListOffset + 0x8;
-						int texCount = ByteConverter.ToInt32(file, 0xC);
-						int texOffset = 0;
-						List<string> texNames = new List<string>();
-						// Check if it's a basic model
-						if (System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, texListOffset))) == "NJBM")
-							basicModel = true;
-						for (int i = 0; i < texCount; i++)
-                        {
-                            int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
-                            // Read null terminated string
-                            List<byte> namestring = new List<byte>();
-                            byte namechar = (file[textAddress]);
-                            int j = 0;
-                            while (namechar != 0)
-                            {
-                                namestring.Add(namechar);
-                                j++;
-                                namechar = (file[textAddress + j]);
-                            }
-                            texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
-                            texOffset += 0xC;
-                        }
-                        TexList = new TexnameArray(texNames.ToArray());
-						break;
-                    case "GJCM":
-                    case "NJCM":
-                        ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-                        ninjaDataOffset = 0x8;
-                        break;
-                    case "NJBM":
-                        ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-                        ninjaDataOffset = 0x8;
-                        basicModel = true;
-                        break;
-                    default:
-                        MessageBox.Show("Incorrect format!");
-                        return;
-                }
-
-				// Set modelinfo parameters
-				modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
-				modelinfo.radioButtonObject.Checked = true;
-				modelinfo.numericUpDownModelAddress.Value = 0;
-				if (basicModel)
-				{
-					modelinfo.comboBoxModelFormat.SelectedIndex = 0;
-				}
-				else if (extension.Equals(".nj"))
-				{
-					modelinfo.comboBoxModelFormat.SelectedIndex = 2;
-				}
-				else if (extension.Equals(".gj"))
-				{
-					modelinfo.comboBoxModelFormat.SelectedIndex = 3;
-				}
-
-				modelinfo.numericUpDownMotionAddress.Value = 0;
-				modelinfo.checkBoxMemoryObject.Checked = false;
-				modelinfo.checkBoxMemoryMotion.Checked = false;
-
-				modelinfo.numericUpDownKey.Value = 0;
-				modelinfo.numericUpDownKey.Value = 0;
-
-
-				// Get rid of the junk so that we can treat it like what SAMDL expects
-				byte[] newFile = new byte[file.Length - ninjaDataOffset];
-                Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
-
-                LoadBinFile(newFile);
-                animations = new List<NJS_MOTION>();
-                if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
-            }
-            // Project file
-            else if (extension.Equals(".sap"))
-            {
-                LoadProject(filename);
-                return;
-            }
-            // Generic binary
-            else
-            {
-				byte[] file = File.ReadAllBytes(filename);
-				if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
-                    file = FraGag.Compression.Prs.Decompress(file);
-                ByteConverter.BigEndian = false;
-				modelinfo.CheckFilename(filename);
-				uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
-                if (baseaddr.HasValue)
-                    modelinfo.numericUpDownKey.Value = baseaddr.Value;
-				modelinfo.ShowDialog(this);
-                if (modelinfo.DialogResult == DialogResult.OK)
-                {
-					if (modelinfo.radioButtonBinary.Checked)
+					modelFile = new ModelFile(filename);
+					outfmt = modelFile.Format;
+					if (modelFile.Model.Sibling != null)
 					{
-						if (modelinfo.comboBoxBinaryFileType.SelectedIndex == 2) // REL file
-						{
-							ByteConverter.BigEndian = true;
-							file = SplitTools.HelperFunctions.DecompressREL(file);
-							SplitTools.HelperFunctions.FixRELPointers(file, 0xC900000);
-						}
-						log.Add("Loading model from binary file " + filename);
-						log.Add("\tKey: " + uint.Parse(modelinfo.numericUpDownKey.Value.ToString()).ToCHex());
-						log.Add("\tAddress: " + uint.Parse(modelinfo.numericUpDownModelAddress.Value.ToString()).ToCHex());
-						if (modelinfo.numericUpDownStartOffset.Value != 0)
-							log.Add("\tOffset: " + uint.Parse(modelinfo.numericUpDownStartOffset.Value.ToString()).ToCHex());
-						if (modelinfo.numericUpDownMotionAddress.Value != 0)
-							log.Add("\tMotion at: " + uint.Parse(modelinfo.numericUpDownMotionAddress.Value.ToString()).ToCHex());
-						log.Add("\tBig Endian: " + modelinfo.checkBoxBigEndian.Checked.ToString()); ;
-						log.WriteLog();
-						LoadBinFile(file);
+						model = new NJS_OBJECT { Name = "Root" };
+						model.AddChild(modelFile.Model);
+						rootSiblingMode = true;
 					}
 					else
 					{
-						ModelFormat fmt = outfmt = ModelFormat.Chunk;
-						ByteConverter.BigEndian = modelinfo.radioButtonSA2BMDL.Checked;
-						using (SA2MDLDialog dlg = new SA2MDLDialog())
+						model = modelFile.Model;
+						rootSiblingMode = false;
+					}
+					animations = new List<NJS_MOTION>(modelFile.Animations);
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+				}
+				catch (Exception ex)
+				{
+					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
+					string errDesc = "SAMDL could not load the model for the reason(s) below.\n" +
+						"Please check the model's type and address and try again.\n\n" +
+						"If you wish to report a bug, please include the model file and this information\n" +
+						"in your report.";
+					ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
+					log.WriteLog();
+					report.ShowDialog();
+					return;
+				}
+			}
+			else
+			{
+				byte[] file = File.ReadAllBytes(filename);
+				switch (extension)
+				{
+					// Ninja/Ginja model file
+					case ".nj":
+					case ".gj":
+						int ninjaDataOffset = 0;
+						bool basicModel = false;
+
+						string magic = System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
+
+						switch (magic)
 						{
-							int address = 0;
-							SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
-							int i = ByteConverter.ToInt32(file, address);
-							while (i != -1)
-							{
-								sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
-								address += 8;
-								i = ByteConverter.ToInt32(file, address);
-							}
-							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-								dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
-							dlg.ShowDialog(this);
-							i = 0;
-							foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
-							{
-								if (i == dlg.modelChoice.SelectedIndex)
+							case "GJTL":
+							case "NJTL":
+								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+								int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
+								int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
+								int texListOffset = POF0Offset + POF0Size + 0x8;
+								ninjaDataOffset = texListOffset + 0x8;
+								int texCount = ByteConverter.ToInt32(file, 0xC);
+								int texOffset = 0;
+								List<string> texNames = new List<string>();
+								// Check if it's a basic model
+								if (System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, texListOffset))) == "NJBM")
+									basicModel = true;
+								for (int i = 0; i < texCount; i++)
 								{
-									model = item.Value;
-									break;
-								}
-								i++;
-							}
-							if (dlg.checkBox1.Checked)
-							{
-								using (OpenFileDialog anidlg = new OpenFileDialog()
-								{
-									DefaultExt = "bin",
-									Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
-								})
-								{
-									if (anidlg.ShowDialog(this) == DialogResult.OK)
+									int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
+									// Read null terminated string
+									List<byte> namestring = new List<byte>();
+									byte namechar = (file[textAddress]);
+									int j = 0;
+									while (namechar != 0)
 									{
-										byte[] anifile = File.ReadAllBytes(anidlg.FileName);
-										if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-											anifile = FraGag.Compression.Prs.Decompress(anifile);
-										address = 0;
-										SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
+										namestring.Add(namechar);
+										j++;
+										namechar = (file[textAddress + j]);
+									}
+									texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
+									texOffset += 0xC;
+								}
+								TexList = new TexnameArray(texNames.ToArray());
+								break;
+							case "GJCM":
+							case "NJCM":
+								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+								ninjaDataOffset = 0x8;
+								break;
+							case "NJBM":
+								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+								ninjaDataOffset = 0x8;
+								basicModel = true;
+								break;
+							default:
+								MessageBox.Show("Incorrect format!");
+								return;
+						}
+
+						// Set modelinfo parameters
+						modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
+						modelinfo.radioButtonObject.Checked = true;
+						modelinfo.numericUpDownModelAddress.Value = 0;
+						if (basicModel)
+						{
+							modelinfo.comboBoxModelFormat.SelectedIndex = 0;
+						}
+						else if (extension.Equals(".nj"))
+						{
+							modelinfo.comboBoxModelFormat.SelectedIndex = 2;
+						}
+						else if (extension.Equals(".gj"))
+						{
+							modelinfo.comboBoxModelFormat.SelectedIndex = 3;
+						}
+
+						modelinfo.numericUpDownMotionAddress.Value = 0;
+						modelinfo.checkBoxMemoryObject.Checked = false;
+						modelinfo.checkBoxMemoryMotion.Checked = false;
+
+						modelinfo.numericUpDownKey.Value = 0;
+						modelinfo.numericUpDownKey.Value = 0;
+
+
+						// Get rid of the junk so that we can treat it like what SAMDL expects
+						byte[] newFile = new byte[file.Length - ninjaDataOffset];
+						Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
+
+						LoadBinFile(newFile);
+						animations = new List<NJS_MOTION>();
+						if (animations.Count > 0)
+							buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+						break;
+					// Project file
+					case ".sap":
+						LoadProject(filename);
+						return;
+					// Import
+					case ".obj":
+					case ".fbx":
+					case ".dae":
+						ImportModelFromFile(filename);
+						break;
+					// Generic binary
+					default:
+						if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
+							file = FraGag.Compression.Prs.Decompress(file);
+						ByteConverter.BigEndian = false;
+						modelinfo.CheckFilename(filename);
+						uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
+						if (baseaddr.HasValue)
+							modelinfo.numericUpDownKey.Value = baseaddr.Value;
+						modelinfo.ShowDialog(this);
+						if (modelinfo.DialogResult == DialogResult.OK)
+						{
+							if (modelinfo.radioButtonBinary.Checked)
+							{
+								if (modelinfo.comboBoxBinaryFileType.SelectedIndex == 2) // REL file
+								{
+									ByteConverter.BigEndian = true;
+									file = SplitTools.HelperFunctions.DecompressREL(file);
+									SplitTools.HelperFunctions.FixRELPointers(file, 0xC900000);
+								}
+								log.Add("Loading model from binary file " + filename);
+								log.Add("\tKey: " + uint.Parse(modelinfo.numericUpDownKey.Value.ToString()).ToCHex());
+								log.Add("\tAddress: " + uint.Parse(modelinfo.numericUpDownModelAddress.Value.ToString()).ToCHex());
+								if (modelinfo.numericUpDownStartOffset.Value != 0)
+									log.Add("\tOffset: " + uint.Parse(modelinfo.numericUpDownStartOffset.Value.ToString()).ToCHex());
+								if (modelinfo.numericUpDownMotionAddress.Value != 0)
+									log.Add("\tMotion at: " + uint.Parse(modelinfo.numericUpDownMotionAddress.Value.ToString()).ToCHex());
+								log.Add("\tBig Endian: " + modelinfo.checkBoxBigEndian.Checked.ToString()); ;
+								log.WriteLog();
+								LoadBinFile(file);
+							}
+							else
+							{
+								ModelFormat fmt = outfmt = ModelFormat.Chunk;
+								ByteConverter.BigEndian = modelinfo.radioButtonSA2BMDL.Checked;
+								using (SA2MDLDialog dlg = new SA2MDLDialog())
+								{
+									int address = 0;
+									SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
+									int i = ByteConverter.ToInt32(file, address);
+									while (i != -1)
+									{
+										sa2models.Add(i, new NJS_OBJECT(file, ByteConverter.ToInt32(file, address + 4), 0, fmt, null));
+										address += 8;
 										i = ByteConverter.ToInt32(file, address);
-										while (i != -1)
+									}
+									foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+										dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
+									dlg.ShowDialog(this);
+									i = 0;
+									foreach (KeyValuePair<int, NJS_OBJECT> item in sa2models)
+									{
+										if (i == dlg.modelChoice.SelectedIndex)
 										{
-											anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
-											address += 8;
-											i = ByteConverter.ToInt32(file, address);
+											model = item.Value;
+											break;
 										}
-										animations = new List<NJS_MOTION>(anis.Values);
-										if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+										i++;
+									}
+									if (dlg.checkBox1.Checked)
+									{
+										using (OpenFileDialog anidlg = new OpenFileDialog()
+										{
+											DefaultExt = "bin",
+											Filter = "Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*"
+										})
+										{
+											if (anidlg.ShowDialog(this) == DialogResult.OK)
+											{
+												byte[] anifile = File.ReadAllBytes(anidlg.FileName);
+												if (Path.GetExtension(anidlg.FileName).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+													anifile = FraGag.Compression.Prs.Decompress(anifile);
+												address = 0;
+												SortedDictionary<int, NJS_MOTION> anis = new SortedDictionary<int, NJS_MOTION>();
+												i = ByteConverter.ToInt32(file, address);
+												while (i != -1)
+												{
+													anis.Add(i, new NJS_MOTION(file, ByteConverter.ToInt32(file, address + 4), 0, model.CountAnimated()));
+													address += 8;
+													i = ByteConverter.ToInt32(file, address);
+												}
+												animations = new List<NJS_MOTION>(anis.Values);
+												if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+											}
+										}
 									}
 								}
 							}
 						}
-					}
-                }
-                else return;
-            }
-
+						else return;
+						break;
+				}
+			}
             currentFileName = filename;
 
             RebuildModelCache();
@@ -682,6 +707,7 @@ namespace SAModel.SAMDL
 			EditorOptions.backLight.Ambient.B = settingsfile.BackLightAmbientB;
 			EditorOptions.UpdateDefaultLights(d3ddevice);
 		}
+
 		private void LoadBinFile(byte[] file)
 		{
 			// Start offset for X360 exe
@@ -2236,7 +2262,7 @@ namespace SAModel.SAMDL
 				}
 		}
 
-		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false)
+		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false, bool importColladaRoot = false)
 		{
 			string rootPath = Path.GetDirectoryName(objFileName);
 			string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(objFileName) + ".tls");
@@ -2274,7 +2300,7 @@ namespace SAModel.SAMDL
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			timer1.Stop();
             // Collada adds a root node, so use the first child node instead
-            if (Path.GetExtension(objFileName).ToLowerInvariant() == ".dae")
+            if (!importColladaRoot)
                 importnode = scene.RootNode.Children[0];
             NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfoCurrent?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
@@ -2340,8 +2366,10 @@ namespace SAModel.SAMDL
 				foreach (BMPInfo bmp in TextureInfoCurrent)
 				{
 					textureNames.Add(bmp.Name);
-					texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
-					bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
+					string savePath = Path.Combine(rootPath, bmp.Name + ".png");
+					texturePaths.Add(savePath);
+					if (!File.Exists(savePath))
+						bmp.Image.Save(savePath);
 				}
 				// Save texture list
 				TexnameArray textureNamesArray = TexList != null ? TexList : new TexnameArray(textureNames.ToArray());
@@ -3316,36 +3344,6 @@ namespace SAModel.SAMDL
 			unsaved = true;
 		}
 
-		private void importAsModelToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog ofd = new OpenFileDialog
-			{
-				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
-			})
-			{
-				if (ofd.ShowDialog() == DialogResult.OK)
-				{
-					ImportModel_Assimp(ofd.FileName, true);
-				}
-			}
-		}
-
-		private void importAsNodesToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (OpenFileDialog ofd = new OpenFileDialog
-			{
-				DefaultExt = "dae",
-				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
-			})
-			{
-				if (ofd.ShowDialog() == DialogResult.OK)
-				{
-					ImportModel_Assimp(ofd.FileName, false);
-				}
-			}
-		}
-
 		private void exportContextMenuItem_Click(object sender, EventArgs e)
 		{
 			using (SaveFileDialog a = new SaveFileDialog
@@ -3763,7 +3761,23 @@ namespace SAModel.SAMDL
             LoadProject(currentProject);
         }
 
-        private void SetPartialTexlist(int[] texIDs)
+		private void importToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog
+			{
+				DefaultExt = "dae",
+				Title = "Import Model",
+				Filter = "Model Files|*.obj;*.fbx;*.dae;|All Files|*.*"
+			})
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					ImportModelFromFile(ofd.FileName);
+				}
+			}
+		}
+
+		private void SetPartialTexlist(int[] texIDs)
         {
             // If a partial texlist isn't set, remove all of it
             if (texIDs == null)

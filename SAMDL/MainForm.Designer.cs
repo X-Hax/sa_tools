@@ -125,9 +125,6 @@ namespace SAModel.SAMDL
             this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importAsModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importAsNodesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.legacyOBJImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nJAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1060,42 +1057,16 @@ namespace SAModel.SAMDL
             // 
             // importToolStripMenuItem
             // 
-            this.importToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importAsModelToolStripMenuItem,
-            this.importAsNodesToolStripMenuItem,
-            this.legacyOBJImportToolStripMenuItem});
             this.importToolStripMenuItem.Enabled = false;
             this.importToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.import;
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(244, 22);
             this.importToolStripMenuItem.Text = "&Import...";
-            // 
-            // importAsModelToolStripMenuItem
-            // 
-            this.importAsModelToolStripMenuItem.Name = "importAsModelToolStripMenuItem";
-            this.importAsModelToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.importAsModelToolStripMenuItem.Text = "As Model...";
-            this.importAsModelToolStripMenuItem.Click += new System.EventHandler(this.importAsModelToolStripMenuItem_Click);
-            // 
-            // importAsNodesToolStripMenuItem
-            // 
-            this.importAsNodesToolStripMenuItem.Name = "importAsNodesToolStripMenuItem";
-            this.importAsNodesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.importAsNodesToolStripMenuItem.Text = "As Nodes...";
-            this.importAsNodesToolStripMenuItem.Click += new System.EventHandler(this.importAsNodesToolStripMenuItem_Click);
-            // 
-            // legacyOBJImportToolStripMenuItem
-            // 
-            this.legacyOBJImportToolStripMenuItem.Name = "legacyOBJImportToolStripMenuItem";
-            this.legacyOBJImportToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.legacyOBJImportToolStripMenuItem.Text = "Legacy OBJ Import...";
-            this.legacyOBJImportToolStripMenuItem.ToolTipText = "Use the old OBJ import from previous versions of SA Tools. This can help import a" +
-    "ssets in older mods that used this system.";
-            this.legacyOBJImportToolStripMenuItem.Click += new System.EventHandler(this.legacyOBJImportToolStripMenuItem_Click);
-            // 
-            // exportToolStripMenuItem
-            // 
-            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+			// 
+			// exportToolStripMenuItem
+			// 
+			this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cStructsToolStripMenuItem,
             this.nJAToolStripMenuItem,
             this.aSSIMPExportToolStripMenuItem});
@@ -1549,13 +1520,10 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem transparentOnlyToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
 		private System.Windows.Forms.ToolStripMenuItem alternativeCameraModeToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem importAsModelToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem importAsNodesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importSelectedAsMeshContextMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importSelectedAsNodesContextMenuItem;
 		private System.Windows.Forms.ToolStripButton buttonShowVertexIndices;
 		private System.Windows.Forms.ToolStripMenuItem showVertexIndicesToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem legacyOBJImportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem selectedLegacyOBJImportToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem resetLabelsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
