@@ -12,12 +12,14 @@ namespace SAToolsHub.Updater
 	public class LoaderManifestDialog : ProgressDialog
 	{
 		private readonly string updatePath;
+		private readonly string originalPath;
 		private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-		public LoaderManifestDialog(string updatePath)
+		public LoaderManifestDialog(string updatePath, string originalPath)
 			: base("Update Progress", true)
 		{
 			this.updatePath = updatePath;
+			this.originalPath = originalPath;
 
 			Shown += OnShown;
 			CancelEvent += OnCancelEvent;
@@ -48,7 +50,7 @@ namespace SAToolsHub.Updater
 					using (var task = new Task(() =>
 					{
 						string newManPath = Path.Combine(updatePath, "satools.manifest");
-						string oldManPath = "satools.manifest";
+						string oldManPath = Path.Combine(originalPath, "satools.manifest");
 
 						SetTaskAndStep("Parsing manifest...");
 						if (token.IsCancellationRequested)
@@ -105,7 +107,7 @@ namespace SAToolsHub.Updater
 						}
 
 						File.Copy(newManPath, oldManPath, true);
-						Process.Start(Application.ExecutablePath, $"cleanupdate \"{updatePath}\"");
+						Process.Start(Path.Combine(originalPath, Path.GetFileName(Application.ExecutablePath)), $"cleanupdate \"{updatePath}\"");
 					}, token))
 					{
 						task.Start();

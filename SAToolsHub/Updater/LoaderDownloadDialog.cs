@@ -131,7 +131,7 @@ namespace SAToolsHub.Updater
 
 							Process.Start(new ProcessStartInfo("tools\\lib\\7z.exe", $"x -aoa -o\"{dataDir}\" \"{filePath}\"") { UseShellExecute = false, CreateNoWindow = true }).WaitForExit();
 
-							Process.Start(Path.Combine(dataDir, Path.GetFileName(Application.ExecutablePath)), $"doupdate \"{dataDir}\"");
+							Process.Start(Path.Combine(dataDir, Path.GetFileName(Application.ExecutablePath)), $"doupdate \"{dataDir}\" \"{Path.GetDirectoryName(Application.ExecutablePath)}\"");
 						}, token))
 						{
 							task.Start();
