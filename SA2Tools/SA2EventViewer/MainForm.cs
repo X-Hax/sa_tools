@@ -626,7 +626,7 @@ namespace SA2EventViewer
 					draw = true;
 					break;
 
-				case ("Zoom to target"):
+				case ("Zoom to Target"):
 					if (selectedObject != null)
 					{
 						BoundingSphere bounds = (selectedObject.Model?.Attach != null) ? selectedObject.Model.Attach.Bounds :
@@ -656,21 +656,21 @@ namespace SA2EventViewer
 					draw = true;
 					break;
 
-				case ("Increase camera move speed"):
+				case ("Increase Camera Speed"):
 					cam.MoveSpeed += 0.0625f;
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
 					UpdateStatusString();
 					break;
 
-				case ("Decrease camera move speed"):
+				case ("Decrease Camera Speed"):
 					cam.MoveSpeed = Math.Max(cam.MoveSpeed - 0.0625f, 0.0625f);
 					osd.UpdateOSDItem("Camera speed: " + cam.MoveSpeed.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
 					UpdateStatusString();
 					break;
 
-				case ("Reset camera move speed"):
+				case ("Reset Camera Speed"):
 					cam.MoveSpeed = EditorCamera.DefaultMoveSpeed;
 					osd.UpdateOSDItem("Reset camera speed", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 					//UpdateTitlebar();
@@ -755,6 +755,18 @@ namespace SA2EventViewer
 					lookKeyDown = true;
 					break;
 
+				case ("Play Animation (Hold)"):
+					if (scenenum == 0)
+						scenenum = 1;
+					AdvanceAnimation();
+					break;
+
+				case ("Play Animation in Reverse (Hold)"):
+					AdvanceAnimation(true);
+					if (scenenum == 0)
+						scenenum = 1;
+					break;
+
 				default:
 					break;
 			}
@@ -795,9 +807,12 @@ namespace SA2EventViewer
 		}
 		#endregion
 
-		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		private void AdvanceAnimation(bool negative = false)
 		{
-			decframe += (float)numericUpDown1.Value / 2.0f;
+			if (negative)
+				decframe -= (float)numericUpDown1.Value / 2.0f;
+			else
+				decframe += (float)numericUpDown1.Value / 2.0f;
 			float oldanimframe = animframe;
 			animframe = decframe;
 			if (animframe != oldanimframe)
@@ -820,6 +835,11 @@ namespace SA2EventViewer
 				UpdateWeightedModels();
 				DrawEntireModel();
 			}
+		}
+
+		private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+		{
+			AdvanceAnimation();
 		}
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)

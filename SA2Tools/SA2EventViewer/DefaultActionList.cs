@@ -22,7 +22,7 @@ namespace SA2EventViewer
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Zoom to target",
+				Name = "Zoom to Target",
 				MainKey = Keys.Z,
 				AltKey = Keys.F,
 				Description = "Zoom to the selected object",
@@ -33,7 +33,7 @@ namespace SA2EventViewer
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Increase camera move speed",
+				Name = "Increase Camera Speed",
 				MainKey = Keys.Add,
 				AltKey = Keys.None,
 				Description = "",
@@ -44,7 +44,7 @@ namespace SA2EventViewer
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Decrease camera move speed",
+				Name = "Decrease Camera Speed",
 				MainKey = Keys.Subtract,
 				AltKey = Keys.None,
 				Description = "",
@@ -55,7 +55,7 @@ namespace SA2EventViewer
 			},
 			new ActionKeyMapping()
 			{
-				Name = "Reset camera move speed",
+				Name = "Reset Camera Speed",
 				MainKey = Keys.NumPad5,
 				AltKey = Keys.None,
 				Description = "",
@@ -195,6 +195,28 @@ namespace SA2EventViewer
 				AltKey = Keys.None,
 				Description = "Toggles the play state of the animation",
 				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Play Animation (Hold)",
+				MainKey = Keys.OemPeriod,
+				AltKey = Keys.None,
+				Description = "Play the animation while the key is being held.",
+				FireType = ActionFireType.OnHold,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Play Animation in Reverse (Hold)",
+				MainKey = Keys.Oemcomma,
+				AltKey = Keys.None,
+				Description = "Play the animation in reverse while the key is being held.",
+				FireType = ActionFireType.OnHold,
 				IsSearchable = true,
 				Modifiers = Keys.None,
 				Synonyms = new string[] { }
