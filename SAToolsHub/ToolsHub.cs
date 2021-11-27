@@ -258,13 +258,12 @@ namespace SAToolsHub
                 {
                     buildToolStripMenuItem.Enabled = true;
                     editProjectInfoToolStripMenuItem.Enabled = true;
-                    tsProjUtils.Enabled = true;
                     tsBuild.Enabled = true;
                     tsGameRun.Enabled = true;
                     tsEditProj.Enabled = true;
                 }
 
-                editToolStripMenuItem.Enabled = true;
+                editToolStripMenuItem.Enabled = tsProjUtils.Enabled = true;
             }
         }
 
@@ -1583,7 +1582,7 @@ namespace SAToolsHub
             if (updateMData == DialogResult.Yes)
             {
 				Dictionary<string, string> metadataList = new Dictionary<string, string>();
-                Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(GetTemplate(), true);
+                Templates.SplitTemplate splitFile = ProjectFunctions.openTemplateFile(GetTemplateFileForGame(setGame), true);
 				string iniFolder;
 				string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 				if (Directory.Exists(Path.Combine(appPath, "GameConfig", splitFile.GameInfo.DataFolder)))
@@ -1772,29 +1771,32 @@ namespace SAToolsHub
                                     case "basicdxmodel":
                                     case "chunkmodel":
                                     case "gcmodel":
-                                        if (metadataList.ContainsKey(NormalizePath(file.Value.Filename)))
-                                        {
-                                            string[] meta = metadataList[NormalizePath(file.Value.Filename)].Split('|');
-                                            string curHash = file.Value.MD5Hash;
-                                            if (!check.ContainsKey(meta[0]))
-                                            {
-                                                if (meta.Length > 1 && meta[1] != "")
-                                                {
-                                                    file.Value.CustomProperties["texture"] = meta[1];
-                                                    if (meta.Length > 2)
-                                                    {
-                                                        if (Path.GetExtension(meta[1].ToLowerInvariant()) == ".ini")
-                                                            file.Value.CustomProperties["texnames"] = meta[2];
-                                                        else
-                                                            file.Value.CustomProperties["texids"] = meta[2];
-                                                    }
-                                                }
-                                            }
-                                            file.Value.MD5Hash = curHash;
-                                            check.Add(meta[0], file.Value);
-                                        }
-                                        else
-                                            check.Add(file.Key, file.Value);
+										if (metadataList.ContainsKey(NormalizePath(file.Value.Filename)))
+										{
+											string[] meta = metadataList[NormalizePath(file.Value.Filename)].Split('|');
+											string curHash = file.Value.MD5Hash;
+											if (!check.ContainsKey(meta[0]))
+											{
+												if (meta.Length > 1 && meta[1] != "")
+												{
+													file.Value.CustomProperties["texture"] = meta[1];
+													if (meta.Length > 2)
+													{
+														if (Path.GetExtension(meta[1].ToLowerInvariant()) == ".ini")
+															file.Value.CustomProperties["texnames"] = meta[2];
+														else
+															file.Value.CustomProperties["texids"] = meta[2];
+													}
+												}
+											}
+											file.Value.MD5Hash = curHash;
+											if (!check.ContainsKey(meta[0]))
+												check.Add(meta[0], file.Value);
+											else
+												MessageBox.Show(this, "Possible split data conflict with the item:\n" + meta[0], "SA Tools Hub Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+										}
+										else
+											check.Add(file.Key, file.Value);
                                         break;
 
                                     default:
@@ -1862,6 +1864,8 @@ namespace SAToolsHub
                             break;
                     }
                 }
+
+				MessageBox.Show(this, "Metadata update was successful.", "SA Tools Hub", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -1889,57 +1893,24 @@ namespace SAToolsHub
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + url) { CreateNoWindow = true });
         }
 
-        public static string GetTemplate()
+        public static string GetTemplateFileForGame(string game)
         {
-            string templateFile = "";
-            string templatePath = "";
+            string templatePath;
 
-            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig")))
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig")))
                 templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig");
             else
                 templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../GameConfig");
 
-            switch (setGame)
-            {
-                case "SADXPC":
-                    templateFile = "PC - SADX.xml";
-                    break;
-                case "SA2PC":
-                    templateFile = "PC - SA2.xml";
-                    break;
-                case "SA1AD":
-                    templateFile = "DC - SA1 Autodemo.xml";
-                    break;
-                case "SA1":
-                    templateFile = "DC - SA1.xml";
-                    break;
-                case "SA2TT":
-                    templateFile = "DC - SA2 The Trial.xml";
-                    break;
-                case "SA2PRE":
-                    templateFile = "DC - SA2 Preview.xml";
-                    break;
-                case "SA2":
-                    templateFile = "DC - SA2.xml";
-                    break;
-                case "SADXGCP":
-                    templateFile = "GC - SADX Preview.xml";
-                    break;
-                case "SADXGCR":
-                    templateFile = "GC - SADX Review.xml";
-                    break;
-                case "SADXGC":
-                    templateFile = "GC - SADX.xml";
-                    break;
-                case "SA2GC":
-                    templateFile = "GC - SA2B.xml";
-                    break;
-                case "SADX360":
-                    templateFile = "X360 - SADX Debug Prototype.xml";
-                    break;
-            }
-
-            return Path.Combine(templatePath, templateFile);
+			string[] templateNames = Directory.GetFiles(templatePath, "*.xml", SearchOption.TopDirectoryOnly);
+			for (int i = 0; i < templateNames.Length; i++)
+			{
+				Templates.SplitTemplate tempTemplate = ProjectFunctions.openTemplateFile(templateNames[i], true);
+				if (tempTemplate.GameInfo.GameName.ToUpperInvariant() == game.ToUpperInvariant())
+					return templateNames[i];
+			}
+			MessageBox.Show("No template file detected for " + game + ".");
+			return "";
         }
 
 		private void openSettingsLogsToolStripMenuItem_Click(object sender, EventArgs e)

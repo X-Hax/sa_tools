@@ -60,7 +60,7 @@ namespace SAToolsHub
 			chkBoxEntries.Clear();
 			checkedListBox1.Items.Clear();
 
-			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplate());
+			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplateFileForGame(SAToolsHub.setGame));
 
 			foreach (Templates.SplitEntry splitEntry in template.SplitEntries)
 			{
