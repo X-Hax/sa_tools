@@ -61,9 +61,7 @@ namespace SAModel.Direct3D.TextureSystem
 				case ".gif":
 				case ".bmp":
 					List<BMPInfo> arr = new List<BMPInfo>();
-					System.Drawing.Bitmap bmpTemp = new System.Drawing.Bitmap(filename);
-					System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)bmpTemp.Clone();
-					arr.Add(new BMPInfo(Path.GetFileNameWithoutExtension(filename), bmp));
+					arr.Add(new BMPInfo(Path.GetFileNameWithoutExtension(filename), new System.Drawing.Bitmap(filename)));
 					return arr.ToArray();
 				case ".prs":
                     file = FraGag.Compression.Prs.Decompress(file);

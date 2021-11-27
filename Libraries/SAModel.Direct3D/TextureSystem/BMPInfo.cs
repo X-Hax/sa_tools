@@ -13,7 +13,8 @@ namespace SAModel.Direct3D.TextureSystem
 		public BMPInfo(string name, Bitmap image)
 		{
 			Name = name;
-			Image = image;
+			Image = (Bitmap)image.Clone();
+			image.Dispose();
 		}
 	}
 }
