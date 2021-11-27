@@ -384,7 +384,7 @@ namespace SAModel
 				Sibling.ProcessVertexData();
 		}
 
-		public void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame)
+		public void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame)
 		{
 			int animindex = -1;
 			NJS_OBJECT obj = this;
@@ -395,7 +395,7 @@ namespace SAModel
 			} while (obj != null);
 		}
 
-		private void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, ref int animindex)
+		private void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame, ref int animindex)
 		{
 			if (Morph)
 				animindex++;

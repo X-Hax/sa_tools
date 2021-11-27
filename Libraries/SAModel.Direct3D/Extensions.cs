@@ -627,7 +627,7 @@ namespace SAModel.Direct3D
 				obj.Sibling.GetMatrices(transform, matrices);
 		}
 
-		public static void UpdateWeightedModelAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, Mesh[] meshes)
+		public static void UpdateWeightedModelAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, float animframe, Mesh[] meshes)
 		{
 			List<Matrix> matrices = new List<Matrix>();
 			obj.GetMatricesAnimated(transform, anim, animframe, matrices);
@@ -636,7 +636,7 @@ namespace SAModel.Direct3D
 					mesh.Update(matrices);
 		}
 
-		public static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, List<Matrix> matrices)
+		public static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, float animframe, List<Matrix> matrices)
 		{
 			int animindex = -1;
 			do
@@ -646,7 +646,7 @@ namespace SAModel.Direct3D
 			} while (obj != null);
 		}
 
-		private static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, int animframe, ref int animindex, List<Matrix> matrices)
+		private static void GetMatricesAnimated(this NJS_OBJECT obj, MatrixStack transform, NJS_MOTION anim, float animframe, ref int animindex, List<Matrix> matrices)
 		{
 			transform.Push();
 			bool animate = obj.Animate;
@@ -833,7 +833,7 @@ namespace SAModel.Direct3D
 			return result;
 		}
 	
-		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex, bool ignorematcolors = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
+		private static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, float animframe, ref int modelindex, ref int animindex, bool ignorematcolors = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
@@ -985,7 +985,7 @@ namespace SAModel.Direct3D
 			return DrawModelTree(obj, FillMode.Wireframe, transform, null, meshes, ignorematcolor, ignorelight, true, boundsByMesh);
 		}
 
-		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex, bool ignorematcolor = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
+		private static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, float animframe, ref int modelindex, ref int animindex, bool ignorematcolor = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
 		{
 			return DrawModelTreeAnimated(obj, FillMode.Wireframe, transform, null, meshes, anim, animframe, ignorematcolor, ignorelight, true, boundsByMesh);
 		}
@@ -1021,7 +1021,7 @@ namespace SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, int animframe, bool ignorematcolor = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
+		public static List<RenderInfo> DrawModelTreeAnimated(this NJS_OBJECT obj, FillMode fillMode, MatrixStack transform, Texture[] textures, Mesh[] meshes, NJS_MOTION anim, float animframe, bool ignorematcolor = false, bool ignorelight = false, bool invert = false, bool boundsByMesh = false)
 		{
 			int modelindex = -1;
 			int animindex = -1;
@@ -1034,7 +1034,7 @@ namespace SAModel.Direct3D
 			return result;
 		}
 
-		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, int animframe)
+		public static List<RenderInfo> DrawModelTreeAnimatedInvert(this NJS_OBJECT obj, MatrixStack transform, Mesh[] meshes, NJS_MOTION anim, float animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
@@ -1082,7 +1082,7 @@ namespace SAModel.Direct3D
 			return result;
 		}
 
-		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, int animframe)
+		public static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, float animframe)
 		{
 			int modelindex = -1;
 			int animindex = -1;
@@ -1095,7 +1095,7 @@ namespace SAModel.Direct3D
 			return result;
 		}
 
-		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, int animframe, ref int modelindex, ref int animindex)
+		private static HitResult CheckHitAnimated(this NJS_OBJECT obj, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform, Mesh[] mesh, NJS_MOTION anim, float animframe, ref int modelindex, ref int animindex)
 		{
 			transform.Push();
 			modelindex++;
@@ -1213,7 +1213,7 @@ namespace SAModel.Direct3D
 			transform.LoadMatrix(obj.ProcessTransforms(transform.Top));
 		}
 
-		public static Matrix ProcessTransforms(this NJS_OBJECT obj, AnimModelData anim, int animframe, Matrix matrix)
+		public static Matrix ProcessTransforms(this NJS_OBJECT obj, AnimModelData anim, float animframe, Matrix matrix)
 		{
 			if (anim == null)
 				return obj.ProcessTransforms(matrix);
@@ -1237,7 +1237,7 @@ namespace SAModel.Direct3D
 			return matrix;
 		}
 
-		public static void ProcessTransforms(this NJS_OBJECT obj, AnimModelData anim, int animframe, MatrixStack transform)
+		public static void ProcessTransforms(this NJS_OBJECT obj, AnimModelData anim, float animframe, MatrixStack transform)
 		{
 			transform.LoadMatrix(obj.ProcessTransforms(anim, animframe, transform.Top));
 		}

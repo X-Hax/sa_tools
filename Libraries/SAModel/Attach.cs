@@ -97,7 +97,7 @@ namespace SAModel
 
 		public abstract void ProcessVertexData();
 
-		public abstract void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex);
+		public abstract void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame, int animindex);
 
 		object ICloneable.Clone() => Clone();
 

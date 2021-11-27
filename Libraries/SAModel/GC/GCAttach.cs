@@ -243,7 +243,7 @@ namespace SAModel.GC
 		/// <param name="motion"></param>
 		/// <param name="frame"></param>
 		/// <param name="animindex"></param>
-		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
+		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame, int animindex)
 		{
 			throw new NotImplementedException();
 		}

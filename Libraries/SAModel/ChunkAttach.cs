@@ -276,7 +276,7 @@ namespace SAModel
 			MeshInfo = result.ToArray();
 		}
 
-		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, int frame, int animindex)
+		public override void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame, int animindex)
 		{
 			if (!motion.Models.ContainsKey(animindex))
 			{

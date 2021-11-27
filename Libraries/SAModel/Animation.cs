@@ -2180,10 +2180,10 @@ namespace SAModel
 		{
 		}
 
-		public Vertex GetPosition(int frame)
+		public Vertex GetPosition(float frame)
 		{
-			if (Position.ContainsKey(frame))
-				return Position[frame];
+			if (Math.Floor(frame) == frame && Position.ContainsKey((int)Math.Floor(frame)))
+				return Position[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2210,10 +2210,10 @@ namespace SAModel
 			return val;
 		}
 
-		public Rotation GetRotation(int frame)
+		public Rotation GetRotation(float frame)
 		{
-			if (Rotation.ContainsKey(frame))
-				return Rotation[frame];
+			if (Math.Floor(frame) == frame && Rotation.ContainsKey((int)Math.Floor(frame)))
+				return Rotation[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2240,10 +2240,10 @@ namespace SAModel
 			return val;
 		}
 
-		public Vertex GetScale(int frame)
+		public Vertex GetScale(float frame)
 		{
-			if (Scale.ContainsKey(frame))
-				return Scale[frame];
+			if (Math.Floor(frame) == frame && Scale.ContainsKey((int)Math.Floor(frame)))
+				return Scale[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2270,10 +2270,10 @@ namespace SAModel
 			return val;
 		}
 
-		public Vertex GetVector(int frame)
+		public Vertex GetVector(float frame)
 		{
-			if (Vector.ContainsKey(frame))
-				return Vector[frame];
+			if (Math.Floor(frame) == frame && Vector.ContainsKey((int)Math.Floor(frame)))
+				return Vector[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2300,10 +2300,10 @@ namespace SAModel
 			return val;
 		}
 
-		public Vertex[] GetVertex(int frame)
+		public Vertex[] GetVertex(float frame)
 		{
-			if (Vertex.ContainsKey(frame))
-				return Vertex[frame];
+			if (Math.Floor(frame) == frame && Vertex.ContainsKey((int)Math.Floor(frame)))
+				return Vertex[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2332,10 +2332,10 @@ namespace SAModel
 			return result;
 		}
 
-		public Vertex[] GetNormal(int frame)
+		public Vertex[] GetNormal(float frame)
 		{
-			if (Normal.ContainsKey(frame))
-				return Normal[frame];
+			if (Math.Floor(frame) == frame && Normal.ContainsKey((int)Math.Floor(frame)))
+				return Normal[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2364,10 +2364,10 @@ namespace SAModel
 			return result;
 		}
 
-		public Vertex GetTarget(int frame)
+		public Vertex GetTarget(float frame)
 		{
-			if (Target.ContainsKey(frame))
-				return Target[frame];
+			if (Math.Floor(frame) == frame && Target.ContainsKey((int)Math.Floor(frame)))
+				return Target[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2394,10 +2394,10 @@ namespace SAModel
 			return val;
 		}
 
-		public int GetRoll(int frame)
+		public int GetRoll(float frame)
 		{
-			if (Roll.ContainsKey(frame))
-				return Roll[frame];
+			if (Math.Floor(frame) == frame && Roll.ContainsKey((int)Math.Floor(frame)))
+				return Roll[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
@@ -2418,10 +2418,10 @@ namespace SAModel
 			return (int)Math.Round((((Roll[f2] - Roll[f1]) / (double)(f2 - f1)) * (frame - f1)) + Roll[f1], MidpointRounding.AwayFromZero);
 		}
 
-		public int GetAngle(int frame)
+		public int GetAngle(float frame)
 		{
-			if (Angle.ContainsKey(frame))
-				return Angle[frame];
+			if (Math.Floor(frame) == frame && Angle.ContainsKey((int)Math.Floor(frame)))
+				return Angle[(int)Math.Floor(frame)];
 			int f1 = 0;
 			int f2 = 0;
 			List<int> keys = new List<int>();
