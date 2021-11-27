@@ -2238,6 +2238,21 @@ namespace SAModel.SAMDL
 
 		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false)
 		{
+			string rootPath = Path.GetDirectoryName(objFileName);
+			string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(objFileName) + ".tls");
+			// Load textures if there is a texlist file
+			if (File.Exists(texlistFilename))
+			{
+				UnloadTextures();
+				List<string> texturesPngFilenames = new List<string>();
+				TexList = new TexnameArray(texlistFilename);
+				foreach (string texture in TexList.TextureNames)
+				{
+					texturesPngFilenames.Add(Path.Combine(rootPath, Path.ChangeExtension(texture, ".png")));
+				}
+				AddTextures(texturesPngFilenames.ToArray());
+				UpdateTexlist();
+			}
 			if (TextureInfoCurrent == null)
 			{
 				using (OpenFileDialog a = new OpenFileDialog() { Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs" })
@@ -2320,11 +2335,17 @@ namespace SAModel.SAMDL
 			List<string> texturePaths = new List<string>();
 			if (TextureInfoCurrent != null)
 			{
+				// Save textures
+				List<string> textureNames = new List<string>();
 				foreach (BMPInfo bmp in TextureInfoCurrent)
 				{
+					textureNames.Add(bmp.Name);
 					texturePaths.Add(Path.Combine(rootPath, bmp.Name + ".png"));
 					bmp.Image.Save(Path.Combine(rootPath, bmp.Name + ".png"));
 				}
+				// Save texture list
+				TexnameArray textureNamesArray = TexList != null ? TexList : new TexnameArray(textureNames.ToArray());
+				textureNamesArray.Save(Path.Combine(rootPath, Path.GetFileNameWithoutExtension(filename) + ".tls"));
 			}
 
 			// Export the whole model, the first child (in root sibling mode), or the selection
@@ -2355,6 +2376,9 @@ namespace SAModel.SAMDL
 
 		private void aSSIMPExportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (TextureInfoCurrent == null)
+				if (MessageBox.Show(this, "No textures are loaded. Materials may not be exported properly. Continue?", "SAMDL Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+					return;
 			string expname = model.Name;
 			if (rootSiblingMode)
 				expname = model.Children[0].Name;
