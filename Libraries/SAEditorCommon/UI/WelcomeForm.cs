@@ -19,7 +19,7 @@ namespace SAModel.SAEditorCommon.UI
 
         public void GoToSite(string url)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + url) { CreateNoWindow = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + url) { CreateNoWindow = false });
         }
 
         private void WikiDocLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
