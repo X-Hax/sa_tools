@@ -48,7 +48,7 @@ namespace SAToolsHub.Updater
 					using (var task = new Task(() =>
 					{
 						string newManPath = Path.Combine(updatePath, "satools.manifest");
-						string oldManPath = "satools.manifest";
+						string oldManPath = Path.Combine(updatePath, "/../", "satools.manifest");
 
 						SetTaskAndStep("Parsing manifest...");
 						if (token.IsCancellationRequested)
@@ -105,8 +105,8 @@ namespace SAToolsHub.Updater
 						}
 
 						File.Copy(newManPath, oldManPath, true);
-
-						Process.Start(Path.GetFileName(Application.ExecutablePath), $"cleanupdate \"{updatePath}\"");
+						string originalExePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "/../", Path.GetFileName(Application.ExecutablePath));
+						Process.Start(originalExePath, $"cleanupdate \"{updatePath}\"");
 					}, token))
 					{
 						task.Start();
