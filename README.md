@@ -9,7 +9,7 @@ SA Tools is a toolkit for modifying and extracting data from the Sonic Adventure
 
 [.NET Desktop Runtime 5.0](https://dotnet.microsoft.com/download/dotnet/5.0)
 
-Development build (x64 only): 
+Development build (x64, manual updates only): 
 [![Build status](https://ci.appveyor.com/api/projects/status/hobk9b466cvfrhov?svg=true)](https://ci.appveyor.com/project/PiKeyAr/sa-tools)
 
 ## Quick Links
