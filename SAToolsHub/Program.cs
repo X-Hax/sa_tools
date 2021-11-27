@@ -22,7 +22,8 @@ namespace SAToolsHub
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            bool alreadyRunning;
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+			bool alreadyRunning;
 			try { alreadyRunning = !mutex.WaitOne(0, true); }
 			catch (AbandonedMutexException) { alreadyRunning = false; }
 
