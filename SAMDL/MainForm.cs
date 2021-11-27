@@ -157,10 +157,8 @@ namespace SAModel.SAMDL
 			using (AssimpImportDialog dialog = new AssimpImportDialog(outfmt, Path.GetExtension(modelFilename).ToLowerInvariant() == ".obj"))
 				switch (dialog.ShowDialog())
 				{
-					case DialogResult.Cancel:
-						return;
+
 					case DialogResult.OK:
-					default:
 						outfmt = dialog.Format;
 						if (dialog.LegacyOBJImport)
 						{
@@ -185,6 +183,9 @@ namespace SAModel.SAMDL
 						else
 							ImportModel_Assimp(modelFilename, !dialog.ImportAsNodes, false, dialog.ImportColladaRootNode);
 						break;
+					case DialogResult.Cancel:
+					default:
+						return;
 				}
 		}
 
