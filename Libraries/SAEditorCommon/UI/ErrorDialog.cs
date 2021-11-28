@@ -46,7 +46,7 @@ namespace SAModel.SAEditorCommon
             text.Append("Program: ");
             text.AppendLine(programName);
             text.Append("Build Date: ");
-            text.AppendLine(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(CultureInfo.InvariantCulture));
+            text.AppendLine(File.GetLastWriteTime(Application.ExecutablePath).ToString(CultureInfo.InvariantCulture));
             text.Append("OS Version: ");
             text.AppendLine(Environment.OSVersion.ToString());
             if (log != null)

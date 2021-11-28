@@ -30,7 +30,7 @@ namespace TextureEditor
             {
                 Exception ex = (Exception)e.ExceptionObject;
                 string log = "Texture Editor: New log entry on " + DateTime.Now.ToString("G") + System.Environment.NewLine + "Build date:" +
-                    File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture) + 
+                    File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture) + 
                     System.Environment.NewLine + ex.ToString();
                 string errDesc = "Texture Editor has crashed with the following error:\n" + ex.GetType().Name + ".\n\n" +
                     "If you wish to report a bug, please include the following in your report:";

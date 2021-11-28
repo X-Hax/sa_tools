@@ -83,7 +83,7 @@ namespace SAToolsHub
         public SAToolsHub()
         {
             InitializeComponent();
-			toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
+			toolStripLabelBuildDate.Text = "Build Date: " + File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture);
             lvwColumnSorter = new ListViewColumnSorter();
             this.listView1.ListViewItemSorter = lvwColumnSorter;
             Application.ThreadException += Application_ThreadException;

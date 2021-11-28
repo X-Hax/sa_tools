@@ -148,7 +148,7 @@ namespace SAModel.SALVL
 			log.DeleteLogFile();
 			log.Add("SALVL: New log entry on " + DateTime.Now.ToString("G") + "\n");
 			log.Add("Build Date: ");
-			log.Add(File.GetLastWriteTimeUtc(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			log.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
 			log.Add("OS Version: ");
 			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
 			AppConfig.Reload();
