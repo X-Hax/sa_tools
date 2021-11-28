@@ -159,7 +159,7 @@ namespace SAModel.SAEditorCommon.Import
 
 					if (nodeDescriptorSplit[0] == "node")
 					{
-						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager);
+						LevelItem levelItem = new LevelItem(modelFilePath, position, rotation, LevelData.LevelItemCount, selectionManager, true);
 						instanceMgr.Add(new KeyValuePair<int, Attach>(nodeIndex, levelItem.CollisionData.Model.Attach));
 					}
 					else if (nodeDescriptorSplit[0] == "instance")
