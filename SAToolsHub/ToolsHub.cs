@@ -34,7 +34,7 @@ namespace SAToolsHub
 
     public partial class SAToolsHub : Form
     {
-        //Additional Windows
+        // Additional Windows
         private newProj projectCreateDiag;
         private editProj projectEditorDiag;
         private buildWindow buildWindowDiag;
@@ -44,7 +44,7 @@ namespace SAToolsHub
         private ListViewColumnSorter lvwColumnSorter;
         private resplitMenu resplitTool;
 
-        //Variables
+        // Variables
         public static string newProjFile { get; set; }
         public static string projXML { get; set; }
         public static string projectDirectory { get; set; }
@@ -65,7 +65,7 @@ namespace SAToolsHub
             public DateTime Access { get; set; }
         }
 
-        //Program Paths
+        // Program Paths
         ProcessStartInfo samdlStartInfo;
         ProcessStartInfo texeditStartInfo;
         ProcessStartInfo salvlStartInfo;
@@ -1496,7 +1496,7 @@ namespace SAToolsHub
                                     catch (Exception ex)
                                     {
                                         result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
-											+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admin."
+											+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admininstrator."
 																	   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
                                         if (result == DialogResult.Cancel) return false;
                                     }
@@ -1572,7 +1572,8 @@ namespace SAToolsHub
 
         private void SAToolsHub_Shown(object sender, EventArgs e)
         {
-            if (CheckForUpdates())
+			CleanupUpdatesFolder();
+			if (CheckForUpdates())
                 return;
         }
 
@@ -1922,6 +1923,27 @@ namespace SAToolsHub
 		{
 			hubSettings.DisableX86Warning = disableOSWarningToolStripMenuItem.Checked;
 			hubSettings.Save();
+		}
+
+		private void CleanupUpdatesFolder()
+		{
+			DialogResult result = DialogResult.OK;
+			do
+			{
+				try
+				{
+					string updatesfolder = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), updatePath);
+					if (Directory.Exists(updatesfolder))
+						Directory.Delete(updatesfolder, true);
+				}
+				catch (Exception ex)
+				{
+					result = MessageBox.Show(this, "Failed to delete temporary update directory:\n" + ex.Message
+						+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as administrator."
+												   + "\n\nWould you like to retry?", "Directory Removal Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+					if (result == DialogResult.Cancel) return;
+				}
+			} while (result == DialogResult.Retry);
 		}
 	}
 }
