@@ -289,6 +289,7 @@ namespace SAModel.Direct3D
 			ushort mouseWrapThreshold = 2;
 
 			mouseDelta = mouseEvent - (Size)mouseLast;
+			float moveSpeedAdjusted = MoveSpeed / 4.0f;
 			bool performedWrap = false;
 
 			if (lookKeyDown || zoomKeyDown || moveKeyDown || moveGizmo)
@@ -338,13 +339,13 @@ namespace SAModel.Direct3D
 					case 0: // Normal camera
 						if (zoomKeyDown) // Zoom
 						{
-							Position += Look * (mouseDelta.Y * MoveSpeed);
+							Position += Look * (mouseDelta.Y * moveSpeedAdjusted);
 							result = 1;
 						}
 						else if (moveKeyDown) // Move
 						{
-							Position += Up * (mouseDelta.Y * MoveSpeed);
-							Position += Right * (mouseDelta.X * MoveSpeed) * -1;
+							Position += Up * (mouseDelta.Y * moveSpeedAdjusted);
+							Position += Right * (mouseDelta.X * moveSpeedAdjusted) * -1;
 							result = 1;
 						}
 						else if (lookKeyDown) // Look
@@ -357,13 +358,13 @@ namespace SAModel.Direct3D
 					case 1: // Orbit camera
 						if (zoomKeyDown) // Zoom
 						{
-							Distance += (mouseDelta.Y * MoveSpeed) * 3;
+							Distance += (mouseDelta.Y * moveSpeedAdjusted) * 3;
 							result = 1;
 						}
 						else if (moveKeyDown) // Move
 						{
-							FocalPoint += Up * (mouseDelta.Y * MoveSpeed);
-							FocalPoint += Right * (mouseDelta.X * MoveSpeed) * -1;
+							FocalPoint += Up * (mouseDelta.Y * moveSpeedAdjusted);
+							FocalPoint += Right * (mouseDelta.X * moveSpeedAdjusted) * -1;
 							result = 1;
 						}
 						else if (lookKeyDown) // Look
@@ -377,7 +378,7 @@ namespace SAModel.Direct3D
 
 			}
 
-			if (performedWrap || Math.Abs(mouseDelta.X / 2) * MoveSpeed > 0 || Math.Abs(mouseDelta.Y / 2) * MoveSpeed > 0)
+			if (performedWrap || Math.Abs(mouseDelta.X / 2) * moveSpeedAdjusted > 0 || Math.Abs(mouseDelta.Y / 2) * moveSpeedAdjusted > 0)
 			{
 				mouseLast = mouseEvent;
 				if (lookKeyDown || zoomKeyDown || moveKeyDown) result = 2;
