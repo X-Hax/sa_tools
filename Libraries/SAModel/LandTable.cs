@@ -160,7 +160,7 @@ namespace SAModel
 
 		public static LandTable LoadFromFile(string filename)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
@@ -266,7 +266,7 @@ namespace SAModel
 					Description = description,
 					Metadata = meta
 				};
-				ByteConverter.RestoreEndian();
+				ByteConverter.BigEndian = be;
 				return table;
 			}
 			if (magic == SA2LVL)
@@ -277,7 +277,7 @@ namespace SAModel
 					Description = description,
 					Metadata = meta
 				};
-				ByteConverter.RestoreEndian();
+				ByteConverter.BigEndian = be;
 				return table;
 			}
 			if (magic == SA2BLVL)
@@ -288,20 +288,20 @@ namespace SAModel
 					Description = description,
 					Metadata = meta
 				};
-				ByteConverter.RestoreEndian();
+				ByteConverter.BigEndian = be;
 				return table;
 			}
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 			throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
 		}
 
 		public static bool CheckLevelFile(string filename)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
 			ulong format = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 			switch (format)
 			{
 				case SA1LVL:
@@ -586,7 +586,7 @@ namespace SAModel
 
 		public void SaveToFile(string filename, LandTableFormat format, bool nometa = false)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			if (format == LandTableFormat.SADX)
 				format = LandTableFormat.SA1;
@@ -669,7 +669,7 @@ namespace SAModel
 			}
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 		}
 
 		public enum ChunkTypes : uint

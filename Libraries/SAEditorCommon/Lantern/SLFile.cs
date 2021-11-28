@@ -20,8 +20,8 @@ namespace SAModel.SAEditorCommon
 
         public SLFile(byte[] data, bool bigendian = false)
         {
-			ByteConverter.BackupEndian();
-			ByteConverter.BigEndian = bigendian;
+            bool bigendianbk = ByteConverter.BigEndian;
+            ByteConverter.BigEndian = bigendian;
             int start = 0x5A0;
             // Direction    
             RotationY = ByteConverter.ToInt32(data, start);
@@ -43,8 +43,8 @@ namespace SAModel.SAEditorCommon
             float sg = 255 * ByteConverter.ToSingle(data, start + 44);
             float sb = 255 * ByteConverter.ToSingle(data, start + 48);
             FreeSlaveRGB = Color.FromArgb((int)sr, (int)sg, (int)sb);
-			ByteConverter.RestoreEndian();
-		}
+            ByteConverter.BigEndian = bigendianbk;
+        }
 
         public SLFile() { }
 
@@ -66,8 +66,8 @@ namespace SAModel.SAEditorCommon
 
         public byte[] GetBytes(bool bigendian = false)
         {
-			ByteConverter.BackupEndian();
-			ByteConverter.BigEndian = bigendian;
+            bool bigendianbk = ByteConverter.BigEndian;
+            ByteConverter.BigEndian = bigendian;
             List<byte> result = new List<byte>();
             for (int i = 0; i < 0x5A0; i++)
                 result.Add(0);
@@ -84,8 +84,8 @@ namespace SAModel.SAEditorCommon
             result.AddRange(ByteConverter.GetBytes((float)FreeSlaveRGB.R / 255.0f));
             result.AddRange(ByteConverter.GetBytes((float)FreeSlaveRGB.G / 255.0f));
             result.AddRange(ByteConverter.GetBytes((float)FreeSlaveRGB.B / 255.0f));
-			ByteConverter.RestoreEndian();
-			return result.ToArray();
+            ByteConverter.BigEndian = bigendianbk;
+            return result.ToArray();
         }
     }
 }

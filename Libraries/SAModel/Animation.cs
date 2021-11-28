@@ -649,7 +649,7 @@ namespace SAModel
 
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
@@ -658,7 +658,7 @@ namespace SAModel
 				byte version = file[7];
 				if (version > CurrentVersion)
 				{
-					ByteConverter.RestoreEndian();
+					ByteConverter.BigEndian = be;
 					throw new FormatException("Not a valid SAANIM file.");
 				}
 				int aniaddr = ByteConverter.ToInt32(file, 8);
@@ -705,24 +705,24 @@ namespace SAModel
 					nummodels = BitConverter.ToInt32(file, 0x10);
 				else if (nummodels == -1)
 				{
-					ByteConverter.RestoreEndian();
+					ByteConverter.BigEndian = be;
 					throw new NotImplementedException("Cannot open version 0 animations without a model!");
 				}
 				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0);
-				ByteConverter.RestoreEndian();
+				ByteConverter.BigEndian = be;
 				return anim;
 			}
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 			throw new FormatException("Not a valid SAANIM file.");
 		}
 
 		public static bool CheckAnimationFile(string filename)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 			if (magic == SAANIM)
 				return file[7] <= CurrentVersion;
 			return false;
@@ -2105,7 +2105,7 @@ namespace SAModel
 
 		public void Save(string filename, bool nometa = false)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
 			file.AddRange(ByteConverter.GetBytes(SAANIMVer));
@@ -2142,7 +2142,7 @@ namespace SAModel
 			}
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 		}
 	}
 

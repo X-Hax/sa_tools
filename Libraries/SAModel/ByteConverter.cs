@@ -8,20 +8,6 @@ namespace SAModel
 	{
 		public static bool BigEndian { get; set; }
 		public static bool Reverse { get; set; }
-		private static bool BigEndianBackup { get; set; }
-		private static bool ReverseBackup { get; set; }
-
-		public static void BackupEndian()
-		{
-			BigEndianBackup = BigEndian;
-			ReverseBackup = Reverse;
-		}
-
-		public static void RestoreEndian()
-		{
-			BigEndian = BigEndianBackup;
-			Reverse = ReverseBackup;
-		}
 
 		public static byte[] GetBytes(ushort value)
 		{

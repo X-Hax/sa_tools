@@ -41,8 +41,8 @@ namespace ArchiveLib
 
         public MDLArchive(byte[] file)
         {
-			ByteConverter.BackupEndian();
-			if (file[0] == 0)
+            bool bigendbk = ByteConverter.BigEndian;
+            if (file[0] == 0)
                 ByteConverter.BigEndian = true;
             int count = ByteConverter.ToUInt16(file, 2);
             Entries = new List<GenericArchiveEntry>(count);
@@ -74,8 +74,8 @@ namespace ArchiveLib
                 }
                 Entries.Add(new MDLArchiveEntry(entrydata, i.ToString("D3") + extension));
             }
-			ByteConverter.RestoreEndian();
-		}
+            ByteConverter.BigEndian = bigendbk;
+        }
 
         public override byte[] GetBytes()
         {
@@ -171,8 +171,8 @@ namespace ArchiveLib
 
         public MDTArchive(byte[] file)
         {
-			ByteConverter.BackupEndian();
-			MDTArchiveType type = Identify(file);
+            bool bigendbk = ByteConverter.BigEndian;
+            MDTArchiveType type = Identify(file);
             if (type == MDTArchiveType.CRIBigEndian)
                 ByteConverter.BigEndian = true;
             int firstoffset = ByteConverter.ToInt32(file, 0);
@@ -202,8 +202,8 @@ namespace ArchiveLib
                 string extension = GetEntryExtension(entrydata);
                 Entries.Add(new MDTArchiveEntry(entrydata, u.ToString("D3") + extension));
             }
-			ByteConverter.RestoreEndian();
-		}
+            ByteConverter.BigEndian = bigendbk;
+        }
 
         public override byte[] GetBytes()
         {

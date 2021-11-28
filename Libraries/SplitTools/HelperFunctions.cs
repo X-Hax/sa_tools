@@ -423,23 +423,23 @@ namespace SplitTools
 
 		public static bool CheckBigEndianInt16(byte[] file, int address)
 		{
-			ByteConverter.BackupEndian();
+			bool bigEndState = ByteConverter.BigEndian;
 
 			ByteConverter.BigEndian = true;
 			bool isBigEndian = BitConverter.ToUInt16(file, address) > ByteConverter.ToUInt16(file, address);
 
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = bigEndState;
 
 			return isBigEndian;
 		}
 		public static bool CheckBigEndianInt32(byte[] file, int address)
 		{
-			ByteConverter.BackupEndian();
+			bool bigEndState = ByteConverter.BigEndian;
 
 			ByteConverter.BigEndian = true;
 			bool isBigEndian = BitConverter.ToUInt32(file, address) > ByteConverter.ToUInt32(file, address);
 
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = bigEndState;
 
 			return isBigEndian;
 		}
@@ -449,7 +449,7 @@ namespace SplitTools
 			// Scan the array for the last instance of the "SaCompGC" string because there are some files with redundant headers
 			int start = 0;
 			bool isCompressed = false;
-			ByteConverter.BackupEndian();
+			bool bigend = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = true;
 			for (int u = file.Length - 8; u >= 0; u--)
 			{
@@ -481,7 +481,7 @@ namespace SplitTools
 			Marshal.Copy(pnt_output, decompbuf, 0, size_output);
 			Marshal.FreeHGlobal(pnt_output);
 			Marshal.FreeHGlobal(pnt_input);
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = bigend;
 			return decompbuf;
 		}
 	}

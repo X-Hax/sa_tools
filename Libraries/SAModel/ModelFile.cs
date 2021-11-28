@@ -35,7 +35,7 @@ namespace SAModel
 		public ModelFile(byte[] file, string filename = null)
 		{
 			int tmpaddr;
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
@@ -255,7 +255,7 @@ namespace SAModel
 					Animations = anims.AsReadOnly();
 				}
 			}
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 		}
 
 		public static bool CheckModelFile(string filename)
@@ -278,7 +278,7 @@ namespace SAModel
 
 		public void SaveToFile(string filename)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
 			ulong magic;
@@ -382,13 +382,13 @@ namespace SAModel
 			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 		}
 
 		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
 			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false)
 		{
-			ByteConverter.BackupEndian();
+			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			if (format == ModelFormat.BasicDX)
 				format = ModelFormat.Basic;
@@ -500,7 +500,7 @@ namespace SAModel
 				file.AddRange(new byte[4]);
 			}
 			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.RestoreEndian();
+			ByteConverter.BigEndian = be;
 		}
 
 		public enum ChunkTypes : uint

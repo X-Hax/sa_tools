@@ -13,8 +13,8 @@ namespace ArchiveLib
     {
         public gcaxMLTFile(byte[] file, string filename = "")
         {
-			ByteConverter.BackupEndian();
-			ByteConverter.BigEndian = true;
+            bool bigend = ByteConverter.BigEndian;
+            ByteConverter.BigEndian = true;
             // Get number of MLTM entrues
             int size = ByteConverter.ToInt32(file, 0x1C);
             int numfiles = size / 16;
@@ -37,14 +37,14 @@ namespace ArchiveLib
                 //Console.WriteLine("Entry size: {0}", file.Length - entrypointers[e] - 32);
                 Entries.Add(new gcaxMLTEntry(file, fileoffset + e * 16, entrysize, filename));
             }
-			ByteConverter.RestoreEndian();
-		}
+            ByteConverter.BigEndian = bigend;
+        }
 
         public override byte[] GetBytes()
         {
             byte[] resultData;
-			ByteConverter.BackupEndian();
-			ByteConverter.BigEndian = true;
+            bool bigend = ByteConverter.BigEndian;
+            ByteConverter.BigEndian = true;
             List<byte> result = new List<byte>();
             // gcaxMLT header
             result.AddRange(System.Text.Encoding.ASCII.GetBytes("gcaxMLT "));
@@ -93,8 +93,8 @@ namespace ArchiveLib
             resultData = result.ToArray();
             byte[] sizedata = ByteConverter.GetBytes(resultData.Length);
             Array.Copy(sizedata, 0, resultData, 0xC, 4);
-			ByteConverter.RestoreEndian();
-			return resultData; 
+            ByteConverter.BigEndian = bigend;
+            return resultData; 
         }
 
         public override void CreateIndexFile(string path)
@@ -115,8 +115,8 @@ namespace ArchiveLib
 
             public gcaxMLTEntry(byte[] file, int offset, int size, string filename = "")
             {
-				ByteConverter.BackupEndian();
-				ByteConverter.BigEndian = true;
+                bool bigend = ByteConverter.BigEndian;
+                ByteConverter.BigEndian = true;
                 Type = (gcaxMLTEntryType)file[offset];
                 BankID = file[offset + 4];
                 Name = (filename == "" ? "BANK" : filename + "_BANK") + BankID.ToString("D2") + GetgcaxMLTItemExtension(file, offset);
@@ -124,9 +124,9 @@ namespace ArchiveLib
                 //Console.WriteLine("Size: {0}", size);
                 Data = new byte[size];
                 Array.Copy(file, pointer, Data, 0, size);
-				//Console.WriteLine("Entry {0}, Bank {1}, Address {2}, Size {3}, Name {4}", Type.ToString(), BankID.ToString(), pointer.ToString("X"), Data.Length.ToString(), Name);
-				ByteConverter.RestoreEndian();
-			}
+                //Console.WriteLine("Entry {0}, Bank {1}, Address {2}, Size {3}, Name {4}", Type.ToString(), BankID.ToString(), pointer.ToString("X"), Data.Length.ToString(), Name);
+                ByteConverter.BigEndian = bigend;
+            }
 
             public gcaxMLTEntry(string filename, int bankID)
             {
