@@ -77,7 +77,7 @@ namespace SAModel.GC
 		{
 			primitiveType = (GCPrimitiveType)file[address];
 
-			bool wasBigEndian = ByteConverter.BigEndian;
+			ByteConverter.BackupEndian();
 			ByteConverter.BigEndian = true;
 
 			ushort vtxCount = ByteConverter.ToUInt16(file, address + 1);
@@ -169,7 +169,7 @@ namespace SAModel.GC
 
 			end = tmpaddr;
 
-			ByteConverter.BigEndian = wasBigEndian;
+			ByteConverter.RestoreEndian();
 		}
 
 		/// <summary>

@@ -36,7 +36,7 @@ namespace TextureEditor
 
         public TexturePalette(byte[] palettedata, bool saCompatible = true)
         {
-            bool bigendbk = ByteConverter.BigEndian;
+			ByteConverter.BackupEndian();
             IsGVP = BitConverter.ToUInt32(palettedata, 0) == Magic_GVP;
             ByteConverter.BigEndian = IsGVP;
             pixelCodec = (PixelCodec)ByteConverter.ToInt16(palettedata, 0x8);
@@ -65,8 +65,8 @@ namespace TextureEditor
                 Color result = DecodeColor(colorb, pixelCodec);
                 Colors.Add(result);
             }
-            ByteConverter.BigEndian = bigendbk;
-        }
+			ByteConverter.RestoreEndian();
+		}
 
         public TexturePalette(Bitmap bitmap, bool saCompatible = true)
         {
@@ -143,8 +143,8 @@ namespace TextureEditor
 
         public byte[] GetBytes()
         {
-            bool bigendianbk = ByteConverter.BigEndian;
-            ByteConverter.BigEndian = IsGVP;
+			ByteConverter.BackupEndian();
+			ByteConverter.BigEndian = IsGVP;
             List<byte> result = new List<byte>();
             result.AddRange(BitConverter.GetBytes(IsGVP ? Magic_GVP : Magic_PVP));
             int sizenoheader = Colors.Count * (pixelCodec == PixelCodec.ARGB8888 ? 4 : 2) + 8; // Size without header
@@ -174,8 +174,8 @@ namespace TextureEditor
                     result.AddRange(ByteConverter.GetBytes(value)); // May be converted to Big Endian
                 }
             }
-            ByteConverter.BigEndian = bigendianbk;
-            return result.ToArray();
+			ByteConverter.RestoreEndian();
+			return result.ToArray();
         }
 
         public Bitmap GetBitmap()

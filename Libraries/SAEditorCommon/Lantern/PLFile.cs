@@ -100,22 +100,22 @@ namespace SAModel.SAEditorCommon
             }
         }
 
-        public PLFile(byte[] file, bool bigEndian = false)
-        {
-            bool bk = ByteConverter.BigEndian;
-            ByteConverter.BigEndian = bigEndian;
-            Palettes = new List<PLPalette>();
-            int numpalettes = file.Length / 2048;
-            for (int p = 0; p < numpalettes; p++)
-            {
-                Palettes.Add(new PLPalette(file, p * 2048));
-            }
-            if (Palettes.Count < 9)
-                do
-                    Palettes.Add(new PLPalette());
-                while (Palettes.Count < 9);
-            ByteConverter.BigEndian = bk;
-        }
+		public PLFile(byte[] file, bool bigEndian = false)
+		{
+			ByteConverter.BackupEndian();
+			ByteConverter.BigEndian = bigEndian;
+			Palettes = new List<PLPalette>();
+			int numpalettes = file.Length / 2048;
+			for (int p = 0; p < numpalettes; p++)
+			{
+				Palettes.Add(new PLPalette(file, p * 2048));
+			}
+			if (Palettes.Count < 9)
+				do
+					Palettes.Add(new PLPalette());
+				while (Palettes.Count < 9);
+			ByteConverter.RestoreEndian();
+		}
 
         public PLFile(Bitmap png)
         {

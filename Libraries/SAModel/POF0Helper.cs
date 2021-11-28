@@ -13,7 +13,7 @@ namespace SAModel
 			byte[] finalPOF;
 			int offsetDiff = currentAddress - lastPOF;
 			int offsetDiv = offsetDiff / 4;
-			bool storedBE = ByteConverter.BigEndian;
+			ByteConverter.BackupEndian();
 			ByteConverter.BigEndian = true;
 
 			if (offsetDiff > 0xFF)
@@ -37,7 +37,7 @@ namespace SAModel
 				finalPOF = new byte[] { byteCalc };
 			}
 
-			ByteConverter.BigEndian = storedBE;
+			ByteConverter.RestoreEndian();
 			return finalPOF;
 		}
 

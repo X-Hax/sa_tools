@@ -29,8 +29,8 @@ namespace ArchiveLib
 
         public NjArchive(byte[] file)
         {
-            bool bigendbk = ByteConverter.BigEndian;
-            if (file[0] == 0)
+			ByteConverter.BackupEndian();
+			if (file[0] == 0)
                 ByteConverter.BigEndian = true;
             Entries = new List<GenericArchiveEntry>();
             int count = ByteConverter.ToInt32(file, 0) - 1;
@@ -52,8 +52,8 @@ namespace ArchiveLib
                 Array.Copy(file, offset, data, 0, sizes[i]);
                 Entries.Add(new NjArchiveEntry(data));
             }
-            ByteConverter.BigEndian = bigendbk;
-        }
+			ByteConverter.RestoreEndian();
+		}
 
         public override byte[] GetBytes()
         {

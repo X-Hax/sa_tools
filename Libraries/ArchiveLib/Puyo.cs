@@ -154,8 +154,8 @@ namespace ArchiveLib
 
         public PuyoFile(byte[] pvmdata)
         {
-            bool bigendianbk = ByteConverter.BigEndian;
-            Entries = new List<GenericArchiveEntry>();
+			ByteConverter.BackupEndian();
+			Entries = new List<GenericArchiveEntry>();
             Type = Identify(pvmdata);
             switch (Type)
             {
@@ -248,13 +248,13 @@ namespace ArchiveLib
                     Entries.Add(new GVMEntry(pvrchunk, entryfn + ".gvr"));
                 }
             }
-            ByteConverter.BigEndian = bigendianbk;
-        }
+			ByteConverter.RestoreEndian();
+		}
 
         public override byte[] GetBytes()
         {
-            bool bigendianbk = ByteConverter.BigEndian;
-            ByteConverter.BigEndian = Type == PuyoArchiveType.GVMFile;
+			ByteConverter.BackupEndian();
+			ByteConverter.BigEndian = Type == PuyoArchiveType.GVMFile;
             List<byte> result = new List<byte>();
             result.AddRange(Type == PuyoArchiveType.PVMFile ? BitConverter.GetBytes(Magic_PVM) : BitConverter.GetBytes(Magic_GVM));
 
@@ -321,8 +321,8 @@ namespace ArchiveLib
                 Array.Copy(Entries[i].Data, 16, nogbix, 0, Entries[i].Data.Length - 16);
                 result.AddRange(nogbix);
             }
-            ByteConverter.BigEndian = bigendianbk;
-            return result.ToArray();
+			ByteConverter.RestoreEndian();
+			return result.ToArray();
         }
     }
 

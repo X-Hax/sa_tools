@@ -170,7 +170,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 		public static List<SETItem> Load(byte[] setfile, EditorItemSelection selectionManager)
 		{
-			bool bigendianbk = ByteConverter.BigEndian;
+			ByteConverter.BackupEndian();
 			// Load the value as both Little and Big Endian and compare the result.
 			// If the BE number is larger, this is an LE file.
 			ByteConverter.BigEndian = false;
@@ -190,7 +190,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				list.Add(ent);
 				address += 0x20;
 			}
-			ByteConverter.BigEndian = bigendianbk;
+			ByteConverter.RestoreEndian();
 			return list;
 		}
 
@@ -199,14 +199,14 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static byte[] Save(List<SETItem> items, bool bigendian = false)
 		{
 			List<byte> file = new List<byte>(items.Count * 0x20 + 0x20);
-			bool bigendianbk = ByteConverter.BigEndian;
+			ByteConverter.BackupEndian();
 			ByteConverter.BigEndian = bigendian;
 			file.AddRange(ByteConverter.GetBytes(items.Count));
 			file.Align(0x20);
 
 			foreach (SETItem item in items)
 				file.AddRange(item.GetBytes());
-			ByteConverter.BigEndian = bigendianbk;
+			ByteConverter.RestoreEndian();
 			return file.ToArray();
 		}
 
