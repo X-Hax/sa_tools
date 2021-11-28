@@ -37,7 +37,7 @@ namespace SAModel.SAMDL
 			Application.ThreadException += Application_ThreadException;
 			InitializeComponent();
 			AddMouseMoveHandler(this);
-
+			this.MouseWheel += panel1_MouseWheel;
             this.AllowDrop = true;
 			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
 			this.DragDrop += new DragEventHandler(SAMDL_DragDrop);
@@ -3869,5 +3869,18 @@ namespace SAModel.SAMDL
             }
             modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
         }
+
+		void panel1_MouseWheel(object sender, MouseEventArgs e)
+		{
+			if (!loaded || !RenderPanel.Focused)
+				return;
+
+			if (cam.mode == 0)
+				cam.Position += cam.Look * (cam.MoveSpeed * e.Delta * -1);
+			else if (cam.mode == 1)
+				cam.Distance += (cam.MoveSpeed * e.Delta * -1);
+
+			DrawEntireModel();
+		}
 	}
 }

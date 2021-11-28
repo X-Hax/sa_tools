@@ -539,15 +539,10 @@ namespace SAModel.SALVL
             if (!isStageLoaded || !RenderPanel.Focused)
                 return;
 
-            float detentValue = -1;
-
-            if (e.Delta < 0)
-                detentValue = 1;
-
-            if (cam.mode == 0)
-                cam.Position += cam.Look * (detentValue * cam.MoveSpeed);
-            else if (cam.mode == 1)
-                cam.Distance += (detentValue * cam.MoveSpeed);
+			if (cam.mode == 0)
+				cam.Position += cam.Look * (cam.MoveSpeed * e.Delta * -1);
+			else if (cam.mode == 1)
+				cam.Distance += (cam.MoveSpeed * e.Delta * -1);
 
             DrawLevel();
         }
