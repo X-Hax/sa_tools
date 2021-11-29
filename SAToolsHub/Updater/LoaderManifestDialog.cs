@@ -36,7 +36,7 @@ namespace SAToolsHub.Updater
 			SetProgress(1);
 
 			CancellationToken token = tokenSource.Token;
-			string originalPath = Path.Combine(updatePath, "/../../");
+			string originalPath = Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Application.ExecutablePath)).FullName).FullName;
 			DialogResult result;
 			do
 			{
