@@ -12,14 +12,12 @@ namespace SAToolsHub.Updater
 	public class LoaderManifestDialog : ProgressDialog
 	{
 		private readonly string updatePath;
-		private readonly string originalPath;
 		private readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-		public LoaderManifestDialog(string updatePath, string originalPath)
+		public LoaderManifestDialog(string updatePath)
 			: base("Update Progress", true)
 		{
 			this.updatePath = updatePath;
-			this.originalPath = originalPath;
 
 			Shown += OnShown;
 			CancelEvent += OnCancelEvent;
@@ -38,7 +36,7 @@ namespace SAToolsHub.Updater
 			SetProgress(1);
 
 			CancellationToken token = tokenSource.Token;
-
+			string originalPath = Path.Combine(updatePath, "/../../");
 			DialogResult result;
 			do
 			{

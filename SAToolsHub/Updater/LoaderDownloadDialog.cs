@@ -85,7 +85,7 @@ namespace SAToolsHub.Updater
 								OnDownloadProgress(this, downloadArgs);
 								if (downloadArgs.Cancel)
 								{
-									((WebClient)sender).CancelAsync();
+									client.CancelAsync(); // This still doesn't work
 								}
 							}
 

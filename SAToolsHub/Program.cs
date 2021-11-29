@@ -35,7 +35,7 @@ namespace SAToolsHub
 				Application.EnableVisualStyles();
 				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
                 Application.SetCompatibleTextRenderingDefault(false);
-				mainForm = new LoaderManifestDialog(args[1], args[2]);
+				mainForm = new LoaderManifestDialog(args[1]);
 				Application.Run(mainForm);
 				return;
 			}
