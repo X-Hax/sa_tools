@@ -145,7 +145,7 @@ namespace ArchiveLib
             {
                 list.Add(item.Name, new PAKIniItem(item.LongPath));
             }
-            IniSerializer.Serialize(new PAKIniData() { FolderName = FolderName, Items = list }, Path.Combine(Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
+            IniSerializer.Serialize(new PAKIniData() { FolderName = FolderName, Items = list }, Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path), Path.GetFileNameWithoutExtension(path) + ".ini"));
         }
 
         public PAKFile(string filename)
