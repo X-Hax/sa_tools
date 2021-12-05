@@ -272,6 +272,7 @@ namespace SAModel.SAMDL
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
 			settingsfile = Settings_SAMDL.Load();
+			EditorOptions.FillColor = Color.FromArgb(settingsfile.BackgroundColor);
             
             if (settingsfile.ShowWelcomeScreen)
 			{
@@ -1168,7 +1169,7 @@ namespace SAModel.SAMDL
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, EditorOptions.FillColor.ToRawColorBGRA(), 1, 0);
 			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 
@@ -2155,6 +2156,7 @@ namespace SAModel.SAMDL
 		{
 			settingsfile.DrawDistance = EditorOptions.RenderDrawDistance;
 			settingsfile.CameraModifier = cam.ModifierKey;
+			settingsfile.BackgroundColor = EditorOptions.FillColor.ToArgb();
 			DrawEntireModel();
 		}
 

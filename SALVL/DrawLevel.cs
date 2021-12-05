@@ -32,7 +32,7 @@ namespace SAModel.SALVL
             d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
             d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
             d3ddevice.Material = new Material { Ambient = System.Drawing.Color.White.ToRawColor4() };
-            d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Black.ToRawColorBGRA(), 1, 0);
+            d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, EditorOptions.FillColor.ToRawColorBGRA(), 1, 0);
             d3ddevice.SetRenderState(RenderState.ZEnable, true);
             #endregion
 

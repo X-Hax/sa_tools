@@ -9,7 +9,7 @@ namespace SAModel.SAEditorCommon.UI
 	{
 		public Action CustomizeKeybindsCommand;
 		public Action ResetDefaultKeybindsCommand;
-		
+
 		public delegate void FormUpdatedHandler();
 		public event FormUpdatedHandler FormUpdated;
 		public event FormUpdatedHandler FormUpdatedKeys;
@@ -20,42 +20,32 @@ namespace SAModel.SAEditorCommon.UI
 		ActionKeyMapping[] actionKeyMappings;
 		ActionKeyMapping[] defaultActionKeyMappings;
 
-		private enum SelectedKeyType 
-		{
-			None = -1,
-			Main = 0,
-			Alt = 1,
-			Modifier = 2,
-		};
-
-		private SelectedKeyType SelectedKey = SelectedKeyType.None;
-
 		public EditorOptionsEditor(EditorCamera camera, ActionKeyMapping[] actionKeyMappings_f, ActionKeyMapping[] defaultActionKeyMappings_f, bool setdist_enabled_a, bool leveldist_enabled_a)
 		{
 			InitializeComponent();
 			this.camera = camera;
-			drawDistSlider.Value = (int)EditorOptions.RenderDrawDistance;
-			levelDrawDistSlider.Value = (int)EditorOptions.LevelDrawDistance;
-			setDrawDistSlider.Value = (int)EditorOptions.SetItemDrawDistance;
-			fillModeDropDown.SelectedIndex = (int)EditorOptions.RenderFillMode - 1;
-			cullModeDropdown.SelectedIndex = (int)EditorOptions.RenderCullMode - 1;
+			trackBarDrawDistanceGeneral.Value = (int)EditorOptions.RenderDrawDistance;
+			trackBarDrawDistanceLevel.Value = (int)EditorOptions.LevelDrawDistance;
+			trackBarDrawDistanceSet.Value = (int)EditorOptions.SetItemDrawDistance;
+			comboBoxFillMode.SelectedIndex = (int)EditorOptions.RenderFillMode - 1;
+			comboBoxBackfaceCulling.SelectedIndex = (int)EditorOptions.RenderCullMode - 1;
 			if (setdist_enabled_a)
 			{
-				setDrawDistLabel.Enabled = true;
-				setDrawDistSlider.Enabled = true;
+				labelDrawDistanceSetCam.Enabled = true;
+				trackBarDrawDistanceSet.Enabled = true;
 
 			}
 			if (leveldist_enabled_a)
 			{
-				levelDrawDistLabel.Enabled = true;
-				levelDrawDistSlider.Enabled = true;
+				labelDrawDistanceLevel.Enabled = true;
+				trackBarDrawDistanceLevel.Enabled = true;
 			}
-			toolTip.SetToolTip(fullBrightCheck, "If the scene's lighting is making it hard to work, use this to temporarily set the lighting to flat-white.");
-			toolTip.SetToolTip(ignoreMaterialColorsCheck, "Treat all material colors as white like Dreamcast and Gamecube versions of SA1/SADX/SA2 do.");
-			fullBrightCheck.Checked = EditorOptions.OverrideLighting;
-			ignoreMaterialColorsCheck.Checked = EditorOptions.IgnoreMaterialColors;
+			toolTip.SetToolTip(checkboxDisableLighting, "If the scene's lighting is making it hard to work, use this to temporarily set the lighting to flat-white.");
+			toolTip.SetToolTip(checkBoxIgnoreMaterialColors, "Treat all material colors as white like Dreamcast and Gamecube versions of SA1/SADX/SA2 do.");
+			checkboxDisableLighting.Checked = EditorOptions.OverrideLighting;
+			checkBoxIgnoreMaterialColors.Checked = EditorOptions.IgnoreMaterialColors;
 			UpdateSliderValues();
-
+			pictureBoxBackgroundColor.BackColor = EditorOptions.FillColor;
 			// Keybind editor
 			actionKeyMappings = actionKeyMappings_f;
 			defaultActionKeyMappings = defaultActionKeyMappings_f;
@@ -70,46 +60,46 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void UpdateSliderValues()
 		{
-			drawDistLabel.Text = String.Format("General: {0}", drawDistSlider.Value);
-			levelDrawDistLabel.Text = String.Format("Level Geometry: {0}", levelDrawDistSlider.Value); ;
-			setDrawDistLabel.Text = String.Format("SET/CAM Items: {0}", setDrawDistSlider.Value);
-			EditorOptions.RenderDrawDistance = drawDistSlider.Value;
-			EditorOptions.SetItemDrawDistance = setDrawDistSlider.Value;
-			EditorOptions.LevelDrawDistance = levelDrawDistSlider.Value;
+			labelDrawDistanceGeneral.Text = String.Format("General: {0}", trackBarDrawDistanceGeneral.Value);
+			labelDrawDistanceLevel.Text = String.Format("Level Geometry: {0}", trackBarDrawDistanceLevel.Value); ;
+			labelDrawDistanceSetCam.Text = String.Format("SET/CAM Items: {0}", trackBarDrawDistanceSet.Value);
+			EditorOptions.RenderDrawDistance = trackBarDrawDistanceGeneral.Value;
+			EditorOptions.SetItemDrawDistance = trackBarDrawDistanceSet.Value;
+			EditorOptions.LevelDrawDistance = trackBarDrawDistanceLevel.Value;
 			camera.DrawDistance = EditorOptions.RenderDrawDistance;
 		}
 
 		private void drawDistSlider_Scroll(object sender, EventArgs e)
 		{
-			if (drawDistSlider.Value < levelDrawDistSlider.Value) levelDrawDistSlider.Value = drawDistSlider.Value;
-			if (drawDistSlider.Value < setDrawDistSlider.Value) setDrawDistSlider.Value = drawDistSlider.Value;
+			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceLevel.Value) trackBarDrawDistanceLevel.Value = trackBarDrawDistanceGeneral.Value;
+			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceSet.Value) trackBarDrawDistanceSet.Value = trackBarDrawDistanceGeneral.Value;
 			UpdateSliderValues();
 			FormUpdated();
 		}
 
 		private void levelDrawDistSlider_Scroll(object sender, EventArgs e)
 		{
-			if (drawDistSlider.Value < levelDrawDistSlider.Value) drawDistSlider.Value = levelDrawDistSlider.Value;
+			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceLevel.Value) trackBarDrawDistanceGeneral.Value = trackBarDrawDistanceLevel.Value;
 			UpdateSliderValues();
 			FormUpdated();
 		}
 
 		private void setDrawDistSlider_Scroll(object sender, EventArgs e)
 		{
-			if (drawDistSlider.Value < setDrawDistSlider.Value) drawDistSlider.Value = setDrawDistSlider.Value;
+			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceSet.Value) trackBarDrawDistanceGeneral.Value = trackBarDrawDistanceSet.Value;
 			UpdateSliderValues();
 			FormUpdated();
 		}
 
 		private void fillModeDropDown_SelectionChangeCommitted(object sender, EventArgs e)
 		{
-			EditorOptions.RenderFillMode = (FillMode)fillModeDropDown.SelectedIndex + 1;
+			EditorOptions.RenderFillMode = (FillMode)comboBoxFillMode.SelectedIndex + 1;
 			FormUpdated();
 		}
 
 		private void cullModeDropdown_SelectionChangeCommitted(object sender, EventArgs e)
 		{
-			EditorOptions.RenderCullMode = (Cull)cullModeDropdown.SelectedIndex + 1;
+			EditorOptions.RenderCullMode = (Cull)comboBoxBackfaceCulling.SelectedIndex + 1;
 			FormUpdated();
 		}
 
@@ -121,7 +111,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void fullBrightCheck_Click(object sender, EventArgs e)
 		{
-			EditorOptions.OverrideLighting = fullBrightCheck.Checked;
+			EditorOptions.OverrideLighting = checkboxDisableLighting.Checked;
 			FormUpdated();
 		}
 
@@ -136,13 +126,33 @@ namespace SAModel.SAEditorCommon.UI
 			Hide();
 		}
 
-        private void ignoreMaterialColorsCheck_Click(object sender, EventArgs e)
-        {
-			EditorOptions.IgnoreMaterialColors = ignoreMaterialColorsCheck.Checked;
+		private void ignoreMaterialColorsCheck_Click(object sender, EventArgs e)
+		{
+			EditorOptions.IgnoreMaterialColors = checkBoxIgnoreMaterialColors.Checked;
 			FormUpdated();
 		}
 
+		private void pictureBoxBackgroundColor_Click(object sender, EventArgs e)
+		{
+			using (ColorDialog cld = new ColorDialog())
+			{
+				cld.Color = EditorOptions.FillColor;
+				if (cld.ShowDialog() == DialogResult.OK)
+					pictureBoxBackgroundColor.BackColor = EditorOptions.FillColor = cld.Color;
+			}
+		}
+
 		#region Keybinds
+		private enum SelectedKeyType
+		{
+			None = -1,
+			Main = 0,
+			Alt = 1,
+			Modifier = 2,
+		};
+
+		private SelectedKeyType SelectedKey = SelectedKeyType.None;
+
 		public ActionKeyMapping[] GetActionkeyMappings()
 		{
 			return actionKeyMappings;
@@ -151,7 +161,7 @@ namespace SAModel.SAEditorCommon.UI
 		private void ResetDefaultKeybindButton_Click(object sender, EventArgs e)
 		{
 			DialogResult dialogResult = MessageBox.Show("This will replace all your keybinds with defaults. Would you like to proceed?", "Are you sure?", MessageBoxButtons.YesNo);
-			if (dialogResult != DialogResult.Yes) 
+			if (dialogResult != DialogResult.Yes)
 				return;
 			listBoxActions.Items.Clear();
 			foreach (ActionKeyMapping keyMapping in actionKeyMappings)
@@ -175,7 +185,7 @@ namespace SAModel.SAEditorCommon.UI
 		}
 
 		private void listBoxActions_SelectedIndexChanged(object sender, EventArgs e)
-        {
+		{
 			if (listBoxActions.SelectedIndex == -1)
 			{
 				groupBoxKeys.Enabled = false;
@@ -200,7 +210,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				case SelectedKeyType.Main:
 					actionKeyMappings[listBoxActions.SelectedIndex].MainKey = Keys.None;
-					textBoxMainKey.Text = "None";		
+					textBoxMainKey.Text = "None";
 					break;
 				case SelectedKeyType.Alt:
 					actionKeyMappings[listBoxActions.SelectedIndex].AltKey = Keys.None;
@@ -213,8 +223,8 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
-        private void buttonResetSelectedKey_Click(object sender, EventArgs e)
-        {
+		private void buttonResetSelectedKey_Click(object sender, EventArgs e)
+		{
 			switch (SelectedKey)
 			{
 				case SelectedKeyType.Main:
@@ -252,13 +262,13 @@ namespace SAModel.SAEditorCommon.UI
 		}
 
 		private void textBoxAltKey_KeyDown(object sender, KeyEventArgs e)
-        {
+		{
 			textBoxAltKey.Text = e.KeyCode.ToString();
 			actionKeyMappings[listBoxActions.SelectedIndex].AltKey = e.KeyCode;
 		}
 
-        private void textBoxAltKey_MouseDown(object sender, MouseEventArgs e)
-        {
+		private void textBoxAltKey_MouseDown(object sender, MouseEventArgs e)
+		{
 			SelectedKey = SelectedKeyType.Alt;
 			if (e.Button == MouseButtons.Middle)
 			{
@@ -268,8 +278,8 @@ namespace SAModel.SAEditorCommon.UI
 			SelectedKeyChanged();
 		}
 
-        private void textBoxModifier_KeyDown(object sender, KeyEventArgs e)
-        {
+		private void textBoxModifier_KeyDown(object sender, KeyEventArgs e)
+		{
 			textBoxModifier.Text = e.KeyCode.ToString();
 			actionKeyMappings[listBoxActions.SelectedIndex].Modifiers = e.KeyCode;
 		}

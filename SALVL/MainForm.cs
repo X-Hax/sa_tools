@@ -155,6 +155,7 @@ namespace SAModel.SALVL
 			EditorOptions.RenderDrawDistance = settingsfile.DrawDistance_General;
 			EditorOptions.LevelDrawDistance = settingsfile.DrawDistance_Geometry;
 			EditorOptions.SetItemDrawDistance = settingsfile.DrawDistance_SET;
+			EditorOptions.FillColor = Color.FromArgb(settingsfile.BackgroundColor);
 			disableModelLibraryToolStripMenuItem.Checked = settingsfile.DisableModelLibrary;
 			hideCursorDuringCameraMovementToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
 			wrapAroundScreenEdgesToolStripMenuItem.Checked = settingsfile.MouseWrapScreen;
@@ -923,6 +924,7 @@ namespace SAModel.SALVL
 			settingsfile.DrawDistance_Geometry = EditorOptions.LevelDrawDistance;
 			settingsfile.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
 			settingsfile.CameraModifier = cam.ModifierKey;
+			settingsfile.BackgroundColor = EditorOptions.FillColor.ToArgb();
 			DrawLevel();
 		}
 

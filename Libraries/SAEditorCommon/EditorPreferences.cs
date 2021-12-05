@@ -30,24 +30,39 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(true)]
 			public bool ShowWelcomeScreen { get; set; }
+
 			[DefaultValue(true)]
 			public bool DisableModelLibrary { get; set; }
+
 			[DefaultValue(0)]
 			public int LibrarySplitterPosition { get; set; }
+
 			[DefaultValue(0)]
 			public int ItemsSplitterPosition { get; set; }
+
 			[DefaultValue(0)]
 			public int PropertiesSplitterPosition { get; set; }
+
 			[DefaultValue(10000.0f)]
 			public float DrawDistance_General { get; set; }
+
 			[DefaultValue(6000.0f)]
 			public float DrawDistance_SET { get; set; }
+
 			[DefaultValue(6000.0f)]
 			public float DrawDistance_Geometry { get; set; }
+
 			[DefaultValue(1)]
 			public int CameraModifier { get; set; }
+			
+			[DefaultValue(false)]
 			public bool AlternativeCamera { get; set; }
+
+			[DefaultValue(false)]
 			public bool MouseWrapScreen { get; set; }
+
+			[DefaultValue(-16777216)]
+			public int BackgroundColor { get; set; }
 
 			public Settings_SALVL()
 			{
@@ -62,6 +77,7 @@ namespace SAModel.SAEditorCommon
 				CameraModifier = 1;
 				AlternativeCamera = false;
 				MouseWrapScreen = false;
+				BackgroundColor = -16777216;
 			}
 
 			public static Settings_SALVL Load()
@@ -103,6 +119,9 @@ namespace SAModel.SAEditorCommon
 			[DefaultValue(0.0f)]
 			public float BackLightAmbientB { get; set; }
 
+			[DefaultValue(-16777216)]
+			public int BackgroundColor { get; set; }
+
 			public Settings_SAMDL()
 			{
 				ShowWelcomeScreen = true;
@@ -114,6 +133,7 @@ namespace SAModel.SAEditorCommon
 				BackLightAmbientR = 0.0f;
 				BackLightAmbientG = 0.0f;
 				BackLightAmbientB = 0.0f;
+				BackgroundColor = -16777216;
 			}
 
 			public static Settings_SAMDL Load()
@@ -130,13 +150,18 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(55000.0f)]
 			public float DrawDistance_General { get; set; }
+			
 			[DefaultValue(1)]
 			public int CameraModifier { get; set; }
+
+			[DefaultValue(-16777216)]
+			public int BackgroundColor { get; set; }
 
 			public Settings_SA2EventViewer()
 			{
 				DrawDistance_General = 55000.0f;
 				CameraModifier = 1;
+				BackgroundColor = -16777216;
 			}
 
 			public static Settings_SA2EventViewer Load()

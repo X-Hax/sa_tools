@@ -105,7 +105,7 @@ namespace SA2EventViewer
 				});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			settingsfile = Settings_SA2EventViewer.Load();
-
+			EditorOptions.FillColor = Color.FromArgb(settingsfile.BackgroundColor);
 			EditorOptions.Initialize(d3ddevice);
 			EditorOptions.RenderDrawDistance = cam.DrawDistance = settingsfile.DrawDistance_General;
 			cam.ModifierKey = settingsfile.CameraModifier;
@@ -261,7 +261,7 @@ namespace SA2EventViewer
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black.ToRawColorBGRA(), 1, 0);
+			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, EditorOptions.FillColor.ToRawColorBGRA(), 1, 0);
 			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 
@@ -955,6 +955,7 @@ namespace SA2EventViewer
 		{
 			settingsfile.CameraModifier = cam.ModifierKey;
 			settingsfile.DrawDistance_General = EditorOptions.RenderDrawDistance;
+			settingsfile.BackgroundColor = EditorOptions.FillColor.ToArgb();
 			DrawEntireModel();
 		}
 

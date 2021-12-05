@@ -15,6 +15,7 @@ namespace SAModel.SAEditorCommon
 		#region Render Options
 		private static FillMode renderFillMode = FillMode.Solid;
 		private static Cull renderCullMode = Cull.None;
+		private static Color fillColor = Color.Black;
 		private static float renderDrawDistance = 10000f;
 		private static float levelDrawDistance = 6000f;
 		private static float setDrawDistance = 6000f;
@@ -35,6 +36,7 @@ namespace SAModel.SAEditorCommon
 		public static bool IgnoreMaterialColors { get { return ignoreMaterialColors; } set { ignoreMaterialColors = value; } }
 		public static Device Direct3DDevice { get { return direct3DDevice; } set { direct3DDevice = value; } }
 		public static Font OnscreenFont { get { return onscreenFont; } set { onscreenFont = value; } }
+		public static Color FillColor { get { return fillColor; } set { fillColor = value; } }
 		#endregion
 
 		public static void Initialize(Device d3dDevice)
