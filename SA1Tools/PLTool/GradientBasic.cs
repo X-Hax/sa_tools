@@ -17,7 +17,21 @@ namespace PLTool
             UpdatePreview();
         }
 
-        private Bitmap DrawPreview()
+		private Bitmap DrawStretchedBitmap(Bitmap bitmap, int width, int height)
+		{
+			Bitmap result = new Bitmap(width, height);
+			using (Graphics gfx = Graphics.FromImage(result))
+			{
+				gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+				gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+				gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+				gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+				gfx.DrawImage(bitmap, 0, 0, width, height);
+			}
+			return result;
+		}
+
+		private Bitmap DrawPreview()
         {
             Bitmap image = new Bitmap(256, 32);
             using (Graphics gfx = Graphics.FromImage(image))
@@ -31,7 +45,7 @@ namespace PLTool
                     gfx.FillRectangle(new SolidBrush(result[i]), i, 0, 1, 32);
                 }
             }
-            return image;
+            return DrawStretchedBitmap(image, pictureBoxPreview.Width, pictureBoxPreview.Height);
         }
 
         private void UpdatePreview()
