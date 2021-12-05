@@ -252,35 +252,5 @@ namespace SAModel
 			}
 			return result;
 		}
-
-		public void SetVColor(Color[] vcolors, string vColorName = "")
-		{
-			VColor = vcolors;
-			VColorName = vColorName != "" ? vColorName : "vcolor_" + Extensions.GenerateIdentifier();
-		}
-
-		public NJS_MESHSET CloneWithVColor(Color[] vcolors)
-		{
-			NJS_MESHSET result = (NJS_MESHSET)MemberwiseClone();
-			List<Poly> polys = new List<Poly>(Poly.Count);
-			foreach (Poly item in Poly)
-				polys.Add(item.Clone());
-			result.Poly = new ReadOnlyCollection<Poly>(polys);
-			if (PolyNormal != null)
-			{
-				result.PolyNormal = new Vertex[PolyNormal.Length];
-				for (int i = 0; i < PolyNormal.Length; i++)
-					result.PolyNormal[i] = PolyNormal[i].Clone();
-			}
-			if (vcolors != null)
-				result.VColor = vcolors;
-			if (UV != null)
-			{
-				result.UV = new UV[UV.Length];
-				for (int i = 0; i < UV.Length; i++)
-					result.UV[i] = UV[i].Clone();
-			}
-			return result;
-		}
 	}
 }
