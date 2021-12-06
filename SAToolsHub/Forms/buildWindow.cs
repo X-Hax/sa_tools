@@ -288,6 +288,9 @@ namespace SAToolsHub
 			chkBoxEXE.Items.Clear();
 			chkBoxDLL.Items.Clear();
 			chkBoxMDL.Items.Clear();
+			iniEXEFiles.Clear();
+			iniDLLFiles.Clear();
+			sa2MdlMtnFiles.Clear();
 
 			switch (SAToolsHub.setGame)
 			{
