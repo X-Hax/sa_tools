@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
+    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
   </ItemGroup>
 
 </Project>

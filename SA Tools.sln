@@ -97,7 +97,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NvTriStripDotNet", "Librari
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VrSharp", "Libraries\VrSharp\VrSharp.csproj", "{8686CBD7-7055-475F-AA7D-E4B037363607}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizeAnim", "OptimizeAnim\OptimizeAnim.csproj", "{934F64CE-95F1-4966-9F38-8058B862C6A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizeAnim", "CommandLine\OptimizeAnim\OptimizeAnim.csproj", "{934F64CE-95F1-4966-9F38-8058B862C6A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
