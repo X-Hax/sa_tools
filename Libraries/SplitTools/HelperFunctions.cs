@@ -194,10 +194,16 @@ namespace SplitTools
 
 		static readonly System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
 
-		public static string FileHash(string path) { return FileHash(File.ReadAllBytes(path)); }
+		public static string FileHash(string path, int rangeStart = 0, int rangeFinish = 0) { return FileHash(File.ReadAllBytes(path), rangeStart, rangeFinish); }
 
-		public static string FileHash(byte[] file)
+		public static string FileHash(byte[] file, int rangeStart = 0, int rangeFinish = 0)
 		{
+			if (rangeStart != 0 || rangeFinish != 0)
+			{
+				byte[] newfile = new byte[rangeFinish - rangeStart];
+				Array.Copy(file, rangeStart, newfile, 0, newfile.Length);
+				file = newfile;
+			}
 			file = md5.ComputeHash(file);
 			string result = string.Empty;
 			foreach (byte item in file)
