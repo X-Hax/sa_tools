@@ -6,7 +6,7 @@ using System.Globalization;
 namespace SAModel
 {
 	[TypeConverter(typeof (RotationConverter))]
-	public class Rotation : ICloneable
+	public class Rotation : ICloneable, IEquatable<Rotation>
 	{
 		[Browsable(false)]
 		public int X { get; set; }
@@ -157,6 +157,23 @@ namespace SAModel
 		public bool IsEmpty
 		{
 			get { return X == 0 && Y == 0 && Z == 0; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is Rotation)
+				return Equals((Rotation)obj);
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
+		}
+
+		public bool Equals(Rotation other)
+		{
+			return X == other.X && Y == other.Y && Z == other.Z;
 		}
 
 		object ICloneable.Clone() => Clone();

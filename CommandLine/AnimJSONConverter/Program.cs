@@ -11,6 +11,9 @@ namespace AnimJSONConverter
 	{
 		static void Main(string[] args)
 		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			if (args.Length == 0)
 			{
 				Thread t = new Thread((ThreadStart)(() =>

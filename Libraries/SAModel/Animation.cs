@@ -2443,7 +2443,7 @@ namespace SAModel
 		}
 	}
 
-	public class Spotlight
+	public class Spotlight : IEquatable<Spotlight>
 	{
 		public float Near { get; set; }
 		public float Far { get; set; }
@@ -2468,6 +2468,11 @@ namespace SAModel
 			result.AddRange(ByteConverter.GetBytes(InsideAngle));
 			result.AddRange(ByteConverter.GetBytes(OutsideAngle));
 			return result.ToArray();
+		}
+
+		public bool Equals(Spotlight other)
+		{
+			return Near == other.Near && Far == other.Far && InsideAngle == other.InsideAngle && OutsideAngle == other.OutsideAngle;
 		}
 	}
 
