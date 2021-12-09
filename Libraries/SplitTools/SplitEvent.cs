@@ -179,7 +179,7 @@ namespace SplitTools.SAArc
 			if (ptr != 0)
 				for (int i = 0; i < 93; i++)
 				{
-					string name = GetModel(fc, ptr, key, $"Mech Part {i + 1}.sa2mdl");
+					string name = $"object_{ptr:X8}";
 					if (name != null)
 						ini.MechParts.Add(i, name);
 					ptr += 4;
@@ -276,6 +276,19 @@ namespace SplitTools.SAArc
 				ini.TailsTails = GetModel(fc, ptr, key, $"Tails' tails.sa2mdl");
 			else
 				Console.WriteLine("Event does not contain Tails' tails.");
+			ptr = fc.GetPointer(4, key);
+			if (ptr == 0)
+				Console.WriteLine("Event does not contain an internal texture list.");
+			ptr = fc.GetPointer(0xC, key);
+			if (ptr == 0)
+				Console.WriteLine("Event does not contain texture sizes.");
+			ptr = fc.GetPointer(0x24, key);
+			if (ptr == 0)
+				Console.WriteLine("Event does not contain texture animation data.");
+			if (battle && fc[0x2B] == 0)
+				Console.WriteLine("Event does not use GC shadow maps.");
+			if (battle && fc[0x2B] == 1)
+				Console.WriteLine("Event uses GC shadow maps.");
 			foreach (var item in motionfiles.Values)
 			{
 				string fn = item.Filename ?? $"Unknown Motion {motions.IndexOf(item.Motion)}.saanim";
@@ -494,7 +507,7 @@ namespace SplitTools.SAArc
 				}
 			ptr = fc.GetPointer(0x18, key);
 			if (ptr != 0)
-				for (int i = 0; i < 18; i++)
+				for (int i = 0; i < 93; i++)
 				{
 					if (ini.MechParts.ContainsKey(i) && labels.ContainsKeySafe(ini.MechParts[i]))
 						ByteConverter.GetBytes(labels[ini.MechParts[i]]).CopyTo(fc, ptr);
