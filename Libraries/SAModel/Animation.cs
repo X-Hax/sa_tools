@@ -617,6 +617,7 @@ namespace SAModel
 				}
 				if (hasdata)
 				{
+					data.NbKeyframes = Frames;
 					Models.Add(i, data);
 				}
 			}
@@ -2176,6 +2177,7 @@ namespace SAModel
 		public string IntensityName;
 		public string SpotName;
 		public string PointName;
+		public int NbKeyframes;
 		public AnimModelData()
 		{
 		}
@@ -2199,13 +2201,13 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetPosition(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Vertex val = new Vertex()
 			{
-				X = (((Position[f2].X - Position[f1].X) / (f2 - f1)) * (frame - f1)) + Position[f1].X,
-				Y = (((Position[f2].Y - Position[f1].Y) / (f2 - f1)) * (frame - f1)) + Position[f1].Y,
-				Z = (((Position[f2].Z - Position[f1].Z) / (f2 - f1)) * (frame - f1)) + Position[f1].Z
+				X = ((Position[f2z].X - Position[f1].X) / diff * (frame - f1)) + Position[f1].X,
+				Y = ((Position[f2z].Y - Position[f1].Y) / diff * (frame - f1)) + Position[f1].Y,
+				Z = ((Position[f2z].Z - Position[f1].Z) / diff * (frame - f1)) + Position[f1].Z
 			};
 			return val;
 		}
@@ -2229,13 +2231,13 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetRotation(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Rotation val = new Rotation()
 			{
-				X = (int)Math.Round((((Rotation[f2].X - Rotation[f1].X) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].X, MidpointRounding.AwayFromZero),
-				Y = (int)Math.Round((((Rotation[f2].Y - Rotation[f1].Y) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].Y, MidpointRounding.AwayFromZero),
-				Z = (int)Math.Round((((Rotation[f2].Z - Rotation[f1].Z) / (double)(f2 - f1)) * (frame - f1)) + Rotation[f1].Z, MidpointRounding.AwayFromZero)
+				X = (int)Math.Round(((Rotation[f2z].X - Rotation[f1].X) / (double)diff * (frame - f1)) + Rotation[f1].X, MidpointRounding.AwayFromZero),
+				Y = (int)Math.Round(((Rotation[f2z].Y - Rotation[f1].Y) / (double)diff * (frame - f1)) + Rotation[f1].Y, MidpointRounding.AwayFromZero),
+				Z = (int)Math.Round(((Rotation[f2z].Z - Rotation[f1].Z) / (double)diff * (frame - f1)) + Rotation[f1].Z, MidpointRounding.AwayFromZero)
 			};
 			return val;
 		}
@@ -2259,13 +2261,13 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetScale(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Vertex val = new Vertex()
 			{
-				X = (((Scale[f2].X - Scale[f1].X) / (f2 - f1)) * (frame - f1)) + Scale[f1].X,
-				Y = (((Scale[f2].Y - Scale[f1].Y) / (f2 - f1)) * (frame - f1)) + Scale[f1].Y,
-				Z = (((Scale[f2].Z - Scale[f1].Z) / (f2 - f1)) * (frame - f1)) + Scale[f1].Z
+				X = ((Scale[f2z].X - Scale[f1].X) / diff * (frame - f1)) + Scale[f1].X,
+				Y = ((Scale[f2z].Y - Scale[f1].Y) / diff * (frame - f1)) + Scale[f1].Y,
+				Z = ((Scale[f2z].Z - Scale[f1].Z) / diff * (frame - f1)) + Scale[f1].Z
 			};
 			return val;
 		}
@@ -2289,13 +2291,13 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetVector(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Vertex val = new Vertex()
 			{
-				X = (((Vector[f2].X - Vector[f1].X) / (f2 - f1)) * (frame - f1)) + Vector[f1].X,
-				Y = (((Vector[f2].Y - Vector[f1].Y) / (f2 - f1)) * (frame - f1)) + Vector[f1].Y,
-				Z = (((Vector[f2].Z - Vector[f1].Z) / (f2 - f1)) * (frame - f1)) + Vector[f1].Z
+				X = ((Vector[f2z].X - Vector[f1].X) / diff * (frame - f1)) + Vector[f1].X,
+				Y = ((Vector[f2z].Y - Vector[f1].Y) / diff * (frame - f1)) + Vector[f1].Y,
+				Z = ((Vector[f2z].Z - Vector[f1].Z) / diff * (frame - f1)) + Vector[f1].Z
 			};
 			return val;
 		}
@@ -2319,15 +2321,15 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetVertex(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Vertex[] result = new Vertex[Vertex[f1].Length];
 			for (int i = 0; i < Vertex[f1].Length; i++)
 				result[i] = new Vertex()
 				{
-					X = (((Vertex[f2][i].X - Vertex[f1][i].X) / (f2 - f1)) * (frame - f1)) + Vertex[f1][i].X,
-					Y = (((Vertex[f2][i].Y - Vertex[f1][i].Y) / (f2 - f1)) * (frame - f1)) + Vertex[f1][i].Y,
-					Z = (((Vertex[f2][i].Z - Vertex[f1][i].Z) / (f2 - f1)) * (frame - f1)) + Vertex[f1][i].Z
+					X = ((Vertex[f2z][i].X - Vertex[f1][i].X) / diff * (frame - f1)) + Vertex[f1][i].X,
+					Y = ((Vertex[f2z][i].Y - Vertex[f1][i].Y) / diff * (frame - f1)) + Vertex[f1][i].Y,
+					Z = ((Vertex[f2z][i].Z - Vertex[f1][i].Z) / diff * (frame - f1)) + Vertex[f1][i].Z
 				};
 			return result;
 		}
@@ -2351,15 +2353,15 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetNormal(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Vertex[] result = new Vertex[Normal[f1].Length];
 			for (int i = 0; i < Normal[f1].Length; i++)
 				result[i] = new Vertex()
 				{
-					X = (((Normal[f2][i].X - Normal[f1][i].X) / (f2 - f1)) * (frame - f1)) + Normal[f1][i].X,
-					Y = (((Normal[f2][i].Y - Normal[f1][i].Y) / (f2 - f1)) * (frame - f1)) + Normal[f1][i].Y,
-					Z = (((Normal[f2][i].Z - Normal[f1][i].Z) / (f2 - f1)) * (frame - f1)) + Normal[f1][i].Z
+					X = ((Normal[f2z][i].X - Normal[f1][i].X) / diff * (frame - f1)) + Normal[f1][i].X,
+					Y = ((Normal[f2z][i].Y - Normal[f1][i].Y) / diff * (frame - f1)) + Normal[f1][i].Y,
+					Z = ((Normal[f2z][i].Z - Normal[f1][i].Z) / diff * (frame - f1)) + Normal[f1][i].Z
 				};
 			return result;
 		}
@@ -2383,13 +2385,13 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetTarget(0);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
 			Vertex val = new Vertex()
 			{
-				X = (((Target[f2].X - Target[f1].X) / (f2 - f1)) * (frame - f1)) + Target[f1].X,
-				Y = (((Target[f2].Y - Target[f1].Y) / (f2 - f1)) * (frame - f1)) + Target[f1].Y,
-				Z = (((Target[f2].Z - Target[f1].Z) / (f2 - f1)) * (frame - f1)) + Target[f1].Z
+				X = ((Target[f2z].X - Target[f1].X) / diff * (frame - f1)) + Target[f1].X,
+				Y = ((Target[f2z].Y - Target[f1].Y) / diff * (frame - f1)) + Target[f1].Y,
+				Z = ((Target[f2z].Z - Target[f1].Z) / diff * (frame - f1)) + Target[f1].Z
 			};
 			return val;
 		}
@@ -2413,9 +2415,9 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetRoll(0);
-			return (int)Math.Round((((Roll[f2] - Roll[f1]) / (double)(f2 - f1)) * (frame - f1)) + Roll[f1], MidpointRounding.AwayFromZero);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
+			return (int)Math.Round((((Roll[f2z] - Roll[f1]) / (double)diff) * (frame - f1)) + Roll[f1], MidpointRounding.AwayFromZero);
 		}
 
 		public int GetAngle(float frame)
@@ -2437,9 +2439,9 @@ namespace SAModel
 				if (keys[i] > frame)
 					f2 = keys[i];
 			}
-			if (f2 == 0)
-				return GetAngle(0);
-			return (int)Math.Round((((Angle[f2] - Angle[f1]) / (double)(f2 - f1)) * (frame - f1)) + Angle[f1], MidpointRounding.AwayFromZero);
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
+			return (int)Math.Round((((Angle[f2z] - Angle[f1]) / (double)diff) * (frame - f1)) + Angle[f1], MidpointRounding.AwayFromZero);
 		}
 	}
 
