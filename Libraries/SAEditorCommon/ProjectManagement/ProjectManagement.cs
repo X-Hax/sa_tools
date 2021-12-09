@@ -98,7 +98,12 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("checkHashes")]
             public string CheckHashes { get; set; }
-        }
+			/// <summary>
+			/// A string containing a range to generate the MD5 from (e.g. 00000FFE-034F78D0 in the EXE)
+			/// </summary>
+			[XmlAttribute("checkRange")]
+			public string CheckRange { get; set; }
+		}
 
 		/// <summary>
 		/// <para>
@@ -338,36 +343,55 @@ namespace SAModel.SAEditorCommon.ProjectManagement
                     if (Directory.Exists(fsd.SelectedPath))
                     {
                         string checkFile = Path.Combine(fsd.SelectedPath, templateFile.GameInfo.CheckFile);
-                        if (File.Exists(checkFile))
-                        {
-                            string checkFileHash = HelperFunctions.FileHash(checkFile);
-                            if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
-                            {
-                                SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
-                                return templateFile;
-                            }
-                            else
-                            {
-                                DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " is not correct for the template select.\n\n"), "Incorrect Game Version", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                                if (pathWarning == DialogResult.Retry)
-                                {
-                                    goto FolderSelectionNew;
-                                }
-                                else
-                                    return null;
-                            }
-
-                        }
-                        else
-                        {
-                            DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                            if (pathWarning == DialogResult.Retry)
-                            {
-                                goto FolderSelectionNew;
-                            }
-                            else
-                                return null;
-                        }
+						int rangeStart = 0;
+						int rangeFinish = 0;
+						if (templateFile.GameInfo.CheckRange != null && templateFile.GameInfo.CheckRange != "")
+						{
+							string[] spl = templateFile.GameInfo.CheckRange.Split('-');
+							rangeStart = int.Parse(spl[0], System.Globalization.NumberStyles.HexNumber);
+							rangeFinish = int.Parse(spl[1], System.Globalization.NumberStyles.HexNumber);
+						}
+						if (File.Exists(checkFile))
+						{
+							string checkFileHash = HelperFunctions.FileHash(checkFile, rangeStart, rangeFinish);
+							if (checkFileHashes(templateFile.GameInfo.CheckHashes, checkFileHash) == true)
+							{
+								SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
+								return templateFile;
+							}
+							else
+							{
+								File.WriteAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(checkFile) + "_md5.txt"), checkFileHash);
+								string checkErrorMessage = "The file " + templateFile.GameInfo.CheckFile +
+									" does not match the record for the template " + templateFile.GameInfo.GameName + ".\n\n" +
+									"Trying to rip an incompatible version of the game may lead to crashes or missing data. " +
+									"Make sure you are using the correct version of the game and try again.\n\n" +
+									"Would you like to try to use this path anyway?\nSelect No to pick a different path, Cancel to exit.\n\n" +
+									"MD5: " + checkFileHash;
+								DialogResult pathWarning = MessageBox.Show(checkErrorMessage, "Incorrect Game Version", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+								switch (pathWarning)
+								{
+									case DialogResult.No:
+										goto FolderSelectionNew;
+									case DialogResult.Yes:
+										SetGamePath(templateFile.GameInfo.GameName, fsd.SelectedPath);
+										return templateFile;
+									case DialogResult.Cancel:
+									default:
+										return null;
+								}
+							}
+						}
+						else
+						{
+							DialogResult pathWarning = MessageBox.Show(("Check file " + templateFile.GameInfo.CheckFile + " was not located in the supplied Directory."), "Check File Not Found", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							if (pathWarning == DialogResult.Retry)
+							{
+								goto FolderSelectionNew;
+							}
+							else
+								return null;
+						}
                     }
                     else
                     {
