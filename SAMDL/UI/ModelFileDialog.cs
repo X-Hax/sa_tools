@@ -306,7 +306,7 @@ namespace SAModel.SAMDL
 
 		private void RadioButton_Binary_CheckedChanged(object sender, EventArgs e)
 		{
-			radioButtonObject.Enabled = radioButtonBinary.Checked;
+			checkBoxBigEndian.Enabled = labelStructure.Enabled = radioButtonObject.Enabled = radioButtonBinary.Checked;
 			radioButtonAttach.Enabled = radioButtonBinary.Checked;
 			radioButtonAction.Enabled = radioButtonBinary.Checked;
 			comboBoxBinaryFileType.Enabled = radioButtonBinary.Checked;
@@ -326,6 +326,7 @@ namespace SAModel.SAMDL
 			checkBoxHexMotion.Enabled = false;
 			checkBoxMemoryMotion.Enabled = false;
 			checkBoxLoadMotion.Enabled = false;
+			labelStartOffset.Enabled = numericUpDownStartOffset.Enabled = checkBoxHexStartOffset.Enabled = radioButtonBinary.Checked;
 			if (radioButtonObject.Checked && radioButtonBinary.Checked)
 			{
 				checkBoxLoadMotion.Enabled = radioButtonObject.Checked;
