@@ -43,6 +43,14 @@ namespace SAModel.Direct3D
 
 		public static float DefaultMoveSpeed = 1.125f;
 
+		[Flags]
+		public enum CameraUpdateFlags
+		{
+			None,
+			Redraw,
+			RefreshControls
+		}
+
 		public EditorCamera(float drawDistance)
 		{
 			RotateSpeed = 1.5f;
@@ -249,9 +257,9 @@ namespace SAModel.Direct3D
 			}
 		}
 
-		public int UpdateCamera(System.Drawing.Point point, System.Drawing.Rectangle mouseBounds, bool lookKeyDown = false, bool zoomKeyDown = false, bool moveKeyDown = false, bool hideCursor = false, bool moveGizmo = false)
+		public CameraUpdateFlags UpdateCamera(System.Drawing.Point point, System.Drawing.Rectangle mouseBounds, bool lookKeyDown = false, bool zoomKeyDown = false, bool moveKeyDown = false, bool hideCursor = false, bool moveGizmo = false)
 		{
-			int result = 0; // 0 - no redraw, 1 - redraw, 2 - redraw + refresh controls, 3 - refresh controls only
+			CameraUpdateFlags result = CameraUpdateFlags.None;
 
 			// Check for multiple keys being pressed, and disable the modifier key. This is to allow the same key to be used both independently and as a modifier.
 			if (Convert.ToInt32(lookKeyDown) + Convert.ToInt32(moveKeyDown) + Convert.ToInt32(zoomKeyDown) > 1)
@@ -340,38 +348,38 @@ namespace SAModel.Direct3D
 						if (zoomKeyDown) // Zoom
 						{
 							Position += Look * (mouseDelta.Y * moveSpeedAdjusted);
-							result = 1;
+							result |= CameraUpdateFlags.Redraw;
 						}
 						else if (moveKeyDown) // Move
 						{
 							Position += Up * (mouseDelta.Y * moveSpeedAdjusted);
 							Position += Right * (mouseDelta.X * moveSpeedAdjusted) * -1;
-							result = 1;
+							result |= CameraUpdateFlags.Redraw;
 						}
 						else if (lookKeyDown) // Look
 						{
 							Yaw = unchecked((ushort)(Yaw - mouseDelta.X * 0x10));
 							Pitch = unchecked((ushort)(Pitch - mouseDelta.Y * 0x10));
-							result = 1;
+							result |= CameraUpdateFlags.Redraw;
 						}
 						break;
 					case 1: // Orbit camera
 						if (zoomKeyDown) // Zoom
 						{
 							Distance += (mouseDelta.Y * moveSpeedAdjusted) * 3;
-							result = 1;
+							result |= CameraUpdateFlags.Redraw;
 						}
 						else if (moveKeyDown) // Move
 						{
 							FocalPoint += Up * (mouseDelta.Y * moveSpeedAdjusted);
 							FocalPoint += Right * (mouseDelta.X * moveSpeedAdjusted) * -1;
-							result = 1;
+							result |= CameraUpdateFlags.Redraw;
 						}
 						else if (lookKeyDown) // Look
 						{
 							Yaw = unchecked((ushort)(Yaw - mouseDelta.X * 0x10));
 							Pitch = unchecked((ushort)(Pitch - mouseDelta.Y * 0x10));
-							result = 1;
+							result |= CameraUpdateFlags.Redraw;
 						}
 						break;
 				}
@@ -381,8 +389,9 @@ namespace SAModel.Direct3D
 			if (performedWrap || Math.Abs(mouseDelta.X / 2) * moveSpeedAdjusted > 0 || Math.Abs(mouseDelta.Y / 2) * moveSpeedAdjusted > 0)
 			{
 				mouseLast = mouseEvent;
-				if (lookKeyDown || zoomKeyDown || moveKeyDown) result = 2;
-				else result = 3;
+				result |= CameraUpdateFlags.RefreshControls;
+				if (lookKeyDown || zoomKeyDown || moveKeyDown)
+					result |= CameraUpdateFlags.Redraw;
 			}
 
 			if (MouseCursorHidden && !lookKeyDown && !zoomKeyDown && !moveKeyDown)

@@ -177,9 +177,7 @@ namespace SAModel.SALVL
             }
 
             if (draw)
-            {
-                DrawLevel();
-            }
+				NeedRedraw = true;
         }
 
         private void UpdateCameraOSD()
@@ -322,9 +320,7 @@ namespace SAModel.SALVL
                     contextMenuStrip1.Show(RenderPanel, e.Location);
                     break;
             }
-
-            //DrawLevel();
-        }
+		}
 
         private HitResult PickItem(Point mouse)
         {
@@ -465,10 +461,10 @@ namespace SAModel.SALVL
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
-
-            UpdatePropertyGrid();
-        }
+            if (e.Button == MouseButtons.Middle) 
+				actionInputCollector.KeyUp(Keys.MButton);
+			NeedPropertyRefresh = true;
+		}
 
         private void Panel1_MouseMove(object sender, MouseEventArgs e)
         {
@@ -517,22 +513,23 @@ namespace SAModel.SALVL
                     {
                         GizmoSelectedAxes oldHelperAxes = pointHelper.SelectedAxes;
                         pointHelper.SelectedAxes = pointHelper.CheckHit(Near, Far, viewport, proj, view, cam);
-                        if (oldHelperAxes != pointHelper.SelectedAxes) pointHelper.Draw(d3ddevice, cam);
-                        draw = true;
+						if (oldHelperAxes != pointHelper.SelectedAxes)
+						{
+							pointHelper.Draw(d3ddevice, cam);
+							draw = true;
+						}
                     }
 
                     break;
             }
             mouseBounds = (wrapAroundScreenEdgesToolStripMenuItem.Checked) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-            int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, hideCursorDuringCameraMovementToolStripMenuItem.Checked, gizmo);
+            EditorCamera.CameraUpdateFlags camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, hideCursorDuringCameraMovementToolStripMenuItem.Checked, gizmo);
 
-            if (camresult >= 2 && selectedItems != null && selectedItems.ItemCount > 0 && propertyGrid1.ActiveControl == null) UpdatePropertyGrid();
-            if (camresult >= 1 || draw)
-            {
-                DrawLevel();
-            }
-
-        }
+            if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedItems != null && selectedItems.ItemCount > 0 && propertyGrid1.ActiveControl == null)
+				NeedPropertyRefresh = true;
+			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw) || draw)
+				NeedRedraw = true;
+		}
 
         void panel1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -543,8 +540,9 @@ namespace SAModel.SALVL
 				cam.Position += cam.Look * (cam.MoveSpeed * e.Delta * -1);
 			else if (cam.mode == 1)
 				cam.Distance += (cam.MoveSpeed * e.Delta * -1);
-
-            DrawLevel();
+		
+			DrawLevel();
+			NeedRedraw = true;
         }
     }
 }

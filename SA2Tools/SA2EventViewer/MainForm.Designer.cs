@@ -59,7 +59,6 @@ namespace SA2EventViewer
             this.cameraFOVLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.sceneNumLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timer1 = new System.Timers.Timer();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.buttonOpen = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -87,7 +86,6 @@ namespace SA2EventViewer
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -203,7 +201,6 @@ namespace SA2EventViewer
             this.RenderPanel.Size = new System.Drawing.Size(685, 521);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
-            this.RenderPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.RenderPanel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
             this.RenderPanel.KeyUp += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyUp);
             this.RenderPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
@@ -369,12 +366,6 @@ namespace SA2EventViewer
             this.animFrameLabel.Name = "animFrameLabel";
             this.animFrameLabel.Size = new System.Drawing.Size(61, 19);
             this.animFrameLabel.Text = "Frame: -1";
-            // 
-            // timer1
-            // 
-            this.timer1.Interval = 16.666666666666668D;
-            this.timer1.SynchronizingObject = this;
-            this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
             // 
             // toolStrip1
             // 
@@ -592,7 +583,8 @@ namespace SA2EventViewer
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
-            this.menuStrip1.ResumeLayout(false);
+			this.Resize += new System.EventHandler(this.MainForm_Resize);
+			this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -604,7 +596,6 @@ namespace SA2EventViewer
             this.contextMenuStrip1.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -631,7 +622,6 @@ namespace SA2EventViewer
 		private System.Windows.Forms.ToolStripStatusLabel cameraPosLabel;
 		private System.Windows.Forms.ToolStripStatusLabel sceneNumLabel;
 		private System.Windows.Forms.ToolStripStatusLabel animFrameLabel;
-		private System.Timers.Timer timer1;
 		private System.Windows.Forms.ToolStripStatusLabel camModeLabel;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.Label label1;

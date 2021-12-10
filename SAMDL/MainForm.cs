@@ -28,6 +28,8 @@ namespace SAModel.SAMDL
         System.Drawing.Rectangle mouseBounds;
 		bool mouseWrapScreen = false;
 		bool FormResizing;
+		bool AnimationPlaying = false;
+		bool NeedRedraw = false;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
         string currentProject; // Path to currently loaded project, if it exists
         string lastProjectModeCategory = ""; // Last selected category in the model list
@@ -35,6 +37,7 @@ namespace SAModel.SAMDL
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
+			Application.Idle += HandleWaitLoop;
 			InitializeComponent();
 			AddMouseMoveHandler(this);
 			this.MouseWheel += panel1_MouseWheel;
@@ -58,6 +61,11 @@ namespace SAModel.SAMDL
 			// Suppress the WM_UPDATEUISTATE message to remove rendering flicker
 			if (m.Msg == 0x128) return;
 			base.WndProc(ref m);
+		}
+
+		private void MainForm_Resize(object sender, EventArgs e)
+		{
+			NeedRedraw = true;
 		}
 
 		private void SAMDL_DragEnter(object sender, DragEventArgs e)
@@ -252,7 +260,8 @@ namespace SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-            log.DeleteLogFile();
+			AnimationTimer = new AccurateTimer(this, new Action(AdvanceAnimation), 16);
+			log.DeleteLogFile();
             log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
             log.Add("Build Date: ");
             log.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -319,6 +328,7 @@ namespace SAModel.SAMDL
 			selectedModelSphereMesh = Mesh.Sphere(0.0625f, 10, 10, Color.Yellow);
 			if (Program.Arguments.Length > 0)
 				LoadFileList(Program.Arguments, true);
+			NeedRedraw = true;
 		}
 
 		void ShowWelcomeScreen()
@@ -452,7 +462,7 @@ namespace SAModel.SAMDL
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			if (extension == ".sa1mdl") swapUVToolStripMenuItem.Enabled = true;
 			else swapUVToolStripMenuItem.Enabled = false;
-			timer1.Stop();
+			AnimationPlaying = false;
 			modelFile = null;
 			animation = null;
 			animations = null;
@@ -817,13 +827,13 @@ namespace SAModel.SAMDL
 						break;
 				}
 			}
-
 			try
 			{
 				settingsfile.AlternativeCamera = alternativeCameraModeToolStripMenuItem.Checked;
 				settingsfile.Save();
 			}
 			catch { };
+			AnimationTimer.Stop();
 		}
 
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1059,8 +1069,7 @@ namespace SAModel.SAMDL
 			rootSiblingMode = false;
 			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
-			//Environment.CurrentDirectory = Path.GetDirectoryName(filename); // might not need this for now?
-			timer1.Stop();
+			AnimationPlaying = false;
 			modelFile = null;
 			animation = null;
 			animations = null;
@@ -1165,7 +1174,6 @@ namespace SAModel.SAMDL
 			if (!loaded || DeviceResizing) return;
 			d3ddevice.SetTransform(TransformState.Projection, Matrix.PerspectiveFovRH((float)(Math.PI / 4), RenderPanel.Width / (float)RenderPanel.Height, 1, cam.DrawDistance));
 			d3ddevice.SetTransform(TransformState.View, cam.ToMatrix());
-			UpdateStatusString();
 			d3ddevice.SetRenderState(RenderState.FillMode, EditorOptions.RenderFillMode);
 			d3ddevice.SetRenderState(RenderState.CullMode, EditorOptions.RenderCullMode);
 			d3ddevice.Material = new Material { Ambient = Color.White.ToRawColor4() };
@@ -1374,21 +1382,6 @@ namespace SAModel.SAMDL
 			transform.Pop();
 		}
 
-		private void UpdateWeightedModel()
-		{
-			if (hasWeight)
-			{
-				if (animation != null)
-					model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
-				else
-					model.UpdateWeightedModel(new MatrixStack(), meshes);
-			}
-		}
-
-		private void panel1_Paint(object sender, PaintEventArgs e)
-		{
-			DrawEntireModel();
-		}
 		#endregion
 
 		#region Keyboard/Mouse Methods
@@ -1426,7 +1419,7 @@ namespace SAModel.SAMDL
 				buttonPlayAnimation.Enabled = false;
 			}
 			animframe = 0;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void NextAnimation()
@@ -1449,7 +1442,7 @@ namespace SAModel.SAMDL
 				buttonPlayAnimation.Enabled = false;
 			}
 			animframe = 0;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void NextFrame()
@@ -1458,8 +1451,7 @@ namespace SAModel.SAMDL
 			animframe = (float)Math.Floor(animframe + 1);
 			if (animframe == animation.Frames) animframe = 0;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			UpdateWeightedModel();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void PrevFrame()
@@ -1468,15 +1460,14 @@ namespace SAModel.SAMDL
 			animframe = (float)Math.Floor(animframe - 1);
 			if (animframe < 0) animframe = animation.Frames - 1;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			UpdateWeightedModel();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void PlayPause()
 		{
 			if (animations == null || animation == null) return;
-			timer1.Enabled = !timer1.Enabled;
-			if (timer1.Enabled)
+			AnimationPlaying = !AnimationPlaying;
+			if (AnimationPlaying)
 			{
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayAnimation.Checked = true;
@@ -1486,8 +1477,7 @@ namespace SAModel.SAMDL
 				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayAnimation.Checked = false;
 			}
-			UpdateWeightedModel();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
@@ -1684,10 +1674,7 @@ namespace SAModel.SAMDL
 			}
 
 			if (draw)
-			{
-				UpdateWeightedModel();
-				DrawEntireModel();
-			}
+				NeedRedraw = true;
 		}
 
 		private void ActionInputCollector_OnActionStart(ActionInputCollector sender, string actionName)
@@ -1713,14 +1700,14 @@ namespace SAModel.SAMDL
 					animframe += animspeed;
 					if (animframe >= animation.Frames)
 						animframe = 0;
-					DrawEntireModel();
+					NeedRedraw = true;
 					break;
 
 				case ("Play Animation in Reverse (Hold)"):
 					animframe -= animspeed;
 					if (animframe < 0)
 						animframe = animation.Frames;
-					DrawEntireModel();
+					NeedRedraw = true;
 					break;
 
 				default:
@@ -1739,35 +1726,21 @@ namespace SAModel.SAMDL
 			actionInputCollector.KeyUp(e.KeyCode);
 		}
 
-		private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-			/*switch (e.KeyCode)
-			{
-				case Keys.Down:
-				case Keys.Left:
-				case Keys.Right:
-				case Keys.Up:
-					e.IsInputKey = true;
-					break;
-			}*/
-		}
-
 		private void Panel1_MouseMove(object sender, MouseEventArgs e)
 		{
 			if (!loaded) return;
 			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-			int camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked); 
-			if (camresult >= 2 && selectedObject != null && propertyGrid1.ActiveControl == null) propertyGrid1.Refresh();
-			if (camresult >= 1 && !timer1.Enabled)
-			{
-				UpdateWeightedModel();
-				DrawEntireModel();
-			}
+			EditorCamera.CameraUpdateFlags camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked);
+			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedObject != null && propertyGrid1.ActiveControl == null) 
+				propertyGrid1.Refresh();
+			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
+				NeedRedraw = true;
 		}
 
 		private void panel1_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
+			if (e.Button == MouseButtons.Middle) 
+				actionInputCollector.KeyUp(Keys.MButton);
 		}
         #endregion
 
@@ -1813,7 +1786,7 @@ namespace SAModel.SAMDL
             UpdateTexlist();
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
 			if (loaded) 
-                DrawEntireModel();
+                NeedRedraw = true;
 		}
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1825,18 +1798,6 @@ namespace SAModel.SAMDL
 					LoadTextures(a.FileName);
 				}
 			}
-		}
-
-		private void timer1_Tick(object sender, EventArgs e)
-		{
-			if (animation == null) return;
-			animframe += animspeed;
-			if (animframe >= animation.Frames) 
-				animframe = 0;
-			else if (animframe < 0)
-				animframe = animation.Frames;
-			UpdateWeightedModel();
-			DrawEntireModel();
 		}
 
 		private void cStructsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2017,7 +1978,7 @@ namespace SAModel.SAMDL
 			if (showWeightsToolStripMenuItem.Checked && hasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
 
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void copyModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2053,7 +2014,7 @@ namespace SAModel.SAMDL
 			}
 			selectedObject.Attach = attach;
             RebuildModelCache();
-			DrawEntireModel();
+			NeedRedraw = true;
 			unsaved = true;
 		}
 
@@ -2076,7 +2037,7 @@ namespace SAModel.SAMDL
 			}
 			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent))
 			{
-				dlg.FormUpdated += (s, ev) => DrawEntireModel();
+				dlg.FormUpdated += (s, ev) => NeedRedraw = true;
 				dlg.ShowDialog(this);
 			}
 			switch (selectedObject.Attach)
@@ -2129,7 +2090,7 @@ namespace SAModel.SAMDL
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			UpdateWeightedModel();
+			NeedRedraw = true;
 			unsaved = true;
 		}
 
@@ -2142,7 +2103,7 @@ namespace SAModel.SAMDL
 
 		private void primitiveRenderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2157,7 +2118,7 @@ namespace SAModel.SAMDL
 			settingsfile.DrawDistance = EditorOptions.RenderDrawDistance;
 			settingsfile.CameraModifier = cam.ModifierKey;
 			settingsfile.BackgroundColor = EditorOptions.FillColor.ToArgb();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void findToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2210,14 +2171,11 @@ namespace SAModel.SAMDL
 								break;
 						}
 					if (hasWeight)
-					{
 						meshes = model.ProcessWeightedModel().ToArray();
-						UpdateWeightedModel();
-					}
 					else
 						model.ProcessVertexData();
 
-					DrawEntireModel();
+					NeedRedraw = true;
 				}
 		}
 
@@ -2226,7 +2184,7 @@ namespace SAModel.SAMDL
 			string showmodel = "Off";
 			if (showModelToolStripMenuItem.Checked) showmodel = "On";
 			osd.UpdateOSDItem("Show model: " + showmodel, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void showNodesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -2235,7 +2193,7 @@ namespace SAModel.SAMDL
 			if (showNodesToolStripMenuItem.Checked) shownodes = "On";
 			osd.UpdateOSDItem("Show nodes: " + shownodes, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodes.Checked = showNodesToolStripMenuItem.Checked;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void nJAToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2329,7 +2287,7 @@ namespace SAModel.SAMDL
 					if (a.ShowDialog() == DialogResult.OK)
 					{
 						LoadTextures(a.FileName);
-                        DrawEntireModel();
+                        NeedRedraw = true;
                     }
 					else
 						MessageBox.Show("No textures are loaded. Materials may not be imported properly.", "SAMDL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2341,9 +2299,9 @@ namespace SAModel.SAMDL
 			Assimp.Node importnode = scene.RootNode;
             loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
-			timer1.Stop();
-            // Collada adds a root node, so use the first child node instead
-            if (!importColladaRoot)
+			AnimationPlaying = false;
+			// Collada adds a root node, so use the first child node instead
+			if (!importColladaRoot)
                 importnode = scene.RootNode.Children[0];
             NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfoCurrent?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
@@ -2376,7 +2334,7 @@ namespace SAModel.SAMDL
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 			SelectedItemChanged();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void ShowWeightsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -2389,7 +2347,7 @@ namespace SAModel.SAMDL
 			else
 				model.UpdateWeightedModelSelection(null, meshes);
 			buttonShowWeights.Checked = showWeightsToolStripMenuItem.Checked;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void ExportModel_Assimp(string filename, bool selected)
@@ -2499,8 +2457,7 @@ namespace SAModel.SAMDL
 							animnum = animations.Count;
 							animations.Add(anim);
 							animation = anim;
-							UpdateWeightedModel();
-							DrawEntireModel();
+							NeedRedraw = true;
 						}
 						else
 							animations.Add(anim);
@@ -2523,8 +2480,7 @@ namespace SAModel.SAMDL
 							animnum = animations.Count;
 							animations.Add(njm);
 							animation = njm;
-							UpdateWeightedModel();
-							DrawEntireModel();
+							NeedRedraw = true;
 						}
 						else
 							animations.Add(njm);
@@ -2565,8 +2521,7 @@ namespace SAModel.SAMDL
 
 									animnum = animations.Count;
 									animation = animations[0];
-									UpdateWeightedModel();
-									DrawEntireModel();
+									NeedRedraw = true;
 								}
 								else
 								{
@@ -2609,8 +2564,7 @@ namespace SAModel.SAMDL
 													animnum = animations.Count;
 													animations.Add(mot);
 													animation = mot;
-													UpdateWeightedModel();
-													DrawEntireModel();
+													NeedRedraw = true;
 												}
 												else
 													animations.Add(mot);
@@ -2635,8 +2589,7 @@ namespace SAModel.SAMDL
 												animnum = animations.Count;
 												animations.Add(mot);
 												animation = mot;
-												UpdateWeightedModel();
-												DrawEntireModel();
+												NeedRedraw = true;
 											}
 											else
 												animations.Add(mot);
@@ -2652,8 +2605,7 @@ namespace SAModel.SAMDL
 												animnum = animations.Count;
 												animations.Add(mot);
 												animation = mot;
-												UpdateWeightedModel();
-												DrawEntireModel();
+												NeedRedraw = true;
 											}
 											else
 												animations.Add(mot);
@@ -2676,8 +2628,7 @@ namespace SAModel.SAMDL
 								animnum = animations.Count;
 								animations.Add(mot);
 								animation = mot;
-								UpdateWeightedModel();
-								DrawEntireModel();
+								NeedRedraw = true;
 							}
 							else
 								animations.Add(mot);
@@ -2689,13 +2640,11 @@ namespace SAModel.SAMDL
 
 				//Play our animation in the viewport after loading it. To make sure this will work, we need to disable and reenable it.
 				if (animations == null || animation == null) return;
-				timer1.Enabled = false;
+				AnimationPlaying = false;
 				buttonPlayAnimation.Checked = false;
-				timer1.Enabled = true;
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayAnimation.Enabled = buttonPlayAnimation.Checked = true;
-				UpdateWeightedModel();
-				DrawEntireModel();
+				NeedRedraw = true;
 			}
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
 		}
@@ -2717,7 +2666,7 @@ namespace SAModel.SAMDL
 		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			UnloadTextures();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void SwapUV(NJS_OBJECT obj)
@@ -2746,7 +2695,7 @@ namespace SAModel.SAMDL
 		{
 			if (model != null) SwapUV(model);
             RebuildModelCache();
-            DrawEntireModel();
+            NeedRedraw = true;
 		}
 
 		private void DeleteSelectedModel()
@@ -2765,7 +2714,7 @@ namespace SAModel.SAMDL
 					SelectedItemChanged();
 					unsaved = true;
 					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-                    DrawEntireModel();
+                    NeedRedraw = true;
 				}
 			}
 			else
@@ -2776,10 +2725,7 @@ namespace SAModel.SAMDL
 		{
 			model.ProcessVertexData();
             if (hasWeight = model.HasWeight)
-            {
                 meshes = model.ProcessWeightedModel().ToArray();
-                UpdateWeightedModel();
-            }
             else
             {
                 NJS_OBJECT[] models = model.GetObjects();
@@ -2805,7 +2751,7 @@ namespace SAModel.SAMDL
 				{
 					selectedObject.ClearChildren();
 					RebuildModelCache();
-					DrawEntireModel();
+					NeedRedraw = true;
 					SelectedItemChanged();
 					unsaved = true;
 				}
@@ -2818,7 +2764,7 @@ namespace SAModel.SAMDL
 			{
 				selectedObject.AddChild(new NJS_OBJECT());
 				RebuildModelCache();
-				DrawEntireModel();
+				NeedRedraw = true;
 				SelectedItemChanged();
 				unsaved = true;
 			}
@@ -2827,12 +2773,12 @@ namespace SAModel.SAMDL
 		private void clearChildrenToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ClearChildren();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
-			if (osd != null && osd.UpdateTimer()) DrawEntireModel();
+			if (osd != null && osd.UpdateTimer()) NeedRedraw = true;
 		}
 
 		private void buttonNew_Click(object sender, EventArgs e)
@@ -2904,7 +2850,7 @@ namespace SAModel.SAMDL
 			buttonVertices.Checked = false;
 			buttonWireframe.Checked = false;
 			osd.UpdateOSDItem("Render mode: Solid", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void buttonVertices_Click(object sender, EventArgs e)
@@ -2914,7 +2860,7 @@ namespace SAModel.SAMDL
 			buttonVertices.Checked = true;
 			buttonWireframe.Checked = false;
 			osd.UpdateOSDItem("Render mode: Point", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void buttonWireframe_Click(object sender, EventArgs e)
@@ -2924,7 +2870,7 @@ namespace SAModel.SAMDL
 			buttonVertices.Checked = false;
 			buttonWireframe.Checked = true;
 			osd.UpdateOSDItem("Render mode: Wireframe", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void buttonPrevAnimation_Click(object sender, EventArgs e)
@@ -2956,7 +2902,7 @@ namespace SAModel.SAMDL
 		{
 			osd.show_osd = !osd.show_osd;
 			buttonShowHints.Checked = showHintsToolStripMenuItem.Checked;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void buttonLighting_Click(object sender, EventArgs e)
@@ -2966,8 +2912,7 @@ namespace SAModel.SAMDL
 			buttonLighting.Checked = !EditorOptions.OverrideLighting;
 			if (EditorOptions.OverrideLighting) lighting = "Off";
 			osd.UpdateOSDItem("Lighting: " + lighting, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			UpdateWeightedModel();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void materialEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3072,8 +3017,7 @@ namespace SAModel.SAMDL
 			EditorOptions.IgnoreMaterialColors = !buttonMaterialColors.Checked;
 			if (EditorOptions.IgnoreMaterialColors) showmatcolors = "Off";
 			osd.UpdateOSDItem("Material Colors: " + showmatcolors, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-			UpdateWeightedModel();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void modelCodeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3160,13 +3104,13 @@ namespace SAModel.SAMDL
 			if (showNodeConnectionsToolStripMenuItem.Checked) shownodecons = "On";
 			osd.UpdateOSDItem("Show node connections: " + shownodecons, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowNodeConnections.Checked = showNodeConnectionsToolStripMenuItem.Checked;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void clearChildrenToolStripMenuItem1_Click(object sender, EventArgs e)
 		{
 			ClearChildren();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void emptyModelDataToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3176,7 +3120,7 @@ namespace SAModel.SAMDL
 			{
 				selectedObject.Attach = null;
 				RebuildModelCache();
-				DrawEntireModel();
+				NeedRedraw = true;
 				SelectedItemChanged();
 				unsaved = true;
 			}
@@ -3185,7 +3129,7 @@ namespace SAModel.SAMDL
 		private void deleteTheWholeHierarchyToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			DeleteSelectedModel();
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void transparentOnlyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3223,7 +3167,7 @@ namespace SAModel.SAMDL
 				NJS_OBJECT[] models = model.GetObjects();
 				try { meshes[Array.IndexOf(models, selectedObject)] = selectedObject.Attach.CreateD3DMesh(); }
 				catch { }
-				DrawEntireModel();
+				NeedRedraw = true;
 			}
 		}
 
@@ -3254,7 +3198,7 @@ namespace SAModel.SAMDL
 			d3ddevice.Reset(pp);
 			DeviceResizing = false;
 			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		// Splitting models
@@ -3382,7 +3326,7 @@ namespace SAModel.SAMDL
 			else
 				selectedObject.Attach = null;
 			RebuildModelCache();
-			DrawEntireModel();
+			NeedRedraw = true;
 			SelectedItemChanged();
 			unsaved = true;
 		}
@@ -3430,7 +3374,7 @@ namespace SAModel.SAMDL
 							cam.MoveToShowBounds(bounds);
 						}
 					}
-					DrawEntireModel();
+					NeedRedraw = true;
 					unsaved = true;
 				}
 		}
@@ -3449,7 +3393,7 @@ namespace SAModel.SAMDL
 		{
 			osd.UpdateOSDItem("Show vertex indices: " + (buttonShowVertexIndices.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			buttonShowVertexIndices.Checked = showVertexIndicesToolStripMenuItem.Checked;
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 
 		private void buttonShowVertexIndices_Click(object sender, EventArgs e)
@@ -3482,7 +3426,7 @@ namespace SAModel.SAMDL
         {
             obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfoCurrent != null ? TextureInfoCurrent?.Select(a => a.Name).ToArray() : null);
             RebuildModelCache();
-            DrawEntireModel();
+            NeedRedraw = true;
         }
 
 		private void legacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3707,7 +3651,7 @@ namespace SAModel.SAMDL
 				}
 				selectedObject.Attach = null;
 				RebuildModelCache();
-				DrawEntireModel();
+				NeedRedraw = true;
 				SelectedItemChanged();
 				unsaved = true;
 			}
@@ -3790,7 +3734,7 @@ namespace SAModel.SAMDL
 					SortModel(child, true);
 			}
 			RebuildModelCache();
-			DrawEntireModel();
+			NeedRedraw = true;
 			SelectedItemChanged();
 			unsaved = true;
 		}
@@ -3882,7 +3826,7 @@ namespace SAModel.SAMDL
 			else if (cam.mode == 1)
 				cam.Distance += (cam.MoveSpeed * e.Delta * -1);
 
-			DrawEntireModel();
+			NeedRedraw = true;
 		}
 	}
 }

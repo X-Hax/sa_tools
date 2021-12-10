@@ -30,4 +30,9 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="RenderLoop.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
+	</ItemGroup>
 </Project>

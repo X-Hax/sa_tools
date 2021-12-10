@@ -32,10 +32,13 @@ namespace SAModel.SALVL
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SALVL.config
         ProgressDialog progress;
         bool initerror = false;
+		bool NeedRedraw;
+		bool NeedPropertyRefresh;
 
         public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
+			Application.Idle += HandleWaitLoop;
 			InitializeComponent();
 			AddMouseMoveHandler(this);
 		}
@@ -375,6 +378,7 @@ namespace SAModel.SALVL
 			}
 			catch { };
 			AppConfig.Save();
+			//AnimationTimer.Stop();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -392,11 +396,6 @@ namespace SAModel.SALVL
 			Text = "SALVL - " + levelName + " (" + cam.Position.X + ", " + cam.Position.Y + ", " + cam.Position.Z
 				+ " Pitch=" + cam.Pitch.ToString("X") + " Yaw=" + cam.Yaw.ToString("X")
 				+ " Speed=" + cam.MoveSpeed + (cam.mode == 1 ? " Distance=" + cam.Distance : "") + ")";
-		}
-
-		private void panel1_Paint(object sender, PaintEventArgs e)
-		{
-			DrawLevel();
 		}
 
 		private void LevelData_PointOperation()
@@ -432,16 +431,8 @@ namespace SAModel.SALVL
             deleteToolStripMenuItem.Enabled = selectedItems.ItemCount > 0;
             addSelectedLevelItemsToolStripMenuItem.Enabled = selectedItems.Items.Count<Item>(item => item is LevelItem) > 0;
 
-            DrawLevel();
+            NeedRedraw = true;
         }
-
-		/// <summary>
-		/// Refreshes the properties for the currently selected items.
-		/// </summary>
-		private void UpdatePropertyGrid()
-		{
-			propertyGrid1.Refresh();
-		}
 
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -561,7 +552,7 @@ namespace SAModel.SALVL
 
 			transformGizmo.Enabled = false;
 
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void onClickCharacterButton(object sender, EventArgs e)
@@ -587,7 +578,7 @@ namespace SAModel.SALVL
 
 			transformGizmo.Enabled = false;
 
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -777,8 +768,9 @@ namespace SAModel.SALVL
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			LevelData.InvalidateRenderState();
-			propertyGrid1.Refresh();
-			unsaved = true;
+			NeedPropertyRefresh = true;
+			SetGizmoPivotAndLocality(true);
+			 unsaved = true;
 		}
 
 		private void reportBugToolStripMenuItem_Click(object sender, EventArgs e)
@@ -799,7 +791,8 @@ namespace SAModel.SALVL
 		{
 			if (transformGizmo == null) transformGizmo = new TransformGizmo();
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
-			DrawLevel();
+			SetGizmoPivotAndLocality(true);
+			NeedRedraw = NeedPropertyRefresh = true;
 		}
 
 		private void statsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -863,18 +856,18 @@ namespace SAModel.SALVL
 		private void sETITemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			setItemsButton.Checked = viewSETItemsToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void cAMItemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			camItemsButton.Checked = viewCAMItemsToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 		private void deathZonesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			deathZonesButton.Checked = viewDeathZonesToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -925,7 +918,7 @@ namespace SAModel.SALVL
 			settingsfile.DrawDistance_SET = EditorOptions.SetItemDrawDistance;
 			settingsfile.CameraModifier = cam.ModifierKey;
 			settingsfile.BackgroundColor = EditorOptions.FillColor.ToArgb();
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		#region Gizmo Button Event Methods
@@ -940,7 +933,7 @@ namespace SAModel.SALVL
 				rotateModeButton.Checked = false;
 				scaleModeButton.Checked = false;
 				osd.UpdateOSDItem("Transform mode: Select", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				DrawLevel(); // TODO: possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
+				NeedRedraw = true; // TODO: possibly find a better way of doing this than re-drawing the entire scene? Possibly keep a copy of the last render w/o gizmo in memory?
 			}
 		}
 
@@ -957,7 +950,7 @@ namespace SAModel.SALVL
 				scaleModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
 				osd.UpdateOSDItem("Transform mode: Move", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				DrawLevel();
+				NeedRedraw = true;
 			}
 		}
 
@@ -975,7 +968,7 @@ namespace SAModel.SALVL
 				scaleModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
 				osd.UpdateOSDItem("Transform mode: Rotate", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				DrawLevel();
+				NeedRedraw = true;
 			}
 		}
 
@@ -1014,7 +1007,7 @@ namespace SAModel.SALVL
 					osd.UpdateOSDItem("Transform: " + globalorlocal + ", " + pivotmode, RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				}
 
-				DrawLevel();
+				NeedRedraw = true;
 			}
 		}
 
@@ -1032,7 +1025,7 @@ namespace SAModel.SALVL
 				rotateModeButton.Checked = false;
 				SetGizmoPivotAndLocality();
 				osd.UpdateOSDItem("Transform mode: Scale", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				DrawLevel();
+				NeedRedraw = true;
 			}
 		}
 		#endregion
@@ -1063,7 +1056,7 @@ namespace SAModel.SALVL
 		private void splinesToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			splinesButton.Checked = viewSplinesToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void changeLevelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1187,7 +1180,7 @@ namespace SAModel.SALVL
 			foreach (LevelItem item in LevelData.LevelItems)
 				item.CalculateBounds();
 			osd.UpdateOSDItem("Calculated all bounds", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-			DrawLevel();
+			LevelData.InvalidateRenderState();
 			unsaved = true;
 		}
 
@@ -1345,7 +1338,7 @@ namespace SAModel.SALVL
 					break;
 			}
 
-			DrawLevel();
+			NeedRedraw = true;
 			unsaved = true;
 		}
 		#endregion
@@ -1402,7 +1395,7 @@ namespace SAModel.SALVL
 
 		private void boundsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void PropertiesSplitter_SplitterMoved(object sender, SplitterEventArgs e)
@@ -1444,7 +1437,7 @@ namespace SAModel.SALVL
 		{
 			viewDeathZonesToolStripMenuItem.Checked = !viewDeathZonesToolStripMenuItem.Checked;
 			deathZonesButton.Checked = viewDeathZonesToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void settingsButton_Click(object sender, EventArgs e)
@@ -1482,13 +1475,13 @@ namespace SAModel.SALVL
 		private void backgroundToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			backgroundButton.Checked = viewSkyboxToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void missionSETItemsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			missionItemsButton.Checked = viewMissionSETItemsToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void JumpToOrigin()
@@ -1496,9 +1489,9 @@ namespace SAModel.SALVL
 			cam.Position = new Vector3(0, 0, 0);
 			cam.Yaw = 0;
 			cam.Pitch = 0;
-			osd.UpdateOSDItem("Jumped to origin", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-			DrawLevel(); //Had to do it twice because it doesn't draw SET objects properly if you do it once
 			DrawLevel();
+			osd.UpdateOSDItem("Jumped to origin", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			LevelData.InvalidateRenderState();
 		}
 
 		private void JumpToStartPos()
@@ -1509,9 +1502,9 @@ namespace SAModel.SALVL
 				ushort rot = (ushort)LevelData.StartPositions[LevelData.Character].YRotation;
 				cam.Yaw = (ushort)(-rot - 0x4000);
 				cam.Pitch = 0;
-				osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-				DrawLevel(); //Had to do it twice because it doesn't draw SET objects properly if you do it once
 				DrawLevel();
+				osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+				LevelData.InvalidateRenderState();
 			}
 		}
 		private void jumpToStartPositionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1527,7 +1520,7 @@ namespace SAModel.SALVL
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
 			if (d3ddevice != null && osd != null)
-				if (osd.UpdateTimer() == true) DrawLevel();
+				if (osd.UpdateTimer() == true) NeedRedraw = true;
 		}
 
 		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -1545,7 +1538,7 @@ namespace SAModel.SALVL
 		private void lightingButton_CheckedChanged(object sender, EventArgs e)
 		{
 			EditorOptions.OverrideLighting = !lightingButton.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void jumpToOriginToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1556,7 +1549,7 @@ namespace SAModel.SALVL
 		private void materialColorsButton_CheckedChanged(object sender, EventArgs e)
 		{
 			EditorOptions.IgnoreMaterialColors = !materialColorsButton.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void unloadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1564,7 +1557,7 @@ namespace SAModel.SALVL
 			LevelData.leveltexs = null;
 			LevelData.Textures = null;
 			unloadTexturesToolStripMenuItem.Enabled = false;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void DeviceReset()
@@ -1582,7 +1575,7 @@ namespace SAModel.SALVL
 			DeviceResizing = false;
 			if (isStageLoaded) LevelData.InvalidateRenderState();
 			osd.UpdateOSDItem("Direct3D device reset", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void LoadLights(List<SA1StageLightData> lightList)
@@ -1630,7 +1623,7 @@ namespace SAModel.SALVL
 			}
 			settingsfile.DisableModelLibrary = disableModelLibraryToolStripMenuItem.Checked;
 			modelLibraryToolStripMenuItem.Visible = !disableModelLibraryToolStripMenuItem.Checked;
-			DrawLevel();
+			NeedRedraw = true;
 		}
 
 		private void MainForm_Deactivate(object sender, EventArgs e)
@@ -1828,6 +1821,11 @@ namespace SAModel.SALVL
 			FormResizing = true;
 		}
 
+		private void MainForm_Resize(object sender, EventArgs e)
+		{
+			NeedRedraw = true;
+		}
+
 		private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
             OpenNewProject();
@@ -1902,7 +1900,7 @@ namespace SAModel.SALVL
                         LevelData.leveltexs = LevelData.geo.TextureFileName;
                     }
                     unloadTexturesToolStripMenuItem.Enabled = true;
-                    DrawLevel();
+                    NeedRedraw = true;
                 }
             }
         }
@@ -2024,7 +2022,7 @@ namespace SAModel.SALVL
             List<SETItem> itemsToChange = LevelData.SETItems(LevelData.Character).ToList();
             foreach (SETItem item in itemsToChange)
                 item.ClipLevel = 0;
-            UpdatePropertyGrid();
-        }
+			NeedPropertyRefresh = true;
+		}
 	}
 }

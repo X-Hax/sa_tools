@@ -23,4 +23,9 @@
 	<ItemGroup>
 		<Content Include="icon_sa2EvView.ico" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="RenderLoop.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
+	</ItemGroup>
 </Project>

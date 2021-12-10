@@ -213,6 +213,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			COL.CalculateBounds();
 			COL.Model.Attach.CalculateBounds();
+			LevelData.InvalidateRenderState();
 		}
 
 		[Browsable(true)]
