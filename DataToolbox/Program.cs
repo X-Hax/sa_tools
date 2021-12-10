@@ -14,6 +14,7 @@ namespace SAModel.DataToolbox
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 			Application.Run(new MainForm());
 		}
 	}

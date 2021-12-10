@@ -20,7 +20,7 @@ namespace SAModel.SALVL
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
-
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 			primaryForm = new MainForm();
 			Application.Run(primaryForm);
 		}
