@@ -2493,7 +2493,10 @@ namespace SAModel.SAMDL
 						if (extension.Equals(".prs", StringComparison.OrdinalIgnoreCase))
 							anifile = FraGag.Compression.Prs.Decompress(anifile);
 
-						ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
+						if (BitConverter.ToInt16(anifile, 0) != 0)
+							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 0);
+						else
+							ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt16(anifile, 8);
 
 						int address = 0;
 						int i = ByteConverter.ToInt16(anifile, address);
