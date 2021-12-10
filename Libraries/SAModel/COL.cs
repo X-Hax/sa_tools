@@ -126,7 +126,7 @@ namespace SAModel
 		public string ToStruct(LandTableFormat format)
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(Bounds.ToStruct());
+			result.Append(Bounds.ToStruct(true));
 			result.Append(", ");
 			switch (format)
 			{

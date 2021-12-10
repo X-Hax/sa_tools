@@ -5,12 +5,12 @@ namespace SAModel
 {
 	public class GeoAnimData
 	{
-		public int Unknown1 { get; set; }
-		public float Unknown2 { get; set; }
-		public float Unknown3 { get; set; }
+		public float Frame { get; set; }
+		public float Step { get; set; }
+		public float MaxFrame { get; set; }
 		public NJS_OBJECT Model { get; set; }
 		public NJS_MOTION Animation { get; set; }
-		public int Unknown4 { get; set; }
+		public uint TexlistPointer { get; set; } // Unused
 
 		public string ActionName { get; set; }
 		public static int Size
@@ -21,6 +21,19 @@ namespace SAModel
 		public GeoAnimData(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, Attach> attaches)
 			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches)
 		{
+		}
+
+		public GeoAnimData(NJS_OBJECT model, NJS_MOTION animation)
+		{
+			Model = model;
+			Animation = animation;
+		}
+
+		public GeoAnimData(NJS_ACTION action)
+		{
+			Model = action.Model;
+			Animation = action.Animation;
+			ActionName = action.Name;
 		}
 
 		public GeoAnimData(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
@@ -38,14 +51,14 @@ namespace SAModel
 					mfmt = ModelFormat.Chunk;
 					break;
 			}
-			Unknown1 = ByteConverter.ToInt32(file, address);
-			Unknown2 = ByteConverter.ToSingle(file, address + 4);
-			Unknown3 = ByteConverter.ToSingle(file, address + 8);
+			Frame = ByteConverter.ToSingle(file, address);
+			Step = ByteConverter.ToSingle(file, address + 4);
+			MaxFrame = ByteConverter.ToSingle(file, address + 8);
 			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt, labels, attaches);
 			int actionaddr = (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase);
 			int motionaddr = (int)(ByteConverter.ToUInt32(file, actionaddr + 4) - imageBase);
 			Animation = NJS_MOTION.ReadDirect(file, Model.CountAnimated(), motionaddr, imageBase, labels, attaches);
-			Unknown4 = ByteConverter.ToInt32(file, address + 0x14);
+			TexlistPointer = ByteConverter.ToUInt32(file, address + 0x14);
 			if (labels.ContainsKey(actionaddr)) ActionName = labels[actionaddr];
 			else
 			{
@@ -58,29 +71,29 @@ namespace SAModel
 		public byte[] GetBytes(uint imageBase, uint modelptr, uint animptr)
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(Unknown1));
-			result.AddRange(ByteConverter.GetBytes(Unknown2));
-			result.AddRange(ByteConverter.GetBytes(Unknown3));
+			result.AddRange(ByteConverter.GetBytes(Frame));
+			result.AddRange(ByteConverter.GetBytes(Step));
+			result.AddRange(ByteConverter.GetBytes(MaxFrame));
 			result.AddRange(ByteConverter.GetBytes(modelptr));
 			result.AddRange(ByteConverter.GetBytes(animptr));
-			result.AddRange(ByteConverter.GetBytes(Unknown4));
+			result.AddRange(ByteConverter.GetBytes(TexlistPointer));
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(Unknown1.ToCHex());
+			result.Append(Frame.ToC());
 			result.Append(", ");
-			result.Append(Unknown2.ToC());
+			result.Append(Step.ToC());
 			result.Append(", ");
-			result.Append(Unknown3.ToC());
+			result.Append(MaxFrame.ToC());
 			result.Append(", ");
 			result.Append(Model != null ? "&" + Model.Name : "NULL");
 			result.Append(", ");
 			result.Append(Animation != null ? "&" + ActionName : "NULL");
 			result.Append(", (NJS_TEXLIST *)");
-			result.Append(Unknown4.ToCHex());
+			result.Append(TexlistPointer.ToCHex());
 			result.Append(" }");
 			return result.ToString();
 		}

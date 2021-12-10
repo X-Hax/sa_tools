@@ -506,7 +506,7 @@ namespace SAModel
 			if (!labels.Contains(COLName))
 			{
 				labels.Add(COLName);
-				writer.Write("COL ");
+				writer.Write("_OBJ_LANDENTRY ");
 				writer.Write(COLName);
 				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(COL.Count);
@@ -519,7 +519,7 @@ namespace SAModel
 			if (Anim.Count > 0 && !labels.Contains(AnimName))
 			{
 				labels.Add(AnimName);
-				writer.Write("GeoAnimData ");
+				writer.Write("_OBJ_MOTLANDENTRY ");
 				writer.Write(AnimName);
 				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(Anim.Count);
@@ -529,7 +529,7 @@ namespace SAModel
 				writer.WriteLine("};");
 				writer.WriteLine();
 			}
-			writer.Write("LandTable ");
+			writer.Write("_OBJ_LANDTABLE ");
 			writer.Write(Name);
 			writer.Write(" = { LengthOfArray<int16_t>(");
 			writer.Write(COLName);

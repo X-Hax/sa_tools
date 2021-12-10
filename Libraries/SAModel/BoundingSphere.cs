@@ -54,10 +54,19 @@ namespace SAModel
 			return Center.ToString() + ", " + Radius.ToString(NumberFormatInfo.InvariantInfo);
 		}
 
-		public string ToStruct()
+		public string ToStruct(bool land = false)
 		{
 			StringBuilder result = new StringBuilder();
-			result.Append(Center.ToStruct());
+			if (land)
+			{
+				result.Append(Center.X.ToC());
+				result.Append(", ");
+				result.Append(Center.Y.ToC());
+				result.Append(", ");
+				result.Append(Center.Z.ToC());
+			}
+			else
+				result.Append(Center.ToStruct());
 			result.Append(", ");
 			result.Append(Radius.ToC());
 			return result.ToString();
