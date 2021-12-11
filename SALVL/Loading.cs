@@ -451,26 +451,35 @@ namespace SAModel.SALVL
                                 case 1:
                                 case 3:
                                 case 4:
-                                    if (daytimeToolStripMenuItem.Checked && lightData.Act == 0) currentLightList.Add(lightData);
-                                    else if (eveningToolStripMenuItem.Checked && lightData.Act == 1) currentLightList.Add(lightData);
-                                    else if (nightToolStripMenuItem.Checked && lightData.Act == 3) currentLightList.Add(lightData);
+                                    if (daytimeToolStripMenuItem.Checked && lightData.Act == 0) 
+										currentLightList.Add(lightData);
+                                    else if (eveningToolStripMenuItem.Checked && lightData.Act == 1) 
+										currentLightList.Add(lightData);
+                                    else if (nightToolStripMenuItem.Checked && lightData.Act == 3) 
+										currentLightList.Add(lightData);
                                     break;
                                 case 2:
                                 case 5:
-                                    if (lightData.Act == 2) currentLightList.Add(lightData); // TP entrance doesn't use Stage Lights though
+                                    if (lightData.Act == 2) 
+										currentLightList.Add(lightData); // TP entrance doesn't use Stage Lights though
                                     break;
                             }
 
-                            if ((levelact.Act == 2 || levelact.Act == 5) && lightData.Act == 2) currentLightList.Add(lightData); // TP entrance doesn't use Stage Lights though
+                            if ((levelact.Act == 2 || levelact.Act == 5) && lightData.Act == 2) 
+								currentLightList.Add(lightData); // TP entrance doesn't use Stage Lights though
 
                         }
                         else if (levelact.Level == SA1LevelIDs.MysticRuins)
                         {
                             // 0 - day, 1 - evening, 2 - night, 3 - base
-                            if (levelact.Act == 3 && lightData.Act == 3) currentLightList.Add(lightData);
-                            else if (daytimeToolStripMenuItem.Checked && lightData.Act == 0) currentLightList.Add(lightData);
-                            else if (eveningToolStripMenuItem.Checked && lightData.Act == 1) currentLightList.Add(lightData);
-                            else if (nightToolStripMenuItem.Checked && lightData.Act == 2) currentLightList.Add(lightData);
+                            if (levelact.Act == 3 && lightData.Act == 3) 
+								currentLightList.Add(lightData);
+                            else if (daytimeToolStripMenuItem.Checked && lightData.Act == 0) 
+								currentLightList.Add(lightData);
+                            else if (eveningToolStripMenuItem.Checked && lightData.Act == 1) 
+								currentLightList.Add(lightData);
+                            else if (nightToolStripMenuItem.Checked && lightData.Act == 2) 
+								currentLightList.Add(lightData);
                         }
                         else if (lightData.Act == levelact.Act)
                             currentLightList.Add(lightData);
@@ -484,15 +493,14 @@ namespace SAModel.SALVL
                         foreach (SA1StageLightData lightData in stageLightList)
                         {
                             if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
-                                currentLightList.Add(lightData);
+								if (currentLightList.Count < 4)
+									currentLightList.Add(lightData);
                         }
                     }
                 }
 
                 if (currentLightList.Count > 0)
-                {
                     LoadLights(currentLightList);
-                }
                 else
                 {
                     osd.AddMessage("No lights were found for this stage. Using default lights instead.", 180);
