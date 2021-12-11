@@ -93,13 +93,16 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Paste();
 		}
 
-		[ReadOnly(true)]
-		[Category("Common"), ParenthesizePropertyName(true)]
+		[Category("Common")]
 		public string Name
 		{
 			get
 			{
 				return COL.Model.Name;
+			}
+			set
+			{
+				COL.Model.Name = value;
 			}
 		}
 
