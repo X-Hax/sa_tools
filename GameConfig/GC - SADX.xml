@@ -48,6 +48,7 @@
   <SplitEntry SourceFile="ChaoStgGarden02MR_Night.rel" IniFile="ChaoStgGarden02MR_Night" />
   <SplitEntry SourceFile="ChaoStgRace.rel" IniFile="ChaoStgRace" />
   <SplitEntry SourceFile="sboard.rel" IniFile="sboard" />
+  <SplitEntry SourceFile="Mission.rel" IniFile="Mission" />
   <SplitEntry SourceFile="_Minicart.rel" IniFile="_Minicart" />
   <SplitEntry SourceFile="_Shooting.rel" IniFile="_Shooting" />
 </SplitTemplate>
