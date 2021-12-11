@@ -16,11 +16,11 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act)
 		{
-			for (char i = 'a'; i < 'c'; i++)
-			{
-				models[i] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kaze" + (i) + ".nja.sa1mdl");
+			models[0] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazea.nja.sa1mdl");
+			models[1] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazeb.nja.sa1mdl");
+			models[2] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazec.nja.sa1mdl");
+			for (int i = 0; i < models.Length; i++)
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
-			}
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
