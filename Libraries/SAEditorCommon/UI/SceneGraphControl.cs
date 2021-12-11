@@ -11,6 +11,7 @@ namespace SAModel.SAEditorCommon.UI
 		EditorItemSelection selection;
 
 		TreeNode levelItemNode;
+		TreeNode levelAnimNode;
 		TreeNode deathZoneNode;
 		TreeNode setNode;
 		TreeNode camNode;
@@ -62,7 +63,7 @@ namespace SAModel.SAEditorCommon.UI
 				// figure out which kind of node we are by looking at the immediate parent.
 				Item _item = GetItemForNode(selectedNode);
 				if (selectedNode == sceneTreeView.TopNode) continue;
-				if (selectedNode == levelItemNode || selectedNode == deathZoneNode ||
+				if (selectedNode == levelItemNode || selectedNode == levelAnimNode || selectedNode == deathZoneNode ||
 					selectedNode == setNode || selectedNode == camNode ||
 					selectedNode == missionSETNode || selectedNode == splineNode) continue;
 
@@ -80,6 +81,10 @@ namespace SAModel.SAEditorCommon.UI
 			if (parent == levelItemNode)
 			{
 				return LevelData.GetLevelitemAtIndex(node.Index);
+			}
+			else if (parent == levelAnimNode)
+			{
+				return LevelData.GetLevelAnimAtIndex(node.Index);
 			}
 			else if (parent == deathZoneNode)
 			{
@@ -122,6 +127,15 @@ namespace SAModel.SAEditorCommon.UI
 					int index = LevelData.GetIndexOfItem(levelItem);
 
 					selectedNodes.Add(levelItemNode.Nodes[index]);
+				}
+				else if (item is LevelAnim)
+				{
+					LevelAnim levelAnim = (LevelAnim)item;
+
+					// find the index of the level animation
+					int index = LevelData.GetIndexOfItem(levelAnim);
+
+					selectedNodes.Add(levelAnimNode.Nodes[index]);
 				}
 				else if (item is DeathZoneItem)
 				{
@@ -175,6 +189,7 @@ namespace SAModel.SAEditorCommon.UI
 				// go through the level data and add all the things
 				sceneTreeView.BeginUpdate();
 				levelItemNode = sceneTreeView.Nodes.Add("Level Objects");
+				levelAnimNode = sceneTreeView.Nodes.Add("Level Animations");
 				deathZoneNode = sceneTreeView.Nodes.Add("Death Zones");
 				setNode = sceneTreeView.Nodes.Add("SET Items");
 				camNode = sceneTreeView.Nodes.Add("CAM Items");
@@ -205,6 +220,7 @@ namespace SAModel.SAEditorCommon.UI
 			sceneTreeView.BeginUpdate();
 
 			levelItemNode.Nodes.Clear();
+			levelAnimNode.Nodes.Clear();
 			deathZoneNode.Nodes.Clear();
 			setNode.Nodes.Clear();
 			camNode.Nodes.Clear();
@@ -217,6 +233,13 @@ namespace SAModel.SAEditorCommon.UI
 				levelItemNode.Nodes.Add(levelItem.Name);
 			}
 
+			// level animations
+			foreach (LevelAnim levelAnimItem in LevelData.LevelAnims)
+			{
+				levelAnimNode.Nodes.Add(levelAnimItem.ActionName);
+			}
+
+			// death zones
 			if (LevelData.DeathZones != null)
 			{
 				foreach (DeathZoneItem deathZone in LevelData.DeathZones)

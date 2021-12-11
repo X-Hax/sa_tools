@@ -76,6 +76,7 @@
             this.toolClearAll = new System.Windows.Forms.ToolStripMenuItem();
             this.addToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.addLevelPieceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addLevelAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addSETItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addCAMItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addMissionItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +85,7 @@
             this.findReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllOfTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forceClipLevelToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointOneObjectAtAnotherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -132,6 +134,7 @@
             this.upgradeObjDefsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layer_levelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layer_levelAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layer_deathZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layer__SETItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layer_CAMItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -155,6 +158,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelPieceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.levelAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.objectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deathZoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,13 +199,19 @@
             this.camItemsButton = new System.Windows.Forms.ToolStripButton();
             this.missionItemsButton = new System.Windows.Forms.ToolStripButton();
             this.splinesButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.lightingButton = new System.Windows.Forms.ToolStripButton();
             this.materialColorsButton = new System.Windows.Forms.ToolStripButton();
-            this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
             this.showHintsButton = new System.Windows.Forms.ToolStripButton();
+            this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
             this.settingsButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.prevFrameButton = new System.Windows.Forms.ToolStripButton();
+            this.playAnimButton = new System.Windows.Forms.ToolStripButton();
+            this.nextFrameButton = new System.Windows.Forms.ToolStripButton();
+            this.resetAnimButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.forceClipLevelToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -236,8 +246,8 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(1141, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(1331, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -388,7 +398,7 @@
             // toStageToolStripMenuItem
             // 
             this.toStageToolStripMenuItem.Name = "toStageToolStripMenuItem";
-            this.toStageToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.toStageToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.toStageToolStripMenuItem.Text = "To &Stage...";
             this.toStageToolStripMenuItem.ToolTipText = "Import a model to the level.";
             this.toStageToolStripMenuItem.Click += new System.EventHandler(this.toStageToolStripMenuItem_Click);
@@ -396,14 +406,14 @@
             // toModelLibraryToolStripMenuItem
             // 
             this.toModelLibraryToolStripMenuItem.Name = "toModelLibraryToolStripMenuItem";
-            this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.toModelLibraryToolStripMenuItem.Text = "To Model Library...";
             this.toModelLibraryToolStripMenuItem.Click += new System.EventHandler(this.importToModelLibrary_Click);
             // 
             // wholeLevelToolStripMenuItem
             // 
             this.wholeLevelToolStripMenuItem.Name = "wholeLevelToolStripMenuItem";
-            this.wholeLevelToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.wholeLevelToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.wholeLevelToolStripMenuItem.Text = "&Whole Level...";
             this.wholeLevelToolStripMenuItem.Click += new System.EventHandler(this.wholeLevelToolStripMenuItem_Click);
             // 
@@ -501,21 +511,21 @@
             // advancedSavelevelToolStripMenuItem
             // 
             this.advancedSavelevelToolStripMenuItem.Name = "advancedSavelevelToolStripMenuItem";
-            this.advancedSavelevelToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.advancedSavelevelToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.advancedSavelevelToolStripMenuItem.Text = "Level...";
             this.advancedSavelevelToolStripMenuItem.Click += new System.EventHandler(this.advancedSavelevelToolStripMenuItem_Click);
             // 
             // advancedSaveSETFileToolStripMenuItem
             // 
             this.advancedSaveSETFileToolStripMenuItem.Name = "advancedSaveSETFileToolStripMenuItem";
-            this.advancedSaveSETFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.advancedSaveSETFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.advancedSaveSETFileToolStripMenuItem.Text = "SET File...";
             this.advancedSaveSETFileToolStripMenuItem.Click += new System.EventHandler(this.advancedSaveSETFileToolStripMenuItem_Click);
             // 
             // advancedSaveSETFileBigEndianToolStripMenuItem
             // 
             this.advancedSaveSETFileBigEndianToolStripMenuItem.Name = "advancedSaveSETFileBigEndianToolStripMenuItem";
-            this.advancedSaveSETFileBigEndianToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.advancedSaveSETFileBigEndianToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.advancedSaveSETFileBigEndianToolStripMenuItem.Text = "SET File (Big Endian)...";
             this.advancedSaveSETFileBigEndianToolStripMenuItem.Click += new System.EventHandler(this.advancedSaveSETFileBigEndianToolStripMenuItem_Click);
             // 
@@ -566,14 +576,14 @@
             this.splinesToolStripMenuItem,
             this.toolClearAll});
             this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
-            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.clearLevelToolStripMenuItem.Text = "Clear Level";
             // 
             // toolClearGeometry
             // 
             this.toolClearGeometry.Image = global::SAModel.SALVL.Properties.Resources.levelitem;
             this.toolClearGeometry.Name = "toolClearGeometry";
-            this.toolClearGeometry.Size = new System.Drawing.Size(169, 22);
+            this.toolClearGeometry.Size = new System.Drawing.Size(168, 22);
             this.toolClearGeometry.Text = "Geometry";
             this.toolClearGeometry.Click += new System.EventHandler(this.toolClearGeometry_Click);
             // 
@@ -581,7 +591,7 @@
             // 
             this.toolClearAnimations.Image = global::SAModel.SALVL.Properties.Resources.geoanim;
             this.toolClearAnimations.Name = "toolClearAnimations";
-            this.toolClearAnimations.Size = new System.Drawing.Size(169, 22);
+            this.toolClearAnimations.Size = new System.Drawing.Size(168, 22);
             this.toolClearAnimations.Text = "Animations";
             this.toolClearAnimations.Click += new System.EventHandler(this.toolClearAnimations_Click);
             // 
@@ -589,7 +599,7 @@
             // 
             this.toolClearSetItems.Image = global::SAModel.SALVL.Properties.Resources.set;
             this.toolClearSetItems.Name = "toolClearSetItems";
-            this.toolClearSetItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearSetItems.Size = new System.Drawing.Size(168, 22);
             this.toolClearSetItems.Text = "SET Items";
             this.toolClearSetItems.Click += new System.EventHandler(this.toolClearSetItems_Click);
             // 
@@ -597,7 +607,7 @@
             // 
             this.toolClearCamItems.Image = global::SAModel.SALVL.Properties.Resources.cam;
             this.toolClearCamItems.Name = "toolClearCamItems";
-            this.toolClearCamItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearCamItems.Size = new System.Drawing.Size(168, 22);
             this.toolClearCamItems.Text = "CAM Items";
             this.toolClearCamItems.Click += new System.EventHandler(this.toolClearCamItems_Click);
             // 
@@ -605,7 +615,7 @@
             // 
             this.toolClearMissionSetItems.Image = global::SAModel.SALVL.Properties.Resources.mis;
             this.toolClearMissionSetItems.Name = "toolClearMissionSetItems";
-            this.toolClearMissionSetItems.Size = new System.Drawing.Size(169, 22);
+            this.toolClearMissionSetItems.Size = new System.Drawing.Size(168, 22);
             this.toolClearMissionSetItems.Text = "Mission SET Items";
             this.toolClearMissionSetItems.Click += new System.EventHandler(this.toolClearMissionSetItems_Click);
             // 
@@ -613,14 +623,14 @@
             // 
             this.splinesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.splines;
             this.splinesToolStripMenuItem.Name = "splinesToolStripMenuItem";
-            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.splinesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.splinesToolStripMenuItem.Text = "Splines";
             this.splinesToolStripMenuItem.Click += new System.EventHandler(this.splinesToolStripMenuItem_Click);
             // 
             // toolClearAll
             // 
             this.toolClearAll.Name = "toolClearAll";
-            this.toolClearAll.Size = new System.Drawing.Size(169, 22);
+            this.toolClearAll.Size = new System.Drawing.Size(168, 22);
             this.toolClearAll.Text = "All";
             this.toolClearAll.Click += new System.EventHandler(this.toolClearAll_Click);
             // 
@@ -628,27 +638,35 @@
             // 
             this.addToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addLevelPieceToolStripMenuItem,
+            this.addLevelAnimationToolStripMenuItem,
             this.addSETItemToolStripMenuItem,
             this.addCAMItemToolStripMenuItem,
             this.addMissionItemToolStripMenuItem,
             this.addDeathZoneToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(226, 30);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
             this.addToolStripMenuItem1.Text = "&Add";
             // 
             // addLevelPieceToolStripMenuItem
             // 
             this.addLevelPieceToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.levelitem;
             this.addLevelPieceToolStripMenuItem.Name = "addLevelPieceToolStripMenuItem";
-            this.addLevelPieceToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.addLevelPieceToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addLevelPieceToolStripMenuItem.Text = "Level Piece";
             this.addLevelPieceToolStripMenuItem.Click += new System.EventHandler(this.levelPieceToolStripMenuItem_Click);
+            // 
+            // addLevelAnimationToolStripMenuItem
+            // 
+            this.addLevelAnimationToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.geoanim;
+            this.addLevelAnimationToolStripMenuItem.Name = "addLevelAnimationToolStripMenuItem";
+            this.addLevelAnimationToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.addLevelAnimationToolStripMenuItem.Text = "Level Animation";
             // 
             // addSETItemToolStripMenuItem
             // 
             this.addSETItemToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.set;
             this.addSETItemToolStripMenuItem.Name = "addSETItemToolStripMenuItem";
-            this.addSETItemToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.addSETItemToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addSETItemToolStripMenuItem.Text = "SET Item";
             this.addSETItemToolStripMenuItem.Click += new System.EventHandler(this.objectToolStripMenuItem_Click);
             // 
@@ -656,7 +674,7 @@
             // 
             this.addCAMItemToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.cam;
             this.addCAMItemToolStripMenuItem.Name = "addCAMItemToolStripMenuItem";
-            this.addCAMItemToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.addCAMItemToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addCAMItemToolStripMenuItem.Text = "CAM Item";
             this.addCAMItemToolStripMenuItem.Click += new System.EventHandler(this.cameraToolStripMenuItem_Click);
             // 
@@ -664,7 +682,7 @@
             // 
             this.addMissionItemToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.mis;
             this.addMissionItemToolStripMenuItem.Name = "addMissionItemToolStripMenuItem";
-            this.addMissionItemToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.addMissionItemToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addMissionItemToolStripMenuItem.Text = "Mission Item";
             this.addMissionItemToolStripMenuItem.Click += new System.EventHandler(this.missionObjectToolStripMenuItem_Click);
             // 
@@ -672,7 +690,7 @@
             // 
             this.addDeathZoneToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.deathzone;
             this.addDeathZoneToolStripMenuItem.Name = "addDeathZoneToolStripMenuItem";
-            this.addDeathZoneToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.addDeathZoneToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addDeathZoneToolStripMenuItem.Text = "Death Zone";
             this.addDeathZoneToolStripMenuItem.Click += new System.EventHandler(this.deathZoneToolStripMenuItem_Click);
             // 
@@ -684,37 +702,46 @@
             this.duplicateToToolStripMenuItem,
             this.forceClipLevelToAllToolStripMenuItem});
             this.editSETItemsToolStripMenuItem.Name = "editSETItemsToolStripMenuItem";
-            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.editSETItemsToolStripMenuItem.Text = "SET Items";
             // 
             // findReplaceToolStripMenuItem
             // 
             this.findReplaceToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.find;
             this.findReplaceToolStripMenuItem.Name = "findReplaceToolStripMenuItem";
-            this.findReplaceToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.findReplaceToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.findReplaceToolStripMenuItem.Text = "Find/Replace";
             this.findReplaceToolStripMenuItem.Click += new System.EventHandler(this.findReplaceToolStripMenuItem_Click);
             // 
             // deleteAllOfTypeToolStripMenuItem
             // 
             this.deleteAllOfTypeToolStripMenuItem.Name = "deleteAllOfTypeToolStripMenuItem";
-            this.deleteAllOfTypeToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.deleteAllOfTypeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.deleteAllOfTypeToolStripMenuItem.Text = "Delete All of Type";
             this.deleteAllOfTypeToolStripMenuItem.Click += new System.EventHandler(this.deleteAllOfTypeToolStripMenuItem_Click);
             // 
             // duplicateToToolStripMenuItem
             // 
             this.duplicateToToolStripMenuItem.Name = "duplicateToToolStripMenuItem";
-            this.duplicateToToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
+            this.duplicateToToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.duplicateToToolStripMenuItem.Text = "Duplicate &To";
             this.duplicateToToolStripMenuItem.Click += new System.EventHandler(this.duplicateToToolStripMenuItem_Click);
+            // 
+            // forceClipLevelToAllToolStripMenuItem
+            // 
+            this.forceClipLevelToAllToolStripMenuItem.Name = "forceClipLevelToAllToolStripMenuItem";
+            this.forceClipLevelToAllToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.forceClipLevelToAllToolStripMenuItem.Text = "Force Clip Level to All";
+            this.forceClipLevelToAllToolStripMenuItem.ToolTipText = "Force the Clip Level setting to All in all SET items. Useful for Dreamcast compat" +
+    "ibility.";
+            this.forceClipLevelToAllToolStripMenuItem.Click += new System.EventHandler(this.forceClipLevelToAllToolStripMenuItem_Click);
             // 
             // duplicateToolStripMenuItem
             // 
             this.duplicateToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.duplicate;
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
             this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.duplicateToolStripMenuItem.Text = "&Duplicate Selected";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
@@ -722,27 +749,27 @@
             // 
             this.deleteSelectedToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.delete;
             this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
-            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
             this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // pointOneObjectAtAnotherToolStripMenuItem
             // 
             this.pointOneObjectAtAnotherToolStripMenuItem.Name = "pointOneObjectAtAnotherToolStripMenuItem";
-            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.pointOneObjectAtAnotherToolStripMenuItem.Text = "Point one object at another";
             this.pointOneObjectAtAnotherToolStripMenuItem.Click += new System.EventHandler(this.pointToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(223, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 6);
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.preferencesToolStripMenuItem.Text = "&Preferences";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -750,7 +777,7 @@
             // 
             this.editLevelInfoToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.editinfo;
             this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
-            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
             this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
             // 
@@ -761,7 +788,7 @@
             this.calculateAllBoundsToolStripMenuItem,
             this.exportTextureNamesToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.advancedToolStripMenuItem.Text = "Advanced";
             // 
             // usetBasicDXFormatToolStripMenuItem
@@ -770,7 +797,7 @@
             this.usetBasicDXFormatToolStripMenuItem.CheckOnClick = true;
             this.usetBasicDXFormatToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.usetBasicDXFormatToolStripMenuItem.Name = "usetBasicDXFormatToolStripMenuItem";
-            this.usetBasicDXFormatToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.usetBasicDXFormatToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.usetBasicDXFormatToolStripMenuItem.Text = "Use BasicDX format";
             this.usetBasicDXFormatToolStripMenuItem.ToolTipText = "Use the BasicDX model format for Ninja Basic Models. The BasicDX format is used i" +
     "n the 2004 PC port of SADX and its derivatives.";
@@ -778,7 +805,7 @@
             // calculateAllBoundsToolStripMenuItem
             // 
             this.calculateAllBoundsToolStripMenuItem.Name = "calculateAllBoundsToolStripMenuItem";
-            this.calculateAllBoundsToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.calculateAllBoundsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.calculateAllBoundsToolStripMenuItem.Text = "Calculate All Bounds";
             this.calculateAllBoundsToolStripMenuItem.ToolTipText = "Recalculate bounding spheres to make sure geometry clips properly.";
             this.calculateAllBoundsToolStripMenuItem.Click += new System.EventHandler(this.calculateAllBoundsToolStripMenuItem_Click);
@@ -789,7 +816,7 @@
             this.exportTextureNamesToolStripMenuItem.CheckOnClick = true;
             this.exportTextureNamesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.exportTextureNamesToolStripMenuItem.Name = "exportTextureNamesToolStripMenuItem";
-            this.exportTextureNamesToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.exportTextureNamesToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.exportTextureNamesToolStripMenuItem.Text = "Export Texture Names";
             this.exportTextureNamesToolStripMenuItem.ToolTipText = "Export a texture name array when exporting the level as C structs.";
             // 
@@ -1125,6 +1152,7 @@
             // 
             this.layersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.layer_levelItemsToolStripMenuItem,
+            this.layer_levelAnimationsToolStripMenuItem,
             this.layer_deathZonesToolStripMenuItem,
             this.layer__SETItemsToolStripMenuItem,
             this.layer_CAMItemsToolStripMenuItem,
@@ -1142,18 +1170,29 @@
             this.layer_levelItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.layer_levelItemsToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.levelitem;
             this.layer_levelItemsToolStripMenuItem.Name = "layer_levelItemsToolStripMenuItem";
-            this.layer_levelItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_levelItemsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.layer_levelItemsToolStripMenuItem.Text = "Level Items";
-            this.layer_levelItemsToolStripMenuItem.ToolTipText = "Make level items selectable";
+            this.layer_levelItemsToolStripMenuItem.ToolTipText = "Make level items selectable.";
+            // 
+            // layer_levelAnimationsToolStripMenuItem
+            // 
+            this.layer_levelAnimationsToolStripMenuItem.Checked = true;
+            this.layer_levelAnimationsToolStripMenuItem.CheckOnClick = true;
+            this.layer_levelAnimationsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.layer_levelAnimationsToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.geoanim;
+            this.layer_levelAnimationsToolStripMenuItem.Name = "layer_levelAnimationsToolStripMenuItem";
+            this.layer_levelAnimationsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.layer_levelAnimationsToolStripMenuItem.Text = "Level Animations";
+            this.layer_levelAnimationsToolStripMenuItem.ToolTipText = "Make level animations selectable.";
             // 
             // layer_deathZonesToolStripMenuItem
             // 
             this.layer_deathZonesToolStripMenuItem.CheckOnClick = true;
             this.layer_deathZonesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.deathzone;
             this.layer_deathZonesToolStripMenuItem.Name = "layer_deathZonesToolStripMenuItem";
-            this.layer_deathZonesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_deathZonesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.layer_deathZonesToolStripMenuItem.Text = "Death Zones";
-            this.layer_deathZonesToolStripMenuItem.ToolTipText = "Make death zones selectable";
+            this.layer_deathZonesToolStripMenuItem.ToolTipText = "Make death zones selectable.";
             // 
             // layer__SETItemsToolStripMenuItem
             // 
@@ -1162,9 +1201,9 @@
             this.layer__SETItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.layer__SETItemsToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.set;
             this.layer__SETItemsToolStripMenuItem.Name = "layer__SETItemsToolStripMenuItem";
-            this.layer__SETItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer__SETItemsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.layer__SETItemsToolStripMenuItem.Text = "SET Items";
-            this.layer__SETItemsToolStripMenuItem.ToolTipText = "Make SET items selectable";
+            this.layer__SETItemsToolStripMenuItem.ToolTipText = "Make SET items selectable.";
             // 
             // layer_CAMItemsToolStripMenuItem
             // 
@@ -1173,9 +1212,9 @@
             this.layer_CAMItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.layer_CAMItemsToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.cam;
             this.layer_CAMItemsToolStripMenuItem.Name = "layer_CAMItemsToolStripMenuItem";
-            this.layer_CAMItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_CAMItemsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.layer_CAMItemsToolStripMenuItem.Text = "CAM Items";
-            this.layer_CAMItemsToolStripMenuItem.ToolTipText = "Make CAM items selectable";
+            this.layer_CAMItemsToolStripMenuItem.ToolTipText = "Make CAM items selectable.";
             // 
             // layer_missionSETItemsToolStripMenuItem
             // 
@@ -1184,9 +1223,9 @@
             this.layer_missionSETItemsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.layer_missionSETItemsToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.mis;
             this.layer_missionSETItemsToolStripMenuItem.Name = "layer_missionSETItemsToolStripMenuItem";
-            this.layer_missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_missionSETItemsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.layer_missionSETItemsToolStripMenuItem.Text = "Mission SET Items";
-            this.layer_missionSETItemsToolStripMenuItem.ToolTipText = "Make Mission SET items selectable";
+            this.layer_missionSETItemsToolStripMenuItem.ToolTipText = "Make Mission SET items selectable.";
             // 
             // layer_splinesToolStripMenuItem
             // 
@@ -1195,9 +1234,9 @@
             this.layer_splinesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.layer_splinesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.splines;
             this.layer_splinesToolStripMenuItem.Name = "layer_splinesToolStripMenuItem";
-            this.layer_splinesToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.layer_splinesToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.layer_splinesToolStripMenuItem.Text = "Splines";
-            this.layer_splinesToolStripMenuItem.ToolTipText = "Make splines selectable";
+            this.layer_splinesToolStripMenuItem.ToolTipText = "Make splines selectable.";
             // 
             // modelLibraryToolStripMenuItem
             // 
@@ -1290,7 +1329,7 @@
             // 
             this.reportBugToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.bug;
             this.reportBugToolStripMenuItem.Name = "reportBugToolStripMenuItem";
-            this.reportBugToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.reportBugToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.reportBugToolStripMenuItem.Text = "Report &Bug";
             this.reportBugToolStripMenuItem.Click += new System.EventHandler(this.reportBugToolStripMenuItem_Click);
             // 
@@ -1299,7 +1338,7 @@
             this.welcomeTutorialToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.help;
             this.welcomeTutorialToolStripMenuItem.Name = "welcomeTutorialToolStripMenuItem";
             this.welcomeTutorialToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.welcomeTutorialToolStripMenuItem.Text = "Welcome / Tutorial";
             this.welcomeTutorialToolStripMenuItem.Click += new System.EventHandler(this.welcomeTutorialToolStripMenuItem_Click);
             // 
@@ -1309,8 +1348,9 @@
             this.RenderPanel.BackColor = System.Drawing.Color.Black;
             this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
+            this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(615, 260);
+            this.RenderPanel.Size = new System.Drawing.Size(762, 344);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragDrop);
@@ -1346,6 +1386,7 @@
             // 
             this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.levelPieceToolStripMenuItem,
+            this.levelAnimationToolStripMenuItem,
             this.objectToolStripMenuItem,
             this.deathZoneToolStripMenuItem,
             this.cameraToolStripMenuItem,
@@ -1359,15 +1400,23 @@
             // 
             this.levelPieceToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.levelitem;
             this.levelPieceToolStripMenuItem.Name = "levelPieceToolStripMenuItem";
-            this.levelPieceToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.levelPieceToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.levelPieceToolStripMenuItem.Text = "&Level Piece";
             this.levelPieceToolStripMenuItem.Click += new System.EventHandler(this.levelPieceToolStripMenuItem_Click);
+            // 
+            // levelAnimationToolStripMenuItem
+            // 
+            this.levelAnimationToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.geoanim;
+            this.levelAnimationToolStripMenuItem.Name = "levelAnimationToolStripMenuItem";
+            this.levelAnimationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.levelAnimationToolStripMenuItem.Text = "Level &Animation";
+            this.levelAnimationToolStripMenuItem.Click += new System.EventHandler(this.levelAnimationToolStripMenuItem_Click);
             // 
             // objectToolStripMenuItem
             // 
             this.objectToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.set;
             this.objectToolStripMenuItem.Name = "objectToolStripMenuItem";
-            this.objectToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.objectToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.objectToolStripMenuItem.Text = "&SET Item";
             this.objectToolStripMenuItem.Click += new System.EventHandler(this.objectToolStripMenuItem_Click);
             // 
@@ -1375,7 +1424,7 @@
             // 
             this.deathZoneToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.deathzone;
             this.deathZoneToolStripMenuItem.Name = "deathZoneToolStripMenuItem";
-            this.deathZoneToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.deathZoneToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.deathZoneToolStripMenuItem.Text = "&Death Zone";
             this.deathZoneToolStripMenuItem.Click += new System.EventHandler(this.deathZoneToolStripMenuItem_Click);
             // 
@@ -1383,7 +1432,7 @@
             // 
             this.cameraToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.cam;
             this.cameraToolStripMenuItem.Name = "cameraToolStripMenuItem";
-            this.cameraToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.cameraToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.cameraToolStripMenuItem.Text = "&CAM Item";
             this.cameraToolStripMenuItem.Click += new System.EventHandler(this.cameraToolStripMenuItem_Click);
             // 
@@ -1391,7 +1440,7 @@
             // 
             this.missionObjectToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.mis;
             this.missionObjectToolStripMenuItem.Name = "missionObjectToolStripMenuItem";
-            this.missionObjectToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.missionObjectToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.missionObjectToolStripMenuItem.Text = "&Mission SET Item";
             this.missionObjectToolStripMenuItem.Click += new System.EventHandler(this.missionObjectToolStripMenuItem_Click);
             // 
@@ -1453,6 +1502,7 @@
             this.PropertiesSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PropertiesSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.PropertiesSplitter.Location = new System.Drawing.Point(0, 67);
+            this.PropertiesSplitter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.PropertiesSplitter.Name = "PropertiesSplitter";
             // 
             // PropertiesSplitter.Panel1
@@ -1462,8 +1512,9 @@
             // PropertiesSplitter.Panel2
             // 
             this.PropertiesSplitter.Panel2.Controls.Add(this.propertyGrid1);
-            this.PropertiesSplitter.Size = new System.Drawing.Size(1141, 545);
-            this.PropertiesSplitter.SplitterDistance = 796;
+            this.PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
+            this.PropertiesSplitter.SplitterDistance = 976;
+            this.PropertiesSplitter.SplitterWidth = 5;
             this.PropertiesSplitter.TabIndex = 2;
             // 
             // LibrarySplitter
@@ -1471,6 +1522,7 @@
             this.LibrarySplitter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LibrarySplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.LibrarySplitter.Location = new System.Drawing.Point(0, 0);
+            this.LibrarySplitter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.LibrarySplitter.Name = "LibrarySplitter";
             this.LibrarySplitter.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -1481,14 +1533,16 @@
             // LibrarySplitter.Panel2
             // 
             this.LibrarySplitter.Panel2.Controls.Add(this.libraryTabControl);
-            this.LibrarySplitter.Size = new System.Drawing.Size(792, 541);
-            this.LibrarySplitter.SplitterDistance = 260;
+            this.LibrarySplitter.Size = new System.Drawing.Size(972, 635);
+            this.LibrarySplitter.SplitterDistance = 344;
+            this.LibrarySplitter.SplitterWidth = 5;
             this.LibrarySplitter.TabIndex = 3;
             // 
             // ItemsSplitter
             // 
             this.ItemsSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ItemsSplitter.Location = new System.Drawing.Point(0, 0);
+            this.ItemsSplitter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.ItemsSplitter.Name = "ItemsSplitter";
             // 
             // ItemsSplitter.Panel1
@@ -1498,17 +1552,18 @@
             // ItemsSplitter.Panel2
             // 
             this.ItemsSplitter.Panel2.Controls.Add(this.RenderPanel);
-            this.ItemsSplitter.Size = new System.Drawing.Size(792, 260);
-            this.ItemsSplitter.SplitterDistance = 173;
+            this.ItemsSplitter.Size = new System.Drawing.Size(972, 344);
+            this.ItemsSplitter.SplitterDistance = 205;
+            this.ItemsSplitter.SplitterWidth = 5;
             this.ItemsSplitter.TabIndex = 0;
             // 
             // sceneGraphControl1
             // 
             this.sceneGraphControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
-            this.sceneGraphControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.sceneGraphControl1.Name = "sceneGraphControl1";
-            this.sceneGraphControl1.Size = new System.Drawing.Size(173, 260);
+            this.sceneGraphControl1.Size = new System.Drawing.Size(205, 344);
             this.sceneGraphControl1.TabIndex = 0;
             // 
             // libraryTabControl
@@ -1517,18 +1572,20 @@
             this.libraryTabControl.Controls.Add(this.setLibraryPage);
             this.libraryTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.libraryTabControl.Location = new System.Drawing.Point(0, 0);
+            this.libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.libraryTabControl.Name = "libraryTabControl";
             this.libraryTabControl.SelectedIndex = 0;
-            this.libraryTabControl.Size = new System.Drawing.Size(792, 277);
+            this.libraryTabControl.Size = new System.Drawing.Size(972, 286);
             this.libraryTabControl.TabIndex = 0;
             // 
             // modelLibraryPage
             // 
             this.modelLibraryPage.Controls.Add(this.modelLibraryControl1);
-            this.modelLibraryPage.Location = new System.Drawing.Point(4, 22);
+            this.modelLibraryPage.Location = new System.Drawing.Point(4, 24);
+            this.modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.modelLibraryPage.Name = "modelLibraryPage";
-            this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(3);
-            this.modelLibraryPage.Size = new System.Drawing.Size(784, 251);
+            this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.modelLibraryPage.Size = new System.Drawing.Size(964, 258);
             this.modelLibraryPage.TabIndex = 1;
             this.modelLibraryPage.Text = "Model Library";
             this.modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1536,19 +1593,20 @@
             // modelLibraryControl1
             // 
             this.modelLibraryControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modelLibraryControl1.Location = new System.Drawing.Point(3, 3);
-            this.modelLibraryControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.modelLibraryControl1.Location = new System.Drawing.Point(4, 3);
+            this.modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.modelLibraryControl1.Name = "modelLibraryControl1";
             this.modelLibraryControl1.SelectedModel = null;
-            this.modelLibraryControl1.Size = new System.Drawing.Size(778, 245);
+            this.modelLibraryControl1.Size = new System.Drawing.Size(956, 252);
             this.modelLibraryControl1.TabIndex = 0;
             // 
             // setLibraryPage
             // 
-            this.setLibraryPage.Location = new System.Drawing.Point(4, 22);
+            this.setLibraryPage.Location = new System.Drawing.Point(4, 24);
+            this.setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.setLibraryPage.Name = "setLibraryPage";
-            this.setLibraryPage.Padding = new System.Windows.Forms.Padding(3);
-            this.setLibraryPage.Size = new System.Drawing.Size(784, 251);
+            this.setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.setLibraryPage.Size = new System.Drawing.Size(964, 258);
             this.setLibraryPage.TabIndex = 0;
             this.setLibraryPage.Text = "SET Library";
             this.setLibraryPage.UseVisualStyleBackColor = true;
@@ -1564,7 +1622,7 @@
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(337, 541);
+            this.propertyGrid1.Size = new System.Drawing.Size(346, 635);
             this.propertyGrid1.TabIndex = 13;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -1600,15 +1658,22 @@
             this.camItemsButton,
             this.missionItemsButton,
             this.splinesButton,
+            this.toolStripSeparator6,
             this.lightingButton,
             this.materialColorsButton,
-            this.moveToStartButton,
             this.showHintsButton,
-            this.settingsButton});
+            this.moveToStartButton,
+            this.settingsButton,
+            this.toolStripSeparator5,
+            this.prevFrameButton,
+            this.playAnimButton,
+            this.nextFrameButton,
+            this.resetAnimButton,
+            this.toolStripSeparator10});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1141, 43);
+            this.toolStrip1.Size = new System.Drawing.Size(1331, 43);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -1665,7 +1730,7 @@
             "Global",
             "Local"});
             this.gizmoSpaceComboBox.Name = "gizmoSpaceComboBox";
-            this.gizmoSpaceComboBox.Size = new System.Drawing.Size(121, 43);
+            this.gizmoSpaceComboBox.Size = new System.Drawing.Size(140, 43);
             this.gizmoSpaceComboBox.DropDownClosed += new System.EventHandler(this.gizmoSpaceComboBox_DropDownClosed);
             // 
             // toolBig
@@ -1748,7 +1813,7 @@
             "CenterMass",
             "Origin"});
             this.pivotComboBox.Name = "pivotComboBox";
-            this.pivotComboBox.Size = new System.Drawing.Size(121, 43);
+            this.pivotComboBox.Size = new System.Drawing.Size(140, 43);
             this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
             // 
             // deathZonesButton
@@ -1817,6 +1882,11 @@
             this.splinesButton.Text = "Show Splines";
             this.splinesButton.Click += new System.EventHandler(this.splinesButton_Click);
             // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 43);
+            // 
             // lightingButton
             // 
             this.lightingButton.Checked = true;
@@ -1843,16 +1913,6 @@
             this.materialColorsButton.Text = "Enable Material Colors";
             this.materialColorsButton.CheckedChanged += new System.EventHandler(this.materialColorsButton_CheckedChanged);
             // 
-            // moveToStartButton
-            // 
-            this.moveToStartButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.moveToStartButton.Image = global::SAModel.SALVL.Properties.Resources.startpos;
-            this.moveToStartButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.moveToStartButton.Name = "moveToStartButton";
-            this.moveToStartButton.Size = new System.Drawing.Size(40, 40);
-            this.moveToStartButton.Text = "Jump to Start Position";
-            this.moveToStartButton.Click += new System.EventHandler(this.moveToStartButton_Click);
-            // 
             // showHintsButton
             // 
             this.showHintsButton.Checked = true;
@@ -1865,6 +1925,16 @@
             this.showHintsButton.Text = "Show Hints";
             this.showHintsButton.Click += new System.EventHandler(this.showHintsButton_Click);
             // 
+            // moveToStartButton
+            // 
+            this.moveToStartButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.moveToStartButton.Image = global::SAModel.SALVL.Properties.Resources.startpos;
+            this.moveToStartButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.moveToStartButton.Name = "moveToStartButton";
+            this.moveToStartButton.Size = new System.Drawing.Size(40, 40);
+            this.moveToStartButton.Text = "Jump to Start Position";
+            this.moveToStartButton.Click += new System.EventHandler(this.moveToStartButton_Click);
+            // 
             // settingsButton
             // 
             this.settingsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1875,29 +1945,76 @@
             this.settingsButton.Text = "Preferences";
             this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 43);
+            // 
+            // prevFrameButton
+            // 
+            this.prevFrameButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.prevFrameButton.Image = global::SAModel.SALVL.Properties.Resources.prevframe;
+            this.prevFrameButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.prevFrameButton.Name = "prevFrameButton";
+            this.prevFrameButton.Size = new System.Drawing.Size(40, 40);
+            this.prevFrameButton.Text = "Previous Animation Frame";
+            this.prevFrameButton.Click += new System.EventHandler(this.prevFrameButton_Click);
+			this.prevFrameButton.Enabled = false;
+			// 
+			// playAnimButton
+			// 
+			this.playAnimButton.CheckOnClick = true;
+            this.playAnimButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.playAnimButton.Image = global::SAModel.SALVL.Properties.Resources.playanim;
+            this.playAnimButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.playAnimButton.Name = "playAnimButton";
+            this.playAnimButton.Size = new System.Drawing.Size(40, 40);
+            this.playAnimButton.Text = "Play/Pause Animation";
+            this.playAnimButton.CheckedChanged += new System.EventHandler(this.playAnimButton_CheckedChanged);
+			this.playAnimButton.Enabled = false;
+			// 
+			// nextFrameButton
+			// 
+			this.nextFrameButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.nextFrameButton.Image = global::SAModel.SALVL.Properties.Resources.nextframe;
+            this.nextFrameButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.nextFrameButton.Name = "nextFrameButton";
+            this.nextFrameButton.Size = new System.Drawing.Size(40, 40);
+            this.nextFrameButton.Text = "Next Animation Frame";
+            this.nextFrameButton.Click += new System.EventHandler(this.nextFrameButton_Click);
+			this.nextFrameButton.Enabled = false;
+			// 
+			// resetAnimButton
+			// 
+			this.resetAnimButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.resetAnimButton.Image = global::SAModel.SALVL.Properties.Resources.resetanim;
+            this.resetAnimButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.resetAnimButton.Name = "resetAnimButton";
+            this.resetAnimButton.Size = new System.Drawing.Size(40, 40);
+            this.resetAnimButton.Text = "Reset Animation Frame";
+            this.resetAnimButton.Click += new System.EventHandler(this.resetAnimButton_Click);
+			this.resetAnimButton.Enabled = false;
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 43);
+            // 
             // BackgroundPanel
             // 
             this.BackgroundPanel.AutoSize = true;
             this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
+            this.BackgroundPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BackgroundPanel.Name = "BackgroundPanel";
-            this.BackgroundPanel.Size = new System.Drawing.Size(1141, 612);
+            this.BackgroundPanel.Size = new System.Drawing.Size(1331, 706);
             this.BackgroundPanel.TabIndex = 2;
-            // 
-            // forceClipLevelToAllToolStripMenuItem
-            // 
-            this.forceClipLevelToAllToolStripMenuItem.Name = "forceClipLevelToAllToolStripMenuItem";
-            this.forceClipLevelToAllToolStripMenuItem.Size = new System.Drawing.Size(196, 30);
-            this.forceClipLevelToAllToolStripMenuItem.Text = "Force Clip Level to All";
-            this.forceClipLevelToAllToolStripMenuItem.ToolTipText = "Force the Clip Level setting to All in all SET items. Useful for Dreamcast compat" +
-    "ibility.";
-            this.forceClipLevelToAllToolStripMenuItem.Click += new System.EventHandler(this.forceClipLevelToAllToolStripMenuItem_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1141, 612);
+            this.ClientSize = new System.Drawing.Size(1331, 706);
             this.Controls.Add(this.PropertiesSplitter);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -1905,6 +2022,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "SALVL";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -1913,8 +2031,8 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
-			this.Resize += new System.EventHandler(this.MainForm_Resize);
-			this.menuStrip1.ResumeLayout(false);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
             this.PropertiesSplitter.Panel1.ResumeLayout(false);
@@ -2112,6 +2230,16 @@
 		private System.Windows.Forms.ToolStripMenuItem wholeLevelToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem forceClipLevelToAllToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addLevelAnimationToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem layer_levelAnimationsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem levelAnimationToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton playAnimButton;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripButton prevFrameButton;
+		private System.Windows.Forms.ToolStripButton nextFrameButton;
+		private System.Windows.Forms.ToolStripButton resetAnimButton;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 	}
 }
 

@@ -172,7 +172,27 @@ namespace SAModel.SALVL
                     UpdateCameraOSD();
                     break;
 
-                default:
+				case ("Next Animation Frame"):
+					NextAnimationFrame();
+					osd.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+					break;
+
+				case ("Previous Animation Frame"):
+					PreviousAnimationFrame();
+					osd.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+					break;
+
+				case ("Reset Animation Frame"):
+					ResetAnimationFrame();
+					osd.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+					break;
+
+				case ("Play/Pause Animation"):
+					playAnimButton.Checked = !playAnimButton.Checked;
+					osd.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+					break;
+
+				default:
                     break;
             }
 
@@ -365,10 +385,31 @@ namespace SAModel.SALVL
                     }
                 }
             }
-            #endregion
+			#endregion
 
-            #region Picking Start Positions
-            if (LevelData.StartPositions != null)
+			#region Picking Level Animations
+			if (LevelData.LevelAnims != null)
+			{
+				for (int i = 0; i < LevelData.LevelAnimCount; i++)
+				{
+					bool display = false;
+					if (visibleToolStripMenuItem.Checked || allToolStripMenuItem.Checked)
+						display = true;
+					if (display && layer_levelAnimationsToolStripMenuItem.Checked)
+					{
+						hit = LevelData.GetLevelAnimAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = LevelData.GetLevelAnimAtIndex(i);
+						}
+					}
+				}
+			}
+			#endregion
+
+			#region Picking Start Positions
+			if (LevelData.StartPositions != null)
             {
                 hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
                 if (hit < closesthit)

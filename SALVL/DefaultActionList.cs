@@ -161,7 +161,51 @@ namespace SAModel.SALVL
 				IsSearchable = true,
 				Modifiers = Keys.None,
 				Synonyms = new string[] { "mouselook", "rotate" }
-			}
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Next Animation Frame",
+				MainKey = Keys.OemCloseBrackets,
+				AltKey = Keys.None,
+				Description = "Next Frame in Level Animation",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Previous Animation Frame",
+				MainKey = Keys.OemOpenBrackets,
+				AltKey = Keys.None,
+				Description = "Previous Frame in Level Animation",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Reset Animation Frame",
+				MainKey = Keys.Back,
+				AltKey = Keys.None,
+				Description = "Set Level Animation Frame to 0",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
+				Name = "Play/Pause Animation",
+				MainKey = Keys.P,
+				AltKey = Keys.None,
+				Description = "Play or Pause the Level Animation",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
 		};
 
 		public static ActionKeyMapping[] DefaultActionMapping { get { return defaultActionMapping; } }

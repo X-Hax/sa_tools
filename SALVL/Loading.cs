@@ -280,19 +280,24 @@ namespace SAModel.SALVL
             InitializeDirect3D();
             selectedItems.Clear();
             sceneGraphControl1.InitSceneControl(selectedItems);
-            PointHelper.Instances.Clear();
+			PointHelper.Instances.Clear();
             LevelData.leveltexs = null;
             d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Black.ToRawColorBGRA(), 1, 0);
             LevelData.geo = land;
             LevelData.ClearLevelItems();
-            LevelData.LevelSplines = new List<SplineData>();
+			LevelData.ClearLevelAnims();
+			LevelData.LevelSplines = new List<SplineData>();
             LevelData.ObjDefs = new List<ObjectDefinition>();
             SplineData.Init();
             for (int i = 0; i < LevelData.geo.COL.Count; i++)
             {
                 LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
             }
-            transformGizmo = new TransformGizmo();
+			for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+			{
+				LevelData.AddLevelAnim(new LevelAnim(LevelData.geo.Anim[i], i, selectedItems));
+			}
+			transformGizmo = new TransformGizmo();
             bool isGeometryPresent = LevelData.geo != null;
             bool isSETPreset = !LevelData.SETItemsIsNull();
             bool isDeathZonePresent = LevelData.DeathZones != null;
@@ -321,8 +326,9 @@ namespace SAModel.SALVL
             addToolStripMenuItem1.Enabled = true;
             addToolStripMenuItem.Enabled = true;
             unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
-
-            isStageLoaded = true;
+			AnimationPlaying = playAnimButton.Checked = false;
+			playAnimButton.Enabled = prevFrameButton.Enabled = nextFrameButton.Enabled = resetAnimButton.Enabled = LevelData.LevelAnimCount > 0;
+			isStageLoaded = true;
             selectedItems.SelectionChanged += SelectionChanged;
             UseWaitCursor = false;
             Enabled = true;
@@ -419,7 +425,9 @@ namespace SAModel.SALVL
             LevelData.InvalidateRenderState();
             unloadTexturesToolStripMenuItem.Enabled = LevelData.Textures != null;
             progress.StepProgress();
-            JumpToStartPos();
+			AnimationPlaying = playAnimButton.Checked = false;
+			playAnimButton.Enabled = prevFrameButton.Enabled = nextFrameButton.Enabled = resetAnimButton.Enabled = LevelData.LevelAnimCount > 0;
+			JumpToStartPos();
         }
 
         private void LoadStageLights(SA1LevelAct levelact)
@@ -549,12 +557,18 @@ namespace SAModel.SALVL
                 {
                     LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
                     LevelData.ClearLevelItems();
+					LevelData.ClearLevelAnims();
 
-                    for (int i = 0; i < LevelData.geo.COL.Count; i++)
+					for (int i = 0; i < LevelData.geo.COL.Count; i++)
                     {
                         LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
                     }
-                }
+
+					for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+					{
+						LevelData.AddLevelAnim(new LevelAnim(LevelData.geo.Anim[i], i, selectedItems));
+					}
+				}
 
                 // Initialize level textures
                 LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();

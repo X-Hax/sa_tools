@@ -34,6 +34,7 @@ namespace SAModel.SALVL
         bool initerror = false;
 		bool NeedRedraw;
 		bool NeedPropertyRefresh;
+		bool AnimationPlaying;
 
         public MainForm()
 		{
@@ -139,6 +140,7 @@ namespace SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			AnimationTimer = new AccurateTimer(this, new Action(AdvanceAnimation), 16);
 			settingsfile = Settings_SALVL.Load();
 			progress = new ProgressDialog("SALVL", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
@@ -378,7 +380,7 @@ namespace SAModel.SALVL
 			}
 			catch { };
 			AppConfig.Save();
-			//AnimationTimer.Stop();
+			AnimationTimer.Stop();
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -583,12 +585,12 @@ namespace SAModel.SALVL
 
 		private void levelPieceToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ImportToStage();
+			ImportLevelItem();
 		}
 
 		private void toStageToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ImportToStage();
+			ImportLevelItem();
 		}
 
        	private void importToModelLibrary_Click(object sender, EventArgs e)
@@ -1654,6 +1656,7 @@ namespace SAModel.SALVL
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
 				LoadStageLights(levelact);
+			NeedRedraw = true;
 		}
 
 		private void eveningToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1664,6 +1667,7 @@ namespace SAModel.SALVL
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
 				LoadStageLights(levelact);
+			NeedRedraw = true;
 		}
 
 		private void nightToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1674,6 +1678,7 @@ namespace SAModel.SALVL
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
 				LoadStageLights(levelact);
+			NeedRedraw = true;
 		}
 
 		private void exportAssimpSelectedItemsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1706,6 +1711,15 @@ namespace SAModel.SALVL
 							string path = Path.Combine(folderBrowser.SelectedPath, levelItem.CollisionData.Model.Name + ".sa1mdl");
 
 							ModelFile.CreateFile(path, levelItem.CollisionData.Model, null, "", "", null, ModelFormat.Basic);
+						}
+						else if (selectedItem is LevelAnim)
+						{
+							LevelAnim levelAnim = selectedItem as LevelAnim;
+							string path = Path.Combine(folderBrowser.SelectedPath, levelAnim.GeoAnimationData.ActionName + ".sa1mdl");
+
+							ModelFile.CreateFile(path, levelAnim.GeoAnimationData.Model, null, "", "", null, ModelFormat.Basic);
+							levelAnim.GeoAnimationData.Animation.Save(Path.ChangeExtension(path, ".saanim"));
+							File.WriteAllText(Path.ChangeExtension(path, ".action"), Path.GetFileName(Path.ChangeExtension(path, ".saanim")));
 						}
 					}
 				}
@@ -1990,7 +2004,7 @@ namespace SAModel.SALVL
 
 		private void wholeLevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            ImportToStage(true);
+            ImportLevelItem(true);
         }
 
         private void UpdateMRUList(string filename)
@@ -2023,6 +2037,72 @@ namespace SAModel.SALVL
             foreach (SETItem item in itemsToChange)
                 item.ClipLevel = 0;
 			NeedPropertyRefresh = true;
+		}
+
+		private void levelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportLevelAnimation();
+		}
+
+		private void playAnimButton_CheckedChanged(object sender, EventArgs e)
+		{
+			AnimationPlaying = playAnimButton.Checked;
+		}
+
+		private void NextAnimationFrame()
+		{
+			AnimationPlaying = playAnimButton.Checked = false;
+			if (!isStageLoaded || LevelData.geo.Anim == null)
+				return;
+			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
+			{
+				geoanim.AnimationFrame = (float)Math.Ceiling(geoanim.AnimationFrame + 1.0f);
+				if (geoanim.AnimationFrame >= geoanim.MaxFrame)
+					geoanim.AnimationFrame = 0;
+			}
+			NeedRedraw = true;
+			NeedPropertyRefresh = true;
+		}
+
+		private void PreviousAnimationFrame()
+		{
+			AnimationPlaying = playAnimButton.Checked = false;
+			if (!isStageLoaded || LevelData.geo.Anim == null)
+				return;
+			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
+			{
+				geoanim.AnimationFrame = (float)Math.Floor(geoanim.AnimationFrame - 1.0f);
+				if (geoanim.AnimationFrame < 0)
+					geoanim.AnimationFrame = geoanim.MaxFrame;
+			}
+			NeedRedraw = true;
+			NeedPropertyRefresh = true;
+		}
+
+		private void ResetAnimationFrame()
+		{
+			AnimationPlaying = playAnimButton.Checked = false;
+			if (!isStageLoaded || LevelData.geo.Anim == null)
+				return;
+			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
+				geoanim.AnimationFrame = 0;
+			NeedRedraw = true;
+			NeedPropertyRefresh = true;
+		}
+
+		private void resetAnimButton_Click(object sender, EventArgs e)
+		{
+			ResetAnimationFrame();
+		}
+
+		private void prevFrameButton_Click(object sender, EventArgs e)
+		{
+			PreviousAnimationFrame();
+		}
+
+		private void nextFrameButton_Click(object sender, EventArgs e)
+		{
+			NextAnimationFrame();
 		}
 	}
 }

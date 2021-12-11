@@ -2,28 +2,20 @@
 using SAModel.Direct3D;
 using Point = System.Drawing.Point;
 using System.Runtime.InteropServices;
+using SAModel.SAEditorCommon.DataTypes;
 
 namespace SAModel.SALVL
 {
 	public partial class MainForm
 	{
+		SAModel.SAEditorCommon.AccurateTimer AnimationTimer;
+
 		void HandleWaitLoop(object sender, EventArgs e)
 		{
 			if (!isStageLoaded)
 				return;
 			while (IsApplicationIdle())
 			{
-				/*
-				if (AnimationPlaying && animation != null)
-				{
-					animframe += animspeed;
-					if (animframe >= animation.Frames)
-						animframe = 0;
-					else if (animframe < 0)
-						animframe = animation.Frames - 1;
-					NeedRedraw = true;
-				}
-				*/
 				if (NeedRedraw)
 				{
 					DrawLevel();
@@ -54,6 +46,29 @@ namespace SAModel.SALVL
 		{
 			NativeMessage result;
 			return PeekMessage(out result, IntPtr.Zero, (uint)0, (uint)0, (uint)0) == 0;
+		}
+
+		private void AdvanceAnimation()
+		{
+			if (AnimationPlaying && LevelData.geo.Anim != null)
+			{
+				foreach (GeoAnimData geoanim in LevelData.geo.Anim)
+				{
+					geoanim.AnimationFrame += geoanim.AnimationSpeed * 0.96f;
+					if (geoanim.AnimationFrame >= geoanim.MaxFrame)
+						geoanim.AnimationFrame = 0;
+				}
+				NeedRedraw = true;
+				System.Collections.Generic.List<Item> selection = selectedItems.GetSelection();
+				if (selection.Count == 0)
+					return;
+				foreach (Item item in selection)
+				{
+					if (item is LevelAnim)
+						NeedPropertyRefresh = true;
+					break;
+				}
+			}
 		}
 	}
 }

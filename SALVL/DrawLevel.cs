@@ -67,9 +67,23 @@ namespace SAModel.SALVL
                         renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
                 }
             }
-            #endregion
 
-            if (LevelData.StartPositions != null) renderlist_geo.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
+			if (LevelData.LevelAnims != null)
+			{
+				foreach (LevelAnim item in LevelData.LevelAnims)
+				{
+					bool display = false;
+
+					if (visibleToolStripMenuItem.Checked || allToolStripMenuItem.Checked)
+						display = true;
+
+					if (display)
+						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
+				}
+			}
+			#endregion
+
+			if (LevelData.StartPositions != null) renderlist_geo.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
 
             #region Adding Death Zones
             if (LevelData.DeathZones != null & viewDeathZonesToolStripMenuItem.Checked)

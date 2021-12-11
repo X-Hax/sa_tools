@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace SAModel
 {
 	public class GeoAnimData
 	{
-		public float Frame { get; set; }
-		public float Step { get; set; }
+		public float AnimationFrame { get; set; }
+		public float AnimationSpeed { get; set; }
 		public float MaxFrame { get; set; }
 		public NJS_OBJECT Model { get; set; }
 		public NJS_MOTION Animation { get; set; }
@@ -27,6 +28,9 @@ namespace SAModel
 		{
 			Model = model;
 			Animation = animation;
+			MaxFrame = animation.Frames;
+			AnimationSpeed = 1.0f;
+			ActionName = "action_" + Extensions.GenerateIdentifier();
 		}
 
 		public GeoAnimData(NJS_ACTION action)
@@ -51,8 +55,8 @@ namespace SAModel
 					mfmt = ModelFormat.Chunk;
 					break;
 			}
-			Frame = ByteConverter.ToSingle(file, address);
-			Step = ByteConverter.ToSingle(file, address + 4);
+			AnimationFrame = ByteConverter.ToSingle(file, address);
+			AnimationSpeed = ByteConverter.ToSingle(file, address + 4);
 			MaxFrame = ByteConverter.ToSingle(file, address + 8);
 			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt, labels, attaches);
 			int actionaddr = (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase);
@@ -71,8 +75,8 @@ namespace SAModel
 		public byte[] GetBytes(uint imageBase, uint modelptr, uint animptr)
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(Frame));
-			result.AddRange(ByteConverter.GetBytes(Step));
+			result.AddRange(ByteConverter.GetBytes((uint)0)); // Animation frame is only used internally
+			result.AddRange(ByteConverter.GetBytes(AnimationSpeed));
 			result.AddRange(ByteConverter.GetBytes(MaxFrame));
 			result.AddRange(ByteConverter.GetBytes(modelptr));
 			result.AddRange(ByteConverter.GetBytes(animptr));
@@ -83,9 +87,9 @@ namespace SAModel
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(Frame.ToC());
+			result.Append("0"); // Animation frame is only used internally
 			result.Append(", ");
-			result.Append(Step.ToC());
+			result.Append(AnimationSpeed.ToC());
 			result.Append(", ");
 			result.Append(MaxFrame.ToC());
 			result.Append(", ");
@@ -96,6 +100,32 @@ namespace SAModel
 			result.Append(TexlistPointer.ToCHex());
 			result.Append(" }");
 			return result.ToString();
+		}
+
+		public void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
+		{
+			if (!labels.Contains(Model.Name))
+			{
+				Model.ToStructVariables(writer, DX, labels, textures);
+				labels.Add(Model.Name);
+			}
+			if (!labels.Contains(Animation.Name))
+			{
+				Animation.ToStructVariables(writer, labels);
+				labels.Add(Animation.Name);
+			}
+			if (!labels.Contains(ActionName))
+			{
+				writer.Write("NJS_ACTION ");
+				writer.Write(ActionName);
+				writer.Write(" = { &");
+				writer.Write(Model.Name);
+				writer.Write(", &");
+				writer.Write(Animation.Name);
+				writer.WriteLine(" };");
+				writer.WriteLine();
+				labels.Add(ActionName);
+			}
 		}
 	}
 }
