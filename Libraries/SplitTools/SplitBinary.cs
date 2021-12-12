@@ -624,6 +624,12 @@ namespace SplitTools.Split
                 case "charactervoicearray":
                     CharaVoiceArray.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath);
                     break;
+				case "minieventarray":
+					if (game == Game.SA2B)
+						MiniEventArray.Load(datafile, address, data.Length).Save(fileOutputPath);
+					else
+						DCMiniEventArray.Load(datafile, address, data.Length).Save(fileOutputPath);
+					break;
                 case "stringarray":
                     {
                         Languages lang = Languages.Japanese;

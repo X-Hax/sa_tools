@@ -1544,6 +1544,132 @@ namespace SplitTools
 		}
 	}
 
+	public static class MiniEventArray
+	{
+		public static MiniEventArrayEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<MiniEventArrayEntry[]>(filename);
+		}
+
+		public static MiniEventArrayEntry[] Load(byte[] file, int address, int count)
+		{
+			MiniEventArrayEntry[] result = new MiniEventArrayEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new MiniEventArrayEntry(file, address);
+				address += MiniEventArrayEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this MiniEventArrayEntry[] soundlist, string filename)
+		{
+			IniSerializer.Serialize(soundlist, filename);
+		}
+	}
+
+	[Serializable]
+	public class MiniEventArrayEntry
+	{
+		public SA2LevelIDs Level { get; set; }
+		[IniAlwaysInclude]
+		public SA2Characters Character { get; set; }
+		public int CutsceneID { get; set; }
+
+		public static int Size { get { return 0x6; } }
+
+		public MiniEventArrayEntry() { }
+
+		public MiniEventArrayEntry(byte[] file, int address)
+		{
+			Level = (SA2LevelIDs)ByteConverter.ToUInt16(file, address);
+			address += sizeof(short);
+			Character = (SA2Characters)ByteConverter.ToUInt16(file, address);
+			address += sizeof(short);
+			CutsceneID = ByteConverter.ToUInt16(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Level);
+			sb.Append(", ");
+			sb.Append(Character);
+			sb.Append(", ");
+			sb.Append(CutsceneID);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public static class DCMiniEventArray
+	{
+		public static DCMiniEventArrayEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<DCMiniEventArrayEntry[]>(filename);
+		}
+
+		public static DCMiniEventArrayEntry[] Load(byte[] file, int address, int count)
+		{
+			DCMiniEventArrayEntry[] result = new DCMiniEventArrayEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new DCMiniEventArrayEntry(file, address);
+				address += DCMiniEventArrayEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this DCMiniEventArrayEntry[] soundlist, string filename)
+		{
+			IniSerializer.Serialize(soundlist, filename);
+		}
+	}
+
+	[Serializable]
+	public class DCMiniEventArrayEntry
+	{
+		public SA2DCLevelIDs Level { get; set; }
+		[IniAlwaysInclude]
+		public SA2Characters Character { get; set; }
+		public int CutsceneID { get; set; }
+
+		public static int Size { get { return 0x6; } }
+
+		public DCMiniEventArrayEntry() { }
+
+		public DCMiniEventArrayEntry(byte[] file, int address)
+		{
+			Level = (SA2DCLevelIDs)ByteConverter.ToUInt16(file, address);
+			address += sizeof(short);
+			Character = (SA2Characters)ByteConverter.ToUInt16(file, address);
+			address += sizeof(short);
+			CutsceneID = ByteConverter.ToUInt16(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Level);
+			sb.Append(", ");
+			sb.Append(Character);
+			sb.Append(", ");
+			sb.Append(CutsceneID);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public static class StringArray
 	{
 		public static string[] Load(string filename)

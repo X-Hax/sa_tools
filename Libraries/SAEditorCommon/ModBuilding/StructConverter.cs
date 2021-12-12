@@ -47,6 +47,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "soundlist", "Sound List" },
 			{ "charactersoundarray", "Character Sound Array" },
 			{ "charactervoicearray", "Character Voice Array" },
+			{ "minieventarray", "Mini-Event Array"},
 			{ "stringarray", "String Array" },
 			{ "nextlevellist", "Next Level List" },
 			{ "cutscenetext", "Cutscene Text" },
@@ -959,6 +960,30 @@ namespace SAModel.SAEditorCommon.StructConverter
 									objs.Add(obj.ToStruct());
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
+							}
+							break;
+						case "minieventarray":
+							{
+								if (SA2B)
+								{
+									MiniEventArrayEntry[] list = MiniEventArray.Load(data.Filename);
+									writer.WriteLine("MiniEventArray {0}[] = {{", name);
+									List<string> objs = new List<string>(list.Length);
+									foreach (MiniEventArrayEntry obj in list)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+								}
+								else
+								{
+									DCMiniEventArrayEntry[] list = DCMiniEventArray.Load(data.Filename);
+									writer.WriteLine("MiniEventArray {0}[] = {{", name);
+									List<string> objs = new List<string>(list.Length);
+									foreach (DCMiniEventArrayEntry obj in list)
+										objs.Add(obj.ToStruct());
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+								}
 							}
 							break;
 						case "enemyanimationlist":
