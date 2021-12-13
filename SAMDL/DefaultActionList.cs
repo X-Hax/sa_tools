@@ -190,6 +190,17 @@ namespace SAModel.SAMDL
 			},
 			new ActionKeyMapping()
 			{
+				Name = "Reset Animation Frame",
+				MainKey = Keys.Back,
+				AltKey = Keys.None,
+				Description = "Previous Frame in animation",
+				FireType = ActionFireType.OnPress,
+				IsSearchable = true,
+				Modifiers = Keys.None,
+				Synonyms = new string[] { }
+			},
+			new ActionKeyMapping()
+			{
 				Name = "Play/Pause Animation",
 				MainKey = Keys.P,
 				AltKey = Keys.None,

@@ -260,7 +260,8 @@ namespace SAModel.SAMDL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			AnimationTimer = new AccurateTimer(this, new Action(AdvanceAnimation), 16);
+			AnimationTimer = new HiResTimer(16.667f);
+			AnimationTimer.Elapsed += new EventHandler<HiResTimerElapsedEventArgs>(AdvanceAnimation);
 			log.DeleteLogFile();
             log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
             log.Add("Build Date: ");
@@ -466,7 +467,7 @@ namespace SAModel.SAMDL
 			modelFile = null;
 			animation = null;
 			animations = null;
-			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
+			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
 			animnum = -1;
 			animframe = 0;
 			// Model file
@@ -488,7 +489,7 @@ namespace SAModel.SAMDL
 						rootSiblingMode = false;
 					}
 					animations = new List<NJS_MOTION>(modelFile.Animations);
-					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+					if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 				}
 				catch (Exception ex)
 				{
@@ -596,7 +597,7 @@ namespace SAModel.SAMDL
 						LoadBinFile(newFile);
 						animations = new List<NJS_MOTION>();
 						if (animations.Count > 0)
-							buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+							buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 						break;
 					// Project file
 					case ".sap":
@@ -690,7 +691,7 @@ namespace SAModel.SAMDL
 													i = ByteConverter.ToInt32(file, address);
 												}
 												animations = new List<NJS_MOTION>(anis.Values);
-												if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+												if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 											}
 										}
 									}
@@ -752,14 +753,14 @@ namespace SAModel.SAMDL
 				}
 				if (modelinfo.checkBoxLoadMotion.Checked)
 					animations = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
-					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+					if (animations != null && animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 			}
 			else if (modelinfo.radioButtonAction.Checked)
 			{
 				action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				model = action.Model;
 				animations = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null) };
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 			}
 			else
 			{
@@ -1083,7 +1084,7 @@ namespace SAModel.SAMDL
 			model.Morph = false;
             RebuildModelCache();
 			selectedObject = model;
-			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = false;
+			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
 			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
@@ -1451,6 +1452,8 @@ namespace SAModel.SAMDL
 			animframe = (float)Math.Floor(animframe + 1);
 			if (animframe == animation.Frames) animframe = 0;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			AnimationTimer.Stop();
+			AnimationPlaying = buttonPlayAnimation.Checked = false;
 			NeedRedraw = true;
 		}
 
@@ -1460,6 +1463,18 @@ namespace SAModel.SAMDL
 			animframe = (float)Math.Floor(animframe - 1);
 			if (animframe < 0) animframe = animation.Frames - 1;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			AnimationTimer.Stop();
+			AnimationPlaying = buttonPlayAnimation.Checked = false;
+			NeedRedraw = true;
+		}
+
+		private void ResetFrame()
+		{
+			if (animations == null || animation == null) return;
+			animframe = 0;
+			osd.UpdateOSDItem("Reset animation frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			AnimationTimer.Stop();
+			AnimationPlaying = buttonPlayAnimation.Checked = false;
 			NeedRedraw = true;
 		}
 
@@ -1467,15 +1482,16 @@ namespace SAModel.SAMDL
 		{
 			if (animations == null || animation == null) return;
 			AnimationPlaying = !AnimationPlaying;
+			buttonPlayAnimation.Checked = AnimationPlaying;
 			if (AnimationPlaying)
 			{
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Checked = true;
+				AnimationTimer.Start();
 			}
 			else
 			{
 				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Checked = false;
+				AnimationTimer.Stop();
 			}
 			NeedRedraw = true;
 		}
@@ -1620,6 +1636,10 @@ namespace SAModel.SAMDL
 
 				case ("Next Frame"):
 					NextFrame();
+					break;
+
+				case ("Reset Animation Frame"):
+					ResetFrame();
 					break;
 
 				case ("Play/Pause Animation"):
@@ -2091,6 +2111,8 @@ namespace SAModel.SAMDL
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			NeedRedraw = true;
+			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
+			treeView1.Refresh();
 			unsaved = true;
 		}
 
@@ -2324,7 +2346,7 @@ namespace SAModel.SAMDL
 
             if (!selected)
 			{
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 				selectedObject = model;
 				AddModelToLibrary(model, false);
 			}
@@ -2632,14 +2654,15 @@ namespace SAModel.SAMDL
 						break;
 				}
 
-				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = true;
+				if (animations.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 
 				//Play our animation in the viewport after loading it. To make sure this will work, we need to disable and reenable it.
 				if (animations == null || animation == null) return;
 				AnimationPlaying = false;
 				buttonPlayAnimation.Checked = false;
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Enabled = buttonPlayAnimation.Checked = true;
+				buttonPlayAnimation.Enabled = AnimationPlaying = buttonPlayAnimation.Checked = true;
+				AnimationTimer.Start();
 				NeedRedraw = true;
 			}
 			saveAnimationsToolStripMenuItem.Enabled = animations.Count > 0;
@@ -2892,6 +2915,11 @@ namespace SAModel.SAMDL
 		private void buttonNextFrame_Click(object sender, EventArgs e)
 		{
 			NextFrame();
+		}
+
+		private void buttonResetFrame_Click(object sender, EventArgs e)
+		{
+			ResetFrame();
 		}
 
 		private void showHintsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -3776,7 +3804,7 @@ namespace SAModel.SAMDL
             UpdateTexlist();
         }
 
-        private void LoadModelInfo(ModelLoadInfo info)
+		private void LoadModelInfo(ModelLoadInfo info)
         {
             if (info == null)
                 return;

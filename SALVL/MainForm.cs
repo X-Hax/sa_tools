@@ -140,7 +140,8 @@ namespace SAModel.SALVL
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			AnimationTimer = new AccurateTimer(this, new Action(AdvanceAnimation), 16);
+			AnimationTimer = new HiResTimer(16.667f);
+			AnimationTimer.Elapsed += new EventHandler<HiResTimerElapsedEventArgs>(AdvanceAnimation);
 			settingsfile = Settings_SALVL.Load();
 			progress = new ProgressDialog("SALVL", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
@@ -2039,19 +2040,10 @@ namespace SAModel.SALVL
 			NeedPropertyRefresh = true;
 		}
 
-		private void levelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ImportLevelAnimation();
-		}
-
-		private void playAnimButton_CheckedChanged(object sender, EventArgs e)
-		{
-			AnimationPlaying = playAnimButton.Checked;
-		}
-
 		private void NextAnimationFrame()
 		{
 			AnimationPlaying = playAnimButton.Checked = false;
+			AnimationTimer.Stop();
 			if (!isStageLoaded || LevelData.geo.Anim == null)
 				return;
 			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
@@ -2060,13 +2052,15 @@ namespace SAModel.SALVL
 				if (geoanim.AnimationFrame >= geoanim.MaxFrame)
 					geoanim.AnimationFrame = 0;
 			}
-			NeedRedraw = true;
+			osd.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
 
 		private void PreviousAnimationFrame()
 		{
 			AnimationPlaying = playAnimButton.Checked = false;
+			AnimationTimer.Stop();
 			if (!isStageLoaded || LevelData.geo.Anim == null)
 				return;
 			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
@@ -2075,19 +2069,34 @@ namespace SAModel.SALVL
 				if (geoanim.AnimationFrame < 0)
 					geoanim.AnimationFrame = geoanim.MaxFrame;
 			}
-			NeedRedraw = true;
+			osd.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
 
 		private void ResetAnimationFrame()
 		{
 			AnimationPlaying = playAnimButton.Checked = false;
+			AnimationTimer.Stop();
 			if (!isStageLoaded || LevelData.geo.Anim == null)
 				return;
 			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
 				geoanim.AnimationFrame = 0;
-			NeedRedraw = true;
+			osd.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
+		}
+
+		private void PlayPause()
+		{
+			AnimationPlaying = !AnimationPlaying;
+			playAnimButton.Checked = AnimationPlaying;
+			if (AnimationPlaying)
+				AnimationTimer.Start();
+			else
+				AnimationTimer.Stop();
+			osd.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			NeedUpdateAnimation = true;
 		}
 
 		private void resetAnimButton_Click(object sender, EventArgs e)
@@ -2103,6 +2112,16 @@ namespace SAModel.SALVL
 		private void nextFrameButton_Click(object sender, EventArgs e)
 		{
 			NextAnimationFrame();
+		}
+
+		private void levelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportLevelAnimation();
+		}
+
+		private void playAnimButton_Click(object sender, EventArgs e)
+		{
+			PlayPause();
 		}
 	}
 }

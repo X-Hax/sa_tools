@@ -71,6 +71,7 @@ namespace SA2EventViewer
 		int scenenum = 0;
 		float animframe = -1;
 		float nextframe = -1;
+		float animspeed = 0.5f;
 		List<List<Mesh[]>> meshes;
 		List<Mesh[]> bigmeshes;
 		NJS_OBJECT cammodel;
@@ -96,7 +97,8 @@ namespace SA2EventViewer
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			AnimationTimer = new AccurateTimer(this, new Action(PlayAnimationTimer), 16);
+			AnimationTimer = new HiResTimer(16.667f);
+			AnimationTimer.Elapsed += new EventHandler<HiResTimerElapsedEventArgs>(AdvanceAnimation);
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
@@ -152,6 +154,7 @@ namespace SA2EventViewer
 					Playing = false;
 					scenenum = 0;
 					nextframe = 0;
+					AnimationTimer.Stop();
 					animframe = -1;
 					LoadFile(a.FileName);
 				}
@@ -503,6 +506,39 @@ namespace SA2EventViewer
 		#endregion
 
 		#region Keyboard/Mouse Methods
+		private void panel1_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (!loaded) return;
+			actionInputCollector.KeyDown(e.KeyCode);
+		}
+
+		private void panel1_KeyUp(object sender, KeyEventArgs e)
+		{
+			actionInputCollector.KeyUp(e.KeyCode);
+		}
+
+		private void Panel1_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (!loaded) return;
+			bool mouseWrapScreen = false;
+			EditorCamera.CameraUpdateFlags camresult = EditorCamera.CameraUpdateFlags.None;
+			if (!eventcamera || animframe == -1)
+			{
+				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
+				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
+			}
+			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedObject != null)
+				propertyGrid1.Refresh();
+			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
+				NeedRedraw = true;
+		}
+
+		private void panel1_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Middle) 
+				actionInputCollector.KeyUp(Keys.MButton);
+		}
+		#endregion
 
 		private void NextAnimation()
 		{
@@ -554,7 +590,7 @@ namespace SA2EventViewer
 
 		private void PreviousFrame()
 		{
-			if (scenenum > 0 && !Playing)
+			if (scenenum > 0)
 			{
 				animframe = (float)Math.Floor(animframe - 1);
 				if (animframe <= -1)
@@ -565,6 +601,8 @@ namespace SA2EventViewer
 					animframe = @event.Scenes[scenenum].FrameCount - 1;
 				}
 				nextframe = animframe;
+				AnimationTimer.Stop();
+				Playing = false;
 				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				NeedRedraw = true;
 			}
@@ -572,7 +610,7 @@ namespace SA2EventViewer
 
 		private void NextFrame()
 		{
-			if (scenenum > 0 && !Playing)
+			if (scenenum > 0)
 			{
 				animframe = (float)Math.Floor(animframe + 1);
 				if (animframe == @event.Scenes[scenenum].FrameCount)
@@ -583,8 +621,10 @@ namespace SA2EventViewer
 					animframe = -1;
 				}
 				nextframe = animframe;
+				AnimationTimer.Stop();
+				Playing = false;
 				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				NeedRedraw = true;
+				NeedRedraw = true;	
 			}
 		}
 
@@ -602,11 +642,13 @@ namespace SA2EventViewer
 			{
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayScene.Checked = true;
+				AnimationTimer.Start();
 			}
 			else
 			{
 				osd.UpdateOSDItem("Stop animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonPlayScene.Checked = false;
+				AnimationTimer.Stop();
 			}
 			NeedRedraw = true;
 		}
@@ -770,90 +812,20 @@ namespace SA2EventViewer
 			}
 		}
 
-		private void panel1_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (!loaded) return;
-			actionInputCollector.KeyDown(e.KeyCode);
-		}
-
-		private void panel1_KeyUp(object sender, KeyEventArgs e)
-		{
-			actionInputCollector.KeyUp(e.KeyCode);
-		}
-
-		private void Panel1_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (!loaded) return;
-			bool mouseWrapScreen = false;
-			EditorCamera.CameraUpdateFlags camresult = EditorCamera.CameraUpdateFlags.None;
-			if (!eventcamera || animframe == -1)
-			{
-				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
-				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
-			}
-			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedObject != null)
-				propertyGrid1.Refresh();
-			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
-				NeedRedraw = true;
-		}
-
-		private void panel1_MouseUp(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Middle) actionInputCollector.KeyUp(Keys.MButton);
-		}
-		#endregion
-
 		// Increase or decrease animation frame on key held
 		private void PlayAnimationHold(bool negative = false)
 		{
 			if (!loaded)
 				return;
 			if (negative)
-				nextframe -= (float)numericUpDown1.Value / 2.083f;
+				nextframe -= animspeed;
 			else
-				nextframe += (float)numericUpDown1.Value / 2.083f;
-			AdvanceAnimation();
+				nextframe += animspeed;
+			NeedUpdateAnimation = true;
+			NeedRedraw = true;
 		}
 
 		// Increate or decrease animation frame using the timer
-		private void PlayAnimationTimer()
-		{
-			if (!Playing || !loaded)
-				return;
-			if (numericUpDown1.Value < 0)
-				nextframe -= (float)numericUpDown1.Value / 2.083f;
-			else
-				nextframe += (float)numericUpDown1.Value / 2.083f;
-			AdvanceAnimation();
-		}
-
-		private void AdvanceAnimation()
-		{
-			if (!loaded)
-				return;
-
-			float oldanimframe = animframe;
-			animframe = nextframe;
-			if (animframe != oldanimframe)
-			{
-				if (animframe < 0)
-				{
-					scenenum--;
-					if (scenenum == 0)
-						scenenum = @event.Scenes.Count - 1;
-					animframe = @event.Scenes[scenenum].FrameCount - 1;
-					nextframe = (float)Math.Floor(animframe + 1);
-				}
-				else if (animframe >= @event.Scenes[scenenum].FrameCount)
-				{
-					scenenum++;
-					if (scenenum == @event.Scenes.Count)
-						scenenum = 1;
-					nextframe = animframe = 0;
-				}
-				NeedRedraw = true;
-			}
-		}
 
 		private void panel1_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -1172,6 +1144,16 @@ namespace SA2EventViewer
 			optionsEditor.Show();
 			optionsEditor.BringToFront();
 			optionsEditor.Focus();
+		}
+
+		private void numericUpDown1_ValueChanged(Object sender, EventArgs e)
+		{
+			animspeed = (float)numericUpDown1.Value / 2.0f;
+		}
+
+		private void MessageTimer_Tick(object sender, EventArgs e)
+		{
+			if (osd != null && osd.UpdateTimer()) NeedRedraw = true;
 		}
 	}
 }

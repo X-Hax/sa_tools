@@ -7,14 +7,28 @@ namespace SAModel.SAMDL
 {
 	public partial class MainForm
 	{
-		SAModel.SAEditorCommon.AccurateTimer AnimationTimer;
+		SAModel.SAEditorCommon.HiResTimer AnimationTimer;
+		bool NeedUpdateAnimation;
 
-		public void HandleWaitLoop(object sender, EventArgs e)
+		void HandleWaitLoop(object sender, EventArgs e)
 		{
 			if (!loaded)
 				return;
 			while (IsApplicationIdle())
 			{
+				if (NeedUpdateAnimation)
+				{
+					if (AnimationPlaying && animation != null)
+					{
+						animframe += animspeed;
+						if (animframe >= animation.Frames - 1)
+							animframe = 0;
+						else if (animframe < 0)
+							animframe = animation.Frames - 1;
+						NeedRedraw = true;
+					}
+					NeedUpdateAnimation = false;
+				}
 				if (hasWeight)
 				{
 					if (animation != null)
@@ -50,17 +64,9 @@ namespace SAModel.SAMDL
 			return PeekMessage(out result, IntPtr.Zero, (uint)0, (uint)0, (uint)0) == 0;
 		}
 
-		private void AdvanceAnimation()
+		private void AdvanceAnimation(object obj, SAEditorCommon.HiResTimerElapsedEventArgs args)
 		{
-			if (AnimationPlaying && animation != null)
-			{
-				animframe += animspeed * 0.96f; // 0.96 because the 16ms timer is 62.5 FPS
-				if (animframe >= animation.Frames)
-					animframe -= animation.Frames;
-				else if (animframe < 0)
-					animframe += animation.Frames;
-				NeedRedraw = true;
-			}
+			NeedUpdateAnimation = true;
 		}
 	}
 }

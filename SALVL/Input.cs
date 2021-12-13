@@ -174,22 +174,18 @@ namespace SAModel.SALVL
 
 				case ("Next Animation Frame"):
 					NextAnimationFrame();
-					osd.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 					break;
 
 				case ("Previous Animation Frame"):
 					PreviousAnimationFrame();
-					osd.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 					break;
 
 				case ("Reset Animation Frame"):
 					ResetAnimationFrame();
-					osd.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 					break;
 
 				case ("Play/Pause Animation"):
-					playAnimButton.Checked = !playAnimButton.Checked;
-					osd.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+					PlayPause();
 					break;
 
 				default:
@@ -362,8 +358,29 @@ namespace SAModel.SALVL
             Far = Near;
             Far.Z = -1;
 
-            #region Picking Level Items
-            if (LevelData.LevelItems != null)
+			#region Picking Level Animations
+			if (LevelData.LevelAnims != null)
+			{
+				for (int i = 0; i < LevelData.LevelAnimCount; i++)
+				{
+					bool display = false;
+					if (visibleToolStripMenuItem.Checked || allToolStripMenuItem.Checked)
+						display = true;
+					if (display && layer_levelAnimationsToolStripMenuItem.Checked)
+					{
+						hit = LevelData.GetLevelAnimAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = LevelData.GetLevelAnimAtIndex(i);
+						}
+					}
+				}
+			}
+			#endregion
+
+			#region Picking Level Items
+			if (LevelData.LevelItems != null)
             {
                 for (int i = 0; i < LevelData.LevelItemCount; i++)
                 {
@@ -385,27 +402,6 @@ namespace SAModel.SALVL
                     }
                 }
             }
-			#endregion
-
-			#region Picking Level Animations
-			if (LevelData.LevelAnims != null)
-			{
-				for (int i = 0; i < LevelData.LevelAnimCount; i++)
-				{
-					bool display = false;
-					if (visibleToolStripMenuItem.Checked || allToolStripMenuItem.Checked)
-						display = true;
-					if (display && layer_levelAnimationsToolStripMenuItem.Checked)
-					{
-						hit = LevelData.GetLevelAnimAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
-						if (hit < closesthit)
-						{
-							closesthit = hit;
-							item = LevelData.GetLevelAnimAtIndex(i);
-						}
-					}
-				}
-			}
 			#endregion
 
 			#region Picking Start Positions
@@ -448,26 +444,6 @@ namespace SAModel.SALVL
             }
             #endregion
 
-            #region Picking Death Zones
-
-            if (LevelData.DeathZones != null && layer_deathZonesToolStripMenuItem.Checked)
-            {
-                foreach (DeathZoneItem dzitem in LevelData.DeathZones)
-                {
-                    if (dzitem.Visible & viewDeathZonesToolStripMenuItem.Checked)
-                    {
-                        hit = dzitem.CheckHit(Near, Far, viewport, proj, view);
-                        if (hit < closesthit)
-                        {
-                            closesthit = hit;
-                            item = dzitem;
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
             #region Picking Mission SET Items
             if (LevelData.MissionSETItems != null && viewMissionSETItemsToolStripMenuItem.Checked && layer_missionSETItemsToolStripMenuItem.Checked)
                 foreach (MissionSETItem setitem in LevelData.MissionSETItems[LevelData.Character])
@@ -495,9 +471,29 @@ namespace SAModel.SALVL
                     }
                 }
             }
-            #endregion
+			#endregion
 
-            return closesthit;
+			#region Picking Death Zones
+
+			if (LevelData.DeathZones != null && layer_deathZonesToolStripMenuItem.Checked)
+			{
+				foreach (DeathZoneItem dzitem in LevelData.DeathZones)
+				{
+					if (dzitem.Visible & viewDeathZonesToolStripMenuItem.Checked)
+					{
+						hit = dzitem.CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = dzitem;
+						}
+					}
+				}
+			}
+
+			#endregion
+
+			return closesthit;
         }
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)

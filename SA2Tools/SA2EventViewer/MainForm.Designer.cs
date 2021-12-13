@@ -59,7 +59,8 @@ namespace SA2EventViewer
             this.cameraFOVLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.sceneNumLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.MessageTimer = new System.Windows.Forms.Timer(this.components);
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.buttonOpen = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonLighting = new System.Windows.Forms.ToolStripButton();
@@ -267,9 +268,10 @@ namespace SA2EventViewer
             this.label1.TabIndex = 15;
             this.label1.Text = "Timescale:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // numericUpDown1
-            // 
+			// 
+			// numericUpDown1
+			// 
+			this.numericUpDown1.ValueChanged += new System.EventHandler(numericUpDown1_ValueChanged);
             this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.numericUpDown1.DecimalPlaces = 2;
             this.numericUpDown1.Increment = new decimal(new int[] {
@@ -304,10 +306,17 @@ namespace SA2EventViewer
             this.exportSA2BMDLToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
-            // 
-            // exportSA2MDLToolStripMenuItem
-            // 
-            this.exportSA2MDLToolStripMenuItem.Enabled = false;
+			// 
+			// MessageTimer
+			// 
+			this.MessageTimer.Enabled = true;
+			this.MessageTimer.Interval = 1;
+			this.MessageTimer.Tick += new System.EventHandler(this.MessageTimer_Tick);
+			// 
+			// 
+			// exportSA2MDLToolStripMenuItem
+			// 
+			this.exportSA2MDLToolStripMenuItem.Enabled = false;
             this.exportSA2MDLToolStripMenuItem.Name = "exportSA2MDLToolStripMenuItem";
             this.exportSA2MDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exportSA2MDLToolStripMenuItem.Text = "Export &SA2MDL";
@@ -647,6 +656,7 @@ namespace SA2EventViewer
 		private System.Windows.Forms.ToolStripButton buttonNextFrame;
 		private System.Windows.Forms.ToolStripButton buttonPlayScene;
 		private System.Windows.Forms.ToolStripMenuItem showHintsToolStripMenuItem;
+		private System.Windows.Forms.Timer MessageTimer;
 		private System.Windows.Forms.ToolStripMenuItem showAdvancedCameraInfoToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel cameraAngleLabel;
 		private System.Windows.Forms.ToolStripMenuItem exportSA2BMDLToolStripMenuItem;

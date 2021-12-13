@@ -1963,14 +1963,13 @@
 			// 
 			// playAnimButton
 			// 
-			this.playAnimButton.CheckOnClick = true;
             this.playAnimButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.playAnimButton.Image = global::SAModel.SALVL.Properties.Resources.playanim;
             this.playAnimButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.playAnimButton.Name = "playAnimButton";
             this.playAnimButton.Size = new System.Drawing.Size(40, 40);
             this.playAnimButton.Text = "Play/Pause Animation";
-            this.playAnimButton.CheckedChanged += new System.EventHandler(this.playAnimButton_CheckedChanged);
+            this.playAnimButton.Click += new System.EventHandler(this.playAnimButton_Click);
 			this.playAnimButton.Enabled = false;
 			// 
 			// nextFrameButton
