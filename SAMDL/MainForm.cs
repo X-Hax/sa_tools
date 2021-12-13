@@ -2110,9 +2110,26 @@ namespace SAModel.SAMDL
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
+			if (e.ChangedItem.Label == "Name")
+			{
+				NJS_OBJECT[] list = model.GetObjects();
+				int index = 0;
+				for (int i = 0; i < list.Length; i++)
+				{
+					if (selectedObject == list[i])
+					{
+						index = i;
+					}
+					else if (list[i].Name == (string)e.ChangedItem.Value)
+					{
+						MessageBox.Show(this, "There already exists a model with the label '" + (string)e.ChangedItem.Value + "'.\nRenaming to avoid duplicates.", "SAMDL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						selectedObject.Name = (string)e.ChangedItem.Value + "_" + Extensions.GenerateIdentifier();
+						propertyGrid1.Refresh();
+					}
+				}
+				nodeDict[selectedObject].Text = $"{index}: {selectedObject.Name}";
+			}
 			NeedRedraw = true;
-			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
-			treeView1.Refresh();
 			unsaved = true;
 		}
 
