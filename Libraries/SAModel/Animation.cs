@@ -2257,9 +2257,9 @@ namespace SAModel
 			int f2z = f2 != 0 ? f2 : keys[0];
 			Rotation val = new Rotation()
 			{
-				X = (int)((short)(Rotation[f2z].X - Rotation[f1].X) / (double)diff * (frame - f1)) + Rotation[f1].X,
-				Y = (int)((short)(Rotation[f2z].Y - Rotation[f1].Y) / (double)diff * (frame - f1)) + Rotation[f1].Y,
-				Z = (int)((short)(Rotation[f2z].Z - Rotation[f1].Z) / (double)diff * (frame - f1)) + Rotation[f1].Z
+				X = (int)Math.Round(((Rotation[f2z].X - Rotation[f1].X) / (double)diff * (frame - f1)) + Rotation[f1].X, MidpointRounding.AwayFromZero),
+				Y = (int)Math.Round(((Rotation[f2z].Y - Rotation[f1].Y) / (double)diff * (frame - f1)) + Rotation[f1].Y, MidpointRounding.AwayFromZero),
+				Z = (int)Math.Round(((Rotation[f2z].Z - Rotation[f1].Z) / (double)diff * (frame - f1)) + Rotation[f1].Z, MidpointRounding.AwayFromZero)
 			};
 			return val;
 		}
