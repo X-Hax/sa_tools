@@ -904,10 +904,21 @@ namespace SAModel
 					hasVert = true;
 					result.Align(4);
 					List<uint> offs = new List<uint>();
+					List<(Vertex[] vlist, uint off)> voffs = new List<(Vertex[] vlist, uint off)>();
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
 					{
+						bool found = false;
+						foreach (var (vlist, off) in voffs)
+							if (item.Value.SequenceEqual(vlist))
+							{
+								offs.Add(off);
+								found = true;
+								break;
+							}
+						if (found) continue;
 						result.Align(4);
 						offs.Add(imageBase + (uint)result.Count);
+						voffs.Add((item.Value, imageBase + (uint)result.Count));
 						foreach (Vertex v in item.Value)
 							result.AddRange(v.GetBytes());
 					}
@@ -957,10 +968,21 @@ namespace SAModel
 					hasNorm = true;
 					result.Align(4);
 					List<uint> offs = new List<uint>();
+					List<(Vertex[] vlist, uint off)> voffs = new List<(Vertex[] vlist, uint off)>();
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
 					{
+						bool found = false;
+						foreach (var (vlist, off) in voffs)
+							if (item.Value.SequenceEqual(vlist))
+							{
+								offs.Add(off);
+								found = true;
+								break;
+							}
+						if (found) continue;
 						result.Align(4);
 						offs.Add(imageBase + (uint)result.Count);
+						voffs.Add((item.Value, imageBase + (uint)result.Count));
 						foreach (Vertex v in item.Value)
 							result.AddRange(v.GetBytes());
 					}
