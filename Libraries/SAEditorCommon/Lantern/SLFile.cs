@@ -7,8 +7,8 @@ namespace SAModel.SAEditorCommon
 {
 	public class SLFile
 	{
-        public int RotationY;
-        public int RotationZ;
+        public uint RotationY;
+        public uint RotationZ;
         // Stuff below is not used for palettes
         public Color EnvRGB;
         public float EnvSpecularMultiplier;
@@ -24,8 +24,8 @@ namespace SAModel.SAEditorCommon
             ByteConverter.BigEndian = bigendian;
             int start = 0x5A0;
             // Direction    
-            RotationY = ByteConverter.ToInt32(data, start);
-            RotationZ = ByteConverter.ToInt32(data, start + 4);
+            RotationY = ByteConverter.ToUInt32(data, start) % 65535;
+            RotationZ = ByteConverter.ToUInt32(data, start + 4) % 65535;
             // Env RGB
             float r = 255 * ByteConverter.ToSingle(data, start + 8);
             float g = 255 * ByteConverter.ToSingle(data, start + 12);
@@ -51,8 +51,8 @@ namespace SAModel.SAEditorCommon
         public Vector3 GetLightDirection()
         {
             MatrixStack matrixStack = new MatrixStack();
-            matrixStack.NJRotateY(RotationY);
-            matrixStack.NJRotateZ(RotationZ);
+            matrixStack.NJRotateY((int)RotationY);
+            matrixStack.NJRotateZ((int)RotationZ);
             return Vector3.TransformCoordinate(Vector3.Down, matrixStack.Top);
         }
 

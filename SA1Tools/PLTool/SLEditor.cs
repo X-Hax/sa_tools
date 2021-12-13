@@ -51,8 +51,8 @@ namespace PLTool
 
         private void UpdateData()
         {
-            slfile.RotationY = (int)numericUpDownAngleY.Value;
-            slfile.RotationZ = (int)numericUpDownAngleZ.Value;
+            slfile.RotationY = (uint)numericUpDownAngleY.Value;
+            slfile.RotationZ = (uint)numericUpDownAngleZ.Value;
             slfile.EnvRGB = Color.FromArgb((int)numericUpDownEnvR.Value, (int)numericUpDownEnvG.Value, (int)numericUpDownEnvB.Value);
             slfile.EnvAmbientMultiplier = (float)trackBarAMB.Value / 100.0f;
             slfile.EnvDiffuseMultiplier = (float)trackBarDIF.Value / 100.0f;
