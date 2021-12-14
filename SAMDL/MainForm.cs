@@ -2355,7 +2355,10 @@ namespace SAModel.SAMDL
 			}
 			else
 			{
-				selectedObject.AddChild(newmodel);
+				if (importAsSingle)
+					selectedObject.Attach = newmodel.Attach;
+				else
+					selectedObject.AddChild(newmodel);
 			}
 
 			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
