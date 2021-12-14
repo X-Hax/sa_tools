@@ -361,7 +361,10 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 							}
 							else
 							{
-								File.WriteAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(checkFile) + "_md5.txt"), checkFileHash);
+								string appdata = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools");
+								if (!Directory.Exists(appdata))
+									Directory.CreateDirectory(appdata);
+								File.WriteAllText(Path.Combine(appdata, Path.GetFileNameWithoutExtension(checkFile) + "_md5.txt"), checkFileHash);
 								string checkErrorMessage = "The file " + templateFile.GameInfo.CheckFile +
 									" does not match the record for the template " + templateFile.GameInfo.GameName + ".\n\n" +
 									"Trying to rip an incompatible version of the game may lead to crashes or missing data. " +
