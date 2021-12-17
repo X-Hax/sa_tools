@@ -152,11 +152,7 @@ namespace SAModel.SAEditorCommon
 		public static void SetStageLights(Device d3ddevice)
 		{
 			for (int i = 0; i < 4; i++)
-			{
 				d3ddevice.EnableLight(i, false);
-			}
-			if (stageLights == null || stageLights.Count == 0)
-				SetDefaultLights(d3ddevice);
 			for (int i = 0; i < stageLights.Count; i++)
 			{
 				SADXStageLightData lightData = stageLights[i];
@@ -259,7 +255,10 @@ namespace SAModel.SAEditorCommon
 					SetDefaultLights(d3ddevice);
 					return;
 				case SADXLightTypes.Level:
-					SetStageLights(d3ddevice);
+					if (stageLights == null || stageLights.Count == 0)
+						SetDefaultLights(d3ddevice);
+					else
+						SetStageLights(d3ddevice);
 					return;
 				case SADXLightTypes.Character:
 					if (characterLights == null || characterLights.Count == 0)
