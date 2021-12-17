@@ -716,10 +716,10 @@ namespace SAModel.SAMDL
 			}
 			AddModelToLibrary(model, false);
 			unsaved = false;
-			EditorOptions.backLight.Ambient.R = settingsfile.BackLightAmbientR;
-			EditorOptions.backLight.Ambient.G = settingsfile.BackLightAmbientG;
-			EditorOptions.backLight.Ambient.B = settingsfile.BackLightAmbientB;
-			EditorOptions.UpdateDefaultLights(d3ddevice);
+			EditorOptions.BackLightR = settingsfile.BackLightAmbientR;
+			EditorOptions.BackLightG = settingsfile.BackLightAmbientG;
+			EditorOptions.BackLightB = settingsfile.BackLightAmbientB;
+			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
 		}
 
 		private void LoadBinFile(byte[] file)
@@ -1667,25 +1667,25 @@ namespace SAModel.SAMDL
 					break;
 
 				case ("Brighten Ambient"):
-					EditorOptions.backLight.Ambient.R = Math.Min(1.0f, EditorOptions.backLight.Ambient.R + 0.1f);
-					EditorOptions.backLight.Ambient.G = Math.Min(1.0f, EditorOptions.backLight.Ambient.G + 0.1f);
-					EditorOptions.backLight.Ambient.B = Math.Min(1.0f, EditorOptions.backLight.Ambient.B + 0.1f);
-					EditorOptions.UpdateDefaultLights(d3ddevice);
-					settingsfile.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
-					settingsfile.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
-					settingsfile.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					EditorOptions.BackLightR = Math.Min(1.0f, EditorOptions.BackLightR + 0.1f);
+					EditorOptions.BackLightG = Math.Min(1.0f, EditorOptions.BackLightG + 0.1f);
+					EditorOptions.BackLightB = Math.Min(1.0f, EditorOptions.BackLightB + 0.1f);
+					EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
+					settingsfile.BackLightAmbientR = EditorOptions.BackLightR;
+					settingsfile.BackLightAmbientG = EditorOptions.BackLightG;
+					settingsfile.BackLightAmbientB = EditorOptions.BackLightB;
 					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
 
 				case ("Darken Ambient"):
-					EditorOptions.backLight.Ambient.R = Math.Max(0.0f, EditorOptions.backLight.Ambient.R - 0.1f);
-					EditorOptions.backLight.Ambient.G = Math.Max(0.0f, EditorOptions.backLight.Ambient.G - 0.1f);
-					EditorOptions.backLight.Ambient.B = Math.Max(0.0f, EditorOptions.backLight.Ambient.B - 0.1f);
-					EditorOptions.UpdateDefaultLights(d3ddevice);
-					settingsfile.BackLightAmbientR = EditorOptions.backLight.Ambient.R;
-					settingsfile.BackLightAmbientG = EditorOptions.backLight.Ambient.G;
-					settingsfile.BackLightAmbientB = EditorOptions.backLight.Ambient.B;
+					EditorOptions.BackLightR = Math.Min(1.0f, EditorOptions.BackLightR - 0.1f);
+					EditorOptions.BackLightG = Math.Min(1.0f, EditorOptions.BackLightG - 0.1f);
+					EditorOptions.BackLightB = Math.Min(1.0f, EditorOptions.BackLightB - 0.1f);
+					EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
+					settingsfile.BackLightAmbientR = EditorOptions.BackLightR;
+					settingsfile.BackLightAmbientG = EditorOptions.BackLightG;
+					settingsfile.BackLightAmbientB = EditorOptions.BackLightB;
 					osd.UpdateOSDItem("Darken Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;

@@ -46,7 +46,8 @@ namespace SAModel.SALVL
 
             List<RenderInfo> renderlist_death = new List<RenderInfo>();
             List<RenderInfo> renderlist_geo = new List<RenderInfo>();
-            List<RenderInfo> renderlist_set = new List<RenderInfo>();
+			List<RenderInfo> renderlist_char = new List<RenderInfo>();
+			List<RenderInfo> renderlist_set = new List<RenderInfo>();
 
             #region Adding Level Geometry
 
@@ -83,7 +84,7 @@ namespace SAModel.SALVL
 			}
 			#endregion
 
-			if (LevelData.StartPositions != null) renderlist_geo.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
+			if (LevelData.StartPositions != null) renderlist_char.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
 
             #region Adding Death Zones
             if (LevelData.DeathZones != null & viewDeathZonesToolStripMenuItem.Checked)
@@ -179,9 +180,13 @@ namespace SAModel.SALVL
             drawqueue.AddRange(RenderInfo.Queue(renderlist_set, cam));
 
             cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
+			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Level);
             RenderInfo.Draw(drawqueue, d3ddevice, cam);
 
-            d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
+			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Character);
+			RenderInfo.Draw(renderlist_char, d3ddevice, cam);
+
+			d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
             RenderInfo.Draw(renderlist_death, d3ddevice, cam);
             d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
 

@@ -93,11 +93,13 @@ namespace SAModel.SALVL
 
 			// Load stage lights
 			string stageLightPath = Path.Combine(modFolder, "Misc", "Stage Lights.ini");
-
 			if (File.Exists(stageLightPath))
-			{
 				stageLightList = SADXStageLightDataList.Load(stageLightPath);
-			}
+
+			// Load character lights
+			string charLightPath = Path.Combine(modFolder, "Misc", "Character Lights.ini");
+			if (File.Exists(charLightPath))
+				characterLightList = LSPaletteDataList.Load(charLightPath);
 		}
 
 		private void OpenAnyFile(string filename)
@@ -434,7 +436,7 @@ namespace SAModel.SALVL
 		{
 			if ((stageLightList != null) && (stageLightList.Count > 0))
 			{
-				currentLightList = new List<SADXStageLightData>();
+				List<SADXStageLightData> currentStageLights = new List<SADXStageLightData>();
 
 				foreach (SADXStageLightData lightData in stageLightList)
 				{
@@ -452,60 +454,138 @@ namespace SAModel.SALVL
 								case 3:
 								case 4:
 									if (daytimeToolStripMenuItem.Checked && lightData.Act == 0)
-										currentLightList.Add(lightData);
+										currentStageLights.Add(lightData);
 									else if (eveningToolStripMenuItem.Checked && lightData.Act == 1)
-										currentLightList.Add(lightData);
+										currentStageLights.Add(lightData);
 									else if (nightToolStripMenuItem.Checked && lightData.Act == 3)
-										currentLightList.Add(lightData);
+										currentStageLights.Add(lightData);
 									break;
 								case 2:
 								case 5:
 									if (lightData.Act == 2)
-										currentLightList.Add(lightData); // TP entrance doesn't use Stage Lights though
+										currentStageLights.Add(lightData); // TP entrance doesn't use Stage Lights though
 									break;
 							}
 
 							if ((levelact.Act == 2 || levelact.Act == 5) && lightData.Act == 2)
-								currentLightList.Add(lightData); // TP entrance doesn't use Stage Lights though
+								currentStageLights.Add(lightData); // TP entrance doesn't use Stage Lights though
 
 						}
 						else if (levelact.Level == SA1LevelIDs.MysticRuins)
 						{
 							// 0 - day, 1 - evening, 2 - night, 3 - base
 							if (levelact.Act == 3 && lightData.Act == 3)
-								currentLightList.Add(lightData);
+								currentStageLights.Add(lightData);
 							else if (daytimeToolStripMenuItem.Checked && lightData.Act == 0)
-								currentLightList.Add(lightData);
+								currentStageLights.Add(lightData);
 							else if (eveningToolStripMenuItem.Checked && lightData.Act == 1)
-								currentLightList.Add(lightData);
+								currentStageLights.Add(lightData);
 							else if (nightToolStripMenuItem.Checked && lightData.Act == 2)
-								currentLightList.Add(lightData);
+								currentStageLights.Add(lightData);
 						}
 						else if (lightData.Act == levelact.Act)
-							currentLightList.Add(lightData);
+							currentStageLights.Add(lightData);
 					}
 				}
 
-				if (levelact.Act > 0 && currentLightList.Count <= 0)
+				if (levelact.Act > 0 && currentStageLights.Count <= 0)
 				{
 					for (int i = 1; i < levelact.Act + 1; i++)
 					{
 						foreach (SADXStageLightData lightData in stageLightList)
 						{
 							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
-								if (currentLightList.Count < 4)
-									currentLightList.Add(lightData);
+								if (currentStageLights.Count < 4)
+									currentStageLights.Add(lightData);
 						}
 					}
 				}
 
-				if (currentLightList.Count > 0)
-					LoadLights(currentLightList);
+				if (currentStageLights.Count > 0)
+					EditorOptions.StageLights = currentStageLights;
 				else
 				{
 					osd.AddMessage("No lights were found for this stage. Using default lights instead.", 180);
 					log.Add("No lights were found for this stage. Using default lights.");
-					EditorOptions.SetDefaultLights(d3ddevice, false);
+					EditorOptions.SetDefaultLights(d3ddevice);
+				}
+			}
+		}
+
+		private void LoadCharacterLights(SA1LevelAct levelact)
+		{
+			if ((characterLightList != null) && (characterLightList.Count > 0))
+			{
+				List<LSPaletteData> currentCharacterLights = new List<LSPaletteData>();
+
+				foreach (LSPaletteData lightData in characterLightList)
+				{
+					if (lightData.Level == levelact.Level)
+					{
+						// Adventure Field day/night stuff
+						if (levelact.Level == SA1LevelIDs.StationSquare)
+						{
+							switch (levelact.Act)
+							{
+								// LightData acts: 0 - day, 1 - evening, 2 - sewers, 3 - night
+								// Stage acts: 0, 1, 3, 4 - outside, 2 - sewers, 5 - TP entrance
+								case 0:
+								case 1:
+								case 3:
+								case 4:
+									if (daytimeToolStripMenuItem.Checked && lightData.Act == 0)
+										currentCharacterLights.Add(lightData);
+									else if (eveningToolStripMenuItem.Checked && lightData.Act == 1)
+										currentCharacterLights.Add(lightData);
+									else if (nightToolStripMenuItem.Checked && lightData.Act == 3)
+										currentCharacterLights.Add(lightData);
+									break;
+								case 2:
+								case 5:
+									if (lightData.Act == 2)
+										currentCharacterLights.Add(lightData); // TP entrance doesn't use Stage Lights though
+									break;
+							}
+
+							if ((levelact.Act == 2 || levelact.Act == 5) && lightData.Act == 2)
+								currentCharacterLights.Add(lightData); // TP entrance doesn't use Stage Lights though
+
+						}
+						else if (levelact.Level == SA1LevelIDs.MysticRuins)
+						{
+							// 0 - day, 1 - evening, 2 - night, 3 - base
+							if (levelact.Act == 3 && lightData.Act == 3)
+								currentCharacterLights.Add(lightData);
+							else if (daytimeToolStripMenuItem.Checked && lightData.Act == 0)
+								currentCharacterLights.Add(lightData);
+							else if (eveningToolStripMenuItem.Checked && lightData.Act == 1)
+								currentCharacterLights.Add(lightData);
+							else if (nightToolStripMenuItem.Checked && lightData.Act == 2)
+								currentCharacterLights.Add(lightData);
+						}
+						else if (lightData.Act == levelact.Act)
+							currentCharacterLights.Add(lightData);
+					}
+				}
+				if (levelact.Act > 0 && currentCharacterLights.Count <= 0)
+				{
+					for (int i = 1; i < levelact.Act + 1; i++)
+					{
+						foreach (LSPaletteData lightData in characterLightList)
+						{
+							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
+								if (currentCharacterLights.Count < 4)
+									currentCharacterLights.Add(lightData);
+						}
+					}
+				}
+				if (currentCharacterLights.Count > 0)
+					EditorOptions.CharacterLights = currentCharacterLights;
+				else
+				{
+					osd.AddMessage("No character lights were found for this stage. Using level lights instead.", 180);
+					log.Add("No character lights were found for this stage. Using level lights.");
+					EditorOptions.CharacterLights = null;
 				}
 			}
 		}
@@ -1019,6 +1099,7 @@ namespace SAModel.SALVL
 			progress.SetTaskAndStep("Loading lights...");
 
 			LoadStageLights(levelact);
+			LoadCharacterLights(levelact);
 			#endregion
 
 			transformGizmo = new TransformGizmo();
