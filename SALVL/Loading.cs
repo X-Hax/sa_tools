@@ -96,7 +96,7 @@ namespace SAModel.SALVL
 
 			if (File.Exists(stageLightPath))
 			{
-				stageLightList = SA1StageLightDataList.Load(stageLightPath);
+				stageLightList = SADXStageLightDataList.Load(stageLightPath);
 			}
 		}
 
@@ -434,9 +434,9 @@ namespace SAModel.SALVL
 		{
 			if ((stageLightList != null) && (stageLightList.Count > 0))
 			{
-				currentLightList = new List<SA1StageLightData>();
+				currentLightList = new List<SADXStageLightData>();
 
-				foreach (SA1StageLightData lightData in stageLightList)
+				foreach (SADXStageLightData lightData in stageLightList)
 				{
 					if (lightData.Level == levelact.Level)
 					{
@@ -490,7 +490,7 @@ namespace SAModel.SALVL
 				{
 					for (int i = 1; i < levelact.Act + 1; i++)
 					{
-						foreach (SA1StageLightData lightData in stageLightList)
+						foreach (SADXStageLightData lightData in stageLightList)
 						{
 							if ((lightData.Level == levelact.Level) && (lightData.Act == levelact.Act - i))
 								if (currentLightList.Count < 4)

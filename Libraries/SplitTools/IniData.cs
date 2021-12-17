@@ -3373,46 +3373,46 @@ namespace SplitTools
 		}
 	}
 
-	public static class SA1StageLightDataList
+	public static class SADXStageLightDataList
 	{
-		public static List<SA1StageLightData> Load(string filename)
+		public static List<SADXStageLightData> Load(string filename)
 		{
-			return IniSerializer.Deserialize<List<SA1StageLightData>>(filename);
+			return IniSerializer.Deserialize<List<SADXStageLightData>>(filename);
 		}
 
-		public static List<SA1StageLightData> Load(byte[] file, int address)
+		public static List<SADXStageLightData> Load(byte[] file, int address)
 		{
-			List<SA1StageLightData> result = new List<SA1StageLightData>();
+			List<SADXStageLightData> result = new List<SADXStageLightData>();
 			while (file[address] != 0xFF)
 			{
-				result.Add(new SA1StageLightData(file, address));
-				address += SA1StageLightData.Size;
+				result.Add(new SADXStageLightData(file, address));
+				address += SADXStageLightData.Size;
 			}
 			return result;
 		}
 
-		public static void Save(this List<SA1StageLightData> startpos, string filename)
+		public static void Save(this List<SADXStageLightData> startpos, string filename)
 		{
 			IniSerializer.Serialize(startpos, filename);
 		}
 
-		public static byte[] GetBytes(this List<SA1StageLightData> startpos)
+		public static byte[] GetBytes(this List<SADXStageLightData> startpos)
 		{
-			List<byte> result = new List<byte>(SA1StageLightData.Size * (startpos.Count + 1));
-			foreach (SA1StageLightData item in startpos)
+			List<byte> result = new List<byte>(SADXStageLightData.Size * (startpos.Count + 1));
+			foreach (SADXStageLightData item in startpos)
 				result.AddRange(item.GetBytes());
 			result.Add(0xFF);
-			result.AddRange(new byte[SA1StageLightData.Size - 1]);
+			result.AddRange(new byte[SADXStageLightData.Size - 1]);
 			return result.ToArray();
 		}
 	}
 
 	[Serializable]
-	public class SA1StageLightData
+	public class SADXStageLightData
 	{
-		public SA1StageLightData() { Direction = new Vertex(); }
+		public SADXStageLightData() { Direction = new Vertex(); }
 
-		public SA1StageLightData(byte[] file, int address)
+		public SADXStageLightData(byte[] file, int address)
 		{
 			Level = (SA1LevelIDs)file[address++];
 			Act = file[address++];
@@ -3420,9 +3420,9 @@ namespace SplitTools
 			UseDirection = file[address++] != 0;
 			Direction = new Vertex(file, address);
 			address += Vertex.Size;
-			Dif = ByteConverter.ToSingle(file, address);
+			Specular = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
-			Multiplier = ByteConverter.ToSingle(file, address);
+			Diffuse = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
 			RGB = new Vertex(file, address);
 			address += Vertex.Size;
@@ -3438,8 +3438,10 @@ namespace SplitTools
 		public byte LightNum { get; set; }
 		public bool UseDirection { get; set; }
 		public Vertex Direction { get; set; }
-		public float Dif { get; set; }
-		public float Multiplier { get; set; }
+		[IniName("Dif")]
+		public float Specular { get; set; }
+		[IniName("Multiplier")]
+		public float Diffuse { get; set; }
 		public Vertex RGB { get; set; }
 		public Vertex AmbientRGB { get; set; }
 
@@ -3455,8 +3457,8 @@ namespace SplitTools
 				(byte)(UseDirection ? 1 : 0)
 			};
 			result.AddRange(Direction.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Dif));
-			result.AddRange(ByteConverter.GetBytes(Multiplier));
+			result.AddRange(ByteConverter.GetBytes(Specular));
+			result.AddRange(ByteConverter.GetBytes(Diffuse));
 			result.AddRange(RGB.GetBytes());
 			result.AddRange(AmbientRGB.GetBytes());
 			return result.ToArray();
@@ -3475,9 +3477,9 @@ namespace SplitTools
 			result.Append(", ");
 			result.Append(Direction.ToStruct());
 			result.Append(", ");
-			result.Append(Dif.ToC());
+			result.Append(Specular.ToC());
 			result.Append(", ");
-			result.Append(Multiplier.ToC());
+			result.Append(Diffuse.ToC());
 			result.Append(", ");
 			result.Append(RGB.ToStruct());
 			result.Append(", ");
@@ -4526,16 +4528,24 @@ namespace SplitTools
 		}
 	}
 
-	public class PaletteLight
+	public class LSPaletteData
 	{
+		[Flags]
+		public enum LSPaletteFlags
+		{
+			UseLSLightDirection = 2, // Use the stage light direction if false
+			IgnoreDirection = 4, // Set direction if false
+			OverrideLastLight = 8 // Reverses light direction on the last light (ID 3)
+		}
+
 		[IniAlwaysInclude]
-		public byte Level { get; set; }
+		public SA1LevelIDs Level { get; set; }
 		[IniAlwaysInclude]
 		public byte Act { get; set; }
 		[IniAlwaysInclude]
 		public byte Type { get; set; }
 		[IniAlwaysInclude]
-		public byte Flags { get; set; }
+		public LSPaletteFlags Flags { get; set; }
 		[IniAlwaysInclude]
 		public Vertex Direction { get; set; }
 		[IniAlwaysInclude]
@@ -4559,12 +4569,12 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public Vertex Specular2 { get; set; }
 
-		public PaletteLight(byte[] file, int address)
+		public LSPaletteData(byte[] file, int address)
 		{
-			Level = file[address];
+			Level = (SA1LevelIDs)file[address];
 			Act = file[address + 1];
 			Type = file[address + 2];
-			Flags = file[address + 3];
+			Flags = (LSPaletteFlags)file[address + 3];
 			Direction = new Vertex(file, address + 4);
 			Diffuse = ByteConverter.ToSingle(file, address + 16);
 			Ambient = new Vertex(file, address + 20);
@@ -4577,26 +4587,41 @@ namespace SplitTools
 			Specular2Power = ByteConverter.ToSingle(file, address + 80);
 			Specular2 = new Vertex(file, address + 84);
 		}
+
+		public LSPaletteData()
+		{ }
 	}
 
-	public class PaletteLightList
+	public class LSPaletteDataList
 	{
 		[IniCollection(IniCollectionMode.IndexOnly)]
-		public PaletteLight[] Lights { get; set; }
+		public LSPaletteData[] Lights { get; set; }
 
-		public PaletteLightList(byte[] file, int address, int count)
+		public LSPaletteDataList(byte[] file, int address, int count)
 		{
-			List<PaletteLight> lightlist = new List<PaletteLight>();
+			List<LSPaletteData> lightlist = new List<LSPaletteData>();
 			for (int i = 0; i < count; i++)
 			{
-				lightlist.Add(new PaletteLight(file, address + i * 96));
+				lightlist.Add(new LSPaletteData(file, address + i * 96));
 			}
 			Lights = lightlist.ToArray();
 		}
+
 		public void Save(string fileOutputPath)
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
+
+		public static List<LSPaletteData> Load(string filename)
+		{
+			LSPaletteDataList origlist = IniSerializer.Deserialize<LSPaletteDataList>(filename);
+			List<LSPaletteData> lights = new List<LSPaletteData>(origlist.Lights.Length);
+			lights.AddRange(origlist.Lights);
+			return lights;
+		}
+
+		public LSPaletteDataList()
+		{ }
 	}
 
 	public class PlayerParameter
