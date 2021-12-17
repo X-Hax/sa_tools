@@ -105,7 +105,7 @@ namespace SAModel.SAEditorCommon
 					Type = LightType.Directional,
 					Direction = lightData.Direction.ToVector3(),
 				};
-				light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
+				light.Specular = new RawColor4(lightData.Specular, lightData.Specular, lightData.Specular, 1.0f);
 				// SADXPC reuses the first light's ambient color for other lights
 				light.Ambient = new RawColor4(
 					lightList[0].AmbientRGB.X,
@@ -113,9 +113,9 @@ namespace SAModel.SAEditorCommon
 					lightList[0].AmbientRGB.Z,
 					1.0f);
 				light.Diffuse = new RawColor4(
-					lightData.RGB.X * lightData.Multiplier,
-					lightData.RGB.Y * lightData.Multiplier,
-					lightData.RGB.Z * lightData.Multiplier,
+					lightData.RGB.X * lightData.Diffuse,
+					lightData.RGB.Y * lightData.Diffuse,
+					lightData.RGB.Z * lightData.Diffuse,
 					1.0f);
 				d3ddevice.SetRenderState(RenderState.SpecularEnable, false);
 				d3ddevice.SetLight(i, ref light);

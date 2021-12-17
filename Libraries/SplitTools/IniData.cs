@@ -3420,9 +3420,9 @@ namespace SplitTools
 			UseDirection = file[address++] != 0;
 			Direction = new Vertex(file, address);
 			address += Vertex.Size;
-			Dif = ByteConverter.ToSingle(file, address);
+			Specular = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
-			Multiplier = ByteConverter.ToSingle(file, address);
+			Diffuse = ByteConverter.ToSingle(file, address);
 			address += sizeof(float);
 			RGB = new Vertex(file, address);
 			address += Vertex.Size;
@@ -3438,8 +3438,8 @@ namespace SplitTools
 		public byte LightNum { get; set; }
 		public bool UseDirection { get; set; }
 		public Vertex Direction { get; set; }
-		public float Dif { get; set; }
-		public float Multiplier { get; set; }
+		public float Specular { get; set; }
+		public float Diffuse { get; set; }
 		public Vertex RGB { get; set; }
 		public Vertex AmbientRGB { get; set; }
 
@@ -3455,8 +3455,8 @@ namespace SplitTools
 				(byte)(UseDirection ? 1 : 0)
 			};
 			result.AddRange(Direction.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Dif));
-			result.AddRange(ByteConverter.GetBytes(Multiplier));
+			result.AddRange(ByteConverter.GetBytes(Specular));
+			result.AddRange(ByteConverter.GetBytes(Diffuse));
 			result.AddRange(RGB.GetBytes());
 			result.AddRange(AmbientRGB.GetBytes());
 			return result.ToArray();
@@ -3475,9 +3475,9 @@ namespace SplitTools
 			result.Append(", ");
 			result.Append(Direction.ToStruct());
 			result.Append(", ");
-			result.Append(Dif.ToC());
+			result.Append(Specular.ToC());
 			result.Append(", ");
-			result.Append(Multiplier.ToC());
+			result.Append(Diffuse.ToC());
 			result.Append(", ");
 			result.Append(RGB.ToStruct());
 			result.Append(", ");
