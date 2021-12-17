@@ -201,10 +201,10 @@ namespace SAModel.SALVL
 				{
 					if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PVM"))
 						extension = ".PVM";
-					else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PRS"))
-						extension = ".PRS";
 					else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".GVM"))
 						extension = ".GVM";
+					else if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PRS"))
+						extension = ".PRS";
 					texturePath = Path.Combine(systemPath, pvmName) + extension;
 				}
 				string textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
