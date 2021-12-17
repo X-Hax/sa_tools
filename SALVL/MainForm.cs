@@ -108,9 +108,9 @@ namespace SAModel.SALVL
 
 		Dictionary<string, List<string>> levelNames;
 
-		// light lists
-		List<SADXStageLightData> stageLightList; // Lights for all stages
-		List<LSPaletteData> characterLightList; // Character lights for all stages
+		// light list
+		List<SA1StageLightData> stageLightList;
+		List<SA1StageLightData> currentLightList;
 		#endregion
 
 		#region UI & Customization
@@ -1581,6 +1581,36 @@ namespace SAModel.SALVL
 			NeedRedraw = true;
 		}
 
+		private void LoadLights(List<SA1StageLightData> lightList)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				d3ddevice.EnableLight(i, false);
+			}
+			for (int i = 0; i < lightList.Count; i++)
+			{
+				SA1StageLightData lightData = lightList[i];
+				Light light = new Light
+				{
+					Type = LightType.Directional,
+					Direction = lightData.Direction.ToVector3(),
+				};
+				light.Specular = new RawColor4(lightData.Dif, lightData.Dif, lightData.Dif, 1.0f);
+				// SADXPC reuses the first light's ambient color for other lights
+				light.Ambient = new RawColor4(
+					lightList[0].AmbientRGB.X,
+					lightList[0].AmbientRGB.Y,
+					lightList[0].AmbientRGB.Z,
+					1.0f);
+				light.Diffuse = new RawColor4(
+					lightData.RGB.X * lightData.Multiplier,
+					lightData.RGB.Y * lightData.Multiplier,
+					lightData.RGB.Z * lightData.Multiplier,
+					1.0f);
+				d3ddevice.SetLight(i, ref light);
+				d3ddevice.EnableLight(i, lightData.UseDirection);
+			}
+		}
 
 		private void disableModelLibraryToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1626,10 +1656,7 @@ namespace SAModel.SALVL
 			nightToolStripMenuItem.Checked = false;
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
-			{
 				LoadStageLights(levelact);
-				LoadCharacterLights(levelact);
-			}
 			NeedRedraw = true;
 		}
 
@@ -1640,10 +1667,7 @@ namespace SAModel.SALVL
 			nightToolStripMenuItem.Checked = false;
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
-			{
 				LoadStageLights(levelact);
-				LoadCharacterLights(levelact);
-			}
 			NeedRedraw = true;
 		}
 
@@ -1654,10 +1678,7 @@ namespace SAModel.SALVL
 			nightToolStripMenuItem.Checked = true;
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
-			{
 				LoadStageLights(levelact);
-				LoadCharacterLights(levelact);
-			}
 			NeedRedraw = true;
 		}
 

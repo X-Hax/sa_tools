@@ -1077,10 +1077,10 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "stagelightdatalist":
 							{
-								List<SADXStageLightData> list = SADXStageLightDataList.Load(data.Filename);
+								List<SA1StageLightData> list = SA1StageLightDataList.Load(data.Filename);
 								writer.WriteLine("StageLightData {0}[] = {{", name);
 								List<string> objs = new List<string>(list.Count + 1);
-								foreach (SADXStageLightData obj in list)
+								foreach (SA1StageLightData obj in list)
 									objs.Add(obj.ToStruct());
 								objs.Add("{ 0xFFu }");
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
