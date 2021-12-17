@@ -79,14 +79,14 @@ namespace SAModel.SAEditorCommon.DataTypes
 			transform.NJRotateY(-0x8000 - YRotation);
 			if (LevelData.Textures != null && LevelData.Textures.Count > 0 && LevelData.Textures.ContainsKey(texture))
 			{
-				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes));
+				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors));
 			}
 			else
 			{
-				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Meshes));
+				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Meshes, EditorOptions.IgnoreMaterialColors));
 			}
 			if (Selected)
-				result.AddRange(Model.DrawModelTreeInvert(transform, Meshes));
+				result.AddRange(Model.DrawModelTreeInvert(transform, Meshes, EditorOptions.IgnoreMaterialColors));
 			transform.Pop();
 			return result;
 		}
