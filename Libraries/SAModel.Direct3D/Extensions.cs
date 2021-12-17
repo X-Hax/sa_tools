@@ -128,7 +128,7 @@ namespace SAModel.Direct3D
 					Diffuse = material.DiffuseColor.ToRawColor4(),
 					Ambient = material.DiffuseColor.ToRawColor4(),
 					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
-					Power = material.Exponent * material.Exponent
+					Power = material.Exponent
 				};
 				/*if (!material.SuperSample)
 				{
