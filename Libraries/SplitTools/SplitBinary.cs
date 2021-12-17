@@ -1264,7 +1264,7 @@ namespace SplitTools.Split
                     }
                     break;
                 case "stagelightdatalist":
-                    SA1StageLightDataList.Load(datafile, address).Save(fileOutputPath);
+                    SADXStageLightDataList.Load(datafile, address).Save(fileOutputPath);
                     break;
                 case "weldlist":
                     WeldList.Load(datafile, address, imageBase).Save(fileOutputPath);
@@ -1324,7 +1324,7 @@ namespace SplitTools.Split
                     int count = 255;
                     if (customProperties.ContainsKey("count"))
                         count = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-                    PaletteLightList pllist = new PaletteLightList(datafile, address, count);
+                    LSPaletteDataList pllist = new LSPaletteDataList(datafile, address, count);
                     pllist.Save(fileOutputPath);
                     break;
                 case "physicsdata":
