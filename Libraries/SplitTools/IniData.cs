@@ -4533,9 +4533,18 @@ namespace SplitTools
 		[Flags]
 		public enum LSPaletteFlags
 		{
-			UseLSLightDirection = 2, // Use the stage light direction if false
-			IgnoreDirection = 4, // Set direction if false
-			OverrideLastLight = 8 // Reverses light direction on the last light (ID 3)
+			Enabled = 0x1,
+			UseLSLightDirection = 0x2, // Use the stage light direction if false
+			IgnoreDirection = 0x4, // Set direction if false
+			OverrideLastLight = 0x8, // Reverses light direction on the last light (ID 3)
+			Unknown = 0x10
+		}
+
+		public enum LSPaletteTypes
+		{
+			Character = 0, // Characters, NPCs, Leon, some other enemies
+			CharacterAlt = 6, // Gamma, Super Sonic, some Egg Carrier NPCs
+			Boss = 8
 		}
 
 		[IniAlwaysInclude]
