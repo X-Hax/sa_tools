@@ -38,10 +38,11 @@
             // progressBar
             // 
             this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(13, 38);
-            this.progressBar.MaximumSize = new System.Drawing.Size(400, 23);
+            this.progressBar.Location = new System.Drawing.Point(15, 48);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.progressBar.MaximumSize = new System.Drawing.Size(467, 27);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(400, 23);
+            this.progressBar.Size = new System.Drawing.Size(467, 27);
             this.progressBar.Step = 1;
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar.TabIndex = 3;
@@ -49,29 +50,32 @@
             // labelTask
             // 
             this.labelTask.AutoSize = true;
-            this.labelTask.Location = new System.Drawing.Point(12, 9);
-            this.labelTask.MaximumSize = new System.Drawing.Size(400, 13);
+            this.labelTask.Location = new System.Drawing.Point(14, 10);
+            this.labelTask.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelTask.MaximumSize = new System.Drawing.Size(467, 20);
             this.labelTask.Name = "labelTask";
-            this.labelTask.Size = new System.Drawing.Size(53, 13);
+            this.labelTask.Size = new System.Drawing.Size(54, 15);
             this.labelTask.TabIndex = 1;
             this.labelTask.Text = "labelTask";
             // 
             // labelStep
             // 
             this.labelStep.AutoSize = true;
-            this.labelStep.Location = new System.Drawing.Point(12, 22);
-            this.labelStep.MaximumSize = new System.Drawing.Size(400, 13);
+            this.labelStep.Location = new System.Drawing.Point(14, 25);
+            this.labelStep.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelStep.MaximumSize = new System.Drawing.Size(467, 20);
             this.labelStep.Name = "labelStep";
-            this.labelStep.Size = new System.Drawing.Size(51, 13);
+            this.labelStep.Size = new System.Drawing.Size(55, 15);
             this.labelStep.TabIndex = 2;
             this.labelStep.Text = "labelStep";
             // 
             // checkAutoClose
             // 
             this.checkAutoClose.AutoSize = true;
-            this.checkAutoClose.Location = new System.Drawing.Point(12, 72);
+            this.checkAutoClose.Location = new System.Drawing.Point(14, 83);
+            this.checkAutoClose.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkAutoClose.Name = "checkAutoClose";
-            this.checkAutoClose.Size = new System.Drawing.Size(127, 17);
+            this.checkAutoClose.Size = new System.Drawing.Size(140, 19);
             this.checkAutoClose.TabIndex = 4;
             this.checkAutoClose.Text = "&Close when complete";
             this.checkAutoClose.UseVisualStyleBackColor = true;
@@ -81,9 +85,10 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(338, 72);
+            this.buttonOK.Location = new System.Drawing.Point(394, 83);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 23);
+            this.buttonOK.Size = new System.Drawing.Size(88, 27);
             this.buttonOK.TabIndex = 5;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
@@ -92,10 +97,10 @@
             // ProgressDialog
             // 
             this.AcceptButton = this.buttonOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(425, 103);
+            this.ClientSize = new System.Drawing.Size(496, 119);
             this.ControlBox = false;
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.checkAutoClose);
@@ -103,6 +108,7 @@
             this.Controls.Add(this.labelTask);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ProgressDialog";
