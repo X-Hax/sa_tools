@@ -92,14 +92,21 @@ namespace SAModel.SALVL
 			changeLevelToolStripMenuItem.Enabled = true;
 
 			// Load stage lights
+			stageLightList = null;
 			string stageLightPath = Path.Combine(modFolder, "Misc", "Stage Lights.ini");
 			if (File.Exists(stageLightPath))
 				stageLightList = SADXStageLightDataList.Load(stageLightPath);
-
+			else
+				log.Add("Stage Lights file not found: " + stageLightPath);
 			// Load character lights
+			characterLightList = null;
 			string charLightPath = Path.Combine(modFolder, "Misc", "Character Lights.ini");
 			if (File.Exists(charLightPath))
 				characterLightList = LSPaletteDataList.Load(charLightPath);
+			else
+				log.Add("Character Lights file not found: " + charLightPath);
+			lightsEditorToolStripMenuItem.Enabled = (stageLightList != null && characterLightList != null);
+			log.WriteLog();
 		}
 
 		private void OpenAnyFile(string filename)
@@ -125,6 +132,11 @@ namespace SAModel.SALVL
 
 		private void LoadTemplate(Templates.ProjectTemplate projFile)
 		{
+			if (!File.Exists(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini")))
+			{
+				MessageBox.Show(this, "This project does not have an INI file for SALVL.", "SALVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			sadxlvlini = SAEditorCommon.IniData.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
 			systemFallback = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
 			modFolder = projFile.GameInfo.ProjectFolder;
@@ -507,9 +519,16 @@ namespace SAModel.SALVL
 				{
 					osd.AddMessage("No lights were found for this stage. Using default lights instead.", 180);
 					log.Add("No lights were found for this stage. Using default lights.");
-					EditorOptions.SetDefaultLights(d3ddevice);
+					EditorOptions.StageLights = null;
 				}
 			}
+			else
+			{
+				osd.AddMessage("Stage Lights data not found. Using default lights.", 180);
+				log.Add("Stage Lights data not found. Using default lights.");
+				EditorOptions.StageLights = null;
+			}
+			log.WriteLog();
 		}
 
 		private void LoadCharacterLights(SA1LevelAct levelact)
@@ -588,6 +607,13 @@ namespace SAModel.SALVL
 					EditorOptions.CharacterLights = null;
 				}
 			}
+			else
+			{
+				osd.AddMessage("Character lights data not found. Using level lights instead.", 180);
+				log.Add("Character lights data not found. Using level lights instead.");
+				EditorOptions.CharacterLights = null;
+			}
+			log.WriteLog();
 		}
 
 		private void MainLevelLoadLoop()

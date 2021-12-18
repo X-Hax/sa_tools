@@ -90,8 +90,9 @@
             this.deleteSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointOneObjectAtAnotherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editLevelInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lightsEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.usetBasicDXFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.calculateAllBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -212,6 +213,7 @@
             this.resetAnimButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
+            this.viewLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -558,8 +560,9 @@
             this.deleteSelectedToolStripMenuItem,
             this.pointOneObjectAtAnotherToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.preferencesToolStripMenuItem,
             this.editLevelInfoToolStripMenuItem,
+            this.lightsEditorToolStripMenuItem,
+            this.preferencesToolStripMenuItem,
             this.advancedToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
@@ -765,14 +768,6 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 6);
             // 
-            // preferencesToolStripMenuItem
-            // 
-            this.preferencesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.settings;
-            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
-            this.preferencesToolStripMenuItem.Text = "&Preferences";
-            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
-            // 
             // editLevelInfoToolStripMenuItem
             // 
             this.editLevelInfoToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.editinfo;
@@ -780,6 +775,23 @@
             this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
             this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
+            // 
+            // lightsEditorToolStripMenuItem
+            // 
+            this.lightsEditorToolStripMenuItem.Enabled = false;
+            this.lightsEditorToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.sllight;
+            this.lightsEditorToolStripMenuItem.Name = "lightsEditorToolStripMenuItem";
+            this.lightsEditorToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.lightsEditorToolStripMenuItem.Text = "Lights Editor...";
+            this.lightsEditorToolStripMenuItem.Click += new System.EventHandler(this.lightsEditorToolStripMenuItem_Click);
+            // 
+            // preferencesToolStripMenuItem
+            // 
+            this.preferencesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.settings;
+            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.preferencesToolStripMenuItem.Text = "&Preferences";
+            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
             // advancedToolStripMenuItem
             // 
@@ -1320,6 +1332,7 @@
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reportBugToolStripMenuItem,
+            this.viewLogToolStripMenuItem,
             this.welcomeTutorialToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
@@ -1329,7 +1342,7 @@
             // 
             this.reportBugToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.bug;
             this.reportBugToolStripMenuItem.Name = "reportBugToolStripMenuItem";
-            this.reportBugToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.reportBugToolStripMenuItem.Size = new System.Drawing.Size(202, 30);
             this.reportBugToolStripMenuItem.Text = "Report &Bug";
             this.reportBugToolStripMenuItem.Click += new System.EventHandler(this.reportBugToolStripMenuItem_Click);
             // 
@@ -1338,7 +1351,7 @@
             this.welcomeTutorialToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.help;
             this.welcomeTutorialToolStripMenuItem.Name = "welcomeTutorialToolStripMenuItem";
             this.welcomeTutorialToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.welcomeTutorialToolStripMenuItem.Size = new System.Drawing.Size(202, 30);
             this.welcomeTutorialToolStripMenuItem.Text = "Welcome / Tutorial";
             this.welcomeTutorialToolStripMenuItem.Click += new System.EventHandler(this.welcomeTutorialToolStripMenuItem_Click);
             // 
@@ -1350,7 +1363,7 @@
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(762, 344);
+            this.RenderPanel.Size = new System.Drawing.Size(762, 342);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragDrop);
@@ -1513,7 +1526,7 @@
             // 
             this.PropertiesSplitter.Panel2.Controls.Add(this.propertyGrid1);
             this.PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
-            this.PropertiesSplitter.SplitterDistance = 976;
+            this.PropertiesSplitter.SplitterDistance = 974;
             this.PropertiesSplitter.SplitterWidth = 5;
             this.PropertiesSplitter.TabIndex = 2;
             // 
@@ -1533,8 +1546,8 @@
             // LibrarySplitter.Panel2
             // 
             this.LibrarySplitter.Panel2.Controls.Add(this.libraryTabControl);
-            this.LibrarySplitter.Size = new System.Drawing.Size(972, 635);
-            this.LibrarySplitter.SplitterDistance = 344;
+            this.LibrarySplitter.Size = new System.Drawing.Size(970, 635);
+            this.LibrarySplitter.SplitterDistance = 342;
             this.LibrarySplitter.SplitterWidth = 5;
             this.LibrarySplitter.TabIndex = 3;
             // 
@@ -1552,8 +1565,8 @@
             // ItemsSplitter.Panel2
             // 
             this.ItemsSplitter.Panel2.Controls.Add(this.RenderPanel);
-            this.ItemsSplitter.Size = new System.Drawing.Size(972, 344);
-            this.ItemsSplitter.SplitterDistance = 205;
+            this.ItemsSplitter.Size = new System.Drawing.Size(970, 342);
+            this.ItemsSplitter.SplitterDistance = 203;
             this.ItemsSplitter.SplitterWidth = 5;
             this.ItemsSplitter.TabIndex = 0;
             // 
@@ -1563,7 +1576,7 @@
             this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
             this.sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.sceneGraphControl1.Name = "sceneGraphControl1";
-            this.sceneGraphControl1.Size = new System.Drawing.Size(205, 344);
+            this.sceneGraphControl1.Size = new System.Drawing.Size(203, 342);
             this.sceneGraphControl1.TabIndex = 0;
             // 
             // libraryTabControl
@@ -1575,7 +1588,7 @@
             this.libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.libraryTabControl.Name = "libraryTabControl";
             this.libraryTabControl.SelectedIndex = 0;
-            this.libraryTabControl.Size = new System.Drawing.Size(972, 286);
+            this.libraryTabControl.Size = new System.Drawing.Size(970, 288);
             this.libraryTabControl.TabIndex = 0;
             // 
             // modelLibraryPage
@@ -1585,7 +1598,7 @@
             this.modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.modelLibraryPage.Name = "modelLibraryPage";
             this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.modelLibraryPage.Size = new System.Drawing.Size(964, 258);
+            this.modelLibraryPage.Size = new System.Drawing.Size(962, 260);
             this.modelLibraryPage.TabIndex = 1;
             this.modelLibraryPage.Text = "Model Library";
             this.modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1597,7 +1610,7 @@
             this.modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.modelLibraryControl1.Name = "modelLibraryControl1";
             this.modelLibraryControl1.SelectedModel = null;
-            this.modelLibraryControl1.Size = new System.Drawing.Size(956, 252);
+            this.modelLibraryControl1.Size = new System.Drawing.Size(954, 254);
             this.modelLibraryControl1.TabIndex = 0;
             // 
             // setLibraryPage
@@ -1606,7 +1619,7 @@
             this.setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.setLibraryPage.Name = "setLibraryPage";
             this.setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.setLibraryPage.Size = new System.Drawing.Size(964, 258);
+            this.setLibraryPage.Size = new System.Drawing.Size(962, 260);
             this.setLibraryPage.TabIndex = 0;
             this.setLibraryPage.Text = "SET Library";
             this.setLibraryPage.UseVisualStyleBackColor = true;
@@ -1622,7 +1635,7 @@
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(346, 635);
+            this.propertyGrid1.Size = new System.Drawing.Size(348, 635);
             this.propertyGrid1.TabIndex = 13;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -1953,50 +1966,50 @@
             // prevFrameButton
             // 
             this.prevFrameButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.prevFrameButton.Enabled = false;
             this.prevFrameButton.Image = global::SAModel.SALVL.Properties.Resources.prevframe;
             this.prevFrameButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.prevFrameButton.Name = "prevFrameButton";
             this.prevFrameButton.Size = new System.Drawing.Size(40, 40);
             this.prevFrameButton.Text = "Previous Animation Frame";
             this.prevFrameButton.Click += new System.EventHandler(this.prevFrameButton_Click);
-			this.prevFrameButton.Enabled = false;
-			// 
-			// playAnimButton
-			// 
+            // 
+            // playAnimButton
+            // 
             this.playAnimButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.playAnimButton.Enabled = false;
             this.playAnimButton.Image = global::SAModel.SALVL.Properties.Resources.playanim;
             this.playAnimButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.playAnimButton.Name = "playAnimButton";
             this.playAnimButton.Size = new System.Drawing.Size(40, 40);
             this.playAnimButton.Text = "Play/Pause Animation";
             this.playAnimButton.Click += new System.EventHandler(this.playAnimButton_Click);
-			this.playAnimButton.Enabled = false;
-			// 
-			// nextFrameButton
-			// 
-			this.nextFrameButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            // 
+            // nextFrameButton
+            // 
+            this.nextFrameButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.nextFrameButton.Enabled = false;
             this.nextFrameButton.Image = global::SAModel.SALVL.Properties.Resources.nextframe;
             this.nextFrameButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.nextFrameButton.Name = "nextFrameButton";
             this.nextFrameButton.Size = new System.Drawing.Size(40, 40);
             this.nextFrameButton.Text = "Next Animation Frame";
             this.nextFrameButton.Click += new System.EventHandler(this.nextFrameButton_Click);
-			this.nextFrameButton.Enabled = false;
-			// 
-			// resetAnimButton
-			// 
-			this.resetAnimButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            // 
+            // resetAnimButton
+            // 
+            this.resetAnimButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.resetAnimButton.Enabled = false;
             this.resetAnimButton.Image = global::SAModel.SALVL.Properties.Resources.resetanim;
             this.resetAnimButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.resetAnimButton.Name = "resetAnimButton";
             this.resetAnimButton.Size = new System.Drawing.Size(40, 40);
             this.resetAnimButton.Text = "Reset Animation Frame";
             this.resetAnimButton.Click += new System.EventHandler(this.resetAnimButton_Click);
-			this.resetAnimButton.Enabled = false;
-			// 
-			// toolStripSeparator10
-			// 
-			this.toolStripSeparator10.Name = "toolStripSeparator10";
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
             this.toolStripSeparator10.Size = new System.Drawing.Size(6, 43);
             // 
             // BackgroundPanel
@@ -2008,6 +2021,13 @@
             this.BackgroundPanel.Name = "BackgroundPanel";
             this.BackgroundPanel.Size = new System.Drawing.Size(1331, 706);
             this.BackgroundPanel.TabIndex = 2;
+            // 
+            // viewLogToolStripMenuItem
+            // 
+            this.viewLogToolStripMenuItem.Name = "viewLogToolStripMenuItem";
+            this.viewLogToolStripMenuItem.Size = new System.Drawing.Size(202, 30);
+            this.viewLogToolStripMenuItem.Text = "View Log";
+            this.viewLogToolStripMenuItem.Click += new System.EventHandler(this.viewLogToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2239,6 +2259,8 @@
 		private System.Windows.Forms.ToolStripButton nextFrameButton;
 		private System.Windows.Forms.ToolStripButton resetAnimButton;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+		private System.Windows.Forms.ToolStripMenuItem lightsEditorToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem viewLogToolStripMenuItem;
 	}
 }
 
