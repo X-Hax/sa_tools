@@ -13,7 +13,7 @@ namespace SAToolsHub
 
 		static internal string[] Arguments { get; set; }
 		public static Form mainForm;
-        private static readonly Mutex mutex = new Mutex(true, pipeName);
+		private static readonly Mutex mutex = new Mutex(true, pipeName);
 
 		[STAThread]
 		static void Main(string[] args)
@@ -21,7 +21,7 @@ namespace SAToolsHub
 			Application.EnableVisualStyles();
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			Application.SetCompatibleTextRenderingDefault(false);
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 			bool alreadyRunning;
 			try { alreadyRunning = !mutex.WaitOne(0, true); }
@@ -34,7 +34,7 @@ namespace SAToolsHub
 					catch (AbandonedMutexException) { }
 				Application.EnableVisualStyles();
 				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-                Application.SetCompatibleTextRenderingDefault(false);
+				Application.SetCompatibleTextRenderingDefault(false);
 				mainForm = new LoaderManifestDialog(args[1]);
 				Application.Run(mainForm);
 				return;
@@ -54,7 +54,7 @@ namespace SAToolsHub
 				}
 				catch { }
 			}
-			
+
 			if (alreadyRunning)
 			{
 				return;
@@ -84,8 +84,10 @@ namespace SAToolsHub
 			}
 			else
 			{
-				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAToolsHub.log");
-				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
+				string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAToolsHub.log");
+				if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+					Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+				File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SA Tools Hub Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}

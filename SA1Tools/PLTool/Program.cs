@@ -56,6 +56,8 @@ namespace PLTool
             else
             {
 				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "PLTool.log");
+				if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+					Directory.CreateDirectory(Path.GetDirectoryName(logPath));
 				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
                 MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "PLTool Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

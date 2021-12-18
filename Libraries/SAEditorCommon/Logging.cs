@@ -96,6 +96,18 @@ namespace SAModel.SAEditorCommon
 		{
 			return string.Join(System.Environment.NewLine, LogQueue);
 		}
+
+		/// <summary>
+		/// Opens the log file. If the log file doesn't exist, opens the SA Tools AppData folder.
+		/// </summary>
+		public void OpenLog()
+		{
+			string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", Path.GetFileNameWithoutExtension(Application.ExecutablePath) + ".log");
+			if (File.Exists(logPath))
+				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + logPath + "\"") { CreateNoWindow = false });
+			else
+				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer", $"\"" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools\"")) { CreateNoWindow = false });
+		}
 	}
 
 	public class OnScreenDisplay

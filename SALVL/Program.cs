@@ -44,8 +44,10 @@ namespace SAModel.SALVL
 			}
 			else
 			{
-				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SALVL.log");
-				System.IO.File.WriteAllText(logPath, e.ExceptionObject.ToString());
+				string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SALVL.log");
+				if (!Directory.Exists(Path.GetDirectoryName(logPath)))
+					Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+				File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "SALVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
