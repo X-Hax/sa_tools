@@ -4552,7 +4552,7 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public byte Act { get; set; }
 		[IniAlwaysInclude]
-		public byte Type { get; set; }
+		public LSPaletteTypes Type { get; set; }
 		[IniAlwaysInclude]
 		public LSPaletteFlags Flags { get; set; }
 		[IniAlwaysInclude]
@@ -4582,7 +4582,7 @@ namespace SplitTools
 		{
 			Level = (SA1LevelIDs)file[address];
 			Act = file[address + 1];
-			Type = file[address + 2];
+			Type = (LSPaletteTypes)file[address + 2];
 			Flags = (LSPaletteFlags)file[address + 3];
 			Direction = new Vertex(file, address + 4);
 			Diffuse = ByteConverter.ToSingle(file, address + 16);
