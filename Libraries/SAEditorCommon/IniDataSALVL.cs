@@ -29,6 +29,13 @@ namespace SAModel.SAEditorCommon
 		public Dictionary<string, IniCharInfo> Characters { get; set; }
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, IniLevelData> Levels { get; set; }
+		public LevelFogInfo LevelFogFiles { get; set; }
+	}
+
+	public class LevelFogInfo
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<SA1LevelIDs, string> FogEntries { get; set; }
 	}
 
 	public class IniCharInfo
