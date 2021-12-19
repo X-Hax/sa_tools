@@ -1792,16 +1792,23 @@ namespace SAToolsHub
 											}
 											file.Value.MD5Hash = curHash;
 											if (!check.ContainsKey(meta[0]))
+											{
 												check.Add(meta[0], file.Value);
+												modified = true;
+											}
 											else
 												MessageBox.Show(this, "Possible split data conflict with the item:\n" + meta[0], "SA Tools Hub Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 										}
 										else
+										{
 											check.Add(file.Key, file.Value);
-                                        break;
+											modified = true;
+										}
+										break;
 
                                     default:
                                         check.Add(file.Key, file.Value);
+										modified = true;
                                         break;
                                 }
                             }
@@ -1833,6 +1840,7 @@ namespace SAToolsHub
                                             mg += "|" + meta[1];
                                         SAMDLMetadata convMeta = new SAMDLMetadata(mg);
                                         dllFile.SAMDLData.Add(file.Key, convMeta);
+										modified = true;
                                     }
                                 }
                             }
@@ -1841,28 +1849,28 @@ namespace SAToolsHub
                                 IniSerializer.Serialize(dllFile, iniFilePath);
                             break;
 
-                        case ".nb":
-                            Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(iniFilePath);
-							Dictionary<int, string> nbFilenamesNew = new Dictionary<int, string>();
-							bool nbModified = false;
-                            foreach (var file in nbFilenames)
-                            {
-                                string[] meta = file.Value.Split('|');
+       //                 case ".nb":
+       //                     Dictionary<int, string> nbFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(iniFilePath);
+							//Dictionary<int, string> nbFilenamesNew = new Dictionary<int, string>();
+							//bool nbModified = false;
+       //                     foreach (var file in nbFilenames)
+       //                     {
+       //                         string[] meta = file.Value.Split('|');
 
-                                if (metadataList.ContainsKey(NormalizePath(meta[0] + ".sa1mdl")))
-                                {
-                                    List<string> nbNames = new List<string>();
-                                    nbNames.Add(NormalizePath(meta[0]));
-                                    nbNames.Add(metadataList[NormalizePath(meta[0] + ".sa1mdl")]);
-									nbFilenamesNew.Add(file.Key, string.Join("|", nbNames));
-                                }
-                                else
-									nbFilenamesNew.Add(file.Key, NormalizePath(meta[0]));
-                            }
+       //                         if (metadataList.ContainsKey(NormalizePath(meta[0] + ".sa1mdl")))
+       //                         {
+       //                             List<string> nbNames = new List<string>();
+       //                             nbNames.Add(NormalizePath(meta[0]));
+       //                             nbNames.Add(metadataList[NormalizePath(meta[0] + ".sa1mdl")]);
+							//		nbFilenamesNew.Add(file.Key, string.Join("|", nbNames));
+       //                         }
+       //                         else
+							//		nbFilenamesNew.Add(file.Key, NormalizePath(meta[0]));
+       //                     }
 
-                            if (nbModified)
-                                IniSerializer.Serialize(nbFilenamesNew, iniFilePath);
-                            break;
+       //                     if (nbModified)
+       //                         IniSerializer.Serialize(nbFilenamesNew, iniFilePath);
+       //                     break;
                     }
                 }
 
