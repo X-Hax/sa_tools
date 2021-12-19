@@ -4,11 +4,11 @@ using SplitTools;
 
 namespace SAModel.SAEditorCommon
 {
-	public class IniData
+	public class IniDataSALVL
 	{
-		public static IniData Load(string filename)
+		public static IniDataSALVL Load(string filename)
 		{
-			return IniSerializer.Deserialize<IniData>(filename);
+			return IniSerializer.Deserialize<IniDataSALVL>(filename);
 		}
 
 		public void Save(string filename)

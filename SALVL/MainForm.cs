@@ -81,7 +81,7 @@ namespace SAModel.SALVL
 		internal Device d3ddevice;
 
 		#region Editor-Specific Variables
-		SAEditorCommon.IniData sadxlvlini;
+		IniDataSALVL sadxlvlini;
 		Logger log = new Logger();
 		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);

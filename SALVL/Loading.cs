@@ -43,7 +43,7 @@ namespace SAModel.SALVL
 			return false;
 		}
 
-		private void LoadSadxlvlIni(SAEditorCommon.IniData ini)
+		private void LoadSadxlvlIni(IniDataSALVL ini)
 		{
 			isStageLoaded = false;
 
@@ -137,7 +137,7 @@ namespace SAModel.SALVL
 				MessageBox.Show(this, "This project does not have an INI file for SALVL.", "SALVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			sadxlvlini = SAEditorCommon.IniData.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
+			sadxlvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
 			systemFallback = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
 			modFolder = projFile.GameInfo.ProjectFolder;
 			modSystemFolder = Path.Combine(modFolder, sadxlvlini.SystemPath);
