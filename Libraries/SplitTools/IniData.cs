@@ -4452,19 +4452,19 @@ namespace SplitTools
 
 	public class FogData
 	{
-		public float Layer { get; set; }
-		public float Distance { get; set; }
+		public float FogStart { get; set; }
+		public float FogEnd { get; set; }
 		public byte A { get; set; }
 		public byte R { get; set; }
 		public byte G { get; set; }
 		public byte B { get; set; }
-		public int Toggle { get; set; }
+		public int FogEnabled { get; set; }
 
 		public FogData(byte[] file, int address)
 		{
-			Layer = BitConverter.ToSingle(file, address);
-			Distance = BitConverter.ToSingle(file, address + 4);
-			if (BitConverter.IsLittleEndian)
+			FogStart = ByteConverter.ToSingle(file, address);
+			FogEnd = ByteConverter.ToSingle(file, address + 4);
+			if (ByteConverter.BigEndian)
 			{
 				A = file[address + 11];
 				R = file[address + 10];
@@ -4478,7 +4478,7 @@ namespace SplitTools
 				G = file[address + 10];
 				B = file[address + 11];
 			}
-			Toggle = BitConverter.ToInt32(file, address + 12);
+			FogEnabled = ByteConverter.ToInt32(file, address + 12);
 		}
 
 		public void Save(string fileOutputPath)
@@ -4489,15 +4489,66 @@ namespace SplitTools
 
 	public class FogDataArray
 	{
-		public FogData High { get; set; }
-		public FogData Medium { get; set; }
-		public FogData Low { get; set; }
+		// Fog Start
+		public float HighFogStart { get; set; }
+		public float MediumFogStart { get; set; }
+		public float LowFogStart { get; set; }
+		// Fog End
+		public float HighFogEnd { get; set; }
+		public float MediumFogEnd { get; set; }
+		public float LowFogEnd { get; set; }
+		// Fog Color A
+		public byte HighA { get; set; }
+		public byte MediumA { get; set; }
+		public byte LowA { get; set; }
+		// Fog Color R
+		public byte HighR { get; set; }
+		public byte MediumR { get; set; }
+		public byte LowR { get; set; }
+		// Fog Color G
+		public byte HighG { get; set; }
+		public byte MediumG { get; set; }
+		public byte LowG { get; set; }
+		// Fog Color B
+		public byte HighB { get; set; }
+		public byte MediumB { get; set; }
+		public byte LowB { get; set; }
+		// Fog Toggle
+		public int HighFogEnabled { get; set; }
+		public int MediumFogEnabled { get; set; }
+		public int LowFogEnabled { get; set; }
+
 		public FogDataArray(byte[] datafile, int address)
 		{
-			High = new FogData(datafile, address);
-			Medium = new FogData(datafile, address + 16);
-			Low = new FogData(datafile, address + 32);
+			// High detail
+			FogData High = new FogData(datafile, address);
+			HighFogStart = High.FogStart;
+			HighFogEnd = High.FogEnd;
+			HighA = High.A;
+			HighR = High.R;
+			HighG = High.G;
+			HighB = High.B;
+			HighFogEnabled = High.FogEnabled;
+			// Medium detail
+			FogData Medium = new FogData(datafile, address + 16);
+			MediumFogStart = Medium.FogStart;
+			MediumFogEnd = Medium.FogEnd;
+			MediumA = Medium.A;
+			MediumR = Medium.R;
+			MediumG = Medium.G;
+			MediumB = Medium.B;
+			MediumFogEnabled = Medium.FogEnabled;
+			// Low detail
+			FogData Low = new FogData(datafile, address + 32);
+			LowFogStart = Low.FogStart;
+			LowFogEnd = Low.FogEnd;
+			LowA = Low.A;
+			LowR = Low.R;
+			LowG = Low.G;
+			LowB = Low.B;
+			LowFogEnabled = Low.FogEnabled;
 		}
+
 		public void Save(string fileOutputPath)
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
@@ -4506,7 +4557,7 @@ namespace SplitTools
 
 	public class FogDataTable
 	{
-		[IniCollection(IniCollectionMode.NoSquareBrackets)]
+		[IniCollection(IniCollectionMode.IndexOnly)]
 		public FogDataArray[] Act { get; set; }
 		public FogDataTable(byte[] datafile, int address, uint imageBase, int count = 3)
 		{
