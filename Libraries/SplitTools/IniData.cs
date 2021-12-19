@@ -55,29 +55,29 @@ namespace SplitTools
 	public enum Game
 	{
 		SA1,
-        SADX,
-        SA2,
-        SA2B
+		SADX,
+		SA2,
+		SA2B
 	}
 
-    public class FileInfo
-    {
-        [IniName("type")]
-        public string Type { get; set; }
-        [IniName("address")]
-        [TypeConverter(typeof(Int32HexConverter))]
-        public int Address { get; set; }
-        [IniName("filename")]
-        public string Filename { get; set; }
-        [IniName("length")]
-        public int Length { get; set; }
-        [IniName("md5")]
-        public string MD5Hash { get; set; }
-        [IniName("pointer")]
-        [IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
-        public int[] PointerList { get; set; }
-        [IniCollection(IniCollectionMode.IndexOnly)]
-        public Dictionary<string, string> CustomProperties { get; set; }
+	public class FileInfo
+	{
+		[IniName("type")]
+		public string Type { get; set; }
+		[IniName("address")]
+		[TypeConverter(typeof(Int32HexConverter))]
+		public int Address { get; set; }
+		[IniName("filename")]
+		public string Filename { get; set; }
+		[IniName("length")]
+		public int Length { get; set; }
+		[IniName("md5")]
+		public string MD5Hash { get; set; }
+		[IniName("pointer")]
+		[IniCollection(IniCollectionMode.SingleLine, Format = ",", ValueConverter = typeof(Int32HexConverter))]
+		public int[] PointerList { get; set; }
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public Dictionary<string, string> CustomProperties { get; set; }
 	}
 
 	[Serializable]
@@ -419,7 +419,7 @@ namespace SplitTools
 
 	public static class SA1StartPosList
 	{
-		public static int Size { get { return SA1StartPosInfo.Size + 4;}}
+		public static int Size { get { return SA1StartPosInfo.Size + 4; } }
 
 		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(string filename)
 		{
@@ -720,79 +720,79 @@ namespace SplitTools
 		}
 	}
 
-    public class TexnameArray
-    {
-        public string[] TextureNames { get; set; }
-        public TexnameArray(byte[] file, int address, uint imageBase)
-        {
-            uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
-            uint NumTextures = ByteConverter.ToUInt32(file, address + 4);
-            TextureNames = new string[NumTextures];
-            if (TexnameArrayAddr == 0)
-                return;
-            if (NumTextures <= 300 && NumTextures > 0)
-            {
-                TextureNames = new string[NumTextures];
-                for (int u = 0; u < NumTextures; u++)
-                {
-                    uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
-                    if (TexnamePointer != 0)
-                        TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
-                    else
-                        TextureNames[u] = "empty";
-                }
-            }
-        }
+	public class TexnameArray
+	{
+		public string[] TextureNames { get; set; }
+		public TexnameArray(byte[] file, int address, uint imageBase)
+		{
+			uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
+			uint NumTextures = ByteConverter.ToUInt32(file, address + 4);
+			TextureNames = new string[NumTextures];
+			if (TexnameArrayAddr == 0)
+				return;
+			if (NumTextures <= 300 && NumTextures > 0)
+			{
+				TextureNames = new string[NumTextures];
+				for (int u = 0; u < NumTextures; u++)
+				{
+					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
+					if (TexnamePointer != 0)
+						TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
+					else
+						TextureNames[u] = "empty";
+				}
+			}
+		}
 
-        public TexnameArray(string[] list)
-        {
-            TextureNames = list;
-        }
+		public TexnameArray(string[] list)
+		{
+			TextureNames = list;
+		}
 
-        public TexnameArray(string textFile)
-        {
-            string extension = "pvr";
-            string[] texnames_raw = File.ReadAllLines(textFile);
-            if (texnames_raw.Length > 0)
-            {
-                switch (Path.GetExtension(texnames_raw[0]))
-                {
-                    case ".gvr":
-                        extension = "gvr";
-                        break;
-                    case ".dds":
-                        extension = "dds";
-                        break;
-                    case ".pvr":
-                    default:
-                        break;
-                }
-            }
-            TextureNames = new string[texnames_raw.Length];
-            for (int i = 0; i < texnames_raw.Length; i++)
-            {
-                if (texnames_raw[i] == "")
-                    break;
-                TextureNames[i] = texnames_raw[i].Replace("." + extension, "");
-            }
-        }
+		public TexnameArray(string textFile)
+		{
+			string extension = "pvr";
+			string[] texnames_raw = File.ReadAllLines(textFile);
+			if (texnames_raw.Length > 0)
+			{
+				switch (Path.GetExtension(texnames_raw[0]))
+				{
+					case ".gvr":
+						extension = "gvr";
+						break;
+					case ".dds":
+						extension = "dds";
+						break;
+					case ".pvr":
+					default:
+						break;
+				}
+			}
+			TextureNames = new string[texnames_raw.Length];
+			for (int i = 0; i < texnames_raw.Length; i++)
+			{
+				if (texnames_raw[i] == "")
+					break;
+				TextureNames[i] = texnames_raw[i].Replace("." + extension, "");
+			}
+		}
 
-        public int GetNumTextures()
-        {
-            return TextureNames.Length;
-        }
+		public int GetNumTextures()
+		{
+			return TextureNames.Length;
+		}
 
-        public void Save(string fileOutputPath, string extension = "pvr")
-        {
-            StreamWriter sw = File.CreateText(fileOutputPath);
-            for (int u = 0; u < TextureNames.Length; u++)
-            {
-                sw.WriteLine(TextureNames[u] + "." + extension);
-            }
-            sw.Flush();
-            sw.Close();
-        }
-    }
+		public void Save(string fileOutputPath, string extension = "pvr")
+		{
+			StreamWriter sw = File.CreateText(fileOutputPath);
+			for (int u = 0; u < TextureNames.Length; u++)
+			{
+				sw.WriteLine(TextureNames[u] + "." + extension);
+			}
+			sw.Flush();
+			sw.Close();
+		}
+	}
 
 	public static class TextureList
 	{
@@ -2111,9 +2111,9 @@ namespace SplitTools
 			Lines = new List<NPCTextLine>();
 		}
 
-		[IniCollection(IniCollectionMode.SingleLine, Format=", ")]
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<ushort> EventFlags { get; set; }
-		[IniCollection(IniCollectionMode.SingleLine, Format=", ")]
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<ushort> NPCFlags { get; set; }
 		[DefaultValue((SA1CharacterFlags)0xFF)]
 		[IniAlwaysInclude]
@@ -2800,11 +2800,11 @@ namespace SplitTools
 			return result;
 		}
 
-	public static void Save(this KartRankTimes[] startpos, string filename)
-	{
-		IniSerializer.Serialize(startpos, filename);
+		public static void Save(this KartRankTimes[] startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
 	}
-}
 	[Serializable]
 	public class KartRankTimes
 	{
@@ -2854,7 +2854,7 @@ namespace SplitTools
 		}
 	}
 
-		public static class SA2EndPosList
+	public static class SA2EndPosList
 	{
 		public static int Size { get { return SA2EndPosInfo.Size + 2; } }
 
@@ -3524,7 +3524,7 @@ namespace SplitTools
 		[IniAlwaysInclude]
 		public byte WeldType { get; set; }
 		public short Unknown { get; set; }
-		[IniCollection(IniCollectionMode.SingleLine,Format=", ")]
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<ushort> VertIndexes { get; set; }
 		public string VertIndexName { get; set; }
 
@@ -3754,7 +3754,7 @@ namespace SplitTools
 			return result;
 		}
 
-	public static void Save(this SA2CreditsTextListEntry[] list, string filename)
+		public static void Save(this SA2CreditsTextListEntry[] list, string filename)
 		{
 			IniSerializer.Serialize(list, filename);
 		}
@@ -4421,7 +4421,7 @@ namespace SplitTools
 
 	public class NinjaCamera
 	{
-		public Vertex Position  { get; set; } // Camera position
+		public Vertex Position { get; set; } // Camera position
 		public Vertex Vector { get; set; } // Camera vector in unit direction[Local Z axis]
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public int Roll { get; set; } // Camera roll
@@ -4489,64 +4489,64 @@ namespace SplitTools
 
 	public class FogDataArray
 	{
-		// Fog Start
-		public float HighFogStart { get; set; }
-		public float MediumFogStart { get; set; }
-		public float LowFogStart { get; set; }
-		// Fog End
-		public float HighFogEnd { get; set; }
-		public float MediumFogEnd { get; set; }
-		public float LowFogEnd { get; set; }
-		// Fog Color A
-		public byte HighA { get; set; }
-		public byte MediumA { get; set; }
-		public byte LowA { get; set; }
-		// Fog Color R
-		public byte HighR { get; set; }
-		public byte MediumR { get; set; }
-		public byte LowR { get; set; }
-		// Fog Color G
-		public byte HighG { get; set; }
-		public byte MediumG { get; set; }
-		public byte LowG { get; set; }
-		// Fog Color B
-		public byte HighB { get; set; }
-		public byte MediumB { get; set; }
-		public byte LowB { get; set; }
 		// Fog Toggle
-		public int HighFogEnabled { get; set; }
-		public int MediumFogEnabled { get; set; }
-		public int LowFogEnabled { get; set; }
+		public int FogEnabledHigh { get; set; }
+		public int FogEnabledMedium { get; set; }
+		public int FogEnabledLow { get; set; }
+		// Fog Start
+		public float FogStartHigh { get; set; }
+		public float FogStartMedium { get; set; }
+		public float FogStartLow { get; set; }
+		// Fog End
+		public float FogEndHigh { get; set; }
+		public float FogEndMedium { get; set; }
+		public float FogEndLow { get; set; }
+		// Fog Color A
+		public byte ColorA_High { get; set; }
+		public byte ColorA_Medium { get; set; }
+		public byte ColorA_Low { get; set; }
+		// Fog Color R
+		public byte ColorR_High { get; set; }
+		public byte ColorR_Medium { get; set; }
+		public byte ColorR_Low { get; set; }
+		// Fog Color G
+		public byte ColorG_High { get; set; }
+		public byte ColorG_Medium { get; set; }
+		public byte ColorG_Low { get; set; }
+		// Fog Color B
+		public byte ColorB_High { get; set; }
+		public byte ColorB_Medium { get; set; }
+		public byte ColorB_Low { get; set; }
 
 		public FogDataArray(byte[] datafile, int address)
 		{
 			// High detail
 			FogData High = new FogData(datafile, address);
-			HighFogStart = High.FogStart;
-			HighFogEnd = High.FogEnd;
-			HighA = High.A;
-			HighR = High.R;
-			HighG = High.G;
-			HighB = High.B;
-			HighFogEnabled = High.FogEnabled;
+			FogStartHigh = High.FogStart;
+			FogEndHigh = High.FogEnd;
+			ColorA_High = High.A;
+			ColorR_High = High.R;
+			ColorG_High = High.G;
+			ColorB_High = High.B;
+			FogEnabledHigh = High.FogEnabled;
 			// Medium detail
-			FogData Medium = new FogData(datafile, address + 16);
-			MediumFogStart = Medium.FogStart;
-			MediumFogEnd = Medium.FogEnd;
-			MediumA = Medium.A;
-			MediumR = Medium.R;
-			MediumG = Medium.G;
-			MediumB = Medium.B;
-			MediumFogEnabled = Medium.FogEnabled;
+			FogData Medium = new FogData(datafile, address);
+			FogStartMedium = Medium.FogStart;
+			FogEndMedium = Medium.FogEnd;
+			ColorA_Medium = Medium.A;
+			ColorR_Medium = Medium.R;
+			ColorG_Medium = Medium.G;
+			ColorB_Medium = Medium.B;
+			FogEnabledMedium = Medium.FogEnabled;
 			// Low detail
-			FogData Low = new FogData(datafile, address + 32);
-			LowFogStart = Low.FogStart;
-			LowFogEnd = Low.FogEnd;
-			LowA = Low.A;
-			LowR = Low.R;
-			LowG = Low.G;
-			LowB = Low.B;
-			LowFogEnabled = Low.FogEnabled;
+			FogData Low = new FogData(datafile, address);
+			FogStartLow = Low.FogStart;
+			FogEndLow = Low.FogEnd;
+			ColorA_Low = Low.A;
+			ColorR_Low = Low.R;
+			ColorG_Low = Low.G;
+			ColorB_Low = Low.B;
+			FogEnabledLow = Low.FogEnabled;
 		}
 
 		public void Save(string fileOutputPath)
