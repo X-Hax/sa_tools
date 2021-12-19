@@ -39,7 +39,7 @@ namespace SAModel.SALVL
 			comboBoxLightType.SelectedIndex = 0;
 			Suspend = false;
 			SetCurrentLights();
-			this.FormClosing += new FormClosingEventHandler(this.EditorClosing);
+			FormClosing += new FormClosingEventHandler(EditorClosing);
 		}
 
 		private void SetCurrentLights()
@@ -621,11 +621,10 @@ namespace SAModel.SALVL
 			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + "https://github.com/X-Hax/sa_tools/wiki/SALVL#lights-editor") { CreateNoWindow = false });
 		}
 
-		private void EditorClosing(object? sender, FormClosingEventArgs e)
+		private void EditorClosing(object sender, FormClosingEventArgs e)
 		{
 			if (UnsavedChanges)
 				ApplyChangesDialog();
-			EditorMainForm.LightEditorClosed();
 		}
 	}
 }

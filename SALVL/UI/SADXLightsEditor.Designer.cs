@@ -392,7 +392,7 @@ namespace SAModel.SALVL
             this.numericUpDownStageLightIndex.Location = new System.Drawing.Point(89, 15);
             this.numericUpDownStageLightIndex.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownStageLightIndex.Maximum = new decimal(new int[] {
-            4,
+            3,
             0,
             0,
             0});

@@ -2107,6 +2107,7 @@ namespace SAModel.SALVL
 		{
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			SADXLightsEditor lightsEditor = new SADXLightsEditor(this, stageLightList, characterLightList, levelact.Level, levelact.Act);
+			lightsEditor.FormClosed += new FormClosedEventHandler(LightEditorClosed);
 			lightsEditorToolStripMenuItem.Enabled = false;
 			lightsEditor.Show();
 		}
@@ -2126,7 +2127,7 @@ namespace SAModel.SALVL
 			unsaved = true;
 		}
 
-		public void LightEditorClosed()
+		public void LightEditorClosed(object sender, FormClosedEventArgs e)
 		{
 			lightsEditorToolStripMenuItem.Enabled = true;
 		}
