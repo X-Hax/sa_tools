@@ -707,31 +707,6 @@ namespace SplitTools.Split
                                 {
                                     if (ByteConverter.BigEndian)
                                     {
-                                        List<SA2BDeathZoneFlags> flags = new List<SA2BDeathZoneFlags>();
-                                        string path = Path.GetDirectoryName(fileOutputPath);
-                                        List<string> hashes = new List<string>();
-                                        int num = 0;
-                                        while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
-                                        {
-                                            string file_tosave;
-                                            if (customProperties.ContainsKey("filename" + num.ToString()))
-                                                file_tosave = customProperties["filename" + num++.ToString()];
-                                            else
-                                                file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
-                                            string file = Path.Combine(path, file_tosave);
-                                            flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
-                                            ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
-                                            hashes.Add(HelperFunctions.FileHash(file));
-                                            address += 8;
-
-                                        }
-                                        flags.ToArray().Save(fileOutputPath);
-                                        hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
-                                        data.MD5Hash = string.Join(",", hashes.ToArray());
-                                        nohash = true;
-                                    }
-                                    else
-                                    {
                                         List<SA2BBigDeathZoneFlags> flags = new List<SA2BBigDeathZoneFlags>();
                                         string path = Path.GetDirectoryName(fileOutputPath);
                                         List<string> hashes = new List<string>();
@@ -745,6 +720,31 @@ namespace SplitTools.Split
                                                 file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
                                             string file = Path.Combine(path, file_tosave);
                                             flags.Add(new SA2BBigDeathZoneFlags(datafile, address, file_tosave));
+                                            ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+                                            hashes.Add(HelperFunctions.FileHash(file));
+                                            address += 8;
+
+                                        }
+                                        flags.ToArray().Save(fileOutputPath);
+                                        hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+                                        data.MD5Hash = string.Join(",", hashes.ToArray());
+                                        nohash = true;
+                                    }
+                                    else
+                                    {
+                                        List<SA2BDeathZoneFlags> flags = new List<SA2BDeathZoneFlags>();
+                                        string path = Path.GetDirectoryName(fileOutputPath);
+                                        List<string> hashes = new List<string>();
+                                        int num = 0;
+                                        while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+                                        {
+                                            string file_tosave;
+                                            if (customProperties.ContainsKey("filename" + num.ToString()))
+                                                file_tosave = customProperties["filename" + num++.ToString()];
+                                            else
+                                                file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+                                            string file = Path.Combine(path, file_tosave);
+                                            flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
                                             ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
                                             hashes.Add(HelperFunctions.FileHash(file));
                                             address += 8;
