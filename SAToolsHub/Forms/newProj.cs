@@ -446,15 +446,12 @@ namespace SAToolsHub
 			else
 			{
 				if (splitCheck == 0)
-					MessageBox.Show("Item failed to split properly. Please check the SplitLog.log file at:\n\n" + projFolder, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(this, "Item failed to split properly. Please check the SplitLog.log file at:\n\n" + projFolder, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				else
 				{
-					DialogResult successDiag = MessageBox.Show("Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
-					if (successDiag == DialogResult.OK)
-					{
-						SAToolsHub.newProjFile = Path.Combine(projFolder, projName);
-						this.Close();
-					}
+					MessageBox.Show(this, "Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
+					SAToolsHub.newProjFile = Path.Combine(projFolder, projName);
+					this.Close();
 				}
 			}
 		}
