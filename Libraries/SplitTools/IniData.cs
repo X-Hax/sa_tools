@@ -2316,7 +2316,7 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address, string filename)
 		{
-			Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+			Flags = (SA2CharacterFlags)file[address++];
 			Constant1 = file[address++];
 			Constant2 = file[address++];
 			DeathFlag = file[address++];
