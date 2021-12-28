@@ -65,7 +65,7 @@ namespace SplitTools.Split
                 // Start split
                 int itemcount = 0;
                 Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
-				if (inifile.MasterObjectList != null)
+				if (inifile.MasterObjectList != null && File.Exists(inifile.MasterObjectList))
 					masterobjlist = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(Path.Combine(projectFolderName, inifile.MasterObjectList));
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
@@ -148,9 +148,13 @@ namespace SplitTools.Split
                             break;
                     }
                 }
-                // Deal with the master object list
-                if (inifile.MasterObjectList != null)
-					IniSerializer.Serialize(masterobjlist, Path.Combine(projectFolderName, inifile.MasterObjectList));
+				// Deal with the master object list
+				if (inifile.MasterObjectList != null)
+				{
+					string filename = Path.Combine(projectFolderName, inifile.MasterObjectList);
+					Directory.CreateDirectory(Path.GetDirectoryName(filename));
+					IniSerializer.Serialize(masterobjlist, filename);
+				}
                 // Save _data INI file
                 IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename) + "_data.ini"));
                 timer.Stop();
