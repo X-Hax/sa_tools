@@ -65,10 +65,13 @@ namespace SplitTools.Split
                 // Start split
                 int itemcount = 0;
                 Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
-				string molpath = Path.Combine(projectFolderName, inifile.MasterObjectList);
-				if (inifile.MasterObjectList != null && File.Exists(molpath))
-					masterobjlist = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(molpath);
-
+				string molpath = null;
+				if (inifile.MasterObjectList != null)
+				{
+					molpath = Path.Combine(projectFolderName, inifile.MasterObjectList);
+					if (File.Exists(molpath))
+						masterobjlist = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(molpath);
+				}
 				Stopwatch timer = new Stopwatch();
                 timer.Start();
                 // Loop through all items
