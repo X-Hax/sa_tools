@@ -65,7 +65,8 @@ namespace SplitTools.Split
                 // Start split
                 int itemcount = 0;
                 Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
-                Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
+				if (inifile.MasterObjectList != null)
+					masterobjlist = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(Path.Combine(projectFolderName, inifile.MasterObjectList));
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
                 // Loop through all items
@@ -143,27 +144,13 @@ namespace SplitTools.Split
                             break;
                         // Single split mode for everything else
                         default:
-                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, inifile.MasterObjectList, nometa, nolabel, overwrite);
+                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, masterobjlist, nometa, nolabel, overwrite);
                             break;
                     }
                 }
                 // Deal with the master object list
                 if (inifile.MasterObjectList != null)
-                {
-                    foreach (KeyValuePair<string, MasterObjectListEntry> obj in masterobjlist)
-                    {
-                        KeyValuePair<string, int> name = new KeyValuePair<string, int>();
-                        foreach (KeyValuePair<string, int> it in objnamecounts[obj.Key])
-                            if (it.Value > name.Value)
-                                name = it;
-                        obj.Value.Name = name.Key;
-                        obj.Value.Names = objnamecounts[obj.Key].Select((it) => it.Key).ToArray();
-                    }
-
-                    string masterObjectListOutputPath = Path.Combine(projectFolderName, inifile.MasterObjectList);
-
-                    IniSerializer.Serialize(masterobjlist, masterObjectListOutputPath);
-                }
+					IniSerializer.Serialize(masterobjlist, Path.Combine(projectFolderName, inifile.MasterObjectList));
                 // Save _data INI file
                 IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename) + "_data.ini"));
                 timer.Stop();
@@ -191,7 +178,7 @@ namespace SplitTools.Split
             return (int)SplitERRORVALUE.Success;
         }
 
-		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
+		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, Dictionary<string, MasterObjectListEntry> masterobjlist, bool nometa = false, bool nolabel = false, bool overwrite = true)
         {
             if (string.IsNullOrEmpty(itemName))
                 return 0;
@@ -227,8 +214,6 @@ namespace SplitTools.Split
                     SA2 = true;
                     break;
             }
-            Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
-            Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
             Console.WriteLine(itemName + ": " + data.Address.ToString("X") + " -> " + fileOutputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
             switch (type)
@@ -523,22 +508,17 @@ namespace SplitTools.Split
                     }
                     break;
                 case "objlist":
-                    {
-                        ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
-                        if (MasterObjectList != null)
-                            foreach (ObjectListEntry obj in objs)
-                            {
-                                if (!masterobjlist.ContainsKey(obj.CodeString))
-                                    masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
-                                if (!objnamecounts.ContainsKey(obj.CodeString))
-                                    objnamecounts.Add(obj.CodeString, new Dictionary<string, int>() { { obj.Name, 1 } });
-                                else if (!objnamecounts[obj.CodeString].ContainsKey(obj.Name))
-                                    objnamecounts[obj.CodeString].Add(obj.Name, 1);
-                                else
-                                    objnamecounts[obj.CodeString][obj.Name]++;
-                            }
-                        objs.Save(fileOutputPath);
-                    }
+					{
+						ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
+						foreach (ObjectListEntry obj in objs)
+						{
+							if (!masterobjlist.ContainsKey(obj.CodeString))
+								masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
+							else
+								masterobjlist[obj.CodeString].AddName(obj.Name);
+						}
+						objs.Save(fileOutputPath);
+					}
                     break;
                 case "startpos":
                     {
