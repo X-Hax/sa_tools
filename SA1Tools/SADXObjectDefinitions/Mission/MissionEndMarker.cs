@@ -78,6 +78,11 @@ namespace SADXObjectDefinitions.Mission
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.Y;
+		}
+
 		public override string Name { get { return "Mission End Marker"; } }
 
 		static void SetItemList(SETItem obj, object val)

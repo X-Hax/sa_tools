@@ -125,6 +125,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
+
 		public override string Name { get { return name; } }
 
 		public override ushort DefaultXRotation { get { return defxrot ?? base.DefaultXRotation; } }

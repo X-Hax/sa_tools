@@ -53,6 +53,11 @@ namespace SADXObjectDefinitions.Mission
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.None;
+		}
+
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 	}
 }

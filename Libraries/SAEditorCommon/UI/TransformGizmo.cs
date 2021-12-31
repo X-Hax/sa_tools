@@ -35,10 +35,10 @@ namespace SAModel.SAEditorCommon.UI
 		NONE,
 		/// <summary>Used to move items. Axis handles will have arrow tips to suggest movement.</summary>
 		TRANFORM_MOVE,
+		/// <summary>Used to scale cameras and level items. Axis handles will be blocks.</summary>
+		TRANSFORM_SCALE,
 		/// <summary>Used to rotate items. Axis handles will be toroids to suggest a continuum.</summary>
 		TRANSFORM_ROTATE,
-		/// <summary>Used to scale cameras and level items. Axis handles will be blocks.</summary>
-		TRANSFORM_SCALE
 	}
 
 	public enum Pivot
@@ -408,7 +408,7 @@ namespace SAModel.SAEditorCommon.UI
 					// rotate all of our editor selected items
 					foreach (Item item in selectedItems.Items)
 					{
-						item.Rotation = Rotate(gizmoMouseInput, cam, item.Rotation);
+						item.Rotation = Rotate(gizmoMouseInput, cam, item.Rotation, item.RotationType == EditorRotationType.ZXY);
 						result = true;
 					}
 					SetGizmo(
@@ -444,23 +444,42 @@ namespace SAModel.SAEditorCommon.UI
 		#endregion
 
 		#region Rotation Methods
-		public Rotation Rotate(Vector2 input, EditorCamera cam, Rotation rotation)
+		public Rotation Rotate(Vector2 input, EditorCamera cam, Rotation rotation, bool rotateZXY)
 		{
 			if (isTransformLocal)
 			{
+				// todo: find a way to handle y-axis mouse motion, as well as camera relative-direction
 				try
 				{
-					switch (selectedAxes) // todo: find a way to handle y-axis mouse motion, as well as camera relative-direction
+					if (rotateZXY)
 					{
-						case GizmoSelectedAxes.X_AXIS:
-							rotation.XDeg += (int)input.X;
-							break;
-						case GizmoSelectedAxes.Y_AXIS:
-							rotation.ZDeg += (int)input.X;
-							break;
-						case GizmoSelectedAxes.Z_AXIS:
-							rotation.YDeg += (int)input.X;
-							break;
+						switch (selectedAxes)
+						{
+							case GizmoSelectedAxes.X_AXIS:
+								rotation.ZDeg += (int)input.X;
+								break;
+							case GizmoSelectedAxes.Y_AXIS:
+								rotation.XDeg += (int)input.X;
+								break;
+							case GizmoSelectedAxes.Z_AXIS:
+								rotation.YDeg += (int)input.X;
+								break;
+						}
+					}
+					else
+					{
+						switch (selectedAxes)
+						{
+							case GizmoSelectedAxes.X_AXIS:
+								rotation.XDeg += (int)input.X;
+								break;
+							case GizmoSelectedAxes.Y_AXIS:
+								rotation.ZDeg += (int)input.X;
+								break;
+							case GizmoSelectedAxes.Z_AXIS:
+								rotation.YDeg += (int)input.X;
+								break;
+						}
 					}
 				}
 				catch (NotSupportedException)

@@ -9,6 +9,16 @@ using SAModel.SAEditorCommon.UI;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
+	public enum EditorRotationType
+	{
+		None,
+		XYZ,
+		ZXY,
+		ZYX,
+		XY,
+		Y
+	}
+
 	[Serializable]
 	public abstract class Item : IComponent
 	{
@@ -24,7 +34,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		protected Matrix transformMatrix = Matrix.Identity;
 		protected Vertex position = new Vertex();
 		protected Rotation rotation = new Rotation();
-		protected bool rotateZYX = false;
+		protected EditorRotationType rotationType = EditorRotationType.XYZ;
 
 		[Category("Common")]
 		public virtual Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
@@ -32,6 +42,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public virtual Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
 		[Browsable(false)]
 		public Matrix TransformMatrix { get { return transformMatrix; } }
+		[Browsable(false)]
+		public EditorRotationType RotationType { get { return rotationType; } }
 
 		[Browsable(false)]
 		public virtual bool CanCopy { get { return true; } }
@@ -116,8 +128,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.LoadMatrix(Matrix.Identity);
 			matrixStack.NJTranslate(Position);
-			if (!rotateZYX) matrixStack.NJRotateXYZ(Rotation);
-			else matrixStack.NJRotateZYX(Rotation);
+
+			if (rotationType != EditorRotationType.ZYX)
+				matrixStack.NJRotateXYZ(Rotation);
+			else
+				matrixStack.NJRotateZYX(Rotation);
 
 			transformMatrix = matrixStack.Top;
 		}

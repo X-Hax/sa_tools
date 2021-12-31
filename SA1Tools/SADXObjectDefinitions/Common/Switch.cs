@@ -83,6 +83,16 @@ namespace SADXObjectDefinitions.Common
 			return matrix;
 		}
 
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
+
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
 			int x; int z; direction.GetRotation(out x, out z);

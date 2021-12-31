@@ -141,6 +141,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 			return matrix;
 		}
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
 	}
 
 	public enum BigRockVars

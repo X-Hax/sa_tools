@@ -65,6 +65,11 @@ namespace SADXObjectDefinitions.WindyValley
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.Y;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

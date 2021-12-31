@@ -128,6 +128,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return matrix;
 		}
 
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
+
 		private PropertySpec[] customProperties = new PropertySpec[] {
 			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (PierVariants)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
 		};

@@ -129,6 +129,16 @@ namespace SADXObjectDefinitions.Common
 			return matrix;
 		}
 
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
+
 		public override string Name { get { return "Spikes"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {

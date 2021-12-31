@@ -82,6 +82,11 @@ namespace SADXObjectDefinitions.Mission
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.Y;
+		}
+
 		public override string Name { get { return "Mission Flag"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {

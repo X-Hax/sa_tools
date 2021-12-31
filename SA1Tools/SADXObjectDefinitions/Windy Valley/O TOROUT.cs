@@ -68,6 +68,11 @@ namespace SADXObjectDefinitions.WindyValley
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.None;
+		}
+
 		public override string Name { get { return "Tornado"; } }
 	}
 }

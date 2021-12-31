@@ -73,6 +73,11 @@ namespace SADXObjectDefinitions.Mission
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.None;
+		}
+
 		public override string Name { get { return "Mission Balloon"; } }
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {

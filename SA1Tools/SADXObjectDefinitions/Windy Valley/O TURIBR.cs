@@ -67,6 +67,16 @@ namespace SADXObjectDefinitions.WindyValley
 
 			return matrix;
 		}
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.Y;
+		}
 	}
 
 	public class Turibr1 : Bridge

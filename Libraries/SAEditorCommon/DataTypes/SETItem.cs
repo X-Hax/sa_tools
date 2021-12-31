@@ -30,6 +30,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			objdef = GetObjectDefinition();
 			position = new Vertex();
 			rotation = new Rotation(objdef.DefaultXRotation, objdef.DefaultYRotation, objdef.DefaultZRotation);
+			rotationType = objdef.GetRotationType(this);
 			Scale = new Vertex(objdef.DefaultXScale, objdef.DefaultYScale, objdef.DefaultZScale);
 			isLoaded = true;
 
@@ -50,6 +51,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Scale = new Vertex(file, address + 0x14);
 			isLoaded = true;
 			objdef = GetObjectDefinition();
+			rotationType = objdef.GetRotationType(this);
 
 			GetHandleMatrix();
 		}

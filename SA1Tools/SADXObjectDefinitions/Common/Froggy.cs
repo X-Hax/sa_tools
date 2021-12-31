@@ -115,6 +115,16 @@ namespace SADXObjectDefinitions.Common
 
 			return matrix;
 		}
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
 	}
 
 	public class Froggy : ObjectDefinition
@@ -186,6 +196,16 @@ namespace SADXObjectDefinitions.Common
 			MatrixFunctions.RotateObject(ref matrix, item.Rotation);
 
 			return matrix;
+		}
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
 		}
 	}
 }

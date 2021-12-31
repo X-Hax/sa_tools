@@ -43,7 +43,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Model = new NJS_OBJECT();
 			ImportModel();
 
-			rotateZYX = Model.RotateZYX;
+			if (Model.RotateZYX)
+				rotationType = EditorRotationType.ZYX;
+
 			GetHandleMatrix();
 		}
 
@@ -63,7 +65,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 			
 			Mesh = Model.Attach.CreateD3DMesh();
 
-			rotateZYX = Model.RotateZYX;
+			if (Model.RotateZYX)
+				rotationType = EditorRotationType.ZYX;
+
 			GetHandleMatrix();
 		}
 

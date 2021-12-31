@@ -97,6 +97,16 @@ namespace SADXObjectDefinitions.EmeraldCoast
 
 			return matrix;
 		}
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
 	}
 
 	public class AOKill : ObjectDefinition
@@ -176,6 +186,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			MatrixFunctions.Translate(ref matrix, item.Position);
 
 			return matrix;
+		}
+
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.None;
 		}
 	}
 
@@ -263,6 +278,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			MatrixFunctions.Translate(ref matrix, item.Position);
 
 			return matrix;
+		}
+
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.None;
 		}
 	}
 }

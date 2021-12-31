@@ -65,6 +65,11 @@ namespace SADXObjectDefinitions.Mission
 			return matrix;
 		}
 
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.None;
+		}
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();

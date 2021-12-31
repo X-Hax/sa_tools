@@ -88,6 +88,16 @@ namespace SADXObjectDefinitions.Mission
 			return matrix;
 		}
 
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public override EditorRotationType GetRotationType(SETItem item)
+		{
+			return EditorRotationType.XYZ;
+		}
+
 		public override string Name { get { return "Mission Robot Fish"; } }
 
 		static object GetWeight(SETItem obj)
