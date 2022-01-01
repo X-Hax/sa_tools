@@ -3581,21 +3581,21 @@ namespace SAModel.SAMDL
             UpdateTexlist();
         }
 
-        private void AddTextures(string[] filenames)
-        {
-            List<BMPInfo> result = new List<BMPInfo>();
-            if (TextureInfo != null && TextureInfo.Length > 0)
-                result.AddRange(TextureInfo);
-            for (int i = 0; i < filenames.Length; i++)
-            {
-                if (File.Exists(filenames[i]))
-                    result.AddRange(TextureArchive.GetTextures(filenames[i]));
-                else
-                    MessageBox.Show(this, "Texture file " + filenames[i] + " doesn't exist.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            TextureInfo = result.ToArray();
-            UpdateTexlist();
-        }
+		private void AddTextures(string[] filenames, string paletteFile = null)
+		{
+			List<BMPInfo> result = new List<BMPInfo>();
+			if (TextureInfo != null && TextureInfo.Length > 0)
+				result.AddRange(TextureInfo);
+			for (int i = 0; i < filenames.Length; i++)
+			{
+				if (File.Exists(filenames[i]))
+					result.AddRange(TextureArchive.GetTextures(filenames[i], paletteFile));
+				else
+					MessageBox.Show(this, "Texture file " + filenames[i] + " doesn't exist.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			TextureInfo = result.ToArray();
+			UpdateTexlist();
+		}
 
 		private void addTexturestoolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -3835,7 +3835,7 @@ namespace SAModel.SAMDL
             if (info.TextureArchives != null)
             {
                 // Load texture archives
-                AddTextures(info.TextureArchives);
+                AddTextures(info.TextureArchives, info.TexturePalettePath);
                 // Set texture IDs for partial texlist if defined
                 if (info.TextureIDs != null)
                     SetPartialTexlist(info.TextureIDs);
