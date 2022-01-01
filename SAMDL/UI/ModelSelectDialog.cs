@@ -173,7 +173,7 @@ namespace SAModel.SAMDL
                                 case ".sa2bmdl":
                                     string[] textures = new string[1];
                                     textures[0] = entryTexture;
-                                    Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null));
+                                    Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null, null));
                                     break;
                                 default:
                                     break;
@@ -330,7 +330,7 @@ namespace SAModel.SAMDL
                     // Set the list of texture archive names
                     if (textureArchiveList.Count > 0)
                         textureArchives = textureArchiveList.ToArray();
-                    return new ModelLoadInfo(model.ModelName, modelFilePath, textureArchives, model.TextureNames, model.TextureIDs);
+                    return new ModelLoadInfo(model.ModelName, modelFilePath, textureArchives, model.TextureNames, model.TextureIDs, model.TexturePalettePath);
                 }
             }
             return null;
@@ -363,35 +363,39 @@ namespace SAModel.SAMDL
         public string[] TextureArchives;
         public TexnameArray TextureNames;
         public int[] TextureIDs;
+		public string TexturePalettePath;
 
-        public ModelLoadInfo(string name, string modelFile, string[] textures, TexnameArray texnames, int[] texids)
+        public ModelLoadInfo(string name, string modelFile, string[] textures, TexnameArray texnames, int[] texids, string texturePaletteFile)
         {
             ModelName = name;
             ModelFilePath = modelFile;
             TextureArchives = textures;
             TextureNames = texnames;
             TextureIDs = texids;
+			TexturePalettePath = texturePaletteFile;
         }
 
-        public ModelLoadInfo(string name, SplitTools.FileInfo split, string modFolder)
-        {
-            ModelName = name;
-            ModelFilePath = split.Filename;
-            if (split.CustomProperties.ContainsKey("texture"))
-                TextureArchives = split.CustomProperties["texture"].Split(',');
-            if (split.CustomProperties.ContainsKey("texids"))
-            {
-                string[] texids_s = split.CustomProperties["texids"].Split(',');
-                List<int> texid_list = new List<int>();
-                for (int i = 0; i < texids_s.Length; i++)
-                    texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
-                TextureIDs = texid_list.ToArray();
-            }
-            else if (split.CustomProperties.ContainsKey("texnames"))
-            {
-                string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
-                TextureNames = new TexnameArray(texnamefile);
-            }
+		public ModelLoadInfo(string name, SplitTools.FileInfo split, string modFolder)
+		{
+			ModelName = name;
+			ModelFilePath = split.Filename;
+			if (split.CustomProperties.ContainsKey("texture"))
+				TextureArchives = split.CustomProperties["texture"].Split(',');
+			if (split.CustomProperties.ContainsKey("texturepalette"))
+				TexturePalettePath = split.CustomProperties["texturepalette"];
+			if (split.CustomProperties.ContainsKey("texids"))
+			{
+				string[] texids_s = split.CustomProperties["texids"].Split(',');
+				List<int> texid_list = new List<int>();
+				for (int i = 0; i < texids_s.Length; i++)
+					texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+				TextureIDs = texid_list.ToArray();
+			}
+			else if (split.CustomProperties.ContainsKey("texnames"))
+			{
+				string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
+				TextureNames = new TexnameArray(texnamefile);
+			}
         }
 
         public ModelLoadInfo(string modelFilePath, SAMDLMetadata meta, string modFolder)
