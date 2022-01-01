@@ -402,7 +402,7 @@ namespace SplitTools
 		public float Distance { get; set; }
 		public string Name { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
-		public string[] Names { get; set; }
+		public List<string> Names { get; set; }
 
 		public MasterObjectListEntry() { }
 
@@ -413,7 +413,13 @@ namespace SplitTools
 			Flags = obj.Flags;
 			Distance = obj.Distance;
 			Name = obj.Name;
-			Names = new[] { obj.Name };
+			Names = new List<string>() { obj.Name };
+		}
+
+		public void AddName(string name)
+		{
+			if (!Names.Contains(name))
+				Names.Add(name);
 		}
 	}
 
