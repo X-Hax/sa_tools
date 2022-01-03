@@ -192,7 +192,7 @@ namespace SAToolsHub
 				case "SA2PC":
 					SA2ModInfo sa2ModInfo = SplitTools.IniSerializer.Deserialize<SA2ModInfo>(baseModIniPath);
 
-					if (iniDLLFiles.Count > 0) sa2ModInfo.DLLData = "Data_DLL_orig.ini";
+					if (iniDLLFiles.Count > 0) sa2ModInfo.DLLData = "Data_DLL_orig_data.ini";
 					if (iniEXEFiles.Count > 0) sa2ModInfo.EXEData = "sonic2app_data.ini";
 
 					SplitTools.IniSerializer.Serialize(sa2ModInfo, outputModIniPath);
