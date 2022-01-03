@@ -850,7 +850,7 @@ namespace SplitTools.Split
                                     file_tosave = customProperties["filename" + i.ToString()];
                                 else
                                     file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim";
-                                string file = Path.Combine(path, file_tosave);
+                                string file = Path.Combine(fileOutputPath, file_tosave);
                                 motion.Save(file, nometa);
                                 hashes.Add(HelperFunctions.FileHash(file));
                             }
