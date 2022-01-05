@@ -4466,17 +4466,17 @@ namespace SplitTools
 			FogEnd = ByteConverter.ToSingle(file, address + 4);
 			if (ByteConverter.BigEndian)
 			{
-				A = file[address + 11];
-				R = file[address + 10];
-				G = file[address + 9];
-				B = file[address + 8];
-			}
-			else
-			{
 				A = file[address + 8];
 				R = file[address + 9];
 				G = file[address + 10];
 				B = file[address + 11];
+			}
+			else
+			{
+				A = file[address + 11];
+				R = file[address + 10];
+				G = file[address + 9];
+				B = file[address + 8];
 			}
 			FogEnabled = ByteConverter.ToInt32(file, address + 12);
 		}
@@ -4485,6 +4485,8 @@ namespace SplitTools
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
+
+		public FogData() { }
 	}
 
 	public class FogDataArray
@@ -4553,12 +4555,15 @@ namespace SplitTools
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
+
+		public FogDataArray() { }
 	}
 
 	public class FogDataTable
 	{
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public FogDataArray[] Act { get; set; }
+
 		public FogDataTable(byte[] datafile, int address, uint imageBase, int count = 3)
 		{
 			List<FogDataArray> foglist = new List<FogDataArray>();
@@ -4573,10 +4578,13 @@ namespace SplitTools
 			}
 			Act = foglist.ToArray();
 		}
+
 		public void Save(string fileOutputPath)
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
+
+		public FogDataTable() { }
 	}
 
 	public class LSPaletteData
