@@ -2040,7 +2040,7 @@ namespace SAModel.SALVL
 				if (geoanim.AnimationFrame >= geoanim.MaxFrame)
 					geoanim.AnimationFrame = 0;
 			}
-			osd.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			osd.UpdateOSDItem("Next Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
@@ -2057,7 +2057,7 @@ namespace SAModel.SALVL
 				if (geoanim.AnimationFrame < 0)
 					geoanim.AnimationFrame = geoanim.MaxFrame;
 			}
-			osd.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			osd.UpdateOSDItem("Previous Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
@@ -2070,7 +2070,7 @@ namespace SAModel.SALVL
 				return;
 			foreach (GeoAnimData geoanim in LevelData.geo.Anim)
 				geoanim.AnimationFrame = 0;
-			osd.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			osd.UpdateOSDItem("Reset Animation Frame", RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 			NeedPropertyRefresh = true;
 		}
@@ -2083,7 +2083,7 @@ namespace SAModel.SALVL
 				AnimationTimer.Start();
 			else
 				AnimationTimer.Stop();
-			osd.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
+			osd.UpdateOSDItem("Animation " + (playAnimButton.Checked ? "started" : "stopped"), RenderPanel.Width, 24, Color.AliceBlue.ToRawColorBGRA(), "anim", 120);
 			NeedUpdateAnimation = true;
 		}
 
@@ -2144,6 +2144,12 @@ namespace SAModel.SALVL
 		private void viewLogToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			log.OpenLog();
+		}
+
+		private void fogButton_Click(object sender, EventArgs e)
+		{
+			osd.UpdateOSDItem("Fog: " + (fogButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			NeedRedraw = true;
 		}
 	}
 }
