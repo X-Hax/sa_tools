@@ -5,7 +5,6 @@ using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
 using SAModel.SAEditorCommon.ProjectManagement;
-using SharpDX;
 using SharpDX.Direct3D9;
 using SplitTools;
 using System;
@@ -13,9 +12,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -159,7 +156,7 @@ namespace SAModel.SALVL
 			Text = "SALVL - Loading " + levelName + "...";
 
 #if !DEBUG
-            backgroundWorker1.RunWorkerAsync();
+			backgroundWorker1.RunWorkerAsync();
 #else
 			backgroundWorker1_DoWork(null, null);
 			backgroundWorker1_RunWorkerCompleted(null, null);
@@ -616,543 +613,611 @@ namespace SAModel.SALVL
 			log.WriteLog();
 		}
 
+		private void SetFogData(FogDataArray data)
+		{
+			StageFog = new FogData();
+			switch (editorDetailSetting)
+			{
+				case ClipLevel.Far:
+				default:
+					StageFog.FogEnabled = data.FogEnabledHigh;
+					StageFog.FogStart = data.FogStartHigh;
+					StageFog.FogEnd = data.FogEndHigh;
+					StageFog.A = data.ColorA_High;
+					StageFog.R = data.ColorR_High;
+					StageFog.G = data.ColorG_High;
+					StageFog.B = data.ColorB_High;
+					break;
+				case ClipLevel.Medium:
+					StageFog.FogEnabled = data.FogEnabledMedium;
+					StageFog.FogStart = data.FogStartMedium;
+					StageFog.FogEnd = data.FogEndMedium;
+					StageFog.A = data.ColorA_Medium;
+					StageFog.R = data.ColorR_Medium;
+					StageFog.G = data.ColorG_Medium;
+					StageFog.B = data.ColorB_Medium;
+					break;
+				case ClipLevel.Near:
+					StageFog.FogEnabled = data.FogEnabledLow;
+					StageFog.FogStart = data.FogStartLow;
+					StageFog.FogEnd = data.FogEndLow;
+					StageFog.A = data.ColorA_Low;
+					StageFog.R = data.ColorR_Low;
+					StageFog.G = data.ColorG_Low;
+					StageFog.B = data.ColorB_Low;
+					break;
+			}
+		}
+
+		private void LoadFog(SA1LevelAct levelact)
+		{
+			if (sadxlvlini.LevelFogFiles.FogEntries != null && sadxlvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
+			{
+				string fogFilePath = sadxlvlini.LevelFogFiles.FogEntries[levelact.Level];
+				if (File.Exists(fogFilePath))
+				{
+					FogDataTable table = IniSerializer.Deserialize<FogDataTable>(fogFilePath);
+					if (table.Act[levelact.Act] != null)
+						SetFogData(table.Act[levelact.Act]);
+					else
+					{
+						osd.AddMessage("Fog data for this level is null. Stage fog is disabled.", 180);
+						log.Add("Fog data for this level is null. Stage fog is disabled.");
+						StageFog = null;
+					}
+				}
+			}
+			else
+			{
+				osd.AddMessage("Fog data not found. Stage fog is disabled.", 180);
+				log.Add("Fog data not found. Stage fog is disabled.");
+				StageFog = null;
+			}
+
+		}
+
 		private void MainLevelLoadLoop()
 		{
 #if !DEBUG
-            try
-            {
-#endif
-			int steps = 9;
-			if (d3ddevice == null)
-				++steps;
-
-			toolStrip1.Enabled = false;
-			LevelData.SuppressEvents = true;
-
-			#region Initialization and cleanup
-
-			if (isStageLoaded)
+			try
 			{
-				LevelData.Clear();
-				selectedItems = new EditorItemSelection();
-				sceneGraphControl1.InitSceneControl(selectedItems);
-				PointHelper.Instances.Clear();
-				LevelData.ClearTextures();
-			}
+#endif 
+				int steps = 9;
+				if (d3ddevice == null)
+					++steps;
 
-			isStageLoaded = false;
+				toolStrip1.Enabled = false;
+				LevelData.SuppressEvents = true;
 
-			progress.SetTask("Loading stage: " + levelName);
-			progress.ResetSteps();
-			progress.SetMaxSteps(steps);
-			IniLevelData level = sadxlvlini.Levels[levelID];
+				#region Initialization and cleanup
 
-			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
-			LevelData.leveltexs = null;
-
-			Invoke((Action)progress.Show);
-
-			if (d3ddevice == null)
-			{
-				progress.SetTask("Initializing Direct3D...");
-				Invoke((Action)InitializeDirect3D);
-				progress.StepProgress();
-			}
-			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Black.ToRawColorBGRA(), 1, 0);
-			progress.SetTaskAndStep("Loading level data:", "Geometry");
-
-			// Set current directory. Otherwise most stuff won't be able to load.
-			Environment.CurrentDirectory = modFolder;
-
-			// Load Landtable
-			if (string.IsNullOrEmpty(level.LevelGeometry))
-				LevelData.geo = null;
-			else
-			{
-				LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
-				LevelData.ClearLevelItems();
-				LevelData.ClearLevelAnims();
-
-				for (int i = 0; i < LevelData.geo.COL.Count; i++)
+				if (isStageLoaded)
 				{
-					LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
+					LevelData.Clear();
+					selectedItems = new EditorItemSelection();
+					sceneGraphControl1.InitSceneControl(selectedItems);
+					PointHelper.Instances.Clear();
+					LevelData.ClearTextures();
+					StageFog = null;
 				}
 
-				for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+				isStageLoaded = false;
+
+				progress.SetTask("Loading stage: " + levelName);
+				progress.ResetSteps();
+				progress.SetMaxSteps(steps);
+				IniLevelData level = sadxlvlini.Levels[levelID];
+
+				SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
+				LevelData.leveltexs = null;
+
+				Invoke((Action)progress.Show);
+
+				if (d3ddevice == null)
 				{
-					LevelData.AddLevelAnim(new LevelAnim(LevelData.geo.Anim[i], i, selectedItems));
+					progress.SetTask("Initializing Direct3D...");
+					Invoke((Action)InitializeDirect3D);
+					progress.StepProgress();
 				}
-			}
+				d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Black.ToRawColorBGRA(), 1, 0);
+				progress.SetTaskAndStep("Loading level data:", "Geometry");
 
-			// Initialize level textures
-			LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
-			LevelData.Textures = new Dictionary<string, Texture[]>();
-			if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
-				LevelData.leveltexs = LevelData.geo.TextureFileName;
+				// Set current directory. Otherwise most stuff won't be able to load.
+				Environment.CurrentDirectory = modFolder;
 
-			progress.StepProgress();
-
-			#endregion
-
-			#region Start Positions
-
-			progress.SetTaskAndStep("Setting up start positions...");
-
-			LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
-			for (int i = 0; i < LevelData.StartPositions.Length; i++)
-			{
-				progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
-
-				IniCharInfo character;
-				if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
-					character = sadxlvlini.Characters["SuperSonic"];
+				// Load Landtable
+				if (string.IsNullOrEmpty(level.LevelGeometry))
+					LevelData.geo = null;
 				else
-					character = sadxlvlini.Characters[LevelData.Characters[i]];
-
-				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
-
-				if (File.Exists(character.StartPositions))
-					posini = SA1StartPosList.Load(character.StartPositions);
-
-				Vertex pos = new Vertex();
-				int rot = 0;
-
-				if (posini.ContainsKey(levelact))
 				{
-					pos = posini[levelact].Position;
-					rot = posini[levelact].YRotation;
-				}
-				if (File.Exists(character.Model))
-					LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
-				else
-					LevelData.StartPositions[i] = new StartPosItem(new NJS_OBJECT(),
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
-				if (File.Exists(character.TextureList))
-					LoadTextureList(character.TextureList, modSystemFolder);
-			}
-			JumpToStartPos();
+					LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
+					LevelData.ClearLevelItems();
+					LevelData.ClearLevelAnims();
 
-			progress.StepProgress();
-
-			#endregion
-
-			#region Death Zones
-
-			progress.SetTaskAndStep("Death Zones:", "Initializing...");
-
-			if (string.IsNullOrEmpty(level.DeathZones))
-				LevelData.DeathZones = null;
-			else
-			{
-				LevelData.DeathZones = new List<DeathZoneItem>();
-				if (File.Exists(level.DeathZones))
-				{
-					DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
-					string path = Path.GetDirectoryName(level.DeathZones);
-					for (int i = 0; i < dzini.Length; i++)
+					for (int i = 0; i < LevelData.geo.COL.Count; i++)
 					{
-						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+						LevelData.AddLevelItem(new LevelItem(LevelData.geo.COL[i], i, selectedItems));
+					}
 
-						LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
+					for (int i = 0; i < LevelData.geo.Anim.Count; i++)
+					{
+						LevelData.AddLevelAnim(new LevelAnim(LevelData.geo.Anim[i], i, selectedItems));
+					}
+				}
+
+				// Initialize level textures
+				LevelData.TextureBitmaps = new Dictionary<string, BMPInfo[]>();
+				LevelData.Textures = new Dictionary<string, Texture[]>();
+				if (LevelData.geo != null && !string.IsNullOrEmpty(LevelData.geo.TextureFileName))
+					LevelData.leveltexs = LevelData.geo.TextureFileName;
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Start Positions
+
+				progress.SetTaskAndStep("Setting up start positions...");
+
+				LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
+				for (int i = 0; i < LevelData.StartPositions.Length; i++)
+				{
+					progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
+
+					IniCharInfo character;
+					if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
+						character = sadxlvlini.Characters["SuperSonic"];
+					else
+						character = sadxlvlini.Characters[LevelData.Characters[i]];
+
+					Dictionary<SA1LevelAct, SA1StartPosInfo> posini = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
+
+					if (File.Exists(character.StartPositions))
+						posini = SA1StartPosList.Load(character.StartPositions);
+
+					Vertex pos = new Vertex();
+					int rot = 0;
+
+					if (posini.ContainsKey(levelact))
+					{
+						pos = posini[levelact].Position;
+						rot = posini[levelact].YRotation;
+					}
+					if (File.Exists(character.Model))
+						LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
+						character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+					else
+						LevelData.StartPositions[i] = new StartPosItem(new NJS_OBJECT(),
+						character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+					if (File.Exists(character.TextureList))
+						LoadTextureList(character.TextureList, modSystemFolder);
+				}
+				JumpToStartPos();
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Death Zones
+
+				progress.SetTaskAndStep("Death Zones:", "Initializing...");
+
+				if (string.IsNullOrEmpty(level.DeathZones))
+					LevelData.DeathZones = null;
+				else
+				{
+					LevelData.DeathZones = new List<DeathZoneItem>();
+					if (File.Exists(level.DeathZones))
+					{
+						DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
+						string path = Path.GetDirectoryName(level.DeathZones);
+						for (int i = 0; i < dzini.Length; i++)
+						{
+							progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+
+							LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
+						}
+					}
+					else
+						LevelData.DeathZones = null;
+				}
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Textures and Texture Lists
+
+				progress.SetTaskAndStep("Loading textures for:");
+
+				progress.SetStep("Common objects");
+				// Loads common object textures (e.g OBJ_REGULAR)
+				if (File.Exists(sadxlvlini.ObjectTextureList))
+					LoadTextureList(sadxlvlini.ObjectTextureList, modSystemFolder);
+
+				progress.SetStep("Mission objects");
+				// Loads mission object textures
+				if (File.Exists(sadxlvlini.MissionTextureList))
+					LoadTextureList(sadxlvlini.MissionTextureList, modSystemFolder);
+
+				progress.SetTaskAndStep("Loading stage texture lists...");
+
+				// Loads the textures in the texture list for this stage (e.g BEACH01)
+				if (sadxlvlini.LevelTextureLists != null)
+				{
+					// Loads the textures in the texture list for this stage (e.g BEACH01)
+					foreach (string file in Directory.GetFiles(sadxlvlini.LevelTextureLists))
+					{
+						LevelTextureList texini = LevelTextureList.Load(file);
+						if (texini.Level != levelact)
+							continue;
+						LoadTextureList(texini.TextureList, modSystemFolder);
 					}
 				}
 				else
-					LevelData.DeathZones = null;
-			}
-
-			progress.StepProgress();
-
-			#endregion
-
-			#region Textures and Texture Lists
-
-			progress.SetTaskAndStep("Loading textures for:");
-
-			progress.SetStep("Common objects");
-			// Loads common object textures (e.g OBJ_REGULAR)
-			if (File.Exists(sadxlvlini.ObjectTextureList))
-				LoadTextureList(sadxlvlini.ObjectTextureList, modSystemFolder);
-
-			progress.SetStep("Mission objects");
-			// Loads mission object textures
-			if (File.Exists(sadxlvlini.MissionTextureList))
-				LoadTextureList(sadxlvlini.MissionTextureList, modSystemFolder);
-
-			progress.SetTaskAndStep("Loading stage texture lists...");
-
-			// Loads the textures in the texture list for this stage (e.g BEACH01)
-			if (sadxlvlini.LevelTextureLists != null)
-			{
-				// Loads the textures in the texture list for this stage (e.g BEACH01)
-				foreach (string file in Directory.GetFiles(sadxlvlini.LevelTextureLists))
 				{
-					LevelTextureList texini = LevelTextureList.Load(file);
-					if (texini.Level != levelact)
-						continue;
-					LoadTextureList(texini.TextureList, modSystemFolder);
-				}
-			}
-			else
-			{
-				if (level.TextureList != null)
-				{
-					LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
-					LoadTextureList(texini.TextureList, modSystemFolder);
-				}
-			}
-
-			progress.SetTaskAndStep("Loading textures for:", "Objects");
-			// Object texture list(s)
-			if (File.Exists(level.ObjectTextureList))
-				LoadTextureList(level.ObjectTextureList, modSystemFolder);
-
-			progress.SetStep("Stage");
-			// Set stage PVM name for stages that don't have it.
-			// This also loads things like skybox textures for some stages.
-			if (level.Textures != null && level.Textures.Length > 0)
-				foreach (string tex in level.Textures)
-				{
-					LoadPVM(tex, modSystemFolder);
-					if (string.IsNullOrEmpty(LevelData.leveltexs))
-						LevelData.leveltexs = tex;
-				}
-
-			// Load PVMs for stages that don't have a stage texture list.
-			if (!string.IsNullOrEmpty(LevelData.leveltexs))
-				LoadPVM(LevelData.leveltexs, modSystemFolder);
-
-			progress.StepProgress();
-
-			#endregion
-
-			#region Object Definitions / SET Layout
-
-			progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
-
-			// Load Object Definitions INI file
-			if (File.Exists(sadxlvlini.ObjectDefinitions))
-				objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(sadxlvlini.ObjectDefinitions);
-			LevelData.ObjDefs = new List<ObjectDefinition>();
-			LevelData.MisnObjDefs = new List<ObjectDefinition>();
-			InitObjDefReferences();
-			// Load SET items
-			if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
-			{
-				LoadObjectList(level.ObjectList);
-				progress.SetTaskAndStep("Loading SET items", "Initializing...");
-
-				// Assign SET data
-				if (LevelData.ObjDefs.Count > 0)
-				{
-					LevelData.SETName = level.SETName ?? level.LevelID;
-					string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
-					string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + "{0}.bin");
-					LevelData.InitSETItems();
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					if (level.TextureList != null)
 					{
-						string formatted = string.Format(setstr, LevelData.SETChars[i]);
-						string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+						LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
+						LoadTextureList(texini.TextureList, modSystemFolder);
+					}
+				}
 
-						string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
-						if (File.Exists(useSetPath))
+				progress.SetTaskAndStep("Loading textures for:", "Objects");
+				// Object texture list(s)
+				if (File.Exists(level.ObjectTextureList))
+					LoadTextureList(level.ObjectTextureList, modSystemFolder);
+
+				progress.SetStep("Stage");
+				// Set stage PVM name for stages that don't have it.
+				// This also loads things like skybox textures for some stages.
+				if (level.Textures != null && level.Textures.Length > 0)
+					foreach (string tex in level.Textures)
+					{
+						LoadPVM(tex, modSystemFolder);
+						if (string.IsNullOrEmpty(LevelData.leveltexs))
+							LevelData.leveltexs = tex;
+					}
+
+				// Load PVMs for stages that don't have a stage texture list.
+				if (!string.IsNullOrEmpty(LevelData.leveltexs))
+					LoadPVM(LevelData.leveltexs, modSystemFolder);
+
+				progress.StepProgress();
+
+				#endregion
+
+				#region Object Definitions / SET Layout
+
+				progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
+
+				// Load Object Definitions INI file
+				if (File.Exists(sadxlvlini.ObjectDefinitions))
+					objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(sadxlvlini.ObjectDefinitions);
+				LevelData.ObjDefs = new List<ObjectDefinition>();
+				LevelData.MisnObjDefs = new List<ObjectDefinition>();
+				InitObjDefReferences();
+				// Load SET items
+				if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
+				{
+					LoadObjectList(level.ObjectList);
+					progress.SetTaskAndStep("Loading SET items", "Initializing...");
+
+					// Assign SET data
+					if (LevelData.ObjDefs.Count > 0)
+					{
+						LevelData.SETName = level.SETName ?? level.LevelID;
+						string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
+						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + "{0}.bin");
+						LevelData.InitSETItems();
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
-							if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
-							LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+							string formatted = string.Format(setstr, LevelData.SETChars[i]);
+							string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+							string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
+							if (File.Exists(useSetPath))
+							{
+								if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
+								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+							}
+							else
+							{
+								LevelData.AssignSetList(i, new List<SETItem>());
+							}
 						}
-						else
-						{
-							LevelData.AssignSetList(i, new List<SETItem>());
-						}
+					}
+					else
+					{
+						LevelData.NullifySETItems();
+						osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
 					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
-					osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
+					osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
 				}
-			}
-			else
-			{
-				LevelData.NullifySETItems();
-				osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
-			}
 
-			// Load Mission SET items
-			if (!string.IsNullOrEmpty(sadxlvlini.MissionObjectList) && File.Exists(sadxlvlini.MissionObjectList))
-			{
-				LoadObjectList(sadxlvlini.MissionObjectList, true);
-
-				// Assign Mission SET data
-				progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
-
-				if (LevelData.MisnObjDefs.Count > 0)
+				// Load Mission SET items
+				if (!string.IsNullOrEmpty(sadxlvlini.MissionObjectList) && File.Exists(sadxlvlini.MissionObjectList))
 				{
-					string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
-					string setstr = Path.Combine(modSystemFolder, "SETMI" + level.LevelID + "{0}.bin");
+					LoadObjectList(sadxlvlini.MissionObjectList, true);
 
-					string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
-					string prmstr = Path.Combine(modSystemFolder, "PRMMI" + level.LevelID + "{0}.bin");
-					LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					// Assign Mission SET data
+					progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
+
+					if (LevelData.MisnObjDefs.Count > 0)
 					{
-						List<MissionSETItem> list = new List<MissionSETItem>();
-						byte[] setfile = null;
-						byte[] prmfile = null;
+						string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
+						string setstr = Path.Combine(modSystemFolder, "SETMI" + level.LevelID + "{0}.bin");
 
-						string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
-						string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
-
-						string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
-						string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
-
-						string setfmt = ProjectFunctions.ModPathOrGameFallback(setNormFmt, setFallbackFmt);
-						string prmfmt = ProjectFunctions.ModPathOrGameFallback(prmNormFmt, prmFallbackFmt);
-
-						if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
-						if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
-
-						if (setfile != null && prmfile != null)
+						string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
+						string prmstr = Path.Combine(modSystemFolder, "PRMMI" + level.LevelID + "{0}.bin");
+						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
-							progress.SetTask("Mission SET: " + Path.GetFileName(setfmt));
-							bool bigendianbk = ByteConverter.BigEndian;
-							ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(setfile, 0);
-							int count = ByteConverter.ToInt32(setfile, 0);
-							int setaddr = 0x20;
-							int prmaddr = 0x20;
-							for (int j = 0; j < count; j++)
-							{
-								progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+							List<MissionSETItem> list = new List<MissionSETItem>();
+							byte[] setfile = null;
+							byte[] prmfile = null;
 
-								MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
-								list.Add(ent);
-								setaddr += 0x20;
-								prmaddr += 0xC;
+							string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
+							string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
+
+							string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
+							string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
+
+							string setfmt = ProjectFunctions.ModPathOrGameFallback(setNormFmt, setFallbackFmt);
+							string prmfmt = ProjectFunctions.ModPathOrGameFallback(prmNormFmt, prmFallbackFmt);
+
+							if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+							if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
+
+							if (setfile != null && prmfile != null)
+							{
+								progress.SetTask("Mission SET: " + Path.GetFileName(setfmt));
+								bool bigendianbk = ByteConverter.BigEndian;
+								ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(setfile, 0);
+								int count = ByteConverter.ToInt32(setfile, 0);
+								int setaddr = 0x20;
+								int prmaddr = 0x20;
+								for (int j = 0; j < count; j++)
+								{
+									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+									MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
+									list.Add(ent);
+									setaddr += 0x20;
+									prmaddr += 0xC;
+								}
+								ByteConverter.BigEndian = bigendianbk;
 							}
-							ByteConverter.BigEndian = bigendianbk;
+							LevelData.MissionSETItems[i] = list;
 						}
-						LevelData.MissionSETItems[i] = list;
 					}
+					else
+					{
+						LevelData.MissionSETItems = null;
+					}
+
 				}
 				else
 				{
 					LevelData.MissionSETItems = null;
 				}
 
-			}
-			else
-			{
-				LevelData.MissionSETItems = null;
-			}
+				progress.StepProgress();
 
-			progress.StepProgress();
+				#endregion
 
-			#endregion
+				#region CAM Layout
 
-			#region CAM Layout
+				progress.SetTaskAndStep("Loading CAM items", "Initializing...");
 
-			progress.SetTaskAndStep("Loading CAM items", "Initializing...");
+				string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
+				string camstr = Path.Combine(modSystemFolder, "CAM" + LevelData.SETName + "{0}.bin");
 
-			string camFallback = Path.Combine(systemFallback, "CAM" + LevelData.SETName + "{0}.bin");
-			string camstr = Path.Combine(modSystemFolder, "CAM" + LevelData.SETName + "{0}.bin");
-
-			LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
-			for (int i = 0; i < LevelData.SETChars.Length; i++)
-			{
-				List<CAMItem> list = new List<CAMItem>();
-				byte[] camfile = null;
-
-				string camfmt = string.Format(camstr, LevelData.SETChars[i]);
-				string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
-
-				string formatted = (ProjectFunctions.ModPathOrGameFallback(camfmt, camfmtFallback));
-
-				/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
-					camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
-				else if (File.Exists(formatted))*/
-				if (File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
-
-				if (camfile != null)
+				LevelData.CAMItems = new List<CAMItem>[LevelData.SETChars.Length];
+				for (int i = 0; i < LevelData.SETChars.Length; i++)
 				{
-					progress.SetTask("CAM: " + Path.GetFileName(formatted));
-					bool bigendianbk = ByteConverter.BigEndian;
-					ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(camfile, 0);
-					int count = ByteConverter.ToInt32(camfile, 0);
-					int address = 0x40;
-					for (int j = 0; j < count; j++)
-					{
-						progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+					List<CAMItem> list = new List<CAMItem>();
+					byte[] camfile = null;
 
-						CAMItem ent = new CAMItem(camfile, address, selectedItems);
-						list.Add(ent);
-						address += 0x40;
+					string camfmt = string.Format(camstr, LevelData.SETChars[i]);
+					string camfmtFallback = string.Format(camFallback, LevelData.SETChars[i]);
+
+					string formatted = (ProjectFunctions.ModPathOrGameFallback(camfmt, camfmtFallback));
+
+					/*if (modpath != null && File.Exists(Path.Combine(modpath, formatted)))
+						camfile = File.ReadAllBytes(Path.Combine(modpath, formatted));
+					else if (File.Exists(formatted))*/
+					if (File.Exists(formatted)) camfile = File.ReadAllBytes(formatted);
+
+					if (camfile != null)
+					{
+						progress.SetTask("CAM: " + Path.GetFileName(formatted));
+						bool bigendianbk = ByteConverter.BigEndian;
+						ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(camfile, 0);
+						int count = ByteConverter.ToInt32(camfile, 0);
+						int address = 0x40;
+						for (int j = 0; j < count; j++)
+						{
+							progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+							CAMItem ent = new CAMItem(camfile, address, selectedItems);
+							list.Add(ent);
+							address += 0x40;
+						}
+						ByteConverter.BigEndian = bigendianbk;
 					}
-					ByteConverter.BigEndian = bigendianbk;
+
+					LevelData.CAMItems[i] = list;
 				}
 
-				LevelData.CAMItems[i] = list;
-			}
+				CAMItem.Init();
 
-			CAMItem.Init();
+				progress.StepProgress();
 
-			progress.StepProgress();
+				#endregion
 
-			#endregion
+				#region Loading Level Effects
 
-			#region Loading Level Effects
-
-			LevelData.leveleff = null;
-			if (!string.IsNullOrEmpty(level.Effects))
-			{
-				progress.SetTaskAndStep("Loading Level Effects...");
-
-				LevelDefinition def = null;
-				string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
-				string dllfile = Path.Combine("dllcache", ty + ".dll");
-				string pdbfile = Path.Combine("dllcache", ty + ".pdb");
-				DateTime modDate = DateTime.MinValue;
-				if (File.Exists(dllfile))
-					modDate = File.GetLastWriteTime(dllfile);
-
-				string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
-				if (File.Exists(fp))
+				LevelData.leveleff = null;
+				if (!string.IsNullOrEmpty(level.Effects))
 				{
-					if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
+					progress.SetTaskAndStep("Loading Level Effects...");
+
+					LevelDefinition def = null;
+					string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+					string dllfile = Path.Combine("dllcache", ty + ".dll");
+					string pdbfile = Path.Combine("dllcache", ty + ".pdb");
+					DateTime modDate = DateTime.MinValue;
+					if (File.Exists(dllfile))
+						modDate = File.GetLastWriteTime(dllfile);
+
+					string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
+					if (File.Exists(fp))
 					{
-						def =
-							(LevelDefinition)
-								Activator.CreateInstance(
-									Assembly.LoadFile(Path.Combine(modFolder, dllfile)).GetType(ty));
-					}
-					else
-					{
-
-						SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
-
-						CSharpCompilation compilation =
-								CSharpCompilation.Create(ty, st, objectDefinitionReferences, objectDefinitionOptions);
-
-						try
+						if (modDate >= File.GetLastWriteTime(fp) && modDate > File.GetLastWriteTime(Application.ExecutablePath))
 						{
-							EmitResult result = compilation.Emit(dllfile, pdbfile);
+							def =
+								(LevelDefinition)
+									Activator.CreateInstance(
+										Assembly.LoadFile(Path.Combine(modFolder, dllfile)).GetType(ty));
+						}
+						else
+						{
 
-							if (!result.Success)
+							SyntaxTree[] st = new[] { SyntaxFactory.ParseSyntaxTree(File.ReadAllText(fp), CSharpParseOptions.Default, fp, Encoding.UTF8) };
+
+							CSharpCompilation compilation =
+									CSharpCompilation.Create(ty, st, objectDefinitionReferences, objectDefinitionOptions);
+
+							try
 							{
-								log.Add("Error loading level background:");
-								foreach (Diagnostic diagnostic in result.Diagnostics)
+								EmitResult result = compilation.Emit(dllfile, pdbfile);
+
+								if (!result.Success)
 								{
-									log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+									log.Add("Error loading level background:");
+									foreach (Diagnostic diagnostic in result.Diagnostics)
+									{
+										log.Add(String.Format("\n\n{0}", diagnostic.ToString()));
+									}
+
+									File.Delete(dllfile);
+									File.Delete(pdbfile);
+
+									def = null;
 								}
+								else
+								{
+									def =
+										(LevelDefinition)
+											Activator.CreateInstance(
+												Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
+													.GetType(ty));
+								}
+							}
+							catch (Exception e)
+							{
+								log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
 
 								File.Delete(dllfile);
 								File.Delete(pdbfile);
 
 								def = null;
 							}
-							else
-							{
-								def =
-									(LevelDefinition)
-										Activator.CreateInstance(
-											Assembly.LoadFile(Path.Combine(Environment.CurrentDirectory, dllfile))
-												.GetType(ty));
-							}
 						}
-						catch (Exception e)
-						{
-							log.Add("Error loading level background:" + String.Format("\n\n{0}", e.ToString()));
 
-							File.Delete(dllfile);
-							File.Delete(pdbfile);
-
-							def = null;
-						}
+						if (def != null)
+							def.Init(level, levelact.Act);
 					}
-
-					if (def != null)
-						def.Init(level, levelact.Act);
+					LevelData.leveleff = def;
 				}
-				LevelData.leveleff = def;
-			}
 
-			progress.StepProgress();
+				progress.StepProgress();
 
-			#endregion
+				#endregion
 
-			#region Loading Splines
+				#region Loading Splines
 
-			LevelData.LevelSplines = new List<SplineData>();
-			SplineData.Init();
+				LevelData.LevelSplines = new List<SplineData>();
+				SplineData.Init();
 
-			if (!string.IsNullOrEmpty(sadxlvlini.Paths))
-			{
-				progress.SetTaskAndStep("Reticulating splines...");
-
-				String splineDirectory = Path.Combine(Path.Combine(modFolder, sadxlvlini.Paths),
-					levelact.ToString());
-
-				if (Directory.Exists(splineDirectory))
+				if (!string.IsNullOrEmpty(sadxlvlini.Paths))
 				{
-					List<string> pathFiles = new List<string>();
+					progress.SetTaskAndStep("Reticulating splines...");
 
-					for (int i = 0; i < int.MaxValue; i++)
+					String splineDirectory = Path.Combine(Path.Combine(modFolder, sadxlvlini.Paths),
+						levelact.ToString());
+
+					if (Directory.Exists(splineDirectory))
 					{
-						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
-						if (File.Exists(path))
+						List<string> pathFiles = new List<string>();
+
+						for (int i = 0; i < int.MaxValue; i++)
 						{
-							pathFiles.Add(path);
+							string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
+							if (File.Exists(path))
+							{
+								pathFiles.Add(path);
+							}
+							else
+								break;
 						}
-						else
-							break;
-					}
 
-					foreach (string pathFile in pathFiles) // looping through path files
-					{
-						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+						foreach (string pathFile in pathFiles) // looping through path files
+						{
+							SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
 
-						newSpline.RebuildMesh(d3ddevice);
+							newSpline.RebuildMesh(d3ddevice);
 
-						LevelData.LevelSplines.Add(newSpline);
+							LevelData.LevelSplines.Add(newSpline);
+						}
 					}
 				}
-			}
 
-			progress.StepProgress();
+				progress.StepProgress();
 
-			#endregion
+				#endregion
 
-			#region Stage Lights
-			progress.SetTaskAndStep("Loading lights...");
+				#region Stage Lights
+				progress.SetTaskAndStep("Loading lights...");
 
-			LoadStageLights(levelact);
-			LoadCharacterLights(levelact);
-			#endregion
+				LoadStageLights(levelact);
+				LoadCharacterLights(levelact);
+				#endregion
 
-			transformGizmo = new TransformGizmo();
+				#region Fog
+				LoadFog(levelact);
+				#endregion
 
-			log.Add("----Level load complete: " + levelName + "----\n");
-			log.WriteLog();
+				transformGizmo = new TransformGizmo();
+
+				log.Add("----Level load complete: " + levelName + "----\n");
+				log.WriteLog();
 #if !DEBUG
-            }
-            catch (Exception ex)
-            {
-                log.Add(ex.ToString() + "\n");
-                string errDesc = "SALVL could not load the level for the following reason:\n" + ex.GetType().Name + ".\n\n" +
-                    "If you wish to report a bug, please include the following in your report:";
-                ErrorDialog report = new ErrorDialog("SALVL", errDesc, log.GetLogString());
-                log.WriteLog();
-                DialogResult dgresult = report.ShowDialog();
-                switch (dgresult)
-                {
-                    case DialogResult.Cancel:
-                        initerror = true;
-                        break;
-                    case DialogResult.Abort:
-                    case DialogResult.OK:
-                        Application.Exit();
-                        break;
-                }
-            }
+			}
+			catch (Exception ex)
+			{
+				log.Add(ex.ToString() + "\n");
+				string errDesc = "SALVL could not load the level for the following reason:\n" + ex.GetType().Name + ".\n\n" +
+					"If you wish to report a bug, please include the following in your report:";
+				ErrorDialog report = new ErrorDialog("SALVL", errDesc, log.GetLogString());
+				log.WriteLog();
+				DialogResult dgresult = report.ShowDialog();
+				switch (dgresult)
+				{
+					case DialogResult.Cancel:
+						initerror = true;
+						break;
+					case DialogResult.Abort:
+					case DialogResult.OK:
+						Application.Exit();
+						break;
+				}
+			}
 #endif
 		}
 	}

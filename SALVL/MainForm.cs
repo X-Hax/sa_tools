@@ -78,6 +78,13 @@ namespace SAModel.SALVL
 			}
 		}
 
+		private enum ClipLevel
+		{
+			Near,
+			Medium,
+			Far
+		}
+
 		internal Device d3ddevice;
 
 		#region Editor-Specific Variables
@@ -87,6 +94,8 @@ namespace SAModel.SALVL
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
+		FogData StageFog;
+		ClipLevel editorDetailSetting = ClipLevel.Far;
 		Direct3D.Mesh boundsMesh;
 		NJS_MATERIAL boundsMaterial = new NJS_MATERIAL
 		{

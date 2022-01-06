@@ -34,15 +34,25 @@ namespace SAModel.SALVL
 			#endregion
 
 			d3ddevice.BeginScene();
-			//all drawings after this line
+			// all drawings after this line
 			MatrixStack transform = new MatrixStack();
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
 			if (LevelData.leveleff != null & viewSkyboxToolStripMenuItem.Checked)
 			{
+				d3ddevice.SetRenderState(RenderState.FogEnable, false);
 				d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
 				LevelData.leveleff.Render(d3ddevice, cam);
 				d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
 			}
+
+			#region Fog settings
+			if (StageFog != null && fogButton.Checked)
+			{
+				d3ddevice.SetRenderState(RenderState.FogColor, System.Drawing.Color.FromArgb(StageFog.A, StageFog.R, StageFog.G, StageFog.B).ToArgb());
+				EditorOptions.SetStageFogData(StageFog);
+				d3ddevice.SetRenderState(RenderState.FogEnable, StageFog.FogEnabled);
+			}
+			#endregion
 
 			List<RenderInfo> renderlist_death = new List<RenderInfo>();
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
@@ -183,6 +193,7 @@ namespace SAModel.SALVL
 			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Level);
 			RenderInfo.Draw(drawqueue, d3ddevice, cam);
 
+			d3ddevice.SetRenderState(RenderState.FogEnable, false);
 			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Character);
 			RenderInfo.Draw(renderlist_char, d3ddevice, cam);
 
