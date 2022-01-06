@@ -1993,7 +1993,8 @@
             // fogButton
             // 
             this.fogButton.Checked = true;
-            this.fogButton.CheckOnClick = true;
+			this.fogButton.Enabled = false;
+			this.fogButton.CheckOnClick = true;
             this.fogButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.fogButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.fogButton.Image = global::SAModel.SALVL.Properties.Resources.fog;
