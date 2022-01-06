@@ -2178,6 +2178,8 @@ namespace SAModel.SALVL
 
 		private void UpdateStageFog()
 		{
+			if (sadxlvlini == null)
+				return;
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
 			currentStageFog = GetFogData(stageFogList, levelact.Act);
 			NeedRedraw = true;
