@@ -11,7 +11,7 @@ namespace SAModel.Direct3D.TextureSystem
     /// </summary>
     public static class TextureArchive
     {
-        public static BMPInfo[] GetTextures(string filename)
+        public static BMPInfo[] GetTextures(string filename, string paletteFile = null)
         {
             if (!File.Exists(filename))
                 return null;
@@ -53,8 +53,10 @@ namespace SAModel.Direct3D.TextureSystem
                         arc.Entries.Add(new GVMEntry(filename));
                     else
                         arc.Entries.Add(new PVMEntry(filename));
-                    if (parcx.PaletteRequired)
-                        parcx.AddPalette(Path.GetDirectoryName(filename));
+					if (paletteFile != null)
+						parcx.SetPalette(Path.Combine(Path.GetDirectoryName(filename), paletteFile));
+					if (parcx.PaletteRequired)
+                        parcx.AddPaletteFromDialog(Path.GetDirectoryName(filename));
                     break;
 				case ".png":
 				case ".jpg":
@@ -71,8 +73,10 @@ namespace SAModel.Direct3D.TextureSystem
                 default:
                     arc = new PuyoFile(file);
                     PuyoFile parc = (PuyoFile)arc;
-                    if (parc.PaletteRequired)
-                        parc.AddPalette(Path.GetDirectoryName(filename));
+					if (paletteFile != null)
+						parc.SetPalette(Path.Combine(Path.GetDirectoryName(filename), paletteFile));
+					if (parc.PaletteRequired)
+                        parc.AddPaletteFromDialog(Path.GetDirectoryName(filename));
                     break;
             }
             foreach (GenericArchiveEntry entry in arc.Entries)

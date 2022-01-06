@@ -929,7 +929,7 @@ namespace SAToolsHub
         {
             try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://info.org/SCHG:Sonic_Adventure_DX:_PC") { CreateNoWindow = true });
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://info.sonicretro.org/SCHG:Sonic_Adventure_DX:_PC") { CreateNoWindow = true });
             }
             catch
             {
@@ -941,7 +941,7 @@ namespace SAToolsHub
         {
             try
             {
-                GoToSite("https://info.org/SCHG:Sonic_Adventure_2_(PC)");
+                GoToSite("https://info.sonicretro.org/SCHG:Sonic_Adventure_2_(PC)");
             }
             catch
             {

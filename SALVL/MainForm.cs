@@ -692,9 +692,9 @@ namespace SAModel.SALVL
 					HitResult hit = PickItem(menuLocation);
 					SETItem item = new SETItem(dlg.ID, selectedItems);
 					Vector3 pos;
-					if (hit.IsHit)
+					if (hit.IsHit && hit.Model != null)
 					{
-						pos = hit.Position + (hit.Normal * item.GetObjectDefinition().DistanceFromGround);
+						pos = hit.Position + hit.Model.Position.ToVector3() + (hit.Normal * item.GetObjectDefinition().DistanceFromGround);
 						item.SetOrientation(hit.Normal.ToVertex());
 					}
 					else

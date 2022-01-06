@@ -79,37 +79,52 @@ namespace ArchiveLib
             }
         }
 
-        public void AddPalette(string startPath)
-        {
-            VpPalette Palette = null;
-            bool gvm = Type == PuyoArchiveType.GVMFile;
-            using (System.Windows.Forms.OpenFileDialog a = new System.Windows.Forms.OpenFileDialog
-            {
-                DefaultExt = gvm ? "gvp" : "pvp",
-                Filter = gvm ? "GVP Files|*.gvp" : "PVP Files|*.pvp",
-                InitialDirectory = startPath,
-                Title = "External palette file"
-            })
-            {
-                if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    Palette = gvm ? (VpPalette)new GvpPalette(a.FileName) : (VpPalette)new PvpPalette(a.FileName);
-            }
-            foreach (GenericArchiveEntry entry in Entries)
-            {
-                if (entry is PVMEntry pvme)
-                {
-                    PvrTexture pvrt = new PvrTexture(pvme.Data);
-                    if (pvrt.NeedsExternalPalette)
-                        pvme.Palette = (PvpPalette)Palette;
-                }
-                else if (entry is GVMEntry gvme)
-                {
-                    GvrTexture gvrt = new GvrTexture(gvme.Data);
-                    if (gvrt.NeedsExternalPalette)
-                        gvme.Palette = (GvpPalette)Palette;
-                }
-            }
-        }
+		/// <summary>
+		/// This function sets all textures in the archive to use the specified PVP/GVP palette file.
+		/// If the specified palette file exists, the PaletteRequired flag is removed.
+		/// </summary>
+		public void SetPalette(string palettePath) 
+		{
+			if (File.Exists(palettePath))
+			{
+				VpPalette Palette = null;
+				bool gvm = Type == PuyoArchiveType.GVMFile;
+				Palette = gvm ? (VpPalette)new GvpPalette(palettePath) : (VpPalette)new PvpPalette(palettePath);
+				foreach (GenericArchiveEntry entry in Entries)
+				{
+					if (entry is PVMEntry pvme)
+					{
+						PvrTexture pvrt = new PvrTexture(pvme.Data);
+						if (pvrt.NeedsExternalPalette)
+							pvme.Palette = (PvpPalette)Palette;
+					}
+					else if (entry is GVMEntry gvme)
+					{
+						GvrTexture gvrt = new GvrTexture(gvme.Data);
+						if (gvrt.NeedsExternalPalette)
+							gvme.Palette = (GvpPalette)Palette;
+					}
+				}
+				PaletteRequired = false;
+			}
+		}
+
+		/// <summary>
+		/// This function displays a dialog to select a PVP/GVP palette file and sets all textures in the archive to use the specified palette. 
+		/// </summary>
+		public void AddPaletteFromDialog(string startPath)
+		{
+			bool gvm = Type == PuyoArchiveType.GVMFile;
+			using (System.Windows.Forms.OpenFileDialog a = new System.Windows.Forms.OpenFileDialog
+			{
+				DefaultExt = gvm ? "gvp" : "pvp",
+				Filter = gvm ? "GVP Files|*.gvp" : "PVP Files|*.pvp",
+				InitialDirectory = startPath,
+				Title = "External palette file"
+			})
+				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					SetPalette(a.FileName);
+		}
 
         public PuyoFile(bool gvm = false) 
         {

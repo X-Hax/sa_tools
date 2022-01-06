@@ -65,8 +65,14 @@ namespace SplitTools.Split
                 // Start split
                 int itemcount = 0;
                 Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
-                Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
-                Stopwatch timer = new Stopwatch();
+				string molpath = null;
+				if (inifile.MasterObjectList != null)
+				{
+					molpath = Path.Combine(projectFolderName, inifile.MasterObjectList);
+					if (File.Exists(molpath))
+						masterobjlist = IniSerializer.Deserialize<Dictionary<string, MasterObjectListEntry>>(molpath);
+				}
+				Stopwatch timer = new Stopwatch();
                 timer.Start();
                 // Loop through all items
                 foreach (KeyValuePair<string, SplitTools.FileInfo> item in new List<KeyValuePair<string, SplitTools.FileInfo>>(inifile.Files))
@@ -143,27 +149,16 @@ namespace SplitTools.Split
                             break;
                         // Single split mode for everything else
                         default:
-                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, inifile.MasterObjectList, nometa, nolabel, overwrite);
+                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, masterobjlist, nometa, nolabel, overwrite);
                             break;
                     }
                 }
-                // Deal with the master object list
-                if (inifile.MasterObjectList != null)
-                {
-                    foreach (KeyValuePair<string, MasterObjectListEntry> obj in masterobjlist)
-                    {
-                        KeyValuePair<string, int> name = new KeyValuePair<string, int>();
-                        foreach (KeyValuePair<string, int> it in objnamecounts[obj.Key])
-                            if (it.Value > name.Value)
-                                name = it;
-                        obj.Value.Name = name.Key;
-                        obj.Value.Names = objnamecounts[obj.Key].Select((it) => it.Key).ToArray();
-                    }
-
-                    string masterObjectListOutputPath = Path.Combine(projectFolderName, inifile.MasterObjectList);
-
-                    IniSerializer.Serialize(masterobjlist, masterObjectListOutputPath);
-                }
+				// Deal with the master object list
+				if (inifile.MasterObjectList != null)
+				{
+					Directory.CreateDirectory(Path.GetDirectoryName(molpath));
+					IniSerializer.Serialize(masterobjlist, molpath);
+				}
                 // Save _data INI file
                 IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename) + "_data.ini"));
                 timer.Stop();
@@ -191,7 +186,7 @@ namespace SplitTools.Split
             return (int)SplitERRORVALUE.Success;
         }
 
-		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, string MasterObjectList = null, bool nometa = false, bool nolabel = false, bool overwrite = true)
+		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, Dictionary<string, MasterObjectListEntry> masterobjlist, bool nometa = false, bool nolabel = false, bool overwrite = true)
         {
             if (string.IsNullOrEmpty(itemName))
                 return 0;
@@ -227,8 +222,6 @@ namespace SplitTools.Split
                     SA2 = true;
                     break;
             }
-            Dictionary<string, MasterObjectListEntry> masterobjlist = new Dictionary<string, MasterObjectListEntry>();
-            Dictionary<string, Dictionary<string, int>> objnamecounts = new Dictionary<string, Dictionary<string, int>>();
             Console.WriteLine(itemName + ": " + data.Address.ToString("X") + " -> " + fileOutputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
             switch (type)
@@ -523,22 +516,17 @@ namespace SplitTools.Split
                     }
                     break;
                 case "objlist":
-                    {
-                        ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
-                        if (MasterObjectList != null)
-                            foreach (ObjectListEntry obj in objs)
-                            {
-                                if (!masterobjlist.ContainsKey(obj.CodeString))
-                                    masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
-                                if (!objnamecounts.ContainsKey(obj.CodeString))
-                                    objnamecounts.Add(obj.CodeString, new Dictionary<string, int>() { { obj.Name, 1 } });
-                                else if (!objnamecounts[obj.CodeString].ContainsKey(obj.Name))
-                                    objnamecounts[obj.CodeString].Add(obj.Name, 1);
-                                else
-                                    objnamecounts[obj.CodeString][obj.Name]++;
-                            }
-                        objs.Save(fileOutputPath);
-                    }
+					{
+						ObjectListEntry[] objs = ObjectList.Load(datafile, address, imageBase, SA2);
+						foreach (ObjectListEntry obj in objs)
+						{
+							if (!masterobjlist.ContainsKey(obj.CodeString))
+								masterobjlist.Add(obj.CodeString, new MasterObjectListEntry(obj));
+							else
+								masterobjlist[obj.CodeString].AddName(obj.Name);
+						}
+						objs.Save(fileOutputPath);
+					}
                     break;
                 case "startpos":
                     {
@@ -707,31 +695,6 @@ namespace SplitTools.Split
                                 {
                                     if (ByteConverter.BigEndian)
                                     {
-                                        List<SA2BDeathZoneFlags> flags = new List<SA2BDeathZoneFlags>();
-                                        string path = Path.GetDirectoryName(fileOutputPath);
-                                        List<string> hashes = new List<string>();
-                                        int num = 0;
-                                        while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
-                                        {
-                                            string file_tosave;
-                                            if (customProperties.ContainsKey("filename" + num.ToString()))
-                                                file_tosave = customProperties["filename" + num++.ToString()];
-                                            else
-                                                file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
-                                            string file = Path.Combine(path, file_tosave);
-                                            flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
-                                            ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
-                                            hashes.Add(HelperFunctions.FileHash(file));
-                                            address += 8;
-
-                                        }
-                                        flags.ToArray().Save(fileOutputPath);
-                                        hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
-                                        data.MD5Hash = string.Join(",", hashes.ToArray());
-                                        nohash = true;
-                                    }
-                                    else
-                                    {
                                         List<SA2BBigDeathZoneFlags> flags = new List<SA2BBigDeathZoneFlags>();
                                         string path = Path.GetDirectoryName(fileOutputPath);
                                         List<string> hashes = new List<string>();
@@ -745,6 +708,31 @@ namespace SplitTools.Split
                                                 file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
                                             string file = Path.Combine(path, file_tosave);
                                             flags.Add(new SA2BBigDeathZoneFlags(datafile, address, file_tosave));
+                                            ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+                                            hashes.Add(HelperFunctions.FileHash(file));
+                                            address += 8;
+
+                                        }
+                                        flags.ToArray().Save(fileOutputPath);
+                                        hashes.Insert(0, HelperFunctions.FileHash(fileOutputPath));
+                                        data.MD5Hash = string.Join(",", hashes.ToArray());
+                                        nohash = true;
+                                    }
+                                    else
+                                    {
+                                        List<SA2BDeathZoneFlags> flags = new List<SA2BDeathZoneFlags>();
+                                        string path = Path.GetDirectoryName(fileOutputPath);
+                                        List<string> hashes = new List<string>();
+                                        int num = 0;
+                                        while (ByteConverter.ToUInt32(datafile, address + 4) != 0)
+                                        {
+                                            string file_tosave;
+                                            if (customProperties.ContainsKey("filename" + num.ToString()))
+                                                file_tosave = customProperties["filename" + num++.ToString()];
+                                            else
+                                                file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
+                                            string file = Path.Combine(path, file_tosave);
+                                            flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
                                             ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
                                             hashes.Add(HelperFunctions.FileHash(file));
                                             address += 8;
@@ -862,7 +850,7 @@ namespace SplitTools.Split
                                     file_tosave = customProperties["filename" + i.ToString()];
                                 else
                                     file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim";
-                                string file = Path.Combine(path, file_tosave);
+                                string file = Path.Combine(fileOutputPath, file_tosave);
                                 motion.Save(file, nometa);
                                 hashes.Add(HelperFunctions.FileHash(file));
                             }

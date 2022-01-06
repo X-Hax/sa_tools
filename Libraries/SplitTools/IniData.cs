@@ -402,7 +402,7 @@ namespace SplitTools
 		public float Distance { get; set; }
 		public string Name { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
-		public string[] Names { get; set; }
+		public List<string> Names { get; set; }
 
 		public MasterObjectListEntry() { }
 
@@ -413,7 +413,13 @@ namespace SplitTools
 			Flags = obj.Flags;
 			Distance = obj.Distance;
 			Name = obj.Name;
-			Names = new[] { obj.Name };
+			Names = new List<string>() { obj.Name };
+		}
+
+		public void AddName(string name)
+		{
+			if (!Names.Contains(name))
+				Names.Add(name);
 		}
 	}
 
@@ -2316,7 +2322,7 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address, string filename)
 		{
-			Flags = (SA2CharacterFlags)ByteConverter.ToInt32(file, address);
+			Flags = (SA2CharacterFlags)file[address++];
 			Constant1 = file[address++];
 			Constant2 = file[address++];
 			DeathFlag = file[address++];

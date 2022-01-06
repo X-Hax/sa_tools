@@ -178,10 +178,10 @@ namespace VMSEditor
             numericUpDownMeetKnuckles.Value = chaoData.Memories.player[2].meet;
             trackBarBondAmy.Value = chaoData.Memories.player[3].like;
             numericUpDownMeetAmy.Value = chaoData.Memories.player[3].meet;
-            trackBarBondBig.Value = chaoData.Memories.player[4].like;
-            numericUpDownMeetBig.Value = chaoData.Memories.player[4].meet;
-            trackBarBondGamma.Value = chaoData.Memories.player[5].like;
-            numericUpDownMeetGamma.Value = chaoData.Memories.player[5].meet;
+			trackBarBondGamma.Value = chaoData.Memories.player[4].like;
+			numericUpDownMeetGamma.Value = chaoData.Memories.player[4].meet;
+			trackBarBondBig.Value = chaoData.Memories.player[5].like;
+            numericUpDownMeetBig.Value = chaoData.Memories.player[5].meet;
             // Chao memories
             ReadChaoMemories();
             // Other stuff
@@ -354,10 +354,10 @@ namespace VMSEditor
             chaoData.Memories.player[2].meet = (byte)numericUpDownMeetKnuckles.Value;
             chaoData.Memories.player[3].like = (sbyte)trackBarBondAmy.Value;
             chaoData.Memories.player[3].meet = (byte)numericUpDownMeetAmy.Value;
-            chaoData.Memories.player[4].like = (sbyte)trackBarBondBig.Value;
-            chaoData.Memories.player[4].meet = (byte)numericUpDownMeetBig.Value;
-            chaoData.Memories.player[5].like = (sbyte)trackBarBondGamma.Value;
-            chaoData.Memories.player[5].meet = (byte)numericUpDownMeetGamma.Value;
+			chaoData.Memories.player[4].like = (sbyte)trackBarBondGamma.Value;
+			chaoData.Memories.player[4].meet = (byte)numericUpDownMeetGamma.Value;
+			chaoData.Memories.player[5].like = (sbyte)trackBarBondBig.Value;
+            chaoData.Memories.player[5].meet = (byte)numericUpDownMeetBig.Value;
             // Chao memories
             ReadChaoMemories();
             // Other stuff

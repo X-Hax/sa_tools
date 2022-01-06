@@ -92,7 +92,7 @@ namespace ArchiveLib
 			pos = new Vertex(ByteConverter.ToSingle(data, start + 0x44), ByteConverter.ToSingle(data, start + 0x48), ByteConverter.ToSingle(data, start + 0x4C));
 			rot = new Vertex(ByteConverter.ToSingle(data, start + 0x50), ByteConverter.ToSingle(data, start + 0x54), ByteConverter.ToSingle(data, start + 0x58));
 			scl = new Vertex(ByteConverter.ToSingle(data, start + 0x5C), ByteConverter.ToSingle(data, start + 0x60), ByteConverter.ToSingle(data, start + 0x64));
-			Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}, GRND at: {4}, Motion at: {5}, Texlist at: {6}", start.ToString("X"),idx.ToString(), name, ptr_objTable.ToString("X"), ptr_grndTable.ToString("X"), ptr_motTable.ToString("X"), ptr_texTable.ToString("X"));
+			Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}, GRND at: {4}, Motion at: {5}, Texlist at: {6}", start.ToString("X"), idx.ToString(), name, ptr_objTable.ToString("X"), ptr_grndTable.ToString("X"), ptr_motTable.ToString("X"), ptr_texTable.ToString("X"));
 		}
 	}
 
@@ -135,7 +135,7 @@ namespace ArchiveLib
 			int sizereal = textablepointer - realdatapointer;
 			int sizenmld = realdatapointer - ptr_nmldTable;
 			Console.WriteLine("First entry: {0} size {1}", realdatapointer.ToString("X"), sizereal);
-			
+
 			// Extract NMLD stuff
 			for (int m = 0; m < nmldCount; m++)
 			{
@@ -233,6 +233,22 @@ namespace ArchiveLib
 				string njmName = ("motion_" + nmdmAddr[anm].ToString("X") + ".njm");
 				Console.WriteLine("Adding {0} to Archive Entries", njmName);
 				Entries.Add(new MLDArchiveEntry(nmdmFile, njmName));
+			}
+
+			//Scan file for all NSSM Chunks
+			Console.WriteLine("Scanning for NSSM Chunks");
+			byte[] nssmByte = new byte[] { 0x4E, 0x53, 0x53, 0x4D };
+			List<int> nssmAddr = SearchBytePattern(nssmByte, file);
+			//Add NMDM Entries to Entries List.
+			for (int anm = 0; anm < nssmAddr.Count; anm++)
+			{
+				int nssmLength = ByteConverter.ToInt32(file, nssmAddr[anm] + 4) + 8 + nssmAddr[anm];
+				int nssmEOF = ByteConverter.ToInt32(file, nssmLength + 4) + 8 + nssmLength;
+				byte[] nssmFile = new byte[nssmEOF - nssmAddr[anm]];
+				Array.Copy(file, (nssmAddr[anm]), nssmFile, 0, nssmFile.Length);
+				string njsName = ("shape_" + nssmAddr[anm].ToString("X") + ".njm");
+				Console.WriteLine("Adding {0} to Archive Entries", njsName);
+				Entries.Add(new MLDArchiveEntry(nssmFile, njsName));
 			}
 
 			int numtex = ByteConverter.ToInt32(file, (int)textablepointer);
