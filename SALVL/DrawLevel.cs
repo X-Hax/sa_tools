@@ -46,11 +46,11 @@ namespace SAModel.SALVL
 			}
 
 			#region Fog settings
-			if (StageFog != null && fogButton.Checked)
+			if (currentStageFog != null && fogButton.Checked)
 			{
-				d3ddevice.SetRenderState(RenderState.FogColor, System.Drawing.Color.FromArgb(StageFog.A, StageFog.R, StageFog.G, StageFog.B).ToArgb());
-				EditorOptions.SetStageFogData(StageFog);
-				d3ddevice.SetRenderState(RenderState.FogEnable, StageFog.FogEnabled);
+				d3ddevice.SetRenderState(RenderState.FogColor, System.Drawing.Color.FromArgb(currentStageFog.A, currentStageFog.R, currentStageFog.G, currentStageFog.B).ToArgb());
+				EditorOptions.SetStageFogData(currentStageFog);
+				d3ddevice.SetRenderState(RenderState.FogEnable, currentStageFog.FogEnabled);
 			}
 			#endregion
 
@@ -111,7 +111,17 @@ namespace SAModel.SALVL
 			if (!LevelData.SETItemsIsNull() && viewSETItemsToolStripMenuItem.Checked)
 			{
 				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
-					renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
+				{
+					bool render = false;
+					if (item.ClipSetting == ClipSetting.All)
+						render = true;
+					else if (item.ClipSetting == ClipSetting.HighOnly && editorDetailSetting == ClipLevel.Far)
+						render = true;
+					else if (item.ClipSetting == ClipSetting.MediumAndHigh && (editorDetailSetting == ClipLevel.Medium || editorDetailSetting == ClipLevel.Far))
+						render = true;
+					if (render)
+						renderlist_set.AddRange(item.Render(d3ddevice, cam, transform));
+				}
 			}
 			#endregion
 

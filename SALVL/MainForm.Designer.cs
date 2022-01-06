@@ -90,9 +90,6 @@
             this.deleteSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointOneObjectAtAnotherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.editLevelInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lightsEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.usetBasicDXFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.calculateAllBoundsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,6 +110,10 @@
             this.daytimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eveningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clipLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.farClipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mediumClipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nearClipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.viewDeathZonesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewSkyboxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -146,6 +147,12 @@
             this.addAllLevelItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editLevelInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lightsEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fogEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SALVLModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unloadSETFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -203,6 +210,7 @@
             this.splinesButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.lightingButton = new System.Windows.Forms.ToolStripButton();
+            this.fogButton = new System.Windows.Forms.ToolStripButton();
             this.materialColorsButton = new System.Windows.Forms.ToolStripButton();
             this.showHintsButton = new System.Windows.Forms.ToolStripButton();
             this.moveToStartButton = new System.Windows.Forms.ToolStripButton();
@@ -214,7 +222,6 @@
             this.resetAnimButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
-            this.fogButton = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -245,6 +252,7 @@
             this.viewToolStripMenuItem,
             this.layersToolStripMenuItem,
             this.modelLibraryToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.SALVLModeToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -561,9 +569,6 @@
             this.deleteSelectedToolStripMenuItem,
             this.pointOneObjectAtAnotherToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.editLevelInfoToolStripMenuItem,
-            this.lightsEditorToolStripMenuItem,
-            this.preferencesToolStripMenuItem,
             this.advancedToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
@@ -580,7 +585,7 @@
             this.splinesToolStripMenuItem,
             this.toolClearAll});
             this.clearLevelToolStripMenuItem.Name = "clearLevelToolStripMenuItem";
-            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.clearLevelToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.clearLevelToolStripMenuItem.Text = "Clear Level";
             // 
             // toolClearGeometry
@@ -648,7 +653,7 @@
             this.addMissionItemToolStripMenuItem,
             this.addDeathZoneToolStripMenuItem});
             this.addToolStripMenuItem1.Name = "addToolStripMenuItem1";
-            this.addToolStripMenuItem1.Size = new System.Drawing.Size(226, 30);
+            this.addToolStripMenuItem1.Size = new System.Drawing.Size(218, 22);
             this.addToolStripMenuItem1.Text = "&Add";
             // 
             // addLevelPieceToolStripMenuItem
@@ -706,7 +711,7 @@
             this.duplicateToToolStripMenuItem,
             this.forceClipLevelToAllToolStripMenuItem});
             this.editSETItemsToolStripMenuItem.Name = "editSETItemsToolStripMenuItem";
-            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.editSETItemsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.editSETItemsToolStripMenuItem.Text = "SET Items";
             // 
             // findReplaceToolStripMenuItem
@@ -745,7 +750,7 @@
             this.duplicateToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.duplicate;
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
             this.duplicateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.duplicateToolStripMenuItem.Text = "&Duplicate Selected";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
@@ -753,46 +758,21 @@
             // 
             this.deleteSelectedToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.delete;
             this.deleteSelectedToolStripMenuItem.Name = "deleteSelectedToolStripMenuItem";
-            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.deleteSelectedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
             this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // pointOneObjectAtAnotherToolStripMenuItem
             // 
             this.pointOneObjectAtAnotherToolStripMenuItem.Name = "pointOneObjectAtAnotherToolStripMenuItem";
-            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.pointOneObjectAtAnotherToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.pointOneObjectAtAnotherToolStripMenuItem.Text = "Point one object at another";
             this.pointOneObjectAtAnotherToolStripMenuItem.Click += new System.EventHandler(this.pointToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(223, 6);
-            // 
-            // editLevelInfoToolStripMenuItem
-            // 
-            this.editLevelInfoToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.editinfo;
-            this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
-            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
-            this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
-            this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
-            // 
-            // lightsEditorToolStripMenuItem
-            // 
-            this.lightsEditorToolStripMenuItem.Enabled = false;
-            this.lightsEditorToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.sllight;
-            this.lightsEditorToolStripMenuItem.Name = "lightsEditorToolStripMenuItem";
-            this.lightsEditorToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
-            this.lightsEditorToolStripMenuItem.Text = "Lights Editor...";
-            this.lightsEditorToolStripMenuItem.Click += new System.EventHandler(this.lightsEditorToolStripMenuItem_Click);
-            // 
-            // preferencesToolStripMenuItem
-            // 
-            this.preferencesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.settings;
-            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
-            this.preferencesToolStripMenuItem.Text = "&Preferences";
-            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(215, 6);
             // 
             // advancedToolStripMenuItem
             // 
@@ -801,7 +781,7 @@
             this.calculateAllBoundsToolStripMenuItem,
             this.exportTextureNamesToolStripMenuItem});
             this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(226, 30);
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.advancedToolStripMenuItem.Text = "Advanced";
             // 
             // usetBasicDXFormatToolStripMenuItem
@@ -839,6 +819,7 @@
             this.characterToolStripMenuItem,
             this.levelToolStripMenuItem,
             this.timeOfDayToolStripMenuItem,
+            this.clipLevelToolStripMenuItem,
             this.toolStripSeparator3,
             this.viewDeathZonesToolStripMenuItem,
             this.viewSkyboxToolStripMenuItem,
@@ -980,6 +961,42 @@
             this.nightToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.nightToolStripMenuItem.Text = "Night";
             this.nightToolStripMenuItem.Click += new System.EventHandler(this.nightToolStripMenuItem_Click);
+            // 
+            // clipLevelToolStripMenuItem
+            // 
+            this.clipLevelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.farClipToolStripMenuItem,
+            this.mediumClipToolStripMenuItem,
+            this.nearClipToolStripMenuItem});
+            this.clipLevelToolStripMenuItem.Name = "clipLevelToolStripMenuItem";
+            this.clipLevelToolStripMenuItem.Size = new System.Drawing.Size(202, 30);
+            this.clipLevelToolStripMenuItem.Text = "Clip Level";
+            // 
+            // farClipToolStripMenuItem
+            // 
+            this.farClipToolStripMenuItem.Checked = true;
+            this.farClipToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.farClipToolStripMenuItem.Name = "farClipToolStripMenuItem";
+            this.farClipToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.farClipToolStripMenuItem.Text = "Far (High Detail)";
+            this.farClipToolStripMenuItem.ToolTipText = "Highest detail setting that shows all objects and plays all animations.";
+            this.farClipToolStripMenuItem.Click += new System.EventHandler(this.farClipToolStripMenuItem_Click);
+            // 
+            // mediumClipToolStripMenuItem
+            // 
+            this.mediumClipToolStripMenuItem.Name = "mediumClipToolStripMenuItem";
+            this.mediumClipToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.mediumClipToolStripMenuItem.Text = "Medium (Low Detail)";
+            this.mediumClipToolStripMenuItem.ToolTipText = "Disables some animations and skips some objects.";
+            this.mediumClipToolStripMenuItem.Click += new System.EventHandler(this.mediumClipToolStripMenuItem_Click);
+            // 
+            // nearClipToolStripMenuItem
+            // 
+            this.nearClipToolStripMenuItem.Name = "nearClipToolStripMenuItem";
+            this.nearClipToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.nearClipToolStripMenuItem.Text = "Near (Lowest Detail)";
+            this.nearClipToolStripMenuItem.ToolTipText = "Disables some animations and skips some objects.";
+            this.nearClipToolStripMenuItem.Click += new System.EventHandler(this.nearClipToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -1289,6 +1306,57 @@
             this.resetToDefaultToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.resetToDefaultToolStripMenuItem.Text = "Reset To Default";
             // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editLevelInfoToolStripMenuItem,
+            this.lightsEditorToolStripMenuItem,
+            this.fogEditorToolStripMenuItem,
+            this.toolStripSeparator11,
+            this.preferencesToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 22);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // editLevelInfoToolStripMenuItem
+            // 
+            this.editLevelInfoToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.editinfo;
+            this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
+            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
+            this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
+            // 
+            // lightsEditorToolStripMenuItem
+            // 
+            this.lightsEditorToolStripMenuItem.Enabled = false;
+            this.lightsEditorToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.sllight;
+            this.lightsEditorToolStripMenuItem.Name = "lightsEditorToolStripMenuItem";
+            this.lightsEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.lightsEditorToolStripMenuItem.Text = "Lights Editor...";
+            this.lightsEditorToolStripMenuItem.Click += new System.EventHandler(this.lightsEditorToolStripMenuItem_Click);
+            // 
+            // fogEditorToolStripMenuItem
+            // 
+            this.fogEditorToolStripMenuItem.Enabled = false;
+            this.fogEditorToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.fog;
+            this.fogEditorToolStripMenuItem.Name = "fogEditorToolStripMenuItem";
+            this.fogEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.fogEditorToolStripMenuItem.Text = "Fog Editor...";
+            this.fogEditorToolStripMenuItem.Click += new System.EventHandler(this.fogEditorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(154, 6);
+            // 
+            // preferencesToolStripMenuItem
+            // 
+            this.preferencesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.settings;
+            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.preferencesToolStripMenuItem.Text = "&Preferences...";
+            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
+            // 
             // SALVLModeToolStripMenuItem
             // 
             this.SALVLModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1371,7 +1439,7 @@
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(762, 341);
+            this.RenderPanel.Size = new System.Drawing.Size(762, 337);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragDrop);
@@ -1534,7 +1602,7 @@
             // 
             this.PropertiesSplitter.Panel2.Controls.Add(this.propertyGrid1);
             this.PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
-            this.PropertiesSplitter.SplitterDistance = 973;
+            this.PropertiesSplitter.SplitterDistance = 969;
             this.PropertiesSplitter.SplitterWidth = 5;
             this.PropertiesSplitter.TabIndex = 2;
             // 
@@ -1554,8 +1622,8 @@
             // LibrarySplitter.Panel2
             // 
             this.LibrarySplitter.Panel2.Controls.Add(this.libraryTabControl);
-            this.LibrarySplitter.Size = new System.Drawing.Size(969, 635);
-            this.LibrarySplitter.SplitterDistance = 341;
+            this.LibrarySplitter.Size = new System.Drawing.Size(965, 635);
+            this.LibrarySplitter.SplitterDistance = 337;
             this.LibrarySplitter.SplitterWidth = 5;
             this.LibrarySplitter.TabIndex = 3;
             // 
@@ -1573,8 +1641,8 @@
             // ItemsSplitter.Panel2
             // 
             this.ItemsSplitter.Panel2.Controls.Add(this.RenderPanel);
-            this.ItemsSplitter.Size = new System.Drawing.Size(969, 341);
-            this.ItemsSplitter.SplitterDistance = 202;
+            this.ItemsSplitter.Size = new System.Drawing.Size(965, 337);
+            this.ItemsSplitter.SplitterDistance = 198;
             this.ItemsSplitter.SplitterWidth = 5;
             this.ItemsSplitter.TabIndex = 0;
             // 
@@ -1584,7 +1652,7 @@
             this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
             this.sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.sceneGraphControl1.Name = "sceneGraphControl1";
-            this.sceneGraphControl1.Size = new System.Drawing.Size(202, 341);
+            this.sceneGraphControl1.Size = new System.Drawing.Size(198, 337);
             this.sceneGraphControl1.TabIndex = 0;
             // 
             // libraryTabControl
@@ -1596,7 +1664,7 @@
             this.libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.libraryTabControl.Name = "libraryTabControl";
             this.libraryTabControl.SelectedIndex = 0;
-            this.libraryTabControl.Size = new System.Drawing.Size(969, 289);
+            this.libraryTabControl.Size = new System.Drawing.Size(965, 293);
             this.libraryTabControl.TabIndex = 0;
             // 
             // modelLibraryPage
@@ -1606,7 +1674,7 @@
             this.modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.modelLibraryPage.Name = "modelLibraryPage";
             this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.modelLibraryPage.Size = new System.Drawing.Size(961, 261);
+            this.modelLibraryPage.Size = new System.Drawing.Size(957, 265);
             this.modelLibraryPage.TabIndex = 1;
             this.modelLibraryPage.Text = "Model Library";
             this.modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1618,7 +1686,7 @@
             this.modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.modelLibraryControl1.Name = "modelLibraryControl1";
             this.modelLibraryControl1.SelectedModel = null;
-            this.modelLibraryControl1.Size = new System.Drawing.Size(953, 255);
+            this.modelLibraryControl1.Size = new System.Drawing.Size(949, 259);
             this.modelLibraryControl1.TabIndex = 0;
             // 
             // setLibraryPage
@@ -1627,7 +1695,7 @@
             this.setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.setLibraryPage.Name = "setLibraryPage";
             this.setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.setLibraryPage.Size = new System.Drawing.Size(961, 261);
+            this.setLibraryPage.Size = new System.Drawing.Size(957, 265);
             this.setLibraryPage.TabIndex = 0;
             this.setLibraryPage.Text = "SET Library";
             this.setLibraryPage.UseVisualStyleBackColor = true;
@@ -1643,7 +1711,7 @@
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(349, 635);
+            this.propertyGrid1.Size = new System.Drawing.Size(353, 635);
             this.propertyGrid1.TabIndex = 13;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -1922,6 +1990,19 @@
             this.lightingButton.Text = "Enable Lighting";
             this.lightingButton.CheckedChanged += new System.EventHandler(this.lightingButton_CheckedChanged);
             // 
+            // fogButton
+            // 
+            this.fogButton.Checked = true;
+            this.fogButton.CheckOnClick = true;
+            this.fogButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.fogButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.fogButton.Image = global::SAModel.SALVL.Properties.Resources.fog;
+            this.fogButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.fogButton.Name = "fogButton";
+            this.fogButton.Size = new System.Drawing.Size(40, 40);
+            this.fogButton.Text = "Enable Fog";
+            this.fogButton.Click += new System.EventHandler(this.fogButton_Click);
+            // 
             // materialColorsButton
             // 
             this.materialColorsButton.Checked = true;
@@ -2030,19 +2111,6 @@
             this.BackgroundPanel.Name = "BackgroundPanel";
             this.BackgroundPanel.Size = new System.Drawing.Size(1331, 706);
             this.BackgroundPanel.TabIndex = 2;
-            // 
-            // fogButton
-            // 
-            this.fogButton.Checked = true;
-            this.fogButton.CheckOnClick = true;
-            this.fogButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.fogButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.fogButton.Image = global::SAModel.SALVL.Properties.Resources.fog;
-            this.fogButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.fogButton.Name = "fogButton";
-            this.fogButton.Size = new System.Drawing.Size(40, 40);
-            this.fogButton.Text = "Enable Fog";
-            this.fogButton.Click += new System.EventHandler(this.fogButton_Click);
             // 
             // MainForm
             // 
@@ -2277,6 +2345,13 @@
 		private System.Windows.Forms.ToolStripMenuItem lightsEditorToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem viewLogToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton fogButton;
+		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem fogEditorToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
+		private System.Windows.Forms.ToolStripMenuItem clipLevelToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem farClipToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mediumClipToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem nearClipToolStripMenuItem;
 	}
 }
 

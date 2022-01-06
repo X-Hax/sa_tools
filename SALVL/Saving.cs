@@ -235,6 +235,16 @@ namespace SAModel.SALVL
 			}
 			#endregion
 
+			#region Saving Fog
+			progress.Step = "Fog...";
+			Application.DoEvents();
+			if (stageFogList != null && sadxlvlini.LevelFogFiles.FogEntries != null && sadxlvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
+			{
+				string fogFilePath = sadxlvlini.LevelFogFiles.FogEntries[levelact.Level];
+				IniSerializer.Serialize(stageFogList, fogFilePath);
+			}
+			#endregion
+
 			progress.StepProgress();
 			progress.SetTaskAndStep("Save complete!");
 			unsaved = false;
@@ -257,6 +267,5 @@ namespace SAModel.SALVL
 				}
 			}
 		}
-
 	}
 }

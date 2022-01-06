@@ -36,6 +36,13 @@ namespace SAModel.SALVL
 		bool NeedPropertyRefresh;
 		bool AnimationPlaying;
 
+		public enum ClipLevel
+		{
+			Near,
+			Medium,
+			Far
+		}
+
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
@@ -78,13 +85,6 @@ namespace SAModel.SALVL
 			}
 		}
 
-		private enum ClipLevel
-		{
-			Near,
-			Medium,
-			Far
-		}
-
 		internal Device d3ddevice;
 
 		#region Editor-Specific Variables
@@ -94,7 +94,6 @@ namespace SAModel.SALVL
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
 		EditorItemSelection selectedItems = new EditorItemSelection();
 		EditorOptionsEditor optionsEditor;
-		FogData StageFog;
 		ClipLevel editorDetailSetting = ClipLevel.Far;
 		Direct3D.Mesh boundsMesh;
 		NJS_MATERIAL boundsMaterial = new NJS_MATERIAL
@@ -121,6 +120,9 @@ namespace SAModel.SALVL
 		List<SADXStageLightData> stageLightList;
 		List<LSPaletteData> characterLightList;
 
+		// fog list
+		FogDataTable stageFogList; // Current level, all acts, all detail levels (ini file)
+		FogData currentStageFog; // Current act, current detail level
 		#endregion
 
 		#region UI & Customization
@@ -2150,6 +2152,59 @@ namespace SAModel.SALVL
 		{
 			osd.UpdateOSDItem("Fog: " + (fogButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
+		}
+
+		private void fogEditorToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			SADXFogEditor fogEditor = new SADXFogEditor(this, this.stageFogList, levelact.Act);
+			fogEditor.FormClosed += new FormClosedEventHandler(FogEditorClosed);
+			fogEditorToolStripMenuItem.Enabled = false;
+			fogEditor.Show();
+		}
+
+		public void FogEditorClosed(object sender, FormClosedEventArgs e)
+		{
+			fogEditorToolStripMenuItem.Enabled = true;
+		}
+
+		public void GetEditedFog(FogDataArray[] fogNew)
+		{
+			stageFogList.Act = new FogDataArray[fogNew.Length];
+			Array.Copy(fogNew, stageFogList.Act, fogNew.Length);
+			UpdateStageFog();
+			unsaved = true;
+		}
+
+		private void UpdateStageFog()
+		{
+			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			currentStageFog = GetFogData(stageFogList, levelact.Act);
+			NeedRedraw = true;
+		}
+
+		private void farClipToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editorDetailSetting = ClipLevel.Far;
+			farClipToolStripMenuItem.Checked = true;
+			nearClipToolStripMenuItem.Checked = mediumClipToolStripMenuItem.Checked = false;
+			UpdateStageFog();
+		}
+
+		private void mediumClipToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editorDetailSetting = ClipLevel.Medium;
+			mediumClipToolStripMenuItem.Checked = true;
+			nearClipToolStripMenuItem.Checked = farClipToolStripMenuItem.Checked = false;
+			UpdateStageFog();
+		}
+
+		private void nearClipToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			editorDetailSetting = ClipLevel.Near;
+			nearClipToolStripMenuItem.Checked = true;
+			farClipToolStripMenuItem.Checked = mediumClipToolStripMenuItem.Checked = false;
+			UpdateStageFog();
 		}
 	}
 }

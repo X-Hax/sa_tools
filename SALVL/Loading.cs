@@ -613,65 +613,52 @@ namespace SAModel.SALVL
 			log.WriteLog();
 		}
 
-		private void SetFogData(FogDataArray data)
+		private FogData GetFogData(FogDataTable data, int act)
 		{
-			StageFog = new FogData();
+			if (data != null)
 			switch (editorDetailSetting)
 			{
 				case ClipLevel.Far:
 				default:
-					StageFog.FogEnabled = data.FogEnabledHigh;
-					StageFog.FogStart = data.FogStartHigh;
-					StageFog.FogEnd = data.FogEndHigh;
-					StageFog.A = data.ColorA_High;
-					StageFog.R = data.ColorR_High;
-					StageFog.G = data.ColorG_High;
-					StageFog.B = data.ColorB_High;
-					break;
+					return data.Act[act].High;
 				case ClipLevel.Medium:
-					StageFog.FogEnabled = data.FogEnabledMedium;
-					StageFog.FogStart = data.FogStartMedium;
-					StageFog.FogEnd = data.FogEndMedium;
-					StageFog.A = data.ColorA_Medium;
-					StageFog.R = data.ColorR_Medium;
-					StageFog.G = data.ColorG_Medium;
-					StageFog.B = data.ColorB_Medium;
-					break;
+					return data.Act[act].Medium;
 				case ClipLevel.Near:
-					StageFog.FogEnabled = data.FogEnabledLow;
-					StageFog.FogStart = data.FogStartLow;
-					StageFog.FogEnd = data.FogEndLow;
-					StageFog.A = data.ColorA_Low;
-					StageFog.R = data.ColorR_Low;
-					StageFog.G = data.ColorG_Low;
-					StageFog.B = data.ColorB_Low;
-					break;
+					return data.Act[act].Low;
 			}
+			return null;
 		}
 
 		private void LoadFog(SA1LevelAct levelact)
 		{
+			bool fogdatanotfound = false;
 			if (sadxlvlini.LevelFogFiles.FogEntries != null && sadxlvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
 			{
 				string fogFilePath = sadxlvlini.LevelFogFiles.FogEntries[levelact.Level];
 				if (File.Exists(fogFilePath))
 				{
-					FogDataTable table = IniSerializer.Deserialize<FogDataTable>(fogFilePath);
-					if (table.Act[levelact.Act] != null)
-						SetFogData(table.Act[levelact.Act]);
+					stageFogList = IniSerializer.Deserialize<FogDataTable>(fogFilePath);
+					if (stageFogList.Act[levelact.Act] != null)
+					{
+						currentStageFog = GetFogData(stageFogList, levelact.Act);
+					}
 					else
 					{
 						osd.AddMessage("Fog data for this level is null. Stage fog is disabled.", 180);
 						log.Add("Fog data for this level is null. Stage fog is disabled.");
-						StageFog = null;
+						currentStageFog = null;
 					}
 				}
+				else
+					fogdatanotfound = true;
 			}
 			else
+				fogdatanotfound = true;
+			if (fogdatanotfound)
 			{
 				osd.AddMessage("Fog data not found. Stage fog is disabled.", 180);
 				log.Add("Fog data not found. Stage fog is disabled.");
-				StageFog = null;
+				stageFogList = null;
 			}
 
 		}
@@ -698,7 +685,7 @@ namespace SAModel.SALVL
 					sceneGraphControl1.InitSceneControl(selectedItems);
 					PointHelper.Instances.Clear();
 					LevelData.ClearTextures();
-					StageFog = null;
+					stageFogList = null;
 				}
 
 				isStageLoaded = false;
@@ -1191,6 +1178,7 @@ namespace SAModel.SALVL
 
 				#region Fog
 				LoadFog(levelact);
+				fogEditorToolStripMenuItem.Enabled = fogButton.Enabled = currentStageFog != null;
 				#endregion
 
 				transformGizmo = new TransformGizmo();
