@@ -16,7 +16,6 @@
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Pfim" Version="0.10.1" />
 		<PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
 		<PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
 	</ItemGroup>
