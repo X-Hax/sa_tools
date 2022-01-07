@@ -8,15 +8,18 @@ using ArchiveLib;
 using SplitTools;
 using static ArchiveLib.DATFile;
 using static ArchiveLib.PVMXFile;
+using static ArchiveLib.ARCXFile;
 using static ArchiveLib.MLTFile;
 using static ArchiveLib.gcaxMLTFile;
-//using static ArchiveLib.MLTFile;
+using System.Runtime.InteropServices;
 
 namespace ArchiveTool
 {
     static partial class Program
     {
-        static string outputPath;
+		[DllImport("shlwapi.dll", SetLastError = true)]
+		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+		static string outputPath;
         static ArchiveFromFolderMode folderMode;
         /// <summary>
         /// Compress a binary to PRS.
@@ -37,18 +40,25 @@ namespace ArchiveTool
         static void BuildFromFolder(string[] args)
         {
             bool createPB = false;
+			bool createARCX = false;
             filePath = args[0];
             compressPRS = false;
             for (int a = 0; a < args.Length; a++)
             {
                 if (args[a] == "-prs") compressPRS = true;
                 if (args[a] == "-pb") createPB = true;
-            }
+				if (args[a] == "-arcx") createARCX = true;
+			}
             // Folder mode
             if (Directory.Exists(filePath))
             {
                 GenericArchive arc;
                 string indexfilename = Path.Combine(filePath, "index.txt");
+				if (createARCX)
+				{
+					CreateARCX(filePath);
+					return;
+				}
                 if (!File.Exists(indexfilename))
                 {
                     BuildPAK(filePath);
@@ -172,7 +182,7 @@ namespace ArchiveTool
                             }
                             arc.Entries.Add(new PVMXEntry(Path.GetFileName(filename), gbix, File.ReadAllBytes(Path.Combine(filePath, filename)), width, height));
                             break;
-                        default:
+						default:
                             extension = ".bin";
                             break;
                     }
@@ -204,7 +214,8 @@ namespace ArchiveTool
             {
                 Console.WriteLine("PAK INI file not found: {0}", inipath);
                 Console.WriteLine("The folder must contain either index.txt or an INI file to be recognized as a buildable archive folder.");
-                Console.ReadLine();
+				Console.WriteLine("Press ENTER to exit.");
+				Console.ReadLine();
                 return;
             }
             PAKFile.PAKIniData list = IniSerializer.Deserialize<PAKFile.PAKIniData>(inipath);
@@ -218,6 +229,36 @@ namespace ArchiveTool
             pak.Save(Path.ChangeExtension(outputPath, "pak"));
             Console.WriteLine("Done!");
         }
+		/// <summary>
+		/// Create an ARCX archive from a folder.
+		/// </summary>
+		static void CreateARCX(string filePath)
+		{
+			Console.WriteLine("Building ARCX from folder: {0}", Path.GetFullPath(filePath));
+			outputPath = Path.Combine(Environment.CurrentDirectory, filePath);
+			Environment.CurrentDirectory = Path.GetDirectoryName(outputPath);
+			ARCXFile arc = new ARCXFile();
+			string[] filenames = Directory.GetFiles(filePath, "*.*", SearchOption.AllDirectories);
+			int id = 0;
+			foreach (string line in filenames)
+			{
+				System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+				PathRelativePathTo(sb, Path.GetFullPath(line), 0, Path.GetFullPath(filePath), 0);
+				arc.Entries.Add(new ARCXEntry(Path.GetFileName(line), Path.GetDirectoryName(line), File.ReadAllBytes(line)));
+				Console.WriteLine("Added entry {0}: {1}", id.ToString(), line);
+				id++;
+			}
+			byte[] data = arc.GetBytes();
+			outputPath = Path.GetFullPath(filePath) + ".arcx";
+			if (compressPRS)
+			{
+				Console.WriteLine("Compressing to PRS...");
+				data = FraGag.Compression.Prs.Compress(data);
+				outputPath = Path.ChangeExtension(outputPath, ".PRS");
+			}
+			Console.WriteLine("Output file: {0}", outputPath);
+			File.WriteAllBytes(outputPath, data);
+		}
         /// <summary>
 		/// Convert a GBIX indexed texture pack to PVM.
 		/// </summary>

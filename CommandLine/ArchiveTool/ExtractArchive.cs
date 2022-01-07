@@ -32,9 +32,14 @@ namespace ArchiveTool
                 case (".pvmx"):
                     arc = new PVMXFile(arcdata);
                     break;
-                case (".prs"):
+				case (".arcx"):
+					arc = new ARCXFile(arcdata);
+					break;
+				case (".prs"):
                     arcdata = FraGag.Compression.Prs.Decompress(arcdata);
-                    if (PuyoFile.Identify(arcdata) == PuyoArchiveType.Unknown)
+					if (ARCXFile.Identify(arcdata))
+						arc = new ARCXFile(arcdata);
+					else if (PuyoFile.Identify(arcdata) == PuyoArchiveType.Unknown)
                     {
                         outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + ".bin");
                         Console.WriteLine("Output file: {0}", Path.GetFullPath(outputPath));
@@ -42,7 +47,8 @@ namespace ArchiveTool
                         Console.WriteLine("Archive extracted!");
                         return;
                     }
-                    arc = new PuyoFile(arcdata);
+					else
+						arc = new PuyoFile(arcdata);
                     break;
                 case (".pvm"):
                 case (".gvm"):
@@ -88,7 +94,14 @@ namespace ArchiveTool
                     continue;
                 }
                 Console.WriteLine("Extracting file: {0}", entry.Name);
-                File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.Data);
+				if (arc is ARCXFile)
+				{
+					ARCXFile.ARCXEntry ARCXentry = (ARCXFile.ARCXEntry)entry;
+					Directory.CreateDirectory(Path.Combine(outputPath, ARCXentry.Folder));
+					File.WriteAllBytes(Path.Combine(outputPath, ARCXentry.Folder, entry.Name), entry.Data);
+				}
+				else
+					File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.Data);
             }
             arc.CreateIndexFile(outputPath);
             Console.WriteLine("Archive extracted!");
@@ -227,5 +240,5 @@ namespace ArchiveTool
             Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
             Console.WriteLine("Archive extracted!");
         }
-    }
+	}
 }
