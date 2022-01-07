@@ -659,6 +659,7 @@ namespace SAModel.SALVL
 				osd.AddMessage("Fog data not found. Stage fog is disabled.", 180);
 				log.Add("Fog data not found. Stage fog is disabled.");
 				stageFogList = null;
+				currentStageFog = null;
 			}
 
 		}
