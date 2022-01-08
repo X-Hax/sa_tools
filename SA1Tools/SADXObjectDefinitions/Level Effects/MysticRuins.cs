@@ -16,9 +16,11 @@ namespace SADXObjectDefinitions.Level_Effects
 		Mesh[] meshes;
 		Vector3 Skybox_Scale;
 		Texture[] texs;
+		byte Act;
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
+			Act = act;
 			if (act == 3)
 				return;
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("adv02_mysticruin/bg/bgScale.ini");
@@ -52,7 +54,6 @@ namespace SADXObjectDefinitions.Level_Effects
 						model = ObjectHelper.LoadModel("adv02_mysticruin/sky/mrc_bf_s_skyyoru.nja.sa1mdl");
 					break;
 			}
-			texs = ObjectHelper.GetTextures("MR_SKY0" + act.ToString());
 			meshes = ObjectHelper.GetMeshes(model);
 		}
 
@@ -60,6 +61,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		{
 			if (model == null)
 				return;
+			texs = ObjectHelper.GetTextures("MR_SKY0" + Act.ToString());
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

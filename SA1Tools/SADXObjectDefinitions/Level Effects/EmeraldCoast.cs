@@ -26,11 +26,11 @@ namespace SADXObjectDefinitions.Level_Effects
 			mesh1 = ObjectHelper.GetMeshes(model1);
 			model2 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg3.nja.sa1mdl");
 			mesh2 = ObjectHelper.GetMeshes(model2);
-			texs = ObjectHelper.GetTextures("BG_BEACH");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			texs = ObjectHelper.GetTextures("BG_BEACH");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

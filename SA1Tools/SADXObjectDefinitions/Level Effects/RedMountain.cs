@@ -29,7 +29,6 @@ namespace SADXObjectDefinitions.Level_Effects
 				models[i] = ObjectHelper.LoadModel("stg05_mountain/common/models/soto_fr_sora" + (i + 1).ToString() + "a.nja.sa1mdl");
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 			}
-			texs = ObjectHelper.GetTextures("OBJ_MOUNTAIN");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -37,6 +36,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			float x;
 			float y;
 			float z;
+			texs = ObjectHelper.GetTextures("OBJ_MOUNTAIN");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

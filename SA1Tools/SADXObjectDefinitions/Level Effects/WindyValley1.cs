@@ -28,11 +28,11 @@ namespace SADXObjectDefinitions.Level_Effects
 				models[i] = ObjectHelper.LoadModel("stg02_windy/bg/models/windy01_nbg" + (i + 1).ToString(NumberFormatInfo.InvariantInfo) + ".nja.sa1mdl");
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 			}
-			texs = ObjectHelper.GetTextures("WINDY_BACK");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			texs = ObjectHelper.GetTextures("WINDY_BACK");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

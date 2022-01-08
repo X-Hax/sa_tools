@@ -16,9 +16,11 @@ namespace SADXObjectDefinitions.Level_Effects
 		Mesh[] meshes;
 		Vector3 Skybox_Scale;
 		Texture[] texs;
+		byte Act;
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
+			Act = act;
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("adv03_past/bg/bgScale.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
@@ -26,15 +28,12 @@ namespace SADXObjectDefinitions.Level_Effects
 			{
 				case 0:
 					model = ObjectHelper.LoadModel("adv03_past/bg/mrc_bf_s_skyhiru.nja.sa1mdl");
-					texs = ObjectHelper.GetTextures("MR_SKY02");
 					break;
 				case 1:
 					model = ObjectHelper.LoadModel("adv03_past/bg/mra_s_sora_hare.nja.sa1mdl");
-					texs = ObjectHelper.GetTextures("MR_SKY00");
 					break;
 				case 2:
 					model = ObjectHelper.LoadModel("adv03_past/bg/mra_s_sora_yoru.nja.sa1mdl");
-					texs = ObjectHelper.GetTextures("MR_SKY00");
 					break;
 			}
 			meshes = ObjectHelper.GetMeshes(model);
@@ -42,6 +41,18 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			switch (Act)
+			{
+				case 0:
+					texs = ObjectHelper.GetTextures("MR_SKY02");
+					break;
+				case 1:
+					texs = ObjectHelper.GetTextures("MR_SKY00");
+					break;
+				case 2:
+					texs = ObjectHelper.GetTextures("MR_SKY00");
+					break;
+			}
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

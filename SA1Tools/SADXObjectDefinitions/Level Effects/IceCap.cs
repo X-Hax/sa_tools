@@ -27,7 +27,6 @@ namespace SADXObjectDefinitions.Level_Effects
 			models[0] = ObjectHelper.LoadModel("stg08_icecap/bg/models/sora98_oya.nja.sa1mdl");
 			models[1] = ObjectHelper.LoadModel("stg08_icecap/bg/models/sora55_aida01a.nja.sa1mdl");
 			models[2] = ObjectHelper.LoadModel("stg08_icecap/bg/models/sora98_yuki_03kumo.nja.sa1mdl");
-			texs = ObjectHelper.GetTextures("BG_ICECAP");
 			for (int i = 0; i < 3; i++)
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 		}
@@ -36,6 +35,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		{
 			if (Act == 1 || Act == 3) 
 				return;
+			texs = ObjectHelper.GetTextures("BG_ICECAP");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

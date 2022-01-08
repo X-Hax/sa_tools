@@ -23,11 +23,11 @@ namespace SADXObjectDefinitions.Level_Effects
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			model = ObjectHelper.LoadModel("shareobj/bg/models/tp_nbg2.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texs = ObjectHelper.GetTextures("BG_SHAREOBJ");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			texs = ObjectHelper.GetTextures("BG_SHAREOBJ");
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(cam.Position);

@@ -18,11 +18,11 @@ namespace SADXObjectDefinitions.Level_Effects
 		{
 			carriermdl = ObjectHelper.LoadModel("shooting/common/models/shot_bf_s_bodya.nja.sa1mdl");
 			carriermesh = ObjectHelper.GetMeshes(carriermdl);
-			texs = ObjectHelper.GetTextures("SHOOTING0");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			texs = ObjectHelper.GetTextures("SHOOTING0");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

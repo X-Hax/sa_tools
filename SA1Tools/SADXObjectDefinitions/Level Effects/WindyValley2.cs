@@ -20,11 +20,11 @@ namespace SADXObjectDefinitions.Level_Effects
 			models[2] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazec.nja.sa1mdl");
 			for (int i = 0; i < models.Length; i++)
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
-			texs = ObjectHelper.GetTextures("WINDY_BACK2");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			texs = ObjectHelper.GetTextures("WINDY_BACK2");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();

@@ -36,11 +36,11 @@ namespace SADXObjectDefinitions.Level_Effects
 					break;
 			}
 			meshes = ObjectHelper.GetMeshes(model);
-			texs = ObjectHelper.GetTextures("SS_BG");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
+			texs = ObjectHelper.GetTextures("SS_BG");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
