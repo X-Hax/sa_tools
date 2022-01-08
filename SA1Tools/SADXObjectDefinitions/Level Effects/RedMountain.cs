@@ -18,7 +18,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		byte Act;
 		Texture[] texs;
 
-		public override void Init(IniLevelData data, byte act)
+		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			Act = act;
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg05_mountain/bg/bgScale.ini");

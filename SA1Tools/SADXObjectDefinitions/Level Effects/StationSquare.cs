@@ -10,23 +10,33 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
 {
-	class EmeraldCoast : LevelDefinition
+	class StationSquare : LevelDefinition
 	{
-		NJS_OBJECT model1, model2;
-		Mesh[] mesh1, mesh2;
+		NJS_OBJECT model;
+		Mesh[] meshes;
 		Vector3 Skybox_Scale;
 		Texture[] texs;
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg01_beach/bg/bgScale.ini");
+			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("adv00_stationsquare/bg/bgScale.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
-			model1 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg.nja.sa1mdl");
-			mesh1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg3.nja.sa1mdl");
-			mesh2 = ObjectHelper.GetMeshes(model2);
-			texs = ObjectHelper.GetTextures("BG_BEACH");
+			switch (timeofday)
+			{
+				case 0:
+				default:
+					model = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/bg/ss_haikei_sky_d.nja.sa1mdl");
+					break;
+				case 1:
+					model = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/bg/ss_haikei_sky_e.nja.sa1mdl");
+					break;
+				case 2:
+					model = ObjectHelper.LoadModel("adv00_stationsquare/object/no_unite/bg/ss_haikei_sky_n.nja.sa1mdl");
+					break;
+			}
+			meshes = ObjectHelper.GetMeshes(model);
+			texs = ObjectHelper.GetTextures("SS_BG");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -36,8 +46,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh1));
-			result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh2));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

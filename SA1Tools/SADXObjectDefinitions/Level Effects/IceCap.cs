@@ -18,7 +18,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		Texture[] texs;
 		Vector3 Skybox_Scale;
 		
-		public override void Init(IniLevelData data, byte act)
+		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			Act = act;
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg08_icecap/bg/bgScale.ini");

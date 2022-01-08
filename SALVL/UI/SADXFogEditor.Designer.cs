@@ -141,7 +141,7 @@ namespace SAModel.SALVL
             // 
             this.numericUpDownAct.Location = new System.Drawing.Point(48, 14);
             this.numericUpDownAct.Maximum = new decimal(new int[] {
-            6,
+            7,
             0,
             0,
             0});

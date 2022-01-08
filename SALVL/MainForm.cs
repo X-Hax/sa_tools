@@ -1630,18 +1630,31 @@ namespace SAModel.SALVL
 			LevelData.InvalidateRenderState();
 		}
 
+		private void SetTimeOfDay()
+		{
+			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
+			{
+				byte timeofday = 0;
+				if (eveningToolStripMenuItem.Checked)
+					timeofday = 1;
+				else if (nightToolStripMenuItem.Checked)
+					timeofday = 2;
+				LoadStageLights(levelact);
+				LoadCharacterLights(levelact);
+				if (LevelData.leveleff != null)
+					LevelData.leveleff.Init(sadxlvlini.Levels[levelID], levelact.Act, timeofday);
+				UpdateStageFog();
+				NeedRedraw = true;
+			}
+		}
+
 		private void daytimeToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			daytimeToolStripMenuItem.Checked = true;
 			eveningToolStripMenuItem.Checked = false;
 			nightToolStripMenuItem.Checked = false;
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
-			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
-			{
-				LoadStageLights(levelact);
-				LoadCharacterLights(levelact);
-			}
-			NeedRedraw = true;
+			SetTimeOfDay();
 		}
 
 		private void eveningToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1649,13 +1662,7 @@ namespace SAModel.SALVL
 			daytimeToolStripMenuItem.Checked = false;
 			eveningToolStripMenuItem.Checked = true;
 			nightToolStripMenuItem.Checked = false;
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
-			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
-			{
-				LoadStageLights(levelact);
-				LoadCharacterLights(levelact);
-			}
-			NeedRedraw = true;
+			SetTimeOfDay();
 		}
 
 		private void nightToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1663,13 +1670,7 @@ namespace SAModel.SALVL
 			daytimeToolStripMenuItem.Checked = false;
 			eveningToolStripMenuItem.Checked = false;
 			nightToolStripMenuItem.Checked = true;
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
-			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
-			{
-				LoadStageLights(levelact);
-				LoadCharacterLights(levelact);
-			}
-			NeedRedraw = true;
+			SetTimeOfDay();
 		}
 
 		private void exportAssimpSelectedItemsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2180,8 +2181,45 @@ namespace SAModel.SALVL
 		{
 			if (sadxlvlini == null)
 				return;
+			byte timeofday = 0;
+			if (eveningToolStripMenuItem.Checked)
+				timeofday = 1;
+			else if (nightToolStripMenuItem.Checked)
+				timeofday = 2;
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
-			currentStageFog = GetFogData(stageFogList, levelact.Act);
+			int act = levelact.Act;
+			if (levelact.Level == SA1LevelIDs.MysticRuins && act != 3)
+			{
+				if (timeofday == 1)
+				{
+					switch (act)
+					{
+						case 0:
+						default:
+							act = 4;
+							break;
+						case 1:
+						case 2:
+							act = 5;
+							break;
+					}
+				}
+				if (timeofday == 2)
+				{
+					switch (act)
+					{
+						case 0:
+						default:
+							act = 6;
+							break;
+						case 1:
+						case 2:
+							act = 7;
+							break;
+					}
+				}
+			}
+			currentStageFog = GetFogData(stageFogList, act);
 			NeedRedraw = true;
 		}
 

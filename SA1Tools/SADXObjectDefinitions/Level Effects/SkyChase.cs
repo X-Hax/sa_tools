@@ -14,7 +14,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		Mesh[] carriermesh;
 		Texture[] texs;
 
-		public override void Init(IniLevelData data, byte act)
+		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			carriermdl = ObjectHelper.LoadModel("shooting/common/models/shot_bf_s_bodya.nja.sa1mdl");
 			carriermesh = ObjectHelper.GetMeshes(carriermdl);

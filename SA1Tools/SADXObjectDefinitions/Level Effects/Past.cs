@@ -10,23 +10,34 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
 {
-	class EmeraldCoast : LevelDefinition
+	class Past : LevelDefinition
 	{
-		NJS_OBJECT model1, model2;
-		Mesh[] mesh1, mesh2;
+		NJS_OBJECT model;
+		Mesh[] meshes;
 		Vector3 Skybox_Scale;
 		Texture[] texs;
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg01_beach/bg/bgScale.ini");
+			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("adv03_past/bg/bgScale.ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
-			model1 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg.nja.sa1mdl");
-			mesh1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg3.nja.sa1mdl");
-			mesh2 = ObjectHelper.GetMeshes(model2);
-			texs = ObjectHelper.GetTextures("BG_BEACH");
+			switch (act)
+			{
+				case 0:
+					model = ObjectHelper.LoadModel("adv03_past/bg/mrc_bf_s_skyhiru.nja.sa1mdl");
+					texs = ObjectHelper.GetTextures("MR_SKY02");
+					break;
+				case 1:
+					model = ObjectHelper.LoadModel("adv03_past/bg/mra_s_sora_hare.nja.sa1mdl");
+					texs = ObjectHelper.GetTextures("MR_SKY00");
+					break;
+				case 2:
+					model = ObjectHelper.LoadModel("adv03_past/bg/mra_s_sora_yoru.nja.sa1mdl");
+					texs = ObjectHelper.GetTextures("MR_SKY00");
+					break;
+			}
+			meshes = ObjectHelper.GetMeshes(model);
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -35,9 +46,9 @@ namespace SADXObjectDefinitions.Level_Effects
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
+			transform.NJScale(2.0f, 2.0f, 2.0f);
 			transform.NJScale(Skybox_Scale);
-			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh1));
-			result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh2));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

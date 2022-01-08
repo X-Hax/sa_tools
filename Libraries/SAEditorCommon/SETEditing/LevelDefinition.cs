@@ -5,7 +5,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 {
 	public abstract class LevelDefinition
 	{
-		public abstract void Init(IniLevelData data, byte act);
+		public abstract void Init(IniLevelData data, byte act, byte timeofday);
 		public abstract void Render(Device dev, EditorCamera cam);
 	}
 }

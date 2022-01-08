@@ -16,7 +16,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		Vector3 Skybox_Scale;
 		Texture[] texs;
 
-		public override void Init(IniLevelData data, byte act)
+		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("shareobj/bg/bgScale_tp.ini");
 			if (skyboxdata.Length > act)

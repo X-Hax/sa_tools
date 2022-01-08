@@ -13,7 +13,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		readonly NJS_OBJECT[] models = new NJS_OBJECT[3];
 		readonly Mesh[][] meshes = new Mesh[3][];
 		Texture[] texs;
-		public override void Init(IniLevelData data, byte act)
+		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			models[0] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazea.nja.sa1mdl");
 			models[1] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazeb.nja.sa1mdl");

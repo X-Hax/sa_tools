@@ -18,7 +18,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		Vector3 Skybox_Scale;
 		byte Act;
 
-		public override void Init(IniLevelData data, byte act)
+		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			Act = act;
 			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("stg04_highway/bg/bgScale.ini");
