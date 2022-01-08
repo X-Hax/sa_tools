@@ -2208,5 +2208,12 @@ namespace SAModel.SALVL
 			farClipToolStripMenuItem.Checked = mediumClipToolStripMenuItem.Checked = false;
 			UpdateStageFog();
 		}
+
+		private void texturesButton_Click(object sender, EventArgs e)
+		{
+			EditorOptions.DisableTextures = !texturesButton.Checked;
+			osd.UpdateOSDItem("Textures: " + (texturesButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			NeedRedraw = true;
+		}
 	}
 }

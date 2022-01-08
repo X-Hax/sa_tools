@@ -24,6 +24,7 @@ namespace SAModel.SAEditorCommon
 		private static float setDrawDistance = 6000f;
 		private static bool overrideLighting = false;
 		private static bool ignoreMaterialColors = false;
+		private static bool disableTextures = false;
 		private static Device direct3DDevice;
 		private static Font onscreenFont;
 		private static Light keyLight;
@@ -41,6 +42,7 @@ namespace SAModel.SAEditorCommon
 		public static float SetItemDrawDistance { get { return setDrawDistance; } set { setDrawDistance = value; } }
 		public static bool OverrideLighting { get { return overrideLighting; } set { overrideLighting = value; } }
 		public static bool IgnoreMaterialColors { get { return ignoreMaterialColors; } set { ignoreMaterialColors = value; } }
+		public static bool DisableTextures { get { return disableTextures; } set { disableTextures = value; } }
 		public static Device Direct3DDevice { get { return direct3DDevice; } set { direct3DDevice = value; } }
 		public static Font OnscreenFont { get { return onscreenFont; } set { onscreenFont = value; } }
 		public static Color FillColor { get { return fillColor; } set { fillColor = value; } }

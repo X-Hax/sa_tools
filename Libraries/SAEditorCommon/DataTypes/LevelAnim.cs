@@ -150,7 +150,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			if (!camera.SphereInFrustum(bounds)) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
-			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0)
+			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0 && !EditorOptions.DisableTextures)
 				result.AddRange(GeoAnim.Model.DrawModelTreeAnimated(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Meshes, GeoAnim.Animation, GeoAnim.AnimationFrame, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			else
 				result.AddRange(GeoAnim.Model.DrawModelTreeAnimated(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Meshes, GeoAnim.Animation, GeoAnim.AnimationFrame, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));

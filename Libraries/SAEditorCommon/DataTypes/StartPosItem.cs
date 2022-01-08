@@ -77,7 +77,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
 			transform.NJRotateY(-0x8000 - YRotation);
-			if (LevelData.Textures != null && LevelData.Textures.Count > 0 && LevelData.Textures.ContainsKey(texture))
+			if (LevelData.Textures != null && LevelData.Textures.Count > 0 && LevelData.Textures.ContainsKey(texture) && !EditorOptions.DisableTextures)
 			{
 				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			}

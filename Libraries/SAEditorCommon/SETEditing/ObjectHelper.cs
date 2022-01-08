@@ -56,7 +56,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 
 		public static Texture[] GetTextures(string name)
 		{
-			if (LevelData.Textures != null && LevelData.Textures.ContainsKey(name))
+			if (LevelData.Textures != null && LevelData.Textures.ContainsKey(name) && !EditorOptions.DisableTextures)
 				return LevelData.Textures[name];
 			return null;
 		}
@@ -73,7 +73,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			{
 				DiffuseColor = Color.White
 			};
-			if (texture == null)
+			if (texture == null && !EditorOptions.DisableTextures)
 				texture = QuestionMark;
 			result.Add(new RenderInfo(QuestionBoxMesh, 0, transform.Top, mat, texture, dev.GetRenderState<FillMode>(RenderState.FillMode), new BoundingSphere(center.X, center.Y, center.Z, 8)));
 			if (selected)

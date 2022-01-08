@@ -133,7 +133,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			if (!camera.SphereInFrustum(COL.Bounds)) return EmptyRenderInfo;
 
 			List<RenderInfo> result = new List<RenderInfo>();
-			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0)
+			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0 && !EditorOptions.DisableTextures)
 				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			else
 				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
