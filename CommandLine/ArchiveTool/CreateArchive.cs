@@ -17,8 +17,6 @@ namespace ArchiveTool
 {
     static partial class Program
     {
-		[DllImport("shlwapi.dll", SetLastError = true)]
-		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 		static string outputPath;
         static ArchiveFromFolderMode folderMode;
         /// <summary>
@@ -242,9 +240,8 @@ namespace ArchiveTool
 			int id = 0;
 			foreach (string line in filenames)
 			{
-				System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
-				PathRelativePathTo(sb, Path.GetFullPath(line), 0, Path.GetFullPath(filePath), 0);
-				arc.Entries.Add(new ARCXEntry(Path.GetFileName(line), Path.GetDirectoryName(line), File.ReadAllBytes(line)));
+				string folderEntry = Path.GetDirectoryName(Path.GetRelativePath(filePath, line));
+				arc.Entries.Add(new ARCXEntry(Path.GetFileName(line), folderEntry, File.ReadAllBytes(line)));
 				Console.WriteLine("Added entry {0}: {1}", id.ToString(), line);
 				id++;
 			}
