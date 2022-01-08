@@ -4425,6 +4425,76 @@ namespace SplitTools
 		}
 	}
 
+	[Serializable]
+	public class SingleString
+	{
+		[IniIgnore]
+		private Languages Language;
+		public string[][] Text { get; private set; }
+		private SingleString() { Text = new string[1][]; }
+
+		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang): this()
+		{
+			Text[0] = StringArray.Load(file, address, imageBase, count, lang);
+			Language = lang;
+		}
+
+		public void Save(string directory)
+		{
+			Save(directory, out string[] hashes);
+		}
+
+		public void Save(string directory, out string[] hashes)
+		{
+			hashes = new string[1];
+			Directory.CreateDirectory(directory);
+			string textname = Path.Combine(directory, Language.ToString() + ".txt");
+			Text[0].Save(textname);
+			hashes[0] = HelperFunctions.FileHash(textname);
+		}
+	}
+
+	[Serializable]
+	public class MultilingualString
+	{
+		public string[][] Text { get; private set; }
+		
+		private MultilingualString() { Text = new string[5][]; }
+
+		public MultilingualString(byte[] file, int address, uint imageBase, int count, bool doublePointer = false) : this()
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				Text[i] = new string[count];
+				for (int c = 0; c < count; c++)
+				{
+					if (doublePointer)
+						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4*c, imageBase, 1, (Languages)i)[0];
+					else
+						Text[i][c] = StringArray.Load(file, address, imageBase, 1, (Languages)i)[0];
+				}
+				address += 4;
+			}
+		}
+
+		public void Save(string directory)
+		{
+			Save(directory, out string[] hashes);
+		}
+
+		public void Save(string directory, out string[] hashes)
+		{
+			hashes = new string[5];
+			Directory.CreateDirectory(directory);
+			for (int i = 0; i < 5; i++)
+			{
+				string textname = Path.Combine(directory, ((Languages)i).ToString() + ".txt");
+				Text[i].Save(textname);
+				hashes[i] = HelperFunctions.FileHash(textname);
+			}
+		}
+	}
+
 	public class NinjaCamera
 	{
 		public Vertex Position { get; set; } // Camera position

@@ -1319,7 +1319,22 @@ namespace SplitTools.Split
                     PlayerParameter plpm = new PlayerParameter(datafile, address);
                     plpm.Save(fileOutputPath);
                     break;
-                default: // raw binary
+				case "singlestring":
+					Languages langs = Languages.Japanese;
+					int countx = data.Length > 1 ? data.Length : 1;
+					langs = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+					new SingleString(datafile, address, imageBase, countx, langs).Save(fileOutputPath, out string[] hashesz);
+					data.MD5Hash = string.Join(",", hashesz);
+					nohash = true;
+					break;
+				case "multistring":
+					bool dpointer = customProperties.ContainsKey("doublepointer");
+					int countz = data.Length > 1 ? data.Length : 1;
+					new MultilingualString(datafile, address, imageBase, countz, dpointer).Save(fileOutputPath, out string[] hashess);
+					data.MD5Hash = string.Join(",", hashess);
+					nohash = true;
+					break;
+				default: // raw binary
                     {
                         byte[] bin = new byte[int.Parse(customProperties["size"], NumberStyles.HexNumber)];
                         Array.Copy(datafile, address, bin, 0, bin.Length);

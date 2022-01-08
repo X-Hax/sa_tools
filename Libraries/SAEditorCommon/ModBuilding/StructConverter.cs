@@ -84,14 +84,43 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "physicsdata", "Player Parameters" },
             { "fogdatatable", "Fog Data Table" },
             { "palettelightlist", "LS Palette Data" },
-            { "camera", "Ninja Camera Data" }
-        };
+            { "camera", "Ninja Camera Data" },
+			{ "singlestring", "Single Language String" },
+			{ "multistring", "Multi Language String" }
+		};
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
 		{
 			bool? modified = null;
 			switch (item.Value.Type)
 			{
+				case "singlestring":
+					{
+						modified = false;
+						string[] hashes = item.Value.MD5Hash.Split(',');
+						string textname = Path.Combine(item.Value.Filename, item.Value.CustomProperties["language"] + ".txt");
+						if (HelperFunctions.FileHash(textname) != hashes[0])
+						{
+							modified = true;
+							break;
+						}
+					}
+					break;
+				case "multistring":
+					{
+						modified = false;
+						string[] hashes = item.Value.MD5Hash.Split(',');
+						for (int i = 0; i < 5; i++)
+						{
+							string textname = Path.Combine(item.Value.Filename, ((Languages)i).ToString() + ".txt");
+							if (HelperFunctions.FileHash(textname) != hashes[i])
+							{
+								modified = true;
+								break;
+							}
+						}
+					}
+					break;
 				case "cutscenetext":
 					{
 						modified = false;
