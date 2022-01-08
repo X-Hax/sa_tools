@@ -16,6 +16,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		readonly NJS_OBJECT[] models = new NJS_OBJECT[5];
 		readonly Mesh[][] meshes = new Mesh[5][];
 		Vector3 Skybox_Scale;
+		Texture[] texs;
 
 		public override void Init(IniLevelData data, byte act)
 		{
@@ -27,6 +28,7 @@ namespace SADXObjectDefinitions.Level_Effects
 				models[i] = ObjectHelper.LoadModel("stg02_windy/bg/models/windy01_nbg" + (i + 1).ToString(NumberFormatInfo.InvariantInfo) + ".nja.sa1mdl");
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
 			}
+			texs = ObjectHelper.GetTextures("WINDY_BACK");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -36,7 +38,6 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			Texture[] texs = ObjectHelper.GetTextures("WINDY_BACK");
 			for (int i = 0; i < 5; i++)
 				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
 			transform.Pop();

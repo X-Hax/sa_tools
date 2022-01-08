@@ -15,6 +15,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		NJS_OBJECT model1, model2;
 		Mesh[] mesh1, mesh2;
 		Vector3 Skybox_Scale;
+		Texture[] texs;
 
 		public override void Init(IniLevelData data, byte act)
 		{
@@ -25,6 +26,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			mesh1 = ObjectHelper.GetMeshes(model1);
 			model2 = ObjectHelper.LoadModel("stg01_beach/bg/models/sea_nbg3.nja.sa1mdl");
 			mesh2 = ObjectHelper.GetMeshes(model2);
+			texs = ObjectHelper.GetTextures("BG_BEACH");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -34,7 +36,6 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			Texture[] texs = ObjectHelper.GetTextures("BG_BEACH");
 			result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh1));
 			result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, mesh2));
 			transform.Pop();

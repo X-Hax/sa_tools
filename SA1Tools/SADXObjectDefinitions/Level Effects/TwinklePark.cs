@@ -14,7 +14,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		NJS_OBJECT model;
 		Mesh[] meshes;
 		Vector3 Skybox_Scale;
-		bool NoRender;
+		Texture[] texs;
 
 		public override void Init(IniLevelData data, byte act)
 		{
@@ -23,17 +23,16 @@ namespace SADXObjectDefinitions.Level_Effects
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			model = ObjectHelper.LoadModel("shareobj/bg/models/tp_nbg2.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			NoRender = act == 1;
+			texs = ObjectHelper.GetTextures("BG_SHAREOBJ");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
-			if (NoRender) return;
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(cam.Position);
 			transform.NJScale(Skybox_Scale);
-			RenderInfo.Draw(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BG_SHAREOBJ"), meshes), dev, cam);
+			RenderInfo.Draw(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes), dev, cam);
 			transform.Pop();
 		}
 	}

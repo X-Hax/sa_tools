@@ -12,11 +12,13 @@ namespace SADXObjectDefinitions.Level_Effects
 	{
 		NJS_OBJECT carriermdl;
 		Mesh[] carriermesh;
+		Texture[] texs;
 
 		public override void Init(IniLevelData data, byte act)
 		{
 			carriermdl = ObjectHelper.LoadModel("shooting/common/models/shot_bf_s_bodya.nja.sa1mdl");
 			carriermesh = ObjectHelper.GetMeshes(carriermdl);
+			texs = ObjectHelper.GetTextures("SHOOTING0");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -24,7 +26,6 @@ namespace SADXObjectDefinitions.Level_Effects
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
-			Texture[] texs = ObjectHelper.GetTextures("SHOOTING0");
 			carriermdl.ProcessTransforms(transform);
 			carriermdl.ProcessVertexData();
 			dev.SetRenderState(RenderState.ZWriteEnable, true); // Z write is disabled for skybox by default

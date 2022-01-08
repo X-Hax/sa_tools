@@ -4,7 +4,6 @@ using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
-using System.Globalization;
 using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
@@ -13,7 +12,7 @@ namespace SADXObjectDefinitions.Level_Effects
 	{
 		readonly NJS_OBJECT[] models = new NJS_OBJECT[3];
 		readonly Mesh[][] meshes = new Mesh[3][];
-
+		Texture[] texs;
 		public override void Init(IniLevelData data, byte act)
 		{
 			models[0] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazea.nja.sa1mdl");
@@ -21,6 +20,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			models[2] = ObjectHelper.LoadModel("stg02_windy/bg/models/newmind02_kazec.nja.sa1mdl");
 			for (int i = 0; i < models.Length; i++)
 				meshes[i] = ObjectHelper.GetMeshes(models[i]);
+			texs = ObjectHelper.GetTextures("WINDY_BACK2");
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -28,7 +28,6 @@ namespace SADXObjectDefinitions.Level_Effects
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
-			Texture[] texs = ObjectHelper.GetTextures("WINDY_BACK2");
 			for (int i = 0; i < 3; i++)
 				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
 			transform.Pop();
