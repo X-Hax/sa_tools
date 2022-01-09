@@ -41,7 +41,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			ushort _id = ByteConverter.ToUInt16(file, address);
 			ID = _id;
-			ClipLevel = (byte)(_id >> 12);
+			ClipLevel = (byte)((_id >> 12) & 7);
 			ushort xrot = ByteConverter.ToUInt16(file, address + 2);
 			ushort yrot = ByteConverter.ToUInt16(file, address + 4);
 			ushort zrot = ByteConverter.ToUInt16(file, address + 6);
