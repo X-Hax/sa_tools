@@ -20,6 +20,6 @@ after_build:
 
     cd C:\projects\sa-tools\output
     
-    7z a "C:\projects\sa-tools\SA Tools.7z" *
+    7z a "C:\projects\sa-tools\SA Tools.7z" * -mx9
 artifacts:
 - path: SA Tools.7z
