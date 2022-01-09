@@ -7,6 +7,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using System;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -29,24 +30,24 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateY(item.Rotation.Y);
 			transform.Push();
 			transform.NJTranslate(0, 0, 10);
-			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 2);
+			transform.NJScale(0.1f, 0.1f, 2.0f);
 			result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(0, 0, 20);
 			transform.NJRotateX(0x2000);
 			transform.NJTranslate(0, 0, -3);
-			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
+			transform.NJScale(0.1f, 0.1f, 0.7f);
 			result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(0, 0, 20);
 			transform.NJRotateX(0xE000);
 			transform.NJTranslate(0, 0, -3);
-			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
+			transform.NJScale(0.1f, 0.1f, 0.7f);
 			result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
 			transform.Pop();
-			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1000000014901161f);
+			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1f);
 			result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
 			transform.Pop();
 			return result;
@@ -60,7 +61,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJRotateY(item.Rotation.Y);
 			transform.Push();
 			transform.NJTranslate(0, 0, 10);
-			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 2);
+			transform.NJScale(0.1f, 0.1f, 2.0f);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
@@ -69,7 +70,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(0, 0, 20);
 			transform.NJRotateX(0x2000);
 			transform.NJTranslate(0, 0, -3);
-			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
+			transform.NJScale(0.1f, 0.1f, 0.7f);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
@@ -78,12 +79,12 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(0, 0, 20);
 			transform.NJRotateX(0xE000);
 			transform.NJTranslate(0, 0, -3);
-			transform.NJScale(0.1000000014901161f, 0.1000000014901161f, 0.699999988079071f);
+			transform.NJScale(0.1f, 0.1f, 0.7f);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
 			transform.Pop();
-			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1000000014901161f);
+			transform.NJScale((item.Scale.X + 10) / 5f, (item.Scale.Y + 10) / 5f, 0.1f);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, meshes, boundsByMesh: true));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes, boundsByMesh: true));
@@ -98,13 +99,7 @@ namespace SADXObjectDefinitions.Common
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
-			float largestScale = (item.Scale.X + 10) / 5f;
-			if (item.Scale.Y > largestScale) largestScale = (item.Scale.Y + 10) / 5f;
-			if (item.Scale.Z > largestScale) largestScale = (item.Scale.Z + 10) / 5f;
-
-			BoundingSphere boxSphere = new BoundingSphere() { Center = new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Radius = largestScale };
-
-			return boxSphere;
+			return new BoundingSphere(new Vertex(item.Position.X, item.Position.Y, item.Position.Z), Math.Max(Math.Max(item.Scale.X, item.Scale.Y), item.Scale.Z) + 10.0f);
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)

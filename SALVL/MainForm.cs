@@ -1633,7 +1633,7 @@ namespace SAModel.SALVL
 		private void SetTimeOfDay()
 		{
 			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
-			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins)
+			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck)
 			{
 				byte timeofday = 0;
 				if (eveningToolStripMenuItem.Checked)

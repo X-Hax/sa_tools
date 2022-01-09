@@ -7,18 +7,23 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using System;
 
 namespace SADXObjectDefinitions.Common
 {
 	public class JumpPanel : ObjectDefinition
 	{
 		private NJS_OBJECT model;
+		private NJS_OBJECT numbermodel;
 		private Mesh[] meshes;
+		private Mesh[] numbermeshes;
 
 		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("object/jumppanel_base.nja.sa1mdl");
 			meshes = ObjectHelper.GetMeshes(model);
+			numbermodel = ObjectHelper.LoadModel("object/no_unite/jumppanel_numbers.nja.sa1mdl");
+			numbermeshes = ObjectHelper.GetMeshes(numbermodel);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -37,6 +42,10 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
+			((BasicAttach)numbermodel.Attach).Material[0].TextureID =
+				((BasicAttach)numbermodel.Attach).Material[1].TextureID =
+				62 + Math.Min(Math.Max((int)item.Scale.X, 0), 9);
+			result.AddRange(numbermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CON_REGULAR"), numbermeshes));
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));

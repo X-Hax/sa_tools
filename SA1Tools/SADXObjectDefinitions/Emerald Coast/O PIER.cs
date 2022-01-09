@@ -13,109 +13,63 @@ namespace SADXObjectDefinitions.EmeraldCoast
 {
 	public class Pier : ObjectDefinition
 	{
-		protected NJS_OBJECT model1;
-		protected Mesh[] meshes1;
-		protected NJS_OBJECT model2;
-		protected Mesh[] meshes2;
+		protected NJS_OBJECT[] models = new NJS_OBJECT[2];
+
+		protected Mesh[][] meshes = new Mesh[2][];
 
 		public override void Init(ObjectData data, string name)
 		{
-			model2 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_pier_a01.nja.sa1mdl");
-			meshes2 = ObjectHelper.GetMeshes(model2);
-			model1 = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_pier_b.nja.sa1mdl");
-			meshes1 = ObjectHelper.GetMeshes(model1);
+			models[0] = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_pier_a.nja.sa1mdl");
+			models[1] = ObjectHelper.LoadModel("stg01_beach/common/models/seaobj_pier_b.nja.sa1mdl");
+			meshes[0] = ObjectHelper.GetMeshes(models[0]);
+			meshes[1] = ObjectHelper.GetMeshes(models[1]);
 		}
 
 		public override string Name { get { return "Pier"; } }
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
-			if (item.Scale.Y % 2 == 0)
-			{
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				HitResult result = model2.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes2);
-				transform.Pop();
-				return result;
-			}
-			else
-			{
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				HitResult result = model1.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes1);
-				transform.Pop();
-				return result;
-			}
+			int modelID = (int)item.Scale.Y & 1;
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			HitResult result = models[modelID].CheckHit(Near, Far, Viewport, Projection, View, transform, meshes[modelID]);
+			transform.Pop();
+			return result;
 		}
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
-			if (item.Scale.Y % 2 == 0)
-			{
-				List<RenderInfo> result = new List<RenderInfo>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
-				if (item.Selected)
-					result.AddRange(model2.DrawModelTreeInvert(transform, meshes2));
-				transform.Pop();
-				return result;
-			}
-			else
-			{
-				List<RenderInfo> result = new List<RenderInfo>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
-				if (item.Selected)
-					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
-				transform.Pop();
-				return result;
-			}
+			int modelID = (int)item.Scale.Y & 1;
+			List<RenderInfo> result = new List<RenderInfo>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			result.AddRange(models[modelID].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes[modelID]));
+			if (item.Selected)
+				result.AddRange(models[modelID].DrawModelTreeInvert(transform, meshes[modelID]));
+			transform.Pop();
+			return result;
 		}
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
-			if (item.Scale.Y % 2 == 0)
-			{
-				List<ModelTransform> result = new List<ModelTransform>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
-				result.Add(new ModelTransform(model2, transform.Top));
-				transform.Pop();
-				return result;
-			}
-			else
-			{
-				List<ModelTransform> result = new List<ModelTransform>();
-				transform.Push();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
-				result.Add(new ModelTransform(model1, transform.Top));
-				transform.Pop();
-				return result;
-			}
+			int modelID = (int)item.Scale.Y & 1;
+			List<ModelTransform> result = new List<ModelTransform>();
+			transform.Push();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			result.Add(new ModelTransform(models[modelID], transform.Top));
+			transform.Pop();
+			return result;
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
-			if (item.Scale.Y % 2 == 0)
-			{
-				MatrixStack transform = new MatrixStack();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
-				return ObjectHelper.GetModelBounds(model2, transform);
-			}
-			else
-			{
-				MatrixStack transform = new MatrixStack();
-				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
-				return ObjectHelper.GetModelBounds(model1, transform);
-			}
+			int modelID = (int)item.Scale.Y & 1;
+			MatrixStack transform = new MatrixStack();
+			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation);
+			return ObjectHelper.GetModelBounds(models[modelID], transform);
 		}
 
 		public override Matrix GetHandleMatrix(SETItem item)
@@ -128,8 +82,11 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			return matrix;
 		}
 
-		private PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Variant", typeof(Item), "Extended", null, null, (o) => (PierVariants)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v)
+		private PropertySpec[] customProperties = new PropertySpec[]
+		{
+			new PropertySpec("Variant", typeof(PierVariants), "Extended", null, PierVariants.PierStraight, (o) => (PierVariants)Math.Min(Math.Max((int)o.Scale.Y & 1, 0), 1), (o, v) => o.Scale.Y = (int)o.Scale.Y - ((int)o.Scale.Y & 1) | (int)v),
+			new PropertySpec("Debris Speed X", typeof(float), "Extended", null, 0, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Debris Speed Z", typeof(float), "Extended", null, 0, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v)
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
