@@ -2141,8 +2141,7 @@ namespace SAModel
 			file.AddRange(anim);
 			file.Align(4);
 			file.RemoveRange(0xC, 4);
-			if (!nometa) file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
-			else file.InsertRange(0xC, ByteConverter.GetBytes(0));
+			file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
 			if (labels.Count > 0 && !nometa)
 			{
 				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
@@ -2161,8 +2160,8 @@ namespace SAModel
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			}
+			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;

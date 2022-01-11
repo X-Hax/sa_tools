@@ -615,8 +615,7 @@ namespace SAModel
             }
 			byte[] lvl = GetBytes(0x10, format, labels, out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-			if (!nometa) file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));
-			else file.AddRange(ByteConverter.GetBytes(0));
+			file.AddRange(ByteConverter.GetBytes(lvl.Length + 0x10));
 			file.AddRange(lvl);
 			if (!nometa)
 			{
@@ -665,8 +664,8 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes(item.Value.Length));
 					file.AddRange(item.Value);
 				}
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			}
+			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
