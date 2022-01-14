@@ -18,9 +18,11 @@ namespace SA2MessageFileEditor
 
 		public event EventHandler ValueChanged = delegate { };
 
-		public int Minutes { get { return (int)minutes.Value; } set { minutes.Value = value; ValueChanged(this, EventArgs.Empty); } }
-		public int Seconds { get { return (int)seconds.Value; } set { seconds.Value = value; ValueChanged(this, EventArgs.Empty); } }
-		public int Centiseconds { get { return (int)centiseconds.Value; } set { centiseconds.Value = value; ValueChanged(this, EventArgs.Empty); } }
+		bool updating = false;
+
+		public int Minutes { get { return (int)minutes.Value; } set { minutes.Value = value; if (!updating) ValueChanged(this, EventArgs.Empty); } }
+		public int Seconds { get { return (int)seconds.Value; } set { seconds.Value = value; if (!updating) ValueChanged(this, EventArgs.Empty); } }
+		public int Centiseconds { get { return (int)centiseconds.Value; } set { centiseconds.Value = value; if (!updating) ValueChanged(this, EventArgs.Empty); } }
 
 		[Browsable(false)]
 		public TimeSpan TimeSpan
@@ -31,9 +33,12 @@ namespace SA2MessageFileEditor
 			}
 			set
 			{
+				updating = true;
 				Centiseconds = (int)Math.Round(value.Milliseconds / 10.0, MidpointRounding.AwayFromZero);
 				Seconds = value.Seconds;
 				Minutes = (int)value.TotalMinutes;
+				updating = false;
+				ValueChanged(this, EventArgs.Empty);
 			}
 		}
 
@@ -76,6 +81,11 @@ namespace SA2MessageFileEditor
 			{
 				TotalCentiseconds = (uint)Math.Round(value * Frame, MidpointRounding.AwayFromZero);
 			}
+		}
+
+		private void minutes_ValueChanged(object sender, EventArgs e)
+		{
+			if (!updating) ValueChanged(this, EventArgs.Empty);
 		}
 	}
 

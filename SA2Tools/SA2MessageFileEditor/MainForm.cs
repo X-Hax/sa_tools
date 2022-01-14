@@ -121,8 +121,9 @@ namespace SA2MessageFileEditor
 			messages.Clear();
 			int address = 0;
 			int off = ByteConverter.ToInt32(fc, 0);
+			int end = off;
             bool hasEscape = false;
-			while (off != -1)
+			while (off != -1 && address < end)
 			{
                 string str = fc.GetCString(off, encoding);
                 messages.Add(Message.FromString(str));
@@ -130,6 +131,7 @@ namespace SA2MessageFileEditor
                     hasEscape = true; 
                 address += 4;
 				off = ByteConverter.ToInt32(fc, address);
+				end = Math.Min(off, end);
 			}
             textOnlyToolStripMenuItem.Checked = !hasEscape;
 			UpdateMessageSelect();
