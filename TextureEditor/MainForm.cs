@@ -1594,11 +1594,15 @@ namespace TextureEditor
 					int rowsize_stored = rowsize - currentPalette.StartColor;
 					int numrows = currentPalette.Colors.Count / rowsize_stored;
 					comboBoxCurrentPaletteBank.Items.Clear();
+					int maxbanks = currentPalette.Colors.Count / rowsize;
+					numericUpDownStartBank.Maximum = maxbanks - 1;
+					numericUpDownStartBank.Value = Math.Min(currentPalette.StartBank, numericUpDownStartBank.Maximum);
+					numericUpDownStartColor.Maximum = rowsize - 1;
+					numericUpDownStartColor.Value = Math.Min(currentPalette.StartColor, numericUpDownStartColor.Maximum);
 					for (int i = 0; i < numrows; i++)
-						comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
-					comboBoxCurrentPaletteBank.SelectedIndex = paletteSet;
-					numericUpDownStartBank.Value = currentPalette.StartBank;
-					numericUpDownStartColor.Value = currentPalette.StartColor;
+						if (currentPalette.StartBank + i < maxbanks)
+							comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
+					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = Math.Min(comboBoxCurrentPaletteBank.Items.Count-1, paletteSet);
 					palettePreview.Image = GeneratePalettePreview();
 					labelPaletteFormat.Text = currentPalette.pixelCodec.ToString() + " / " + currentPalette.Colors.Count.ToString() + " colors";
 					labelPaletteFormat.Show();
@@ -1677,7 +1681,7 @@ namespace TextureEditor
 		private void numericUpDownStartColor_ValueChanged(object sender, EventArgs e)
 		{
 			if (currentPalette != null)
-				currentPalette.StartColor = (short)Math.Min(numericUpDownStartColor.Value, currentPalette.Colors.Count);
+				currentPalette.StartColor = (short)Math.Min(numericUpDownStartColor.Value, currentPalette.Colors.Count - numericUpDownStartColor.Value);
 		}
 
 		private void LoadPaletteDialog()
