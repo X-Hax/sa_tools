@@ -155,10 +155,19 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
                     case 3:
                         if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is a motion", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));
                         if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + ".bin", chunk);
-                        NJS_MOTION mot = ProcessMotion(chunk, verbose, curaddr + 8);
-                        //if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mot));
-                        animlist.Add(i, mot);
-                        sectionlist.Add(i, splitfilenames[i] + ".saanim");
+						string desc = null;
+						if (splitfilenames[i].Contains("|"))
+						{
+							metadata = splitfilenames[i].Split('|'); // Filename|Description
+							outFilename = metadata[0];
+							desc = metadata[1];
+						}
+						else outFilename = splitfilenames[i];
+						NJS_MOTION mot = ProcessMotion(chunk, verbose, curaddr + 8);
+						mot.Description = desc;
+						//if (extractchunks) File.WriteAllBytes(i.ToString("D2", NumberFormatInfo.InvariantInfo) + "_p.bin", GetSections(mot));
+						animlist.Add(i, mot);
+                        sectionlist.Add(i, outFilename + ".saanim");
                         break;
                     default:
                         if (verbose > 0) Console.WriteLine("\nSection {0} at {1} is an unknown type", i.ToString("D2", NumberFormatInfo.InvariantInfo), curaddr.ToString("X"));

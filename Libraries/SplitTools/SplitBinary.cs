@@ -474,7 +474,8 @@ namespace SplitTools.Split
                     {
                         ModelFormat modelfmt_act = data.CustomProperties.ContainsKey("format") ? (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]) : modelfmt_def;
                         NJS_ACTION ani = new NJS_ACTION(datafile, address, imageBase, modelfmt_act, labels, new Dictionary<int, Attach>());
-                        if (!labels.ContainsValue(ani.Name) && !nolabel) ani.Name = filedesc;
+                        if (!labels.ContainsValue(ani.Name) && !nolabel)
+							ani.Animation.Description = itemName;
                         if (customProperties.ContainsKey("numparts"))
                             ani.Animation.ModelParts = int.Parse(customProperties["numparts"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
                         if (ani.Animation.ModelParts == 0)
@@ -504,14 +505,12 @@ namespace SplitTools.Split
                     }
                     if (customProperties.ContainsKey("shortrot"))
                     {
-                        NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels, bool.Parse(customProperties["shortrot"]), numverts);
-                        if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
+                        NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels, bool.Parse(customProperties["shortrot"]), numverts) { Description = itemName };
                         mot.Save(fileOutputPath, nometa);
                     }
                     else
                     {
-                        NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels, false, numverts);
-                        if (!labels.ContainsKey(address) && !nolabel) mot.Name = filedesc;
+                        NJS_MOTION mot = new NJS_MOTION(datafile, address, imageBase, numparts, labels, false, numverts) { Description = itemName };
                         mot.Save(fileOutputPath, nometa);
                     }
                     break;

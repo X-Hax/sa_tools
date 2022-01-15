@@ -87,6 +87,7 @@ namespace SAModel
 
 		public int Frames { get; set; }
 		public string Name { get; set; }
+		public string Description { get; set; }
 		public string MdataName { get; set; }
 		public int ModelParts { get; set; }
 		public InterpolationMode InterpolationMode { get; set; }
@@ -649,7 +650,7 @@ namespace SAModel
 		}
 
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
-		{
+		{			
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
@@ -662,6 +663,7 @@ namespace SAModel
 					ByteConverter.BigEndian = be;
 					throw new FormatException("Not a valid SAANIM file.");
 				}
+				string description = null;
 				int aniaddr = ByteConverter.ToInt32(file, 8);
 				Dictionary<int, string> labels = new Dictionary<int, string>();
 				int tmpaddr = BitConverter.ToInt32(file, 0xC);
@@ -689,6 +691,9 @@ namespace SAModel
 										chunkaddr += 8;
 									}
 									break;
+								case ChunkTypes.Description:
+									description = file.GetCString(tmpaddr);
+									break;
 								case ChunkTypes.End:
 									finished = true;
 									break;
@@ -709,7 +714,7 @@ namespace SAModel
 					ByteConverter.BigEndian = be;
 					throw new NotImplementedException("Cannot open version 0 animations without a model!");
 				}
-				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0);
+				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0) { Description = description };
 				ByteConverter.BigEndian = be;
 				return anim;
 			}
@@ -2160,6 +2165,16 @@ namespace SAModel
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
+				if (!string.IsNullOrEmpty(Description))
+				{
+					List<byte> chunkd = new List<byte>(Description.Length + 1);
+					chunkd.AddRange(Encoding.UTF8.GetBytes(Description));
+					chunkd.Add(0);
+					chunkd.Align(4);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
+					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
+					file.AddRange(chunkd);
+				}
 			}
 			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
@@ -2502,6 +2517,7 @@ namespace SAModel
 	public enum ChunkTypes : uint
 	{
 		Label = 0x4C42414C,
+		Description = 0x43534544,
 		End = 0x444E45
 	}
 } 

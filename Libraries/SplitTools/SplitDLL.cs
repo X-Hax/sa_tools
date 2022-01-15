@@ -490,6 +490,7 @@ namespace SplitTools.SplitDLL
 									ptr = (int)(ptr - imageBase);
 									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt_def, new Dictionary<int, Attach>());
 									string nm = item.Key + "_" + i;
+									string metadesc = "";
 									if (nolabel) 
 										nm = ani.Animation.Name;
 									bool saveani = false;
@@ -527,8 +528,11 @@ namespace SplitTools.SplitDLL
 										outputFN = anifiles[nm];
 									if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_a"))
 									{
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
+											metadesc = data.CustomProperties["meta" + i.ToString() + "_a"];
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
+										ani.Animation.Description = metadesc;
 										saveani = true;
 									}
 									
