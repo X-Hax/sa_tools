@@ -173,7 +173,7 @@ namespace SAModel.DataToolbox
             Console.WriteLine("Finding relevant split INI files for {0} in {1}", Path.GetFileName(file), splitTemplate.GameInfo.DataFolder);
             foreach (Templates.SplitEntry entry in splitTemplate.SplitEntries)
             {
-                if (Path.GetFileName(entry.SourceFile).ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant())
+                if ((Path.GetFileName(entry.SourceFile).ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant()) || (Path.GetFileName(entry.SourceFile).ToLowerInvariant() == Path.GetFileName(Path.ChangeExtension(file, ".prs")).ToLowerInvariant()))
                 {
                     string inifilename = Path.Combine(templateFolder, splitTemplate.GameInfo.DataFolder, entry.IniFile + ".ini");
                     if (dllmode)
@@ -187,8 +187,9 @@ namespace SAModel.DataToolbox
                     }
                     else
                     {
+						string filewithoutprs = Path.ChangeExtension(file, ".bin");
                         SplitTools.IniData inifile = IniSerializer.Deserialize<SplitTools.IniData>(inifilename);
-                        if (inifile.DataFilename != null && inifile.DataFilename.ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant())
+						if (inifile.DataFilename != null && (inifile.DataFilename.ToLowerInvariant() == Path.GetFileName(file).ToLowerInvariant() || inifile.DataFilename.ToLowerInvariant() == Path.GetFileName(filewithoutprs).ToLowerInvariant()))
                         {
                             relevantini.Add(Path.GetFullPath(inifilename));
                             Console.WriteLine("Found split file {0}", inifilename);
