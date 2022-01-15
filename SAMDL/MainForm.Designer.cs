@@ -152,6 +152,7 @@ namespace SAModel.SAMDL
             this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.cameraAngleLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.cameraModeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.animDescriptionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.MessageTimer = new System.Windows.Forms.Timer(this.components);
@@ -669,7 +670,7 @@ namespace SAModel.SAMDL
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(777, 615);
+            this.RenderPanel.Size = new System.Drawing.Size(774, 615);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
@@ -680,6 +681,7 @@ namespace SAModel.SAMDL
             // 
             // splitContainer1
             // 
+            this.splitContainer1.Cursor = System.Windows.Forms.Cursors.VSplit;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.Location = new System.Drawing.Point(0, 67);
@@ -695,7 +697,7 @@ namespace SAModel.SAMDL
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(1107, 615);
-            this.splitContainer1.SplitterDistance = 777;
+            this.splitContainer1.SplitterDistance = 774;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 2;
             // 
@@ -706,7 +708,7 @@ namespace SAModel.SAMDL
             this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
             this.BackgroundPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BackgroundPanel.Name = "BackgroundPanel";
-            this.BackgroundPanel.Size = new System.Drawing.Size(777, 615);
+            this.BackgroundPanel.Size = new System.Drawing.Size(774, 615);
             this.BackgroundPanel.TabIndex = 2;
             // 
             // splitContainer2
@@ -724,7 +726,7 @@ namespace SAModel.SAMDL
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(325, 615);
+            this.splitContainer2.Size = new System.Drawing.Size(328, 615);
             this.splitContainer2.SplitterDistance = 302;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 16;
@@ -736,7 +738,7 @@ namespace SAModel.SAMDL
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(325, 302);
+            this.treeView1.Size = new System.Drawing.Size(328, 302);
             this.treeView1.TabIndex = 1;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -748,7 +750,7 @@ namespace SAModel.SAMDL
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid1.Size = new System.Drawing.Size(325, 308);
+            this.propertyGrid1.Size = new System.Drawing.Size(328, 308);
             this.propertyGrid1.TabIndex = 14;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -1302,6 +1304,7 @@ namespace SAModel.SAMDL
             this.cameraAngleLabel,
             this.cameraModeLabel,
             this.animNameLabel,
+            this.animDescriptionLabel,
             this.animFrameLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 682);
             this.statusStrip1.Name = "statusStrip1";
@@ -1325,6 +1328,13 @@ namespace SAModel.SAMDL
             // 
             this.cameraModeLabel.Name = "cameraModeLabel";
             this.cameraModeLabel.Size = new System.Drawing.Size(0, 19);
+            // 
+            // animDescriptionLabel
+            // 
+            this.animDescriptionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.animDescriptionLabel.Name = "animDescriptionLabel";
+            this.animDescriptionLabel.Size = new System.Drawing.Size(106, 19);
+            this.animDescriptionLabel.Text = "Description: None";
             // 
             // animNameLabel
             // 
@@ -1550,5 +1560,6 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripButton buttonModelList;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
 		private System.Windows.Forms.ToolStripButton buttonResetFrame;
+		private System.Windows.Forms.ToolStripStatusLabel animDescriptionLabel;
 	}
 }

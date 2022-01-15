@@ -1165,6 +1165,8 @@ namespace SAModel.SAMDL
 				cameraModeLabel.Text = "";
 			}
 			animNameLabel.Text = $"Animation: {animation?.Name ?? "None"}";
+			animDescriptionLabel.Text = animation?.Description ?? "";
+			animDescriptionLabel.BorderSides = animDescriptionLabel.Text == "" ? ToolStripStatusLabelBorderSides.None : ToolStripStatusLabelBorderSides.Left;
 			animFrameLabel.Text = $"Frame: {animframe.ToString("0.00")}";
 			statusStrip1.Update();
 		}
