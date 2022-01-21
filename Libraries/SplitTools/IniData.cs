@@ -2314,19 +2314,40 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address)
 		{
-			Flags = (SA2CharacterFlags)file[address++];
-			Constant1 = file[address++];
-			Constant2 = file[address++];
-			DeathFlag = file[address++];
+			if (ByteConverter.BigEndian)
+			{
+				DeathFlag = file[address++];
+				Constant2 = file[address++];
+				Constant1 = file[address++];
+				Flags = (SA2CharacterFlags)file[address++];
+			}
+			else
+			{
+				Flags = (SA2CharacterFlags)file[address++];
+				Constant1 = file[address++];
+				Constant2 = file[address++];
+				DeathFlag = file[address++];
+			}
 		}
 
 		public SA2BDeathZoneFlags(byte[] file, int address, string filename)
 		{
-			Flags = (SA2CharacterFlags)file[address++];
-			Constant1 = file[address++];
-			Constant2 = file[address++];
-			DeathFlag = file[address++];
-			Filename = filename;
+			if (ByteConverter.BigEndian)
+			{
+				DeathFlag = file[address++];
+				Constant2 = file[address++];
+				Constant1 = file[address++];
+				Flags = (SA2CharacterFlags)file[address++];
+				Filename = filename;
+			}
+			else
+			{
+				Flags = (SA2CharacterFlags)file[address++];
+				Constant1 = file[address++];
+				Constant2 = file[address++];
+				DeathFlag = file[address++];
+				Filename = filename;
+			}
 		}
 
 		[IniAlwaysInclude]
@@ -2342,11 +2363,11 @@ namespace SplitTools
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>(Size)
-		{
+		{ 
 				(byte)Flags,
 				Constant1,
 				Constant2,
-				DeathFlag
+				DeathFlag,
 		};
 			return ByteConverter.GetBytes((int)Flags);
 		}
