@@ -20,7 +20,8 @@ namespace SAModel.SAMDL
 		{
 			// Defaults
 			comboBoxBinaryFileType.Enabled = checkBoxBigEndian.Enabled = true;
-			switch (CheckBinaryFile(filename).Key)
+			var knownfile = CheckBinaryFile(filename);
+			switch (knownfile.Key)
 			{
 				case BinaryModelFileType.SA2MDL:
 					radioButtonSA2MDL.Checked = true;
@@ -77,6 +78,7 @@ namespace SAModel.SAMDL
 					comboBoxModelFormat.SelectedIndex = 0;
 					break;
 			}
+			numericUpDownKey.Value = knownfile.Value;
 		}
 
 		private enum BinaryModelFileType
