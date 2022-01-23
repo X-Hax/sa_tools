@@ -560,7 +560,6 @@ namespace SplitTools.SplitDLL
 										string mfn = Path.ChangeExtension(fn, modelext_def);
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
-                                            outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
                                             mfn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
 											
 											// Metadata for SAMDL project mode
