@@ -56,5 +56,6 @@
   <SplitEntry SourceFile="SONICADV/EV0006.PRS" IniFile="EV0006" CmnName="Event Models" />
   <SplitEntry SourceFile="SONICADV/EV002B.PRS" IniFile="EV002B" CmnName="Event Models" />
   <SplitEntry SourceFile="SONICADV/EV0030.PRS" IniFile="EV0030" CmnName="Event Models" />
+  <SplitEntry SourceFile="SONICADV/EV0064.PRS" IniFile="EV0064" CmnName="Event Models" />
   <SplitEntry SourceFile="SONICADV/EV00DC.PRS" IniFile="EV00DC" CmnName="Event Models" />
 </SplitTemplate>
