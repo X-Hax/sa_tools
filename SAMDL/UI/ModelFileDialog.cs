@@ -100,11 +100,6 @@ namespace SAModel.SAMDL
 
 		private static KeyValuePair<BinaryModelFileType, uint> CheckBinaryFile(string path)
 		{
-			// Events
-			if (path.Length > 3 && path.Substring(0, 3).Equals("EV0", StringComparison.OrdinalIgnoreCase))
-				return new KeyValuePair<BinaryModelFileType, uint>(BinaryModelFileType.SA1Event, 0xCB80000);
-			else if (path.Length > 2 && path.Substring(0, 2).Equals("E0", StringComparison.OrdinalIgnoreCase))
-				return new KeyValuePair<BinaryModelFileType, uint>(BinaryModelFileType.SA2Event, 0xC600000);
 			// Common extensions
 			switch (Path.GetExtension(path).ToLowerInvariant())
 			{
@@ -116,7 +111,14 @@ namespace SAModel.SAMDL
 					return new KeyValuePair<BinaryModelFileType, uint>(BinaryModelFileType.REL, 0xC900000);
 			}
 			// Known filenames
-			switch (Path.GetFileNameWithoutExtension(path).ToUpperInvariant())
+			string filename = Path.GetFileNameWithoutExtension(path).ToUpperInvariant();
+			// Events
+			if (filename.Contains("EV") && filename.Length == 6)
+				return new KeyValuePair<BinaryModelFileType, uint>(BinaryModelFileType.SA1Event, 0xCB80000);
+			else if (filename.Contains("E0") && filename.Length == 5)
+				return new KeyValuePair<BinaryModelFileType, uint>(BinaryModelFileType.SA2Event, 0xC600000);
+			// Other known files
+			switch (filename)
 			{
 				case "1ST_READ":
 					return new KeyValuePair<BinaryModelFileType, uint>(BinaryModelFileType.DC_1STREAD, 0x8C010000);
