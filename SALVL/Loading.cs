@@ -288,7 +288,6 @@ namespace SAModel.SALVL
 					land = new LandTable(datafile, (int)bd.numericAddress.Value, key, fmt);
 					break;
 			}
-			InitializeDirect3D();
 			selectedItems.Clear();
 			sceneGraphControl1.InitSceneControl(selectedItems);
 			PointHelper.Instances.Clear();

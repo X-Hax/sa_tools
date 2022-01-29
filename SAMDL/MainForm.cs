@@ -282,19 +282,47 @@ namespace SAModel.SAMDL
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
 			settingsfile = Settings_SAMDL.Load();
-			EditorOptions.FillColor = Color.FromArgb(settingsfile.BackgroundColor);
+			EditorOptions.FillColor = settingsfile.BackgroundColor;
             
             if (settingsfile.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
-			EditorOptions.RenderDrawDistance = settingsfile.DrawDistance;			
+			EditorOptions.RenderDrawDistance = settingsfile.DrawDistanceGeneral;			
 			EditorOptions.Initialize(d3ddevice);
 			cam.MoveSpeed = settingsfile.CamMoveSpeed;
 			cam.ModifierKey = settingsfile.CameraModifier;
 			animspeed = settingsfile.AnimSpeed;
 			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
+			EditorOptions.EnableSpecular = settingsfile.EnableSpecular;
+			EditorOptions.KeyLight = new Light()
+			{
+				Type = LightType.Directional,
+				Range = 0,
+				Direction = settingsfile.KeyLightDirection.ToVector3(),
+				Diffuse = settingsfile.KeyLightDiffuse.ToRawColor4(),
+				Ambient = settingsfile.KeyLightAmbient.ToRawColor4(),
+				Specular = settingsfile.KeyLightSpecular.ToRawColor4(),
+			};
+			EditorOptions.FillLight = new Light()
+			{
+				Type = LightType.Directional,
+				Range = 0,
+				Direction = settingsfile.FillLightDirection.ToVector3(),
+				Diffuse = settingsfile.FillLightDiffuse.ToRawColor4(),
+				Ambient = settingsfile.FillLightAmbient.ToRawColor4(),
+				Specular = settingsfile.FillLightSpecular.ToRawColor4(),
+			};
+			EditorOptions.BackLight = new Light()
+			{
+				Type = LightType.Directional,
+				Range = 0,
+				Direction = settingsfile.BackLightDirection.ToVector3(),
+				Diffuse = settingsfile.BackLightDiffuse.ToRawColor4(),
+				Ambient = settingsfile.BackLightAmbient.ToRawColor4(),
+				Specular = settingsfile.BackLightSpecular.ToRawColor4(),
+			};
 			actionList = ActionMappingList.Load(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SAMDL_keys.ini"),
 				DefaultActionList.DefaultActionMapping);
 
@@ -716,10 +744,6 @@ namespace SAModel.SAMDL
 			}
 			AddModelToLibrary(model, false);
 			unsaved = false;
-			EditorOptions.BackLightR = settingsfile.BackLightAmbientR;
-			EditorOptions.BackLightG = settingsfile.BackLightAmbientG;
-			EditorOptions.BackLightB = settingsfile.BackLightAmbientB;
-			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
 		}
 
 		private void LoadBinFile(byte[] file)
@@ -1184,8 +1208,9 @@ namespace SAModel.SAMDL
 			d3ddevice.SetRenderState(RenderState.ZEnable, true);
 			d3ddevice.BeginScene();
 
-			//all drawings after this line
+			// All drawings after this line
 			EditorOptions.RenderStateCommonSetup(d3ddevice);
+			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
 
 			MatrixStack transform = new MatrixStack();
 			if (showModelToolStripMenuItem.Checked)
@@ -1669,26 +1694,15 @@ namespace SAModel.SAMDL
 					break;
 
 				case ("Brighten Ambient"):
-					EditorOptions.BackLightR = Math.Min(1.0f, EditorOptions.BackLightR + 0.1f);
-					EditorOptions.BackLightG = Math.Min(1.0f, EditorOptions.BackLightG + 0.1f);
-					EditorOptions.BackLightB = Math.Min(1.0f, EditorOptions.BackLightB + 0.1f);
+					EditorOptions.AdjustBackLightBrightness(0.1f);
 					EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
-					settingsfile.BackLightAmbientR = EditorOptions.BackLightR;
-					settingsfile.BackLightAmbientG = EditorOptions.BackLightG;
-					settingsfile.BackLightAmbientB = EditorOptions.BackLightB;
 					osd.UpdateOSDItem("Brighten Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
 
 				case ("Darken Ambient"):
-					EditorOptions.BackLightR = Math.Min(1.0f, EditorOptions.BackLightR - 0.1f);
-					EditorOptions.BackLightG = Math.Min(1.0f, EditorOptions.BackLightG - 0.1f);
-					EditorOptions.BackLightB = Math.Min(1.0f, EditorOptions.BackLightB - 0.1f);
+					EditorOptions.AdjustBackLightBrightness(-0.1f);
 					EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Default);
-					settingsfile.BackLightAmbientR = EditorOptions.BackLightR;
-					settingsfile.BackLightAmbientG = EditorOptions.BackLightG;
-					settingsfile.BackLightAmbientB = EditorOptions.BackLightB;
-					osd.UpdateOSDItem("Darken Ambient", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
 					draw = true;
 					break;
 				default:
@@ -2156,9 +2170,25 @@ namespace SAModel.SAMDL
 
 		void optionsEditor_FormUpdated()
 		{
-			settingsfile.DrawDistance = EditorOptions.RenderDrawDistance;
+			settingsfile.DrawDistanceGeneral = EditorOptions.RenderDrawDistance;
 			settingsfile.CameraModifier = cam.ModifierKey;
-			settingsfile.BackgroundColor = EditorOptions.FillColor.ToArgb();
+			settingsfile.BackgroundColor = EditorOptions.FillColor;
+			settingsfile.EnableSpecular = EditorOptions.EnableSpecular;
+			// Key Light
+			settingsfile.KeyLightDirection = new Vertex(EditorOptions.KeyLight.Direction.X, EditorOptions.KeyLight.Direction.Y, EditorOptions.KeyLight.Direction.Z);
+			settingsfile.KeyLightAmbient = Color.FromArgb((int)(EditorOptions.KeyLight.Ambient.R * 255.0f), (int)(EditorOptions.KeyLight.Ambient.G * 255.0f), (int)(EditorOptions.KeyLight.Ambient.B * 255.0f));
+			settingsfile.KeyLightDiffuse = Color.FromArgb((int)(EditorOptions.KeyLight.Diffuse.R * 255.0f), (int)(EditorOptions.KeyLight.Diffuse.G * 255.0f), (int)(EditorOptions.KeyLight.Diffuse.B * 255.0f));
+			settingsfile.KeyLightSpecular = Color.FromArgb((int)(EditorOptions.KeyLight.Specular.R * 255.0f), (int)(EditorOptions.KeyLight.Specular.G * 255.0f), (int)(EditorOptions.KeyLight.Specular.B * 255.0f));
+			// Fill Light
+			settingsfile.FillLightDirection = new Vertex(EditorOptions.FillLight.Direction.X, EditorOptions.FillLight.Direction.Y, EditorOptions.FillLight.Direction.Z);
+			settingsfile.FillLightAmbient = Color.FromArgb((int)(EditorOptions.FillLight.Ambient.R * 255.0f), (int)(EditorOptions.FillLight.Ambient.G * 255.0f), (int)(EditorOptions.FillLight.Ambient.B * 255.0f));
+			settingsfile.FillLightDiffuse = Color.FromArgb((int)(EditorOptions.FillLight.Diffuse.R * 255.0f), (int)(EditorOptions.FillLight.Diffuse.G * 255.0f), (int)(EditorOptions.FillLight.Diffuse.B * 255.0f));
+			settingsfile.FillLightSpecular = Color.FromArgb((int)(EditorOptions.FillLight.Specular.R * 255.0f), (int)(EditorOptions.FillLight.Specular.G * 255.0f), (int)(EditorOptions.FillLight.Specular.B * 255.0f));
+			// Back Light
+			settingsfile.BackLightDirection = new Vertex(EditorOptions.BackLight.Direction.X, EditorOptions.BackLight.Direction.Y, EditorOptions.BackLight.Direction.Z);
+			settingsfile.BackLightAmbient = Color.FromArgb((int)(EditorOptions.BackLight.Ambient.R * 255.0f), (int)(EditorOptions.BackLight.Ambient.G * 255.0f), (int)(EditorOptions.BackLight.Ambient.B * 255.0f));
+			settingsfile.BackLightDiffuse = Color.FromArgb((int)(EditorOptions.BackLight.Diffuse.R * 255.0f), (int)(EditorOptions.BackLight.Diffuse.G * 255.0f), (int)(EditorOptions.BackLight.Diffuse.B * 255.0f));
+			settingsfile.BackLightSpecular = Color.FromArgb((int)(EditorOptions.BackLight.Specular.R * 255.0f), (int)(EditorOptions.BackLight.Specular.G * 255.0f), (int)(EditorOptions.BackLight.Specular.B * 255.0f));
 			NeedRedraw = true;
 		}
 
@@ -3862,7 +3892,7 @@ namespace SAModel.SAMDL
             modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
         }
 
-		void panel1_MouseWheel(object sender, MouseEventArgs e)
+		private void panel1_MouseWheel(object sender, MouseEventArgs e)
 		{
 			if (!loaded || !RenderPanel.Focused)
 				return;

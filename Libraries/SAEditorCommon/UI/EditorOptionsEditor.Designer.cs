@@ -69,6 +69,45 @@
             this.radioButtonLook = new System.Windows.Forms.RadioButton();
             this.radioButtonMove = new System.Windows.Forms.RadioButton();
             this.labelCameraModifier = new System.Windows.Forms.Label();
+            this.tabPageLights = new System.Windows.Forms.TabPage();
+            this.checkBoxEnableSpecular = new System.Windows.Forms.CheckBox();
+            this.buttonResetLights = new System.Windows.Forms.Button();
+            this.label13 = new System.Windows.Forms.Label();
+            this.comboBoxLightType = new System.Windows.Forms.ComboBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.numericUpDownDiffuseB = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownDiffuseG = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownDiffuseR = new System.Windows.Forms.NumericUpDown();
+            this.pictureBoxDiffuse = new System.Windows.Forms.PictureBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.numericUpDownAmbientB = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownAmbientG = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownAmbientR = new System.Windows.Forms.NumericUpDown();
+            this.pictureBoxAmbient = new System.Windows.Forms.PictureBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.trackBarLightY = new System.Windows.Forms.TrackBar();
+            this.labelLightZ = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.labelLightY = new System.Windows.Forms.Label();
+            this.trackBarLightZ = new System.Windows.Forms.TrackBar();
+            this.labelLightX = new System.Windows.Forms.Label();
+            this.trackBarLightX = new System.Windows.Forms.TrackBar();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDownSpecularB = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownSpecularG = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownSpecularR = new System.Windows.Forms.NumericUpDown();
+            this.pictureBoxSpecular = new System.Windows.Forms.PictureBox();
             this.groupBoxRenderOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxBackgroundColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDrawDistanceGeneral)).BeginInit();
@@ -82,6 +121,26 @@
             this.groupBoxActions.SuspendLayout();
             this.groupBoxKeys.SuspendLayout();
             this.groupBoxDescription.SuspendLayout();
+            this.tabPageLights.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDiffuseB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDiffuseG)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDiffuseR)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDiffuse)).BeginInit();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAmbientB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAmbientG)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAmbientR)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAmbient)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLightY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLightZ)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLightX)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSpecularB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSpecularG)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSpecularR)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSpecular)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBoxRenderOptions
@@ -344,6 +403,7 @@
             this.tabControlOptions.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tabControlOptions.Controls.Add(this.tabPageDisplay);
             this.tabControlOptions.Controls.Add(this.tabPageControl);
+            this.tabControlOptions.Controls.Add(this.tabPageLights);
             this.tabControlOptions.Location = new System.Drawing.Point(0, 0);
             this.tabControlOptions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControlOptions.Name = "tabControlOptions";
@@ -413,7 +473,7 @@
             this.listBoxActions.Location = new System.Drawing.Point(7, 22);
             this.listBoxActions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listBoxActions.Name = "listBoxActions";
-            this.listBoxActions.Size = new System.Drawing.Size(234, 214);
+            this.listBoxActions.Size = new System.Drawing.Size(234, 199);
             this.listBoxActions.TabIndex = 2;
             this.listBoxActions.SelectedIndexChanged += new System.EventHandler(this.listBoxActions_SelectedIndexChanged);
             // 
@@ -582,6 +642,492 @@
             this.labelCameraModifier.TabIndex = 14;
             this.labelCameraModifier.Text = "Camera Modifier:";
             // 
+            // tabPageLights
+            // 
+            this.tabPageLights.Controls.Add(this.checkBoxEnableSpecular);
+            this.tabPageLights.Controls.Add(this.buttonResetLights);
+            this.tabPageLights.Controls.Add(this.label13);
+            this.tabPageLights.Controls.Add(this.comboBoxLightType);
+            this.tabPageLights.Controls.Add(this.groupBox5);
+            this.tabPageLights.Controls.Add(this.groupBox3);
+            this.tabPageLights.Controls.Add(this.groupBox4);
+            this.tabPageLights.Controls.Add(this.groupBox1);
+            this.tabPageLights.Location = new System.Drawing.Point(4, 27);
+            this.tabPageLights.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPageLights.Name = "tabPageLights";
+            this.tabPageLights.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPageLights.Size = new System.Drawing.Size(603, 300);
+            this.tabPageLights.TabIndex = 2;
+            this.tabPageLights.Text = "Default Lighting";
+            this.tabPageLights.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxEnableSpecular
+            // 
+            this.checkBoxEnableSpecular.AutoSize = true;
+            this.checkBoxEnableSpecular.Location = new System.Drawing.Point(7, 45);
+            this.checkBoxEnableSpecular.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxEnableSpecular.Name = "checkBoxEnableSpecular";
+            this.checkBoxEnableSpecular.Size = new System.Drawing.Size(109, 19);
+            this.checkBoxEnableSpecular.TabIndex = 25;
+            this.checkBoxEnableSpecular.Text = "Enable Specular";
+            this.checkBoxEnableSpecular.UseVisualStyleBackColor = true;
+            this.checkBoxEnableSpecular.CheckedChanged += new System.EventHandler(this.checkBoxEnableSpecular_CheckedChanged);
+            // 
+            // buttonResetLights
+            // 
+            this.buttonResetLights.Location = new System.Drawing.Point(203, 13);
+            this.buttonResetLights.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonResetLights.Name = "buttonResetLights";
+            this.buttonResetLights.Size = new System.Drawing.Size(75, 23);
+            this.buttonResetLights.TabIndex = 24;
+            this.buttonResetLights.Text = "Reset";
+            this.buttonResetLights.UseVisualStyleBackColor = true;
+            this.buttonResetLights.Click += new System.EventHandler(this.buttonResetLights_Click);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(5, 15);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(64, 15);
+            this.label13.TabIndex = 23;
+            this.label13.Text = "Light Type:";
+            // 
+            // comboBoxLightType
+            // 
+            this.comboBoxLightType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLightType.FormattingEnabled = true;
+            this.comboBoxLightType.Items.AddRange(new object[] {
+            "Fill Light",
+            "Key Light",
+            "Back Light"});
+            this.comboBoxLightType.Location = new System.Drawing.Point(74, 13);
+            this.comboBoxLightType.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBoxLightType.Name = "comboBoxLightType";
+            this.comboBoxLightType.Size = new System.Drawing.Size(123, 23);
+            this.comboBoxLightType.TabIndex = 22;
+            this.comboBoxLightType.SelectedIndexChanged += new System.EventHandler(this.comboBoxLightType_SelectedIndexChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label1);
+            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.numericUpDownDiffuseB);
+            this.groupBox5.Controls.Add(this.numericUpDownDiffuseG);
+            this.groupBox5.Controls.Add(this.numericUpDownDiffuseR);
+            this.groupBox5.Controls.Add(this.pictureBoxDiffuse);
+            this.groupBox5.Location = new System.Drawing.Point(266, 74);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Size = new System.Drawing.Size(163, 102);
+            this.groupBox5.TabIndex = 20;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Diffuse Color";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 77);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(17, 15);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "B:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(11, 49);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(18, 15);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "G:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 25);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(17, 15);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "R:";
+            // 
+            // numericUpDownDiffuseB
+            // 
+            this.numericUpDownDiffuseB.Location = new System.Drawing.Point(34, 73);
+            this.numericUpDownDiffuseB.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownDiffuseB.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownDiffuseB.Name = "numericUpDownDiffuseB";
+            this.numericUpDownDiffuseB.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownDiffuseB.TabIndex = 10;
+            this.numericUpDownDiffuseB.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // numericUpDownDiffuseG
+            // 
+            this.numericUpDownDiffuseG.Location = new System.Drawing.Point(34, 48);
+            this.numericUpDownDiffuseG.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownDiffuseG.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownDiffuseG.Name = "numericUpDownDiffuseG";
+            this.numericUpDownDiffuseG.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownDiffuseG.TabIndex = 9;
+            this.numericUpDownDiffuseG.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // numericUpDownDiffuseR
+            // 
+            this.numericUpDownDiffuseR.Location = new System.Drawing.Point(34, 23);
+            this.numericUpDownDiffuseR.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownDiffuseR.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownDiffuseR.Name = "numericUpDownDiffuseR";
+            this.numericUpDownDiffuseR.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownDiffuseR.TabIndex = 8;
+            this.numericUpDownDiffuseR.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // pictureBoxDiffuse
+            // 
+            this.pictureBoxDiffuse.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxDiffuse.Location = new System.Drawing.Point(110, 43);
+            this.pictureBoxDiffuse.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxDiffuse.Name = "pictureBoxDiffuse";
+            this.pictureBoxDiffuse.Size = new System.Drawing.Size(33, 33);
+            this.pictureBoxDiffuse.TabIndex = 1;
+            this.pictureBoxDiffuse.TabStop = false;
+            this.pictureBoxDiffuse.Click += new System.EventHandler(this.pictureBoxDiffuse_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label10);
+            this.groupBox3.Controls.Add(this.label11);
+            this.groupBox3.Controls.Add(this.label12);
+            this.groupBox3.Controls.Add(this.numericUpDownAmbientB);
+            this.groupBox3.Controls.Add(this.numericUpDownAmbientG);
+            this.groupBox3.Controls.Add(this.numericUpDownAmbientR);
+            this.groupBox3.Controls.Add(this.pictureBoxAmbient);
+            this.groupBox3.Location = new System.Drawing.Point(266, 180);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Size = new System.Drawing.Size(163, 102);
+            this.groupBox3.TabIndex = 20;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Ambient Color";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(13, 74);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(17, 15);
+            this.label10.TabIndex = 13;
+            this.label10.Text = "B:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(11, 49);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(18, 15);
+            this.label11.TabIndex = 12;
+            this.label11.Text = "G:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 25);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(17, 15);
+            this.label12.TabIndex = 11;
+            this.label12.Text = "R:";
+            // 
+            // numericUpDownAmbientB
+            // 
+            this.numericUpDownAmbientB.Location = new System.Drawing.Point(34, 73);
+            this.numericUpDownAmbientB.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownAmbientB.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownAmbientB.Name = "numericUpDownAmbientB";
+            this.numericUpDownAmbientB.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownAmbientB.TabIndex = 10;
+            this.numericUpDownAmbientB.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // numericUpDownAmbientG
+            // 
+            this.numericUpDownAmbientG.Location = new System.Drawing.Point(34, 48);
+            this.numericUpDownAmbientG.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownAmbientG.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownAmbientG.Name = "numericUpDownAmbientG";
+            this.numericUpDownAmbientG.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownAmbientG.TabIndex = 9;
+            this.numericUpDownAmbientG.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // numericUpDownAmbientR
+            // 
+            this.numericUpDownAmbientR.Location = new System.Drawing.Point(34, 23);
+            this.numericUpDownAmbientR.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownAmbientR.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownAmbientR.Name = "numericUpDownAmbientR";
+            this.numericUpDownAmbientR.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownAmbientR.TabIndex = 8;
+            this.numericUpDownAmbientR.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // pictureBoxAmbient
+            // 
+            this.pictureBoxAmbient.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxAmbient.Location = new System.Drawing.Point(110, 43);
+            this.pictureBoxAmbient.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxAmbient.Name = "pictureBoxAmbient";
+            this.pictureBoxAmbient.Size = new System.Drawing.Size(33, 33);
+            this.pictureBoxAmbient.TabIndex = 1;
+            this.pictureBoxAmbient.TabStop = false;
+            this.pictureBoxAmbient.Click += new System.EventHandler(this.pictureBoxAmbient_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label7);
+            this.groupBox4.Controls.Add(this.label8);
+            this.groupBox4.Controls.Add(this.trackBarLightY);
+            this.groupBox4.Controls.Add(this.labelLightZ);
+            this.groupBox4.Controls.Add(this.label9);
+            this.groupBox4.Controls.Add(this.labelLightY);
+            this.groupBox4.Controls.Add(this.trackBarLightZ);
+            this.groupBox4.Controls.Add(this.labelLightX);
+            this.groupBox4.Controls.Add(this.trackBarLightX);
+            this.groupBox4.Location = new System.Drawing.Point(5, 74);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox4.Size = new System.Drawing.Size(257, 208);
+            this.groupBox4.TabIndex = 21;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Light Direction";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(9, 29);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(17, 15);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "X:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(9, 83);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(17, 15);
+            this.label8.TabIndex = 10;
+            this.label8.Text = "Y:";
+            // 
+            // trackBarLightY
+            // 
+            this.trackBarLightY.Location = new System.Drawing.Point(31, 83);
+            this.trackBarLightY.Margin = new System.Windows.Forms.Padding(2);
+            this.trackBarLightY.Maximum = 1000;
+            this.trackBarLightY.Minimum = -1000;
+            this.trackBarLightY.Name = "trackBarLightY";
+            this.trackBarLightY.Size = new System.Drawing.Size(178, 45);
+            this.trackBarLightY.TabIndex = 13;
+            this.trackBarLightY.TickFrequency = 100;
+            this.trackBarLightY.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // labelLightZ
+            // 
+            this.labelLightZ.AutoSize = true;
+            this.labelLightZ.Location = new System.Drawing.Point(213, 139);
+            this.labelLightZ.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelLightZ.Name = "labelLightZ";
+            this.labelLightZ.Size = new System.Drawing.Size(34, 15);
+            this.labelLightZ.TabIndex = 18;
+            this.labelLightZ.Text = "0.000";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(9, 139);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(17, 15);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "Z:";
+            // 
+            // labelLightY
+            // 
+            this.labelLightY.AutoSize = true;
+            this.labelLightY.Location = new System.Drawing.Point(213, 83);
+            this.labelLightY.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelLightY.Name = "labelLightY";
+            this.labelLightY.Size = new System.Drawing.Size(34, 15);
+            this.labelLightY.TabIndex = 17;
+            this.labelLightY.Text = "0.000";
+            // 
+            // trackBarLightZ
+            // 
+            this.trackBarLightZ.Location = new System.Drawing.Point(31, 139);
+            this.trackBarLightZ.Margin = new System.Windows.Forms.Padding(2);
+            this.trackBarLightZ.Maximum = 1000;
+            this.trackBarLightZ.Minimum = -1000;
+            this.trackBarLightZ.Name = "trackBarLightZ";
+            this.trackBarLightZ.Size = new System.Drawing.Size(178, 45);
+            this.trackBarLightZ.TabIndex = 14;
+            this.trackBarLightZ.TickFrequency = 100;
+            this.trackBarLightZ.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // labelLightX
+            // 
+            this.labelLightX.AutoSize = true;
+            this.labelLightX.Location = new System.Drawing.Point(213, 29);
+            this.labelLightX.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelLightX.Name = "labelLightX";
+            this.labelLightX.Size = new System.Drawing.Size(34, 15);
+            this.labelLightX.TabIndex = 16;
+            this.labelLightX.Text = "0.000";
+            // 
+            // trackBarLightX
+            // 
+            this.trackBarLightX.Location = new System.Drawing.Point(31, 28);
+            this.trackBarLightX.Margin = new System.Windows.Forms.Padding(2);
+            this.trackBarLightX.Maximum = 1000;
+            this.trackBarLightX.Minimum = -1000;
+            this.trackBarLightX.Name = "trackBarLightX";
+            this.trackBarLightX.Size = new System.Drawing.Size(178, 45);
+            this.trackBarLightX.TabIndex = 15;
+            this.trackBarLightX.TickFrequency = 100;
+            this.trackBarLightX.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.numericUpDownSpecularB);
+            this.groupBox1.Controls.Add(this.numericUpDownSpecularG);
+            this.groupBox1.Controls.Add(this.numericUpDownSpecularR);
+            this.groupBox1.Controls.Add(this.pictureBoxSpecular);
+            this.groupBox1.Location = new System.Drawing.Point(433, 74);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Size = new System.Drawing.Size(163, 102);
+            this.groupBox1.TabIndex = 19;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Specular Color";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 74);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(17, 15);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "B:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(11, 49);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(18, 15);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "G:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 25);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(17, 15);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "R:";
+            // 
+            // numericUpDownSpecularB
+            // 
+            this.numericUpDownSpecularB.Location = new System.Drawing.Point(34, 73);
+            this.numericUpDownSpecularB.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownSpecularB.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownSpecularB.Name = "numericUpDownSpecularB";
+            this.numericUpDownSpecularB.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownSpecularB.TabIndex = 10;
+            this.numericUpDownSpecularB.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // numericUpDownSpecularG
+            // 
+            this.numericUpDownSpecularG.Location = new System.Drawing.Point(34, 48);
+            this.numericUpDownSpecularG.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownSpecularG.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownSpecularG.Name = "numericUpDownSpecularG";
+            this.numericUpDownSpecularG.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownSpecularG.TabIndex = 9;
+            this.numericUpDownSpecularG.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // numericUpDownSpecularR
+            // 
+            this.numericUpDownSpecularR.Location = new System.Drawing.Point(34, 23);
+            this.numericUpDownSpecularR.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDownSpecularR.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownSpecularR.Name = "numericUpDownSpecularR";
+            this.numericUpDownSpecularR.Size = new System.Drawing.Size(56, 23);
+            this.numericUpDownSpecularR.TabIndex = 8;
+            this.numericUpDownSpecularR.ValueChanged += new System.EventHandler(this.lightValuesChanged);
+            // 
+            // pictureBoxSpecular
+            // 
+            this.pictureBoxSpecular.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxSpecular.Location = new System.Drawing.Point(110, 43);
+            this.pictureBoxSpecular.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxSpecular.Name = "pictureBoxSpecular";
+            this.pictureBoxSpecular.Size = new System.Drawing.Size(33, 33);
+            this.pictureBoxSpecular.TabIndex = 1;
+            this.pictureBoxSpecular.TabStop = false;
+            this.pictureBoxSpecular.Click += new System.EventHandler(this.pictureBoxSpecular_Click);
+            // 
             // EditorOptionsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -615,6 +1161,31 @@
             this.groupBoxKeys.ResumeLayout(false);
             this.groupBoxKeys.PerformLayout();
             this.groupBoxDescription.ResumeLayout(false);
+            this.tabPageLights.ResumeLayout(false);
+            this.tabPageLights.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDiffuseB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDiffuseG)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDiffuseR)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDiffuse)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAmbientB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAmbientG)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAmbientR)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAmbient)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLightY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLightZ)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBarLightX)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSpecularB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSpecularG)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownSpecularR)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSpecular)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -661,5 +1232,44 @@
 		private System.Windows.Forms.Label labelCameraModifier;
 		private System.Windows.Forms.PictureBox pictureBoxBackgroundColor;
 		private System.Windows.Forms.Label labelBackgroundColor;
+		private System.Windows.Forms.TabPage tabPageLights;
+		private System.Windows.Forms.PictureBox pictureBoxSpecular;
+		private System.Windows.Forms.TrackBar trackBarLightX;
+		private System.Windows.Forms.TrackBar trackBarLightZ;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.TrackBar trackBarLightY;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Label labelLightZ;
+		private System.Windows.Forms.Label labelLightY;
+		private System.Windows.Forms.Label labelLightX;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.NumericUpDown numericUpDownAmbientB;
+		private System.Windows.Forms.NumericUpDown numericUpDownAmbientG;
+		private System.Windows.Forms.NumericUpDown numericUpDownAmbientR;
+		private System.Windows.Forms.PictureBox pictureBoxAmbient;
+		private System.Windows.Forms.GroupBox groupBox4;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.GroupBox groupBox5;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.NumericUpDown numericUpDownDiffuseB;
+		private System.Windows.Forms.NumericUpDown numericUpDownDiffuseG;
+		private System.Windows.Forms.NumericUpDown numericUpDownDiffuseR;
+		private System.Windows.Forms.PictureBox pictureBoxDiffuse;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.NumericUpDown numericUpDownSpecularB;
+		private System.Windows.Forms.NumericUpDown numericUpDownSpecularG;
+		private System.Windows.Forms.NumericUpDown numericUpDownSpecularR;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.ComboBox comboBoxLightType;
+		private System.Windows.Forms.Button buttonResetLights;
+		private System.Windows.Forms.CheckBox checkBoxEnableSpecular;
 	}
 }
