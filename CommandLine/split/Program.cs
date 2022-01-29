@@ -417,7 +417,55 @@ namespace Split
                                 Directory.CreateDirectory(outpath);
                             ani.Save(fileOutputPath, nometa);
                             break;
-                        default:
+						// Attach
+						case "attach":
+						case "basicattach":
+						case "basicdxattach":
+						case "chunkattach":
+						case "gcattach":
+							{
+								Attach dummy;
+								ModelFormat modelfmt_att;
+								string modelext = ".sa1mdl";
+								switch (type)
+								{
+									case "basicattach":
+										modelfmt_att = ModelFormat.Basic;
+										modelext = ".sa1mdl";
+										dummy = new BasicAttach(datafile, address, imageBase, false);
+										break;
+									case "basicdxattach":
+										modelfmt_att = ModelFormat.BasicDX;
+										modelext = ".sa1mdl";
+										dummy = new BasicAttach(datafile, address, imageBase, true);
+										break;
+									case "chunkattach":
+										modelfmt_att = ModelFormat.Chunk;
+										modelext = ".sa2mdl";
+										dummy = new ChunkAttach(datafile, address, imageBase);
+										break;
+									case "gcattach":
+										modelfmt_att = ModelFormat.GC;
+										dummy = new SAModel.GC.GCAttach(datafile, address, imageBase);
+										modelext = ".sa2bmdl";
+										break;
+									default:
+										modelfmt_att = ModelFormat.BasicDX;
+										modelext = ".sa1mdl";
+										dummy = new BasicAttach(datafile, address, imageBase, true);
+										break;
+								}
+								NJS_OBJECT mdl = new NJS_OBJECT()
+								{
+									Attach = dummy
+								};
+								fileOutputPath = MakePathThatExists(fileOutputPath, mdl.Name + modelext);
+								if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
+									Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
+								ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_att, nometa);
+							}
+							break;
+						default:
                             Console.WriteLine("Unrecognized export type {0}", type);
                             break;
                     }
