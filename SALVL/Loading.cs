@@ -40,7 +40,7 @@ namespace SAModel.SALVL
 			return false;
 		}
 
-		private void LoadSadxlvlIni(IniDataSALVL ini)
+		private void LoadSalvlIni(IniDataSALVL ini)
 		{
 			isStageLoaded = false;
 
@@ -129,17 +129,30 @@ namespace SAModel.SALVL
 
 		private void LoadTemplate(Templates.ProjectTemplate projFile)
 		{
-			if (!File.Exists(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini")))
+
+			if (!File.Exists(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini")) && !File.Exists(Path.Combine(projFile.GameInfo.ProjectFolder, "sa2lvl.ini")))
 			{
 				MessageBox.Show(this, "This project does not have an INI file for SALVL.", "SALVL Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
-			sadxlvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
-			systemFallback = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), sadxlvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
+
+			if (projFile.GameInfo.GameName == "SA2PC")
+			{
+				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sa2lvl.ini"));
+				salvlini.IsSA2 = true;
+			}
+			else
+			{
+				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
+				salvlini.IsSA2 = false;
+			}
+
+
+			systemFallback = Path.Combine(ProjectFunctions.GetGamePath(projFile.GameInfo.GameName), salvlini.SystemPath); // To get a path like "SADX\system" or "SA1\SONICADV"
 			modFolder = projFile.GameInfo.ProjectFolder;
-			modSystemFolder = Path.Combine(modFolder, sadxlvlini.SystemPath);
+			modSystemFolder = Path.Combine(modFolder, salvlini.SystemPath);
 			//MessageBox.Show("Fallback: " + systemFallback + "\n Mod: " + modFolder);
-			LoadSadxlvlIni(sadxlvlini);
+			LoadSalvlIni(salvlini);
 			ShowLevelSelect();
 		}
 
@@ -359,7 +372,7 @@ namespace SAModel.SALVL
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
 			saveAdvancedToolStripMenuItem.Enabled = true;
 			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
-			upgradeObjDefsToolStripMenuItem.Enabled = sadxlvlini != null;
+			upgradeObjDefsToolStripMenuItem.Enabled = salvlini != null;
 		}
 
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -631,9 +644,9 @@ namespace SAModel.SALVL
 		private void LoadFog(SA1LevelAct levelact)
 		{
 			bool fogdatanotfound = false;
-			if (sadxlvlini.LevelFogFiles.FogEntries != null && sadxlvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
+			if (salvlini != null && salvlini.LevelFogFiles.FogEntries != null && salvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
 			{
-				string fogFilePath = sadxlvlini.LevelFogFiles.FogEntries[levelact.Level];
+				string fogFilePath = salvlini.LevelFogFiles.FogEntries[levelact.Level];
 				if (File.Exists(fogFilePath))
 				{
 					stageFogList = IniSerializer.Deserialize<FogDataTable>(fogFilePath);
@@ -693,7 +706,7 @@ namespace SAModel.SALVL
 			progress.SetTask("Loading stage: " + levelName);
 			progress.ResetSteps();
 			progress.SetMaxSteps(steps);
-			IniLevelData level = sadxlvlini.Levels[levelID];
+			IniLevelData level = salvlini.Levels[levelID];
 
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 			LevelData.leveltexs = null;
@@ -747,20 +760,33 @@ namespace SAModel.SALVL
 			progress.SetTaskAndStep("Setting up start positions...");
 
 			LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
+
+
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
 				progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
 
 				IniCharInfo character;
-				if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
-					character = sadxlvlini.Characters["SuperSonic"];
+
+				if (salvlini.IsSA2)
+				{
+					character = salvlini.Characters[LevelData.SA2Characters[i]];
+				}
 				else
-					character = sadxlvlini.Characters[LevelData.Characters[i]];
+				{
+					if (i == 0 && levelact.Level == SA1LevelIDs.PerfectChaos)
+						character = salvlini.Characters["SuperSonic"];
+					else
+						character = salvlini.Characters[LevelData.Characters[i]];
+				}
 
 				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
 
-				if (File.Exists(character.StartPositions))
+				//to do: Add SA2 Start Pos
+				if (File.Exists(character.StartPositions) && salvlini.IsSA2 != true)
+				{
 					posini = SA1StartPosList.Load(character.StartPositions);
+				}
 
 				Vertex pos = new Vertex();
 				int rot = 0;
@@ -779,6 +805,7 @@ namespace SAModel.SALVL
 				if (File.Exists(character.TextureList))
 					LoadTextureList(character.TextureList, modSystemFolder);
 			}
+
 			JumpToStartPos();
 
 			progress.StepProgress();
@@ -819,21 +846,22 @@ namespace SAModel.SALVL
 
 			progress.SetStep("Common objects");
 			// Loads common object textures (e.g OBJ_REGULAR)
-			if (File.Exists(sadxlvlini.ObjectTextureList))
-				LoadTextureList(sadxlvlini.ObjectTextureList, modSystemFolder);
+			if (File.Exists(salvlini.ObjectTextureList))
+				LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);
 
 			progress.SetStep("Mission objects");
 			// Loads mission object textures
-			if (File.Exists(sadxlvlini.MissionTextureList))
-				LoadTextureList(sadxlvlini.MissionTextureList, modSystemFolder);
+			if (File.Exists(salvlini.MissionTextureList))
+				LoadTextureList(salvlini.MissionTextureList, modSystemFolder);
 
 			progress.SetTaskAndStep("Loading stage texture lists...");
 
 			// Loads the textures in the texture list for this stage (e.g BEACH01)
-			if (sadxlvlini.LevelTextureLists != null)
+
+			if (salvlini.LevelTextureLists != null)
 			{
 				// Loads the textures in the texture list for this stage (e.g BEACH01)
-				foreach (string file in Directory.GetFiles(sadxlvlini.LevelTextureLists))
+				foreach (string file in Directory.GetFiles(salvlini.LevelTextureLists))
 				{
 					LevelTextureList texini = LevelTextureList.Load(file);
 					if (texini.Level != levelact)
@@ -879,8 +907,8 @@ namespace SAModel.SALVL
 			progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 			// Load Object Definitions INI file
-			if (File.Exists(sadxlvlini.ObjectDefinitions))
-				objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(sadxlvlini.ObjectDefinitions);
+			if (File.Exists(salvlini.ObjectDefinitions))
+				objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(salvlini.ObjectDefinitions);
 			LevelData.ObjDefs = new List<ObjectDefinition>();
 			LevelData.MisnObjDefs = new List<ObjectDefinition>();
 			InitObjDefReferences();
@@ -927,9 +955,9 @@ namespace SAModel.SALVL
 			}
 
 			// Load Mission SET items
-			if (!string.IsNullOrEmpty(sadxlvlini.MissionObjectList) && File.Exists(sadxlvlini.MissionObjectList))
+			if (!string.IsNullOrEmpty(salvlini.MissionObjectList) && File.Exists(salvlini.MissionObjectList))
 			{
-				LoadObjectList(sadxlvlini.MissionObjectList, true);
+				LoadObjectList(salvlini.MissionObjectList, true);
 
 				// Assign Mission SET data
 				progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
@@ -986,7 +1014,6 @@ namespace SAModel.SALVL
 				{
 					LevelData.MissionSETItems = null;
 				}
-
 			}
 			else
 			{
@@ -1142,11 +1169,11 @@ namespace SAModel.SALVL
 			LevelData.LevelSplines = new List<SplineData>();
 			SplineData.Init();
 
-			if (!string.IsNullOrEmpty(sadxlvlini.Paths))
+			if (salvlini != null && !string.IsNullOrEmpty(salvlini.Paths))
 			{
 				progress.SetTaskAndStep("Reticulating splines...");
 
-				String splineDirectory = Path.Combine(Path.Combine(modFolder, sadxlvlini.Paths),
+				String splineDirectory = Path.Combine(Path.Combine(modFolder, salvlini.Paths),
 					levelact.ToString());
 
 				if (Directory.Exists(splineDirectory))

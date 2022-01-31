@@ -705,6 +705,7 @@ namespace SAToolsHub
                         switch (itemName)
                         {
                             case "sadxlvl.ini":
+							case "sa2lvl.ini":
                                 salvlStartInfo.Arguments = $"\"{projXML}\"";
                                 Process.Start(salvlStartInfo);
                                 salvlStartInfo.Arguments = "";
@@ -829,7 +830,14 @@ namespace SAToolsHub
         {
             if (projectDirectory != null)
             {
-                string projectArgumentsPath = File.Exists(Path.Combine(projectDirectory, "sadxlvl.ini")) ? $"\"{projXML}\"" : "";
+				string gameIni = "sadxlvl.ini";
+
+				if (setGame == "SA2PC")
+				{
+					gameIni = "sa2lvl.ini";
+				}
+
+				string projectArgumentsPath = File.Exists(Path.Combine(projectDirectory, gameIni)) ? $"\"{projXML}\"" : "";
                 salvlStartInfo.Arguments = projectArgumentsPath;
             }
             Process proc = Process.Start(salvlStartInfo);

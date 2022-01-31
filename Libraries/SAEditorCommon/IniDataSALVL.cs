@@ -30,6 +30,7 @@ namespace SAModel.SAEditorCommon
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, IniLevelData> Levels { get; set; }
 		public LevelFogInfo LevelFogFiles { get; set; }
+		public bool IsSA2 { get; set; }
 	}
 
 	public class LevelFogInfo

@@ -35,6 +35,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static Dictionary<string, Texture[]> Textures;
 		public static readonly string[] Characters = { "Sonic", "Tails", "Knuckles", "Amy", "Gamma", "Big" };
 		public static readonly string[] SETChars = { "S", "M", "K", "A", "E", "B" };
+		public static readonly string[] SA2Characters = { "Sonic", "Shadow", "Knuckles", "Rouge", "MechTails", "MechEggman", };
 		private static int character;
 		public static int Character
 		{

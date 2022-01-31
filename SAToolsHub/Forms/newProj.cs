@@ -403,6 +403,17 @@ namespace SAToolsHub
 				File.Copy(Path.Combine(iniFolder, "sadxlvl.ini"), Path.Combine(projFolder, "sadxlvl.ini"), true);
 				File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
 			}
+			if (File.Exists(Path.Combine(iniFolder, "sa2lvl.ini")))
+			{
+				progress.SetStep("Copying Object Definitions");
+				string objdefsPath = GetObjDefsDirectory();
+				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+				if (Directory.Exists(objdefsPath))
+					CopyFolder(objdefsPath, outputObjdefsPath);
+				progress.SetTask("Finalizing SALVL Supported Setup");
+				File.Copy(Path.Combine(iniFolder, "sa2lvl.ini"), Path.Combine(projFolder, "sa2lvl.ini"), true);
+				File.Copy(Path.Combine(iniFolder, "objdefs.ini"), Path.Combine(projFolder, "objdefs.ini"), true);
+			}
 			// Split MDL files for SA2
 			if (splitMdlEntries.Count > 0)
 			{

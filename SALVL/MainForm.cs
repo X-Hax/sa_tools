@@ -88,7 +88,7 @@ namespace SAModel.SALVL
 		internal Device d3ddevice;
 
 		#region Editor-Specific Variables
-		IniDataSALVL sadxlvlini;
+		IniDataSALVL salvlini;
 		Logger log = new Logger();
 		OnScreenDisplay osd;
 		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
@@ -367,21 +367,21 @@ namespace SAModel.SALVL
 		private DialogResult SavePrompt(bool autoCloseDialog = false)
 		{
 			if (!unsaved) return DialogResult.No;
-			string dialogText = (sadxlvlini != null ? "Do you want to save?" : "Quit without saving?");
+			string dialogText = (salvlini != null ? "Do you want to save?" : "Quit without saving?");
 			DialogResult result = MessageBox.Show(this, dialogText, "SALVL",
 				MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
 			switch (result)
 			{
 				case DialogResult.Yes:
-					if (sadxlvlini != null)
+					if (salvlini != null)
 					{
 						SaveStage(autoCloseDialog);
 						unsaved = false;
 					}
 					break;
 				case DialogResult.No:
-					if (sadxlvlini != null)
+					if (salvlini != null)
 					{
 						unsaved = false;
 						return result;
@@ -1567,6 +1567,7 @@ namespace SAModel.SALVL
 				LevelData.InvalidateRenderState();
 			}
 		}
+
 		private void jumpToStartPositionToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			JumpToStartPos();
@@ -1677,7 +1678,7 @@ namespace SAModel.SALVL
 
 		private void SetTimeOfDay()
 		{
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			SA1LevelAct levelact = new SA1LevelAct(salvlini.Levels[levelID].LevelID);
 			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck)
 			{
 				byte timeofday = 0;
@@ -1688,7 +1689,7 @@ namespace SAModel.SALVL
 				LoadStageLights(levelact);
 				LoadCharacterLights(levelact);
 				if (LevelData.leveleff != null)
-					LevelData.leveleff.Init(sadxlvlini.Levels[levelID], levelact.Act, timeofday);
+					LevelData.leveleff.Init(salvlini.Levels[levelID], levelact.Act, timeofday);
 				UpdateStageFog();
 				NeedRedraw = true;
 			}
@@ -2162,7 +2163,7 @@ namespace SAModel.SALVL
 
 		private void lightsEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			SA1LevelAct levelact = new SA1LevelAct(salvlini.Levels[levelID].LevelID);
 			SADXLightsEditor lightsEditor = new SADXLightsEditor(this, stageLightList, characterLightList, levelact.Level, levelact.Act);
 			lightsEditor.FormClosed += new FormClosedEventHandler(LightEditorClosed);
 			lightsEditorToolStripMenuItem.Enabled = false;
@@ -2177,7 +2178,7 @@ namespace SAModel.SALVL
 			characterLightList = new List<LSPaletteData>();
 			for (int i = 0; i < charLightsNews.Count; i++)
 				characterLightList.Add(charLightsNews[i]);
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			SA1LevelAct levelact = new SA1LevelAct(salvlini.Levels[levelID].LevelID);
 			LoadStageLights(levelact);
 			LoadCharacterLights(levelact);
 			NeedRedraw = true;
@@ -2202,7 +2203,7 @@ namespace SAModel.SALVL
 
 		private void fogEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			SA1LevelAct levelact = new SA1LevelAct(salvlini.Levels[levelID].LevelID);
 			SADXFogEditor fogEditor = new SADXFogEditor(this, this.stageFogList, levelact.Act);
 			fogEditor.FormClosed += new FormClosedEventHandler(FogEditorClosed);
 			fogEditorToolStripMenuItem.Enabled = false;
@@ -2224,14 +2225,14 @@ namespace SAModel.SALVL
 
 		private void UpdateStageFog()
 		{
-			if (sadxlvlini == null)
+			if (salvlini == null)
 				return;
 			byte timeofday = 0;
 			if (eveningToolStripMenuItem.Checked)
 				timeofday = 1;
 			else if (nightToolStripMenuItem.Checked)
 				timeofday = 2;
-			SA1LevelAct levelact = new SA1LevelAct(sadxlvlini.Levels[levelID].LevelID);
+			SA1LevelAct levelact = new SA1LevelAct(salvlini.Levels[levelID].LevelID);
 			int act = levelact.Act;
 			if (levelact.Level == SA1LevelIDs.MysticRuins && act != 3)
 			{
