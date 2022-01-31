@@ -907,7 +907,7 @@ namespace SAModel.SALVL
 				progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 				// Load Object Definitions INI file
-				string objdefspath = Path.Combine(modFolder, sadxlvlini.ObjectDefinitions);
+				string objdefspath = Path.Combine(modFolder, salvlini.ObjectDefinitions);
 				if (Directory.Exists(objdefspath))
 				{
 					List<string> deffiles = new List<string>(Directory.GetFiles(objdefspath, "*.defs"));
