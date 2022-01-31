@@ -26,6 +26,41 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private static Mesh QuestionBoxMesh;
 		private static BoundingSphere SquareBounds;
 
+		public enum RotType
+		{
+			X,
+			Y,
+			Z,
+			XY,
+			XZ,
+			YX,
+			YZ,
+			ZX,
+			ZY,
+			XYZ,
+			XZY,
+			YXZ,
+			YZX,
+			ZXY,
+			ZYX,
+			NoRot
+		}
+
+		public enum SclType
+		{
+			X,
+			Y,
+			Z,
+			XY,
+			XZ,
+			YZ,
+			XYZ,
+			AllX,
+			AllY,
+			AllZ,
+			NoScl
+		}
+
 		public static void Init(Device device)
 		{
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
@@ -149,6 +184,139 @@ namespace SAModel.SAEditorCommon.SETEditing
 				bounds = GetModelBounds(child, transform, scale, bounds);
 			transform.Pop();
 			return bounds;
+		}
+
+		public static void RotateObject(MatrixStack transform, SETItem item, int addrx, int addry, int addrz, string type = "XYZ")
+		{
+			switch (type)
+			{
+				case "X":
+					transform.NJRotateX(item.Rotation.X + addrx);
+					break;
+				case "Y":
+					transform.NJRotateY(item.Rotation.Y + addry);
+					break;
+				case "Z":
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					break;
+				case "XY":
+					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateY(item.Rotation.Y + addry);
+					break;
+				case "XZ":
+					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					break;
+				case "YX":
+					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateX(item.Rotation.X + addrx);
+					break;
+				case "YZ":
+					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					break;
+				case "ZX":
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateX(item.Rotation.X + addrx);
+					break;
+				case "ZY":
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateY(item.Rotation.Y + addry);
+					break;
+				case "XZY":
+					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateY(item.Rotation.Y + addry);
+					break;
+				case "YXZ":
+					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					break;
+				case "YZX":
+					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateX(item.Rotation.X + addrx);
+					break;
+				case "ZXY":
+					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateY(item.Rotation.Y + addry);
+					break;
+				case "ZYX":
+					transform.NJRotateZYX(item.Rotation.X + addrx, item.Rotation.Y + addry, item.Rotation.Z + addrz);
+					break;
+				case "None":
+					break;
+				case "XYZ":
+				default:
+					transform.NJRotateXYZ(item.Rotation.X + addrx, item.Rotation.Y + addry, item.Rotation.Z + addrz);
+					break;
+			}
+		}
+
+		public static Vector3 GetScale(SETItem item, float addfx, float addfy, float addfz, string type = "None")
+		{
+			float x = 1;
+			float y = 1;
+			float z = 1;
+
+			switch (type)
+			{
+				case "X":
+					x = item.Scale.X;
+					break;
+				case "Y":
+					y = item.Scale.Y;
+					break;
+				case "Z":
+					z = item.Scale.Z;
+					break;
+				case "XY":
+					x = item.Scale.X;
+					y = item.Scale.Y;
+					break;
+				case "XZ":
+					x = item.Scale.X;
+					z = item.Scale.Z;
+					break;
+				case "YZ":
+					y = item.Scale.Y;
+					z = item.Scale.Z;
+					break;
+				case "XYZ":
+					x = item.Scale.X;
+					y = item.Scale.Y;
+					z = item.Scale.Z;
+					break;
+				case "AllX":
+					x = item.Scale.X;
+					y = item.Scale.X;
+					z = item.Scale.X;
+					break;
+				case "AllY":
+					x = item.Scale.Y;
+					y = item.Scale.Y;
+					z = item.Scale.Y;
+					break;
+				case "AllZ":
+					x = item.Scale.Z;
+					y = item.Scale.Z;
+					z = item.Scale.Z;
+					break;
+				case "None":
+				default:
+					break;
+			}
+
+			if (addfx != 0)
+				x += addfx;
+			if (addfy != 0)
+				y += addfy;
+			if (addfz != 0)
+				z += addfz;
+
+			return new Vector3(x, y, z);
 		}
 	}
 }

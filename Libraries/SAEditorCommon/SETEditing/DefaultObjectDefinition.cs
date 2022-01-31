@@ -24,6 +24,10 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl, gnddst;
 		private int? xrot, yrot, zrot;
 		private ushort? defxrot, defyrot, defzrot;
+		private ushort addxrot, addyrot, addzrot;
+		private float addxscl, addyscl, addzscl;
+		private string rottype;
+		private string scltype;
 
 		public override void Init(ObjectData data, string name)
 		{
@@ -38,12 +42,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 			xpos = data.XPos;
 			ypos = data.YPos;
 			zpos = data.ZPos;
-			xrot = data.XRot;
-			yrot = data.YRot;
-			zrot = data.ZRot;
-			xscl = data.XScl;
-			yscl = data.YScl;
-			zscl = data.ZScl;
+			//xrot = data.XRot;
+			//yrot = data.YRot;
+			//zrot = data.ZRot;
+			//xscl = data.XScl;
+			//yscl = data.YScl;
+			//zscl = data.ZScl;
 			defxrot = data.DefXRot;
 			defyrot = data.DefYRot;
 			defzrot = data.DefZRot;
@@ -51,19 +55,30 @@ namespace SAModel.SAEditorCommon.SETEditing
 			defyscl = data.DefYScl;
 			defzscl = data.DefZScl;
 			gnddst = data.GndDst;
+			rottype = data.RotType;
+			scltype = data.SclType;
+			addxrot = data.AddXRot;
+			addyrot = data.AddYRot;
+			addzrot = data.AddZRot;
+			addxscl = data.AddXScl;
+			addyscl = data.AddYScl;
+			addzscl = data.AddZScl;
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
-			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			//transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			ObjectHelper.RotateObject(transform, item, addxrot, addyrot, addzrot, rottype);
 			HitResult result;
 			if (model == null)
 				result = ObjectHelper.CheckSpriteHit(Near, Far, Viewport, Projection, View, transform);
 			else
 			{
-				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+				//transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+				Vector3 scl = ObjectHelper.GetScale(item, addxscl, addyscl, addzscl, scltype);
+				transform.NJScale(scl);
 				result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			}
 			transform.Pop();
@@ -75,12 +90,15 @@ namespace SAModel.SAEditorCommon.SETEditing
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
-			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			//transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			ObjectHelper.RotateObject(transform, item, addxrot, addyrot, addzrot, rottype);
 			if (model == null)
 				result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), item.Selected));
 			else
 			{
-				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+				//transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+				Vector3 scl = ObjectHelper.GetScale(item, addxscl, addyscl, addzscl, scltype);
+				transform.NJScale(scl);
 				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures(texture), meshes));
 				if (item.Selected)
 					result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -95,8 +113,11 @@ namespace SAModel.SAEditorCommon.SETEditing
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
-			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
-			transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+			//transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			//transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+			ObjectHelper.RotateObject(transform, item, addxrot, addyrot, addzrot, rottype);
+			Vector3 scl = ObjectHelper.GetScale(item, addxscl, addyscl, addzscl, scltype);
+			transform.NJScale(scl);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -106,13 +127,16 @@ namespace SAModel.SAEditorCommon.SETEditing
 		{
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
-			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			//transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
+			ObjectHelper.RotateObject(transform, item, addxrot, addyrot, addzrot, rottype);
 			if (model == null)
 				return ObjectHelper.GetSpriteBounds(transform);
 			else
 			{
-				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
-				return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(xscl ?? item.Scale.X, yscl ?? item.Scale.Y), zscl ?? item.Scale.Z));
+				//transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
+				Vector3 scl = ObjectHelper.GetScale(item, addxscl, addyscl, addzscl, scltype);
+				transform.NJScale(scl);
+				return ObjectHelper.GetModelBounds(model, transform, Math.Max(Math.Max(scl.X, scl.Y), scl.Z));
 			}
 		}
 

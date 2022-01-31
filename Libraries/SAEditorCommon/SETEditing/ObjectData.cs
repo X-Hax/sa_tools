@@ -17,5 +17,10 @@ namespace SAModel.SAEditorCommon.SETEditing
 		public int? XRot, YRot, ZRot;
 		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort? DefXRot, DefYRot, DefZRot;
+		[TypeConverter(typeof(UInt16HexConverter))]
+		public ushort AddXRot, AddYRot, AddZRot;
+		public float AddXScl, AddYScl, AddZScl;
+		public string RotType;
+		public string SclType;
 	}
 }
