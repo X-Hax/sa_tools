@@ -185,20 +185,65 @@ namespace SAModel.SAEditorCommon.StructConverter
 							modified = true;
 							break;
 						}
-						DeathZoneFlags[] flags = DeathZoneFlagsList.Load(item.Value.Filename);
-						if (flags.Length != hashes.Length - 1)
+						switch (iniData.Game)
 						{
-							modified = true;
-							break;
-						}
-						string path = Path.GetDirectoryName(item.Value.Filename);
-						for (int i = 0; i < flags.Length; i++)
-							if (HelperFunctions.FileHash(Path.Combine(path, flags[i].Filename))
-								!= hashes[i + 1])
-							{
-								modified = true;
+							case Game.SA2:
+								{
+									SA2DeathZoneFlags[] flags = SA2DeathZoneFlagsList.Load(item.Value.Filename);
+									if (flags.Length != hashes.Length - 1)
+									{
+										modified = true;
+										break;
+									}
+									string path = Path.GetDirectoryName(item.Value.Filename);
+									for (int i = 0; i < flags.Length; i++)
+										if (HelperFunctions.FileHash(Path.Combine(path, flags[i].Filename))
+											!= hashes[i + 1])
+										{
+											modified = true;
+											break;
+										}
+								}
 								break;
-							}
+							case Game.SA2B:
+								{
+									SA2BDeathZoneFlags[] flags = SA2BDeathZoneFlagsList.Load(item.Value.Filename);
+									if (flags.Length != hashes.Length - 1)
+									{
+										modified = true;
+										break;
+									}
+									string path = Path.GetDirectoryName(item.Value.Filename);
+									for (int i = 0; i < flags.Length; i++)
+										if (HelperFunctions.FileHash(Path.Combine(path, flags[i].Filename))
+											!= hashes[i + 1])
+										{
+											modified = true;
+											break;
+										}
+								}
+								break;
+							case Game.SA1:
+							case Game.SADX:
+							default:
+								{
+									DeathZoneFlags[] flags = DeathZoneFlagsList.Load(item.Value.Filename);
+									if (flags.Length != hashes.Length - 1)
+									{
+										modified = true;
+										break;
+									}
+									string path = Path.GetDirectoryName(item.Value.Filename);
+									for (int i = 0; i < flags.Length; i++)
+										if (HelperFunctions.FileHash(Path.Combine(path, flags[i].Filename))
+											!= hashes[i + 1])
+										{
+											modified = true;
+											break;
+										}
+								}
+								break;
+						}
 					}
 					break;
 				case "levelpathlist":
@@ -401,12 +446,43 @@ namespace SAModel.SAEditorCommon.StructConverter
 				switch (item.Value.Type)
 				{
 					case "deathzone":
-						DeathZoneFlags[] list = DeathZoneFlagsList.Load(item.Value.Filename);
-						string path = Path.GetDirectoryName(item.Value.Filename);
-						for (int j = 0; j < list.Length; j++)
+						switch (iniData.Game)
 						{
-							System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, list[j].Filename));
-							fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), list[j].Filename), true);
+							case Game.SA2:
+								{
+									SA2DeathZoneFlags[] list = SA2DeathZoneFlagsList.Load(item.Value.Filename);
+									string path = Path.GetDirectoryName(item.Value.Filename);
+									for (int j = 0; j < list.Length; j++)
+									{
+										System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, list[j].Filename));
+										fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), list[j].Filename), true);
+									}
+								}
+								break;
+							case Game.SA2B:
+								{
+									SA2BDeathZoneFlags[] list = SA2BDeathZoneFlagsList.Load(item.Value.Filename);
+									string path = Path.GetDirectoryName(item.Value.Filename);
+									for (int j = 0; j < list.Length; j++)
+									{
+										System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, list[j].Filename));
+										fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), list[j].Filename), true);
+									}
+								}
+								break;
+							case Game.SA1:
+							case Game.SADX:
+							default:
+								{
+									DeathZoneFlags[] list = DeathZoneFlagsList.Load(item.Value.Filename);
+									string path = Path.GetDirectoryName(item.Value.Filename);
+									for (int j = 0; j < list.Length; j++)
+									{
+										System.IO.FileInfo fil = new System.IO.FileInfo(Path.Combine(path, list[j].Filename));
+										fil.CopyTo(Path.Combine(Path.Combine(dstfol, path), list[j].Filename), true);
+									}
+								}
+								break;
 						}
 						File.Copy(item.Value.Filename, Path.Combine(dstfol, item.Value.Filename), true);
 						break;
@@ -887,26 +963,79 @@ namespace SAModel.SAEditorCommon.StructConverter
 							}
 							break;
 						case "deathzone":
+							switch (iniData.Game)
 							{
-								DeathZoneFlags[] list = DeathZoneFlagsList.Load(data.Filename);
-								string path = Path.GetDirectoryName(data.Filename);
-								List<string> mdls = new List<string>(list.Length);
-								List<string> objs = new List<string>();
-								for (int j = 0; j < list.Length; j++)
-								{
-									NJS_OBJECT obj = new ModelFile(Path.Combine(path,
-										list[j].Filename)).Model;
-									obj.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, objs);
-									writer.WriteLine();
-									mdls.Add(obj.Name);
-									objs.Clear();
-								}
-								writer.WriteLine("DeathZone {0}[] = {{", name);
-								for (int j = 0; j < list.Length; j++)
-									objs.Add(string.Format("{{ {0}, &{1} }}", list[j].Flags.ToC("CharacterFlags"), mdls[j]));
-								objs.Add("{ 0 }");
-								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
-								writer.WriteLine("};");
+								case Game.SA2:
+									{
+										SA2DeathZoneFlags[] list = SA2DeathZoneFlagsList.Load(data.Filename);
+										string path = Path.GetDirectoryName(data.Filename);
+										List<string> mdls = new List<string>(list.Length);
+										List<string> objs = new List<string>();
+										for (int j = 0; j < list.Length; j++)
+										{
+											NJS_OBJECT obj = new ModelFile(Path.Combine(path,
+												list[j].Filename)).Model;
+											obj.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, objs);
+											writer.WriteLine();
+											mdls.Add(obj.Name);
+											objs.Clear();
+										}
+										writer.WriteLine("DeathZone {0}[] = {{", name);
+										for (int j = 0; j < list.Length; j++)
+											objs.Add(string.Format("{{ {0}, {1}, 0, 0, &{2} }}", list[j].Flags.ToC("CharacterFlags"), list[j].DeathFlag, mdls[j]));
+										objs.Add("{ 0 }");
+										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+										writer.WriteLine("};");
+									}
+									break;
+								case Game.SA2B:
+									{
+										SA2BDeathZoneFlags[] list = SA2BDeathZoneFlagsList.Load(data.Filename);
+										string path = Path.GetDirectoryName(data.Filename);
+										List<string> mdls = new List<string>(list.Length);
+										List<string> objs = new List<string>();
+										for (int j = 0; j < list.Length; j++)
+										{
+											NJS_OBJECT obj = new ModelFile(Path.Combine(path,
+												list[j].Filename)).Model;
+											obj.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, objs);
+											writer.WriteLine();
+											mdls.Add(obj.Name);
+											objs.Clear();
+										}
+										writer.WriteLine("DeathZone {0}[] = {{", name);
+										for (int j = 0; j < list.Length; j++)
+											objs.Add(string.Format("{{ {0}, {1}, {2}, {3}, &{4} }}", list[j].Flags.ToC("CharacterFlags"), list[j].Constant1, list[j].Constant2, list[j].DeathFlag, mdls[j]));
+										objs.Add("{ 0 }");
+										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+										writer.WriteLine("};");
+									}
+									break;
+								case Game.SA1:
+								case Game.SADX:
+								default:
+									{
+										DeathZoneFlags[] list = DeathZoneFlagsList.Load(data.Filename);
+										string path = Path.GetDirectoryName(data.Filename);
+										List<string> mdls = new List<string>(list.Length);
+										List<string> objs = new List<string>();
+										for (int j = 0; j < list.Length; j++)
+										{
+											NJS_OBJECT obj = new ModelFile(Path.Combine(path,
+												list[j].Filename)).Model;
+											obj.ToStructVariables(writer, modelfmt == ModelFormat.BasicDX, objs);
+											writer.WriteLine();
+											mdls.Add(obj.Name);
+											objs.Clear();
+										}
+										writer.WriteLine("DeathZone {0}[] = {{", name);
+										for (int j = 0; j < list.Length; j++)
+											objs.Add(string.Format("{{ {0}, &{1} }}", list[j].Flags.ToC("CharacterFlags"), mdls[j]));
+										objs.Add("{ 0 }");
+										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+										writer.WriteLine("};");
+									}
+									break;
 							}
 							break;
 						case "skyboxscale":

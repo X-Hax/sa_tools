@@ -31,6 +31,7 @@ namespace SAModel.SAEditorCommon
 		private static Light backLight;
 		private static Light fillLight;
 		private static Light currentLight;
+		private static bool enableSpecular;
 		private static List<SADXStageLightData> stageLights;
 		private static List<LSPaletteData> characterLights;
 		private static EditorFogSettings fogSettings;
@@ -48,9 +49,10 @@ namespace SAModel.SAEditorCommon
 		public static Color FillColor { get { return fillColor; } set { fillColor = value; } }
 		public static List<SADXStageLightData> StageLights { get { return stageLights; } set { stageLights = value; } }
 		public static List<LSPaletteData> CharacterLights { get { return characterLights; } set { characterLights = value; } }
-		public static float BackLightR { get { return backLight.Ambient.R; } set { backLight.Ambient.R = value; } }
-		public static float BackLightG { get { return backLight.Ambient.G; } set { backLight.Ambient.G = value; } }
-		public static float BackLightB { get { return backLight.Ambient.B; } set { backLight.Ambient.B = value; } }
+		public static Light FillLight { get { return fillLight; } set { fillLight = value; } }
+		public static Light KeyLight { get { return keyLight; } set { keyLight = value; } }
+		public static Light BackLight { get { return backLight; } set { backLight = value; } }
+		public static bool EnableSpecular { get { return enableSpecular; } set { enableSpecular = value; } }
 		#endregion
 
 		public static void Initialize(Device d3dDevice)
@@ -83,7 +85,7 @@ namespace SAModel.SAEditorCommon
 			d3ddevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
 			d3ddevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.Anisotropic);
 			d3ddevice.SetRenderState(RenderState.Lighting, !overrideLighting);
-			d3ddevice.SetRenderState(RenderState.SpecularEnable, false);
+			d3ddevice.SetRenderState(RenderState.SpecularEnable, enableSpecular);
 			if (!overrideLighting) d3ddevice.SetRenderState(RenderState.Ambient, Color.Black.ToArgb());
 			else d3ddevice.SetRenderState(RenderState.Ambient, Color.White.ToArgb());
 			d3ddevice.SetRenderState(RenderState.AlphaBlendEnable, false);
@@ -124,8 +126,9 @@ namespace SAModel.SAEditorCommon
 		/// <summary>
 		/// Resets editor lights to default values.
 		/// </summary>
-		private static void ResetDefaultLights()
+		public static void ResetDefaultLights()
 		{
+			enableSpecular = false;
 			#region Key Light
 			keyLight = new Light()
 			{
@@ -155,12 +158,22 @@ namespace SAModel.SAEditorCommon
 			{
 				Type = LightType.Directional,
 				Diffuse = Color.FromArgb(255, 130, 142, 130).ToRawColor4(),
-				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 1),
+				Ambient = new SharpDX.Mathematics.Interop.RawColor4(0.15f, 0.15f, 0.15f, 1),
 				Specular = new SharpDX.Mathematics.Interop.RawColor4(0.5f, 0.5f, 0.5f, 1),
 				Range = 0,
 				Direction = Vector3.Normalize(new Vector3(-0.45f, 1f, 0.25f))
 			};
 			#endregion
+		}
+
+		/// <summary>
+		/// Increases or decreases default Back Light brightness.
+		/// </summary>
+		public static void AdjustBackLightBrightness(float value)
+		{
+			backLight.Ambient.R = Math.Max(0, Math.Min(1.0f, backLight.Ambient.R + value));
+			backLight.Ambient.G = Math.Max(0, Math.Min(1.0f, backLight.Ambient.G + value));
+			backLight.Ambient.B = Math.Max(0, Math.Min(1.0f, backLight.Ambient.B + value));
 		}
 
 		/// <summary>

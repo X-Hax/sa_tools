@@ -19,6 +19,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		ActionKeyMapping[] actionKeyMappings;
 		ActionKeyMapping[] defaultActionKeyMappings;
+		private bool suspend = false;
 
 		public EditorOptionsEditor(EditorCamera camera, ActionKeyMapping[] actionKeyMappings_f, ActionKeyMapping[] defaultActionKeyMappings_f, bool setdist_enabled_a, bool leveldist_enabled_a)
 		{
@@ -40,25 +41,51 @@ namespace SAModel.SAEditorCommon.UI
 				labelDrawDistanceLevel.Enabled = true;
 				trackBarDrawDistanceLevel.Enabled = true;
 			}
-			toolTip.SetToolTip(checkboxDisableLighting, "If the scene's lighting is making it hard to work, use this to temporarily set the lighting to flat-white.");
-			toolTip.SetToolTip(checkBoxIgnoreMaterialColors, "Treat all material colors as white like Dreamcast and Gamecube versions of SA1/SADX/SA2 do.");
+			toolTip.SetToolTip(checkboxDisableLighting, "Make editor, stage and character lighting fullbright. Useful for viewing material or vertex colors.");
+			toolTip.SetToolTip(checkBoxIgnoreMaterialColors, "Treat all material colors as white like Dreamcast and Gamecube versions of the games.");
+			toolTip.SetToolTip(checkBoxEnableSpecular, "Enable specular highlights to make models look glossy. This setting applies to all default editor lights.");
 			checkboxDisableLighting.Checked = EditorOptions.OverrideLighting;
 			checkBoxIgnoreMaterialColors.Checked = EditorOptions.IgnoreMaterialColors;
-			UpdateSliderValues();
 			pictureBoxBackgroundColor.BackColor = EditorOptions.FillColor;
+			UpdateDrawDistanceSliders();
 			// Keybind editor
 			actionKeyMappings = actionKeyMappings_f;
 			defaultActionKeyMappings = defaultActionKeyMappings_f;
 			listBoxActions.Items.Clear();
 			foreach (ActionKeyMapping keyMapping in actionKeyMappings)
-			{
 				listBoxActions.Items.Add(keyMapping.Name);
-			}
 			SelectedKeyChanged();
 			ModifierKeyUpdated();
+			// Lighting editor
+			suspend = true;
+			comboBoxLightType.SelectedIndex = 0;
+			UpdateLightsUI();
+			suspend = false;
 		}
 
-		private void UpdateSliderValues()
+		private void EditorOptionsEditor_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			e.Cancel = true;
+			Hide();
+		}
+
+		private void doneButton_Click(object sender, EventArgs e)
+		{
+			FormUpdatedKeys();
+			Close();
+		}
+
+		private System.Drawing.Color GetColorFromDialog(System.Drawing.Color original)
+		{
+			using (ColorDialog dialog = new ColorDialog { Color = original, AllowFullOpen = true, FullOpen = true })
+			{
+				dialog.ShowDialog();
+				return dialog.Color;
+			}
+		}
+
+		#region Display Options
+		private void UpdateDrawDistanceSliders()
 		{
 			labelDrawDistanceGeneral.Text = String.Format("General: {0}", trackBarDrawDistanceGeneral.Value);
 			labelDrawDistanceLevel.Text = String.Format("Level Geometry: {0}", trackBarDrawDistanceLevel.Value); ;
@@ -73,21 +100,21 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceLevel.Value) trackBarDrawDistanceLevel.Value = trackBarDrawDistanceGeneral.Value;
 			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceSet.Value) trackBarDrawDistanceSet.Value = trackBarDrawDistanceGeneral.Value;
-			UpdateSliderValues();
+			UpdateDrawDistanceSliders();
 			FormUpdated();
 		}
 
 		private void levelDrawDistSlider_Scroll(object sender, EventArgs e)
 		{
 			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceLevel.Value) trackBarDrawDistanceGeneral.Value = trackBarDrawDistanceLevel.Value;
-			UpdateSliderValues();
+			UpdateDrawDistanceSliders();
 			FormUpdated();
 		}
 
 		private void setDrawDistSlider_Scroll(object sender, EventArgs e)
 		{
 			if (trackBarDrawDistanceGeneral.Value < trackBarDrawDistanceSet.Value) trackBarDrawDistanceGeneral.Value = trackBarDrawDistanceSet.Value;
-			UpdateSliderValues();
+			UpdateDrawDistanceSliders();
 			FormUpdated();
 		}
 
@@ -103,28 +130,12 @@ namespace SAModel.SAEditorCommon.UI
 			FormUpdated();
 		}
 
-		private void doneButton_Click(object sender, EventArgs e)
-		{
-			FormUpdatedKeys();
-			Close();
-		}
-
 		private void fullBrightCheck_Click(object sender, EventArgs e)
 		{
 			EditorOptions.OverrideLighting = checkboxDisableLighting.Checked;
 			FormUpdated();
 		}
 
-		private void KeyboardShortcutButton_Click(object sender, EventArgs e)
-		{
-			CustomizeKeybindsCommand.Invoke();
-		}
-
-		private void EditorOptionsEditor_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			e.Cancel = true;
-			Hide();
-		}
 
 		private void ignoreMaterialColorsCheck_Click(object sender, EventArgs e)
 		{
@@ -134,15 +145,12 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void pictureBoxBackgroundColor_Click(object sender, EventArgs e)
 		{
-			using (ColorDialog cld = new ColorDialog())
-			{
-				cld.Color = EditorOptions.FillColor;
-				if (cld.ShowDialog() == DialogResult.OK)
-					pictureBoxBackgroundColor.BackColor = EditorOptions.FillColor = cld.Color;
-			}
+			pictureBoxBackgroundColor.BackColor = EditorOptions.FillColor = GetColorFromDialog(pictureBoxBackgroundColor.BackColor);
+			FormUpdated();
 		}
+		#endregion
 
-		#region Keybinds
+		#region Control Options
 		private enum SelectedKeyType
 		{
 			None = -1,
@@ -156,6 +164,11 @@ namespace SAModel.SAEditorCommon.UI
 		public ActionKeyMapping[] GetActionkeyMappings()
 		{
 			return actionKeyMappings;
+		}
+
+		private void KeyboardShortcutButton_Click(object sender, EventArgs e)
+		{
+			CustomizeKeybindsCommand.Invoke();
 		}
 
 		private void ResetDefaultKeybindButton_Click(object sender, EventArgs e)
@@ -361,6 +374,166 @@ namespace SAModel.SAEditorCommon.UI
 					radioButtonMove.Checked = radioButtonLook.Checked = false;
 					break;
 			}
+		}
+		#endregion
+
+		#region Default Lights
+		private void UpdateLightsUI()
+		{
+			checkBoxEnableSpecular.Checked = EditorOptions.EnableSpecular;
+			Light light;
+			switch (comboBoxLightType.SelectedIndex)
+			{
+				case 0: // Fill Light
+				default:
+					light = EditorOptions.FillLight;
+					break;
+				case 1: // Key Light
+					light = EditorOptions.KeyLight;
+					break;
+				case 2: // Back Light
+					light = EditorOptions.BackLight;
+					break;
+			}
+			trackBarLightX.Value = (int)(light.Direction.X * 1000.0f);
+			trackBarLightY.Value = (int)(light.Direction.Y * 1000.0f);
+			trackBarLightZ.Value = (int)(light.Direction.Z * 1000.0f);
+			numericUpDownDiffuseR.Value = (int)(light.Diffuse.R * 255.0f);
+			numericUpDownDiffuseG.Value = (int)(light.Diffuse.G * 255.0f);
+			numericUpDownDiffuseB.Value = (int)(light.Diffuse.B * 255.0f);
+			numericUpDownAmbientR.Value = (int)(light.Ambient.R * 255.0f);
+			numericUpDownAmbientG.Value = (int)(light.Ambient.G * 255.0f);
+			numericUpDownAmbientB.Value = (int)(light.Ambient.B * 255.0f);
+			numericUpDownSpecularR.Value = (int)(light.Specular.R * 255.0f);
+			numericUpDownSpecularG.Value = (int)(light.Specular.G * 255.0f);
+			numericUpDownSpecularB.Value = (int)(light.Specular.B * 255.0f);
+			UpdateLightLabels();
+		}
+
+		private void SaveLightData()
+		{
+			EditorOptions.EnableSpecular = checkBoxEnableSpecular.Checked;
+			System.Drawing.Color diffuseColor = System.Drawing.Color.FromArgb(255, (int)numericUpDownDiffuseR.Value, (int)numericUpDownDiffuseG.Value, (int)numericUpDownDiffuseB.Value);
+			System.Drawing.Color ambientColor = System.Drawing.Color.FromArgb(255, (int)numericUpDownAmbientR.Value, (int)numericUpDownAmbientG.Value, (int)numericUpDownAmbientB.Value);
+			System.Drawing.Color specularColor = System.Drawing.Color.FromArgb(255, (int)numericUpDownSpecularR.Value, (int)numericUpDownSpecularG.Value, (int)numericUpDownSpecularB.Value);
+			SharpDX.Vector3 lightDirection = new SharpDX.Vector3((float)trackBarLightX.Value / 1000.0f, (float)trackBarLightY.Value / 1000.0f, (float)trackBarLightZ.Value / 1000.0f);
+			switch (comboBoxLightType.SelectedIndex)
+			{
+				case 0: // Fill Light
+				default:
+					EditorOptions.FillLight = new Light()
+					{
+						Type = LightType.Directional,
+						Diffuse = diffuseColor.ToRawColor4(),
+						Ambient = ambientColor.ToRawColor4(),
+						Specular = specularColor.ToRawColor4(),
+						Range = 0,
+						Direction = lightDirection
+					};
+					break;
+				case 1: // Key Light
+					EditorOptions.KeyLight = new Light()
+					{
+						Type = LightType.Directional,
+						Diffuse = diffuseColor.ToRawColor4(),
+						Ambient = ambientColor.ToRawColor4(),
+						Specular = specularColor.ToRawColor4(),
+						Range = 0,
+						Direction = lightDirection
+					};
+					break;
+				case 2: // Back Light
+					EditorOptions.BackLight = new Light()
+					{
+						Type = LightType.Directional,
+						Diffuse = diffuseColor.ToRawColor4(),
+						Ambient = ambientColor.ToRawColor4(),
+						Specular = specularColor.ToRawColor4(),
+						Range = 0,
+						Direction = lightDirection
+					};
+					break;
+			}
+		}
+
+		private void UpdateLightLabels()
+		{
+			labelLightX.Text = ((float)trackBarLightX.Value / 1000.0f).ToString("0.000");
+			labelLightY.Text = ((float)trackBarLightY.Value / 1000.0f).ToString("0.000");
+			labelLightZ.Text = ((float)trackBarLightZ.Value / 1000.0f).ToString("0.000");
+			pictureBoxDiffuse.BackColor = System.Drawing.Color.FromArgb((int)numericUpDownDiffuseR.Value, (int)numericUpDownDiffuseG.Value, (int)numericUpDownDiffuseB.Value);
+			pictureBoxAmbient.BackColor = System.Drawing.Color.FromArgb((int)numericUpDownAmbientR.Value, (int)numericUpDownAmbientG.Value, (int)numericUpDownAmbientB.Value);
+			pictureBoxSpecular.BackColor = System.Drawing.Color.FromArgb((int)numericUpDownSpecularR.Value, (int)numericUpDownSpecularG.Value, (int)numericUpDownSpecularB.Value);
+		}
+
+		private void comboBoxLightType_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			UpdateLightsUI();
+		}
+
+		private void lightValuesChanged(object sender, EventArgs e)
+		{
+			if (suspend)
+				return;
+			SaveLightData();
+			UpdateLightLabels();
+			FormUpdated();
+		}
+
+		private void buttonResetLights_Click(object sender, EventArgs e)
+		{
+			switch (MessageBox.Show(this, "This will reset editor lights to default values. Continue?", "Editor Options Editor", MessageBoxButtons.YesNo))
+			{
+				case DialogResult.Yes:
+					EditorOptions.ResetDefaultLights();
+					UpdateLightsUI();
+					break;
+			}
+		}
+
+		private void checkBoxEnableSpecular_CheckedChanged(object sender, EventArgs e)
+		{
+			if (!suspend)
+			{
+				SaveLightData();
+				FormUpdated();
+			}
+		}
+
+		private void pictureBoxDiffuse_Click(object sender, EventArgs e)
+		{
+			suspend = true;
+			pictureBoxDiffuse.BackColor = GetColorFromDialog(pictureBoxDiffuse.BackColor);
+			numericUpDownDiffuseR.Value = pictureBoxDiffuse.BackColor.R;
+			numericUpDownDiffuseG.Value = pictureBoxDiffuse.BackColor.G;
+			numericUpDownDiffuseB.Value = pictureBoxDiffuse.BackColor.B;
+			SaveLightData();
+			suspend = false;
+			FormUpdated();
+		}
+
+		private void pictureBoxSpecular_Click(object sender, EventArgs e)
+		{
+			suspend = true;
+			pictureBoxSpecular.BackColor = GetColorFromDialog(pictureBoxSpecular.BackColor);
+			numericUpDownSpecularR.Value = pictureBoxSpecular.BackColor.R;
+			numericUpDownSpecularG.Value = pictureBoxSpecular.BackColor.G;
+			numericUpDownSpecularB.Value = pictureBoxSpecular.BackColor.B;
+			SaveLightData();
+			suspend = false;
+			FormUpdated();
+		}
+
+		private void pictureBoxAmbient_Click(object sender, EventArgs e)
+		{
+			suspend = true;
+			pictureBoxAmbient.BackColor = GetColorFromDialog(pictureBoxAmbient.BackColor);
+			numericUpDownAmbientR.Value = pictureBoxAmbient.BackColor.R;
+			numericUpDownAmbientG.Value = pictureBoxAmbient.BackColor.G;
+			numericUpDownAmbientB.Value = pictureBoxAmbient.BackColor.B;
+			SaveLightData();
+			suspend = false;
+			FormUpdated();
 		}
 		#endregion
 	}

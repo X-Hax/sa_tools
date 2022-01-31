@@ -2373,65 +2373,6 @@ namespace SplitTools
 		}
 	}
 
-	public static class SA2BBigDeathZoneFlagsList
-	{
-		public static SA2BBigDeathZoneFlags[] Load(string filename)
-		{
-			return IniSerializer.Deserialize<SA2BBigDeathZoneFlags[]>(filename);
-		}
-
-		public static void Save(this SA2BBigDeathZoneFlags[] flags, string filename)
-		{
-			IniSerializer.Serialize(flags, filename);
-		}
-	}
-
-	[Serializable]
-	public class SA2BBigDeathZoneFlags
-	{
-		public SA2BBigDeathZoneFlags() { }
-
-		public SA2BBigDeathZoneFlags(byte[] file, int address)
-		{
-			DeathFlag = file[address++];
-			Constant2 = file[address++];
-			Constant1 = file[address++];
-			Flags = (SA2CharacterFlags)file[address++];
-		}
-
-		public SA2BBigDeathZoneFlags(byte[] file, int address, string filename)
-		{
-			DeathFlag = file[address++];
-			Constant2 = file[address++];
-			Constant1 = file[address++];
-			Flags = (SA2CharacterFlags)file[address++];
-			Filename = filename;
-		}
-
-		[IniAlwaysInclude]
-		public SA2CharacterFlags Flags { get; set; }
-		public byte Constant1 { get; set; }
-		public byte Constant2 { get; set; }
-		[IniAlwaysInclude]
-		public byte DeathFlag { get; set; }
-		public string Filename { get; set; }
-
-		public static int Size { get { return 4; } }
-
-		public byte[] GetBytes()
-		{
-			List<byte> result = new List<byte>(Size)
-		{
-				DeathFlag,
-				Constant2,
-				Constant1,
-				(byte)Flags,
-
-		};
-			return ByteConverter.GetBytes((int)Flags);
-		}
-	}
-
 	public static class SA2DeathZoneFlagsList
 	{
 		public static SA2DeathZoneFlags[] Load(string filename)

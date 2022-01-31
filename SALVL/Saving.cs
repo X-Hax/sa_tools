@@ -27,7 +27,7 @@ namespace SAModel.SALVL
 			progress.Show(this);
 			Application.DoEvents();
 
-			IniLevelData level = sadxlvlini.Levels[levelID];
+			IniLevelData level = salvlini.Levels[levelID];
 
 			Directory.CreateDirectory(modSystemFolder);
 
@@ -45,14 +45,15 @@ namespace SAModel.SALVL
 
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
-				if (!File.Exists(sadxlvlini.Characters[LevelData.Characters[i]].StartPositions))
+				if (!File.Exists(salvlini.Characters[LevelData.Characters[i]].StartPositions))
 				{
 					log.Add("Error saving start positions for character " + i.ToString());
 					osd.AddMessage("Error saving start positions for character " + i.ToString(), 180);
 					break;
 				}
+
 				Dictionary<SA1LevelAct, SA1StartPosInfo> posini =
-					SA1StartPosList.Load(sadxlvlini.Characters[LevelData.Characters[i]].StartPositions);
+					SA1StartPosList.Load(salvlini.Characters[LevelData.Characters[i]].StartPositions);
 
 				if (posini.ContainsKey(levelact))
 					posini.Remove(levelact);
@@ -67,7 +68,8 @@ namespace SAModel.SALVL
 							YRotation = LevelData.StartPositions[i].Rotation.Y
 						});
 				}
-				posini.Save(sadxlvlini.Characters[LevelData.Characters[i]].StartPositions);
+
+				posini.Save(salvlini.Characters[LevelData.Characters[i]].StartPositions);
 			}
 
 			progress.StepProgress();
@@ -208,7 +210,7 @@ namespace SAModel.SALVL
 			Application.DoEvents();
 			if (LevelData.LevelSplines != null)
 			{
-				string splineDirectory = Path.Combine(Path.Combine(modFolder, sadxlvlini.Paths),
+				string splineDirectory = Path.Combine(Path.Combine(modFolder, salvlini.Paths),
 							levelact.ToString());
 				int s = 0;
 				foreach (SplineData spline in LevelData.LevelSplines)
@@ -238,9 +240,9 @@ namespace SAModel.SALVL
 			#region Saving Fog
 			progress.Step = "Fog...";
 			Application.DoEvents();
-			if (stageFogList != null && sadxlvlini.LevelFogFiles.FogEntries != null && sadxlvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
+			if (stageFogList != null && salvlini.LevelFogFiles.FogEntries != null && salvlini.LevelFogFiles.FogEntries.ContainsKey(levelact.Level))
 			{
-				string fogFilePath = sadxlvlini.LevelFogFiles.FogEntries[levelact.Level];
+				string fogFilePath = salvlini.LevelFogFiles.FogEntries[levelact.Level];
 				IniSerializer.Serialize(stageFogList, fogFilePath);
 			}
 			#endregion
