@@ -601,6 +601,12 @@ namespace SAModel.SALVL
 
 		private void onClickCharacterButton(object sender, EventArgs e)
 		{
+
+			if (salvlini.IsSA2) //fix crash
+			{
+				return;
+			}
+
 			if (sender == toolTails)
 				tailsToolStripMenuItem.PerformClick();
 			else if (sender == toolKnuckles)
@@ -1655,6 +1661,7 @@ namespace SAModel.SALVL
 			modelLibraryToolStripMenuItem.Visible = !disableModelLibraryToolStripMenuItem.Checked;
 			NeedRedraw = true;
 		}
+
 
 		private void MainForm_Deactivate(object sender, EventArgs e)
 		{

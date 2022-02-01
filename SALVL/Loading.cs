@@ -676,6 +676,38 @@ namespace SAModel.SALVL
 
 		}
 
+		private void LoadSA2SetFiles(string setfallback, string setstr)
+		{
+			string setTxt = "set";
+			string setEnd = "_u.bin";
+			string useSetPath = ProjectFunctions.ModPathOrGameFallback(setstr, setfallback);
+
+			if (File.Exists(useSetPath))
+			{
+				if (progress != null)
+					progress.SetTask("SET: " + Path.GetFileName(useSetPath));
+
+				List<SETItem> SetList = new List<SETItem>();
+
+				SetList = SETItem.Load(useSetPath, selectedItems);	
+				setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
+				setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
+
+				string useSetPath2 = ProjectFunctions.ModPathOrGameFallback(setstr, setfallback);
+
+				if (File.Exists(useSetPath2))
+				{
+					SetList.AddRange(SETItem.Load(useSetPath2, selectedItems));
+				}
+
+				LevelData.AssignSetList(0, SetList);
+			}
+			else
+			{
+				LevelData.AssignSetList(0, new List<SETItem>());
+			}
+		}
+
 		private void MainLevelLoadLoop()
 		{
 #if !DEBUG
@@ -907,7 +939,7 @@ namespace SAModel.SALVL
 			progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 			// Load Object Definitions INI file
-			if (File.Exists(salvlini.ObjectDefinitions))
+			if (salvlini.IsSA2 != true && File.Exists(salvlini.ObjectDefinitions))
 				objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(salvlini.ObjectDefinitions);
 			LevelData.ObjDefs = new List<ObjectDefinition>();
 			LevelData.MisnObjDefs = new List<ObjectDefinition>();
@@ -922,23 +954,39 @@ namespace SAModel.SALVL
 				if (LevelData.ObjDefs.Count > 0)
 				{
 					LevelData.SETName = level.SETName ?? level.LevelID;
-					string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
-					string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + "{0}.bin");
-					LevelData.InitSETItems();
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
-					{
-						string formatted = string.Format(setstr, LevelData.SETChars[i]);
-						string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+					string setTxt = "SET";
+					string setEnd = "{0}.bin";
 
-						string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
-						if (File.Exists(useSetPath))
+					if (salvlini.IsSA2)
+					{
+						setEnd = "_s.bin";
+					}
+
+					string setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
+					string setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
+					LevelData.InitSETItems();
+
+					if (salvlini.IsSA2)
+					{
+						LoadSA2SetFiles(setfallback, setstr);
+					}
+					else
+					{
+						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
-							if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
-							LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
-						}
-						else
-						{
-							LevelData.AssignSetList(i, new List<SETItem>());
+							string formatted = string.Format(setstr, LevelData.SETChars[i]);
+							string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+							string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
+							if (File.Exists(useSetPath))
+							{
+								if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
+								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+							}
+							else
+							{
+								LevelData.AssignSetList(i, new List<SETItem>());
+							}
 						}
 					}
 				}
