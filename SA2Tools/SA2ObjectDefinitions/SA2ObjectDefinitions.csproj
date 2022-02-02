@@ -17,8 +17,5 @@
 		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Common\" />
-	</ItemGroup>
 
 </Project>
