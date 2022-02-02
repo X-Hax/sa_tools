@@ -311,6 +311,14 @@ namespace SAModel.SALVL
 			welcomeForm = null;
 		}
 
+		public bool isSA2LVL()
+		{
+			if (salvlini == null)
+				return false;
+
+			return salvlini.IsSA2;
+		}
+
 		private void InitializeDirect3D()
 		{
 			if (d3ddevice == null)
@@ -602,7 +610,7 @@ namespace SAModel.SALVL
 		private void onClickCharacterButton(object sender, EventArgs e)
 		{
 
-			if (salvlini.IsSA2) //fix crash
+			if (isSA2LVL()) //fix crash
 			{
 				return;
 			}

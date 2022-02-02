@@ -23,7 +23,7 @@ namespace SAModel.SALVL
 			if (!isStageLoaded)
 				return;
 
-			if (salvlini.IsSA2 == true) //temporary solution
+			if (isSA2LVL()) //temporary solution
 			{
 				SaveSA2SetFile(autoCloseDialog);
 				unsaved = false;

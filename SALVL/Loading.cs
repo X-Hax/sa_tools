@@ -800,7 +800,7 @@ namespace SAModel.SALVL
 
 				IniCharInfo character;
 
-				if (salvlini.IsSA2)
+				if (isSA2LVL())
 				{
 					character = salvlini.Characters[LevelData.SA2Characters[i]];
 				}
@@ -939,7 +939,7 @@ namespace SAModel.SALVL
 			progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 			// Load Object Definitions INI file
-			if (salvlini.IsSA2 != true && File.Exists(salvlini.ObjectDefinitions))
+			if (File.Exists(salvlini.ObjectDefinitions))
 				objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(salvlini.ObjectDefinitions);
 			LevelData.ObjDefs = new List<ObjectDefinition>();
 			LevelData.MisnObjDefs = new List<ObjectDefinition>();
@@ -957,7 +957,7 @@ namespace SAModel.SALVL
 					string setTxt = "SET";
 					string setEnd = "{0}.bin";
 
-					if (salvlini.IsSA2)
+					if (isSA2LVL())
 					{
 						setEnd = "_s.bin";
 					}
@@ -966,7 +966,7 @@ namespace SAModel.SALVL
 					string setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
 					LevelData.InitSETItems();
 
-					if (salvlini.IsSA2)
+					if (isSA2LVL())
 					{
 						LoadSA2SetFiles(setfallback, setstr);
 					}
