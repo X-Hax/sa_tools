@@ -633,6 +633,32 @@ namespace SAModel.SALVL
 				sonicToolStripMenuItem.PerformClick();
 		}
 
+		// Hide/Show features that only work in SADX.
+		public void Set_SADXOptionsVisible(Boolean flag)
+		{
+			lightsEditorToolStripMenuItem.Visible = flag;
+            fogEditorToolStripMenuItem.Visible = flag;
+
+			//char icon / menu
+			characterToolStripMenuItem.Visible = flag;
+			toolSonic.Visible = flag;
+			toolTails.Visible = flag;
+			toolKnuckles.Visible = flag;
+			toolAmy.Visible = flag;
+			toolBig.Visible = flag;
+			toolGamma.Visible = flag;
+
+			toolClearMissionSetItems.Visible = flag;
+			viewMissionSETItemsToolStripMenuItem.Visible = flag;
+			missionItemsButton.Visible = flag;
+			missionObjectToolStripMenuItem.Visible = flag;
+			addMissionItemToolStripMenuItem.Visible = flag;
+			layer_missionSETItemsToolStripMenuItem.Visible = flag;
+
+			timeOfDayToolStripMenuItem.Visible = flag;
+		}
+
+
 		private void levelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
 			UncheckMenuItems(levelToolStripMenuItem);
@@ -1920,6 +1946,17 @@ namespace SAModel.SALVL
 				DialogResult result = fileDialog.ShowDialog();
 				if (result == DialogResult.OK)
 				{
+					string ext = Path.GetExtension(fileDialog.FileName).ToLowerInvariant();
+
+					if (ext == ".sa2lvl" || ext == ".sa2blvl")
+					{
+						Set_SADXOptionsVisible(false);
+					} 
+					else
+					{
+						Set_SADXOptionsVisible(true);
+					}
+
 					LoadLandtable(fileDialog.FileName);
 					UpdateMRUList(fileDialog.FileName);
 				}

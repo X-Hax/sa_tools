@@ -140,11 +140,13 @@ namespace SAModel.SALVL
 			{
 				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sa2lvl.ini"));
 				salvlini.IsSA2 = true;
+				Set_SADXOptionsVisible(false);
 			}
 			else
 			{
 				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
 				salvlini.IsSA2 = false;
+				Set_SADXOptionsVisible(true);
 			}
 
 
