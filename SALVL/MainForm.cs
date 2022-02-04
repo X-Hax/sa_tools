@@ -562,6 +562,11 @@ namespace SAModel.SALVL
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
+			if (isSA2LVL()) //fix crash
+			{
+				return;
+			}
+
 			LevelData.Character = characterToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
 
 			// Character view buttons
@@ -609,7 +614,6 @@ namespace SAModel.SALVL
 
 		private void onClickCharacterButton(object sender, EventArgs e)
 		{
-
 			if (isSA2LVL()) //fix crash
 			{
 				return;
