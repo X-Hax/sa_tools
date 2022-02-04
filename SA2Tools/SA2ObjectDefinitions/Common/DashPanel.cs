@@ -15,10 +15,16 @@ namespace SA2ObjectDefinitions.Common
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 
+		private NJS_OBJECT child;
+		private Mesh[] meshesChild;
+
 		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_KASOKU_PANEL.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
+
+			child = ObjectHelper.LoadModel("object/OBJECT_KASOKU.sa2mdl");
+			meshesChild = ObjectHelper.GetMeshes(child);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -37,9 +43,13 @@ namespace SA2ObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJTEX_COMMON"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshes));
+			result.AddRange(child.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshesChild));
 			if (item.Selected)
+			{
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
+				result.AddRange(child.DrawModelTreeInvert(transform, meshesChild));
+			}
 			transform.Pop();
 			return result;
 		}
