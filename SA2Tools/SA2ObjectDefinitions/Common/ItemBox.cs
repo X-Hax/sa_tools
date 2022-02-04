@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
@@ -17,6 +18,8 @@ namespace SA2ObjectDefinitions.Common
 		protected Mesh[] meshes;
 		protected int childindex;
 		protected UInt16 ItemBoxLength = 11;
+		protected TexnameArray texarr;
+		protected Texture[] texs;
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
@@ -30,10 +33,12 @@ namespace SA2ObjectDefinitions.Common
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
+			if (texs == null)
+				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			//((BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), ItemBoxLength)];
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
@@ -91,6 +96,7 @@ namespace SA2ObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOX.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 2;
+			texarr = new TexnameArray("object/tls/itembox.tls");
 		}
 
 		public override void SetOrientation(SETItem item, Vertex direction)
@@ -112,6 +118,7 @@ namespace SA2ObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOXAIR.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 1;
+			texarr = new TexnameArray("object/tls/itemboxair.tls");
 		}
 
 		public override string Name { get { return "Floating Item Box"; } }

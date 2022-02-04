@@ -54,11 +54,43 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return Meshes;
 		}
 
-		public static Texture[] GetTextures(string name)
+		public static Texture[] GetTextures(string name, SplitTools.TexnameArray texnames = null, Device dev = null)
 		{
-			if (LevelData.Textures != null && LevelData.Textures.ContainsKey(name) && !EditorOptions.DisableTextures)
-				return LevelData.Textures[name];
-			return null;
+			Texture[] result = null;
+			if (LevelData.Textures == null || EditorOptions.DisableTextures)
+				return result;
+			if (LevelData.Textures.ContainsKey(name))
+				result = LevelData.Textures[name];
+			if (LevelData.Textures.ContainsKey(name.ToUpperInvariant()))
+				result = LevelData.Textures[name.ToUpperInvariant()];
+			if (texnames == null)
+				return result;
+			// Partial texlist
+			else
+			{
+				if (LevelData.TextureBitmaps == null || dev == null)
+					return result;
+				Direct3D.TextureSystem.BMPInfo[] texturebmps = null;
+				if (LevelData.TextureBitmaps.ContainsKey(name))
+					texturebmps = LevelData.TextureBitmaps[name];
+				if (LevelData.TextureBitmaps.ContainsKey(name.ToUpperInvariant()))
+					texturebmps = LevelData.TextureBitmaps[name.ToUpperInvariant()];
+				List<Texture> texlist = new List<Texture>();
+				if (texturebmps == null)
+					return result;
+				for (int i = 0; i < texnames.TextureNames.Length; i++)
+				{
+					for (int b = 0; b < texturebmps.Length; b++)
+					{
+						if (texturebmps[b].Name.ToLowerInvariant() == texnames.TextureNames[i].ToLowerInvariant())
+						{
+							texlist.Add(texturebmps[b].Image.ToTexture(dev));
+							break;
+						}
+					}
+				}
+				return texlist.ToArray();
+			}	
 		}
 
 		public static HitResult CheckSpriteHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
