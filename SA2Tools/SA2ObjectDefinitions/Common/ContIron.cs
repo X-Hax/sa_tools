@@ -8,6 +8,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
@@ -15,11 +16,14 @@ namespace SA2ObjectDefinitions.Common
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
+		private TexnameArray texarr;
+		private Texture[] texs;
 
 		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_CONTIRON.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
+			texarr = new TexnameArray("object/tls/CONTIRON.tls");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -35,10 +39,12 @@ namespace SA2ObjectDefinitions.Common
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
+			if (texs == null)
+				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
