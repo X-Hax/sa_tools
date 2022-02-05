@@ -7,6 +7,12 @@ namespace SAModel.SAEditorCommon
 	public static class SADXOceanData
 	{
 		public static List<WaterSurfaceData> WaterSurfaces;
+		public static readonly NJS_MATERIAL Material = new()
+		{
+			IgnoreLighting = true,
+			SourceAlpha = AlphaInstruction.SourceAlpha,
+			DestinationAlpha = AlphaInstruction.One
+		};
 
 		public static void Initialize()
 		{
@@ -38,11 +44,8 @@ namespace SAModel.SAEditorCommon
 
 		private static BasicAttach GenerateAttach(FVF_PositionTextured[] fvf)
 		{
-			// Material
-			List<NJS_MATERIAL> mats = new List<NJS_MATERIAL>();
-			mats.Add(new NJS_MATERIAL() { IgnoreLighting = true, DiffuseColor = System.Drawing.Color.White, SourceAlpha = AlphaInstruction.SourceAlpha, DestinationAlpha = AlphaInstruction.One });
 			// Poly
-			ushort[] SquareInds = { 0, 1, 2, 1, 3, 2 };
+			ushort[] SquareInds = { 0, 1, 2, 3 };
 			List<Poly> poly = new List<Poly>();
 			poly.Add(new Strip(SquareInds, false));
 			// UV
@@ -63,7 +66,7 @@ namespace SAModel.SAEditorCommon
 				vertices.Add(new Vertex(fvf[f].Position.X, fvf[f].Position.Y, fvf[f].Position.Z));
 				normals.Add(new Vertex(0, 0, 0));
 			}
-			return new BasicAttach(vertices.ToArray(), normals.ToArray(), meshes, mats);
+			return new BasicAttach(vertices.ToArray(), normals.ToArray(), meshes, new List<NJS_MATERIAL>());
 		}
 
 		public class WaterPrimitive
