@@ -211,6 +211,14 @@ namespace SAModel.SALVL
 			RenderInfo.Draw(renderlist_death, d3ddevice, cam);
 			d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
 
+			// SADX water
+			if (LevelData.leveleff != null & viewSkyboxToolStripMenuItem.Checked)
+			{
+				d3ddevice.SetRenderState(RenderState.ZWriteEnable, false);
+				LevelData.leveleff.RenderLate(d3ddevice, cam);
+				d3ddevice.SetRenderState(RenderState.ZWriteEnable, true);
+			}
+
 			d3ddevice.EndScene(); // scene drawings go before this line
 
 			#region Draw Helper Objects
