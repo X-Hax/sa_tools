@@ -24,7 +24,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		private Mesh Mesh { get { return mesh; } set { mesh = value; } }
 		[Category("Common")]
 		public string Name { get { return Model.Name; } }
-
+		private static bool IsSA2DeathZone { get; set; }
 		[Browsable(false)]
 		public override BoundingSphere Bounds
 		{
@@ -61,6 +61,27 @@ namespace SAModel.SAEditorCommon.DataTypes
 			model.ProcessVertexData();
 			Flags = flags;
 			
+			Mesh = Model.Attach.CreateD3DMesh();
+			IsSA2DeathZone = false;
+			rotateZYX = Model.RotateZYX;
+			GetHandleMatrix();
+		}
+
+		public DeathZoneItem(NJS_OBJECT model, SA2CharacterFlags flags, EditorItemSelection selectionManager)
+	: base(selectionManager)
+		{
+			Model = model;
+			if (model.Attach is BasicAttach)
+			{
+				BasicAttach attach = (BasicAttach)model.Attach;
+				if (attach.Material.Count == 0) attach.Material.Add(new NJS_MATERIAL());
+				attach.Material[0].DiffuseColor = System.Drawing.Color.FromArgb(96, 255, 0, 0);
+				attach.Material[0].Flags = 0x96102400;
+			}
+			model.ProcessVertexData();
+			SA2Flags = flags;
+			IsSA2DeathZone = true;
+
 			Mesh = Model.Attach.CreateD3DMesh();
 
 			rotateZYX = Model.RotateZYX;
@@ -180,12 +201,18 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 		[Category("Common"), Description("All characters flags in one field.")]
 		public SA1CharacterFlags Flags { get; set; }
+		public SA2CharacterFlags SA2Flags { get; set; }
 
 		[Browsable(false)]
 		public bool Visible
 		{
 			get
 			{
+				if (IsSA2DeathZone) //since SA2 doesn't have one set per character, flag doesn't really matter.
+				{
+					return true;
+				}
+			
 				switch (LevelData.Character)
 				{
 					case 0:

@@ -691,7 +691,7 @@ namespace SAModel.SALVL
 
 				List<SETItem> SetList = new List<SETItem>();
 
-				SetList = SETItem.Load(useSetPath, selectedItems);	
+				SetList = SETItem.Load(useSetPath, selectedItems);
 				setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
 				setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
 
@@ -708,6 +708,26 @@ namespace SAModel.SALVL
 			{
 				LevelData.AssignSetList(0, new List<SETItem>());
 			}
+		}
+
+		private void LoadSA2DeathZones(IniLevelData level)
+		{
+			LevelData.DeathZones = new List<DeathZoneItem>();
+			if (File.Exists(level.DeathZones))
+			{
+
+				SA2BDeathZoneFlags[] dzini = SA2BDeathZoneFlagsList.Load(level.DeathZones);
+				string path = Path.GetDirectoryName(level.DeathZones);
+				for (int i = 0; i < dzini.Length; i++)
+				{
+					progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+
+					LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
+				}
+			}
+			else
+				LevelData.DeathZones = null;
+
 		}
 
 		private void MainLevelLoadLoop()
@@ -854,20 +874,28 @@ namespace SAModel.SALVL
 				LevelData.DeathZones = null;
 			else
 			{
-				LevelData.DeathZones = new List<DeathZoneItem>();
-				if (File.Exists(level.DeathZones))
+				if (isSA2LVL())
 				{
-					DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
-					string path = Path.GetDirectoryName(level.DeathZones);
-					for (int i = 0; i < dzini.Length; i++)
-					{
-						progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
-
-						LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
-					}
+					LoadSA2DeathZones(level);
 				}
 				else
-					LevelData.DeathZones = null;
+				{
+					LevelData.DeathZones = new List<DeathZoneItem>();
+					if (File.Exists(level.DeathZones))
+					{
+
+						DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
+						string path = Path.GetDirectoryName(level.DeathZones);
+						for (int i = 0; i < dzini.Length; i++)
+						{
+							progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+
+							LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
+						}
+					}
+					else
+						LevelData.DeathZones = null;
+				}
 			}
 
 			progress.StepProgress();
