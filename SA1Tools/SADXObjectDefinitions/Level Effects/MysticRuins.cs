@@ -15,7 +15,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		NJS_OBJECT model;
 		Mesh[] meshes;
 		Vector3 Skybox_Scale;
-		Texture[] texs;
+		Texture[] texs, texs_advmr00;
 		byte Act;
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
@@ -55,6 +55,7 @@ namespace SADXObjectDefinitions.Level_Effects
 					break;
 			}
 			meshes = ObjectHelper.GetMeshes(model);
+			SetOceanData();
 		}
 
 		public override void Render(Device dev, EditorCamera cam)
@@ -70,6 +71,67 @@ namespace SADXObjectDefinitions.Level_Effects
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
+		}
+		public override void RenderLate(Device dev, EditorCamera cam)
+		{
+			if (Act != 0)
+				return;
+			texs_advmr00 = ObjectHelper.GetTextures("ADV_MR00");
+			List<RenderInfo> result3 = new List<RenderInfo>();
+			MatrixStack transform = new MatrixStack();
+			dev.SetRenderState(RenderState.ZWriteEnable, false);
+			for (int o = 0; o < SADXOceanData.WaterSurfaces.Count; o++)
+			{
+				SADXOceanData.WaterSurfaceData water = SADXOceanData.WaterSurfaces[o];
+				transform.Push();
+				transform.NJTranslate(water.Center);
+				transform.Push();
+				for (int i = 0; i < water.WrapX; i++)
+				{
+					for (int z = 0; z < water.WrapZ; z++)
+					{
+						result3.Add(new RenderInfo(water.Meshes[z], 0, transform.Top, SADXOceanData.Material, texs_advmr00?[water.TextureWaves], dev.GetRenderState<FillMode>(RenderState.FillMode), water.Bounds));
+					}
+					transform.NJTranslate(water.WrapXZ, 0, 0);
+				}
+				transform.Pop();
+				transform.Push();
+				transform.NJTranslate(0, 1, 0);
+				for (int i = 0; i < water.WrapX; i++)
+				{
+					for (int z = 0; z < water.WrapZ; z++)
+					{
+						result3.Add(new RenderInfo(water.Meshes[z], 0, transform.Top, SADXOceanData.Material, texs_advmr00?[water.TextureSea], dev.GetRenderState<FillMode>(RenderState.FillMode), water.Bounds));
+					}
+					transform.NJTranslate(water.WrapXZ, 0, 0);
+				}
+				transform.Pop();
+				transform.Pop();
+			}
+			RenderInfo.Draw(result3, dev, cam);
+		}
+
+		private void SetOceanData()
+		{
+			SADXOceanData.Initialize();
+			switch (Act)
+			{
+				case 0:
+		
+					SADXOceanData.WaterSurfaces.Add(new SADXOceanData.WaterSurfaceData()
+					{
+						Center = new Vertex(-4174.0f, -418.5f, -2166.0f),
+						WrapX = 60,
+						WrapZ = 30,
+						WrapXZ = 256.0f,
+						TextureSea = 128,
+						TextureWaves = 127
+					});
+					SADXOceanData.InitWaterSurface(0);
+					break;
+				default:
+					break;
+			}
 		}
 	}
 }
