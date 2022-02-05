@@ -233,6 +233,7 @@ namespace SAModel.SALVL
 				}
 				string textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
+				log.Add("Loading textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures;
 				if (textureBitmaps != null)
 				{

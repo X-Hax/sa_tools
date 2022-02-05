@@ -5,6 +5,7 @@ using System;
 using SharpDX.Direct3D9;
 using Mesh = SAModel.Direct3D.Mesh;
 using SharpDX;
+using SplitTools;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -24,6 +25,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl, gnddst;
 		private int? xrot, yrot, zrot;
 		private ushort? defxrot, defyrot, defzrot;
+		private Texture[] texs;
+		private TexnameArray texnames;
 
 		public override void Init(ObjectData data, string name)
 		{
@@ -32,6 +35,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 			{
 				model = ObjectHelper.LoadModel(data.Model);
 				meshes = ObjectHelper.GetMeshes(model);
+				if (!string.IsNullOrEmpty(data.Texlist))
+					texnames = new TexnameArray(data.Texlist);
 			}
 
 			texture = data.Texture;
@@ -60,7 +65,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			HitResult result;
 			if (model == null)
-				result = ObjectHelper.CheckSpriteHit(Near, Far, Viewport, Projection, View, transform);
+				result = ObjectHelper.CheckQuestionBoxHit(Near, Far, Viewport, Projection, View, transform);
 			else
 			{
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
@@ -77,11 +82,13 @@ namespace SAModel.SAEditorCommon.SETEditing
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
 			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			if (model == null)
-				result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), item.Selected));
+				result.AddRange(ObjectHelper.RenderQuestionBox(dev, transform, null, item.Position.ToVector3(), item.Selected));
 			else
 			{
+				if (texs == null)
+					texs = ObjectHelper.GetTextures(texture, texnames, dev);
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
-				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures(texture), meshes));
+				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			}
@@ -108,7 +115,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			transform.NJTranslate(xpos ?? item.Position.X, ypos ?? item.Position.Y, zpos ?? item.Position.Z);
 			transform.NJRotateObject(xrot ?? item.Rotation.X, yrot ?? item.Rotation.Y, zrot ?? item.Rotation.Z);
 			if (model == null)
-				return ObjectHelper.GetSpriteBounds(transform);
+				return ObjectHelper.GetQuestionBoxBounds(transform);
 			else
 			{
 				transform.NJScale(xscl ?? item.Scale.X, yscl ?? item.Scale.Y, zscl ?? item.Scale.Z);
