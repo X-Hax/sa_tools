@@ -922,7 +922,11 @@ namespace SAModel.SALVL
 			progress.SetStep("Common objects");
 			// Loads common object textures (e.g OBJ_REGULAR)
 			if (File.Exists(salvlini.ObjectTextureList))
-				LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);
+				LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);			
+			
+			// Loads skybox / BG tex (SA2 only)
+			if (File.Exists(level.BackgroundTextureList))
+				LoadTextureList(level.BackgroundTextureList, modSystemFolder);
 
 			progress.SetStep("Mission objects");
 			// Loads mission object textures
@@ -1173,7 +1177,13 @@ namespace SAModel.SALVL
 				progress.SetTaskAndStep("Loading Level Effects...");
 
 				LevelDefinition def = null;
-				string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+				string ty; 
+
+				if (isSA2LVL())
+					ty = "SA2ObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+				else
+					ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+
 				string dllfile = Path.Combine("dllcache", ty + ".dll");
 				string pdbfile = Path.Combine("dllcache", ty + ".pdb");
 				DateTime modDate = DateTime.MinValue;
