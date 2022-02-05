@@ -206,9 +206,9 @@ namespace SAModel.SALVL
 		}
 
 		/// <summary>
-		/// Loads textures from a PVM/GVM/PVMX or a texture pack into the scene.
+		/// Loads textures from a PVM/GVM/PVMX/PAK or a texture pack into the scene.
 		/// </summary>
-		/// <param name="pvmName">The PVM/PRS/PVMX/GVM/texture pack name (name only; no path or extension).</param>
+		/// <param name="pvmName">The PVM/PRS/PVMX/GVM/PAK/texture pack name (name only; no path or extension).</param>
 		/// <param name="systemPath">The mod's system path.</param>
 		void LoadPVM(string pvmName, string systemPath)
 		{
@@ -216,11 +216,20 @@ namespace SAModel.SALVL
 			{
 				string texturePath;
 				string extension = ".PVM";
+				string textureFallbackPath;
 				// Determine whether a custom texture pack or a PVMX exists
 				if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
 					texturePath = Path.Combine(modFolder, "textures", pvmName, "index.txt");
 				else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
 					texturePath = Path.Combine(modFolder, "textures", pvmName + ".PVMX");
+				// Check if a PAK file exists in the PRS folder (SA2)
+				else if (File.Exists(Path.Combine(modFolder, "gd-pc", "PRS", pvmName + ".PAK")))
+					texturePath = Path.Combine(modFolder, "gd-pc", "PRS", pvmName + ".PAK");
+				else if (File.Exists(Path.Combine(systemFallback, "PRS", pvmName) + ".PAK"))
+				{
+					extension = ".PAK";
+					texturePath = Path.Combine(systemPath, "PRS", pvmName) + extension;
+				}
 				else
 				{
 					if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PVM"))
@@ -231,7 +240,10 @@ namespace SAModel.SALVL
 						extension = ".PRS";
 					texturePath = Path.Combine(systemPath, pvmName) + extension;
 				}
-				string textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
+				if (extension != ".PAK")
+					textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
+				else
+					textureFallbackPath = Path.Combine(systemFallback, "PRS", pvmName) + extension;
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				log.Add("Loading textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures;
