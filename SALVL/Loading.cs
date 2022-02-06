@@ -1248,7 +1248,7 @@ namespace SAModel.SALVL
 					if (def != null)
 					{
 						byte timeofday = 0;
-						if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck)
+						if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck || levelact.Level == SA1LevelIDs.EggCarrierOutside)
 						{
 							if (eveningToolStripMenuItem.Checked)
 								timeofday = 1;
