@@ -17,7 +17,7 @@ namespace SADXObjectDefinitions.Level_Effects
 		readonly Mesh[][] meshes = new Mesh[3][];
 		Texture[] texs;
 		Vector3 Skybox_Scale;
-		
+
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
 			Act = act;
@@ -33,7 +33,7 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Render(Device dev, EditorCamera cam)
 		{
-			if (Act == 1 || Act == 3) 
+			if (Act == 1 || Act == 3)
 				return;
 			texs = ObjectHelper.GetTextures("BG_ICECAP");
 			List<RenderInfo> result = new List<RenderInfo>();
@@ -45,18 +45,18 @@ namespace SADXObjectDefinitions.Level_Effects
 				case 0:
 				default:
 					for (int i = 0; i < 3; i++)
-						result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
+						result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					break;
 				case 2:
 					transform.NJScale(Skybox_Scale);
 					if (cam.Position.Y > -4000.0f || cam.Position.Y < -18500.0f)
 					{
 						for (int i = 0; i < 2; i++)
-							result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
+							result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 						if (cam.Position.Y > -4000.0f)
 						{
 							transform.NJRotateY(0xC000);
-							result.AddRange(models[2].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[2]));
+							result.AddRange(models[2].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[2], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 						}
 					}
 					break;

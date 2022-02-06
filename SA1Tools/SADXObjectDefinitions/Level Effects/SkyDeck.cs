@@ -73,21 +73,21 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.NJTranslate(x, y, z);
 			transform.NJScale(1.7f, 1.0f, 1.7f);
 			transform.NJScale(Skybox_Scale);
-			result1.AddRange(modelSky.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshSky));
+			result1.AddRange(modelSky.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshSky, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			RenderInfo.Draw(result1, dev, cam);
 			dev.SetRenderState(RenderState.ZWriteEnable, true);
 			transform.NJScale(1.0f, 1.0f, 1.0f);
-			result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom));
+			result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.NJTranslate(0.0f, -100.0f, 0.0f);
-			result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom));
+			result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (timeOfDay != 0 && Act != 2)
 			{
 				transform.NJTranslate(0.0f, -600.0f, 0.0f);
 				transform.NJScale(Skybox_Scale);
-				result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom));
+				result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				transform.NJScale(1.0f, 1.0f, 1.0f);
 				transform.NJTranslate(0.0f, -100.0f, 0.0f);
-				result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom));
+				result2.AddRange(modelBottom.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshBottom, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			}
 			transform.Pop();
 			RenderInfo.Draw(result2, dev, cam);

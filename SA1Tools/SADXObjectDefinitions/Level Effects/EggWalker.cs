@@ -8,14 +8,14 @@ using Mesh = SAModel.Direct3D.Mesh;
 
 namespace SADXObjectDefinitions.Level_Effects
 {
-	class Chaos4 : LevelDefinition
+	class EggWalker : LevelDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] mesh;
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
-			model = ObjectHelper.LoadModel("boss_chaos4/common/models/obj/c4_s_sora_hare.nja.sa1mdl");
+			model = ObjectHelper.LoadModel("bossegm2/models/sky/boss_em2_sky_n.nja.sa1mdl");
 			mesh = ObjectHelper.GetMeshes(model);
 		}
 
@@ -24,8 +24,9 @@ namespace SADXObjectDefinitions.Level_Effects
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
+			transform.NJTranslate(cam.Position);
 			dev.SetRenderState(RenderState.ZWriteEnable, true);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CHAOS4_OBJECT"), mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("EGM2_SKY"), mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

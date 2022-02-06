@@ -74,7 +74,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			}
 			for (int i = 0; i < 2; i++)
 				if (models[i] != null)
-					result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, textures[i], meshes[i]));
+					result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, textures[i], meshes[i], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

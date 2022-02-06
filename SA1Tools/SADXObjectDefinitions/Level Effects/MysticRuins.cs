@@ -68,10 +68,11 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}
+
 		public override void RenderLate(Device dev, EditorCamera cam)
 		{
 			if (Act != 0)
@@ -117,7 +118,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			switch (Act)
 			{
 				case 0:
-		
+
 					SADXOceanData.WaterSurfaces.Add(new SADXOceanData.WaterSurfaceData()
 					{
 						Center = new Vertex(-4174.0f, -418.5f, -2166.0f),
