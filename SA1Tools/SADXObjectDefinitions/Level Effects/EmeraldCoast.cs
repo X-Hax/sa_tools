@@ -52,8 +52,8 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			result1.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg_beach, mesh1));
-			result1.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg_beach, mesh2));
+			result1.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg_beach, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			result1.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg_beach, mesh2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result1, dev, cam);
 			// Bridge in Act 1
@@ -63,24 +63,24 @@ namespace SADXObjectDefinitions.Level_Effects
 				transform.Push();
 				// Main part 1
 				transform.NJTranslate(2803.0f, -1.0f, 365.0f);
-				result2.AddRange(modelbridge.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge));
+				result2.AddRange(modelbridge.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				// Repeated parts
 				transform.NJTranslate(75.0f, 9.5f, 0.0f);
 				for (int i = 0; i < 25; i++)
 				{
 					// 1
 					transform.NJTranslate(20.0f, 0.0f, 0.0f);
-					result2.AddRange(modelbridge2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge2));
+					result2.AddRange(modelbridge2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					// 2
 					transform.NJTranslate(20.0f, 0.0f, 0.0f);
-					result2.AddRange(modelbridge3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge3));
+					result2.AddRange(modelbridge3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge3, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				}
 				// Small chunk
 				transform.NJTranslate(20.0f, 0.0f, 0.0f);
-				result2.AddRange(modelbridge2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge2));
+				result2.AddRange(modelbridge2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				// Main part 2
 				transform.NJTranslate(95.0f, -9.5f, 0.0f); // Y is 0.0 in original code at 0x501AD6, no idea why
-				result2.AddRange(modelbridge4.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge4));
+				result2.AddRange(modelbridge4.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_obj_beach, meshbridge4, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				transform.Pop();
 				RenderInfo.Draw(result2, dev, cam);
 			}
@@ -132,7 +132,7 @@ namespace SADXObjectDefinitions.Level_Effects
 					SADXOceanData.WaterSurfaces.Add(new SADXOceanData.WaterSurfaceData()
 					{
 						Center = new Vertex(-3000.0f, 0.0f, -1000.0f),
-						WrapX = 60,
+						WrapX = 90,
 						WrapXZ = 128.0f,
 						WrapZ = 35,
 						TextureSea = 15,

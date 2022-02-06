@@ -18,7 +18,9 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
-			SkyboxScale[] skyboxdata = SkyboxScaleList.Load("shareobj/bg/bgScale_tp.ini");
+			SkyboxScale[] skyboxdata;
+			string tptc = data.LevelID.StartsWith("03") ? "tp" : "tc";
+			skyboxdata = SkyboxScaleList.Load("shareobj/bg/bgScale_" + tptc + ".ini");
 			if (skyboxdata.Length > act)
 				Skybox_Scale = skyboxdata[act].Far.ToVector3();
 			model = ObjectHelper.LoadModel("shareobj/bg/models/tp_nbg2.nja.sa1mdl");
@@ -32,7 +34,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position);
 			transform.NJScale(Skybox_Scale);
-			RenderInfo.Draw(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes), dev, cam);
+			RenderInfo.Draw(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), dev, cam);
 			transform.Pop();
 		}
 	}

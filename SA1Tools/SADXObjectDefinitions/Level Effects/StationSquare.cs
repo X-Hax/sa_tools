@@ -46,14 +46,14 @@ namespace SADXObjectDefinitions.Level_Effects
 		public override void Render(Device dev, EditorCamera cam)
 		{
 			texs_bg = ObjectHelper.GetTextures("SS_BG");
-			texs_advss03= ObjectHelper.GetTextures("ADVSS03");
+			texs_advss03 = ObjectHelper.GetTextures("ADVSS03");
 			texs_advss04 = ObjectHelper.GetTextures("ADVSS04");
 			List<RenderInfo> result = new List<RenderInfo>();
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg, meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs_bg, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}
@@ -97,8 +97,8 @@ namespace SADXObjectDefinitions.Level_Effects
 
 		private void SetOceanData()
 		{
-			ushort textureWaves = 0;
-			ushort textureSea = 0;
+			ushort textureWaves;
+			ushort textureSea;
 			ushort textureSewer = 175;
 			SADXOceanData.Initialize();
 			switch (Act)
