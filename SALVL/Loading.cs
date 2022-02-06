@@ -691,6 +691,84 @@ namespace SAModel.SALVL
 
 		}
 
+		private void LoadSADXPaths(SA1LevelAct levelact)
+		{
+			LevelData.LevelSplines = new List<SplineData>();
+			SplineData.Init();
+
+			if (salvlini != null && !string.IsNullOrEmpty(salvlini.Paths))
+			{
+				progress.SetTaskAndStep("Reticulating splines...");
+
+				String splineDirectory = Path.Combine(Path.Combine(modFolder, salvlini.Paths),
+					levelact.ToString());
+
+				if (Directory.Exists(splineDirectory))
+				{
+					List<string> pathFiles = new List<string>();
+
+					for (int i = 0; i < int.MaxValue; i++)
+					{
+						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
+						if (File.Exists(path))
+						{
+							pathFiles.Add(path);
+						}
+						else
+							break;
+					}
+
+					foreach (string pathFile in pathFiles) // looping through path files
+					{
+						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+
+						newSpline.RebuildMesh(d3ddevice);
+
+						LevelData.LevelSplines.Add(newSpline);
+					}
+				}
+			}
+		}
+
+		private void LoadSA2Paths(IniLevelData level)
+		{
+
+			LevelData.LevelSplines = new List<SplineData>();
+			SplineData.Init();
+
+			if (salvlini != null && !string.IsNullOrEmpty(level.SA2Paths))
+			{
+				progress.SetTaskAndStep("Reticulating SA2 splines...");
+
+				String splineDirectory = Path.Combine(Path.Combine(modFolder, level.SA2Paths).ToString());
+
+				if (Directory.Exists(splineDirectory))
+				{
+					List<string> pathFiles = new List<string>();
+
+					for (int i = 0; i < int.MaxValue; i++)
+					{
+						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
+						if (File.Exists(path))
+						{
+							pathFiles.Add(path);
+						}
+						else
+							break;
+					}
+
+					foreach (string pathFile in pathFiles) // looping through path files
+					{
+						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+
+						newSpline.RebuildMesh(d3ddevice);
+
+						LevelData.LevelSplines.Add(newSpline);
+					}
+				}
+			}
+		}
+
 		private void LoadSA2SetFiles(string setfallback, string setstr)
 		{
 			string setTxt = "set";
@@ -728,7 +806,6 @@ namespace SAModel.SALVL
 			LevelData.DeathZones = new List<DeathZoneItem>();
 			if (File.Exists(level.DeathZones))
 			{
-
 				SA2BDeathZoneFlags[] dzini = SA2BDeathZoneFlagsList.Load(level.DeathZones);
 				string path = Path.GetDirectoryName(level.DeathZones);
 				for (int i = 0; i < dzini.Length; i++)
@@ -1279,41 +1356,10 @@ namespace SAModel.SALVL
 
 			#region Loading Splines
 
-			LevelData.LevelSplines = new List<SplineData>();
-			SplineData.Init();
-
-			if (salvlini != null && !string.IsNullOrEmpty(salvlini.Paths))
-			{
-				progress.SetTaskAndStep("Reticulating splines...");
-
-				String splineDirectory = Path.Combine(Path.Combine(modFolder, salvlini.Paths),
-					levelact.ToString());
-
-				if (Directory.Exists(splineDirectory))
-				{
-					List<string> pathFiles = new List<string>();
-
-					for (int i = 0; i < int.MaxValue; i++)
-					{
-						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
-						if (File.Exists(path))
-						{
-							pathFiles.Add(path);
-						}
-						else
-							break;
-					}
-
-					foreach (string pathFile in pathFiles) // looping through path files
-					{
-						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
-
-						newSpline.RebuildMesh(d3ddevice);
-
-						LevelData.LevelSplines.Add(newSpline);
-					}
-				}
-			}
+			if (isSA2LVL())
+				LoadSA2Paths(level);
+			else
+				LoadSADXPaths(levelact);
 
 			progress.StepProgress();
 

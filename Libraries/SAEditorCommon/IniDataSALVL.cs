@@ -62,5 +62,6 @@ namespace SAModel.SAEditorCommon
 		public string DeathZones { get; set; }
 		public string Effects { get; set; }
 		public string BackgroundTextureList { get; set; }
+		public string SA2Paths { get; set; }
 	}
 }
