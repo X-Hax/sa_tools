@@ -7,6 +7,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -61,7 +62,7 @@ namespace SADXObjectDefinitions.Common
 			transform.Push();
 			transform.NJTranslate(item.Position.X, (item.Position.Y + item.Scale.Y), item.Position.Z);
 			transform.NJRotateObject(item.Rotation);
-			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh));
+			result.AddRange(frog.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("BIG_KAERU"), frogmsh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(frog.DrawModelTreeInvert(transform, frogmsh));
 			transform.Pop();

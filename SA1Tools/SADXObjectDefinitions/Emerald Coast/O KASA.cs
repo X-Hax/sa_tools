@@ -7,6 +7,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
@@ -47,14 +48,14 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
-			result.AddRange(model.Sibling.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+			result.AddRange(model.Sibling.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.Sibling.DrawModelTreeInvert(transform, meshes2));
 			transform.Pop();

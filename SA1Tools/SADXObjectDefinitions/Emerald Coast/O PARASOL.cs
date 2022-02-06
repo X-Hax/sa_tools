@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
@@ -100,7 +101,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
 				transform.Pop();
@@ -112,7 +113,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2));
+				result.AddRange(model2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes2, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model2.DrawModelTreeInvert(transform, meshes2));
 				transform.Pop();
@@ -124,7 +125,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes3));
+				result.AddRange(model3.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes3, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model3.DrawModelTreeInvert(transform, meshes3));
 				transform.Pop();
@@ -136,7 +137,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model4.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes4));
+				result.AddRange(model4.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes4, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model4.DrawModelTreeInvert(transform, meshes4));
 				transform.Pop();
@@ -148,7 +149,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model5.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes5));
+				result.AddRange(model5.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes5, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model5.DrawModelTreeInvert(transform, meshes5));
 				transform.Pop();
@@ -160,7 +161,7 @@ namespace SADXObjectDefinitions.EmeraldCoast
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1));
+				result.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), meshes1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				if (item.Selected)
 					result.AddRange(model1.DrawModelTreeInvert(transform, meshes1));
 				transform.Pop();

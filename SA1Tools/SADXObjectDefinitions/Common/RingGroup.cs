@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -82,7 +83,7 @@ namespace SADXObjectDefinitions.Common
 					Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 					transform.Pop();
 					transform.NJTranslate(pos);
-					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 				}
@@ -99,7 +100,7 @@ namespace SADXObjectDefinitions.Common
 					Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 					transform.Pop();
 					transform.NJTranslate(pos);
-					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 				}

@@ -34,7 +34,7 @@ namespace SA2ObjectDefinitions.Level_Effects
 			transform.Push();
 			transform.NJTranslate(cam.Position.X, cam.Position.Y, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
-			result1.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1));
+			result1.AddRange(model1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs1, mesh1, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result1, dev, cam);
 		}
