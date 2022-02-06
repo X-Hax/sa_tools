@@ -740,7 +740,16 @@ namespace SAModel.SALVL
 			}
 			else
 				LevelData.DeathZones = null;
+		}
 
+		private void LoadSA2EnemiesTextures(string systemPath)
+		{
+			LoadPVM("E_G_KUMITEX", systemPath);		
+			LoadPVM("E_EMITEX", systemPath);
+			LoadPVM("E_GOLDTEX", systemPath);
+			LoadPVM("E_KUMITEX", systemPath);			
+			LoadPVM("E_KYOKOTEX", systemPath);		
+			LoadPVM("E_AITEX", systemPath);
 		}
 
 		private void MainLevelLoadLoop()
@@ -927,6 +936,9 @@ namespace SAModel.SALVL
 			// Loads skybox / BG tex (SA2 only)
 			if (File.Exists(level.BackgroundTextureList))
 				LoadTextureList(level.BackgroundTextureList, modSystemFolder);
+
+			if (isSA2LVL())
+				LoadSA2EnemiesTextures(modSystemFolder);
 
 			progress.SetStep("Mission objects");
 			// Loads mission object textures
