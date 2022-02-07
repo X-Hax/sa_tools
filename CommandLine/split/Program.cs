@@ -91,12 +91,16 @@ namespace Split
                     }
                     for (int i = 2; i < args.Length; i++)
                     {
-                        if (args[i] == "-data")
-                        {
-                            dataFolder = args[i + 1];
-                            i++;
-                        }
-                        else fullpath_out = args[i];
+						if (args[i] == "-nolabel")
+							nolabel = true;
+						else if (args[i] == "-nometa")
+							nometa = true;
+						else if (args[i] == "-data")
+						{
+							dataFolder = args[i + 1];
+							i++;
+						}
+						else fullpath_out = args[i];
                     }
                     Templates.SplitTemplate template = ProjectFunctions.openTemplateFile(Path.GetFullPath(args[1]));
                     if (template == null)
@@ -129,7 +133,7 @@ namespace Split
                             continue;
                         }
                         Console.WriteLine("\n{0}: {1}: {2}", splitEntry.CmnName == null ? "No description" : splitEntry.CmnName, splitEntry.SourceFile, splitEntry.IniFile+".ini");
-                        ProjectFunctions.SplitTemplateEntry(splitEntry, null, dataFolder, iniFolder, fullpath_out);
+                        ProjectFunctions.SplitTemplateEntry(splitEntry, null, dataFolder, iniFolder, fullpath_out, true, nometa, nolabel);
                     }
                     if (template.SplitMDLEntries != null)
                         foreach (Templates.SplitEntryMDL splitEntryMDL in template.SplitMDLEntries)

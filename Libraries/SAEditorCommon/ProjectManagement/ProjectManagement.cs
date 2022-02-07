@@ -513,7 +513,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Splits data from a SplitEntry.
 		/// </summary>
-		public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, bool overwrite = true)
+		public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, bool overwrite = true, bool nometa = false, bool nolabel = false)
 		{
 			string datafilename;
 			switch (splitData.SourceFile)
@@ -575,13 +575,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			switch (ext.ToLower())
 			{
 				case ".dll":
-					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
+					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, nometa, nolabel, overwrite, true);
 					break;
 				case ".nb":
 					SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, overwrite);
 					break;
 				default:
-					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, false, false, overwrite, true);
+					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, nometa, nolabel, overwrite, true);
 					break;
 			}
 		}
