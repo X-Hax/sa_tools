@@ -24,9 +24,9 @@ namespace SA2ObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
-			model1 = ObjectHelper.LoadModel("stg10_metalharbor/Skybox.sa2mdl");
+			model1 = ObjectHelper.LoadModel("stg10_metalharbor/models/Skybox.sa2mdl");
 			mesh1 = ObjectHelper.GetMeshes(model1);
-			model2 = ObjectHelper.LoadModel("stg10_metalharbor/Water.sa2mdl");
+			model2 = ObjectHelper.LoadModel("stg10_metalharbor/models/Water.sa2mdl");
 			mesh2 = ObjectHelper.GetMeshes(model2);
 			Skybox_Scale.X = 1.0f;
 			Skybox_Scale.Y = 1.0f;

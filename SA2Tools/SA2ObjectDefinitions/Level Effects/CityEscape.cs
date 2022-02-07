@@ -19,7 +19,7 @@ namespace SA2ObjectDefinitions.Level_Effects
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)
 		{
-			model1 = ObjectHelper.LoadModel("stg13_cityescape/Skybox.sa2bmdl");
+			model1 = ObjectHelper.LoadModel("stg13_cityescape/models/Skybox.sa2bmdl");
 			mesh1 = ObjectHelper.GetMeshes(model1);
 			Skybox_Scale.X = 3.5f;
 			Skybox_Scale.Y = 3.5f;
