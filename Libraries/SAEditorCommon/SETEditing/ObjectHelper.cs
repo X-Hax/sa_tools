@@ -16,41 +16,6 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private static NJS_OBJECT QuestionBoxModel;
 		private static Mesh QuestionBoxMesh;
 
-		public enum RotType
-		{
-			X,
-			Y,
-			Z,
-			XY,
-			XZ,
-			YX,
-			YZ,
-			ZX,
-			ZY,
-			XYZ,
-			XZY,
-			YXZ,
-			YZX,
-			ZXY,
-			ZYX,
-			NoRot
-		}
-
-		public enum SclType
-		{
-			X,
-			Y,
-			Z,
-			XY,
-			XZ,
-			YZ,
-			XYZ,
-			AllX,
-			AllY,
-			AllZ,
-			NoScl
-		}
-
 		public static void Init(Device device)
 		{
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
