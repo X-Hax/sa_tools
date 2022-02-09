@@ -29,7 +29,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			for (int i = 0; i < 3; i++)
-				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
+				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

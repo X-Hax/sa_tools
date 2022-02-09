@@ -39,7 +39,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			transform.NJTranslate(cam.Position.X, 0, cam.Position.Z);
 			transform.NJScale(Skybox_Scale);
 			for (int i = 0; i < 5; i++)
-				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i]));
+				result.AddRange(models[i].DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes[i], EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

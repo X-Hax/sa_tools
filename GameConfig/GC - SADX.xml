@@ -4,6 +4,7 @@
   <SplitEntry SourceFile="_Main.rel" IniFile="_Main" />
   <SplitEntry SourceFile="ModelsMiles.rel" IniFile="ModelsMiles" />
   <SplitEntry SourceFile="ModelsKnuckles.rel" IniFile="ModelsKnuckles" />
+  <SplitEntry SourceFile="advertise.rel" IniFile="advertise" />
   <SplitEntry SourceFile="s_mot.rel" IniFile="s_mot" />
   <SplitEntry SourceFile="s_sbmot.rel" IniFile="s_sbmot" />
   <SplitEntry SourceFile="m_sbmot.rel" IniFile="m_sbmot" />

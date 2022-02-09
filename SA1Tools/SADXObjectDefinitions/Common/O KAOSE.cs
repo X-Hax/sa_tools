@@ -7,6 +7,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -73,7 +74,7 @@ namespace SADXObjectDefinitions.Common
 					transform.Push();
 					transform.NJTranslate(item.Position.X, (item.Position.Y + 10f), item.Position.Z);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(eme_b.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("KAOS_EME"), ememsh_b));
+					result.AddRange(eme_b.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("KAOS_EME"), ememsh_b, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					if (item.Selected)
 						result.AddRange(eme_b.DrawModelTreeInvert(transform, ememsh_b));
 					transform.Pop();
@@ -84,7 +85,7 @@ namespace SADXObjectDefinitions.Common
 					transform.Push();
 					transform.NJTranslate(item.Position.X, (item.Position.Y + 10f), item.Position.Z);
 					transform.NJRotateObject(item.Rotation);
-					result.AddRange(eme_c.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("KAOS_EME"), ememsh_c));
+					result.AddRange(eme_c.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("KAOS_EME"), ememsh_c, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					if (item.Selected)
 						result.AddRange(eme_c.DrawModelTreeInvert(transform, ememsh_c));
 					transform.Pop();

@@ -23,6 +23,14 @@ namespace SAModel.SALVL
 			if (!isStageLoaded)
 				return;
 
+			if (isSA2LVL()) //temporary solution
+			{
+				SaveSA2SetFile(autoCloseDialog);
+				unsaved = false;
+				Application.DoEvents();
+				return;
+			}
+
 			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 6, true, autoCloseDialog);
 			progress.Show(this);
 			Application.DoEvents();
@@ -268,6 +276,30 @@ namespace SAModel.SALVL
 					}
 				}
 			}
+		}
+
+		private void SaveSA2SetFile(bool autoCloseDialog)
+		{
+			Application.DoEvents();
+			IniLevelData level = salvlini.Levels[levelID];
+			Directory.CreateDirectory(modSystemFolder);
+
+			if (LevelData.geo != null)
+				LevelData.geo.SaveToFile(level.LevelGeometry, LandTableFormat.SA2B);
+
+			#region Saving SET Items
+
+			Application.DoEvents();
+
+			if (!LevelData.SETItemsIsNull())
+			{
+				SaveSETFile(true);
+			}
+
+			#endregion
+
+			unsaved = false;
+			Application.DoEvents();
 		}
 	}
 }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -60,7 +61,7 @@ namespace SADXObjectDefinitions.Common
 				transform.Push();
 				for (int j = 0; j < cols; ++j)
 				{
-					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+					result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 					if (item.Selected)
 						result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 					transform.NJTranslate(0, 0, 15);

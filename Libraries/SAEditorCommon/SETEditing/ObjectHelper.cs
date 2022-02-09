@@ -5,7 +5,6 @@ using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.Properties;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
@@ -14,17 +13,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 {
 	public static class ObjectHelper
 	{
-		private static readonly FVF_PositionTextured[] SquareVerts = {
-			new FVF_PositionTextured(new Vector3(-8, 8, 0), new Vector2(1, 0)),
-			new FVF_PositionTextured(new Vector3(-8, -8, 0), new Vector2(1, 1)),
-			new FVF_PositionTextured(new Vector3(8, 8, 0), new Vector2(0, 0)),
-			new FVF_PositionTextured(new Vector3(8, -8, 0), new Vector2(0, 1))
-		};
-		private static readonly short[] SquareInds = { 0, 1, 2, 1, 3, 2 };
 		private static NJS_OBJECT QuestionBoxModel;
-		private static Mesh SquareMesh;
 		private static Mesh QuestionBoxMesh;
-		private static BoundingSphere SquareBounds;
 
 		public enum RotType
 		{
@@ -64,10 +54,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 		public static void Init(Device device)
 		{
 			QuestionBoxModel = new ModelFile(Resources.questionmark).Model;
-			QuestionBoxMesh = ObjectHelper.GetMeshes(QuestionBoxModel).First();
-			SquareMesh = new Mesh<FVF_PositionTextured>(SquareVerts, new short[][] { SquareInds });
-			SquareBounds = SharpDX.BoundingSphere.FromPoints(SquareVerts.Select(a => a.Position).ToArray()).ToSAModel();
-
+			QuestionBoxMesh = GetMeshes(QuestionBoxModel).First();
 			QuestionMark = Resources.questionmark_t.ToTexture(device);
 		}
 
@@ -89,19 +76,55 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return Meshes;
 		}
 
-		public static Texture[] GetTextures(string name)
+		public static Texture[] GetTextures(string name, SplitTools.TexnameArray texnames = null, Device dev = null)
 		{
-			if (LevelData.Textures != null && LevelData.Textures.ContainsKey(name) && !EditorOptions.DisableTextures)
-				return LevelData.Textures[name];
-			return null;
+			Texture[] result = null;
+			if (LevelData.Textures == null || EditorOptions.DisableTextures)
+				return result;
+			if (LevelData.Textures.ContainsKey(name))
+				result = LevelData.Textures[name];
+			else if (LevelData.Textures.ContainsKey(name.ToUpperInvariant()))
+				result = LevelData.Textures[name.ToUpperInvariant()];
+			else if (LevelData.Textures.ContainsKey(name.ToLowerInvariant()))
+				result = LevelData.Textures[name.ToLowerInvariant()];
+			if (texnames == null)
+				return result;
+			// Partial texlist
+			else
+			{
+				if (LevelData.TextureBitmaps == null || dev == null)
+					return result;
+				Direct3D.TextureSystem.BMPInfo[] texturebmps = null;
+				if (LevelData.TextureBitmaps.ContainsKey(name))
+					texturebmps = LevelData.TextureBitmaps[name];
+				else if (LevelData.TextureBitmaps.ContainsKey(name.ToUpperInvariant()))
+					texturebmps = LevelData.TextureBitmaps[name.ToUpperInvariant()];
+				else if (LevelData.TextureBitmaps.ContainsKey(name.ToLowerInvariant()))
+					texturebmps = LevelData.TextureBitmaps[name.ToLowerInvariant()];
+				List<Texture> texlist = new List<Texture>();
+				if (texturebmps == null)
+					return result;
+				for (int i = 0; i < texnames.TextureNames.Length; i++)
+				{
+					for (int b = 0; b < texturebmps.Length; b++)
+					{
+						if (texturebmps[b].Name.ToLowerInvariant() == texnames.TextureNames[i].ToLowerInvariant())
+						{
+							texlist.Add(texturebmps[b].Image.ToTexture(dev));
+							break;
+						}
+					}
+				}
+				return texlist.ToArray();
+			}
 		}
 
-		public static HitResult CheckSpriteHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
+		public static HitResult CheckQuestionBoxHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
-			return SquareMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
+			return QuestionBoxMesh.CheckHit(Near, Far, Viewport, Projection, View, transform);
 		}
 
-		public static RenderInfo[] RenderSprite(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
+		public static RenderInfo[] RenderQuestionBox(Device dev, MatrixStack transform, Texture texture, Vector3 center, bool selected)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			NJS_MATERIAL mat = new NJS_MATERIAL
@@ -123,12 +146,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return result.ToArray();
 		}
 
-		public static BoundingSphere GetSpriteBounds(MatrixStack transform)
+		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform)
 		{
-			return GetSpriteBounds(transform, 1);
+			return GetQuestionBoxBounds(transform, 1);
 		}
 
-		public static BoundingSphere GetSpriteBounds(MatrixStack transform, float scale)
+		public static BoundingSphere GetQuestionBoxBounds(MatrixStack transform, float scale)
 		{
 			return GetModelBounds(QuestionBoxModel, transform, scale, new BoundingSphere());
 		}

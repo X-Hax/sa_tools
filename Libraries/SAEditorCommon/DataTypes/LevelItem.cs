@@ -208,7 +208,11 @@ namespace SAModel.SAEditorCommon.DataTypes
                     pw.ShowDialog();
                 }
             }
-        }
+			else if (COL.Model.Attach is GC.GCAttach)
+			{
+				System.Windows.Forms.MessageBox.Show("Unsupported model format.", "SALVL", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+			}
+		}
 
 		[Browsable(true)]
 		[DisplayName("Calculate Bounds")]

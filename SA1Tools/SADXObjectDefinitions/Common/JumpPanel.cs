@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 using System;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.Common
 {
@@ -45,8 +46,8 @@ namespace SADXObjectDefinitions.Common
 			((BasicAttach)numbermodel.Attach).Material[0].TextureID =
 				((BasicAttach)numbermodel.Attach).Material[1].TextureID =
 				62 + Math.Min(Math.Max((int)item.Scale.X, 0), 9);
-			result.AddRange(numbermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CON_REGULAR"), numbermeshes));
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes));
+			result.AddRange(numbermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CON_REGULAR"), numbermeshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
 			transform.Pop();

@@ -97,7 +97,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NvTriStripDotNet", "Librari
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VrSharp", "Libraries\VrSharp\VrSharp.csproj", "{8686CBD7-7055-475F-AA7D-E4B037363607}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizeAnim", "CommandLine\OptimizeAnim\OptimizeAnim.csproj", "{934F64CE-95F1-4966-9F38-8058B862C6A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimizeAnim", "CommandLine\OptimizeAnim\OptimizeAnim.csproj", "{934F64CE-95F1-4966-9F38-8058B862C6A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SA2ObjectDefinitions", "SA2Tools\SA2ObjectDefinitions\SA2ObjectDefinitions.csproj", "{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -459,6 +461,14 @@ Global
 		{934F64CE-95F1-4966-9F38-8058B862C6A9}.Release|x64.Build.0 = Release|x64
 		{934F64CE-95F1-4966-9F38-8058B862C6A9}.Release|x86.ActiveCfg = Release|x86
 		{934F64CE-95F1-4966-9F38-8058B862C6A9}.Release|x86.Build.0 = Release|x86
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Debug|x64.ActiveCfg = Debug|x64
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Debug|x64.Build.0 = Debug|x64
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Debug|x86.ActiveCfg = Debug|x86
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Debug|x86.Build.0 = Debug|x86
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Release|x64.ActiveCfg = Release|x64
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Release|x64.Build.0 = Release|x64
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Release|x86.ActiveCfg = Release|x86
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -503,6 +513,7 @@ Global
 		{A0DBF445-9081-4EEB-8451-42709BBABAF9} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
 		{8686CBD7-7055-475F-AA7D-E4B037363607} = {AD8162B4-58AB-4700-84DD-E2244DCED68C}
 		{934F64CE-95F1-4966-9F38-8058B862C6A9} = {9AC217CE-9E68-4FA6-BA32-0EC0B403846F}
+		{7ACA31B9-31A0-48C0-95E2-2D5C9DBDDF93} = {485AB560-BEA5-4CC1-9324-43B12A687E57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A67C9CC3-1711-423D-BF49-9228EB5E90B0}

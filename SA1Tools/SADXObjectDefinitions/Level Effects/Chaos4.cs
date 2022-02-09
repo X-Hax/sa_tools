@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Level_Effects
 			MatrixStack transform = new MatrixStack();
 			transform.Push();
 			dev.SetRenderState(RenderState.ZWriteEnable, true);
-			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CHAOS4_OBJECT"), mesh));
+			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CHAOS4_OBJECT"), mesh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			transform.Pop();
 			RenderInfo.Draw(result, dev, cam);
 		}

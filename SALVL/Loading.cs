@@ -140,11 +140,13 @@ namespace SAModel.SALVL
 			{
 				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sa2lvl.ini"));
 				salvlini.IsSA2 = true;
+				Set_SADXOptionsVisible(false);
 			}
 			else
 			{
 				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sadxlvl.ini"));
 				salvlini.IsSA2 = false;
+				Set_SADXOptionsVisible(true);
 			}
 
 
@@ -204,9 +206,9 @@ namespace SAModel.SALVL
 		}
 
 		/// <summary>
-		/// Loads textures from a PVM/GVM/PVMX or a texture pack into the scene.
+		/// Loads textures from a PVM/GVM/PVMX/PAK or a texture pack into the scene.
 		/// </summary>
-		/// <param name="pvmName">The PVM/PRS/PVMX/GVM/texture pack name (name only; no path or extension).</param>
+		/// <param name="pvmName">The PVM/PRS/PVMX/GVM/PAK/texture pack name (name only; no path or extension).</param>
 		/// <param name="systemPath">The mod's system path.</param>
 		void LoadPVM(string pvmName, string systemPath)
 		{
@@ -214,11 +216,20 @@ namespace SAModel.SALVL
 			{
 				string texturePath;
 				string extension = ".PVM";
+				string textureFallbackPath;
 				// Determine whether a custom texture pack or a PVMX exists
 				if (Directory.Exists(Path.Combine(modFolder, "textures", pvmName)))
 					texturePath = Path.Combine(modFolder, "textures", pvmName, "index.txt");
 				else if (File.Exists(Path.Combine(modFolder, "textures", pvmName + ".PVMX")))
 					texturePath = Path.Combine(modFolder, "textures", pvmName + ".PVMX");
+				// Check if a PAK file exists in the PRS folder (SA2)
+				else if (File.Exists(Path.Combine(modFolder, "gd-pc", "PRS", pvmName + ".PAK")))
+					texturePath = Path.Combine(modFolder, "gd-pc", "PRS", pvmName + ".PAK");
+				else if (File.Exists(Path.Combine(systemFallback, "PRS", pvmName) + ".PAK"))
+				{
+					extension = ".PAK";
+					texturePath = Path.Combine(systemPath, "PRS", pvmName) + extension;
+				}
 				else
 				{
 					if (File.Exists(Path.Combine(systemFallback, pvmName) + ".PVM"))
@@ -229,8 +240,12 @@ namespace SAModel.SALVL
 						extension = ".PRS";
 					texturePath = Path.Combine(systemPath, pvmName) + extension;
 				}
-				string textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
+				if (extension != ".PAK")
+					textureFallbackPath = Path.Combine(systemFallback, pvmName) + extension;
+				else
+					textureFallbackPath = Path.Combine(systemFallback, "PRS", pvmName) + extension;
 				BMPInfo[] textureBitmaps = TextureArchive.GetTextures(ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
+				log.Add("Loading textures: " + ProjectFunctions.ModPathOrGameFallback(texturePath, textureFallbackPath));
 				Texture[] d3dTextures;
 				if (textureBitmaps != null)
 				{
@@ -676,6 +691,144 @@ namespace SAModel.SALVL
 
 		}
 
+		private void LoadSADXPaths(SA1LevelAct levelact)
+		{
+			LevelData.LevelSplines = new List<SplineData>();
+			SplineData.Init();
+
+			if (salvlini != null && !string.IsNullOrEmpty(salvlini.Paths))
+			{
+				progress.SetTaskAndStep("Reticulating splines...");
+
+				String splineDirectory = Path.Combine(Path.Combine(modFolder, salvlini.Paths),
+					levelact.ToString());
+
+				if (Directory.Exists(splineDirectory))
+				{
+					List<string> pathFiles = new List<string>();
+
+					for (int i = 0; i < int.MaxValue; i++)
+					{
+						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
+						if (File.Exists(path))
+						{
+							pathFiles.Add(path);
+						}
+						else
+							break;
+					}
+
+					foreach (string pathFile in pathFiles) // looping through path files
+					{
+						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+
+						newSpline.RebuildMesh(d3ddevice);
+
+						LevelData.LevelSplines.Add(newSpline);
+					}
+				}
+			}
+		}
+
+		private void LoadSA2Paths(IniLevelData level)
+		{
+
+			LevelData.LevelSplines = new List<SplineData>();
+			SplineData.Init();
+
+			if (salvlini != null && !string.IsNullOrEmpty(level.SA2Paths))
+			{
+				progress.SetTaskAndStep("Reticulating SA2 splines...");
+
+				String splineDirectory = Path.Combine(Path.Combine(modFolder, level.SA2Paths).ToString());
+
+				if (Directory.Exists(splineDirectory))
+				{
+					List<string> pathFiles = new List<string>();
+
+					for (int i = 0; i < int.MaxValue; i++)
+					{
+						string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
+						if (File.Exists(path))
+						{
+							pathFiles.Add(path);
+						}
+						else
+							break;
+					}
+
+					foreach (string pathFile in pathFiles) // looping through path files
+					{
+						SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
+
+						newSpline.RebuildMesh(d3ddevice);
+
+						LevelData.LevelSplines.Add(newSpline);
+					}
+				}
+			}
+		}
+
+		private void LoadSA2SetFiles(string setfallback, string setstr)
+		{
+			string setTxt = "set";
+			string setEnd = "_u.bin";
+			string useSetPath = ProjectFunctions.ModPathOrGameFallback(setstr, setfallback);
+
+			if (File.Exists(useSetPath))
+			{
+				if (progress != null)
+					progress.SetTask("SET: " + Path.GetFileName(useSetPath));
+
+				List<SETItem> SetList = new List<SETItem>();
+
+				SetList = SETItem.Load(useSetPath, selectedItems);
+				setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
+				setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
+
+				string useSetPath2 = ProjectFunctions.ModPathOrGameFallback(setstr, setfallback);
+
+				if (File.Exists(useSetPath2))
+				{
+					SetList.AddRange(SETItem.Load(useSetPath2, selectedItems));
+				}
+
+				LevelData.AssignSetList(0, SetList);
+			}
+			else
+			{
+				LevelData.AssignSetList(0, new List<SETItem>());
+			}
+		}
+
+		private void LoadSA2DeathZones(IniLevelData level)
+		{
+			LevelData.DeathZones = new List<DeathZoneItem>();
+			if (File.Exists(level.DeathZones))
+			{
+				SA2BDeathZoneFlags[] dzini = SA2BDeathZoneFlagsList.Load(level.DeathZones);
+				string path = Path.GetDirectoryName(level.DeathZones);
+				for (int i = 0; i < dzini.Length; i++)
+				{
+					progress.SetStep(String.Format("Loading model {0}/{1}", (i + 1), dzini.Length));
+
+					LevelData.DeathZones.Add(new DeathZoneItem(new ModelFile(Path.Combine(path, dzini[i].Filename)).Model, dzini[i].Flags, selectedItems));
+				}
+			}
+			else
+				LevelData.DeathZones = null;
+		}
+
+		private void LoadSA2EnemiesTextures(string systemPath)
+		{
+			LoadPVM("E_G_KUMITEX", systemPath);		
+			LoadPVM("E_EMITEX", systemPath);
+			LoadPVM("E_GOLDTEX", systemPath);
+			LoadPVM("E_KUMITEX", systemPath);			
+			LoadPVM("E_KYOKOTEX", systemPath);		
+			LoadPVM("E_AITEX", systemPath);
+		}
+
 		private void MainLevelLoadLoop()
 		{
 #if !DEBUG
@@ -768,7 +921,7 @@ namespace SAModel.SALVL
 
 				IniCharInfo character;
 
-				if (salvlini.IsSA2)
+				if (isSA2LVL())
 				{
 					character = salvlini.Characters[LevelData.SA2Characters[i]];
 				}
@@ -816,13 +969,20 @@ namespace SAModel.SALVL
 
 				progress.SetTaskAndStep("Death Zones:", "Initializing...");
 
-				if (string.IsNullOrEmpty(level.DeathZones))
-					LevelData.DeathZones = null;
+			if (string.IsNullOrEmpty(level.DeathZones))
+				LevelData.DeathZones = null;
+			else
+			{
+				if (isSA2LVL())
+				{
+					LoadSA2DeathZones(level);
+				}
 				else
 				{
 					LevelData.DeathZones = new List<DeathZoneItem>();
 					if (File.Exists(level.DeathZones))
 					{
+
 						DeathZoneFlags[] dzini = DeathZoneFlagsList.Load(level.DeathZones);
 						string path = Path.GetDirectoryName(level.DeathZones);
 						for (int i = 0; i < dzini.Length; i++)
@@ -835,6 +995,7 @@ namespace SAModel.SALVL
 					else
 						LevelData.DeathZones = null;
 				}
+			}
 
 				progress.StepProgress();
 
@@ -847,7 +1008,14 @@ namespace SAModel.SALVL
 			progress.SetStep("Common objects");
 			// Loads common object textures (e.g OBJ_REGULAR)
 			if (File.Exists(salvlini.ObjectTextureList))
-				LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);
+				LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);			
+			
+			// Loads skybox / BG tex (SA2 only)
+			if (File.Exists(level.BackgroundTextureList))
+				LoadTextureList(level.BackgroundTextureList, modSystemFolder);
+
+			if (isSA2LVL())
+				LoadSA2EnemiesTextures(modSystemFolder);
 
 			progress.SetStep("Mission objects");
 			// Loads mission object textures
@@ -923,13 +1091,28 @@ namespace SAModel.SALVL
 					LoadObjectList(level.ObjectList);
 					progress.SetTaskAndStep("Loading SET items", "Initializing...");
 
-					// Assign SET data
-					if (LevelData.ObjDefs.Count > 0)
+				// Assign SET data
+				if (LevelData.ObjDefs.Count > 0)
+				{
+					LevelData.SETName = level.SETName ?? level.LevelID;
+					string setTxt = "SET";
+					string setEnd = "{0}.bin";
+
+					if (isSA2LVL())
 					{
-						LevelData.SETName = level.SETName ?? level.LevelID;
-						string setfallback = Path.Combine(systemFallback, "SET" + LevelData.SETName + "{0}.bin");
-						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + "{0}.bin");
-						LevelData.InitSETItems();
+						setEnd = "_s.bin";
+					}
+
+					string setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
+					string setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
+					LevelData.InitSETItems();
+
+					if (isSA2LVL())
+					{
+						LoadSA2SetFiles(setfallback, setstr);
+					}
+					else
+					{
 						for (int i = 0; i < LevelData.SETChars.Length; i++)
 						{
 							string formatted = string.Format(setstr, LevelData.SETChars[i]);
@@ -947,17 +1130,18 @@ namespace SAModel.SALVL
 							}
 						}
 					}
-					else
-					{
-						LevelData.NullifySETItems();
-						osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
-					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
-					osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
+					osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
 				}
+			}
+			else
+			{
+				LevelData.NullifySETItems();
+				osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
+			}
 
 			// Load Mission SET items
 			if (!string.IsNullOrEmpty(salvlini.MissionObjectList) && File.Exists(salvlini.MissionObjectList))
@@ -1086,13 +1270,19 @@ namespace SAModel.SALVL
 				{
 					progress.SetTaskAndStep("Loading Level Effects...");
 
-					LevelDefinition def = null;
-					string ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
-					string dllfile = Path.Combine("dllcache", ty + ".dll");
-					string pdbfile = Path.Combine("dllcache", ty + ".pdb");
-					DateTime modDate = DateTime.MinValue;
-					if (File.Exists(dllfile))
-						modDate = File.GetLastWriteTime(dllfile);
+				LevelDefinition def = null;
+				string ty; 
+
+				if (isSA2LVL())
+					ty = "SA2ObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+				else
+					ty = "SADXObjectDefinitions.Level_Effects." + Path.GetFileNameWithoutExtension(level.Effects);
+
+				string dllfile = Path.Combine("dllcache", ty + ".dll");
+				string pdbfile = Path.Combine("dllcache", ty + ".pdb");
+				DateTime modDate = DateTime.MinValue;
+				if (File.Exists(dllfile))
+					modDate = File.GetLastWriteTime(dllfile);
 
 					string fp = level.Effects.Replace('/', Path.DirectorySeparatorChar);
 					if (File.Exists(fp))
@@ -1149,21 +1339,21 @@ namespace SAModel.SALVL
 							}
 						}
 
-						if (def != null)
+					if (def != null)
+					{
+						byte timeofday = 0;
+						if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck || levelact.Level == SA1LevelIDs.EggCarrierOutside)
 						{
-							byte timeofday = 0;
-							if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck)
-							{
-								if (eveningToolStripMenuItem.Checked)
-									timeofday = 1;
-								else if (nightToolStripMenuItem.Checked)
-									timeofday = 2;
-							}
-							def.Init(level, levelact.Act, timeofday);
+							if (eveningToolStripMenuItem.Checked)
+								timeofday = 1;
+							else if (nightToolStripMenuItem.Checked)
+								timeofday = 2;
 						}
+						def.Init(level, levelact.Act, timeofday);
 					}
-					LevelData.leveleff = def;
 				}
+				LevelData.leveleff = def;
+			}
 
 				progress.StepProgress();
 
@@ -1171,41 +1361,10 @@ namespace SAModel.SALVL
 
 				#region Loading Splines
 
-				LevelData.LevelSplines = new List<SplineData>();
-				SplineData.Init();
-
-			if (salvlini != null && !string.IsNullOrEmpty(salvlini.Paths))
-			{
-				progress.SetTaskAndStep("Reticulating splines...");
-
-				String splineDirectory = Path.Combine(Path.Combine(modFolder, salvlini.Paths),
-					levelact.ToString());
-
-					if (Directory.Exists(splineDirectory))
-					{
-						List<string> pathFiles = new List<string>();
-
-						for (int i = 0; i < int.MaxValue; i++)
-						{
-							string path = Path.Combine(splineDirectory, string.Format("{0}.ini", i));
-							if (File.Exists(path))
-							{
-								pathFiles.Add(path);
-							}
-							else
-								break;
-						}
-
-						foreach (string pathFile in pathFiles) // looping through path files
-						{
-							SplineData newSpline = new SplineData(PathData.Load(pathFile), selectedItems);
-
-							newSpline.RebuildMesh(d3ddevice);
-
-							LevelData.LevelSplines.Add(newSpline);
-						}
-					}
-				}
+			if (isSA2LVL())
+				LoadSA2Paths(level);
+			else
+				LoadSADXPaths(levelact);
 
 				progress.StepProgress();
 

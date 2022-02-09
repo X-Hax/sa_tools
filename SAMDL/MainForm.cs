@@ -2064,6 +2064,9 @@ namespace SAModel.SAMDL
 			List<NJS_MATERIAL> mats;
 			switch (selectedObject.Attach)
 			{
+				case GC.GCAttach:
+					MessageBox.Show("Unsupported model format.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					return;
 				case BasicAttach bscatt:
 					mats = bscatt.Material;
 					break;

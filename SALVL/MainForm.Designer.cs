@@ -1909,6 +1909,7 @@
             this.pivotComboBox.Name = "pivotComboBox";
             this.pivotComboBox.Size = new System.Drawing.Size(140, 43);
             this.pivotComboBox.DropDownClosed += new System.EventHandler(this.pivotComboBox_DropDownClosed);
+			this.pivotComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             // 
             // deathZonesButton
             // 

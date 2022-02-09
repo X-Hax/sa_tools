@@ -15,7 +15,7 @@ namespace SADXObjectDefinitions.Mission
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			HitResult result = ObjectHelper.CheckSpriteHit(Near, Far, Viewport, Projection, View, transform);
+			HitResult result = ObjectHelper.CheckQuestionBoxHit(Near, Far, Viewport, Projection, View, transform);
 			transform.Pop();
 			return result;
 		}
@@ -25,7 +25,7 @@ namespace SADXObjectDefinitions.Mission
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			result.AddRange(ObjectHelper.RenderSprite(dev, transform, null, item.Position.ToVector3(), item.Selected));
+			result.AddRange(ObjectHelper.RenderQuestionBox(dev, transform, null, item.Position.ToVector3(), item.Selected));
 			transform.Pop();
 			return result;
 		}

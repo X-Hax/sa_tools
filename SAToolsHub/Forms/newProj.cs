@@ -359,12 +359,14 @@ namespace SAToolsHub
 			}
 		}
 
-		private string GetObjDefsDirectory()
+		private string GetObjDefsDirectory(bool SA2 = false)
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
 			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder, "objdefs")))
 				return Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
+			else if (SA2)
+				return Path.Combine(appPath, "..\\SA2Tools\\SA2ObjectDefinitions");
 			else
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
@@ -406,7 +408,7 @@ namespace SAToolsHub
 			if (File.Exists(Path.Combine(iniFolder, "sa2lvl.ini")))
 			{
 				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory();
+				string objdefsPath = GetObjDefsDirectory(true);
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
 				if (Directory.Exists(objdefsPath))
 					CopyFolder(objdefsPath, outputObjdefsPath);

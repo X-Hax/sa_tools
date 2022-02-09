@@ -311,6 +311,14 @@ namespace SAModel.SALVL
 			welcomeForm = null;
 		}
 
+		public bool isSA2LVL()
+		{
+			if (salvlini == null)
+				return false;
+
+			return salvlini.IsSA2;
+		}
+
 		private void InitializeDirect3D()
 		{
 			if (d3ddevice == null)
@@ -554,6 +562,11 @@ namespace SAModel.SALVL
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
+			if (isSA2LVL()) //fix crash
+			{
+				return;
+			}
+
 			LevelData.Character = characterToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
 
 			// Character view buttons
@@ -601,6 +614,11 @@ namespace SAModel.SALVL
 
 		private void onClickCharacterButton(object sender, EventArgs e)
 		{
+			if (isSA2LVL()) //fix crash
+			{
+				return;
+			}
+
 			if (sender == toolTails)
 				tailsToolStripMenuItem.PerformClick();
 			else if (sender == toolKnuckles)
@@ -614,6 +632,32 @@ namespace SAModel.SALVL
 			else
 				sonicToolStripMenuItem.PerformClick();
 		}
+
+		// Hide/Show features that only work in SADX.
+		public void Set_SADXOptionsVisible(Boolean flag)
+		{
+			lightsEditorToolStripMenuItem.Visible = flag;
+            fogEditorToolStripMenuItem.Visible = flag;
+
+			//char icon / menu
+			characterToolStripMenuItem.Visible = flag;
+			toolSonic.Visible = flag;
+			toolTails.Visible = flag;
+			toolKnuckles.Visible = flag;
+			toolAmy.Visible = flag;
+			toolBig.Visible = flag;
+			toolGamma.Visible = flag;
+
+			toolClearMissionSetItems.Visible = flag;
+			viewMissionSETItemsToolStripMenuItem.Visible = flag;
+			missionItemsButton.Visible = flag;
+			missionObjectToolStripMenuItem.Visible = flag;
+			addMissionItemToolStripMenuItem.Visible = flag;
+			layer_missionSETItemsToolStripMenuItem.Visible = flag;
+
+			timeOfDayToolStripMenuItem.Visible = flag;
+		}
+
 
 		private void levelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
@@ -1656,6 +1700,7 @@ namespace SAModel.SALVL
 			NeedRedraw = true;
 		}
 
+
 		private void MainForm_Deactivate(object sender, EventArgs e)
 		{
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
@@ -1679,7 +1724,7 @@ namespace SAModel.SALVL
 		private void SetTimeOfDay()
 		{
 			SA1LevelAct levelact = new SA1LevelAct(salvlini.Levels[levelID].LevelID);
-			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck)
+			if (levelact.Level == SA1LevelIDs.StationSquare || levelact.Level == SA1LevelIDs.MysticRuins || levelact.Level == SA1LevelIDs.SkyDeck || levelact.Level == SA1LevelIDs.EggCarrierOutside)
 			{
 				byte timeofday = 0;
 				if (eveningToolStripMenuItem.Checked)
@@ -1901,6 +1946,17 @@ namespace SAModel.SALVL
 				DialogResult result = fileDialog.ShowDialog();
 				if (result == DialogResult.OK)
 				{
+					string ext = Path.GetExtension(fileDialog.FileName).ToLowerInvariant();
+
+					if (ext == ".sa2lvl" || ext == ".sa2blvl")
+					{
+						Set_SADXOptionsVisible(false);
+					} 
+					else
+					{
+						Set_SADXOptionsVisible(true);
+					}
+
 					LoadLandtable(fileDialog.FileName);
 					UpdateMRUList(fileDialog.FileName);
 				}

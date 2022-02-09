@@ -7,6 +7,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon;
 
 namespace SADXObjectDefinitions.EmeraldCoast
 {
@@ -58,19 +59,19 @@ namespace SADXObjectDefinitions.EmeraldCoast
 			transform.NJTranslate(item.Position);
 			transform.NJRotateY(item.Rotation.Y);
 			transform.NJTranslate(0, 110, 0);
-			result.AddRange(arch.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), archmsh));
+			result.AddRange(arch.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), archmsh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(arch.DrawModelTreeInvert(transform, archmsh));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(ObjectHelper.NJSin(item.Rotation.Y) * 73 + item.Position.X, item.Position.Y, ObjectHelper.NJCos(item.Rotation.Y) * 73 + item.Position.Z);
-			result.AddRange(side1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), side1msh));
+			result.AddRange(side1.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), side1msh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(side1.DrawModelTreeInvert(transform, side1msh));
 			transform.Pop();
 			transform.Push();
 			transform.NJTranslate(item.Position.X - ObjectHelper.NJSin(item.Rotation.Y) * 57, item.Position.Y, item.Position.Z - ObjectHelper.NJCos(item.Rotation.Y) * 57);
-			result.AddRange(side2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), side2msh));
+			result.AddRange(side2.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_BEACH"), side2msh, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(side2.DrawModelTreeInvert(transform, side2msh));
 			transform.Pop();
