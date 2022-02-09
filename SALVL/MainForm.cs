@@ -2299,5 +2299,20 @@ namespace SAModel.SALVL
 			osd.UpdateOSDItem("Textures: " + (texturesButton.Checked ? "Enabled" : "Disabled"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			NeedRedraw = true;
 		}
+
+		private void objectListEditorToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			//objList = IniSerializer.Deserialize<List<ObjectListEntry>>(Path.Combine(modFolder, salvlini.Levels[levelID].ObjectList));
+			string objdefspath = "";
+			if (salvlini.Levels[levelID].ObjectDefinition != null)
+				objdefspath = salvlini.Levels[levelID].ObjectDefinition;
+			ObjListEditor objEditor = new ObjListEditor(salvlini.Levels[levelID].ObjectList, objdefspath, modFolder, salvlini);
+			objEditor.Show();
+		}
+
+		public void ObjectEditorClosed(object sender, FormClosedEventArgs e)
+		{
+			objectListEditorToolStripMenuItem.Enabled = true;
+		}
 	}
 }

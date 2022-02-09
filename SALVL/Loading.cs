@@ -907,19 +907,10 @@ namespace SAModel.SALVL
 				progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 				// Load Object Definitions INI file
-				string objdefspath = Path.Combine(modFolder, salvlini.ObjectDefinitions);
-				if (Directory.Exists(objdefspath))
+				string objdefspath = Path.Combine(modFolder, salvlini.Levels[levelID].ObjectDefinition);
+				if (File.Exists(objdefspath))
 				{
-					List<string> deffiles = new List<string>(Directory.GetFiles(objdefspath, "*.defs"));
-					foreach (string file in deffiles)
-					{
-						Dictionary<string, ObjectData> cmnobjdefs = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(file);
-						foreach (KeyValuePair<string, ObjectData> objdef in cmnobjdefs)
-						{
-							if (!objdefini.ContainsKey(objdef.Key))
-								objdefini.Add(objdef.Key, objdef.Value);
-						}
-					}
+					objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(objdefspath);
 				}
 
 				LevelData.ObjDefs = new List<ObjectDefinition>();
@@ -928,6 +919,7 @@ namespace SAModel.SALVL
 				// Load SET items
 				if (!string.IsNullOrEmpty(level.ObjectList) && File.Exists(level.ObjectList))
 				{
+					objectListEditorToolStripMenuItem.Enabled = true;
 					LoadObjectList(level.ObjectList);
 					progress.SetTaskAndStep("Loading SET items", "Initializing...");
 

@@ -58,7 +58,7 @@ namespace SAModel.SALVL
 
             for (int ID = 0; ID < objlstini.Length; ID++)
             {
-                string codeaddr = objlstini[ID].CodeString;
+                string codeaddr = objlstini[ID].Name;
                 ObjectData defgroup;
                 ObjectDefinition def;
                 if (objdefini == null)

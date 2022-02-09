@@ -61,5 +61,6 @@ namespace SAModel.SAEditorCommon
 		public string ObjectTextureList { get; set; }
 		public string DeathZones { get; set; }
 		public string Effects { get; set; }
+		public string ObjectDefinition { get; set; }
 	}
 }

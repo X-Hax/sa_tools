@@ -186,76 +186,79 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return bounds;
 		}
 
-		public static void RotateObject(MatrixStack transform, SETItem item, int addrx, int addry, int addrz, string type = "XYZ")
+		public static void RotateObject(MatrixStack transform, SETItem item, Rotation addrot, string type = "XYZ")
 		{
+			if (addrot.X != 0 && addrot.Y != 0 && addrot.Z != 0)
+				transform.NJRotateObject(addrot);
+
 			switch (type)
 			{
 				case "X":
-					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateX(item.Rotation.X);
 					break;
 				case "Y":
-					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateY(item.Rotation.Y);
 					break;
 				case "Z":
-					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateZ(item.Rotation.Z);
 					break;
 				case "XY":
-					transform.NJRotateX(item.Rotation.X + addrx);
-					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateY(item.Rotation.Y);
 					break;
 				case "XZ":
-					transform.NJRotateX(item.Rotation.X + addrx);
-					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateZ(item.Rotation.Z);
 					break;
 				case "YX":
-					transform.NJRotateY(item.Rotation.Y + addry);
-					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateX(item.Rotation.X);
 					break;
 				case "YZ":
-					transform.NJRotateY(item.Rotation.Y + addry);
-					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateZ(item.Rotation.Z);
 					break;
 				case "ZX":
-					transform.NJRotateZ(item.Rotation.Z + addrz);
-					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateX(item.Rotation.X);
 					break;
 				case "ZY":
-					transform.NJRotateZ(item.Rotation.Z + addrz);
-					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateY(item.Rotation.Y);
 					break;
 				case "XZY":
-					transform.NJRotateX(item.Rotation.X + addrx);
-					transform.NJRotateZ(item.Rotation.Z + addrz);
-					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateY(item.Rotation.Y);
 					break;
 				case "YXZ":
-					transform.NJRotateY(item.Rotation.Y + addry);
-					transform.NJRotateX(item.Rotation.X + addrx);
-					transform.NJRotateZ(item.Rotation.Z + addrz);
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateZ(item.Rotation.Z);
 					break;
 				case "YZX":
-					transform.NJRotateY(item.Rotation.Y + addry);
-					transform.NJRotateZ(item.Rotation.Z + addrz);
-					transform.NJRotateX(item.Rotation.X + addrx);
+					transform.NJRotateY(item.Rotation.Y);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateX(item.Rotation.X);
 					break;
 				case "ZXY":
-					transform.NJRotateZ(item.Rotation.Z + addrz);
-					transform.NJRotateX(item.Rotation.X + addrx);
-					transform.NJRotateY(item.Rotation.Y + addry);
+					transform.NJRotateZ(item.Rotation.Z);
+					transform.NJRotateX(item.Rotation.X);
+					transform.NJRotateY(item.Rotation.Y);
 					break;
 				case "ZYX":
-					transform.NJRotateZYX(item.Rotation.X + addrx, item.Rotation.Y + addry, item.Rotation.Z + addrz);
+					transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 					break;
 				case "None":
 					break;
 				case "XYZ":
 				default:
-					transform.NJRotateXYZ(item.Rotation.X + addrx, item.Rotation.Y + addry, item.Rotation.Z + addrz);
+					transform.NJRotateXYZ(item.Rotation.X, item.Rotation.Y, item.Rotation.Z);
 					break;
 			}
 		}
 
-		public static Vector3 GetScale(SETItem item, float addfx, float addfy, float addfz, string type = "None")
+		public static Vector3 GetScale(SETItem item, Vector3 addscl, string type = "None")
 		{
 			float x = 1;
 			float y = 1;
@@ -309,12 +312,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 					break;
 			}
 
-			if (addfx != 0)
-				x += addfx;
-			if (addfy != 0)
-				y += addfy;
-			if (addfz != 0)
-				z += addfz;
+			if (addscl.X != 0)
+				x += addscl.X;
+			if (addscl.Y != 0)
+				y += addscl.Y;
+			if (addscl.Z != 0)
+				z += addscl.Z;
 
 			return new Vector3(x, y, z);
 		}

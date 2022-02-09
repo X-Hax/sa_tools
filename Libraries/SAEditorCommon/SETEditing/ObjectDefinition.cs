@@ -44,6 +44,12 @@ namespace SAModel.SAEditorCommon.SETEditing
 		public virtual float DefaultYScale { get { return 1; } }
 		public virtual float DefaultZScale { get { return 1; } }
 		public virtual float DistanceFromGround { get { return 0; } }
+		public virtual ushort AddXRotation { get { return 0; } }
+		public virtual ushort AddYRotation { get { return 0; } }
+		public virtual ushort AddZRotation { get { return 0; } }
+		public virtual float AddXScale { get { return 0; } }
+		public virtual float AddYScale { get { return 0; } }
+		public virtual float AddZScale { get { return 0; } }
 	}
 
 	public class ModelTransform

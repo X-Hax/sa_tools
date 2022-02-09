@@ -223,6 +223,7 @@
             this.resetAnimButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.BackgroundPanel = new System.Windows.Forms.Panel();
+            this.objectListEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PropertiesSplitter)).BeginInit();
@@ -1313,6 +1314,7 @@
             this.editLevelInfoToolStripMenuItem,
             this.lightsEditorToolStripMenuItem,
             this.fogEditorToolStripMenuItem,
+            this.objectListEditorToolStripMenuItem,
             this.toolStripSeparator11,
             this.preferencesToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
@@ -1323,7 +1325,7 @@
             // 
             this.editLevelInfoToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.editinfo;
             this.editLevelInfoToolStripMenuItem.Name = "editLevelInfoToolStripMenuItem";
-            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.editLevelInfoToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.editLevelInfoToolStripMenuItem.Text = "Edit Level Info...";
             this.editLevelInfoToolStripMenuItem.Click += new System.EventHandler(this.editLevelInfoToolStripMenuItem_Click);
             // 
@@ -1332,7 +1334,7 @@
             this.lightsEditorToolStripMenuItem.Enabled = false;
             this.lightsEditorToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.sllight;
             this.lightsEditorToolStripMenuItem.Name = "lightsEditorToolStripMenuItem";
-            this.lightsEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.lightsEditorToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.lightsEditorToolStripMenuItem.Text = "Lights Editor...";
             this.lightsEditorToolStripMenuItem.Click += new System.EventHandler(this.lightsEditorToolStripMenuItem_Click);
             // 
@@ -1341,20 +1343,20 @@
             this.fogEditorToolStripMenuItem.Enabled = false;
             this.fogEditorToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.fog;
             this.fogEditorToolStripMenuItem.Name = "fogEditorToolStripMenuItem";
-            this.fogEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.fogEditorToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.fogEditorToolStripMenuItem.Text = "Fog Editor...";
             this.fogEditorToolStripMenuItem.Click += new System.EventHandler(this.fogEditorToolStripMenuItem_Click);
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(154, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(185, 6);
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Image = global::SAModel.SALVL.Properties.Resources.settings;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.preferencesToolStripMenuItem.Text = "&Preferences...";
             this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
@@ -1372,14 +1374,14 @@
             // unloadTexturesToolStripMenuItem
             // 
             this.unloadTexturesToolStripMenuItem.Name = "unloadTexturesToolStripMenuItem";
-            this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.unloadTexturesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unloadTexturesToolStripMenuItem.Text = "Unload Textures";
             this.unloadTexturesToolStripMenuItem.Click += new System.EventHandler(this.unloadTexturesToolStripMenuItem_Click);
             // 
             // unloadSETFileToolStripMenuItem
             // 
             this.unloadSETFileToolStripMenuItem.Name = "unloadSETFileToolStripMenuItem";
-            this.unloadSETFileToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.unloadSETFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unloadSETFileToolStripMenuItem.Text = "Unload SET File";
             this.unloadSETFileToolStripMenuItem.Click += new System.EventHandler(this.unloadSETFileToolStripMenuItem_Click);
             // 
@@ -1387,14 +1389,14 @@
             // 
             this.unloadCAMFileToolStripMenuItem.Enabled = false;
             this.unloadCAMFileToolStripMenuItem.Name = "unloadCAMFileToolStripMenuItem";
-            this.unloadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.unloadCAMFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unloadCAMFileToolStripMenuItem.Text = "Unload CAM File";
             // 
             // unloadObjectListToolStripMenuItem
             // 
             this.unloadObjectListToolStripMenuItem.Enabled = false;
             this.unloadObjectListToolStripMenuItem.Name = "unloadObjectListToolStripMenuItem";
-            this.unloadObjectListToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.unloadObjectListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unloadObjectListToolStripMenuItem.Text = "Unload Object List";
             this.unloadObjectListToolStripMenuItem.Click += new System.EventHandler(this.unloadObjectListToolStripMenuItem_Click);
             // 
@@ -1440,7 +1442,7 @@
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(762, 335);
+            this.RenderPanel.Size = new System.Drawing.Size(762, 334);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.RenderPanel_DragDrop);
@@ -1603,7 +1605,7 @@
             // 
             this.PropertiesSplitter.Panel2.Controls.Add(this.propertyGrid1);
             this.PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
-            this.PropertiesSplitter.SplitterDistance = 967;
+            this.PropertiesSplitter.SplitterDistance = 966;
             this.PropertiesSplitter.SplitterWidth = 5;
             this.PropertiesSplitter.TabIndex = 2;
             // 
@@ -1623,8 +1625,8 @@
             // LibrarySplitter.Panel2
             // 
             this.LibrarySplitter.Panel2.Controls.Add(this.libraryTabControl);
-            this.LibrarySplitter.Size = new System.Drawing.Size(963, 635);
-            this.LibrarySplitter.SplitterDistance = 335;
+            this.LibrarySplitter.Size = new System.Drawing.Size(962, 635);
+            this.LibrarySplitter.SplitterDistance = 334;
             this.LibrarySplitter.SplitterWidth = 5;
             this.LibrarySplitter.TabIndex = 3;
             // 
@@ -1642,8 +1644,8 @@
             // ItemsSplitter.Panel2
             // 
             this.ItemsSplitter.Panel2.Controls.Add(this.RenderPanel);
-            this.ItemsSplitter.Size = new System.Drawing.Size(963, 335);
-            this.ItemsSplitter.SplitterDistance = 196;
+            this.ItemsSplitter.Size = new System.Drawing.Size(962, 334);
+            this.ItemsSplitter.SplitterDistance = 195;
             this.ItemsSplitter.SplitterWidth = 5;
             this.ItemsSplitter.TabIndex = 0;
             // 
@@ -1653,7 +1655,7 @@
             this.sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
             this.sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.sceneGraphControl1.Name = "sceneGraphControl1";
-            this.sceneGraphControl1.Size = new System.Drawing.Size(196, 335);
+            this.sceneGraphControl1.Size = new System.Drawing.Size(195, 334);
             this.sceneGraphControl1.TabIndex = 0;
             // 
             // libraryTabControl
@@ -1665,7 +1667,7 @@
             this.libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.libraryTabControl.Name = "libraryTabControl";
             this.libraryTabControl.SelectedIndex = 0;
-            this.libraryTabControl.Size = new System.Drawing.Size(963, 295);
+            this.libraryTabControl.Size = new System.Drawing.Size(962, 296);
             this.libraryTabControl.TabIndex = 0;
             // 
             // modelLibraryPage
@@ -1675,7 +1677,7 @@
             this.modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.modelLibraryPage.Name = "modelLibraryPage";
             this.modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.modelLibraryPage.Size = new System.Drawing.Size(955, 267);
+            this.modelLibraryPage.Size = new System.Drawing.Size(954, 268);
             this.modelLibraryPage.TabIndex = 1;
             this.modelLibraryPage.Text = "Model Library";
             this.modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1687,7 +1689,7 @@
             this.modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.modelLibraryControl1.Name = "modelLibraryControl1";
             this.modelLibraryControl1.SelectedModel = null;
-            this.modelLibraryControl1.Size = new System.Drawing.Size(947, 261);
+            this.modelLibraryControl1.Size = new System.Drawing.Size(946, 262);
             this.modelLibraryControl1.TabIndex = 0;
             // 
             // setLibraryPage
@@ -1696,7 +1698,7 @@
             this.setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.setLibraryPage.Name = "setLibraryPage";
             this.setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.setLibraryPage.Size = new System.Drawing.Size(955, 267);
+            this.setLibraryPage.Size = new System.Drawing.Size(954, 268);
             this.setLibraryPage.TabIndex = 0;
             this.setLibraryPage.Text = "SET Library";
             this.setLibraryPage.UseVisualStyleBackColor = true;
@@ -1712,7 +1714,7 @@
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(355, 635);
+            this.propertyGrid1.Size = new System.Drawing.Size(356, 635);
             this.propertyGrid1.TabIndex = 13;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -2129,6 +2131,14 @@
             this.BackgroundPanel.Size = new System.Drawing.Size(1331, 706);
             this.BackgroundPanel.TabIndex = 2;
             // 
+            // objectListEditorToolStripMenuItem
+            // 
+            this.objectListEditorToolStripMenuItem.Enabled = false;
+            this.objectListEditorToolStripMenuItem.Name = "objectListEditorToolStripMenuItem";
+            this.objectListEditorToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+            this.objectListEditorToolStripMenuItem.Text = "Object List Editor";
+            this.objectListEditorToolStripMenuItem.Click += new System.EventHandler(this.objectListEditorToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -2370,6 +2380,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mediumClipToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem nearClipToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton texturesButton;
+		private System.Windows.Forms.ToolStripMenuItem objectListEditorToolStripMenuItem;
 	}
 }
 
