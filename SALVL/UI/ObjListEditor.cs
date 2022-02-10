@@ -25,6 +25,7 @@ namespace SAModel.SALVL
 		};
 		List<string> rottype = new List<string>
 		{
+			"",
 			"X",
 			"Y",
 			"Z",
@@ -44,6 +45,7 @@ namespace SAModel.SALVL
 		};
 		List<string> scltype = new List<string>
 		{
+			"",
 			"X",
 			"Y",
 			"Z",
@@ -379,32 +381,20 @@ namespace SAModel.SALVL
 						ObjectData oldobjdef = oldDefs[key];
 						ObjectData newobjdef = objDefinitions[obj.Name];
 
-						if (oldobjdef.CodeFile != null)
-						{
-							newobjdef.Name = null;
-							newobjdef.Texture = null;
-							newobjdef.Texlist = null;
-							newobjdef.RotType = null;
-							newobjdef.SclType = null;
-							newobjdef.CodeFile = oldobjdef.CodeFile;
-							newobjdef.CodeType = oldobjdef.CodeType;
-						}
-						else
-						{
-							newobjdef.CodeFile = null;
-							newobjdef.CodeType = null;
-							newobjdef.Name = oldobjdef.Name;
-							newobjdef.Model = oldobjdef.Model;
-							newobjdef.Texture = oldobjdef.Texture;
-							newobjdef.Texlist = oldobjdef.Texlist;
-							newobjdef.RotType = oldobjdef.RotType;
-							newobjdef.SclType = oldobjdef.SclType;
-							newobjdef.GndDst = oldobjdef.GndDst;
-						}
+						newobjdef.CodeFile = oldobjdef.CodeFile;
+						newobjdef.CodeType = oldobjdef.CodeType;
+						newobjdef.Name = oldobjdef.Name;
+						newobjdef.Model = oldobjdef.Model;
+						newobjdef.Texture = oldobjdef.Texture;
+						newobjdef.Texlist = oldobjdef.Texlist;
+						newobjdef.RotType = oldobjdef.RotType;
+						newobjdef.SclType = oldobjdef.SclType;
+						newobjdef.GndDst = oldobjdef.GndDst;
 					}
 				}
 			}
-			UpdateObjDefSelection();
+			if (lstObjects.SelectedIndex != -1)
+				UpdateObjDefSelection();
 		}
 
 		private void btnBrowseModel_Click(object sender, EventArgs e)
@@ -603,6 +593,15 @@ namespace SAModel.SALVL
 					btnSave_Click(sender, e);
 				}
 			}
+		}
+
+		private void ObjListEditor_HelpButtonClicked(object sender, CancelEventArgs e)
+		{
+			DialogResult help = MessageBox.Show("This tool is for editing object lists and object definitions for objects to display in SALVL. " +
+				"\n\nThe Object List Editor will update the object list with changes. If you build a mod with a modified object list," +
+				" you may run into issues if you added a new object or imported a new object from another object list. You will usually" +
+				" need to add the texture to the level texture list using SADXTweaker. For newly added objects, your mod will need custom " +
+				"code for implementing the object into the game.", "Object Editor Help", MessageBoxButtons.OK);
 		}
 	}
 }

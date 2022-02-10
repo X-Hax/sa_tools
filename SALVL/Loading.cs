@@ -1005,46 +1005,46 @@ namespace SAModel.SALVL
 
 				progress.SetTaskAndStep("Loading textures for:");
 
-			progress.SetStep("Common objects");
-			// Loads common object textures (e.g OBJ_REGULAR)
-			if (File.Exists(salvlini.ObjectTextureList))
-				LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);			
+				progress.SetStep("Common objects");
+				// Loads common object textures (e.g OBJ_REGULAR)
+				if (File.Exists(salvlini.ObjectTextureList))
+					LoadTextureList(salvlini.ObjectTextureList, modSystemFolder);			
 			
-			// Loads skybox / BG tex (SA2 only)
-			if (File.Exists(level.BackgroundTextureList))
-				LoadTextureList(level.BackgroundTextureList, modSystemFolder);
+				// Loads skybox / BG tex (SA2 only)
+				if (File.Exists(level.BackgroundTextureList))
+					LoadTextureList(level.BackgroundTextureList, modSystemFolder);
 
-			if (isSA2LVL())
-				LoadSA2EnemiesTextures(modSystemFolder);
+				if (isSA2LVL())
+					LoadSA2EnemiesTextures(modSystemFolder);
 
-			progress.SetStep("Mission objects");
-			// Loads mission object textures
-			if (File.Exists(salvlini.MissionTextureList))
-				LoadTextureList(salvlini.MissionTextureList, modSystemFolder);
+				progress.SetStep("Mission objects");
+				// Loads mission object textures
+				if (File.Exists(salvlini.MissionTextureList))
+					LoadTextureList(salvlini.MissionTextureList, modSystemFolder);
 
-				progress.SetTaskAndStep("Loading stage texture lists...");
+					progress.SetTaskAndStep("Loading stage texture lists...");
 
-			// Loads the textures in the texture list for this stage (e.g BEACH01)
-
-			if (salvlini.LevelTextureLists != null)
-			{
 				// Loads the textures in the texture list for this stage (e.g BEACH01)
-				foreach (string file in Directory.GetFiles(salvlini.LevelTextureLists))
+
+				if (salvlini.LevelTextureLists != null)
 				{
-					LevelTextureList texini = LevelTextureList.Load(file);
-					if (texini.Level != levelact)
-						continue;
-					LoadTextureList(texini.TextureList, modSystemFolder);
+					// Loads the textures in the texture list for this stage (e.g BEACH01)
+					foreach (string file in Directory.GetFiles(salvlini.LevelTextureLists))
+					{
+						LevelTextureList texini = LevelTextureList.Load(file);
+						if (texini.Level != levelact)
+							continue;
+						LoadTextureList(texini.TextureList, modSystemFolder);
+					}
 				}
-			}
-			else
-			{
-				if (level.TextureList != null)
+				else
 				{
-					LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
-					LoadTextureList(texini.TextureList, modSystemFolder);
+					if (level.TextureList != null)
+					{
+						LevelTextureList texini = LevelTextureList.Load(Path.Combine(level.TextureList));
+						LoadTextureList(texini.TextureList, modSystemFolder);
+					}
 				}
-			}
 
 				progress.SetTaskAndStep("Loading textures for:", "Objects");
 				// Object texture list(s)
@@ -1075,10 +1075,13 @@ namespace SAModel.SALVL
 				progress.SetTaskAndStep("Loading Object Definitions:", "Parsing...");
 
 				// Load Object Definitions INI file
-				string objdefspath = Path.Combine(modFolder, salvlini.Levels[levelID].ObjectDefinition);
-				if (File.Exists(objdefspath))
+				if (!string.IsNullOrEmpty(salvlini.Levels[levelID].ObjectDefinition))
 				{
-					objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(objdefspath);
+					string objdefspath = Path.Combine(modFolder, salvlini.Levels[levelID].ObjectDefinition);
+					if (File.Exists(objdefspath))
+					{
+						objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(objdefspath);
+					}
 				}
 
 				LevelData.ObjDefs = new List<ObjectDefinition>();
@@ -1090,124 +1093,124 @@ namespace SAModel.SALVL
 					objectListEditorToolStripMenuItem.Enabled = true;
 					LoadObjectList(level.ObjectList);
 					progress.SetTaskAndStep("Loading SET items", "Initializing...");
-
-				// Assign SET data
-				if (LevelData.ObjDefs.Count > 0)
-				{
-					LevelData.SETName = level.SETName ?? level.LevelID;
-					string setTxt = "SET";
-					string setEnd = "{0}.bin";
-
-					if (isSA2LVL())
+				
+					// Assign SET data
+					if (LevelData.ObjDefs.Count > 0)
 					{
-						setEnd = "_s.bin";
-					}
+						LevelData.SETName = level.SETName ?? level.LevelID;
+						string setTxt = "SET";
+						string setEnd = "{0}.bin";
 
-					string setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
-					string setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
-					LevelData.InitSETItems();
+						if (isSA2LVL())
+						{
+							setEnd = "_s.bin";
+						}
 
-					if (isSA2LVL())
-					{
-						LoadSA2SetFiles(setfallback, setstr);
+						string setfallback = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEnd);
+						string setstr = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEnd);
+						LevelData.InitSETItems();
+
+						if (isSA2LVL())
+						{
+							LoadSA2SetFiles(setfallback, setstr);
+						}
+						else
+						{
+							for (int i = 0; i < LevelData.SETChars.Length; i++)
+							{
+								string formatted = string.Format(setstr, LevelData.SETChars[i]);
+								string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
+
+								string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
+								if (File.Exists(useSetPath))
+								{
+									if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
+									LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
+								}
+								else
+								{
+									LevelData.AssignSetList(i, new List<SETItem>());
+								}
+							}
+						}
 					}
 					else
 					{
-						for (int i = 0; i < LevelData.SETChars.Length; i++)
-						{
-							string formatted = string.Format(setstr, LevelData.SETChars[i]);
-							string formattedFallback = string.Format(setfallback, LevelData.SETChars[i]);
-
-							string useSetPath = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
-							if (File.Exists(useSetPath))
-							{
-								if (progress != null) progress.SetTask("SET: " + Path.GetFileName(useSetPath));
-								LevelData.AssignSetList(i, SETItem.Load(useSetPath, selectedItems));
-							}
-							else
-							{
-								LevelData.AssignSetList(i, new List<SETItem>());
-							}
-						}
+						LevelData.NullifySETItems();
+						osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
 					}
 				}
 				else
 				{
 					LevelData.NullifySETItems();
-					osd.AddMessage("Object definitions not found (0 entries), SET files skipped", 180);
+					osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
 				}
-			}
-			else
-			{
-				LevelData.NullifySETItems();
-				osd.AddMessage("Object definitions not found (object list file doesn't exist), SET files skipped", 180);
-			}
 
-			// Load Mission SET items
-			if (!string.IsNullOrEmpty(salvlini.MissionObjectList) && File.Exists(salvlini.MissionObjectList))
-			{
-				LoadObjectList(salvlini.MissionObjectList, true);
+				// Load Mission SET items
+				if (!string.IsNullOrEmpty(salvlini.MissionObjectList) && File.Exists(salvlini.MissionObjectList))
+				{
+					LoadObjectList(salvlini.MissionObjectList, true);
 
-					// Assign Mission SET data
-					progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
+						// Assign Mission SET data
+						progress.SetTaskAndStep("Loading Mission SET items", "Initializing...");
 
-					if (LevelData.MisnObjDefs.Count > 0)
-					{
-						string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
-						string setstr = Path.Combine(modSystemFolder, "SETMI" + level.LevelID + "{0}.bin");
-
-						string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
-						string prmstr = Path.Combine(modSystemFolder, "PRMMI" + level.LevelID + "{0}.bin");
-						LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
-						for (int i = 0; i < LevelData.SETChars.Length; i++)
+						if (LevelData.MisnObjDefs.Count > 0)
 						{
-							List<MissionSETItem> list = new List<MissionSETItem>();
-							byte[] setfile = null;
-							byte[] prmfile = null;
+							string setstrFallback = Path.Combine(systemFallback, "SETMI" + level.LevelID + "{0}.bin");
+							string setstr = Path.Combine(modSystemFolder, "SETMI" + level.LevelID + "{0}.bin");
 
-							string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
-							string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
-
-							string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
-							string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
-
-							string setfmt = ProjectFunctions.ModPathOrGameFallback(setNormFmt, setFallbackFmt);
-							string prmfmt = ProjectFunctions.ModPathOrGameFallback(prmNormFmt, prmFallbackFmt);
-
-							if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
-							if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
-
-							if (setfile != null && prmfile != null)
+							string prmstrFallback = Path.Combine(systemFallback, "PRMMI" + level.LevelID + "{0}.bin");
+							string prmstr = Path.Combine(modSystemFolder, "PRMMI" + level.LevelID + "{0}.bin");
+							LevelData.MissionSETItems = new List<MissionSETItem>[LevelData.SETChars.Length];
+							for (int i = 0; i < LevelData.SETChars.Length; i++)
 							{
-								progress.SetTask("Mission SET: " + Path.GetFileName(setfmt));
-								bool bigendianbk = ByteConverter.BigEndian;
-								ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(setfile, 0);
-								int count = ByteConverter.ToInt32(setfile, 0);
-								int setaddr = 0x20;
-								int prmaddr = 0x20;
-								for (int j = 0; j < count; j++)
-								{
-									progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+								List<MissionSETItem> list = new List<MissionSETItem>();
+								byte[] setfile = null;
+								byte[] prmfile = null;
 
-								MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
-								list.Add(ent);
-								setaddr += 0x20;
-								prmaddr += 0xC;
+								string setNormFmt = string.Format(setstr, LevelData.SETChars[i]);
+								string setFallbackFmt = string.Format(setstrFallback, LevelData.SETChars[i]);
+
+								string prmNormFmt = string.Format(prmstr, LevelData.SETChars[i]);
+								string prmFallbackFmt = string.Format(prmstrFallback, LevelData.SETChars[i]);
+
+								string setfmt = ProjectFunctions.ModPathOrGameFallback(setNormFmt, setFallbackFmt);
+								string prmfmt = ProjectFunctions.ModPathOrGameFallback(prmNormFmt, prmFallbackFmt);
+
+								if (File.Exists(setfmt)) setfile = File.ReadAllBytes(setfmt);
+								if (File.Exists(prmfmt)) prmfile = File.ReadAllBytes(prmfmt);
+
+								if (setfile != null && prmfile != null)
+								{
+									progress.SetTask("Mission SET: " + Path.GetFileName(setfmt));
+									bool bigendianbk = ByteConverter.BigEndian;
+									ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(setfile, 0);
+									int count = ByteConverter.ToInt32(setfile, 0);
+									int setaddr = 0x20;
+									int prmaddr = 0x20;
+									for (int j = 0; j < count; j++)
+									{
+										progress.SetStep(string.Format("{0}/{1}", (j + 1), count));
+
+									MissionSETItem ent = new MissionSETItem(setfile, setaddr, prmfile, prmaddr, selectedItems);
+									list.Add(ent);
+									setaddr += 0x20;
+									prmaddr += 0xC;
+								}
+								ByteConverter.BigEndian = bigendianbk;
 							}
-							ByteConverter.BigEndian = bigendianbk;
+							LevelData.MissionSETItems[i] = list;
 						}
-						LevelData.MissionSETItems[i] = list;
+					}
+					else
+					{
+						LevelData.MissionSETItems = null;
 					}
 				}
 				else
 				{
 					LevelData.MissionSETItems = null;
 				}
-			}
-			else
-			{
-				LevelData.MissionSETItems = null;
-			}
 
 				progress.StepProgress();
 

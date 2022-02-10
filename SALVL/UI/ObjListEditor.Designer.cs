@@ -166,7 +166,7 @@
             this.button1.Location = new System.Drawing.Point(132, 103);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(110, 23);
-            this.button1.TabIndex = 5;
+            this.button1.TabIndex = 6;
             this.button1.Text = "Import Defs";
             this.toolTip1.SetToolTip(this.button1, "Imports Object Definition information and matches it with the currently loaded Ob" +
         "ject List.");
@@ -178,7 +178,7 @@
             this.btnImpObj.Location = new System.Drawing.Point(6, 103);
             this.btnImpObj.Name = "btnImpObj";
             this.btnImpObj.Size = new System.Drawing.Size(110, 23);
-            this.btnImpObj.TabIndex = 4;
+            this.btnImpObj.TabIndex = 5;
             this.btnImpObj.Text = "Import Object";
             this.toolTip1.SetToolTip(this.btnImpObj, "Import an object from another object list.");
             this.btnImpObj.UseVisualStyleBackColor = true;
@@ -198,7 +198,7 @@
             this.btnDelObj.Location = new System.Drawing.Point(132, 74);
             this.btnDelObj.Name = "btnDelObj";
             this.btnDelObj.Size = new System.Drawing.Size(110, 23);
-            this.btnDelObj.TabIndex = 3;
+            this.btnDelObj.TabIndex = 4;
             this.btnDelObj.Text = "Delete Object";
             this.toolTip1.SetToolTip(this.btnDelObj, "Delete the currently selected object from the object list and the object definiti" +
         "ons.");
@@ -221,7 +221,7 @@
             this.btnAddObj.Location = new System.Drawing.Point(6, 74);
             this.btnAddObj.Name = "btnAddObj";
             this.btnAddObj.Size = new System.Drawing.Size(110, 23);
-            this.btnAddObj.TabIndex = 2;
+            this.btnAddObj.TabIndex = 3;
             this.btnAddObj.Text = "Add Object";
             this.toolTip1.SetToolTip(this.btnAddObj, "Add a new object to the object list and object definitions.");
             this.btnAddObj.UseVisualStyleBackColor = true;
@@ -269,7 +269,7 @@
             this.txtObjIntName.Name = "txtObjIntName";
             this.txtObjIntName.ReadOnly = true;
             this.txtObjIntName.Size = new System.Drawing.Size(132, 23);
-            this.txtObjIntName.TabIndex = 10;
+            this.txtObjIntName.TabIndex = 12;
             this.toolTip1.SetToolTip(this.txtObjIntName, "Internal Object Name used in the Object List.");
             // 
             // numDistance
@@ -283,7 +283,7 @@
             196608});
             this.numDistance.Name = "numDistance";
             this.numDistance.Size = new System.Drawing.Size(132, 23);
-            this.numDistance.TabIndex = 8;
+            this.numDistance.TabIndex = 10;
             this.toolTip1.SetToolTip(this.numDistance, "Clipping distance for the object in-game.");
             this.numDistance.ValueChanged += new System.EventHandler(this.numDistance_ValueChanged);
             // 
@@ -292,7 +292,7 @@
             this.numFlags.Location = new System.Drawing.Point(98, 46);
             this.numFlags.Name = "numFlags";
             this.numFlags.Size = new System.Drawing.Size(132, 23);
-            this.numFlags.TabIndex = 7;
+            this.numFlags.TabIndex = 9;
             this.toolTip1.SetToolTip(this.numFlags, "Flags for the object in-game.");
             this.numFlags.ValueChanged += new System.EventHandler(this.numFlags_ValueChanged);
             // 
@@ -301,7 +301,7 @@
             this.numArgs2.Location = new System.Drawing.Point(167, 17);
             this.numArgs2.Name = "numArgs2";
             this.numArgs2.Size = new System.Drawing.Size(63, 23);
-            this.numArgs2.TabIndex = 6;
+            this.numArgs2.TabIndex = 8;
             this.toolTip1.SetToolTip(this.numArgs2, "Second argument for the object in-game.");
             this.numArgs2.ValueChanged += new System.EventHandler(this.numArgs2_ValueChanged);
             // 
@@ -310,7 +310,7 @@
             this.numArgs1.Location = new System.Drawing.Point(98, 17);
             this.numArgs1.Name = "numArgs1";
             this.numArgs1.Size = new System.Drawing.Size(63, 23);
-            this.numArgs1.TabIndex = 5;
+            this.numArgs1.TabIndex = 7;
             this.toolTip1.SetToolTip(this.numArgs1, "First argument for the object in-game.");
             this.numArgs1.ValueChanged += new System.EventHandler(this.numArgs1_ValueChanged);
             // 
@@ -364,7 +364,7 @@
             this.btnSave.Location = new System.Drawing.Point(6, 45);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(236, 23);
-            this.btnSave.TabIndex = 1;
+            this.btnSave.TabIndex = 2;
             this.btnSave.Text = "Save Object Data";
             this.toolTip1.SetToolTip(this.btnSave, "Save the object list and object definitions with all current edits.");
             this.btnSave.UseVisualStyleBackColor = true;
@@ -401,7 +401,7 @@
             this.btnCodeBrowse.Location = new System.Drawing.Point(471, 15);
             this.btnCodeBrowse.Name = "btnCodeBrowse";
             this.btnCodeBrowse.Size = new System.Drawing.Size(63, 23);
-            this.btnCodeBrowse.TabIndex = 4;
+            this.btnCodeBrowse.TabIndex = 36;
             this.btnCodeBrowse.Text = "Browse";
             this.toolTip1.SetToolTip(this.btnCodeBrowse, "Browse option to select the partial path to the code file.");
             this.btnCodeBrowse.UseVisualStyleBackColor = true;
@@ -421,7 +421,7 @@
             this.txtCodeClass.Location = new System.Drawing.Point(80, 44);
             this.txtCodeClass.Name = "txtCodeClass";
             this.txtCodeClass.Size = new System.Drawing.Size(454, 23);
-            this.txtCodeClass.TabIndex = 2;
+            this.txtCodeClass.TabIndex = 37;
             this.toolTip1.SetToolTip(this.txtCodeClass, "The Code Class of the object within the code file.");
             this.txtCodeClass.TextChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -430,7 +430,7 @@
             this.txtCodeFile.Location = new System.Drawing.Point(80, 16);
             this.txtCodeFile.Name = "txtCodeFile";
             this.txtCodeFile.Size = new System.Drawing.Size(384, 23);
-            this.txtCodeFile.TabIndex = 1;
+            this.txtCodeFile.TabIndex = 35;
             this.toolTip1.SetToolTip(this.txtCodeFile, "Partial path to the code file to be used by the object in SALVL.");
             this.txtCodeFile.TextChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -486,7 +486,7 @@
             this.numGrndDist.Location = new System.Drawing.Point(471, 78);
             this.numGrndDist.Name = "numGrndDist";
             this.numGrndDist.Size = new System.Drawing.Size(63, 23);
-            this.numGrndDist.TabIndex = 23;
+            this.numGrndDist.TabIndex = 22;
             this.toolTip1.SetToolTip(this.numGrndDist, "Distance used in SALVL to set object above ground level.");
             this.numGrndDist.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -495,7 +495,7 @@
             this.btnBrowseTexlist1.Location = new System.Drawing.Point(471, 48);
             this.btnBrowseTexlist1.Name = "btnBrowseTexlist1";
             this.btnBrowseTexlist1.Size = new System.Drawing.Size(63, 23);
-            this.btnBrowseTexlist1.TabIndex = 22;
+            this.btnBrowseTexlist1.TabIndex = 19;
             this.btnBrowseTexlist1.Text = "Browse";
             this.toolTip1.SetToolTip(this.btnBrowseTexlist1, "Browse option for locating the Texlist file to be used.");
             this.btnBrowseTexlist1.UseVisualStyleBackColor = true;
@@ -506,7 +506,7 @@
             this.btnBrowseTexture.Location = new System.Drawing.Point(207, 46);
             this.btnBrowseTexture.Name = "btnBrowseTexture";
             this.btnBrowseTexture.Size = new System.Drawing.Size(63, 23);
-            this.btnBrowseTexture.TabIndex = 21;
+            this.btnBrowseTexture.TabIndex = 17;
             this.btnBrowseTexture.Text = "Browse";
             this.toolTip1.SetToolTip(this.btnBrowseTexture, "Browse option for locating the Texture file to be used.");
             this.btnBrowseTexture.UseVisualStyleBackColor = true;
@@ -517,7 +517,7 @@
             this.txtScriptTexlist.Location = new System.Drawing.Point(324, 48);
             this.txtScriptTexlist.Name = "txtScriptTexlist";
             this.txtScriptTexlist.Size = new System.Drawing.Size(140, 23);
-            this.txtScriptTexlist.TabIndex = 20;
+            this.txtScriptTexlist.TabIndex = 18;
             this.toolTip1.SetToolTip(this.txtScriptTexlist, "Texlist to be used by the object in SALVL.");
             this.txtScriptTexlist.TextChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -535,7 +535,7 @@
             this.txtScriptTexture.Location = new System.Drawing.Point(61, 46);
             this.txtScriptTexture.Name = "txtScriptTexture";
             this.txtScriptTexture.Size = new System.Drawing.Size(140, 23);
-            this.txtScriptTexture.TabIndex = 18;
+            this.txtScriptTexture.TabIndex = 16;
             this.toolTip1.SetToolTip(this.txtScriptTexture, "Texture to be used by the object in SALVL.");
             this.txtScriptTexture.TextChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -546,7 +546,7 @@
             this.lstRotType.Location = new System.Drawing.Point(101, 78);
             this.lstRotType.Name = "lstRotType";
             this.lstRotType.Size = new System.Drawing.Size(83, 23);
-            this.lstRotType.TabIndex = 8;
+            this.lstRotType.TabIndex = 20;
             this.toolTip1.SetToolTip(this.lstRotType, "Dropdown list of all supported Rotation Types for scripted objects.");
             this.lstRotType.SelectedIndexChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -591,7 +591,7 @@
             this.numAddSclZ.Location = new System.Drawing.Point(192, 47);
             this.numAddSclZ.Name = "numAddSclZ";
             this.numAddSclZ.Size = new System.Drawing.Size(55, 23);
-            this.numAddSclZ.TabIndex = 24;
+            this.numAddSclZ.TabIndex = 34;
             this.toolTip1.SetToolTip(this.numAddSclZ, "Z Scale to be added to the scale of the object.");
             this.numAddSclZ.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -601,7 +601,7 @@
             this.numAddSclY.Location = new System.Drawing.Point(131, 47);
             this.numAddSclY.Name = "numAddSclY";
             this.numAddSclY.Size = new System.Drawing.Size(55, 23);
-            this.numAddSclY.TabIndex = 23;
+            this.numAddSclY.TabIndex = 33;
             this.toolTip1.SetToolTip(this.numAddSclY, "Y Scale to be added to the scale of the object.");
             this.numAddSclY.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -611,7 +611,7 @@
             this.numAddSclX.Location = new System.Drawing.Point(70, 47);
             this.numAddSclX.Name = "numAddSclX";
             this.numAddSclX.Size = new System.Drawing.Size(55, 23);
-            this.numAddSclX.TabIndex = 22;
+            this.numAddSclX.TabIndex = 32;
             this.toolTip1.SetToolTip(this.numAddSclX, "X Scale to be added to the scale of the object.");
             this.numAddSclX.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -621,7 +621,7 @@
             this.numAddRotZ.Location = new System.Drawing.Point(192, 17);
             this.numAddRotZ.Name = "numAddRotZ";
             this.numAddRotZ.Size = new System.Drawing.Size(55, 23);
-            this.numAddRotZ.TabIndex = 19;
+            this.numAddRotZ.TabIndex = 31;
             this.toolTip1.SetToolTip(this.numAddRotZ, "Z Rotation to be added to the rotation of the object.");
             this.numAddRotZ.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -631,7 +631,7 @@
             this.numAddRotY.Location = new System.Drawing.Point(131, 17);
             this.numAddRotY.Name = "numAddRotY";
             this.numAddRotY.Size = new System.Drawing.Size(55, 23);
-            this.numAddRotY.TabIndex = 18;
+            this.numAddRotY.TabIndex = 30;
             this.toolTip1.SetToolTip(this.numAddRotY, "Y Rotation to be added to the rotation of the object.");
             this.numAddRotY.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -641,7 +641,7 @@
             this.numAddRotX.Location = new System.Drawing.Point(70, 17);
             this.numAddRotX.Name = "numAddRotX";
             this.numAddRotX.Size = new System.Drawing.Size(55, 23);
-            this.numAddRotX.TabIndex = 17;
+            this.numAddRotX.TabIndex = 29;
             this.toolTip1.SetToolTip(this.numAddRotX, "X Rotation to be added to the rotation of the object.");
             this.numAddRotX.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -686,7 +686,7 @@
             this.numDefSclZ.Location = new System.Drawing.Point(184, 47);
             this.numDefSclZ.Name = "numDefSclZ";
             this.numDefSclZ.Size = new System.Drawing.Size(55, 23);
-            this.numDefSclZ.TabIndex = 21;
+            this.numDefSclZ.TabIndex = 28;
             this.toolTip1.SetToolTip(this.numDefSclZ, "Z Scale default value to be displayed in SALVL.");
             this.numDefSclZ.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -696,7 +696,7 @@
             this.numDefSclY.Location = new System.Drawing.Point(123, 47);
             this.numDefSclY.Name = "numDefSclY";
             this.numDefSclY.Size = new System.Drawing.Size(55, 23);
-            this.numDefSclY.TabIndex = 20;
+            this.numDefSclY.TabIndex = 27;
             this.toolTip1.SetToolTip(this.numDefSclY, "Y Scale default value to be displayed in SALVL.");
             this.numDefSclY.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -706,7 +706,7 @@
             this.numDefSclX.Location = new System.Drawing.Point(62, 47);
             this.numDefSclX.Name = "numDefSclX";
             this.numDefSclX.Size = new System.Drawing.Size(55, 23);
-            this.numDefSclX.TabIndex = 17;
+            this.numDefSclX.TabIndex = 26;
             this.toolTip1.SetToolTip(this.numDefSclX, "X Scale default value to be displayed in SALVL.");
             this.numDefSclX.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -716,7 +716,7 @@
             this.numDefRotZ.Location = new System.Drawing.Point(184, 17);
             this.numDefRotZ.Name = "numDefRotZ";
             this.numDefRotZ.Size = new System.Drawing.Size(55, 23);
-            this.numDefRotZ.TabIndex = 16;
+            this.numDefRotZ.TabIndex = 25;
             this.toolTip1.SetToolTip(this.numDefRotZ, "Z Rotation default value to be displayed in SALVL.");
             this.numDefRotZ.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -726,7 +726,7 @@
             this.numDefRotY.Location = new System.Drawing.Point(123, 17);
             this.numDefRotY.Name = "numDefRotY";
             this.numDefRotY.Size = new System.Drawing.Size(55, 23);
-            this.numDefRotY.TabIndex = 15;
+            this.numDefRotY.TabIndex = 24;
             this.toolTip1.SetToolTip(this.numDefRotY, "Y Rotation default value to be displayed in SALVL.");
             this.numDefRotY.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -736,7 +736,7 @@
             this.numDefRotX.Location = new System.Drawing.Point(62, 17);
             this.numDefRotX.Name = "numDefRotX";
             this.numDefRotX.Size = new System.Drawing.Size(55, 23);
-            this.numDefRotX.TabIndex = 14;
+            this.numDefRotX.TabIndex = 23;
             this.toolTip1.SetToolTip(this.numDefRotX, "X Rotation default value to be displayed in SALVL.");
             this.numDefRotX.ValueChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -763,7 +763,7 @@
             this.txtScriptName.Location = new System.Drawing.Point(61, 18);
             this.txtScriptName.Name = "txtScriptName";
             this.txtScriptName.Size = new System.Drawing.Size(209, 23);
-            this.txtScriptName.TabIndex = 14;
+            this.txtScriptName.TabIndex = 13;
             this.toolTip1.SetToolTip(this.txtScriptName, "Name of the Object in SALVL.");
             this.txtScriptName.TextChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -783,7 +783,7 @@
             this.lstSclType.Location = new System.Drawing.Point(274, 78);
             this.lstSclType.Name = "lstSclType";
             this.lstSclType.Size = new System.Drawing.Size(83, 23);
-            this.lstSclType.TabIndex = 9;
+            this.lstSclType.TabIndex = 21;
             this.toolTip1.SetToolTip(this.lstSclType, "Dropdown list of all supported Scale Types for scripted objects.");
             this.lstSclType.SelectedIndexChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -792,7 +792,7 @@
             this.btnBrowseModel.Location = new System.Drawing.Point(471, 17);
             this.btnBrowseModel.Name = "btnBrowseModel";
             this.btnBrowseModel.Size = new System.Drawing.Size(63, 23);
-            this.btnBrowseModel.TabIndex = 7;
+            this.btnBrowseModel.TabIndex = 15;
             this.btnBrowseModel.Text = "Browse";
             this.toolTip1.SetToolTip(this.btnBrowseModel, "Browse option for locating the Model file to be used.");
             this.btnBrowseModel.UseVisualStyleBackColor = true;
@@ -812,7 +812,7 @@
             this.txtScriptModel.Location = new System.Drawing.Point(324, 17);
             this.txtScriptModel.Name = "txtScriptModel";
             this.txtScriptModel.Size = new System.Drawing.Size(140, 23);
-            this.txtScriptModel.TabIndex = 5;
+            this.txtScriptModel.TabIndex = 14;
             this.toolTip1.SetToolTip(this.txtScriptModel, "Model to be used by the object in SALVL.");
             this.txtScriptModel.TextChanged += new System.EventHandler(this.UpdateEntries);
             // 
@@ -832,10 +832,12 @@
             this.ClientSize = new System.Drawing.Size(802, 297);
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.HelpButton = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ObjListEditor";
             this.Text = "Object Editor";
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.ObjListEditor_HelpButtonClicked);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ObjListEditor_FormClosing);
             this.Shown += new System.EventHandler(this.ObjListEditor_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);

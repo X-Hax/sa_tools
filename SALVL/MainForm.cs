@@ -148,7 +148,7 @@ namespace SAModel.SALVL
 		string systemFallback; // The system/SONICADV folder for cases when the mod doesn't have replacement files
 		string modFolder; // The mod's main folder
 		string modSystemFolder; // The mod's "system" folder, such as SONICADV in SA1 or SYSTEM in SADX
-		Dictionary<string, ObjectData> objdefini = new Dictionary<string, ObjectData>();
+		Dictionary<string, ObjectData> objdefini;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
