@@ -17,6 +17,8 @@ using System.Windows.Forms;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using System.Globalization;
+using ByteConverter = SAModel.ByteConverter;
 
 namespace SAModel.SALVL
 {
@@ -861,8 +863,10 @@ namespace SAModel.SALVL
 			progress.SetMaxSteps(steps);
 			IniLevelData level = salvlini.Levels[levelID];
 
-				SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
-				LevelData.leveltexs = null;
+			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
+			SA2LevelIDs SA2level = (SA2LevelIDs)byte.Parse(level.LevelID, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+
+			LevelData.leveltexs = null;
 
 				Invoke((Action)progress.Show);
 
@@ -914,7 +918,6 @@ namespace SAModel.SALVL
 
 			LevelData.StartPositions = new StartPosItem[LevelData.Characters.Length];
 
-
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
 				progress.SetStep(string.Format("{0}/{1}", (i + 1), LevelData.StartPositions.Length));
@@ -933,22 +936,37 @@ namespace SAModel.SALVL
 						character = salvlini.Characters[LevelData.Characters[i]];
 				}
 
-					Dictionary<SA1LevelAct, SA1StartPosInfo> posini = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
+				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
+				Dictionary<SA2LevelIDs, SA2StartPosInfo> SA2posini = new Dictionary<SA2LevelIDs, SA2StartPosInfo>();
 
 				//to do: Add SA2 Start Pos
 				if (File.Exists(character.StartPositions) && salvlini.IsSA2 != true)
 				{
+
 					posini = SA1StartPosList.Load(character.StartPositions);
 				}
 
-					Vertex pos = new Vertex();
-					int rot = 0;
+				if (File.Exists(character.StartPositions) && salvlini.IsSA2)
+				{
+
+					SA2posini = SA2StartPosList.Load(character.StartPositions);
+				}
+
+
+				Vertex pos = new Vertex();
+				int rot = 0;
 
 				if (posini.ContainsKey(levelact))
 				{
 					pos = posini[levelact].Position;
 					rot = posini[levelact].YRotation;
 				}
+				else if (SA2posini.ContainsKey(SA2level))
+				{
+					pos = SA2posini[SA2level].Position;
+					rot = SA2posini[SA2level].YRotation;
+				}
+
 				if (File.Exists(character.Model))
 					LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
 					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
