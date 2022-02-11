@@ -15,17 +15,27 @@ namespace SAModel.SAEditorCommon.DataTypes
 		private Mesh[] Meshes;
 		private string texture;
 		private float offset;
+		private bool hasWeight;
 
-		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager)
+		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager, bool Weight = false)
 			: base(selectionManager)
 		{
 			Model = model;
+			hasWeight = Weight;
+
 			model.ProcessVertexData();
-			NJS_OBJECT[] models = model.GetObjects();
-			Meshes = new Mesh[models.Length];
-			for (int i = 0; i < models.Length; i++)
-				if (models[i].Attach != null)
-					Meshes[i] = models[i].Attach.CreateD3DMesh();
+
+			if (hasWeight)
+				Meshes = model.ProcessWeightedModel().ToArray();
+			else
+			{
+				NJS_OBJECT[] models = model.GetObjects();
+				Meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						Meshes[i] = models[i].Attach.CreateD3DMesh();
+			}
+
 			texture = textures;
 			this.offset = offset;
 			Position = position;
@@ -77,16 +87,36 @@ namespace SAModel.SAEditorCommon.DataTypes
 			transform.NJTranslate(0, offset, 0);
 			transform.NJTranslate(Position);
 			transform.NJRotateY(-0x8000 - YRotation);
+
 			if (LevelData.Textures != null && LevelData.Textures.Count > 0 && LevelData.Textures.ContainsKey(texture) && !EditorOptions.DisableTextures)
 			{
-				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				if (hasWeight)
+				{
+					result.AddRange(Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
+				else
+				{
+					result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
 			}
 			else
 			{
-				result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Meshes, EditorOptions.IgnoreMaterialColors));
+				if (hasWeight)
+				{
+					result.AddRange(Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, null, Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
+				else
+				{
+					result.AddRange(Model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Meshes, EditorOptions.IgnoreMaterialColors));
+				}
 			}
 			if (Selected)
-				result.AddRange(Model.DrawModelTreeInvert(transform, Meshes, EditorOptions.IgnoreMaterialColors));
+			{
+				if (hasWeight)
+					result.AddRange(Model.DrawModelTreeWeightedInvert(transform.Top, Meshes, EditorOptions.IgnoreMaterialColors));
+				else
+					result.AddRange(Model.DrawModelTreeInvert(transform, Meshes, EditorOptions.IgnoreMaterialColors));
+			}
 			transform.Pop();
 			return result;
 		}
