@@ -18,7 +18,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using System.Globalization;
-using ByteConverter = SAModel.ByteConverter;
 
 namespace SAModel.SALVL
 {
@@ -942,19 +941,17 @@ namespace SAModel.SALVL
 				Dictionary<SA1LevelAct, SA1StartPosInfo> posini = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
 				Dictionary<SA2LevelIDs, SA2StartPosInfo> SA2posini = new Dictionary<SA2LevelIDs, SA2StartPosInfo>();
 
-				//to do: Add SA2 Start Pos
-				if (File.Exists(character.StartPositions) && salvlini.IsSA2 != true)
+				if (File.Exists(character.StartPositions))
 				{
-
-					posini = SA1StartPosList.Load(character.StartPositions);
+					if (salvlini.IsSA2 != true)
+					{
+						posini = SA1StartPosList.Load(character.StartPositions);
+					}
+					else
+					{
+						SA2posini = SA2StartPosList.Load(character.StartPositions);
+					}
 				}
-
-				if (File.Exists(character.StartPositions) && salvlini.IsSA2)
-				{
-
-					SA2posini = SA2StartPosList.Load(character.StartPositions);
-				}
-
 
 				Vertex pos = new Vertex();
 				int rot = 0;
@@ -972,12 +969,18 @@ namespace SAModel.SALVL
 
 				if (File.Exists(character.Model))
 					LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems, salvlini.IsSA2);
 				else
 					LevelData.StartPositions[i] = new StartPosItem(new NJS_OBJECT(),
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
+					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems, salvlini.IsSA2);
+
 				if (File.Exists(character.TextureList))
 					LoadTextureList(character.TextureList, modSystemFolder);
+
+				if (isSA2LVL())
+				{
+					LoadPVM(character.Textures, modSystemFolder);
+				}
 			}
 
 			JumpToStartPos();

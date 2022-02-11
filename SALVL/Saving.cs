@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace SAModel.SALVL
 {
@@ -25,7 +26,7 @@ namespace SAModel.SALVL
 
 			if (isSA2LVL()) //temporary solution
 			{
-				SaveSA2SetFile(autoCloseDialog);
+				SaveSA2Data(autoCloseDialog);
 				unsaved = false;
 				Application.DoEvents();
 				return;
@@ -278,14 +279,12 @@ namespace SAModel.SALVL
 			}
 		}
 
-		private void SaveSA2SetFile(bool autoCloseDialog)
+		private void SaveSA2Data(bool autoCloseDialog)
 		{
+
 			Application.DoEvents();
 			IniLevelData level = salvlini.Levels[levelID];
 			Directory.CreateDirectory(modSystemFolder);
-
-			if (LevelData.geo != null)
-				LevelData.geo.SaveToFile(level.LevelGeometry, LandTableFormat.SA2B);
 
 			#region Saving SET Items
 
@@ -298,6 +297,57 @@ namespace SAModel.SALVL
 
 			#endregion
 
+			SA2LevelIDs SA2level = (SA2LevelIDs)byte.Parse(level.LevelID, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+
+			#region Saving Geometry
+
+			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 3, true, autoCloseDialog);
+			progress.Show(this);
+
+			Application.DoEvents();
+			progress.SetTaskAndStep("Saving:", "Geometry...");
+
+			if (LevelData.geo != null)
+				LevelData.geo.SaveToFile(level.LevelGeometry, LandTableFormat.SA2B);
+
+			progress.StepProgress();
+
+			#endregion
+
+			#region Death Zones
+
+			progress.Step = "Death zones...";
+			Application.DoEvents();
+
+			if (LevelData.DeathZones != null)
+			{
+				DeathZoneFlags[] dzini = new DeathZoneFlags[LevelData.DeathZones.Count];
+				string path = Path.GetDirectoryName(level.DeathZones);
+				for (int i = 0; i < LevelData.DeathZones.Count; i++)
+					dzini[i] = LevelData.DeathZones[i].Save(path, i.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ".sa1mdl");
+				dzini.Save(level.DeathZones);
+			}
+
+			progress.StepProgress();
+			#endregion
+
+
+			//TO DO: Add SA2 Start Pos for everyone
+
+			/*#region Start Positions
+
+			progress.Step = "Start positions...";
+			Application.DoEvents();
+
+
+			Dictionary<SA2LevelIDs, SA2StartPosInfo> posini = SA2StartPosList.Load(salvlini.Characters[LevelData.Characters[0]].StartPositions);
+
+
+			progress.StepProgress();
+			#endregion*/
+
+			progress.StepProgress();
+			progress.SetTaskAndStep("Save complete!");
 			unsaved = false;
 			Application.DoEvents();
 		}
