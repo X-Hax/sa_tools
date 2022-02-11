@@ -23,6 +23,7 @@ namespace SAModel.SAEditorCommon
 		public string LevelTextureLists { get; set; }
 		public string MissionObjectList { get; set; }
 		public string MissionTextureList { get; set; }
+		public string MissionObjDefs { get; set; }
 		public string Paths { get; set; }
 		[IniName("Chars_")]
 		[IniCollection(IniCollectionMode.NoSquareBrackets)]

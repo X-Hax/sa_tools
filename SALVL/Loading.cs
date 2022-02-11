@@ -864,7 +864,10 @@ namespace SAModel.SALVL
 			IniLevelData level = salvlini.Levels[levelID];
 
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
-			SA2LevelIDs SA2level = (SA2LevelIDs)byte.Parse(level.LevelID, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+
+			SA2LevelIDs SA2level = 0;
+			if (salvlini.IsSA2)
+				SA2level = (SA2LevelIDs)byte.Parse(level.LevelID, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
 
 			LevelData.leveltexs = null;
 
@@ -1097,8 +1100,17 @@ namespace SAModel.SALVL
 				{
 					string objdefspath = Path.Combine(modFolder, salvlini.Levels[levelID].ObjectDefinition);
 					if (File.Exists(objdefspath))
-					{
 						objdefini = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(objdefspath);
+
+					if (!string.IsNullOrEmpty(salvlini.MissionObjDefs))
+					{
+						string misobjdefpath = Path.Combine(modFolder, salvlini.MissionObjDefs);
+						Dictionary<string, ObjectData> misObjDef = IniSerializer.Deserialize<Dictionary<string, ObjectData>>(misobjdefpath);
+						if (misObjDef != null)
+						{
+							foreach (KeyValuePair<string, ObjectData> obj in misObjDef)
+								objdefini.Add(obj.Key, obj.Value);
+						}
 					}
 				}
 

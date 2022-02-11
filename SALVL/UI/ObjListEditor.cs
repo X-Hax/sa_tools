@@ -144,7 +144,7 @@ namespace SAModel.SALVL
 		private void CreateDefaultObjDefs()
 		{
 			SaveFileDialog dialog = new SaveFileDialog();
-			dialog.Filter = "Object Definition Files (*.defs)|*.defs";
+			dialog.Filter = "Object Definition Files (*.ini)|*.ini";
 			dialog.InitialDirectory = modFolder;
 
 			if (dialog.ShowDialog() == DialogResult.OK)
