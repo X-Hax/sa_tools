@@ -18,7 +18,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using System.Globalization;
-using ByteConverter = SAModel.ByteConverter;
 
 namespace SAModel.SALVL
 {
