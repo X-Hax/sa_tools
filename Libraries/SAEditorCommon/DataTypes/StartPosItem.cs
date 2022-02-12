@@ -92,7 +92,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			{
 				if (hasWeight)
 				{
-					result.AddRange(Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+					result.AddRange(Model.DrawModelTreeWeighted(dev.GetRenderState<FillMode>(RenderState.FillMode), transform.Top, LevelData.Textures[texture], Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 				}
 				else
 				{
@@ -103,7 +103,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			{
 				if (hasWeight)
 				{
-					result.AddRange(Model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, null, Meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+					result.AddRange(Model.DrawModelTreeWeighted(dev.GetRenderState<FillMode>(RenderState.FillMode), transform.Top, null, Meshes, EditorOptions.IgnoreMaterialColors));
 				}
 				else
 				{

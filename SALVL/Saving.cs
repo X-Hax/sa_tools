@@ -24,11 +24,9 @@ namespace SAModel.SALVL
 			if (!isStageLoaded)
 				return;
 
-			if (isSA2LVL()) //temporary solution
+			if (isSA2LVL()) 
 			{
 				SaveSA2Data(autoCloseDialog);
-				unsaved = false;
-				Application.DoEvents();
 				return;
 			}
 
@@ -307,8 +305,11 @@ namespace SAModel.SALVL
 			Application.DoEvents();
 			progress.SetTaskAndStep("Saving:", "Geometry...");
 
+
 			if (LevelData.geo != null)
-				LevelData.geo.SaveToFile(level.LevelGeometry, LandTableFormat.SA2B);
+			{
+				LevelData.geo.SaveToFile(level.LevelGeometry, LevelData.geo.Format);
+			}
 
 			progress.StepProgress();
 
