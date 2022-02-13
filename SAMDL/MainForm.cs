@@ -3667,7 +3667,8 @@ namespace SAModel.SAMDL
 			}
 			if (doOperation)
 			{
-				int id = 0;
+				int id_trans = 0;
+				int id_opaque = 0;
 				List<NJS_OBJECT> transparent = new List<NJS_OBJECT>();
 				List<NJS_OBJECT> opaque = new List<NJS_OBJECT>();
 				foreach (NJS_MESHSET m in basicatt.Mesh)
@@ -3698,17 +3699,18 @@ namespace SAModel.SAMDL
 						Poly[] polyarr = new Poly[1];
 						polyarr[0] = newpoly;
 						NJS_MESHSET mesh_new = new NJS_MESHSET(polyarr, m.PolyNormal != null, m.UV != null, m.VColor != null);
-						mesh_new.PolyName = m.PolyName + "_" + id.ToString();
+						string namesuffix = isTransparent ? "_t_" + id_trans.ToString() : "_o_" + id_opaque.ToString();
+						mesh_new.PolyName = m.PolyName + "_" + namesuffix;
 						if (mesh_new.UV != null)
 						{
-							mesh_new.UVName = m.UVName + "_" + id.ToString();
+							mesh_new.UVName = m.UVName + "_" + namesuffix;
 							UV[] list = uvlist_new.ToArray();
 							for (int u = 0; u < mesh_new.UV.Length; u++)
 								mesh_new.UV[u] = list[u];
 						}
 						if (mesh_new.VColor != null)
 						{
-							mesh_new.VColorName = m.VColorName + "_" + id.ToString();
+							mesh_new.VColorName = m.VColorName + "_" + namesuffix;
 							Color[] clist = vclist_new.ToArray();
 							for (int u = 0; u < mesh_new.VColor.Length; u++)
 								mesh_new.VColor[u] = clist[u];
@@ -3719,19 +3721,22 @@ namespace SAModel.SAMDL
 						BasicAttach newatt = new BasicAttach(vlist_new.ToArray(), nlist_new.ToArray(), meshlist_new, matlist_new);
 						newatt.Bounds.Center = basicatt.Bounds.Center;
 						newatt.Bounds.Radius = basicatt.Bounds.Radius;
-						newatt.Name = basicatt.Name + "_" + id.ToString();
-						newatt.MaterialName = basicatt.MaterialName + "_" + id.ToString();
-						newatt.VertexName = basicatt.VertexName + "_" + id.ToString();
-						newatt.NormalName = basicatt.NormalName + "_" + id.ToString();
-						newatt.MeshName = basicatt.MeshName + "_" + id.ToString();
+						newatt.Name = basicatt.Name + "_" + namesuffix;
+						newatt.MaterialName = basicatt.MaterialName + "_" + namesuffix;
+						newatt.VertexName = basicatt.VertexName + "_" + namesuffix;
+						newatt.NormalName = basicatt.NormalName + "_" + namesuffix;
+						newatt.MeshName = basicatt.MeshName + "_" + namesuffix;
 						NJS_OBJECT newobj = new NJS_OBJECT();
 						newobj.Attach = newatt;
-						newobj.Name = selectedObject.Name + "_" + id.ToString();
+						newobj.Name = selectedObject.Name + "_" + namesuffix;
 						if (isTransparent)
 							transparent.Add(newobj);
 						else
 							opaque.Add(newobj);
-						id++;
+						if (isTransparent) 
+							id_trans++; 
+						else 
+							id_opaque++;
 					}
 				}
 				foreach (NJS_OBJECT newobjs_opaque in opaque)
