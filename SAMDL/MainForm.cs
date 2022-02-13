@@ -3668,10 +3668,13 @@ namespace SAModel.SAMDL
 			if (doOperation)
 			{
 				int id = 0;
+				List<NJS_OBJECT> transparent = new List<NJS_OBJECT>();
+				List<NJS_OBJECT> opaque = new List<NJS_OBJECT>();
 				foreach (NJS_MESHSET m in basicatt.Mesh)
 				{
 					int uvid = 0;
 					if (m.Poly == null) continue;
+					bool isTransparent = basicatt.Material[m.MaterialID].UseAlpha == true;
 					for (int p = 0; p < m.Poly.Count; p++)
 					{
 						List<NJS_MESHSET> meshlist_new = new List<NJS_MESHSET>();
@@ -3724,10 +3727,17 @@ namespace SAModel.SAMDL
 						NJS_OBJECT newobj = new NJS_OBJECT();
 						newobj.Attach = newatt;
 						newobj.Name = selectedObject.Name + "_" + id.ToString();
-						selectedObject.AddChild(newobj);
+						if (isTransparent)
+							transparent.Add(newobj);
+						else
+							opaque.Add(newobj);
 						id++;
 					}
 				}
+				foreach (NJS_OBJECT newobjs_opaque in opaque)
+					selectedObject.AddChild(newobjs_opaque);
+				foreach (NJS_OBJECT newobjs_trans in transparent)
+					selectedObject.AddChild(newobjs_trans);
 				selectedObject.Attach = null;
 				RebuildModelCache();
 				NeedRedraw = true;
