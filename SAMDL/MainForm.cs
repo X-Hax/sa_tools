@@ -3744,6 +3744,7 @@ namespace SAModel.SAMDL
 				foreach (NJS_OBJECT newobjs_trans in transparent)
 					selectedObject.AddChild(newobjs_trans);
 				selectedObject.Attach = null;
+				selectedObject.SkipChildren = false;
 				RebuildModelCache();
 				NeedRedraw = true;
 				SelectedItemChanged();
