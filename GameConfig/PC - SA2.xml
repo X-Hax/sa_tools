@@ -77,6 +77,7 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGRACE" CmnName="Chao Race"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGKINDER" CmnName="Chao Kindergarten"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="EMBLEMGET" CmnName="Emblem Acquired Screen"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="EVENT" CmnName="Cutscene Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Enemies" CmnName="Enemy Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="ChaoCommon" CmnName="Chao Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Characters" CmnName="Character Level Data"/>
