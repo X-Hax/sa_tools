@@ -228,3 +228,4 @@ pip-log.txt
 /buildSATools.exe
 /buildSATools.dll
 /buildSATools.deps.json
+/SA2Tools/SA2ObjectDefinitions/Chao/tree.cs
