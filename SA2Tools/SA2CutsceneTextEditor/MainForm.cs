@@ -436,7 +436,7 @@ namespace SA2CutsceneTextEditor
 		{
 			Character = ByteConverter.ToInt32(file, address);
 			Text = file.GetCString((int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), encoding);
-			if (Text.StartsWith("\a"))
+			if (!string.IsNullOrEmpty(Text) && Text[0] == '\a')
 				Text = Text.TrimStart('\a');
 			else
 				Centered = false;
