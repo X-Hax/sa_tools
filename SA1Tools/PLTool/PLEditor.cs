@@ -776,22 +776,22 @@ namespace PLTool
             }
         }
 
-        private void selectLevel(object sender, EventArgs e)
-        {
-            ToolStripMenuItem send = (ToolStripMenuItem)sender;
-            List<LanternFilenames.LanternLevelEntry> levelList = LanternFilenames.GetLevelList();
-            // Stop if it has dropdowns
-            if (send.DropDownItems.Count > 0)
-                return;
-            // Search by level first
-            foreach (LanternFilenames.LanternLevelEntry entry in levelList)
-                if (entry.Level == send.Text)
-                    OpenPLFileFromLevelSelect(entry.FileID);
-            // Search by act
-            foreach (LanternFilenames.LanternLevelEntry entry in levelList)
-                if (entry.Act == send.Text)
-                    OpenPLFileFromLevelSelect(entry.FileID);
-        }
+		private void selectLevel(object sender, EventArgs e)
+		{
+			ToolStripMenuItem send = (ToolStripMenuItem)sender;
+			List<LanternFilenames.LanternLevelEntry> levelList = LanternFilenames.GetLevelList();
+			// Stop if it has dropdowns
+			if (send.DropDownItems.Count > 0)
+				return;
+			if (string.IsNullOrEmpty(send.ToolTipText))
+				return;
+			foreach (LanternFilenames.LanternLevelEntry entry in levelList)
+			{
+				string levelname = send.ToolTipText.Substring(2, send.ToolTipText.Length - 2).Replace(".BIN", "");
+				if (levelname == entry.FileID)
+					OpenPLFileFromLevelSelect(entry.FileID);
+			}
+		}
 
 
         private void OpenPLFileFromLevelSelect(string plID)
