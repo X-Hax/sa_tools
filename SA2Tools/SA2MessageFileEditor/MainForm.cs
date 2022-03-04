@@ -513,7 +513,7 @@ namespace SA2MessageFileEditor
 				if (next == -1)
 				{
 					msg.Text = text.Substring(c);
-					if (msg.Text.StartsWith("\a"))
+					if (!string.IsNullOrEmpty(msg.Text) && msg.Text[0] == '\a')
 						msg.Text = msg.Text.TrimStart('\a');
 					else
 						msg.Centered = false;
@@ -522,7 +522,7 @@ namespace SA2MessageFileEditor
 				if (next != c)
 				{
 					msg.Text = text.Substring(c, next - c);
-					if (msg.Text.StartsWith("\a"))
+					if (!string.IsNullOrEmpty(msg.Text) && msg.Text[0] == '\a')
 						msg.Text = msg.Text.TrimStart('\a');
 					else
 						msg.Centered = false;
