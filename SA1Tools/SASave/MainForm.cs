@@ -232,6 +232,27 @@ namespace SASave
 			return Regions.US;
 		}
 
+		private Dictionary<int, string> ParseFlagDescriptions(string filename)
+		{
+			Dictionary<int, string> events;
+			if (System.IO.File.Exists(filename))
+				events = IniFile.Deserialize<Dictionary<int, string>>(filename);
+			else
+				events = new Dictionary<int, string>();
+			Dictionary<int, string> result = new Dictionary<int, string>();
+			foreach (var item in events)
+			{
+				if (item.Value.Contains("|"))
+				{
+					string[] splitstr = item.Value.Split('|');
+					result.Add(item.Key, splitstr[0] + " (" + splitstr[1] + ")");
+				}
+				else
+					result.Add(item.Key, item.Value);
+			}
+			return result;
+		}
+
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			lastCharacter.SelectedIndex = 0;
@@ -247,11 +268,7 @@ namespace SASave
 			boss_character.SelectedIndex = 0;
 			metal_level_select.DataSource = new List<KeyValuePair<string, int>>(ActionStages[0]);
 			metal_level_select.SelectedIndex = 0;
-			Dictionary<int, string> events;
-			if (System.IO.File.Exists("StoryFlags.ini"))
-				events = IniFile.Deserialize<Dictionary<int, string>>("StoryFlags.ini");
-			else
-				events = new Dictionary<int, string>();
+			Dictionary<int, string> events = ParseFlagDescriptions("StoryFlags.ini");
 			int i = 0;
 			events_unused.BeginUpdate();
 			for (int k = 0; k < 64; k++)
@@ -309,11 +326,7 @@ namespace SASave
 				i++;
 			}
 			events_big.EndUpdate();
-			Dictionary<int, string> npcs;
-			if (System.IO.File.Exists("CutsceneFlags.ini"))
-				npcs = IniFile.Deserialize<Dictionary<int, string>>("CutsceneFlags.ini");
-			else
-				npcs = new Dictionary<int, string>();
+			Dictionary<int, string> npcs = ParseFlagDescriptions("CutsceneFlags.ini");
 			this.npcs.BeginUpdate();
 			for (i = 0; i < 512; i++)
 				this.npcs.Items.Add(npcs.ContainsKey(i) ? npcs[i] : "Unused");
