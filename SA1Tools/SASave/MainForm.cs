@@ -258,7 +258,9 @@ namespace SASave
 			boss_character.SelectedIndex = 0;
 			metal_level_select.DataSource = new List<KeyValuePair<string, int>>(ActionStages[0]);
 			metal_level_select.SelectedIndex = 0;
-			Dictionary<int, string> events = IniFile.Deserialize<Dictionary<int, string>>("StoryFlags.ini");
+			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
+			Dictionary<int, string> events = IniFile.Deserialize<Dictionary<int, string>>(Path.Combine(appPath, "StoryFlags.ini"));
+			Dictionary<int, string> npcs = IniFile.Deserialize<Dictionary<int, string>>(Path.Combine(appPath, "CutsceneFlags.ini"));
 			int i = 0; // Start index
 					   // Story flags: Unused
 			listViewEventsUnused.BeginUpdate();
@@ -333,7 +335,6 @@ namespace SASave
 			listViewEventsBig.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 			listViewEventsBig.EndUpdate();
 			// Cutscene clear flags
-			Dictionary<int, string> npcs = IniFile.Deserialize<Dictionary<int, string>>("CutsceneFlags.ini");
 			listViewCutsceneFlags.BeginUpdate();
 			for (i = 0; i < 512; i++)
 				if (npcs.ContainsKey(i))
