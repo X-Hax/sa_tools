@@ -232,25 +232,15 @@ namespace SASave
 			return Regions.US;
 		}
 
-		private Dictionary<int, string> ParseFlagDescriptions(string filename)
+		private ListViewItem CreateListViewItemFromFlagData(Dictionary<int, string> events, int index, bool hex = false)
 		{
-			Dictionary<int, string> events;
-			if (System.IO.File.Exists(filename))
-				events = IniFile.Deserialize<Dictionary<int, string>>(filename);
-			else
-				events = new Dictionary<int, string>();
-			Dictionary<int, string> result = new Dictionary<int, string>();
-			foreach (var item in events)
+			if (events.ContainsKey(index))
 			{
-				if (item.Value.Contains("|"))
-				{
-					string[] splitstr = item.Value.Split('|');
-					result.Add(item.Key, splitstr[0] + " (" + splitstr[1] + ")");
-				}
-				else
-					result.Add(item.Key, item.Value);
+				string[] splitstr = events[index].Split('|');
+				return new ListViewItem(new[] { index.ToString(hex ? "X4" : "D3"), splitstr[0], splitstr.Length > 1 ? splitstr[1] : "Unknown" }) { Checked = false };
 			}
-			return result;
+			else
+				return new ListViewItem(new[] { index.ToString(hex ? "X4" : "D3"), "None", "Unused" }) { Checked = false };
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
@@ -268,74 +258,96 @@ namespace SASave
 			boss_character.SelectedIndex = 0;
 			metal_level_select.DataSource = new List<KeyValuePair<string, int>>(ActionStages[0]);
 			metal_level_select.SelectedIndex = 0;
-			Dictionary<int, string> events = ParseFlagDescriptions("StoryFlags.ini");
-			int i = 0;
-			events_unused.BeginUpdate();
+			Dictionary<int, string> events = IniFile.Deserialize<Dictionary<int, string>>("StoryFlags.ini");
+			int i = 0; // Start index
+					   // Story flags: Unused
+			listViewEventsUnused.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_unused.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsUnused.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_unused.EndUpdate();
-			events_general.BeginUpdate();
+			listViewEventsUnused.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsUnused.EndUpdate();
+			// Story flags: General
+			listViewEventsGeneral.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_general.Items.Add(events.ContainsKey(i) ? events[i] : "Unused", i == 65);
+				listViewEventsGeneral.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_general.EndUpdate();
-			events_sonic.BeginUpdate();
+			listViewEventsGeneral.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsGeneral.EndUpdate();
+			// Story flags: Sonic
+			listViewEventsSonic.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_sonic.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsSonic.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_sonic.EndUpdate();
-			events_tails.BeginUpdate();
+			listViewEventsSonic.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsSonic.EndUpdate();
+			// Story flags: Tails
+			listViewEventsTails.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_tails.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsTails.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_tails.EndUpdate();
-			events_knuckles.BeginUpdate();
+			listViewEventsTails.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsTails.EndUpdate();
+			// Story flags: Knuckles
+			listViewEventsKnuckles.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_knuckles.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsKnuckles.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_knuckles.EndUpdate();
-			events_amy.BeginUpdate();
+			listViewEventsKnuckles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsKnuckles.EndUpdate();
+			// Story flags: Amy
+			listViewEventsAmy.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_amy.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsAmy.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_amy.EndUpdate();
-			events_gamma.BeginUpdate();
+			listViewEventsAmy.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsAmy.EndUpdate();
+			// Story flags: Gamma
+			listViewEventsGamma.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_gamma.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsGamma.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_gamma.EndUpdate();
-			events_big.BeginUpdate();
+			listViewEventsGamma.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsGamma.EndUpdate();
+			// Story flags: Big
+			listViewEventsBig.BeginUpdate();
 			for (int k = 0; k < 64; k++)
 			{
-				events_big.Items.Add(events.ContainsKey(i) ? events[i] : "Unused");
+				listViewEventsBig.Items.Add(CreateListViewItemFromFlagData(events, i));
 				i++;
 			}
-			events_big.EndUpdate();
-			Dictionary<int, string> npcs = ParseFlagDescriptions("CutsceneFlags.ini");
-			this.npcs.BeginUpdate();
+			listViewEventsBig.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewEventsBig.EndUpdate();
+			// Cutscene clear flags
+			Dictionary<int, string> npcs = IniFile.Deserialize<Dictionary<int, string>>("CutsceneFlags.ini");
+			listViewCutsceneFlags.BeginUpdate();
 			for (i = 0; i < 512; i++)
-				this.npcs.Items.Add(npcs.ContainsKey(i) ? npcs[i] : "Unused");
-			this.npcs.EndUpdate();
+				if (npcs.ContainsKey(i))
+					listViewCutsceneFlags.Items.Add(CreateListViewItemFromFlagData(npcs, i, true));
+				else
+					listViewCutsceneFlags.Items.Add(new ListViewItem(new[] { i.ToString("X4"), "Unused" }) { Checked = false });
+			listViewCutsceneFlags.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+			listViewCutsceneFlags.EndUpdate();
+			// Level clear flags
 			i = 0;
 			level_clear_table.SuspendLayout();
 			foreach (string item in levels)
 			{
-				level_clear_table.Controls.Add(new Label() { Text = item, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.None, AutoSize=true });
+				level_clear_table.Controls.Add(new Label() { Text = item, TextAlign = ContentAlignment.MiddleCenter, Anchor = AnchorStyles.None, AutoSize = true });
 				NumericUpDown ctrl = new NumericUpDown() { Name = "levelclear_" + i.ToInvariantString(), Width = 64, Maximum = byte.MaxValue, Anchor = AnchorStyles.None };
 				ctrl.ValueChanged += new EventHandler(levelclear_ValueChanged);
 				level_clear_table.Controls.Add(ctrl);
@@ -396,34 +408,34 @@ namespace SASave
 		{
 			int e = 0;
 			for (int i = 0; i < 64; i++)
-				events_unused.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsUnused.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_general.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsGeneral.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_sonic.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsSonic.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_tails.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsTails.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_knuckles.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsKnuckles.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_amy.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsAmy.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_gamma.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsGamma.Items[i].Checked = CurrentData.EventFlags[e + i];
 			e += 64;
 			for (int i = 0; i < 64; i++)
-				events_big.SetItemChecked(i, CurrentData.EventFlags[e + i]);
+				listViewEventsBig.Items[i].Checked = CurrentData.EventFlags[e + i];
 		}
 
 		private void UpdateNPCFlags()
 		{
 			for (int i = 0; i < 512; i++)
-				npcs.SetItemChecked(i, CurrentData.NPCFlags[i]);
+				listViewCutsceneFlags.Items[i].Checked = CurrentData.NPCFlags[i];
 		}
 
 		private void UpdateMetalEmblems()
@@ -1607,47 +1619,47 @@ namespace SASave
 			CurrentData.Emblems[129] = emblem_129.Checked;
 		}
 
-		private void events_unused_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsUnused_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_general_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsGeneral_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 64] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_sonic_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsSonic_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 128] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_tails_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsTails_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 192] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_knuckles_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsKnuckles_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 256] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_amy_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsAmy_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 320] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_gamma_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsGamma_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 384] = e.NewValue == CheckState.Checked;
 		}
 
-		private void events_big_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewEventsBig_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.EventFlags[e.Index + 448] = e.NewValue == CheckState.Checked;
 		}
 
-		private void npcs_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void listViewCutsceneFlags_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
 			CurrentData.NPCFlags[e.Index] = e.NewValue == CheckState.Checked;
 		}

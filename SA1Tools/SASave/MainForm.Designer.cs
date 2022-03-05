@@ -233,23 +233,49 @@
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.tabControl6 = new System.Windows.Forms.TabControl();
             this.tabPage31 = new System.Windows.Forms.TabPage();
-            this.events_unused = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsUnused = new System.Windows.Forms.ListView();
+            this.columnHeaderFlagID = new System.Windows.Forms.ColumnHeader();
+            this.columnHeaderFlagName = new System.Windows.Forms.ColumnHeader();
+            this.columnHeaderFlagDescription = new System.Windows.Forms.ColumnHeader();
             this.tabPage32 = new System.Windows.Forms.TabPage();
-            this.events_general = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsGeneral = new System.Windows.Forms.ListView();
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.tabPage33 = new System.Windows.Forms.TabPage();
-            this.events_sonic = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsSonic = new System.Windows.Forms.ListView();
+            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
             this.tabPage34 = new System.Windows.Forms.TabPage();
-            this.events_tails = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsTails = new System.Windows.Forms.ListView();
+            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader8 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader9 = new System.Windows.Forms.ColumnHeader();
             this.tabPage35 = new System.Windows.Forms.TabPage();
-            this.events_knuckles = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsKnuckles = new System.Windows.Forms.ListView();
+            this.columnHeader10 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader11 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader12 = new System.Windows.Forms.ColumnHeader();
             this.tabPage36 = new System.Windows.Forms.TabPage();
-            this.events_amy = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsAmy = new System.Windows.Forms.ListView();
+            this.columnHeader13 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader14 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader15 = new System.Windows.Forms.ColumnHeader();
             this.tabPage37 = new System.Windows.Forms.TabPage();
-            this.events_gamma = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsGamma = new System.Windows.Forms.ListView();
+            this.columnHeader16 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader17 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader18 = new System.Windows.Forms.ColumnHeader();
             this.tabPage38 = new System.Windows.Forms.TabPage();
-            this.events_big = new System.Windows.Forms.CheckedListBox();
+            this.listViewEventsBig = new System.Windows.Forms.ListView();
+            this.columnHeader19 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader20 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader21 = new System.Windows.Forms.ColumnHeader();
             this.tabPage9 = new System.Windows.Forms.TabPage();
-            this.npcs = new System.Windows.Forms.CheckedListBox();
+            this.listViewCutsceneFlags = new System.Windows.Forms.ListView();
+            this.columnHeader22 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader24 = new System.Windows.Forms.ColumnHeader();
             this.tabPage10 = new System.Windows.Forms.TabPage();
             this.level_clear_table = new System.Windows.Forms.TableLayoutPanel();
             this.levelclear_character = new System.Windows.Forms.ComboBox();
@@ -404,7 +430,8 @@
             this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(584, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(681, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -587,14 +614,14 @@
             // giveAllToolStripMenuItem
             // 
             this.giveAllToolStripMenuItem.Name = "giveAllToolStripMenuItem";
-            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.giveAllToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.giveAllToolStripMenuItem.Text = "&Give All";
             this.giveAllToolStripMenuItem.Click += new System.EventHandler(this.giveAllToolStripMenuItem_Click);
             // 
             // takeAllToolStripMenuItem
             // 
             this.takeAllToolStripMenuItem.Name = "takeAllToolStripMenuItem";
-            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.takeAllToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.takeAllToolStripMenuItem.Text = "&Take All";
             this.takeAllToolStripMenuItem.Click += new System.EventHandler(this.takeAllToolStripMenuItem_Click);
             // 
@@ -696,14 +723,14 @@
             // giveAllToolStripMenuItem1
             // 
             this.giveAllToolStripMenuItem1.Name = "giveAllToolStripMenuItem1";
-            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+            this.giveAllToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.giveAllToolStripMenuItem1.Text = "&Give All";
             this.giveAllToolStripMenuItem1.Click += new System.EventHandler(this.giveAllToolStripMenuItem1_Click);
             // 
             // takeAllToolStripMenuItem1
             // 
             this.takeAllToolStripMenuItem1.Name = "takeAllToolStripMenuItem1";
-            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(115, 22);
+            this.takeAllToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.takeAllToolStripMenuItem1.Text = "&Take All";
             this.takeAllToolStripMenuItem1.Click += new System.EventHandler(this.takeAllToolStripMenuItem1_Click);
             // 
@@ -713,17 +740,19 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(584, 540);
+            this.tabControl1.Size = new System.Drawing.Size(681, 627);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.tabControl2);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(576, 514);
+            this.tabPage1.Size = new System.Drawing.Size(673, 599);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Sonic Adventure";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -743,7 +772,7 @@
             this.tabControl2.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(576, 514);
+            this.tabControl2.Size = new System.Drawing.Size(673, 599);
             this.tabControl2.TabIndex = 0;
             // 
             // tabPage3
@@ -759,10 +788,11 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Controls.Add(this.playTime);
             this.tabPage3.Controls.Add(this.label1);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(568, 488);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage3.Size = new System.Drawing.Size(665, 571);
             this.tabPage3.TabIndex = 0;
             this.tabPage3.Text = "General";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -770,9 +800,10 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 265);
+            this.label3.Location = new System.Drawing.Point(7, 306);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 13);
+            this.label3.Size = new System.Drawing.Size(61, 15);
             this.label3.TabIndex = 9;
             this.label3.Text = "Last Level:";
             // 
@@ -821,18 +852,20 @@
             "Sky Chase Act 1",
             "Sky Chase Act 2",
             "Sand Hill"});
-            this.lastLevel.Location = new System.Drawing.Point(91, 262);
+            this.lastLevel.Location = new System.Drawing.Point(106, 302);
+            this.lastLevel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.lastLevel.Name = "lastLevel";
-            this.lastLevel.Size = new System.Drawing.Size(121, 21);
+            this.lastLevel.Size = new System.Drawing.Size(140, 23);
             this.lastLevel.TabIndex = 8;
             this.lastLevel.SelectedIndexChanged += new System.EventHandler(this.lastLevel_SelectedIndexChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 237);
+            this.label2.Location = new System.Drawing.Point(7, 273);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(79, 13);
+            this.label2.Size = new System.Drawing.Size(85, 15);
             this.label2.TabIndex = 7;
             this.label2.Text = "Last Character:";
             // 
@@ -851,18 +884,20 @@
             "Big",
             "Sonic (Eggman\'s voice)",
             "Sonic (Tikal\'s voice)"});
-            this.lastCharacter.Location = new System.Drawing.Point(91, 234);
+            this.lastCharacter.Location = new System.Drawing.Point(106, 270);
+            this.lastCharacter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.lastCharacter.Name = "lastCharacter";
-            this.lastCharacter.Size = new System.Drawing.Size(121, 21);
+            this.lastCharacter.Size = new System.Drawing.Size(140, 23);
             this.lastCharacter.TabIndex = 6;
             this.lastCharacter.SelectedIndexChanged += new System.EventHandler(this.lastCharacter_SelectedIndexChanged);
             // 
             // rumble
             // 
             this.rumble.AutoSize = true;
-            this.rumble.Location = new System.Drawing.Point(6, 211);
+            this.rumble.Location = new System.Drawing.Point(7, 243);
+            this.rumble.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rumble.Name = "rumble";
-            this.rumble.Size = new System.Drawing.Size(62, 17);
+            this.rumble.Size = new System.Drawing.Size(67, 19);
             this.rumble.TabIndex = 5;
             this.rumble.Text = "Rumble";
             this.rumble.UseVisualStyleBackColor = true;
@@ -878,10 +913,11 @@
             this.groupBox3.Controls.Add(this.textEnglish);
             this.groupBox3.Controls.Add(this.textJapanese);
             this.groupBox3.Controls.Add(this.textDefault);
-            this.groupBox3.Location = new System.Drawing.Point(6, 156);
+            this.groupBox3.Location = new System.Drawing.Point(7, 180);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.groupBox3.Size = new System.Drawing.Size(414, 49);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 3, 4, 0);
+            this.groupBox3.Size = new System.Drawing.Size(479, 57);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Text Language";
@@ -889,10 +925,10 @@
             // textGerman
             // 
             this.textGerman.AutoSize = true;
-            this.textGerman.Location = new System.Drawing.Point(346, 19);
-            this.textGerman.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.textGerman.Location = new System.Drawing.Point(404, 22);
+            this.textGerman.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.textGerman.Name = "textGerman";
-            this.textGerman.Size = new System.Drawing.Size(62, 17);
+            this.textGerman.Size = new System.Drawing.Size(67, 19);
             this.textGerman.TabIndex = 5;
             this.textGerman.Text = "German";
             this.textGerman.UseVisualStyleBackColor = true;
@@ -901,10 +937,10 @@
             // textSpanish
             // 
             this.textSpanish.AutoSize = true;
-            this.textSpanish.Location = new System.Drawing.Point(277, 19);
-            this.textSpanish.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.textSpanish.Location = new System.Drawing.Point(323, 22);
+            this.textSpanish.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.textSpanish.Name = "textSpanish";
-            this.textSpanish.Size = new System.Drawing.Size(63, 17);
+            this.textSpanish.Size = new System.Drawing.Size(66, 19);
             this.textSpanish.TabIndex = 4;
             this.textSpanish.Text = "Spanish";
             this.textSpanish.UseVisualStyleBackColor = true;
@@ -913,10 +949,10 @@
             // textFrench
             // 
             this.textFrench.AutoSize = true;
-            this.textFrench.Location = new System.Drawing.Point(213, 19);
-            this.textFrench.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.textFrench.Location = new System.Drawing.Point(248, 22);
+            this.textFrench.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.textFrench.Name = "textFrench";
-            this.textFrench.Size = new System.Drawing.Size(58, 17);
+            this.textFrench.Size = new System.Drawing.Size(61, 19);
             this.textFrench.TabIndex = 3;
             this.textFrench.Text = "French";
             this.textFrench.UseVisualStyleBackColor = true;
@@ -925,10 +961,10 @@
             // textEnglish
             // 
             this.textEnglish.AutoSize = true;
-            this.textEnglish.Location = new System.Drawing.Point(148, 19);
-            this.textEnglish.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.textEnglish.Location = new System.Drawing.Point(173, 22);
+            this.textEnglish.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.textEnglish.Name = "textEnglish";
-            this.textEnglish.Size = new System.Drawing.Size(59, 17);
+            this.textEnglish.Size = new System.Drawing.Size(63, 19);
             this.textEnglish.TabIndex = 2;
             this.textEnglish.Text = "English";
             this.textEnglish.UseVisualStyleBackColor = true;
@@ -937,10 +973,10 @@
             // textJapanese
             // 
             this.textJapanese.AutoSize = true;
-            this.textJapanese.Location = new System.Drawing.Point(71, 19);
-            this.textJapanese.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.textJapanese.Location = new System.Drawing.Point(83, 22);
+            this.textJapanese.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.textJapanese.Name = "textJapanese";
-            this.textJapanese.Size = new System.Drawing.Size(71, 17);
+            this.textJapanese.Size = new System.Drawing.Size(72, 19);
             this.textJapanese.TabIndex = 1;
             this.textJapanese.Text = "Japanese";
             this.textJapanese.UseVisualStyleBackColor = true;
@@ -950,10 +986,10 @@
             // 
             this.textDefault.AutoSize = true;
             this.textDefault.Checked = true;
-            this.textDefault.Location = new System.Drawing.Point(6, 19);
-            this.textDefault.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.textDefault.Location = new System.Drawing.Point(7, 22);
+            this.textDefault.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.textDefault.Name = "textDefault";
-            this.textDefault.Size = new System.Drawing.Size(59, 17);
+            this.textDefault.Size = new System.Drawing.Size(63, 19);
             this.textDefault.TabIndex = 0;
             this.textDefault.TabStop = true;
             this.textDefault.Text = "Default";
@@ -967,10 +1003,11 @@
             this.groupBox2.Controls.Add(this.voiceEnglish);
             this.groupBox2.Controls.Add(this.voiceJapanese);
             this.groupBox2.Controls.Add(this.voiceDefault);
-            this.groupBox2.Location = new System.Drawing.Point(6, 101);
+            this.groupBox2.Location = new System.Drawing.Point(7, 117);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.groupBox2.Size = new System.Drawing.Size(213, 49);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 0);
+            this.groupBox2.Size = new System.Drawing.Size(244, 57);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Voice Language";
@@ -978,10 +1015,10 @@
             // voiceEnglish
             // 
             this.voiceEnglish.AutoSize = true;
-            this.voiceEnglish.Location = new System.Drawing.Point(148, 19);
-            this.voiceEnglish.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.voiceEnglish.Location = new System.Drawing.Point(173, 22);
+            this.voiceEnglish.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.voiceEnglish.Name = "voiceEnglish";
-            this.voiceEnglish.Size = new System.Drawing.Size(59, 17);
+            this.voiceEnglish.Size = new System.Drawing.Size(63, 19);
             this.voiceEnglish.TabIndex = 2;
             this.voiceEnglish.Text = "English";
             this.voiceEnglish.UseVisualStyleBackColor = true;
@@ -990,10 +1027,10 @@
             // voiceJapanese
             // 
             this.voiceJapanese.AutoSize = true;
-            this.voiceJapanese.Location = new System.Drawing.Point(71, 19);
-            this.voiceJapanese.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.voiceJapanese.Location = new System.Drawing.Point(83, 22);
+            this.voiceJapanese.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.voiceJapanese.Name = "voiceJapanese";
-            this.voiceJapanese.Size = new System.Drawing.Size(71, 17);
+            this.voiceJapanese.Size = new System.Drawing.Size(72, 19);
             this.voiceJapanese.TabIndex = 1;
             this.voiceJapanese.Text = "Japanese";
             this.voiceJapanese.UseVisualStyleBackColor = true;
@@ -1003,10 +1040,10 @@
             // 
             this.voiceDefault.AutoSize = true;
             this.voiceDefault.Checked = true;
-            this.voiceDefault.Location = new System.Drawing.Point(6, 19);
-            this.voiceDefault.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.voiceDefault.Location = new System.Drawing.Point(7, 22);
+            this.voiceDefault.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.voiceDefault.Name = "voiceDefault";
-            this.voiceDefault.Size = new System.Drawing.Size(59, 17);
+            this.voiceDefault.Size = new System.Drawing.Size(63, 19);
             this.voiceDefault.TabIndex = 0;
             this.voiceDefault.TabStop = true;
             this.voiceDefault.Text = "Default";
@@ -1019,10 +1056,11 @@
             this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox1.Controls.Add(this.messagesVoiceOnly);
             this.groupBox1.Controls.Add(this.messagesVoiceAndText);
-            this.groupBox1.Location = new System.Drawing.Point(6, 46);
+            this.groupBox1.Location = new System.Drawing.Point(7, 53);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.groupBox1.Size = new System.Drawing.Size(191, 49);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 0);
+            this.groupBox1.Size = new System.Drawing.Size(216, 57);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Messages";
@@ -1030,10 +1068,10 @@
             // messagesVoiceOnly
             // 
             this.messagesVoiceOnly.AutoSize = true;
-            this.messagesVoiceOnly.Location = new System.Drawing.Point(109, 19);
-            this.messagesVoiceOnly.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.messagesVoiceOnly.Location = new System.Drawing.Point(127, 22);
+            this.messagesVoiceOnly.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.messagesVoiceOnly.Name = "messagesVoiceOnly";
-            this.messagesVoiceOnly.Size = new System.Drawing.Size(76, 17);
+            this.messagesVoiceOnly.Size = new System.Drawing.Size(81, 19);
             this.messagesVoiceOnly.TabIndex = 1;
             this.messagesVoiceOnly.Text = "Voice Only";
             this.messagesVoiceOnly.UseVisualStyleBackColor = true;
@@ -1043,10 +1081,10 @@
             // 
             this.messagesVoiceAndText.AutoSize = true;
             this.messagesVoiceAndText.Checked = true;
-            this.messagesVoiceAndText.Location = new System.Drawing.Point(6, 19);
-            this.messagesVoiceAndText.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.messagesVoiceAndText.Location = new System.Drawing.Point(7, 22);
+            this.messagesVoiceAndText.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.messagesVoiceAndText.Name = "messagesVoiceAndText";
-            this.messagesVoiceAndText.Size = new System.Drawing.Size(97, 17);
+            this.messagesVoiceAndText.Size = new System.Drawing.Size(100, 19);
             this.messagesVoiceAndText.TabIndex = 0;
             this.messagesVoiceAndText.TabStop = true;
             this.messagesVoiceAndText.Text = "Voice and Text";
@@ -1060,11 +1098,12 @@
             this.playTime.Centiseconds = 0;
             this.playTime.Frames = ((uint)(0u));
             this.playTime.Hours = 0;
-            this.playTime.Location = new System.Drawing.Point(68, 14);
+            this.playTime.Location = new System.Drawing.Point(79, 16);
+            this.playTime.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.playTime.Minutes = 0;
             this.playTime.Name = "playTime";
             this.playTime.Seconds = 0;
-            this.playTime.Size = new System.Drawing.Size(205, 26);
+            this.playTime.Size = new System.Drawing.Size(240, 29);
             this.playTime.TabIndex = 1;
             this.playTime.TimeSpan = System.TimeSpan.Parse("00:00:00");
             this.playTime.TotalCentiseconds = ((uint)(0u));
@@ -1073,9 +1112,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 19);
+            this.label1.Location = new System.Drawing.Point(7, 22);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.Size = new System.Drawing.Size(61, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "Play Time:";
             // 
@@ -1098,10 +1138,11 @@
             this.tabPage4.Controls.Add(this.adventure_emblem);
             this.tabPage4.Controls.Add(this.adventure_tod);
             this.tabPage4.Controls.Add(this.lifeIcon);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Location = new System.Drawing.Point(4, 24);
+            this.tabPage4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(568, 488);
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage4.Size = new System.Drawing.Size(665, 571);
             this.tabPage4.TabIndex = 1;
             this.tabPage4.Text = "Adventure";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1119,15 +1160,17 @@
             "Amy",
             "Gamma",
             "Big"});
-            this.adventure_character.Location = new System.Drawing.Point(6, 6);
+            this.adventure_character.Location = new System.Drawing.Point(7, 7);
+            this.adventure_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.adventure_character.Name = "adventure_character";
-            this.adventure_character.Size = new System.Drawing.Size(121, 21);
+            this.adventure_character.Size = new System.Drawing.Size(140, 23);
             this.adventure_character.TabIndex = 15;
             this.adventure_character.SelectedIndexChanged += new System.EventHandler(this.adventure_character_SelectedIndexChanged);
             // 
             // adventure_destination
             // 
-            this.adventure_destination.Location = new System.Drawing.Point(93, 263);
+            this.adventure_destination.Location = new System.Drawing.Point(108, 303);
+            this.adventure_destination.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.adventure_destination.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -1139,48 +1182,51 @@
             0,
             -2147483648});
             this.adventure_destination.Name = "adventure_destination";
-            this.adventure_destination.Size = new System.Drawing.Size(60, 20);
+            this.adventure_destination.Size = new System.Drawing.Size(70, 23);
             this.adventure_destination.TabIndex = 14;
             this.adventure_destination.ValueChanged += new System.EventHandler(this.adventure_destination_ValueChanged);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 265);
+            this.label9.Location = new System.Drawing.Point(7, 306);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(63, 13);
+            this.label9.Size = new System.Drawing.Size(70, 15);
             this.label9.TabIndex = 13;
             this.label9.Text = "Destination:";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 239);
+            this.label8.Location = new System.Drawing.Point(7, 276);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(36, 13);
+            this.label8.Size = new System.Drawing.Size(37, 15);
             this.label8.TabIndex = 12;
             this.label8.Text = "Level:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(41, 64);
+            this.label4.Location = new System.Drawing.Point(48, 74);
             this.label4.Margin = new System.Windows.Forms.Padding(0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(12, 13);
+            this.label4.Size = new System.Drawing.Size(13, 15);
             this.label4.TabIndex = 1;
             this.label4.Text = "x";
             // 
             // lives
             // 
-            this.lives.Location = new System.Drawing.Point(56, 57);
+            this.lives.Location = new System.Drawing.Point(65, 66);
+            this.lives.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.lives.Maximum = new decimal(new int[] {
             127,
             0,
             0,
             0});
             this.lives.Name = "lives";
-            this.lives.Size = new System.Drawing.Size(45, 20);
+            this.lives.Size = new System.Drawing.Size(52, 23);
             this.lives.TabIndex = 2;
             this.lives.Value = new decimal(new int[] {
             4,
@@ -1191,7 +1237,8 @@
             // 
             // adventure_entrance
             // 
-            this.adventure_entrance.Location = new System.Drawing.Point(93, 210);
+            this.adventure_entrance.Location = new System.Drawing.Point(108, 242);
+            this.adventure_entrance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.adventure_entrance.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -1203,31 +1250,34 @@
             0,
             -2147483648});
             this.adventure_entrance.Name = "adventure_entrance";
-            this.adventure_entrance.Size = new System.Drawing.Size(60, 20);
+            this.adventure_entrance.Size = new System.Drawing.Size(70, 23);
             this.adventure_entrance.TabIndex = 10;
             this.adventure_entrance.ValueChanged += new System.EventHandler(this.adventure_entrance_ValueChanged);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 212);
+            this.label7.Location = new System.Drawing.Point(7, 245);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 13);
+            this.label7.Size = new System.Drawing.Size(56, 15);
             this.label7.TabIndex = 9;
             this.label7.Text = "Entrance:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 160);
+            this.label5.Location = new System.Drawing.Point(7, 185);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(59, 13);
+            this.label5.Size = new System.Drawing.Size(61, 15);
             this.label5.TabIndex = 4;
             this.label5.Text = "Sequence:";
             // 
             // adventure_nextseq
             // 
-            this.adventure_nextseq.Location = new System.Drawing.Point(93, 184);
+            this.adventure_nextseq.Location = new System.Drawing.Point(108, 212);
+            this.adventure_nextseq.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.adventure_nextseq.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -1239,22 +1289,24 @@
             0,
             -2147483648});
             this.adventure_nextseq.Name = "adventure_nextseq";
-            this.adventure_nextseq.Size = new System.Drawing.Size(60, 20);
+            this.adventure_nextseq.Size = new System.Drawing.Size(70, 23);
             this.adventure_nextseq.TabIndex = 8;
             this.adventure_nextseq.ValueChanged += new System.EventHandler(this.adventure_nextseq_ValueChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 186);
+            this.label6.Location = new System.Drawing.Point(7, 215);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(84, 13);
+            this.label6.Size = new System.Drawing.Size(89, 15);
             this.label6.TabIndex = 7;
             this.label6.Text = "Next Sequence:";
             // 
             // adventure_seq
             // 
-            this.adventure_seq.Location = new System.Drawing.Point(93, 158);
+            this.adventure_seq.Location = new System.Drawing.Point(108, 182);
+            this.adventure_seq.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.adventure_seq.Maximum = new decimal(new int[] {
             32767,
             0,
@@ -1266,7 +1318,7 @@
             0,
             -2147483648});
             this.adventure_seq.Name = "adventure_seq";
-            this.adventure_seq.Size = new System.Drawing.Size(60, 20);
+            this.adventure_seq.Size = new System.Drawing.Size(70, 23);
             this.adventure_seq.TabIndex = 6;
             this.adventure_seq.ValueChanged += new System.EventHandler(this.adventure_seq_ValueChanged);
             // 
@@ -1277,9 +1329,10 @@
             this.adventure_levelact.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.adventure_levelact.Level = ((byte)(26));
             this.adventure_levelact.LevelAct = ((ushort)(6656));
-            this.adventure_levelact.Location = new System.Drawing.Point(93, 236);
+            this.adventure_levelact.Location = new System.Drawing.Point(108, 272);
+            this.adventure_levelact.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.adventure_levelact.Name = "adventure_levelact";
-            this.adventure_levelact.Size = new System.Drawing.Size(193, 21);
+            this.adventure_levelact.Size = new System.Drawing.Size(225, 24);
             this.adventure_levelact.TabIndex = 11;
             this.adventure_levelact.ValueChanged += new System.EventHandler(this.adventure_levelact_ValueChanged);
             // 
@@ -1287,9 +1340,10 @@
             // 
             this.adventure_emblem.AutoSize = true;
             this.adventure_emblem.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.adventure_emblem.Location = new System.Drawing.Point(107, 33);
+            this.adventure_emblem.Location = new System.Drawing.Point(125, 38);
+            this.adventure_emblem.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.adventure_emblem.Name = "adventure_emblem";
-            this.adventure_emblem.Size = new System.Drawing.Size(64, 64);
+            this.adventure_emblem.Size = new System.Drawing.Size(75, 74);
             this.adventure_emblem.TabIndex = 3;
             this.adventure_emblem.CheckedChanged += new System.EventHandler(this.adventure_emblem_CheckedChanged);
             // 
@@ -1297,18 +1351,20 @@
             // 
             this.adventure_tod.AutoSize = true;
             this.adventure_tod.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.adventure_tod.Location = new System.Drawing.Point(6, 103);
+            this.adventure_tod.Location = new System.Drawing.Point(7, 119);
+            this.adventure_tod.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.adventure_tod.Name = "adventure_tod";
-            this.adventure_tod.Size = new System.Drawing.Size(182, 49);
+            this.adventure_tod.Size = new System.Drawing.Size(210, 57);
             this.adventure_tod.TabIndex = 5;
             this.adventure_tod.ValueChanged += new System.EventHandler(this.adventure_tod_ValueChanged);
             // 
             // lifeIcon
             // 
             this.lifeIcon.Image = global::SASave.Properties.Resources.Sonic;
-            this.lifeIcon.Location = new System.Drawing.Point(6, 45);
+            this.lifeIcon.Location = new System.Drawing.Point(7, 52);
+            this.lifeIcon.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.lifeIcon.Name = "lifeIcon";
-            this.lifeIcon.Size = new System.Drawing.Size(32, 32);
+            this.lifeIcon.Size = new System.Drawing.Size(37, 37);
             this.lifeIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.lifeIcon.TabIndex = 0;
             this.lifeIcon.TabStop = false;
@@ -1322,10 +1378,11 @@
             this.tabPage5.Controls.Add(this.action_stage);
             this.tabPage5.Controls.Add(this.tableLayoutPanel1);
             this.tabPage5.Controls.Add(this.action_stage_character);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Location = new System.Drawing.Point(4, 24);
+            this.tabPage5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(568, 488);
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage5.Size = new System.Drawing.Size(665, 571);
             this.tabPage5.TabIndex = 2;
             this.tabPage5.Text = "Action Stages";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1334,9 +1391,10 @@
             // 
             this.level_emblem_c.AutoSize = true;
             this.level_emblem_c.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_emblem_c.Location = new System.Drawing.Point(146, 60);
+            this.level_emblem_c.Location = new System.Drawing.Point(170, 69);
+            this.level_emblem_c.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.level_emblem_c.Name = "level_emblem_c";
-            this.level_emblem_c.Size = new System.Drawing.Size(64, 64);
+            this.level_emblem_c.Size = new System.Drawing.Size(75, 74);
             this.level_emblem_c.TabIndex = 5;
             this.level_emblem_c.CheckedChanged += new System.EventHandler(this.level_emblem_c_CheckedChanged);
             // 
@@ -1344,9 +1402,10 @@
             // 
             this.level_emblem_b.AutoSize = true;
             this.level_emblem_b.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_emblem_b.Location = new System.Drawing.Point(76, 60);
+            this.level_emblem_b.Location = new System.Drawing.Point(89, 69);
+            this.level_emblem_b.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.level_emblem_b.Name = "level_emblem_b";
-            this.level_emblem_b.Size = new System.Drawing.Size(64, 64);
+            this.level_emblem_b.Size = new System.Drawing.Size(75, 74);
             this.level_emblem_b.TabIndex = 4;
             this.level_emblem_b.CheckedChanged += new System.EventHandler(this.level_emblem_b_CheckedChanged);
             // 
@@ -1354,9 +1413,10 @@
             // 
             this.level_emblem_a.AutoSize = true;
             this.level_emblem_a.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_emblem_a.Location = new System.Drawing.Point(6, 60);
+            this.level_emblem_a.Location = new System.Drawing.Point(7, 69);
+            this.level_emblem_a.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.level_emblem_a.Name = "level_emblem_a";
-            this.level_emblem_a.Size = new System.Drawing.Size(64, 64);
+            this.level_emblem_a.Size = new System.Drawing.Size(75, 74);
             this.level_emblem_a.TabIndex = 3;
             this.level_emblem_a.CheckedChanged += new System.EventHandler(this.level_emblem_a_CheckedChanged);
             // 
@@ -1365,9 +1425,10 @@
             this.action_stage.DisplayMember = "Key";
             this.action_stage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.action_stage.FormattingEnabled = true;
-            this.action_stage.Location = new System.Drawing.Point(6, 33);
+            this.action_stage.Location = new System.Drawing.Point(7, 38);
+            this.action_stage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.action_stage.Name = "action_stage";
-            this.action_stage.Size = new System.Drawing.Size(121, 21);
+            this.action_stage.Size = new System.Drawing.Size(140, 23);
             this.action_stage.TabIndex = 2;
             this.action_stage.ValueMember = "Value";
             this.action_stage.SelectedIndexChanged += new System.EventHandler(this.action_stage_SelectedIndexChanged);
@@ -1385,23 +1446,24 @@
             this.tableLayoutPanel1.Controls.Add(this.level_timeweight, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.level_score, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.level_rings, 1, 2);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 130);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 150);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 66);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(237, 75);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // label12
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(0, 3);
+            this.label12.Location = new System.Drawing.Point(0, 4);
             this.label12.Margin = new System.Windows.Forms.Padding(0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(63, 13);
+            this.label12.Size = new System.Drawing.Size(68, 15);
             this.label12.TabIndex = 0;
             this.label12.Text = "High Score:";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1410,10 +1472,10 @@
             // 
             this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(0, 49);
+            this.label13.Location = new System.Drawing.Point(0, 56);
             this.label13.Margin = new System.Windows.Forms.Padding(0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(63, 13);
+            this.label13.Size = new System.Drawing.Size(69, 15);
             this.label13.TabIndex = 1;
             this.label13.Text = "Most Rings:";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1422,10 +1484,10 @@
             // 
             this.level_timeweight_label.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.level_timeweight_label.AutoSize = true;
-            this.level_timeweight_label.Location = new System.Drawing.Point(0, 26);
+            this.level_timeweight_label.Location = new System.Drawing.Point(0, 30);
             this.level_timeweight_label.Margin = new System.Windows.Forms.Padding(0);
             this.level_timeweight_label.Name = "level_timeweight_label";
-            this.level_timeweight_label.Size = new System.Drawing.Size(57, 13);
+            this.level_timeweight_label.Size = new System.Drawing.Size(61, 15);
             this.level_timeweight_label.TabIndex = 2;
             this.level_timeweight_label.Text = "Best Time:";
             this.level_timeweight_label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1435,11 +1497,11 @@
             this.level_timeweight.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.level_timeweight.AutoSize = true;
             this.level_timeweight.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.level_timeweight.Location = new System.Drawing.Point(63, 20);
+            this.level_timeweight.Location = new System.Drawing.Point(69, 23);
             this.level_timeweight.Margin = new System.Windows.Forms.Padding(0);
             this.level_timeweight.Mode = SASave.WeightControlModes.Time;
             this.level_timeweight.Name = "level_timeweight";
-            this.level_timeweight.Size = new System.Drawing.Size(143, 26);
+            this.level_timeweight.Size = new System.Drawing.Size(168, 29);
             this.level_timeweight.TabIndex = 3;
             levelTime1.Frames = ((byte)(0));
             levelTime1.Minutes = ((byte)(0));
@@ -1456,7 +1518,7 @@
             // 
             // level_score
             // 
-            this.level_score.Location = new System.Drawing.Point(63, 0);
+            this.level_score.Location = new System.Drawing.Point(69, 0);
             this.level_score.Margin = new System.Windows.Forms.Padding(0);
             this.level_score.Maximum = new decimal(new int[] {
             2147483647,
@@ -1464,13 +1526,13 @@
             0,
             0});
             this.level_score.Name = "level_score";
-            this.level_score.Size = new System.Drawing.Size(85, 20);
+            this.level_score.Size = new System.Drawing.Size(99, 23);
             this.level_score.TabIndex = 4;
             this.level_score.ValueChanged += new System.EventHandler(this.level_score_ValueChanged);
             // 
             // level_rings
             // 
-            this.level_rings.Location = new System.Drawing.Point(63, 46);
+            this.level_rings.Location = new System.Drawing.Point(69, 52);
             this.level_rings.Margin = new System.Windows.Forms.Padding(0);
             this.level_rings.Maximum = new decimal(new int[] {
             32767,
@@ -1478,7 +1540,7 @@
             0,
             0});
             this.level_rings.Name = "level_rings";
-            this.level_rings.Size = new System.Drawing.Size(55, 20);
+            this.level_rings.Size = new System.Drawing.Size(64, 23);
             this.level_rings.TabIndex = 5;
             this.level_rings.ValueChanged += new System.EventHandler(this.level_rings_ValueChanged);
             // 
@@ -1493,19 +1555,21 @@
             "Amy",
             "Gamma",
             "Big"});
-            this.action_stage_character.Location = new System.Drawing.Point(6, 6);
+            this.action_stage_character.Location = new System.Drawing.Point(7, 7);
+            this.action_stage_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.action_stage_character.Name = "action_stage_character";
-            this.action_stage_character.Size = new System.Drawing.Size(121, 21);
+            this.action_stage_character.Size = new System.Drawing.Size(140, 23);
             this.action_stage_character.TabIndex = 0;
             this.action_stage_character.SelectedIndexChanged += new System.EventHandler(this.action_stage_character_SelectedIndexChanged);
             // 
             // tabPage6
             // 
             this.tabPage6.Controls.Add(this.tabControl5);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Location = new System.Drawing.Point(4, 24);
+            this.tabPage6.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(568, 488);
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage6.Size = new System.Drawing.Size(665, 571);
             this.tabPage6.TabIndex = 3;
             this.tabPage6.Text = "Sub Games";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1520,11 +1584,11 @@
             this.tabControl5.Controls.Add(this.tabPage29);
             this.tabControl5.Controls.Add(this.tabPage30);
             this.tabControl5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl5.Location = new System.Drawing.Point(3, 3);
+            this.tabControl5.Location = new System.Drawing.Point(4, 3);
             this.tabControl5.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl5.Name = "tabControl5";
             this.tabControl5.SelectedIndex = 0;
-            this.tabControl5.Size = new System.Drawing.Size(562, 482);
+            this.tabControl5.Size = new System.Drawing.Size(657, 565);
             this.tabControl5.TabIndex = 0;
             // 
             // tabPage24
@@ -1536,10 +1600,11 @@
             this.tabPage24.Controls.Add(this.emblem_102);
             this.tabPage24.Controls.Add(this.skychase1_score_2);
             this.tabPage24.Controls.Add(this.skychase1_score_1);
-            this.tabPage24.Location = new System.Drawing.Point(4, 22);
+            this.tabPage24.Location = new System.Drawing.Point(4, 24);
+            this.tabPage24.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage24.Name = "tabPage24";
-            this.tabPage24.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage24.Size = new System.Drawing.Size(554, 456);
+            this.tabPage24.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage24.Size = new System.Drawing.Size(649, 537);
             this.tabPage24.TabIndex = 0;
             this.tabPage24.Text = "Sky Chase Act 1";
             this.tabPage24.UseVisualStyleBackColor = true;
@@ -1551,9 +1616,10 @@
             this.skychase1_character.Items.AddRange(new object[] {
             "Sonic",
             "Tails"});
-            this.skychase1_character.Location = new System.Drawing.Point(6, 6);
+            this.skychase1_character.Location = new System.Drawing.Point(7, 7);
+            this.skychase1_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase1_character.Name = "skychase1_character";
-            this.skychase1_character.Size = new System.Drawing.Size(121, 21);
+            this.skychase1_character.Size = new System.Drawing.Size(140, 23);
             this.skychase1_character.TabIndex = 4;
             this.skychase1_character.SelectedIndexChanged += new System.EventHandler(this.skychase1_character_SelectedIndexChanged);
             // 
@@ -1561,22 +1627,24 @@
             // 
             this.emblem_97.AutoSize = true;
             this.emblem_97.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_97.Location = new System.Drawing.Point(203, 6);
+            this.emblem_97.Location = new System.Drawing.Point(237, 7);
+            this.emblem_97.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_97.Name = "emblem_97";
-            this.emblem_97.Size = new System.Drawing.Size(64, 64);
+            this.emblem_97.Size = new System.Drawing.Size(75, 74);
             this.emblem_97.TabIndex = 2;
             this.emblem_97.CheckedChanged += new System.EventHandler(this.emblem_97_CheckedChanged);
             // 
             // skychase1_score_3
             // 
-            this.skychase1_score_3.Location = new System.Drawing.Point(6, 85);
+            this.skychase1_score_3.Location = new System.Drawing.Point(7, 98);
+            this.skychase1_score_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase1_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.skychase1_score_3.Name = "skychase1_score_3";
-            this.skychase1_score_3.Size = new System.Drawing.Size(85, 20);
+            this.skychase1_score_3.Size = new System.Drawing.Size(99, 23);
             this.skychase1_score_3.TabIndex = 3;
             this.skychase1_score_3.Value = new decimal(new int[] {
             3000,
@@ -1589,22 +1657,24 @@
             // 
             this.emblem_102.AutoSize = true;
             this.emblem_102.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_102.Location = new System.Drawing.Point(133, 6);
+            this.emblem_102.Location = new System.Drawing.Point(155, 7);
+            this.emblem_102.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_102.Name = "emblem_102";
-            this.emblem_102.Size = new System.Drawing.Size(64, 64);
+            this.emblem_102.Size = new System.Drawing.Size(75, 74);
             this.emblem_102.TabIndex = 1;
             this.emblem_102.CheckedChanged += new System.EventHandler(this.emblem_102_CheckedChanged);
             // 
             // skychase1_score_2
             // 
-            this.skychase1_score_2.Location = new System.Drawing.Point(6, 59);
+            this.skychase1_score_2.Location = new System.Drawing.Point(7, 68);
+            this.skychase1_score_2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase1_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.skychase1_score_2.Name = "skychase1_score_2";
-            this.skychase1_score_2.Size = new System.Drawing.Size(85, 20);
+            this.skychase1_score_2.Size = new System.Drawing.Size(99, 23);
             this.skychase1_score_2.TabIndex = 3;
             this.skychase1_score_2.Value = new decimal(new int[] {
             6000,
@@ -1615,14 +1685,15 @@
             // 
             // skychase1_score_1
             // 
-            this.skychase1_score_1.Location = new System.Drawing.Point(6, 33);
+            this.skychase1_score_1.Location = new System.Drawing.Point(7, 38);
+            this.skychase1_score_1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase1_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.skychase1_score_1.Name = "skychase1_score_1";
-            this.skychase1_score_1.Size = new System.Drawing.Size(85, 20);
+            this.skychase1_score_1.Size = new System.Drawing.Size(99, 23);
             this.skychase1_score_1.TabIndex = 2;
             this.skychase1_score_1.Value = new decimal(new int[] {
             8000,
@@ -1640,10 +1711,11 @@
             this.tabPage25.Controls.Add(this.skychase2_score_1);
             this.tabPage25.Controls.Add(this.emblem_98);
             this.tabPage25.Controls.Add(this.emblem_103);
-            this.tabPage25.Location = new System.Drawing.Point(4, 22);
+            this.tabPage25.Location = new System.Drawing.Point(4, 24);
+            this.tabPage25.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage25.Name = "tabPage25";
-            this.tabPage25.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage25.Size = new System.Drawing.Size(554, 456);
+            this.tabPage25.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage25.Size = new System.Drawing.Size(649, 537);
             this.tabPage25.TabIndex = 1;
             this.tabPage25.Text = "Sky Chase Act 2";
             this.tabPage25.UseVisualStyleBackColor = true;
@@ -1655,22 +1727,24 @@
             this.skychase2_character.Items.AddRange(new object[] {
             "Sonic",
             "Tails"});
-            this.skychase2_character.Location = new System.Drawing.Point(6, 6);
+            this.skychase2_character.Location = new System.Drawing.Point(7, 7);
+            this.skychase2_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase2_character.Name = "skychase2_character";
-            this.skychase2_character.Size = new System.Drawing.Size(121, 21);
+            this.skychase2_character.Size = new System.Drawing.Size(140, 23);
             this.skychase2_character.TabIndex = 5;
             this.skychase2_character.SelectedIndexChanged += new System.EventHandler(this.skychase2_character_SelectedIndexChanged);
             // 
             // skychase2_score_3
             // 
-            this.skychase2_score_3.Location = new System.Drawing.Point(6, 85);
+            this.skychase2_score_3.Location = new System.Drawing.Point(7, 98);
+            this.skychase2_score_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase2_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.skychase2_score_3.Name = "skychase2_score_3";
-            this.skychase2_score_3.Size = new System.Drawing.Size(85, 20);
+            this.skychase2_score_3.Size = new System.Drawing.Size(99, 23);
             this.skychase2_score_3.TabIndex = 3;
             this.skychase2_score_3.Value = new decimal(new int[] {
             10000,
@@ -1681,14 +1755,15 @@
             // 
             // skychase2_score_2
             // 
-            this.skychase2_score_2.Location = new System.Drawing.Point(6, 59);
+            this.skychase2_score_2.Location = new System.Drawing.Point(7, 68);
+            this.skychase2_score_2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase2_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.skychase2_score_2.Name = "skychase2_score_2";
-            this.skychase2_score_2.Size = new System.Drawing.Size(85, 20);
+            this.skychase2_score_2.Size = new System.Drawing.Size(99, 23);
             this.skychase2_score_2.TabIndex = 3;
             this.skychase2_score_2.Value = new decimal(new int[] {
             15000,
@@ -1699,14 +1774,15 @@
             // 
             // skychase2_score_1
             // 
-            this.skychase2_score_1.Location = new System.Drawing.Point(6, 33);
+            this.skychase2_score_1.Location = new System.Drawing.Point(7, 38);
+            this.skychase2_score_1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skychase2_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.skychase2_score_1.Name = "skychase2_score_1";
-            this.skychase2_score_1.Size = new System.Drawing.Size(85, 20);
+            this.skychase2_score_1.Size = new System.Drawing.Size(99, 23);
             this.skychase2_score_1.TabIndex = 2;
             this.skychase2_score_1.Value = new decimal(new int[] {
             20000,
@@ -1719,9 +1795,10 @@
             // 
             this.emblem_98.AutoSize = true;
             this.emblem_98.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_98.Location = new System.Drawing.Point(203, 6);
+            this.emblem_98.Location = new System.Drawing.Point(237, 7);
+            this.emblem_98.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_98.Name = "emblem_98";
-            this.emblem_98.Size = new System.Drawing.Size(64, 64);
+            this.emblem_98.Size = new System.Drawing.Size(75, 74);
             this.emblem_98.TabIndex = 2;
             this.emblem_98.CheckedChanged += new System.EventHandler(this.emblem_98_CheckedChanged);
             // 
@@ -1729,9 +1806,10 @@
             // 
             this.emblem_103.AutoSize = true;
             this.emblem_103.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_103.Location = new System.Drawing.Point(133, 6);
+            this.emblem_103.Location = new System.Drawing.Point(155, 7);
+            this.emblem_103.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_103.Name = "emblem_103";
-            this.emblem_103.Size = new System.Drawing.Size(64, 64);
+            this.emblem_103.Size = new System.Drawing.Size(75, 74);
             this.emblem_103.TabIndex = 1;
             this.emblem_103.CheckedChanged += new System.EventHandler(this.emblem_103_CheckedChanged);
             // 
@@ -1742,10 +1820,11 @@
             this.tabPage26.Controls.Add(this.icecap_score_3);
             this.tabPage26.Controls.Add(this.icecap_score_1);
             this.tabPage26.Controls.Add(this.icecap_score_2);
-            this.tabPage26.Location = new System.Drawing.Point(4, 22);
+            this.tabPage26.Location = new System.Drawing.Point(4, 24);
+            this.tabPage26.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage26.Name = "tabPage26";
-            this.tabPage26.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage26.Size = new System.Drawing.Size(554, 456);
+            this.tabPage26.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage26.Size = new System.Drawing.Size(649, 537);
             this.tabPage26.TabIndex = 2;
             this.tabPage26.Text = "Ice Cap";
             this.tabPage26.UseVisualStyleBackColor = true;
@@ -1757,22 +1836,24 @@
             this.icecap_character.Items.AddRange(new object[] {
             "Sonic",
             "Tails"});
-            this.icecap_character.Location = new System.Drawing.Point(6, 6);
+            this.icecap_character.Location = new System.Drawing.Point(7, 7);
+            this.icecap_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.icecap_character.Name = "icecap_character";
-            this.icecap_character.Size = new System.Drawing.Size(121, 21);
+            this.icecap_character.Size = new System.Drawing.Size(140, 23);
             this.icecap_character.TabIndex = 5;
             this.icecap_character.SelectedIndexChanged += new System.EventHandler(this.icecap_character_SelectedIndexChanged);
             // 
             // icecap_score_3
             // 
-            this.icecap_score_3.Location = new System.Drawing.Point(6, 85);
+            this.icecap_score_3.Location = new System.Drawing.Point(7, 98);
+            this.icecap_score_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.icecap_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.icecap_score_3.Name = "icecap_score_3";
-            this.icecap_score_3.Size = new System.Drawing.Size(85, 20);
+            this.icecap_score_3.Size = new System.Drawing.Size(99, 23);
             this.icecap_score_3.TabIndex = 3;
             this.icecap_score_3.Value = new decimal(new int[] {
             3000,
@@ -1783,14 +1864,15 @@
             // 
             // icecap_score_1
             // 
-            this.icecap_score_1.Location = new System.Drawing.Point(6, 33);
+            this.icecap_score_1.Location = new System.Drawing.Point(7, 38);
+            this.icecap_score_1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.icecap_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.icecap_score_1.Name = "icecap_score_1";
-            this.icecap_score_1.Size = new System.Drawing.Size(85, 20);
+            this.icecap_score_1.Size = new System.Drawing.Size(99, 23);
             this.icecap_score_1.TabIndex = 2;
             this.icecap_score_1.Value = new decimal(new int[] {
             9000,
@@ -1801,14 +1883,15 @@
             // 
             // icecap_score_2
             // 
-            this.icecap_score_2.Location = new System.Drawing.Point(6, 59);
+            this.icecap_score_2.Location = new System.Drawing.Point(7, 68);
+            this.icecap_score_2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.icecap_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.icecap_score_2.Name = "icecap_score_2";
-            this.icecap_score_2.Size = new System.Drawing.Size(85, 20);
+            this.icecap_score_2.Size = new System.Drawing.Size(99, 23);
             this.icecap_score_2.TabIndex = 3;
             this.icecap_score_2.Value = new decimal(new int[] {
             6000,
@@ -1826,10 +1909,11 @@
             this.tabPage27.Controls.Add(this.sandhill_score_1);
             this.tabPage27.Controls.Add(this.emblem_99);
             this.tabPage27.Controls.Add(this.emblem_104);
-            this.tabPage27.Location = new System.Drawing.Point(4, 22);
+            this.tabPage27.Location = new System.Drawing.Point(4, 24);
+            this.tabPage27.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage27.Name = "tabPage27";
-            this.tabPage27.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage27.Size = new System.Drawing.Size(554, 456);
+            this.tabPage27.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage27.Size = new System.Drawing.Size(649, 537);
             this.tabPage27.TabIndex = 3;
             this.tabPage27.Text = "Sand Hill";
             this.tabPage27.UseVisualStyleBackColor = true;
@@ -1841,22 +1925,24 @@
             this.sandhill_character.Items.AddRange(new object[] {
             "Sonic",
             "Tails"});
-            this.sandhill_character.Location = new System.Drawing.Point(6, 6);
+            this.sandhill_character.Location = new System.Drawing.Point(7, 7);
+            this.sandhill_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.sandhill_character.Name = "sandhill_character";
-            this.sandhill_character.Size = new System.Drawing.Size(121, 21);
+            this.sandhill_character.Size = new System.Drawing.Size(140, 23);
             this.sandhill_character.TabIndex = 5;
             this.sandhill_character.SelectedIndexChanged += new System.EventHandler(this.sandhill_character_SelectedIndexChanged);
             // 
             // sandhill_score_3
             // 
-            this.sandhill_score_3.Location = new System.Drawing.Point(6, 85);
+            this.sandhill_score_3.Location = new System.Drawing.Point(7, 98);
+            this.sandhill_score_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.sandhill_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.sandhill_score_3.Name = "sandhill_score_3";
-            this.sandhill_score_3.Size = new System.Drawing.Size(85, 20);
+            this.sandhill_score_3.Size = new System.Drawing.Size(99, 23);
             this.sandhill_score_3.TabIndex = 3;
             this.sandhill_score_3.Value = new decimal(new int[] {
             3000,
@@ -1867,14 +1953,15 @@
             // 
             // sandhill_score_2
             // 
-            this.sandhill_score_2.Location = new System.Drawing.Point(6, 59);
+            this.sandhill_score_2.Location = new System.Drawing.Point(7, 68);
+            this.sandhill_score_2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.sandhill_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.sandhill_score_2.Name = "sandhill_score_2";
-            this.sandhill_score_2.Size = new System.Drawing.Size(85, 20);
+            this.sandhill_score_2.Size = new System.Drawing.Size(99, 23);
             this.sandhill_score_2.TabIndex = 3;
             this.sandhill_score_2.Value = new decimal(new int[] {
             6000,
@@ -1885,14 +1972,15 @@
             // 
             // sandhill_score_1
             // 
-            this.sandhill_score_1.Location = new System.Drawing.Point(6, 33);
+            this.sandhill_score_1.Location = new System.Drawing.Point(7, 38);
+            this.sandhill_score_1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.sandhill_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.sandhill_score_1.Name = "sandhill_score_1";
-            this.sandhill_score_1.Size = new System.Drawing.Size(85, 20);
+            this.sandhill_score_1.Size = new System.Drawing.Size(99, 23);
             this.sandhill_score_1.TabIndex = 2;
             this.sandhill_score_1.Value = new decimal(new int[] {
             10000,
@@ -1905,9 +1993,10 @@
             // 
             this.emblem_99.AutoSize = true;
             this.emblem_99.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_99.Location = new System.Drawing.Point(203, 6);
+            this.emblem_99.Location = new System.Drawing.Point(237, 7);
+            this.emblem_99.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_99.Name = "emblem_99";
-            this.emblem_99.Size = new System.Drawing.Size(64, 64);
+            this.emblem_99.Size = new System.Drawing.Size(75, 74);
             this.emblem_99.TabIndex = 2;
             this.emblem_99.CheckedChanged += new System.EventHandler(this.emblem_99_CheckedChanged);
             // 
@@ -1915,9 +2004,10 @@
             // 
             this.emblem_104.AutoSize = true;
             this.emblem_104.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_104.Location = new System.Drawing.Point(133, 6);
+            this.emblem_104.Location = new System.Drawing.Point(155, 7);
+            this.emblem_104.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_104.Name = "emblem_104";
-            this.emblem_104.Size = new System.Drawing.Size(64, 64);
+            this.emblem_104.Size = new System.Drawing.Size(75, 74);
             this.emblem_104.TabIndex = 1;
             this.emblem_104.CheckedChanged += new System.EventHandler(this.emblem_104_CheckedChanged);
             // 
@@ -1929,24 +2019,26 @@
             this.tabPage28.Controls.Add(this.hedgehoghammer_score_1);
             this.tabPage28.Controls.Add(this.emblem_100);
             this.tabPage28.Controls.Add(this.emblem_105);
-            this.tabPage28.Location = new System.Drawing.Point(4, 22);
+            this.tabPage28.Location = new System.Drawing.Point(4, 24);
+            this.tabPage28.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage28.Name = "tabPage28";
-            this.tabPage28.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage28.Size = new System.Drawing.Size(554, 456);
+            this.tabPage28.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage28.Size = new System.Drawing.Size(649, 537);
             this.tabPage28.TabIndex = 4;
             this.tabPage28.Text = "Hedgehog Hammer";
             this.tabPage28.UseVisualStyleBackColor = true;
             // 
             // hedgehoghammer_score_3
             // 
-            this.hedgehoghammer_score_3.Location = new System.Drawing.Point(6, 58);
+            this.hedgehoghammer_score_3.Location = new System.Drawing.Point(7, 67);
+            this.hedgehoghammer_score_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hedgehoghammer_score_3.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.hedgehoghammer_score_3.Name = "hedgehoghammer_score_3";
-            this.hedgehoghammer_score_3.Size = new System.Drawing.Size(85, 20);
+            this.hedgehoghammer_score_3.Size = new System.Drawing.Size(99, 23);
             this.hedgehoghammer_score_3.TabIndex = 3;
             this.hedgehoghammer_score_3.Value = new decimal(new int[] {
             1000,
@@ -1957,14 +2049,15 @@
             // 
             // hedgehoghammer_score_2
             // 
-            this.hedgehoghammer_score_2.Location = new System.Drawing.Point(6, 32);
+            this.hedgehoghammer_score_2.Location = new System.Drawing.Point(7, 37);
+            this.hedgehoghammer_score_2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hedgehoghammer_score_2.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.hedgehoghammer_score_2.Name = "hedgehoghammer_score_2";
-            this.hedgehoghammer_score_2.Size = new System.Drawing.Size(85, 20);
+            this.hedgehoghammer_score_2.Size = new System.Drawing.Size(99, 23);
             this.hedgehoghammer_score_2.TabIndex = 3;
             this.hedgehoghammer_score_2.Value = new decimal(new int[] {
             1500,
@@ -1975,14 +2068,15 @@
             // 
             // hedgehoghammer_score_1
             // 
-            this.hedgehoghammer_score_1.Location = new System.Drawing.Point(6, 6);
+            this.hedgehoghammer_score_1.Location = new System.Drawing.Point(7, 7);
+            this.hedgehoghammer_score_1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hedgehoghammer_score_1.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.hedgehoghammer_score_1.Name = "hedgehoghammer_score_1";
-            this.hedgehoghammer_score_1.Size = new System.Drawing.Size(85, 20);
+            this.hedgehoghammer_score_1.Size = new System.Drawing.Size(99, 23);
             this.hedgehoghammer_score_1.TabIndex = 2;
             this.hedgehoghammer_score_1.Value = new decimal(new int[] {
             2000,
@@ -1995,9 +2089,10 @@
             // 
             this.emblem_100.AutoSize = true;
             this.emblem_100.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_100.Location = new System.Drawing.Point(167, 6);
+            this.emblem_100.Location = new System.Drawing.Point(195, 7);
+            this.emblem_100.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_100.Name = "emblem_100";
-            this.emblem_100.Size = new System.Drawing.Size(64, 64);
+            this.emblem_100.Size = new System.Drawing.Size(75, 74);
             this.emblem_100.TabIndex = 2;
             this.emblem_100.CheckedChanged += new System.EventHandler(this.emblem_100_CheckedChanged);
             // 
@@ -2005,9 +2100,10 @@
             // 
             this.emblem_105.AutoSize = true;
             this.emblem_105.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_105.Location = new System.Drawing.Point(97, 6);
+            this.emblem_105.Location = new System.Drawing.Point(113, 7);
+            this.emblem_105.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_105.Name = "emblem_105";
-            this.emblem_105.Size = new System.Drawing.Size(64, 64);
+            this.emblem_105.Size = new System.Drawing.Size(75, 74);
             this.emblem_105.TabIndex = 1;
             this.emblem_105.CheckedChanged += new System.EventHandler(this.emblem_105_CheckedChanged);
             // 
@@ -2022,10 +2118,11 @@
             this.tabPage29.Controls.Add(this.circuit_lap_1);
             this.tabPage29.Controls.Add(this.emblem_96);
             this.tabPage29.Controls.Add(this.emblem_101);
-            this.tabPage29.Location = new System.Drawing.Point(4, 22);
+            this.tabPage29.Location = new System.Drawing.Point(4, 24);
+            this.tabPage29.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage29.Name = "tabPage29";
-            this.tabPage29.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage29.Size = new System.Drawing.Size(554, 456);
+            this.tabPage29.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage29.Size = new System.Drawing.Size(649, 537);
             this.tabPage29.TabIndex = 5;
             this.tabPage29.Text = "Twinkle Circuit";
             this.tabPage29.UseVisualStyleBackColor = true;
@@ -2041,27 +2138,30 @@
             "Amy",
             "Gamma",
             "Big"});
-            this.circuit_character.Location = new System.Drawing.Point(6, 6);
+            this.circuit_character.Location = new System.Drawing.Point(7, 7);
+            this.circuit_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.circuit_character.Name = "circuit_character";
-            this.circuit_character.Size = new System.Drawing.Size(121, 21);
+            this.circuit_character.Size = new System.Drawing.Size(140, 23);
             this.circuit_character.TabIndex = 15;
             this.circuit_character.SelectedIndexChanged += new System.EventHandler(this.circuit_character_SelectedIndexChanged);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(167, 89);
+            this.label10.Location = new System.Drawing.Point(195, 103);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(37, 13);
+            this.label10.Size = new System.Drawing.Size(38, 15);
             this.label10.TabIndex = 14;
             this.label10.Text = "Lap 2:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(167, 57);
+            this.label11.Location = new System.Drawing.Point(195, 66);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(37, 13);
+            this.label11.Size = new System.Drawing.Size(38, 15);
             this.label11.TabIndex = 11;
             this.label11.Text = "Lap 1:";
             // 
@@ -2072,11 +2172,11 @@
             this.groupBox4.Controls.Add(this.circuit_time_1);
             this.groupBox4.Controls.Add(this.circuit_time_3);
             this.groupBox4.Controls.Add(this.circuit_time_2);
-            this.groupBox4.Location = new System.Drawing.Point(6, 33);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.groupBox4.Location = new System.Drawing.Point(7, 38);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.groupBox4.Size = new System.Drawing.Size(155, 122);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 3, 4, 0);
+            this.groupBox4.Size = new System.Drawing.Size(184, 141);
             this.groupBox4.TabIndex = 10;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Best Times";
@@ -2095,11 +2195,12 @@
             levelTime2.Minutes = ((byte)(10));
             levelTime2.Seconds = ((byte)(0));
             this.circuit_time_1.LevelTime = levelTime2;
-            this.circuit_time_1.Location = new System.Drawing.Point(6, 19);
+            this.circuit_time_1.Location = new System.Drawing.Point(7, 22);
+            this.circuit_time_1.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_time_1.Minutes = 10;
             this.circuit_time_1.Name = "circuit_time_1";
             this.circuit_time_1.Seconds = 0;
-            this.circuit_time_1.Size = new System.Drawing.Size(143, 26);
+            this.circuit_time_1.Size = new System.Drawing.Size(168, 29);
             this.circuit_time_1.TabIndex = 2;
             this.circuit_time_1.TimeSpan = System.TimeSpan.Parse("00:10:00");
             this.circuit_time_1.TotalCentiseconds = ((uint)(60000u));
@@ -2120,12 +2221,12 @@
             levelTime3.Minutes = ((byte)(20));
             levelTime3.Seconds = ((byte)(0));
             this.circuit_time_3.LevelTime = levelTime3;
-            this.circuit_time_3.Location = new System.Drawing.Point(6, 83);
-            this.circuit_time_3.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.circuit_time_3.Location = new System.Drawing.Point(7, 96);
+            this.circuit_time_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.circuit_time_3.Minutes = 20;
             this.circuit_time_3.Name = "circuit_time_3";
             this.circuit_time_3.Seconds = 0;
-            this.circuit_time_3.Size = new System.Drawing.Size(143, 26);
+            this.circuit_time_3.Size = new System.Drawing.Size(168, 29);
             this.circuit_time_3.TabIndex = 4;
             this.circuit_time_3.TimeSpan = System.TimeSpan.Parse("00:20:00");
             this.circuit_time_3.TotalCentiseconds = ((uint)(120000u));
@@ -2146,11 +2247,12 @@
             levelTime4.Minutes = ((byte)(15));
             levelTime4.Seconds = ((byte)(0));
             this.circuit_time_2.LevelTime = levelTime4;
-            this.circuit_time_2.Location = new System.Drawing.Point(6, 51);
+            this.circuit_time_2.Location = new System.Drawing.Point(7, 59);
+            this.circuit_time_2.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_time_2.Minutes = 15;
             this.circuit_time_2.Name = "circuit_time_2";
             this.circuit_time_2.Seconds = 0;
-            this.circuit_time_2.Size = new System.Drawing.Size(143, 26);
+            this.circuit_time_2.Size = new System.Drawing.Size(168, 29);
             this.circuit_time_2.TabIndex = 3;
             this.circuit_time_2.TimeSpan = System.TimeSpan.Parse("00:15:00");
             this.circuit_time_2.TotalCentiseconds = ((uint)(90000u));
@@ -2171,11 +2273,12 @@
             levelTime5.Minutes = ((byte)(7));
             levelTime5.Seconds = ((byte)(0));
             this.circuit_lap_2.LevelTime = levelTime5;
-            this.circuit_lap_2.Location = new System.Drawing.Point(210, 84);
+            this.circuit_lap_2.Location = new System.Drawing.Point(245, 97);
+            this.circuit_lap_2.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_lap_2.Minutes = 7;
             this.circuit_lap_2.Name = "circuit_lap_2";
             this.circuit_lap_2.Seconds = 0;
-            this.circuit_lap_2.Size = new System.Drawing.Size(143, 26);
+            this.circuit_lap_2.Size = new System.Drawing.Size(168, 29);
             this.circuit_lap_2.TabIndex = 13;
             this.circuit_lap_2.TimeSpan = System.TimeSpan.Parse("00:07:00");
             this.circuit_lap_2.TotalCentiseconds = ((uint)(42000u));
@@ -2196,11 +2299,12 @@
             levelTime6.Minutes = ((byte)(4));
             levelTime6.Seconds = ((byte)(0));
             this.circuit_lap_1.LevelTime = levelTime6;
-            this.circuit_lap_1.Location = new System.Drawing.Point(210, 52);
+            this.circuit_lap_1.Location = new System.Drawing.Point(245, 60);
+            this.circuit_lap_1.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_lap_1.Minutes = 4;
             this.circuit_lap_1.Name = "circuit_lap_1";
             this.circuit_lap_1.Seconds = 0;
-            this.circuit_lap_1.Size = new System.Drawing.Size(143, 26);
+            this.circuit_lap_1.Size = new System.Drawing.Size(168, 29);
             this.circuit_lap_1.TabIndex = 12;
             this.circuit_lap_1.TimeSpan = System.TimeSpan.Parse("00:04:00");
             this.circuit_lap_1.TotalCentiseconds = ((uint)(24000u));
@@ -2211,9 +2315,10 @@
             // 
             this.emblem_96.AutoSize = true;
             this.emblem_96.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_96.Location = new System.Drawing.Point(429, 6);
+            this.emblem_96.Location = new System.Drawing.Point(500, 7);
+            this.emblem_96.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_96.Name = "emblem_96";
-            this.emblem_96.Size = new System.Drawing.Size(64, 64);
+            this.emblem_96.Size = new System.Drawing.Size(75, 74);
             this.emblem_96.TabIndex = 2;
             this.emblem_96.CheckedChanged += new System.EventHandler(this.emblem_96_CheckedChanged);
             // 
@@ -2221,9 +2326,10 @@
             // 
             this.emblem_101.AutoSize = true;
             this.emblem_101.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_101.Location = new System.Drawing.Point(359, 6);
+            this.emblem_101.Location = new System.Drawing.Point(419, 7);
+            this.emblem_101.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_101.Name = "emblem_101";
-            this.emblem_101.Size = new System.Drawing.Size(64, 64);
+            this.emblem_101.Size = new System.Drawing.Size(75, 74);
             this.emblem_101.TabIndex = 1;
             this.emblem_101.CheckedChanged += new System.EventHandler(this.emblem_101_CheckedChanged);
             // 
@@ -2234,10 +2340,11 @@
             this.tabPage30.Controls.Add(this.boss_time_1);
             this.tabPage30.Controls.Add(this.boss_time_2);
             this.tabPage30.Controls.Add(this.boss_time_3);
-            this.tabPage30.Location = new System.Drawing.Point(4, 22);
+            this.tabPage30.Location = new System.Drawing.Point(4, 24);
+            this.tabPage30.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage30.Name = "tabPage30";
-            this.tabPage30.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage30.Size = new System.Drawing.Size(554, 456);
+            this.tabPage30.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage30.Size = new System.Drawing.Size(649, 537);
             this.tabPage30.TabIndex = 6;
             this.tabPage30.Text = "Boss";
             this.tabPage30.UseVisualStyleBackColor = true;
@@ -2253,9 +2360,10 @@
             "Amy",
             "Gamma",
             "Big"});
-            this.boss_character.Location = new System.Drawing.Point(6, 6);
+            this.boss_character.Location = new System.Drawing.Point(7, 7);
+            this.boss_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.boss_character.Name = "boss_character";
-            this.boss_character.Size = new System.Drawing.Size(121, 21);
+            this.boss_character.Size = new System.Drawing.Size(140, 23);
             this.boss_character.TabIndex = 16;
             this.boss_character.SelectedIndexChanged += new System.EventHandler(this.boss_character_SelectedIndexChanged);
             // 
@@ -2273,11 +2381,12 @@
             levelTime7.Minutes = ((byte)(12));
             levelTime7.Seconds = ((byte)(0));
             this.boss_time_1.LevelTime = levelTime7;
-            this.boss_time_1.Location = new System.Drawing.Point(6, 33);
+            this.boss_time_1.Location = new System.Drawing.Point(7, 38);
+            this.boss_time_1.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.boss_time_1.Minutes = 12;
             this.boss_time_1.Name = "boss_time_1";
             this.boss_time_1.Seconds = 0;
-            this.boss_time_1.Size = new System.Drawing.Size(143, 26);
+            this.boss_time_1.Size = new System.Drawing.Size(168, 29);
             this.boss_time_1.TabIndex = 6;
             this.boss_time_1.TimeSpan = System.TimeSpan.Parse("00:12:00");
             this.boss_time_1.TotalCentiseconds = ((uint)(72000u));
@@ -2298,11 +2407,12 @@
             levelTime8.Minutes = ((byte)(13));
             levelTime8.Seconds = ((byte)(30));
             this.boss_time_2.LevelTime = levelTime8;
-            this.boss_time_2.Location = new System.Drawing.Point(6, 65);
+            this.boss_time_2.Location = new System.Drawing.Point(7, 75);
+            this.boss_time_2.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.boss_time_2.Minutes = 13;
             this.boss_time_2.Name = "boss_time_2";
             this.boss_time_2.Seconds = 30;
-            this.boss_time_2.Size = new System.Drawing.Size(143, 26);
+            this.boss_time_2.Size = new System.Drawing.Size(168, 29);
             this.boss_time_2.TabIndex = 7;
             this.boss_time_2.TimeSpan = System.TimeSpan.Parse("00:13:30");
             this.boss_time_2.TotalCentiseconds = ((uint)(81000u));
@@ -2323,11 +2433,12 @@
             levelTime9.Minutes = ((byte)(15));
             levelTime9.Seconds = ((byte)(0));
             this.boss_time_3.LevelTime = levelTime9;
-            this.boss_time_3.Location = new System.Drawing.Point(6, 97);
+            this.boss_time_3.Location = new System.Drawing.Point(7, 112);
+            this.boss_time_3.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.boss_time_3.Minutes = 15;
             this.boss_time_3.Name = "boss_time_3";
             this.boss_time_3.Seconds = 0;
-            this.boss_time_3.Size = new System.Drawing.Size(143, 26);
+            this.boss_time_3.Size = new System.Drawing.Size(168, 29);
             this.boss_time_3.TabIndex = 5;
             this.boss_time_3.TimeSpan = System.TimeSpan.Parse("00:15:00");
             this.boss_time_3.TotalCentiseconds = ((uint)(90000u));
@@ -2339,10 +2450,11 @@
             this.tabPage7.AutoScroll = true;
             this.tabPage7.Controls.Add(this.tableLayoutPanel8);
             this.tabPage7.Controls.Add(this.tableLayoutPanel7);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Location = new System.Drawing.Point(4, 24);
+            this.tabPage7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(568, 488);
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage7.Size = new System.Drawing.Size(665, 571);
             this.tabPage7.TabIndex = 4;
             this.tabPage7.Text = "Extra Emblems";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -2370,14 +2482,15 @@
             this.tableLayoutPanel8.Controls.Add(this.emblem_119, 1, 1);
             this.tableLayoutPanel8.Controls.Add(this.label98, 0, 0);
             this.tableLayoutPanel8.Controls.Add(this.emblem_118, 0, 1);
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(6, 98);
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(7, 113);
+            this.tableLayoutPanel8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.RowCount = 4;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(285, 228);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(345, 260);
             this.tableLayoutPanel8.TabIndex = 1;
             // 
             // emblem_129
@@ -2385,9 +2498,10 @@
             this.emblem_129.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_129.AutoSize = true;
             this.emblem_129.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_129.Location = new System.Drawing.Point(217, 160);
+            this.emblem_129.Location = new System.Drawing.Point(264, 182);
+            this.emblem_129.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_129.Name = "emblem_129";
-            this.emblem_129.Size = new System.Drawing.Size(64, 64);
+            this.emblem_129.Size = new System.Drawing.Size(75, 74);
             this.emblem_129.TabIndex = 2;
             this.emblem_129.CheckedChanged += new System.EventHandler(this.emblem_129_CheckedChanged);
             // 
@@ -2396,9 +2510,10 @@
             this.emblem_128.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_128.AutoSize = true;
             this.emblem_128.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_128.Location = new System.Drawing.Point(146, 160);
+            this.emblem_128.Location = new System.Drawing.Point(178, 182);
+            this.emblem_128.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_128.Name = "emblem_128";
-            this.emblem_128.Size = new System.Drawing.Size(64, 64);
+            this.emblem_128.Size = new System.Drawing.Size(75, 74);
             this.emblem_128.TabIndex = 2;
             this.emblem_128.CheckedChanged += new System.EventHandler(this.emblem_128_CheckedChanged);
             // 
@@ -2407,9 +2522,10 @@
             this.emblem_127.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_127.AutoSize = true;
             this.emblem_127.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_127.Location = new System.Drawing.Point(75, 160);
+            this.emblem_127.Location = new System.Drawing.Point(92, 182);
+            this.emblem_127.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_127.Name = "emblem_127";
-            this.emblem_127.Size = new System.Drawing.Size(64, 64);
+            this.emblem_127.Size = new System.Drawing.Size(75, 74);
             this.emblem_127.TabIndex = 2;
             this.emblem_127.CheckedChanged += new System.EventHandler(this.emblem_127_CheckedChanged);
             // 
@@ -2418,9 +2534,10 @@
             this.emblem_126.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_126.AutoSize = true;
             this.emblem_126.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_126.Location = new System.Drawing.Point(4, 160);
+            this.emblem_126.Location = new System.Drawing.Point(6, 182);
+            this.emblem_126.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_126.Name = "emblem_126";
-            this.emblem_126.Size = new System.Drawing.Size(64, 64);
+            this.emblem_126.Size = new System.Drawing.Size(75, 74);
             this.emblem_126.TabIndex = 2;
             this.emblem_126.CheckedChanged += new System.EventHandler(this.emblem_126_CheckedChanged);
             // 
@@ -2429,9 +2546,10 @@
             this.emblem_125.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_125.AutoSize = true;
             this.emblem_125.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_125.Location = new System.Drawing.Point(217, 89);
+            this.emblem_125.Location = new System.Drawing.Point(264, 101);
+            this.emblem_125.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_125.Name = "emblem_125";
-            this.emblem_125.Size = new System.Drawing.Size(64, 64);
+            this.emblem_125.Size = new System.Drawing.Size(75, 74);
             this.emblem_125.TabIndex = 2;
             this.emblem_125.CheckedChanged += new System.EventHandler(this.emblem_125_CheckedChanged);
             // 
@@ -2440,9 +2558,10 @@
             this.emblem_124.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_124.AutoSize = true;
             this.emblem_124.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_124.Location = new System.Drawing.Point(146, 89);
+            this.emblem_124.Location = new System.Drawing.Point(178, 101);
+            this.emblem_124.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_124.Name = "emblem_124";
-            this.emblem_124.Size = new System.Drawing.Size(64, 64);
+            this.emblem_124.Size = new System.Drawing.Size(75, 74);
             this.emblem_124.TabIndex = 2;
             this.emblem_124.CheckedChanged += new System.EventHandler(this.emblem_124_CheckedChanged);
             // 
@@ -2451,9 +2570,10 @@
             this.emblem_123.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_123.AutoSize = true;
             this.emblem_123.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_123.Location = new System.Drawing.Point(75, 89);
+            this.emblem_123.Location = new System.Drawing.Point(92, 101);
+            this.emblem_123.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_123.Name = "emblem_123";
-            this.emblem_123.Size = new System.Drawing.Size(64, 64);
+            this.emblem_123.Size = new System.Drawing.Size(75, 74);
             this.emblem_123.TabIndex = 2;
             this.emblem_123.CheckedChanged += new System.EventHandler(this.emblem_123_CheckedChanged);
             // 
@@ -2462,9 +2582,10 @@
             this.emblem_122.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_122.AutoSize = true;
             this.emblem_122.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_122.Location = new System.Drawing.Point(4, 89);
+            this.emblem_122.Location = new System.Drawing.Point(6, 101);
+            this.emblem_122.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_122.Name = "emblem_122";
-            this.emblem_122.Size = new System.Drawing.Size(64, 64);
+            this.emblem_122.Size = new System.Drawing.Size(75, 74);
             this.emblem_122.TabIndex = 2;
             this.emblem_122.CheckedChanged += new System.EventHandler(this.emblem_122_CheckedChanged);
             // 
@@ -2473,9 +2594,10 @@
             this.emblem_121.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_121.AutoSize = true;
             this.emblem_121.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_121.Location = new System.Drawing.Point(217, 18);
+            this.emblem_121.Location = new System.Drawing.Point(264, 20);
+            this.emblem_121.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_121.Name = "emblem_121";
-            this.emblem_121.Size = new System.Drawing.Size(64, 64);
+            this.emblem_121.Size = new System.Drawing.Size(75, 74);
             this.emblem_121.TabIndex = 2;
             this.emblem_121.CheckedChanged += new System.EventHandler(this.emblem_121_CheckedChanged);
             // 
@@ -2484,9 +2606,10 @@
             this.emblem_120.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_120.AutoSize = true;
             this.emblem_120.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_120.Location = new System.Drawing.Point(146, 18);
+            this.emblem_120.Location = new System.Drawing.Point(178, 20);
+            this.emblem_120.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_120.Name = "emblem_120";
-            this.emblem_120.Size = new System.Drawing.Size(64, 64);
+            this.emblem_120.Size = new System.Drawing.Size(75, 74);
             this.emblem_120.TabIndex = 2;
             this.emblem_120.CheckedChanged += new System.EventHandler(this.emblem_120_CheckedChanged);
             // 
@@ -2495,9 +2618,10 @@
             this.emblem_119.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_119.AutoSize = true;
             this.emblem_119.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_119.Location = new System.Drawing.Point(75, 18);
+            this.emblem_119.Location = new System.Drawing.Point(92, 20);
+            this.emblem_119.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_119.Name = "emblem_119";
-            this.emblem_119.Size = new System.Drawing.Size(64, 64);
+            this.emblem_119.Size = new System.Drawing.Size(75, 74);
             this.emblem_119.TabIndex = 2;
             this.emblem_119.CheckedChanged += new System.EventHandler(this.emblem_119_CheckedChanged);
             // 
@@ -2507,9 +2631,10 @@
             this.label98.BackColor = System.Drawing.SystemColors.Window;
             this.tableLayoutPanel8.SetColumnSpan(this.label98, 4);
             this.label98.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label98.Location = new System.Drawing.Point(4, 1);
+            this.label98.Location = new System.Drawing.Point(5, 1);
+            this.label98.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label98.Name = "label98";
-            this.label98.Size = new System.Drawing.Size(277, 13);
+            this.label98.Size = new System.Drawing.Size(335, 15);
             this.label98.TabIndex = 0;
             this.label98.Text = "Adventure Fields";
             this.label98.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -2519,9 +2644,10 @@
             this.emblem_118.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_118.AutoSize = true;
             this.emblem_118.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_118.Location = new System.Drawing.Point(4, 18);
+            this.emblem_118.Location = new System.Drawing.Point(6, 20);
+            this.emblem_118.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_118.Name = "emblem_118";
-            this.emblem_118.Size = new System.Drawing.Size(64, 64);
+            this.emblem_118.Size = new System.Drawing.Size(75, 74);
             this.emblem_118.TabIndex = 1;
             this.emblem_118.CheckedChanged += new System.EventHandler(this.emblem_118_CheckedChanged);
             // 
@@ -2542,12 +2668,13 @@
             this.tableLayoutPanel7.Controls.Add(this.emblem_107, 1, 1);
             this.tableLayoutPanel7.Controls.Add(this.label97, 0, 0);
             this.tableLayoutPanel7.Controls.Add(this.emblem_106, 0, 1);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(6, 6);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(7, 7);
+            this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 2;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(356, 86);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(431, 98);
             this.tableLayoutPanel7.TabIndex = 0;
             // 
             // emblem_110
@@ -2555,9 +2682,10 @@
             this.emblem_110.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_110.AutoSize = true;
             this.emblem_110.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_110.Location = new System.Drawing.Point(288, 18);
+            this.emblem_110.Location = new System.Drawing.Point(350, 20);
+            this.emblem_110.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_110.Name = "emblem_110";
-            this.emblem_110.Size = new System.Drawing.Size(64, 64);
+            this.emblem_110.Size = new System.Drawing.Size(75, 74);
             this.emblem_110.TabIndex = 2;
             this.emblem_110.CheckedChanged += new System.EventHandler(this.emblem_110_CheckedChanged);
             // 
@@ -2566,9 +2694,10 @@
             this.emblem_109.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_109.AutoSize = true;
             this.emblem_109.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_109.Location = new System.Drawing.Point(217, 18);
+            this.emblem_109.Location = new System.Drawing.Point(264, 20);
+            this.emblem_109.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_109.Name = "emblem_109";
-            this.emblem_109.Size = new System.Drawing.Size(64, 64);
+            this.emblem_109.Size = new System.Drawing.Size(75, 74);
             this.emblem_109.TabIndex = 2;
             this.emblem_109.CheckedChanged += new System.EventHandler(this.emblem_109_CheckedChanged);
             // 
@@ -2577,9 +2706,10 @@
             this.emblem_108.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_108.AutoSize = true;
             this.emblem_108.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_108.Location = new System.Drawing.Point(146, 18);
+            this.emblem_108.Location = new System.Drawing.Point(178, 20);
+            this.emblem_108.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_108.Name = "emblem_108";
-            this.emblem_108.Size = new System.Drawing.Size(64, 64);
+            this.emblem_108.Size = new System.Drawing.Size(75, 74);
             this.emblem_108.TabIndex = 2;
             this.emblem_108.CheckedChanged += new System.EventHandler(this.emblem_108_CheckedChanged);
             // 
@@ -2588,9 +2718,10 @@
             this.emblem_107.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_107.AutoSize = true;
             this.emblem_107.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_107.Location = new System.Drawing.Point(75, 18);
+            this.emblem_107.Location = new System.Drawing.Point(92, 20);
+            this.emblem_107.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_107.Name = "emblem_107";
-            this.emblem_107.Size = new System.Drawing.Size(64, 64);
+            this.emblem_107.Size = new System.Drawing.Size(75, 74);
             this.emblem_107.TabIndex = 2;
             this.emblem_107.CheckedChanged += new System.EventHandler(this.emblem_107_CheckedChanged);
             // 
@@ -2600,9 +2731,10 @@
             this.label97.BackColor = System.Drawing.SystemColors.Window;
             this.tableLayoutPanel7.SetColumnSpan(this.label97, 5);
             this.label97.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label97.Location = new System.Drawing.Point(4, 1);
+            this.label97.Location = new System.Drawing.Point(5, 1);
+            this.label97.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label97.Name = "label97";
-            this.label97.Size = new System.Drawing.Size(348, 13);
+            this.label97.Size = new System.Drawing.Size(421, 15);
             this.label97.TabIndex = 0;
             this.label97.Text = "Chao Race";
             this.label97.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -2612,19 +2744,21 @@
             this.emblem_106.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.emblem_106.AutoSize = true;
             this.emblem_106.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.emblem_106.Location = new System.Drawing.Point(4, 18);
+            this.emblem_106.Location = new System.Drawing.Point(6, 20);
+            this.emblem_106.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.emblem_106.Name = "emblem_106";
-            this.emblem_106.Size = new System.Drawing.Size(64, 64);
+            this.emblem_106.Size = new System.Drawing.Size(75, 74);
             this.emblem_106.TabIndex = 1;
             this.emblem_106.CheckedChanged += new System.EventHandler(this.emblem_106_CheckedChanged);
             // 
             // tabPage8
             // 
             this.tabPage8.Controls.Add(this.tabControl6);
-            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Location = new System.Drawing.Point(4, 24);
+            this.tabPage8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage8.Size = new System.Drawing.Size(568, 488);
+            this.tabPage8.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage8.Size = new System.Drawing.Size(665, 571);
             this.tabPage8.TabIndex = 5;
             this.tabPage8.Text = "Story Flags";
             this.tabPage8.UseVisualStyleBackColor = true;
@@ -2640,238 +2774,431 @@
             this.tabControl6.Controls.Add(this.tabPage37);
             this.tabControl6.Controls.Add(this.tabPage38);
             this.tabControl6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl6.Location = new System.Drawing.Point(3, 3);
+            this.tabControl6.Location = new System.Drawing.Point(4, 3);
             this.tabControl6.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl6.Name = "tabControl6";
             this.tabControl6.SelectedIndex = 0;
-            this.tabControl6.Size = new System.Drawing.Size(562, 482);
+            this.tabControl6.Size = new System.Drawing.Size(657, 565);
             this.tabControl6.TabIndex = 0;
             // 
             // tabPage31
             // 
             this.tabPage31.AutoScroll = true;
-            this.tabPage31.Controls.Add(this.events_unused);
-            this.tabPage31.Location = new System.Drawing.Point(4, 22);
+            this.tabPage31.Controls.Add(this.listViewEventsUnused);
+            this.tabPage31.Location = new System.Drawing.Point(4, 24);
+            this.tabPage31.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage31.Name = "tabPage31";
-            this.tabPage31.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage31.Size = new System.Drawing.Size(554, 456);
+            this.tabPage31.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage31.Size = new System.Drawing.Size(649, 537);
             this.tabPage31.TabIndex = 0;
             this.tabPage31.Text = "Unused";
             this.tabPage31.UseVisualStyleBackColor = true;
             // 
-            // events_unused
+            // listViewEventsUnused
             // 
-            this.events_unused.CheckOnClick = true;
-            this.events_unused.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_unused.FormattingEnabled = true;
-            this.events_unused.Location = new System.Drawing.Point(3, 3);
-            this.events_unused.Name = "events_unused";
-            this.events_unused.Size = new System.Drawing.Size(548, 450);
-            this.events_unused.TabIndex = 0;
-            this.events_unused.ThreeDCheckBoxes = true;
-            this.events_unused.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_unused_ItemCheck);
+            this.listViewEventsUnused.CheckBoxes = true;
+            this.listViewEventsUnused.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeaderFlagID,
+            this.columnHeaderFlagName,
+            this.columnHeaderFlagDescription});
+            this.listViewEventsUnused.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsUnused.FullRowSelect = true;
+            this.listViewEventsUnused.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsUnused.HideSelection = false;
+            this.listViewEventsUnused.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsUnused.Name = "listViewEventsUnused";
+            this.listViewEventsUnused.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsUnused.TabIndex = 1;
+            this.listViewEventsUnused.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsUnused.View = System.Windows.Forms.View.Details;
+            this.listViewEventsUnused.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsUnused_ItemCheck);
+            // 
+            // columnHeaderFlagID
+            // 
+            this.columnHeaderFlagID.Text = "ID";
+            // 
+            // columnHeaderFlagName
+            // 
+            this.columnHeaderFlagName.Text = "Name";
+            this.columnHeaderFlagName.Width = 200;
+            // 
+            // columnHeaderFlagDescription
+            // 
+            this.columnHeaderFlagDescription.Text = "Description";
+            this.columnHeaderFlagDescription.Width = 300;
             // 
             // tabPage32
             // 
             this.tabPage32.AutoScroll = true;
-            this.tabPage32.Controls.Add(this.events_general);
-            this.tabPage32.Location = new System.Drawing.Point(4, 22);
+            this.tabPage32.Controls.Add(this.listViewEventsGeneral);
+            this.tabPage32.Location = new System.Drawing.Point(4, 24);
+            this.tabPage32.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage32.Name = "tabPage32";
-            this.tabPage32.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage32.Size = new System.Drawing.Size(554, 456);
+            this.tabPage32.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage32.Size = new System.Drawing.Size(649, 537);
             this.tabPage32.TabIndex = 1;
             this.tabPage32.Text = "General";
             this.tabPage32.UseVisualStyleBackColor = true;
             // 
-            // events_general
+            // listViewEventsGeneral
             // 
-            this.events_general.CheckOnClick = true;
-            this.events_general.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_general.FormattingEnabled = true;
-            this.events_general.Location = new System.Drawing.Point(3, 3);
-            this.events_general.Name = "events_general";
-            this.events_general.Size = new System.Drawing.Size(548, 450);
-            this.events_general.TabIndex = 1;
-            this.events_general.ThreeDCheckBoxes = true;
-            this.events_general.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_general_ItemCheck);
+            this.listViewEventsGeneral.CheckBoxes = true;
+            this.listViewEventsGeneral.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3,
+            this.columnHeader1,
+            this.columnHeader2});
+            this.listViewEventsGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsGeneral.FullRowSelect = true;
+            this.listViewEventsGeneral.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsGeneral.HideSelection = false;
+            this.listViewEventsGeneral.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsGeneral.Name = "listViewEventsGeneral";
+            this.listViewEventsGeneral.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsGeneral.TabIndex = 2;
+            this.listViewEventsGeneral.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsGeneral.View = System.Windows.Forms.View.Details;
+            this.listViewEventsGeneral.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsGeneral_ItemCheck);
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "ID";
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 200;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Description";
+            this.columnHeader2.Width = 300;
             // 
             // tabPage33
             // 
             this.tabPage33.AutoScroll = true;
-            this.tabPage33.Controls.Add(this.events_sonic);
-            this.tabPage33.Location = new System.Drawing.Point(4, 22);
+            this.tabPage33.Controls.Add(this.listViewEventsSonic);
+            this.tabPage33.Location = new System.Drawing.Point(4, 24);
+            this.tabPage33.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage33.Name = "tabPage33";
-            this.tabPage33.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage33.Size = new System.Drawing.Size(554, 456);
+            this.tabPage33.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage33.Size = new System.Drawing.Size(649, 537);
             this.tabPage33.TabIndex = 2;
             this.tabPage33.Text = "Sonic";
             this.tabPage33.UseVisualStyleBackColor = true;
             // 
-            // events_sonic
+            // listViewEventsSonic
             // 
-            this.events_sonic.CheckOnClick = true;
-            this.events_sonic.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_sonic.FormattingEnabled = true;
-            this.events_sonic.Location = new System.Drawing.Point(3, 3);
-            this.events_sonic.Name = "events_sonic";
-            this.events_sonic.Size = new System.Drawing.Size(548, 450);
-            this.events_sonic.TabIndex = 1;
-            this.events_sonic.ThreeDCheckBoxes = true;
-            this.events_sonic.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_sonic_ItemCheck);
+            this.listViewEventsSonic.CheckBoxes = true;
+            this.listViewEventsSonic.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4,
+            this.columnHeader5,
+            this.columnHeader6});
+            this.listViewEventsSonic.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsSonic.FullRowSelect = true;
+            this.listViewEventsSonic.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsSonic.HideSelection = false;
+            this.listViewEventsSonic.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsSonic.Name = "listViewEventsSonic";
+            this.listViewEventsSonic.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsSonic.TabIndex = 2;
+            this.listViewEventsSonic.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsSonic.View = System.Windows.Forms.View.Details;
+            this.listViewEventsSonic.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsSonic_ItemCheck);
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "ID";
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Name";
+            this.columnHeader5.Width = 200;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Description";
+            this.columnHeader6.Width = 300;
             // 
             // tabPage34
             // 
             this.tabPage34.AutoScroll = true;
-            this.tabPage34.Controls.Add(this.events_tails);
-            this.tabPage34.Location = new System.Drawing.Point(4, 22);
+            this.tabPage34.Controls.Add(this.listViewEventsTails);
+            this.tabPage34.Location = new System.Drawing.Point(4, 24);
+            this.tabPage34.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage34.Name = "tabPage34";
-            this.tabPage34.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage34.Size = new System.Drawing.Size(554, 456);
+            this.tabPage34.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage34.Size = new System.Drawing.Size(649, 537);
             this.tabPage34.TabIndex = 3;
             this.tabPage34.Text = "Tails";
             this.tabPage34.UseVisualStyleBackColor = true;
             // 
-            // events_tails
+            // listViewEventsTails
             // 
-            this.events_tails.CheckOnClick = true;
-            this.events_tails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_tails.FormattingEnabled = true;
-            this.events_tails.Location = new System.Drawing.Point(3, 3);
-            this.events_tails.Name = "events_tails";
-            this.events_tails.Size = new System.Drawing.Size(548, 450);
-            this.events_tails.TabIndex = 1;
-            this.events_tails.ThreeDCheckBoxes = true;
-            this.events_tails.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_tails_ItemCheck);
+            this.listViewEventsTails.CheckBoxes = true;
+            this.listViewEventsTails.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader7,
+            this.columnHeader8,
+            this.columnHeader9});
+            this.listViewEventsTails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsTails.FullRowSelect = true;
+            this.listViewEventsTails.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsTails.HideSelection = false;
+            this.listViewEventsTails.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsTails.Name = "listViewEventsTails";
+            this.listViewEventsTails.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsTails.TabIndex = 2;
+            this.listViewEventsTails.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsTails.View = System.Windows.Forms.View.Details;
+            this.listViewEventsTails.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsTails_ItemCheck);
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "ID";
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Name";
+            this.columnHeader8.Width = 200;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Description";
+            this.columnHeader9.Width = 300;
             // 
             // tabPage35
             // 
             this.tabPage35.AutoScroll = true;
-            this.tabPage35.Controls.Add(this.events_knuckles);
-            this.tabPage35.Location = new System.Drawing.Point(4, 22);
+            this.tabPage35.Controls.Add(this.listViewEventsKnuckles);
+            this.tabPage35.Location = new System.Drawing.Point(4, 24);
+            this.tabPage35.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage35.Name = "tabPage35";
-            this.tabPage35.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage35.Size = new System.Drawing.Size(554, 456);
+            this.tabPage35.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage35.Size = new System.Drawing.Size(649, 537);
             this.tabPage35.TabIndex = 4;
             this.tabPage35.Text = "Knuckles";
             this.tabPage35.UseVisualStyleBackColor = true;
             // 
-            // events_knuckles
+            // listViewEventsKnuckles
             // 
-            this.events_knuckles.CheckOnClick = true;
-            this.events_knuckles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_knuckles.FormattingEnabled = true;
-            this.events_knuckles.Location = new System.Drawing.Point(3, 3);
-            this.events_knuckles.Name = "events_knuckles";
-            this.events_knuckles.Size = new System.Drawing.Size(548, 450);
-            this.events_knuckles.TabIndex = 1;
-            this.events_knuckles.ThreeDCheckBoxes = true;
-            this.events_knuckles.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_knuckles_ItemCheck);
+            this.listViewEventsKnuckles.CheckBoxes = true;
+            this.listViewEventsKnuckles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader10,
+            this.columnHeader11,
+            this.columnHeader12});
+            this.listViewEventsKnuckles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsKnuckles.FullRowSelect = true;
+            this.listViewEventsKnuckles.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsKnuckles.HideSelection = false;
+            this.listViewEventsKnuckles.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsKnuckles.Name = "listViewEventsKnuckles";
+            this.listViewEventsKnuckles.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsKnuckles.TabIndex = 2;
+            this.listViewEventsKnuckles.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsKnuckles.View = System.Windows.Forms.View.Details;
+            this.listViewEventsKnuckles.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsKnuckles_ItemCheck);
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "ID";
+            // 
+            // columnHeader11
+            // 
+            this.columnHeader11.Text = "Name";
+            this.columnHeader11.Width = 200;
+            // 
+            // columnHeader12
+            // 
+            this.columnHeader12.Text = "Description";
+            this.columnHeader12.Width = 300;
             // 
             // tabPage36
             // 
             this.tabPage36.AutoScroll = true;
-            this.tabPage36.Controls.Add(this.events_amy);
-            this.tabPage36.Location = new System.Drawing.Point(4, 22);
+            this.tabPage36.Controls.Add(this.listViewEventsAmy);
+            this.tabPage36.Location = new System.Drawing.Point(4, 24);
+            this.tabPage36.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage36.Name = "tabPage36";
-            this.tabPage36.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage36.Size = new System.Drawing.Size(554, 456);
+            this.tabPage36.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage36.Size = new System.Drawing.Size(649, 537);
             this.tabPage36.TabIndex = 5;
             this.tabPage36.Text = "Amy";
             this.tabPage36.UseVisualStyleBackColor = true;
             // 
-            // events_amy
+            // listViewEventsAmy
             // 
-            this.events_amy.CheckOnClick = true;
-            this.events_amy.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_amy.FormattingEnabled = true;
-            this.events_amy.Location = new System.Drawing.Point(3, 3);
-            this.events_amy.Name = "events_amy";
-            this.events_amy.Size = new System.Drawing.Size(548, 450);
-            this.events_amy.TabIndex = 1;
-            this.events_amy.ThreeDCheckBoxes = true;
-            this.events_amy.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_amy_ItemCheck);
+            this.listViewEventsAmy.CheckBoxes = true;
+            this.listViewEventsAmy.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader13,
+            this.columnHeader14,
+            this.columnHeader15});
+            this.listViewEventsAmy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsAmy.FullRowSelect = true;
+            this.listViewEventsAmy.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsAmy.HideSelection = false;
+            this.listViewEventsAmy.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsAmy.Name = "listViewEventsAmy";
+            this.listViewEventsAmy.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsAmy.TabIndex = 2;
+            this.listViewEventsAmy.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsAmy.View = System.Windows.Forms.View.Details;
+            this.listViewEventsAmy.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsAmy_ItemCheck);
+            // 
+            // columnHeader13
+            // 
+            this.columnHeader13.Text = "ID";
+            // 
+            // columnHeader14
+            // 
+            this.columnHeader14.Text = "Name";
+            this.columnHeader14.Width = 200;
+            // 
+            // columnHeader15
+            // 
+            this.columnHeader15.Text = "Description";
+            this.columnHeader15.Width = 300;
             // 
             // tabPage37
             // 
             this.tabPage37.AutoScroll = true;
-            this.tabPage37.Controls.Add(this.events_gamma);
-            this.tabPage37.Location = new System.Drawing.Point(4, 22);
+            this.tabPage37.Controls.Add(this.listViewEventsGamma);
+            this.tabPage37.Location = new System.Drawing.Point(4, 24);
+            this.tabPage37.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage37.Name = "tabPage37";
-            this.tabPage37.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage37.Size = new System.Drawing.Size(554, 456);
+            this.tabPage37.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage37.Size = new System.Drawing.Size(649, 537);
             this.tabPage37.TabIndex = 6;
             this.tabPage37.Text = "Gamma";
             this.tabPage37.UseVisualStyleBackColor = true;
             // 
-            // events_gamma
+            // listViewEventsGamma
             // 
-            this.events_gamma.CheckOnClick = true;
-            this.events_gamma.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_gamma.FormattingEnabled = true;
-            this.events_gamma.Location = new System.Drawing.Point(3, 3);
-            this.events_gamma.Name = "events_gamma";
-            this.events_gamma.Size = new System.Drawing.Size(548, 450);
-            this.events_gamma.TabIndex = 1;
-            this.events_gamma.ThreeDCheckBoxes = true;
-            this.events_gamma.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_gamma_ItemCheck);
+            this.listViewEventsGamma.CheckBoxes = true;
+            this.listViewEventsGamma.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader16,
+            this.columnHeader17,
+            this.columnHeader18});
+            this.listViewEventsGamma.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsGamma.FullRowSelect = true;
+            this.listViewEventsGamma.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsGamma.HideSelection = false;
+            this.listViewEventsGamma.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsGamma.Name = "listViewEventsGamma";
+            this.listViewEventsGamma.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsGamma.TabIndex = 2;
+            this.listViewEventsGamma.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsGamma.View = System.Windows.Forms.View.Details;
+            this.listViewEventsGamma.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsGamma_ItemCheck);
+            // 
+            // columnHeader16
+            // 
+            this.columnHeader16.Text = "ID";
+            // 
+            // columnHeader17
+            // 
+            this.columnHeader17.Text = "Name";
+            this.columnHeader17.Width = 200;
+            // 
+            // columnHeader18
+            // 
+            this.columnHeader18.Text = "Description";
+            this.columnHeader18.Width = 300;
             // 
             // tabPage38
             // 
             this.tabPage38.AutoScroll = true;
-            this.tabPage38.Controls.Add(this.events_big);
-            this.tabPage38.Location = new System.Drawing.Point(4, 22);
+            this.tabPage38.Controls.Add(this.listViewEventsBig);
+            this.tabPage38.Location = new System.Drawing.Point(4, 24);
+            this.tabPage38.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage38.Name = "tabPage38";
-            this.tabPage38.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage38.Size = new System.Drawing.Size(554, 456);
+            this.tabPage38.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage38.Size = new System.Drawing.Size(649, 537);
             this.tabPage38.TabIndex = 7;
             this.tabPage38.Text = "Big";
             this.tabPage38.UseVisualStyleBackColor = true;
             // 
-            // events_big
+            // listViewEventsBig
             // 
-            this.events_big.CheckOnClick = true;
-            this.events_big.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.events_big.FormattingEnabled = true;
-            this.events_big.Location = new System.Drawing.Point(3, 3);
-            this.events_big.Name = "events_big";
-            this.events_big.Size = new System.Drawing.Size(548, 450);
-            this.events_big.TabIndex = 1;
-            this.events_big.ThreeDCheckBoxes = true;
-            this.events_big.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.events_big_ItemCheck);
+            this.listViewEventsBig.CheckBoxes = true;
+            this.listViewEventsBig.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader19,
+            this.columnHeader20,
+            this.columnHeader21});
+            this.listViewEventsBig.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewEventsBig.FullRowSelect = true;
+            this.listViewEventsBig.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewEventsBig.HideSelection = false;
+            this.listViewEventsBig.Location = new System.Drawing.Point(4, 3);
+            this.listViewEventsBig.Name = "listViewEventsBig";
+            this.listViewEventsBig.Size = new System.Drawing.Size(641, 531);
+            this.listViewEventsBig.TabIndex = 2;
+            this.listViewEventsBig.UseCompatibleStateImageBehavior = false;
+            this.listViewEventsBig.View = System.Windows.Forms.View.Details;
+            this.listViewEventsBig.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewEventsBig_ItemCheck);
+            // 
+            // columnHeader19
+            // 
+            this.columnHeader19.Text = "ID";
+            // 
+            // columnHeader20
+            // 
+            this.columnHeader20.Text = "Name";
+            this.columnHeader20.Width = 200;
+            // 
+            // columnHeader21
+            // 
+            this.columnHeader21.Text = "Description";
+            this.columnHeader21.Width = 300;
             // 
             // tabPage9
             // 
             this.tabPage9.AutoScroll = true;
-            this.tabPage9.Controls.Add(this.npcs);
-            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Controls.Add(this.listViewCutsceneFlags);
+            this.tabPage9.Location = new System.Drawing.Point(4, 24);
+            this.tabPage9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage9.Name = "tabPage9";
-            this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(568, 488);
+            this.tabPage9.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage9.Size = new System.Drawing.Size(665, 571);
             this.tabPage9.TabIndex = 6;
             this.tabPage9.Text = "Cutscene Flags";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
-            // npcs
+            // listViewCutsceneFlags
             // 
-            this.npcs.CheckOnClick = true;
-            this.npcs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.npcs.FormattingEnabled = true;
-            this.npcs.Location = new System.Drawing.Point(3, 3);
-            this.npcs.Name = "npcs";
-            this.npcs.Size = new System.Drawing.Size(562, 482);
-            this.npcs.TabIndex = 1;
-            this.npcs.ThreeDCheckBoxes = true;
-            this.npcs.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.npcs_ItemCheck);
+            this.listViewCutsceneFlags.CheckBoxes = true;
+            this.listViewCutsceneFlags.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader22,
+            this.columnHeader24});
+            this.listViewCutsceneFlags.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewCutsceneFlags.FullRowSelect = true;
+            this.listViewCutsceneFlags.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewCutsceneFlags.HideSelection = false;
+            this.listViewCutsceneFlags.Location = new System.Drawing.Point(4, 3);
+            this.listViewCutsceneFlags.Name = "listViewCutsceneFlags";
+            this.listViewCutsceneFlags.Size = new System.Drawing.Size(657, 565);
+            this.listViewCutsceneFlags.TabIndex = 3;
+            this.listViewCutsceneFlags.UseCompatibleStateImageBehavior = false;
+            this.listViewCutsceneFlags.View = System.Windows.Forms.View.Details;
+            this.listViewCutsceneFlags.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listViewCutsceneFlags_ItemCheck);
+            // 
+            // columnHeader22
+            // 
+            this.columnHeader22.Text = "ID";
+            // 
+            // columnHeader24
+            // 
+            this.columnHeader24.Text = "Description";
+            this.columnHeader24.Width = 300;
             // 
             // tabPage10
             // 
             this.tabPage10.AutoScroll = true;
             this.tabPage10.Controls.Add(this.level_clear_table);
             this.tabPage10.Controls.Add(this.levelclear_character);
-            this.tabPage10.Location = new System.Drawing.Point(4, 22);
+            this.tabPage10.Location = new System.Drawing.Point(4, 24);
+            this.tabPage10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage10.Name = "tabPage10";
-            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage10.Size = new System.Drawing.Size(568, 488);
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage10.Size = new System.Drawing.Size(665, 571);
             this.tabPage10.TabIndex = 7;
             this.tabPage10.Text = "Level Clear Count";
             this.tabPage10.UseVisualStyleBackColor = true;
@@ -2884,7 +3211,8 @@
             this.level_clear_table.ColumnCount = 2;
             this.level_clear_table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.level_clear_table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.level_clear_table.Location = new System.Drawing.Point(6, 33);
+            this.level_clear_table.Location = new System.Drawing.Point(7, 38);
+            this.level_clear_table.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.level_clear_table.Name = "level_clear_table";
             this.level_clear_table.RowCount = 1;
             this.level_clear_table.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -2904,19 +3232,21 @@
             "Amy",
             "Gamma",
             "Big"});
-            this.levelclear_character.Location = new System.Drawing.Point(6, 6);
+            this.levelclear_character.Location = new System.Drawing.Point(7, 7);
+            this.levelclear_character.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.levelclear_character.Name = "levelclear_character";
-            this.levelclear_character.Size = new System.Drawing.Size(121, 21);
+            this.levelclear_character.Size = new System.Drawing.Size(140, 23);
             this.levelclear_character.TabIndex = 1;
             this.levelclear_character.SelectedIndexChanged += new System.EventHandler(this.levelclear_character_SelectedIndexChanged);
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.tabControl8);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(576, 514);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage2.Size = new System.Drawing.Size(673, 599);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Sonic Adventure DX";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -2927,11 +3257,11 @@
             this.tabControl8.Controls.Add(this.tabPage40);
             this.tabControl8.Controls.Add(this.tabPage47);
             this.tabControl8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl8.Location = new System.Drawing.Point(3, 3);
+            this.tabControl8.Location = new System.Drawing.Point(4, 3);
             this.tabControl8.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl8.Name = "tabControl8";
             this.tabControl8.SelectedIndex = 0;
-            this.tabControl8.Size = new System.Drawing.Size(570, 508);
+            this.tabControl8.Size = new System.Drawing.Size(665, 593);
             this.tabControl8.TabIndex = 0;
             // 
             // tabPage39
@@ -2939,33 +3269,36 @@
             this.tabPage39.AutoScroll = true;
             this.tabPage39.Controls.Add(this.blackmarket_rings);
             this.tabPage39.Controls.Add(this.label99);
-            this.tabPage39.Location = new System.Drawing.Point(4, 22);
+            this.tabPage39.Location = new System.Drawing.Point(4, 24);
+            this.tabPage39.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage39.Name = "tabPage39";
-            this.tabPage39.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage39.Size = new System.Drawing.Size(562, 482);
+            this.tabPage39.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage39.Size = new System.Drawing.Size(657, 565);
             this.tabPage39.TabIndex = 0;
             this.tabPage39.Text = "General";
             this.tabPage39.UseVisualStyleBackColor = true;
             // 
             // blackmarket_rings
             // 
-            this.blackmarket_rings.Location = new System.Drawing.Point(115, 6);
+            this.blackmarket_rings.Location = new System.Drawing.Point(134, 7);
+            this.blackmarket_rings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.blackmarket_rings.Maximum = new decimal(new int[] {
             2147483647,
             0,
             0,
             0});
             this.blackmarket_rings.Name = "blackmarket_rings";
-            this.blackmarket_rings.Size = new System.Drawing.Size(85, 20);
+            this.blackmarket_rings.Size = new System.Drawing.Size(99, 23);
             this.blackmarket_rings.TabIndex = 1;
             this.blackmarket_rings.ValueChanged += new System.EventHandler(this.blackmarket_rings_ValueChanged);
             // 
             // label99
             // 
             this.label99.AutoSize = true;
-            this.label99.Location = new System.Drawing.Point(6, 8);
+            this.label99.Location = new System.Drawing.Point(7, 9);
+            this.label99.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label99.Name = "label99";
-            this.label99.Size = new System.Drawing.Size(103, 13);
+            this.label99.Size = new System.Drawing.Size(110, 15);
             this.label99.TabIndex = 0;
             this.label99.Text = "Black Market Rings:";
             // 
@@ -2973,10 +3306,11 @@
             // 
             this.tabPage40.AutoScroll = true;
             this.tabPage40.Controls.Add(this.MissionTable);
-            this.tabPage40.Location = new System.Drawing.Point(4, 22);
+            this.tabPage40.Location = new System.Drawing.Point(4, 24);
+            this.tabPage40.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage40.Name = "tabPage40";
-            this.tabPage40.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage40.Size = new System.Drawing.Size(562, 482);
+            this.tabPage40.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage40.Size = new System.Drawing.Size(657, 565);
             this.tabPage40.TabIndex = 1;
             this.tabPage40.Text = "Missions";
             this.tabPage40.UseVisualStyleBackColor = true;
@@ -2995,20 +3329,22 @@
             this.MissionTable.Controls.Add(this.label101, 1, 0);
             this.MissionTable.Controls.Add(this.label102, 2, 0);
             this.MissionTable.Controls.Add(this.label103, 3, 0);
-            this.MissionTable.Location = new System.Drawing.Point(6, 6);
+            this.MissionTable.Location = new System.Drawing.Point(7, 7);
+            this.MissionTable.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MissionTable.Name = "MissionTable";
             this.MissionTable.RowCount = 1;
             this.MissionTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.MissionTable.Size = new System.Drawing.Size(200, 15);
+            this.MissionTable.Size = new System.Drawing.Size(226, 17);
             this.MissionTable.TabIndex = 0;
             // 
             // label100
             // 
             this.label100.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label100.AutoSize = true;
-            this.label100.Location = new System.Drawing.Point(4, 1);
+            this.label100.Location = new System.Drawing.Point(5, 1);
+            this.label100.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label100.Name = "label100";
-            this.label100.Size = new System.Drawing.Size(24, 13);
+            this.label100.Size = new System.Drawing.Size(26, 15);
             this.label100.TabIndex = 0;
             this.label100.Text = "No.";
             this.label100.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3017,9 +3353,10 @@
             // 
             this.label101.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label101.AutoSize = true;
-            this.label101.Location = new System.Drawing.Point(35, 1);
+            this.label101.Location = new System.Drawing.Point(40, 1);
+            this.label101.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label101.Name = "label101";
-            this.label101.Size = new System.Drawing.Size(53, 13);
+            this.label101.Size = new System.Drawing.Size(57, 15);
             this.label101.TabIndex = 1;
             this.label101.Text = "Unlocked";
             this.label101.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3028,9 +3365,10 @@
             // 
             this.label102.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label102.AutoSize = true;
-            this.label102.Location = new System.Drawing.Point(95, 1);
+            this.label102.Location = new System.Drawing.Point(106, 1);
+            this.label102.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label102.Name = "label102";
-            this.label102.Size = new System.Drawing.Size(37, 13);
+            this.label102.Size = new System.Drawing.Size(40, 15);
             this.label102.TabIndex = 2;
             this.label102.Text = "Active";
             this.label102.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3039,9 +3377,10 @@
             // 
             this.label103.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label103.AutoSize = true;
-            this.label103.Location = new System.Drawing.Point(139, 1);
+            this.label103.Location = new System.Drawing.Point(155, 1);
+            this.label103.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label103.Name = "label103";
-            this.label103.Size = new System.Drawing.Size(57, 13);
+            this.label103.Size = new System.Drawing.Size(66, 15);
             this.label103.TabIndex = 3;
             this.label103.Text = "Completed";
             this.label103.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3049,10 +3388,11 @@
             // tabPage47
             // 
             this.tabPage47.Controls.Add(this.tabControl9);
-            this.tabPage47.Location = new System.Drawing.Point(4, 22);
+            this.tabPage47.Location = new System.Drawing.Point(4, 24);
+            this.tabPage47.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage47.Name = "tabPage47";
-            this.tabPage47.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage47.Size = new System.Drawing.Size(562, 482);
+            this.tabPage47.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage47.Size = new System.Drawing.Size(657, 565);
             this.tabPage47.TabIndex = 2;
             this.tabPage47.Text = "Metal Sonic";
             this.tabPage47.UseVisualStyleBackColor = true;
@@ -3062,11 +3402,11 @@
             this.tabControl9.Controls.Add(this.tabPage48);
             this.tabControl9.Controls.Add(this.tabPage49);
             this.tabControl9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl9.Location = new System.Drawing.Point(3, 3);
+            this.tabControl9.Location = new System.Drawing.Point(4, 3);
             this.tabControl9.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl9.Name = "tabControl9";
             this.tabControl9.SelectedIndex = 0;
-            this.tabControl9.Size = new System.Drawing.Size(556, 476);
+            this.tabControl9.Size = new System.Drawing.Size(649, 559);
             this.tabControl9.TabIndex = 0;
             // 
             // tabPage48
@@ -3078,10 +3418,11 @@
             this.tabPage48.Controls.Add(this.metal_stage_emblem_a);
             this.tabPage48.Controls.Add(this.metal_level_select);
             this.tabPage48.Controls.Add(this.tableLayoutPanel2);
-            this.tabPage48.Location = new System.Drawing.Point(4, 22);
+            this.tabPage48.Location = new System.Drawing.Point(4, 24);
+            this.tabPage48.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage48.Name = "tabPage48";
-            this.tabPage48.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage48.Size = new System.Drawing.Size(548, 450);
+            this.tabPage48.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage48.Size = new System.Drawing.Size(641, 531);
             this.tabPage48.TabIndex = 0;
             this.tabPage48.Text = "Action Stages";
             this.tabPage48.UseVisualStyleBackColor = true;
@@ -3090,9 +3431,10 @@
             // 
             this.metal_stage_emblem_c.AutoSize = true;
             this.metal_stage_emblem_c.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_stage_emblem_c.Location = new System.Drawing.Point(146, 33);
+            this.metal_stage_emblem_c.Location = new System.Drawing.Point(170, 38);
+            this.metal_stage_emblem_c.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.metal_stage_emblem_c.Name = "metal_stage_emblem_c";
-            this.metal_stage_emblem_c.Size = new System.Drawing.Size(64, 64);
+            this.metal_stage_emblem_c.Size = new System.Drawing.Size(75, 74);
             this.metal_stage_emblem_c.TabIndex = 7;
             this.metal_stage_emblem_c.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_c_CheckedChanged);
             // 
@@ -3100,9 +3442,10 @@
             // 
             this.metal_stage_emblem_b.AutoSize = true;
             this.metal_stage_emblem_b.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_stage_emblem_b.Location = new System.Drawing.Point(76, 33);
+            this.metal_stage_emblem_b.Location = new System.Drawing.Point(89, 38);
+            this.metal_stage_emblem_b.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.metal_stage_emblem_b.Name = "metal_stage_emblem_b";
-            this.metal_stage_emblem_b.Size = new System.Drawing.Size(64, 64);
+            this.metal_stage_emblem_b.Size = new System.Drawing.Size(75, 74);
             this.metal_stage_emblem_b.TabIndex = 6;
             this.metal_stage_emblem_b.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_b_CheckedChanged);
             // 
@@ -3110,9 +3453,10 @@
             // 
             this.metal_stage_emblem_a.AutoSize = true;
             this.metal_stage_emblem_a.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.metal_stage_emblem_a.Location = new System.Drawing.Point(6, 33);
+            this.metal_stage_emblem_a.Location = new System.Drawing.Point(7, 38);
+            this.metal_stage_emblem_a.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.metal_stage_emblem_a.Name = "metal_stage_emblem_a";
-            this.metal_stage_emblem_a.Size = new System.Drawing.Size(64, 64);
+            this.metal_stage_emblem_a.Size = new System.Drawing.Size(75, 74);
             this.metal_stage_emblem_a.TabIndex = 5;
             this.metal_stage_emblem_a.CheckedChanged += new System.EventHandler(this.metal_stage_emblem_a_CheckedChanged);
             // 
@@ -3121,9 +3465,10 @@
             this.metal_level_select.DisplayMember = "Key";
             this.metal_level_select.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.metal_level_select.FormattingEnabled = true;
-            this.metal_level_select.Location = new System.Drawing.Point(6, 6);
+            this.metal_level_select.Location = new System.Drawing.Point(7, 7);
+            this.metal_level_select.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.metal_level_select.Name = "metal_level_select";
-            this.metal_level_select.Size = new System.Drawing.Size(121, 21);
+            this.metal_level_select.Size = new System.Drawing.Size(140, 23);
             this.metal_level_select.TabIndex = 4;
             this.metal_level_select.ValueMember = "Value";
             this.metal_level_select.SelectedIndexChanged += new System.EventHandler(this.metal_level_select_SelectedIndexChanged);
@@ -3144,24 +3489,24 @@
             this.tableLayoutPanel2.Controls.Add(this.metal_level_time, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.metal_level_score, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.metal_level_rings, 1, 2);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 103);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(7, 119);
             this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(206, 66);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(237, 75);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
             // label15
             // 
             this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(0, 3);
+            this.label15.Location = new System.Drawing.Point(0, 4);
             this.label15.Margin = new System.Windows.Forms.Padding(0);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(63, 13);
+            this.label15.Size = new System.Drawing.Size(68, 15);
             this.label15.TabIndex = 0;
             this.label15.Text = "High Score:";
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3170,10 +3515,10 @@
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(0, 49);
+            this.label16.Location = new System.Drawing.Point(0, 56);
             this.label16.Margin = new System.Windows.Forms.Padding(0);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(63, 13);
+            this.label16.Size = new System.Drawing.Size(69, 15);
             this.label16.TabIndex = 1;
             this.label16.Text = "Most Rings:";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3182,10 +3527,10 @@
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 26);
+            this.label17.Location = new System.Drawing.Point(4, 30);
             this.label17.Margin = new System.Windows.Forms.Padding(0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(57, 13);
+            this.label17.Size = new System.Drawing.Size(61, 15);
             this.label17.TabIndex = 2;
             this.label17.Text = "Best Time:";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3204,12 +3549,12 @@
             levelTime10.Minutes = ((byte)(0));
             levelTime10.Seconds = ((byte)(0));
             this.metal_level_time.LevelTime = levelTime10;
-            this.metal_level_time.Location = new System.Drawing.Point(63, 20);
+            this.metal_level_time.Location = new System.Drawing.Point(69, 23);
             this.metal_level_time.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_time.Minutes = 0;
             this.metal_level_time.Name = "metal_level_time";
             this.metal_level_time.Seconds = 0;
-            this.metal_level_time.Size = new System.Drawing.Size(143, 26);
+            this.metal_level_time.Size = new System.Drawing.Size(168, 29);
             this.metal_level_time.TabIndex = 3;
             this.metal_level_time.TimeSpan = System.TimeSpan.Parse("00:00:00");
             this.metal_level_time.TotalCentiseconds = ((uint)(0u));
@@ -3218,7 +3563,7 @@
             // 
             // metal_level_score
             // 
-            this.metal_level_score.Location = new System.Drawing.Point(63, 0);
+            this.metal_level_score.Location = new System.Drawing.Point(69, 0);
             this.metal_level_score.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_score.Maximum = new decimal(new int[] {
             2147483647,
@@ -3226,13 +3571,13 @@
             0,
             0});
             this.metal_level_score.Name = "metal_level_score";
-            this.metal_level_score.Size = new System.Drawing.Size(85, 20);
+            this.metal_level_score.Size = new System.Drawing.Size(99, 23);
             this.metal_level_score.TabIndex = 4;
             this.metal_level_score.ValueChanged += new System.EventHandler(this.metal_level_score_ValueChanged);
             // 
             // metal_level_rings
             // 
-            this.metal_level_rings.Location = new System.Drawing.Point(63, 46);
+            this.metal_level_rings.Location = new System.Drawing.Point(69, 52);
             this.metal_level_rings.Margin = new System.Windows.Forms.Padding(0);
             this.metal_level_rings.Maximum = new decimal(new int[] {
             32767,
@@ -3240,17 +3585,18 @@
             0,
             0});
             this.metal_level_rings.Name = "metal_level_rings";
-            this.metal_level_rings.Size = new System.Drawing.Size(55, 20);
+            this.metal_level_rings.Size = new System.Drawing.Size(64, 23);
             this.metal_level_rings.TabIndex = 5;
             this.metal_level_rings.ValueChanged += new System.EventHandler(this.metal_level_rings_ValueChanged);
             // 
             // tabPage49
             // 
             this.tabPage49.Controls.Add(this.tabControl10);
-            this.tabPage49.Location = new System.Drawing.Point(4, 22);
+            this.tabPage49.Location = new System.Drawing.Point(4, 24);
+            this.tabPage49.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage49.Name = "tabPage49";
-            this.tabPage49.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage49.Size = new System.Drawing.Size(548, 450);
+            this.tabPage49.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage49.Size = new System.Drawing.Size(641, 531);
             this.tabPage49.TabIndex = 1;
             this.tabPage49.Text = "Sub Games";
             this.tabPage49.UseVisualStyleBackColor = true;
@@ -3262,21 +3608,22 @@
             this.tabControl10.Controls.Add(this.tabPage55);
             this.tabControl10.Controls.Add(this.tabPage56);
             this.tabControl10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl10.Location = new System.Drawing.Point(3, 3);
+            this.tabControl10.Location = new System.Drawing.Point(4, 3);
             this.tabControl10.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl10.Name = "tabControl10";
             this.tabControl10.SelectedIndex = 0;
-            this.tabControl10.Size = new System.Drawing.Size(542, 444);
+            this.tabControl10.Size = new System.Drawing.Size(633, 525);
             this.tabControl10.TabIndex = 1;
             // 
             // tabPage52
             // 
             this.tabPage52.AutoScroll = true;
             this.tabPage52.Controls.Add(this.tableLayoutPanel12);
-            this.tabPage52.Location = new System.Drawing.Point(4, 22);
+            this.tabPage52.Location = new System.Drawing.Point(4, 24);
+            this.tabPage52.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage52.Name = "tabPage52";
-            this.tabPage52.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage52.Size = new System.Drawing.Size(534, 418);
+            this.tabPage52.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage52.Size = new System.Drawing.Size(625, 497);
             this.tabPage52.TabIndex = 2;
             this.tabPage52.Text = "Ice Cap";
             this.tabPage52.UseVisualStyleBackColor = true;
@@ -3295,20 +3642,21 @@
             this.tableLayoutPanel12.Controls.Add(this.icecap_metal_sonic_score_2, 0, 2);
             this.tableLayoutPanel12.Controls.Add(this.icecap_metal_sonic_score_1, 0, 1);
             this.tableLayoutPanel12.Controls.Add(this.label117, 0, 0);
-            this.tableLayoutPanel12.Location = new System.Drawing.Point(6, 6);
+            this.tableLayoutPanel12.Location = new System.Drawing.Point(7, 7);
+            this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.RowCount = 4;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(87, 78);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(101, 89);
             this.tableLayoutPanel12.TabIndex = 0;
             // 
             // icecap_metal_sonic_score_3
             // 
             this.icecap_metal_sonic_score_3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_3.Location = new System.Drawing.Point(1, 57);
+            this.icecap_metal_sonic_score_3.Location = new System.Drawing.Point(1, 65);
             this.icecap_metal_sonic_score_3.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_3.Maximum = new decimal(new int[] {
             2147483647,
@@ -3316,7 +3664,7 @@
             0,
             0});
             this.icecap_metal_sonic_score_3.Name = "icecap_metal_sonic_score_3";
-            this.icecap_metal_sonic_score_3.Size = new System.Drawing.Size(85, 20);
+            this.icecap_metal_sonic_score_3.Size = new System.Drawing.Size(99, 23);
             this.icecap_metal_sonic_score_3.TabIndex = 3;
             this.icecap_metal_sonic_score_3.Value = new decimal(new int[] {
             3000,
@@ -3328,7 +3676,7 @@
             // icecap_metal_sonic_score_2
             // 
             this.icecap_metal_sonic_score_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_2.Location = new System.Drawing.Point(1, 36);
+            this.icecap_metal_sonic_score_2.Location = new System.Drawing.Point(1, 41);
             this.icecap_metal_sonic_score_2.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_2.Maximum = new decimal(new int[] {
             2147483647,
@@ -3336,7 +3684,7 @@
             0,
             0});
             this.icecap_metal_sonic_score_2.Name = "icecap_metal_sonic_score_2";
-            this.icecap_metal_sonic_score_2.Size = new System.Drawing.Size(85, 20);
+            this.icecap_metal_sonic_score_2.Size = new System.Drawing.Size(99, 23);
             this.icecap_metal_sonic_score_2.TabIndex = 3;
             this.icecap_metal_sonic_score_2.Value = new decimal(new int[] {
             6000,
@@ -3348,7 +3696,7 @@
             // icecap_metal_sonic_score_1
             // 
             this.icecap_metal_sonic_score_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.icecap_metal_sonic_score_1.Location = new System.Drawing.Point(1, 15);
+            this.icecap_metal_sonic_score_1.Location = new System.Drawing.Point(1, 17);
             this.icecap_metal_sonic_score_1.Margin = new System.Windows.Forms.Padding(0);
             this.icecap_metal_sonic_score_1.Maximum = new decimal(new int[] {
             2147483647,
@@ -3356,7 +3704,7 @@
             0,
             0});
             this.icecap_metal_sonic_score_1.Name = "icecap_metal_sonic_score_1";
-            this.icecap_metal_sonic_score_1.Size = new System.Drawing.Size(85, 20);
+            this.icecap_metal_sonic_score_1.Size = new System.Drawing.Size(99, 23);
             this.icecap_metal_sonic_score_1.TabIndex = 2;
             this.icecap_metal_sonic_score_1.Value = new decimal(new int[] {
             9000,
@@ -3370,10 +3718,10 @@
             this.label117.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label117.AutoSize = true;
             this.label117.BackColor = System.Drawing.SystemColors.Window;
-            this.label117.Location = new System.Drawing.Point(11, 1);
+            this.label117.Location = new System.Drawing.Point(15, 1);
             this.label117.Margin = new System.Windows.Forms.Padding(0);
             this.label117.Name = "label117";
-            this.label117.Size = new System.Drawing.Size(65, 13);
+            this.label117.Size = new System.Drawing.Size(70, 15);
             this.label117.TabIndex = 4;
             this.label117.Text = "High Scores";
             this.label117.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3382,10 +3730,11 @@
             // 
             this.tabPage53.AutoScroll = true;
             this.tabPage53.Controls.Add(this.tableLayoutPanel13);
-            this.tabPage53.Location = new System.Drawing.Point(4, 22);
+            this.tabPage53.Location = new System.Drawing.Point(4, 24);
+            this.tabPage53.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage53.Name = "tabPage53";
-            this.tabPage53.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage53.Size = new System.Drawing.Size(534, 418);
+            this.tabPage53.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage53.Size = new System.Drawing.Size(625, 497);
             this.tabPage53.TabIndex = 3;
             this.tabPage53.Text = "Sand Hill";
             this.tabPage53.UseVisualStyleBackColor = true;
@@ -3401,20 +3750,21 @@
             this.tableLayoutPanel13.Controls.Add(this.sandhill_metal_sonic_score_2, 0, 2);
             this.tableLayoutPanel13.Controls.Add(this.sandhill_metal_sonic_score_1, 0, 1);
             this.tableLayoutPanel13.Controls.Add(this.label120, 0, 0);
-            this.tableLayoutPanel13.Location = new System.Drawing.Point(6, 6);
+            this.tableLayoutPanel13.Location = new System.Drawing.Point(7, 7);
+            this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
             this.tableLayoutPanel13.RowCount = 4;
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(87, 78);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(101, 89);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // sandhill_metal_sonic_score_3
             // 
             this.sandhill_metal_sonic_score_3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_3.Location = new System.Drawing.Point(1, 57);
+            this.sandhill_metal_sonic_score_3.Location = new System.Drawing.Point(1, 65);
             this.sandhill_metal_sonic_score_3.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_3.Maximum = new decimal(new int[] {
             2147483647,
@@ -3422,7 +3772,7 @@
             0,
             0});
             this.sandhill_metal_sonic_score_3.Name = "sandhill_metal_sonic_score_3";
-            this.sandhill_metal_sonic_score_3.Size = new System.Drawing.Size(85, 20);
+            this.sandhill_metal_sonic_score_3.Size = new System.Drawing.Size(99, 23);
             this.sandhill_metal_sonic_score_3.TabIndex = 3;
             this.sandhill_metal_sonic_score_3.Value = new decimal(new int[] {
             3000,
@@ -3434,7 +3784,7 @@
             // sandhill_metal_sonic_score_2
             // 
             this.sandhill_metal_sonic_score_2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_2.Location = new System.Drawing.Point(1, 36);
+            this.sandhill_metal_sonic_score_2.Location = new System.Drawing.Point(1, 41);
             this.sandhill_metal_sonic_score_2.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_2.Maximum = new decimal(new int[] {
             2147483647,
@@ -3442,7 +3792,7 @@
             0,
             0});
             this.sandhill_metal_sonic_score_2.Name = "sandhill_metal_sonic_score_2";
-            this.sandhill_metal_sonic_score_2.Size = new System.Drawing.Size(85, 20);
+            this.sandhill_metal_sonic_score_2.Size = new System.Drawing.Size(99, 23);
             this.sandhill_metal_sonic_score_2.TabIndex = 3;
             this.sandhill_metal_sonic_score_2.Value = new decimal(new int[] {
             6000,
@@ -3454,7 +3804,7 @@
             // sandhill_metal_sonic_score_1
             // 
             this.sandhill_metal_sonic_score_1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.sandhill_metal_sonic_score_1.Location = new System.Drawing.Point(1, 15);
+            this.sandhill_metal_sonic_score_1.Location = new System.Drawing.Point(1, 17);
             this.sandhill_metal_sonic_score_1.Margin = new System.Windows.Forms.Padding(0);
             this.sandhill_metal_sonic_score_1.Maximum = new decimal(new int[] {
             2147483647,
@@ -3462,7 +3812,7 @@
             0,
             0});
             this.sandhill_metal_sonic_score_1.Name = "sandhill_metal_sonic_score_1";
-            this.sandhill_metal_sonic_score_1.Size = new System.Drawing.Size(85, 20);
+            this.sandhill_metal_sonic_score_1.Size = new System.Drawing.Size(99, 23);
             this.sandhill_metal_sonic_score_1.TabIndex = 2;
             this.sandhill_metal_sonic_score_1.Value = new decimal(new int[] {
             10000,
@@ -3476,10 +3826,10 @@
             this.label120.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label120.AutoSize = true;
             this.label120.BackColor = System.Drawing.SystemColors.Window;
-            this.label120.Location = new System.Drawing.Point(11, 1);
+            this.label120.Location = new System.Drawing.Point(15, 1);
             this.label120.Margin = new System.Windows.Forms.Padding(0);
             this.label120.Name = "label120";
-            this.label120.Size = new System.Drawing.Size(65, 13);
+            this.label120.Size = new System.Drawing.Size(70, 15);
             this.label120.TabIndex = 4;
             this.label120.Text = "High Scores";
             this.label120.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3492,10 +3842,11 @@
             this.tabPage55.Controls.Add(this.groupBox5);
             this.tabPage55.Controls.Add(this.circuit_metal_lap_2);
             this.tabPage55.Controls.Add(this.circuit_metal_lap_1);
-            this.tabPage55.Location = new System.Drawing.Point(4, 22);
+            this.tabPage55.Location = new System.Drawing.Point(4, 24);
+            this.tabPage55.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage55.Name = "tabPage55";
-            this.tabPage55.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage55.Size = new System.Drawing.Size(534, 418);
+            this.tabPage55.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage55.Size = new System.Drawing.Size(625, 497);
             this.tabPage55.TabIndex = 5;
             this.tabPage55.Text = "Twinkle Circuit";
             this.tabPage55.UseVisualStyleBackColor = true;
@@ -3503,18 +3854,20 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(167, 62);
+            this.label18.Location = new System.Drawing.Point(195, 72);
+            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(37, 13);
+            this.label18.Size = new System.Drawing.Size(38, 15);
             this.label18.TabIndex = 14;
             this.label18.Text = "Lap 2:";
             // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(167, 30);
+            this.label19.Location = new System.Drawing.Point(195, 35);
+            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(37, 13);
+            this.label19.Size = new System.Drawing.Size(38, 15);
             this.label19.TabIndex = 11;
             this.label19.Text = "Lap 1:";
             // 
@@ -3525,11 +3878,11 @@
             this.groupBox5.Controls.Add(this.circuit_metal_time_1);
             this.groupBox5.Controls.Add(this.circuit_metal_time_3);
             this.groupBox5.Controls.Add(this.circuit_metal_time_2);
-            this.groupBox5.Location = new System.Drawing.Point(6, 6);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.groupBox5.Location = new System.Drawing.Point(7, 7);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.groupBox5.Size = new System.Drawing.Size(155, 122);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 3, 4, 0);
+            this.groupBox5.Size = new System.Drawing.Size(184, 141);
             this.groupBox5.TabIndex = 10;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Best Times";
@@ -3548,11 +3901,12 @@
             levelTime11.Minutes = ((byte)(10));
             levelTime11.Seconds = ((byte)(0));
             this.circuit_metal_time_1.LevelTime = levelTime11;
-            this.circuit_metal_time_1.Location = new System.Drawing.Point(6, 19);
+            this.circuit_metal_time_1.Location = new System.Drawing.Point(7, 22);
+            this.circuit_metal_time_1.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_metal_time_1.Minutes = 10;
             this.circuit_metal_time_1.Name = "circuit_metal_time_1";
             this.circuit_metal_time_1.Seconds = 0;
-            this.circuit_metal_time_1.Size = new System.Drawing.Size(143, 26);
+            this.circuit_metal_time_1.Size = new System.Drawing.Size(168, 29);
             this.circuit_metal_time_1.TabIndex = 2;
             this.circuit_metal_time_1.TimeSpan = System.TimeSpan.Parse("00:10:00");
             this.circuit_metal_time_1.TotalCentiseconds = ((uint)(60000u));
@@ -3573,12 +3927,12 @@
             levelTime12.Minutes = ((byte)(20));
             levelTime12.Seconds = ((byte)(0));
             this.circuit_metal_time_3.LevelTime = levelTime12;
-            this.circuit_metal_time_3.Location = new System.Drawing.Point(6, 83);
-            this.circuit_metal_time_3.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.circuit_metal_time_3.Location = new System.Drawing.Point(7, 96);
+            this.circuit_metal_time_3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 0);
             this.circuit_metal_time_3.Minutes = 20;
             this.circuit_metal_time_3.Name = "circuit_metal_time_3";
             this.circuit_metal_time_3.Seconds = 0;
-            this.circuit_metal_time_3.Size = new System.Drawing.Size(143, 26);
+            this.circuit_metal_time_3.Size = new System.Drawing.Size(168, 29);
             this.circuit_metal_time_3.TabIndex = 4;
             this.circuit_metal_time_3.TimeSpan = System.TimeSpan.Parse("00:20:00");
             this.circuit_metal_time_3.TotalCentiseconds = ((uint)(120000u));
@@ -3599,11 +3953,12 @@
             levelTime13.Minutes = ((byte)(15));
             levelTime13.Seconds = ((byte)(0));
             this.circuit_metal_time_2.LevelTime = levelTime13;
-            this.circuit_metal_time_2.Location = new System.Drawing.Point(6, 51);
+            this.circuit_metal_time_2.Location = new System.Drawing.Point(7, 59);
+            this.circuit_metal_time_2.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_metal_time_2.Minutes = 15;
             this.circuit_metal_time_2.Name = "circuit_metal_time_2";
             this.circuit_metal_time_2.Seconds = 0;
-            this.circuit_metal_time_2.Size = new System.Drawing.Size(143, 26);
+            this.circuit_metal_time_2.Size = new System.Drawing.Size(168, 29);
             this.circuit_metal_time_2.TabIndex = 3;
             this.circuit_metal_time_2.TimeSpan = System.TimeSpan.Parse("00:15:00");
             this.circuit_metal_time_2.TotalCentiseconds = ((uint)(90000u));
@@ -3624,11 +3979,12 @@
             levelTime14.Minutes = ((byte)(7));
             levelTime14.Seconds = ((byte)(0));
             this.circuit_metal_lap_2.LevelTime = levelTime14;
-            this.circuit_metal_lap_2.Location = new System.Drawing.Point(210, 57);
+            this.circuit_metal_lap_2.Location = new System.Drawing.Point(245, 66);
+            this.circuit_metal_lap_2.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_metal_lap_2.Minutes = 7;
             this.circuit_metal_lap_2.Name = "circuit_metal_lap_2";
             this.circuit_metal_lap_2.Seconds = 0;
-            this.circuit_metal_lap_2.Size = new System.Drawing.Size(143, 26);
+            this.circuit_metal_lap_2.Size = new System.Drawing.Size(168, 29);
             this.circuit_metal_lap_2.TabIndex = 13;
             this.circuit_metal_lap_2.TimeSpan = System.TimeSpan.Parse("00:07:00");
             this.circuit_metal_lap_2.TotalCentiseconds = ((uint)(42000u));
@@ -3649,11 +4005,12 @@
             levelTime15.Minutes = ((byte)(4));
             levelTime15.Seconds = ((byte)(0));
             this.circuit_metal_lap_1.LevelTime = levelTime15;
-            this.circuit_metal_lap_1.Location = new System.Drawing.Point(210, 25);
+            this.circuit_metal_lap_1.Location = new System.Drawing.Point(245, 29);
+            this.circuit_metal_lap_1.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.circuit_metal_lap_1.Minutes = 4;
             this.circuit_metal_lap_1.Name = "circuit_metal_lap_1";
             this.circuit_metal_lap_1.Seconds = 0;
-            this.circuit_metal_lap_1.Size = new System.Drawing.Size(143, 26);
+            this.circuit_metal_lap_1.Size = new System.Drawing.Size(168, 29);
             this.circuit_metal_lap_1.TabIndex = 12;
             this.circuit_metal_lap_1.TimeSpan = System.TimeSpan.Parse("00:04:00");
             this.circuit_metal_lap_1.TotalCentiseconds = ((uint)(24000u));
@@ -3664,10 +4021,11 @@
             // 
             this.tabPage56.AutoScroll = true;
             this.tabPage56.Controls.Add(this.tableLayoutPanel15);
-            this.tabPage56.Location = new System.Drawing.Point(4, 22);
+            this.tabPage56.Location = new System.Drawing.Point(4, 24);
+            this.tabPage56.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage56.Name = "tabPage56";
-            this.tabPage56.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage56.Size = new System.Drawing.Size(534, 418);
+            this.tabPage56.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage56.Size = new System.Drawing.Size(625, 497);
             this.tabPage56.TabIndex = 6;
             this.tabPage56.Text = "Boss";
             this.tabPage56.UseVisualStyleBackColor = true;
@@ -3683,14 +4041,15 @@
             this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_3, 0, 3);
             this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_1, 0, 1);
             this.tableLayoutPanel15.Controls.Add(this.boss_metal_sonic_time_2, 0, 2);
-            this.tableLayoutPanel15.Location = new System.Drawing.Point(6, 6);
+            this.tableLayoutPanel15.Location = new System.Drawing.Point(7, 7);
+            this.tableLayoutPanel15.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel15.Name = "tableLayoutPanel15";
             this.tableLayoutPanel15.RowCount = 4;
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel15.Size = new System.Drawing.Size(151, 114);
+            this.tableLayoutPanel15.Size = new System.Drawing.Size(180, 125);
             this.tableLayoutPanel15.TabIndex = 0;
             // 
             // label127
@@ -3698,9 +4057,10 @@
             this.label127.AutoSize = true;
             this.label127.BackColor = System.Drawing.SystemColors.Window;
             this.label127.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label127.Location = new System.Drawing.Point(4, 1);
+            this.label127.Location = new System.Drawing.Point(5, 1);
+            this.label127.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label127.Name = "label127";
-            this.label127.Size = new System.Drawing.Size(143, 13);
+            this.label127.Size = new System.Drawing.Size(170, 15);
             this.label127.TabIndex = 4;
             this.label127.Text = "Best Times";
             this.label127.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -3720,11 +4080,12 @@
             levelTime16.Minutes = ((byte)(15));
             levelTime16.Seconds = ((byte)(0));
             this.boss_metal_sonic_time_3.LevelTime = levelTime16;
-            this.boss_metal_sonic_time_3.Location = new System.Drawing.Point(4, 84);
+            this.boss_metal_sonic_time_3.Location = new System.Drawing.Point(6, 92);
+            this.boss_metal_sonic_time_3.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.boss_metal_sonic_time_3.Minutes = 15;
             this.boss_metal_sonic_time_3.Name = "boss_metal_sonic_time_3";
             this.boss_metal_sonic_time_3.Seconds = 0;
-            this.boss_metal_sonic_time_3.Size = new System.Drawing.Size(143, 26);
+            this.boss_metal_sonic_time_3.Size = new System.Drawing.Size(168, 29);
             this.boss_metal_sonic_time_3.TabIndex = 5;
             this.boss_metal_sonic_time_3.TimeSpan = System.TimeSpan.Parse("00:15:00");
             this.boss_metal_sonic_time_3.TotalCentiseconds = ((uint)(90000u));
@@ -3746,11 +4107,12 @@
             levelTime17.Minutes = ((byte)(12));
             levelTime17.Seconds = ((byte)(0));
             this.boss_metal_sonic_time_1.LevelTime = levelTime17;
-            this.boss_metal_sonic_time_1.Location = new System.Drawing.Point(4, 18);
+            this.boss_metal_sonic_time_1.Location = new System.Drawing.Point(6, 20);
+            this.boss_metal_sonic_time_1.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.boss_metal_sonic_time_1.Minutes = 12;
             this.boss_metal_sonic_time_1.Name = "boss_metal_sonic_time_1";
             this.boss_metal_sonic_time_1.Seconds = 0;
-            this.boss_metal_sonic_time_1.Size = new System.Drawing.Size(143, 26);
+            this.boss_metal_sonic_time_1.Size = new System.Drawing.Size(168, 29);
             this.boss_metal_sonic_time_1.TabIndex = 6;
             this.boss_metal_sonic_time_1.TimeSpan = System.TimeSpan.Parse("00:12:00");
             this.boss_metal_sonic_time_1.TotalCentiseconds = ((uint)(72000u));
@@ -3772,11 +4134,12 @@
             levelTime18.Minutes = ((byte)(13));
             levelTime18.Seconds = ((byte)(30));
             this.boss_metal_sonic_time_2.LevelTime = levelTime18;
-            this.boss_metal_sonic_time_2.Location = new System.Drawing.Point(4, 51);
+            this.boss_metal_sonic_time_2.Location = new System.Drawing.Point(6, 56);
+            this.boss_metal_sonic_time_2.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.boss_metal_sonic_time_2.Minutes = 13;
             this.boss_metal_sonic_time_2.Name = "boss_metal_sonic_time_2";
             this.boss_metal_sonic_time_2.Seconds = 30;
-            this.boss_metal_sonic_time_2.Size = new System.Drawing.Size(143, 26);
+            this.boss_metal_sonic_time_2.Size = new System.Drawing.Size(168, 29);
             this.boss_metal_sonic_time_2.TabIndex = 7;
             this.boss_metal_sonic_time_2.TimeSpan = System.TimeSpan.Parse("00:13:30");
             this.boss_metal_sonic_time_2.TotalCentiseconds = ((uint)(81000u));
@@ -3813,13 +4176,14 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 564);
+            this.ClientSize = new System.Drawing.Size(681, 651);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "Sonic Adventure Save File Editor";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -4159,15 +4523,6 @@
         private WeightControl level_timeweight;
         private System.Windows.Forms.NumericUpDown level_score;
         private System.Windows.Forms.NumericUpDown level_rings;
-        private System.Windows.Forms.CheckedListBox events_unused;
-        private System.Windows.Forms.CheckedListBox events_general;
-        private System.Windows.Forms.CheckedListBox events_sonic;
-        private System.Windows.Forms.CheckedListBox events_tails;
-        private System.Windows.Forms.CheckedListBox events_knuckles;
-        private System.Windows.Forms.CheckedListBox events_amy;
-        private System.Windows.Forms.CheckedListBox events_gamma;
-        private System.Windows.Forms.CheckedListBox events_big;
-        private System.Windows.Forms.CheckedListBox npcs;
         private System.Windows.Forms.ComboBox levelclear_character;
         private System.Windows.Forms.ComboBox action_stage;
         private System.Windows.Forms.TableLayoutPanel level_clear_table;
@@ -4193,6 +4548,41 @@
         private EmblemControl level_emblem_c;
         private EmblemControl level_emblem_b;
         private EmblemControl level_emblem_a;
-    }
+		private System.Windows.Forms.ListView listViewEventsUnused;
+		private System.Windows.Forms.ColumnHeader columnHeaderFlagName;
+		private System.Windows.Forms.ColumnHeader columnHeaderFlagDescription;
+		private System.Windows.Forms.ListView listViewEventsGeneral;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.ColumnHeader columnHeader2;
+		private System.Windows.Forms.ColumnHeader columnHeaderFlagID;
+		private System.Windows.Forms.ColumnHeader columnHeader3;
+		private System.Windows.Forms.ListView listViewEventsSonic;
+		private System.Windows.Forms.ColumnHeader columnHeader4;
+		private System.Windows.Forms.ColumnHeader columnHeader5;
+		private System.Windows.Forms.ColumnHeader columnHeader6;
+		private System.Windows.Forms.ListView listViewEventsTails;
+		private System.Windows.Forms.ColumnHeader columnHeader7;
+		private System.Windows.Forms.ColumnHeader columnHeader8;
+		private System.Windows.Forms.ColumnHeader columnHeader9;
+		private System.Windows.Forms.ListView listViewEventsKnuckles;
+		private System.Windows.Forms.ColumnHeader columnHeader10;
+		private System.Windows.Forms.ColumnHeader columnHeader11;
+		private System.Windows.Forms.ColumnHeader columnHeader12;
+		private System.Windows.Forms.ListView listViewEventsAmy;
+		private System.Windows.Forms.ColumnHeader columnHeader13;
+		private System.Windows.Forms.ColumnHeader columnHeader14;
+		private System.Windows.Forms.ColumnHeader columnHeader15;
+		private System.Windows.Forms.ListView listViewEventsGamma;
+		private System.Windows.Forms.ColumnHeader columnHeader16;
+		private System.Windows.Forms.ColumnHeader columnHeader17;
+		private System.Windows.Forms.ColumnHeader columnHeader18;
+		private System.Windows.Forms.ListView listViewEventsBig;
+		private System.Windows.Forms.ColumnHeader columnHeader19;
+		private System.Windows.Forms.ColumnHeader columnHeader20;
+		private System.Windows.Forms.ColumnHeader columnHeader21;
+		private System.Windows.Forms.ListView listViewCutsceneFlags;
+		private System.Windows.Forms.ColumnHeader columnHeader22;
+		private System.Windows.Forms.ColumnHeader columnHeader24;
+	}
 }
 
