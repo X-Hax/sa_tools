@@ -684,7 +684,7 @@ namespace PLTool
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(318, 96);
+            this.label1.Location = new System.Drawing.Point(320, 95);
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(14, 15);
@@ -709,7 +709,7 @@ namespace PLTool
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(318, 132);
+            this.label2.Location = new System.Drawing.Point(320, 131);
             this.label2.Margin = new System.Windows.Forms.Padding(0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(14, 15);
@@ -722,7 +722,7 @@ namespace PLTool
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label3.Location = new System.Drawing.Point(318, 168);
+            this.label3.Location = new System.Drawing.Point(320, 167);
             this.label3.Margin = new System.Windows.Forms.Padding(0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(14, 15);
@@ -735,7 +735,7 @@ namespace PLTool
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label4.Location = new System.Drawing.Point(318, 203);
+            this.label4.Location = new System.Drawing.Point(320, 203);
             this.label4.Margin = new System.Windows.Forms.Padding(0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(14, 15);
@@ -748,7 +748,7 @@ namespace PLTool
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label5.Location = new System.Drawing.Point(318, 239);
+            this.label5.Location = new System.Drawing.Point(320, 239);
             this.label5.Margin = new System.Windows.Forms.Padding(0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(14, 15);
@@ -761,7 +761,7 @@ namespace PLTool
             this.label6.AutoSize = true;
             this.label6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label6.Location = new System.Drawing.Point(318, 276);
+            this.label6.Location = new System.Drawing.Point(320, 275);
             this.label6.Margin = new System.Windows.Forms.Padding(0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(14, 15);
@@ -774,7 +774,7 @@ namespace PLTool
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(318, 312);
+            this.label7.Location = new System.Drawing.Point(320, 311);
             this.label7.Margin = new System.Windows.Forms.Padding(0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(14, 15);
@@ -787,7 +787,7 @@ namespace PLTool
             this.labelB.AutoSize = true;
             this.labelB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
             this.labelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelB.Location = new System.Drawing.Point(318, 347);
+            this.labelB.Location = new System.Drawing.Point(320, 347);
             this.labelB.Margin = new System.Windows.Forms.Padding(0);
             this.labelB.Name = "labelB";
             this.labelB.Size = new System.Drawing.Size(15, 15);
@@ -988,7 +988,7 @@ namespace PLTool
             // DiffusePaletteB
             // 
             this.DiffusePaletteB.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePaletteB.Location = new System.Drawing.Point(18, 344);
+            this.DiffusePaletteB.Location = new System.Drawing.Point(17, 344);
             this.DiffusePaletteB.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePaletteB.Name = "DiffusePaletteB";
             this.DiffusePaletteB.Size = new System.Drawing.Size(299, 24);
@@ -1106,7 +1106,7 @@ namespace PLTool
             // DiffusePalette7
             // 
             this.DiffusePalette7.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette7.Location = new System.Drawing.Point(18, 308);
+            this.DiffusePalette7.Location = new System.Drawing.Point(17, 308);
             this.DiffusePalette7.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette7.Name = "DiffusePalette7";
             this.DiffusePalette7.Size = new System.Drawing.Size(299, 24);
@@ -1118,7 +1118,7 @@ namespace PLTool
             // DiffusePalette6
             // 
             this.DiffusePalette6.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette6.Location = new System.Drawing.Point(18, 271);
+            this.DiffusePalette6.Location = new System.Drawing.Point(17, 271);
             this.DiffusePalette6.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette6.Name = "DiffusePalette6";
             this.DiffusePalette6.Size = new System.Drawing.Size(299, 24);
@@ -1130,7 +1130,7 @@ namespace PLTool
             // DiffusePalette5
             // 
             this.DiffusePalette5.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette5.Location = new System.Drawing.Point(18, 235);
+            this.DiffusePalette5.Location = new System.Drawing.Point(17, 235);
             this.DiffusePalette5.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette5.Name = "DiffusePalette5";
             this.DiffusePalette5.Size = new System.Drawing.Size(299, 24);
@@ -1142,7 +1142,7 @@ namespace PLTool
             // DiffusePalette4
             // 
             this.DiffusePalette4.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette4.Location = new System.Drawing.Point(18, 200);
+            this.DiffusePalette4.Location = new System.Drawing.Point(17, 200);
             this.DiffusePalette4.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette4.Name = "DiffusePalette4";
             this.DiffusePalette4.Size = new System.Drawing.Size(299, 24);
@@ -1154,7 +1154,7 @@ namespace PLTool
             // DiffusePalette3
             // 
             this.DiffusePalette3.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette3.Location = new System.Drawing.Point(18, 164);
+            this.DiffusePalette3.Location = new System.Drawing.Point(17, 164);
             this.DiffusePalette3.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette3.Name = "DiffusePalette3";
             this.DiffusePalette3.Size = new System.Drawing.Size(299, 24);
@@ -1166,7 +1166,7 @@ namespace PLTool
             // DiffusePalette2
             // 
             this.DiffusePalette2.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette2.Location = new System.Drawing.Point(18, 128);
+            this.DiffusePalette2.Location = new System.Drawing.Point(17, 128);
             this.DiffusePalette2.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette2.Name = "DiffusePalette2";
             this.DiffusePalette2.Size = new System.Drawing.Size(299, 24);
@@ -1178,7 +1178,7 @@ namespace PLTool
             // DiffusePalette1
             // 
             this.DiffusePalette1.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette1.Location = new System.Drawing.Point(18, 91);
+            this.DiffusePalette1.Location = new System.Drawing.Point(17, 91);
             this.DiffusePalette1.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette1.Name = "DiffusePalette1";
             this.DiffusePalette1.Size = new System.Drawing.Size(299, 24);
@@ -1190,7 +1190,7 @@ namespace PLTool
             // DiffusePalette0
             // 
             this.DiffusePalette0.BackColor = System.Drawing.Color.Transparent;
-            this.DiffusePalette0.Location = new System.Drawing.Point(18, 55);
+            this.DiffusePalette0.Location = new System.Drawing.Point(17, 55);
             this.DiffusePalette0.Margin = new System.Windows.Forms.Padding(6);
             this.DiffusePalette0.Name = "DiffusePalette0";
             this.DiffusePalette0.Size = new System.Drawing.Size(299, 24);
