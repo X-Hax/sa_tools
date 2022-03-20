@@ -95,57 +95,34 @@ namespace SplitTools.Split
                     {
                         // This is the only thing that couldn't be moved out to SplitSingle because it retroactively writes to inifile
                         case "masterstringlist":
-                            {
-                                Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " -> " + fileOutputPath);
-                                if (inifile.Game == Game.SA2B && !inifile.BigEndian)
-                                {
-                                    for (int l = 0; l < 6; l++)
-                                    {
-                                        Languages lng = (Languages)l;
-                                        System.Text.Encoding enc = HelperFunctions.GetEncoding(inifile.Game, lng);
-                                        string ld = Path.Combine(fileOutputPath, lng.ToString());
-                                        Directory.CreateDirectory(ld);
-                                        int ptr = datafile.GetPointer(address, imageBase);
-                                        for (int i = 0; i < data.Length; i++)
-                                        {
-                                            int ptr2 = datafile.GetPointer(ptr, imageBase);
-                                            if (ptr2 != 0)
-                                            {
-                                                string fn = Path.Combine(ld, $"{i}.txt");
-                                                File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
-                                                inifile.Files.Add($"{filedesc} {lng} {i}", new FileInfo() { Type = "string", Filename = fn, PointerList = new int[] { ptr }, MD5Hash = HelperFunctions.FileHash(fn), CustomProperties = new Dictionary<string, string>() { { "language", lng.ToString() } } });
-                                            }
-                                            ptr += 4;
-                                        }
-                                        address += 4;
-                                    }
-                                }
-                                else
-                                {
-                                    for (int l = 0; l < 5; l++)
-                                    {
-                                        Languages lng = (Languages)l;
-                                        System.Text.Encoding enc = HelperFunctions.GetEncoding(inifile.Game, lng);
-                                        string ld = Path.Combine(fileOutputPath, lng.ToString());
-                                        Directory.CreateDirectory(ld);
-                                        int ptr = datafile.GetPointer(address, imageBase);
-                                        for (int i = 0; i < data.Length; i++)
-                                        {
-                                            int ptr2 = datafile.GetPointer(ptr, imageBase);
-                                            if (ptr2 != 0)
-                                            {
-                                                string fn = Path.Combine(ld, $"{i}.txt");
-                                                File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
-                                                inifile.Files.Add($"{filedesc} {lng} {i}", new FileInfo() { Type = "string", Filename = fn, PointerList = new int[] { ptr }, MD5Hash = HelperFunctions.FileHash(fn), CustomProperties = new Dictionary<string, string>() { { "language", lng.ToString() } } });
-                                            }
-                                            ptr += 4;
-                                        }
-                                        address += 4;
-                                    }
-                                }
-                                inifile.Files.Remove(filedesc);
-                                itemcount++;
-                            }
+							{
+								Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " -> " + fileOutputPath);
+								int lngcnt = 5;
+								if (inifile.Game == Game.SA2B && !inifile.BigEndian)
+									lngcnt = 6;
+								for (int l = 0; l < lngcnt; l++)
+								{
+									Languages lng = (Languages)l;
+									System.Text.Encoding enc = HelperFunctions.GetEncoding(inifile.Game, lng);
+									string ld = Path.Combine(fileOutputPath, lng.ToString());
+									Directory.CreateDirectory(ld);
+									int ptr = datafile.GetPointer(address, imageBase);
+									for (int i = 0; i < data.Length; i++)
+									{
+										int ptr2 = datafile.GetPointer(ptr, imageBase);
+										if (ptr2 != 0)
+										{
+											string fn = Path.Combine(ld, $"{i}.txt").Substring(projectFolderName.Length + 1);
+											File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
+											inifile.Files.Add($"{filedesc} {lng} {i}", new FileInfo() { Type = "string", Filename = fn, PointerList = new int[] { ptr }, MD5Hash = HelperFunctions.FileHash(fn), CustomProperties = new Dictionary<string, string>() { { "language", lng.ToString() } } });
+										}
+										ptr += 4;
+									}
+									address += 4;
+								}
+								inifile.Files.Remove(filedesc);
+								itemcount++;
+							}
                             break;
                         // Single split mode for everything else
                         default:
