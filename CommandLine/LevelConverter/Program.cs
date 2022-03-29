@@ -62,8 +62,46 @@ namespace LevelConverter
 					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa2lvl"), LandTableFormat.SA2);
 					break;
 				case LandTableFormat.SA2:
+
 					foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach is ChunkAttach))
+					{
 						col.Model.Attach = col.Model.Attach.ToBasic();
+					}
+
+					foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach != null))
+					{
+						//fix flags differences
+						if ((col.SurfaceFlags & SA1SurfaceFlags.Diggable) == SA1SurfaceFlags.Diggable)
+						{
+							col.SurfaceFlags &= ~SA1SurfaceFlags.Diggable;
+							col.SurfaceFlags |= SA1SurfaceFlags.Stairs;
+						}
+
+						if ((col.SurfaceFlags & SA1SurfaceFlags.UseSkyDrawDistance) == SA1SurfaceFlags.UseSkyDrawDistance)
+						{
+							col.SurfaceFlags &= ~SA1SurfaceFlags.UseSkyDrawDistance;
+							col.SurfaceFlags |= SA1SurfaceFlags.Diggable;
+						}
+
+						if ((col.SurfaceFlags & SA1SurfaceFlags.Unclimbable) == SA1SurfaceFlags.Unclimbable)
+						{
+							col.SurfaceFlags &= ~SA1SurfaceFlags.Unclimbable;
+							col.SurfaceFlags |= SA1SurfaceFlags.CannotLand;
+						}
+
+						if ((col.SurfaceFlags & SA1SurfaceFlags.IncreasedAcceleration) == SA1SurfaceFlags.IncreasedAcceleration)
+						{
+							col.SurfaceFlags &= ~SA1SurfaceFlags.IncreasedAcceleration;
+							col.SurfaceFlags |= SA1SurfaceFlags.Unclimbable;
+						}
+
+						if ((col.SurfaceFlags & SA1SurfaceFlags.Waterfall) == SA1SurfaceFlags.Waterfall)
+						{
+							col.SurfaceFlags &= ~SA1SurfaceFlags.Waterfall;
+							col.SurfaceFlags |= SA1SurfaceFlags.Hurt;
+						}
+					}
+
 					level.Anim = new List<GeoAnimData>();
 					level.Attributes = SA1LandtableAttributes.LoadTextureFile; // set LandTable to use PVM/GVM
 					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
