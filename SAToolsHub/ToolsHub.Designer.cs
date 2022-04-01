@@ -602,7 +602,7 @@
             this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
             this.checkForUpdatesToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
             this.checkForUpdatesToolStripMenuItem.ToolTipText = "Checks for updates to any of the SA Tools programs.";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
@@ -610,12 +610,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(207, 6);
             // 
             // autoUpdateToolStripMenuItem
             // 
             this.autoUpdateToolStripMenuItem.Name = "autoUpdateToolStripMenuItem";
-            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.autoUpdateToolStripMenuItem.Text = "Check on Statup";
             this.autoUpdateToolStripMenuItem.ToolTipText = "Enables update checks every time you start the program.";
             this.autoUpdateToolStripMenuItem.Click += new System.EventHandler(this.autoUpdateToolStripMenuItem_Click);
@@ -627,7 +627,7 @@
             this.dailyToolStripMenuItem,
             this.weeklyToolStripMenuItem});
             this.frequencyToolStripMenuItem.Name = "frequencyToolStripMenuItem";
-            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.frequencyToolStripMenuItem.Text = "Update Frequency";
             this.frequencyToolStripMenuItem.ToolTipText = "Choose the frequency at which the program checks for updates.";
             // 
@@ -657,7 +657,7 @@
             // openSettingsLogsToolStripMenuItem
             // 
             this.openSettingsLogsToolStripMenuItem.Name = "openSettingsLogsToolStripMenuItem";
-            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.openSettingsLogsToolStripMenuItem.Text = "Open Settings/Logs";
             this.openSettingsLogsToolStripMenuItem.ToolTipText = "Opens the folder where SA Tools store logs and preferences.";
             this.openSettingsLogsToolStripMenuItem.Click += new System.EventHandler(this.openSettingsLogsToolStripMenuItem_Click);
@@ -666,10 +666,10 @@
             // 
             this.disableOSWarningToolStripMenuItem.CheckOnClick = true;
             this.disableOSWarningToolStripMenuItem.Name = "disableOSWarningToolStripMenuItem";
-            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.disableOSWarningToolStripMenuItem.Text = "Disable OS Warning";
-            this.disableOSWarningToolStripMenuItem.ToolTipText = "Disables the warning that appears when trying to update an x86 version of SA Tools" +
-    " on an x64 version of Windows.";
+            this.disableOSWarningToolStripMenuItem.ToolTipText = "Disables the warning that appears when trying to update an x86 version of SA Tool" +
+    "s on an x64 version of Windows.";
             this.disableOSWarningToolStripMenuItem.Click += new System.EventHandler(this.disableOSWarningToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
@@ -782,7 +782,7 @@
             this.rightToolStrip.Location = new System.Drawing.Point(985, 79);
             this.rightToolStrip.Name = "rightToolStrip";
             this.rightToolStrip.Padding = new System.Windows.Forms.Padding(0);
-            this.rightToolStrip.Size = new System.Drawing.Size(64, 582);
+            this.rightToolStrip.Size = new System.Drawing.Size(64, 558);
             this.rightToolStrip.TabIndex = 1;
             this.rightToolStrip.Text = "toolStrip1";
             // 
@@ -905,7 +905,7 @@
             this.tsSA2StgSel.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsSA2StgSel.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsSA2StgSel.Name = "tsSA2StgSel";
-            this.tsSA2StgSel.Size = new System.Drawing.Size(63, 52);
+            this.tsSA2StgSel.Size = new System.Drawing.Size(52, 52);
             this.tsSA2StgSel.Text = "Open SA2 Stage Select Editor";
             this.tsSA2StgSel.Visible = false;
             this.tsSA2StgSel.Click += new System.EventHandler(this.tsSA2StgSel_Click);
@@ -1029,7 +1029,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.listView1);
-            this.splitContainer1.Size = new System.Drawing.Size(985, 550);
+            this.splitContainer1.Size = new System.Drawing.Size(985, 526);
             this.splitContainer1.SplitterDistance = 236;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 3;
@@ -1042,7 +1042,7 @@
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(236, 550);
+            this.treeView1.Size = new System.Drawing.Size(236, 526);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -1058,7 +1058,7 @@
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(744, 550);
+            this.listView1.Size = new System.Drawing.Size(744, 526);
             this.listView1.SmallImageList = this.imageList1;
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
@@ -1253,7 +1253,7 @@
             this.toolStripStatusLabelFileTip});
             this.statusStrip1.Location = new System.Drawing.Point(0, 637);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(985, 24);
+            this.statusStrip1.Size = new System.Drawing.Size(1049, 24);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip1";
@@ -1277,12 +1277,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1049, 661);
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.rightToolStrip);
             this.Controls.Add(this.topToolStrip);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
