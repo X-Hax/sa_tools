@@ -1371,7 +1371,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 								Languages lang = Languages.Japanese;
 								if (data.CustomProperties.ContainsKey("language"))
 									lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
-								writer.WriteLine("const char *{0} = {1}; {2}", name, str.ToC(lang), str.ToComment());
+								writer.WriteLine("const char {0}[] = {1}; {2}", name, str.ToC(lang), str.ToComment());
 							}
 							break;
 						case "physicsdata":
