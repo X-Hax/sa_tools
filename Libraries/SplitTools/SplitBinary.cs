@@ -112,7 +112,7 @@ namespace SplitTools.Split
 										int ptr2 = datafile.GetPointer(ptr, imageBase);
 										if (ptr2 != 0)
 										{
-											string fn = Path.Combine(ld, $"{i}.txt").Substring(projectFolderName.Length + 1);
+											string fn = Path.Combine(ld, $"{i}.txt").Substring(projectFolderName.Length);
 											File.WriteAllText(fn, datafile.GetCString(ptr2, enc).Replace("\n", "\r\n"));
 											inifile.Files.Add($"{filedesc} {lng} {i}", new FileInfo() { Type = "string", Filename = fn, PointerList = new int[] { ptr }, MD5Hash = HelperFunctions.FileHash(fn), CustomProperties = new Dictionary<string, string>() { { "language", lng.ToString() } } });
 										}
