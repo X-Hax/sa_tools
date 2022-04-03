@@ -214,7 +214,7 @@ namespace SAToolsHub
 			{
 				case ("SADXPC"):
 					string texturesPath = Path.Combine(SAToolsHub.projectDirectory, "textures");
-					SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), modSystemPath);
+					SAModel.SAEditorCommon.StructConverter.StructConverter.CopyDirectory(new DirectoryInfo(texturesPath), Path.Combine(modFolder, "textures"));
 					break;
 
 				case ("SA2PC"):
