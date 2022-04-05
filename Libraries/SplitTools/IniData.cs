@@ -4833,6 +4833,9 @@ namespace SplitTools
 			sb.Append(" }");
 			return sb.ToString();
 		}
+
+		public PlayerParameter()
+		{ }
 	}
 
 	/// <summary>
