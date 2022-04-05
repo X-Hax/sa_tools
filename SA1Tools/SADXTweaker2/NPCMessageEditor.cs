@@ -31,7 +31,7 @@ namespace SADXTweaker2
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase)))
 			{
 				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
-				NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(item.Value.Filename, item.Value.Length)));
+				NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(path, item.Value.Length)));
 				level.Items.Add(item.Key);
 			}
 			level.EndUpdate();
