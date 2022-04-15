@@ -1216,7 +1216,7 @@ namespace SAModel.SAMDL
 			if (showModelToolStripMenuItem.Checked)
 			{
 				if (hasWeight)
-					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, Textures, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeWeighted(EditorOptions.RenderFillMode, transform.Top, buttonTextures.Checked ? Textures : null, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
 				else if (animation != null)
 				{
 					foreach (KeyValuePair<int, AnimModelData> animdata in animation.Models)
@@ -1232,10 +1232,10 @@ namespace SAModel.SAMDL
 									catch { }
 						}
 					}
-					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, Textures, meshes, animation, animframe, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTreeAnimated(EditorOptions.RenderFillMode, transform, buttonTextures.Checked ? Textures : null, meshes, animation, animframe, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
 				}
 				else
-					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, Textures, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
+					RenderInfo.Draw(model.DrawModelTree(EditorOptions.RenderFillMode, transform, buttonTextures.Checked ? Textures : null, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting), d3ddevice, cam);
 
 				if (selectedObject != null)
 				{
@@ -1953,7 +1953,7 @@ namespace SAModel.SAMDL
 				actionInputCollector.ReleaseKeys();
 				mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 				cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), new System.Drawing.Rectangle(), false, false, false, alternativeCameraModeToolStripMenuItem.Checked);
-				contextMenuStrip1.Show(RenderPanel, e.Location);
+				contextMenuStripRightClick.Show(RenderPanel, e.Location);
 			}
 		}
 
@@ -3874,6 +3874,12 @@ namespace SAModel.SAMDL
             }
             UpdateTexlist();
         }
+
+		private void buttonTextures_CheckedChanged(object sender, EventArgs e)
+		{
+			osd.UpdateOSDItem("Show textures: " + (buttonTextures.Checked ? "On" : "Off"), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+			NeedRedraw = true;
+		}
 
 		private void LoadModelInfo(ModelLoadInfo info)
         {

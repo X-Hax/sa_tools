@@ -32,7 +32,7 @@ namespace SAModel.SAMDL
 		{
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStripTopMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileMenuitem = new System.Windows.Forms.ToolStripMenuItem();
             this.basicModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,7 +93,7 @@ namespace SAModel.SAMDL
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButtonBar = new System.Windows.Forms.ToolStrip();
             this.buttonNew = new System.Windows.Forms.ToolStripButton();
             this.buttonOpen = new System.Windows.Forms.ToolStripButton();
             this.buttonModelList = new System.Windows.Forms.ToolStripButton();
@@ -106,6 +106,7 @@ namespace SAModel.SAMDL
             this.buttonShowVertexIndices = new System.Windows.Forms.ToolStripButton();
             this.buttonShowWeights = new System.Windows.Forms.ToolStripButton();
             this.buttonLighting = new System.Windows.Forms.ToolStripButton();
+            this.buttonTextures = new System.Windows.Forms.ToolStripButton();
             this.buttonMaterialColors = new System.Windows.Forms.ToolStripButton();
             this.buttonShowHints = new System.Windows.Forms.ToolStripButton();
             this.buttonPreferences = new System.Windows.Forms.ToolStripButton();
@@ -120,10 +121,11 @@ namespace SAModel.SAMDL
             this.buttonPlayAnimation = new System.Windows.Forms.ToolStripButton();
             this.buttonNextFrame = new System.Windows.Forms.ToolStripButton();
             this.buttonResetFrame = new System.Windows.Forms.ToolStripButton();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStripRightClick = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.editMeshsetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PolyNormalstoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPolyNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removePolyNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,15 +154,15 @@ namespace SAModel.SAMDL
             this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.cameraAngleLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.cameraModeLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.animDescriptionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.animDescriptionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.MessageTimer = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStripNew = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.basicModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.chunkModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gamecubeModelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuStrip1.SuspendLayout();
+            this.menuStripTopMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -169,26 +171,27 @@ namespace SAModel.SAMDL
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
+            this.toolStripButtonBar.SuspendLayout();
+            this.contextMenuStripRightClick.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.contextMenuStripNew.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip1
+            // menuStripTopMenu
             // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStripTopMenu.BackColor = System.Drawing.SystemColors.MenuBar;
+            this.menuStripTopMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.menuStripTopMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(1107, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStripTopMenu.Location = new System.Drawing.Point(0, 0);
+            this.menuStripTopMenu.Name = "menuStripTopMenu";
+            this.menuStripTopMenu.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
+            this.menuStripTopMenu.Size = new System.Drawing.Size(1107, 24);
+            this.menuStripTopMenu.TabIndex = 0;
+            this.menuStripTopMenu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
@@ -659,6 +662,7 @@ namespace SAModel.SAMDL
             // editMaterialsToolStripMenuItem
             // 
             this.editMaterialsToolStripMenuItem.Enabled = false;
+            this.editMaterialsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.texture;
             this.editMaterialsToolStripMenuItem.Name = "editMaterialsToolStripMenuItem";
             this.editMaterialsToolStripMenuItem.Size = new System.Drawing.Size(210, 30);
             this.editMaterialsToolStripMenuItem.Text = "Edit &Materials...";
@@ -670,7 +674,7 @@ namespace SAModel.SAMDL
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(774, 615);
+            this.RenderPanel.Size = new System.Drawing.Size(770, 615);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
@@ -696,7 +700,7 @@ namespace SAModel.SAMDL
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(1107, 615);
-            this.splitContainer1.SplitterDistance = 774;
+            this.splitContainer1.SplitterDistance = 770;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 2;
             // 
@@ -707,7 +711,7 @@ namespace SAModel.SAMDL
             this.BackgroundPanel.Location = new System.Drawing.Point(0, 0);
             this.BackgroundPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BackgroundPanel.Name = "BackgroundPanel";
-            this.BackgroundPanel.Size = new System.Drawing.Size(774, 615);
+            this.BackgroundPanel.Size = new System.Drawing.Size(770, 615);
             this.BackgroundPanel.TabIndex = 2;
             // 
             // splitContainer2
@@ -725,7 +729,7 @@ namespace SAModel.SAMDL
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(328, 615);
+            this.splitContainer2.Size = new System.Drawing.Size(332, 615);
             this.splitContainer2.SplitterDistance = 302;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 16;
@@ -737,7 +741,7 @@ namespace SAModel.SAMDL
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(328, 302);
+            this.treeView1.Size = new System.Drawing.Size(332, 302);
             this.treeView1.TabIndex = 1;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -749,16 +753,16 @@ namespace SAModel.SAMDL
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid1.Size = new System.Drawing.Size(328, 308);
+            this.propertyGrid1.Size = new System.Drawing.Size(332, 308);
             this.propertyGrid1.TabIndex = 14;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
             // 
-            // toolStrip1
+            // toolStripButtonBar
             // 
-            this.toolStrip1.BackColor = System.Drawing.SystemColors.Control;
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(36, 36);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonBar.BackColor = System.Drawing.SystemColors.Control;
+            this.toolStripButtonBar.ImageScalingSize = new System.Drawing.Size(36, 36);
+            this.toolStripButtonBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonNew,
             this.buttonOpen,
             this.buttonModelList,
@@ -771,6 +775,7 @@ namespace SAModel.SAMDL
             this.buttonShowVertexIndices,
             this.buttonShowWeights,
             this.buttonLighting,
+            this.buttonTextures,
             this.buttonMaterialColors,
             this.buttonShowHints,
             this.buttonPreferences,
@@ -785,12 +790,12 @@ namespace SAModel.SAMDL
             this.buttonPlayAnimation,
             this.buttonNextFrame,
             this.buttonResetFrame});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1107, 43);
-            this.toolStrip1.TabIndex = 2;
-            this.toolStrip1.Text = "toolStrip1";
+            this.toolStripButtonBar.Location = new System.Drawing.Point(0, 24);
+            this.toolStripButtonBar.Name = "toolStripButtonBar";
+            this.toolStripButtonBar.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStripButtonBar.Size = new System.Drawing.Size(1107, 43);
+            this.toolStripButtonBar.TabIndex = 2;
+            this.toolStripButtonBar.Text = "toolStrip1";
             // 
             // buttonNew
             // 
@@ -910,6 +915,20 @@ namespace SAModel.SAMDL
             this.buttonLighting.Size = new System.Drawing.Size(40, 40);
             this.buttonLighting.Text = "Enable Lighting";
             this.buttonLighting.Click += new System.EventHandler(this.buttonLighting_Click);
+            // 
+            // buttonTextures
+            // 
+            this.buttonTextures.Checked = true;
+            this.buttonTextures.CheckOnClick = true;
+            this.buttonTextures.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.buttonTextures.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonTextures.Image = global::SAModel.SAMDL.Properties.Resources.texture;
+            this.buttonTextures.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonTextures.Name = "buttonTextures";
+            this.buttonTextures.Size = new System.Drawing.Size(40, 40);
+            this.buttonTextures.Text = "toolStripButton1";
+            this.buttonTextures.ToolTipText = "Show/Hide Textures";
+            this.buttonTextures.CheckedChanged += new System.EventHandler(this.buttonTextures_CheckedChanged);
             // 
             // buttonMaterialColors
             // 
@@ -1054,14 +1073,15 @@ namespace SAModel.SAMDL
             this.buttonResetFrame.Text = "Reset Animation Frame";
             this.buttonResetFrame.Click += new System.EventHandler(this.buttonResetFrame_Click);
             // 
-            // contextMenuStrip1
+            // contextMenuStripRightClick
             // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenuStripRightClick.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.contextMenuStripRightClick.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyModelToolStripMenuItem,
             this.pasteModelToolStripMenuItem,
             this.toolStripSeparator9,
             this.editMaterialsToolStripMenuItem,
+            this.editMeshsetsToolStripMenuItem,
             this.PolyNormalstoolStripMenuItem,
             this.toolStripSeparator8,
             this.importContextMenuItem,
@@ -1072,8 +1092,8 @@ namespace SAModel.SAMDL
             this.sortToolStripMenuItem,
             this.toolStripSeparator7,
             this.deleteToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 328);
+            this.contextMenuStripRightClick.Name = "contextMenuStrip1";
+            this.contextMenuStripRightClick.Size = new System.Drawing.Size(211, 358);
             // 
             // copyModelToolStripMenuItem
             // 
@@ -1100,6 +1120,14 @@ namespace SAModel.SAMDL
             this.toolStripSeparator9.Name = "toolStripSeparator9";
             this.toolStripSeparator9.Size = new System.Drawing.Size(207, 6);
             // 
+            // editMeshsetsToolStripMenuItem
+            // 
+            this.editMeshsetsToolStripMenuItem.Enabled = false;
+            this.editMeshsetsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.meshset;
+            this.editMeshsetsToolStripMenuItem.Name = "editMeshsetsToolStripMenuItem";
+            this.editMeshsetsToolStripMenuItem.Size = new System.Drawing.Size(210, 30);
+            this.editMeshsetsToolStripMenuItem.Text = "Edit Meshsets...";
+            // 
             // PolyNormalstoolStripMenuItem
             // 
             this.PolyNormalstoolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1113,14 +1141,14 @@ namespace SAModel.SAMDL
             // createPolyNormalToolStripMenuItem
             // 
             this.createPolyNormalToolStripMenuItem.Name = "createPolyNormalToolStripMenuItem";
-            this.createPolyNormalToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.createPolyNormalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.createPolyNormalToolStripMenuItem.Text = "Create";
             this.createPolyNormalToolStripMenuItem.Click += new System.EventHandler(this.createToolStripMenuItem_Click);
             // 
             // removePolyNormalToolStripMenuItem
             // 
             this.removePolyNormalToolStripMenuItem.Name = "removePolyNormalToolStripMenuItem";
-            this.removePolyNormalToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.removePolyNormalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.removePolyNormalToolStripMenuItem.Text = "Remove";
             this.removePolyNormalToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
@@ -1328,19 +1356,19 @@ namespace SAModel.SAMDL
             this.cameraModeLabel.Name = "cameraModeLabel";
             this.cameraModeLabel.Size = new System.Drawing.Size(0, 19);
             // 
-            // animDescriptionLabel
-            // 
-            this.animDescriptionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-            this.animDescriptionLabel.Name = "animDescriptionLabel";
-            this.animDescriptionLabel.Size = new System.Drawing.Size(106, 19);
-            this.animDescriptionLabel.Text = "Description: None";
-            // 
             // animNameLabel
             // 
             this.animNameLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.animNameLabel.Name = "animNameLabel";
             this.animNameLabel.Size = new System.Drawing.Size(102, 19);
             this.animNameLabel.Text = "Animation: None";
+            // 
+            // animDescriptionLabel
+            // 
+            this.animDescriptionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.animDescriptionLabel.Name = "animDescriptionLabel";
+            this.animDescriptionLabel.Size = new System.Drawing.Size(106, 19);
+            this.animDescriptionLabel.Text = "Description: None";
             // 
             // animFrameLabel
             // 
@@ -1392,12 +1420,12 @@ namespace SAModel.SAMDL
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1107, 706);
             this.Controls.Add(this.splitContainer1);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.toolStripButtonBar);
+            this.Controls.Add(this.menuStripTopMenu);
             this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MainMenuStrip = this.menuStrip1;
+            this.MainMenuStrip = this.menuStripTopMenu;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "SAMDL";
@@ -1408,8 +1436,8 @@ namespace SAModel.SAMDL
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.menuStripTopMenu.ResumeLayout(false);
+            this.menuStripTopMenu.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -1419,9 +1447,9 @@ namespace SAModel.SAMDL
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.toolStripButtonBar.ResumeLayout(false);
+            this.toolStripButtonBar.PerformLayout();
+            this.contextMenuStripRightClick.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.contextMenuStripNew.ResumeLayout(false);
@@ -1432,7 +1460,7 @@ namespace SAModel.SAMDL
 
 		#endregion
 
-		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.MenuStrip menuStripTopMenu;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -1451,7 +1479,7 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.TreeView treeView1;
 		private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
-		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripRightClick;
 		private System.Windows.Forms.ToolStripMenuItem exportContextMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importContextMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
@@ -1498,7 +1526,7 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripMenuItem showHintsToolStripMenuItem;
 		private System.Windows.Forms.Timer MessageTimer;
-		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStrip toolStripButtonBar;
 		private System.Windows.Forms.ToolStripButton buttonNew;
 		private System.Windows.Forms.ToolStripButton buttonOpen;
 		private System.Windows.Forms.ToolStripButton buttonSave;
@@ -1560,5 +1588,7 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
 		private System.Windows.Forms.ToolStripButton buttonResetFrame;
 		private System.Windows.Forms.ToolStripStatusLabel animDescriptionLabel;
+		private System.Windows.Forms.ToolStripMenuItem editMeshsetsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton buttonTextures;
 	}
 }
