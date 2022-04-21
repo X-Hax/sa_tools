@@ -24,7 +24,7 @@ You are encouraged to first [check the wiki](https://github.com/X-Hax/sa_tools/w
 - Media such as screenshots or video that help illustrate the issue.
 ### Real-time assistance & discussion
 The toolkit developers (and other community members familiar with it) are frequently available at:
-- [The official x-hax Discord server](https://t.co/QHzmLrHHDy)
+- [The official x-hax Discord server](https://discord.gg/gqJCF47)
 - The official x-hax IRC server: irc://irc.badnik.zone/x-hax
 
 ## External Resources
