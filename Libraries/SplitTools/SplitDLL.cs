@@ -222,6 +222,9 @@ namespace SplitTools.SplitDLL
 								if (data.CustomProperties.ContainsKey("format"))
 									modelfmt_obj = (ModelFormat)Enum.Parse(typeof(ModelFormat), data.CustomProperties["format"]);
 								NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, modelfmt_obj, new Dictionary<int, Attach>());
+								string[] mdlanis = new string[0];
+								if (data.CustomProperties.ContainsKey("animations"))
+									mdlanis = data.CustomProperties["animations"].Split(',');
 								DllItemInfo info = new DllItemInfo()
 								{
 									Export = name,
@@ -230,7 +233,7 @@ namespace SplitTools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_obj));
+									ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, mdl.Name, null, modelfmt_obj, nometa);
 									labels.AddRange(mdl.GetLabels());
 								}
                                 // Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
