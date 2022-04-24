@@ -33,7 +33,7 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG31" CmnName="Green Hill"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG32" CmnName="Meteor Herd"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG33" CmnName="Knuckles vs. Rouge"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="STG34" CmnName="Cannon's Core (Sonic) Character Animations, Texlists, and Paths"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="STG34" CmnName="Cannon's Core (Sonic)"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG35" CmnName="Cannon's Core (Eggman)"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG36" CmnName="Cannon's Core (Tails)"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG37" CmnName="Cannon's Core (Rouge)"/>
@@ -85,7 +85,7 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="ObjectLists" CmnName="Object List Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Misc" CmnName="Miscellaneous Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Unknown" CmnName="Currently Unknown Data"/>
-  <SplitEntry SourceFile="Data_DLL.dll" IniFile="STG34_DLL" CmnName="Cannon's Core (Sonic) Models"/>
+  <SplitEntry SourceFile="Data_DLL.dll" IniFile="STG34_DLL" CmnName="Cannon's Core (Sonic) Animated Background Models"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="ADVERTISE_DLL" CmnName="Battle GUI Elements"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_DLL" CmnName="Boss Egg Golem (Sonic)"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_E_DLL" CmnName="Boss Egg Golem (Eggman)"/>
