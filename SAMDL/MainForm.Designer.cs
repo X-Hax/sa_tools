@@ -1127,10 +1127,11 @@ namespace SAModel.SAMDL
             this.editMeshsetsToolStripMenuItem.Name = "editMeshsetsToolStripMenuItem";
             this.editMeshsetsToolStripMenuItem.Size = new System.Drawing.Size(210, 30);
             this.editMeshsetsToolStripMenuItem.Text = "Edit Meshsets...";
-            // 
-            // PolyNormalstoolStripMenuItem
-            // 
-            this.PolyNormalstoolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.editMeshsetsToolStripMenuItem.Visible = false;
+			// 
+			// PolyNormalstoolStripMenuItem
+			// 
+			this.PolyNormalstoolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createPolyNormalToolStripMenuItem,
             this.removePolyNormalToolStripMenuItem});
             this.PolyNormalstoolStripMenuItem.Enabled = false;
