@@ -38,7 +38,7 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG36" CmnName="Cannon's Core (Tails)"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG37" CmnName="Cannon's Core (Rouge)"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG38" CmnName="Cannon's Core (Knuckles)"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="STG39" CmnName="Missions Street 2P"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="STG39" CmnName="Mission Street 2P"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG40" CmnName="Final Chase"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG41" CmnName="Wild Canyon 2P"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="STG42" CmnName="Sonic vs. Shadow 2"/>
