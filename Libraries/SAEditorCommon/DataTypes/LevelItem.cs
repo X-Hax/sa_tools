@@ -194,7 +194,7 @@ namespace SAModel.SAEditorCommon.DataTypes
             if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
             if (COL.Model.Attach is BasicAttach attach)
             {
-                using (MaterialEditor pw = new MaterialEditor(attach.Material, textures))
+                using (MaterialEditor pw = new MaterialEditor(attach.Material, textures, attach.MaterialName))
                 {
                     pw.FormUpdated += pw_FormUpdated;
                     pw.ShowDialog();

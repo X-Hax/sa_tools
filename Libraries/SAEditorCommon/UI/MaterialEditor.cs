@@ -18,11 +18,13 @@ namespace SAModel.SAEditorCommon.UI
 		private readonly List<NJS_MATERIAL> materials;
 		private readonly BMPInfo[] textures;
 
-		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures)
+		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
 		{
 			materials = mats;
 			this.textures = textures;
 			InitializeComponent();
+			if (!string.IsNullOrEmpty(matsName))
+				this.Text = "Material Editor: " + matsName;
 		}
 
 		private void MaterialEditor_Load(object sender, EventArgs e)

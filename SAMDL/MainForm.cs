@@ -2062,6 +2062,7 @@ namespace SAModel.SAMDL
 		private void OpenMaterialEditor()
 		{
 			List<NJS_MATERIAL> mats;
+			string matname = null;
 			switch (selectedObject.Attach)
 			{
 				case GC.GCAttach:
@@ -2069,12 +2070,13 @@ namespace SAModel.SAMDL
 					return;
 				case BasicAttach bscatt:
 					mats = bscatt.Material;
+					matname = bscatt.MaterialName;
 					break;
 				default:
 					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 					break;
 			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent))
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
 			{
 				dlg.FormUpdated += (s, ev) => NeedRedraw = true;
 				dlg.ShowDialog(this);
