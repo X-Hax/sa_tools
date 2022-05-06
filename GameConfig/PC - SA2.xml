@@ -64,11 +64,11 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_BIGFOOT" CmnName="Boss GUN Big Foot"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_FDOG" CmnName="Boss GUN Flying Dog"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_HOTSHOT" CmnName="Boss GUN Hot Shot"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_GOLEM" CmnName="Boss Egg Golem (Sonic) Character Data"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_GOLEM_E" CmnName="Boss Egg Golem (Eggman) Character Data"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_GOLEM" CmnName="Boss Egg Golem (Sonic)"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_GOLEM_E" CmnName="Boss Egg Golem (Eggman)"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_BIGBOGY" CmnName="Boss King Boom Boo"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_LAST1" CmnName="Boss Biolizard"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_LAST2" CmnName="Boss Final Hazard"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_LAST2" CmnName="Boss FinalHazard"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CART" CmnName="Cart Texlists"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGDARK" CmnName="Dark Garden"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGHERO" CmnName="Hero Garden"/>
@@ -85,12 +85,12 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="ObjectLists" CmnName="Object List Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Misc" CmnName="Miscellaneous Data"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="Unknown" CmnName="Currently Unknown Data"/>
-  <SplitEntry SourceFile="Data_DLL.dll" IniFile="STG34_DLL" CmnName="Cannon's Core (Sonic) Animated Background Models"/>
+  <SplitEntry SourceFile="Data_DLL.dll" IniFile="STG34_DLL" CmnName="Cannon's Core (Sonic) Animated Background Models and Landtable"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="ADVERTISE_DLL" CmnName="Battle GUI Elements"/>
-  <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_DLL" CmnName="Boss Egg Golem (Sonic)"/>
-  <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_E_DLL" CmnName="Boss Egg Golem (Eggman)"/>
+  <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_DLL" CmnName="Boss Egg Golem (Sonic) Boss Models and Landtable"/>
+  <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_E_DLL" CmnName="Boss Egg Golem (Eggman) Boss Models and Landtable"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="CART_DLL" CmnName="Cart Data"/>
-  <SplitEntry SourceFile="Data_DLL.dll" IniFile="Chao_DLL" CmnName="Chao Garden and Kindergarten Landtables, Objects, and Texlists"/>
+  <SplitEntry SourceFile="Data_DLL.dll" IniFile="Chao_DLL" CmnName="Chao Landtables, Objects, and Texlists"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="LeftoverDLL" CmnName="Stage Landtables and Texlists"/>
   <SplitEntryMDL BigEndian="true" ModelFile="resource\gd_PC\amymdl.prs">
     <MotionFile>plcommtn.prs</MotionFile>
