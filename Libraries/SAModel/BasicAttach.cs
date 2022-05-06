@@ -608,7 +608,7 @@ namespace SAModel
 						verts.Add(new VertexData(
 							Vertex[poly.Indexes[i]],
 							Normal[poly.Indexes[i]],
-							hasVColor ? (Color?)mesh.VColor[currentstriptotal] : null,
+							hasVColor ? Color.FromArgb(mesh.VColor[currentstriptotal].R, mesh.VColor[currentstriptotal].G, mesh.VColor[currentstriptotal].B)  : null,
 							hasUV ? mesh.UV[currentstriptotal++] : null));
 					}
 					polys.Add(newpoly);
