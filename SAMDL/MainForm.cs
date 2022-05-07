@@ -3315,8 +3315,16 @@ namespace SAModel.SAMDL
 			if (!doOperation) return;
 			int id = 0;
 			BasicAttach opaqueatt = new BasicAttach();
+			bool transonly = transparentOnlyToolStripMenuItem.Checked;
+			bool hasopaque = false;
+			// Check if the model has opaque meshes - if it doesn't, sort all meshes
+			foreach (NJS_MESHSET ms in basicatt.Mesh)
+				if (basicatt.Material[ms.MaterialID].UseAlpha == false)
+					hasopaque = true;
+			if (!hasopaque) 
+				transonly = false;
 			// Add opaque meshes to a child model
-			if (transparentOnlyToolStripMenuItem.Checked)
+			if (transonly)
 			{
 				List<NJS_MESHSET> opaquemeshes = new List<NJS_MESHSET>();
 				List<NJS_MATERIAL> opaquematerials = new List<NJS_MATERIAL>();
@@ -3365,7 +3373,7 @@ namespace SAModel.SAMDL
 			// Add meshes to a child model (or both opaque and transparent if the option is off)
 			foreach (NJS_MESHSET m in basicatt.Mesh)
 			{
-				if (transparentOnlyToolStripMenuItem.Checked && !basicatt.Material[m.MaterialID].UseAlpha)
+				if (transonly && !basicatt.Material[m.MaterialID].UseAlpha)
 					continue;
 				Dictionary<ushort, ushort> vmatchlist = new Dictionary<ushort, ushort>();
 				ushort newpid = 0;
@@ -3407,7 +3415,7 @@ namespace SAModel.SAMDL
 				selectedObject.AddChild(newobj);
 				id++;
 			}
-			if (transparentOnlyToolStripMenuItem.Checked)
+			if (transonly)
 				selectedObject.Attach = opaqueatt;
 			else
 				selectedObject.Attach = null;
