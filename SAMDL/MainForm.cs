@@ -1996,6 +1996,7 @@ namespace SAModel.SAMDL
 				exportContextMenuItem.Enabled = selectedObject.Attach != null;
 				importContextMenuItem.Enabled = true;
 				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
+				editModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null && selectedObject.Attach is BasicAttach;
 			}
 			else
 			{
@@ -2010,6 +2011,7 @@ namespace SAModel.SAMDL
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
 				importContextMenuItem.Enabled = false;
 				exportContextMenuItem.Enabled = false;
+				editModelDataToolStripMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && hasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
@@ -3930,6 +3932,18 @@ namespace SAModel.SAMDL
 				cam.Distance += (cam.MoveSpeed * e.Delta * -1);
 
 			NeedRedraw = true;
+		}
+
+		private void editModelDataToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ModelDataEditor me = new ModelDataEditor(selectedObject.Attach);
+			if (me.ShowDialog(this) == DialogResult.OK)
+			{
+				selectedObject.Attach = me.editedModel.Clone();
+				RebuildModelCache();
+				NeedRedraw = true;
+				unsaved = true;
+			}
 		}
 	}
 }

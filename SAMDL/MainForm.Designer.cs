@@ -125,7 +125,7 @@ namespace SAModel.SAMDL
             this.copyModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.editMeshsetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editModelDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PolyNormalstoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPolyNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removePolyNormalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1081,7 +1081,7 @@ namespace SAModel.SAMDL
             this.pasteModelToolStripMenuItem,
             this.toolStripSeparator9,
             this.editMaterialsToolStripMenuItem,
-            this.editMeshsetsToolStripMenuItem,
+            this.editModelDataToolStripMenuItem,
             this.PolyNormalstoolStripMenuItem,
             this.toolStripSeparator8,
             this.importContextMenuItem,
@@ -1120,14 +1120,14 @@ namespace SAModel.SAMDL
             this.toolStripSeparator9.Name = "toolStripSeparator9";
             this.toolStripSeparator9.Size = new System.Drawing.Size(207, 6);
             // 
-            // editMeshsetsToolStripMenuItem
+            // editModelDataToolStripMenuItem
             // 
-            this.editMeshsetsToolStripMenuItem.Enabled = false;
-            this.editMeshsetsToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.meshset;
-            this.editMeshsetsToolStripMenuItem.Name = "editMeshsetsToolStripMenuItem";
-            this.editMeshsetsToolStripMenuItem.Size = new System.Drawing.Size(210, 30);
-            this.editMeshsetsToolStripMenuItem.Text = "Edit Meshsets...";
-			this.editMeshsetsToolStripMenuItem.Visible = false;
+            this.editModelDataToolStripMenuItem.Enabled = false;
+            this.editModelDataToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.meshset;
+            this.editModelDataToolStripMenuItem.Name = "editModelDataToolStripMenuItem";
+            this.editModelDataToolStripMenuItem.Size = new System.Drawing.Size(210, 30);
+            this.editModelDataToolStripMenuItem.Text = "Edit Model Data...";
+			this.editModelDataToolStripMenuItem.Click += new System.EventHandler(this.editModelDataToolStripMenuItem_Click);
 			// 
 			// PolyNormalstoolStripMenuItem
 			// 
@@ -1589,7 +1589,7 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
 		private System.Windows.Forms.ToolStripButton buttonResetFrame;
 		private System.Windows.Forms.ToolStripStatusLabel animDescriptionLabel;
-		private System.Windows.Forms.ToolStripMenuItem editMeshsetsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editModelDataToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton buttonTextures;
 	}
 }

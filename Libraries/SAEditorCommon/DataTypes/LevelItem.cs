@@ -215,6 +215,28 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 
 		[Browsable(true)]
+		[DisplayName("Edit Model")]
+		public void EditModel()
+		{
+			if (COL.Model.Attach is BasicAttach attach)
+			{
+				ModelDataEditor me = new ModelDataEditor(COL.Model.Attach);
+				if (me.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					COL.Model.Attach = me.editedModel.Clone();
+					COL.Model.ProcessVertexData();
+					mesh = COL.Model.Attach.CreateD3DMesh();
+					COL.Model.Attach.CalculateBounds();
+					LevelData.InvalidateRenderState();
+				}
+			}
+			else
+			{
+				System.Windows.Forms.MessageBox.Show("Unsupported model format.", "SALVL", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+			}
+		}
+
+		[Browsable(true)]
 		[DisplayName("Calculate Bounds")]
 		public void CalculateBounds()
 		{
