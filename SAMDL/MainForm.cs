@@ -1997,6 +1997,8 @@ namespace SAModel.SAMDL
 				importContextMenuItem.Enabled = true;
 				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
 				editModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null && selectedObject.Attach is BasicAttach;
+				moveDownToolStripMenuItem.Enabled = selectedObject.Parent != null && selectedObject.Parent.Children.IndexOf(selectedObject) < selectedObject.Parent.Children.Count - 1;
+				moveUpToolStripMenuItem.Enabled = selectedObject.Parent != null && selectedObject.Parent.Children.IndexOf(selectedObject) > 0;
 			}
 			else
 			{
@@ -2012,6 +2014,7 @@ namespace SAModel.SAMDL
 				importContextMenuItem.Enabled = false;
 				exportContextMenuItem.Enabled = false;
 				editModelDataToolStripMenuItem.Enabled = false;
+				moveDownToolStripMenuItem.Enabled = moveUpToolStripMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && hasWeight)
 				model.UpdateWeightedModelSelection(selectedObject, meshes);
@@ -3907,7 +3910,53 @@ namespace SAModel.SAMDL
             }
         }
 
-        private void LoadProject(string filename)
+		private void MoveObjectInHierarchy(bool down)
+		{
+			int index = selectedObject.Parent.Children.IndexOf(selectedObject);
+			NJS_OBJECT parent = selectedObject.Parent;
+			if (!down && index == 0 || down && index >= parent.Children.Count - 1)
+				return;
+			List<NJS_OBJECT> newobjs = new List<NJS_OBJECT>();
+			foreach (NJS_OBJECT obj in selectedObject.Parent.Children)
+			{
+				newobjs.Add(obj.Clone());
+			}
+			// Move down
+			if (down)
+			{
+				newobjs.Insert(index + 2, selectedObject);
+				newobjs.RemoveAt(index);
+			}
+			// Move up
+			else
+			{
+				newobjs.Insert(index - 1, selectedObject);
+				newobjs.RemoveAt(index + 1);
+			}
+			selectedObject.Parent.ClearChildren();
+			foreach (NJS_OBJECT obj in newobjs)
+			{
+				obj.ClearSibling();
+				parent.AddChild(obj);
+			}
+			selectedObject.Parent.FixSiblings();
+			RebuildModelCache();
+			NeedRedraw = true;
+		}
+
+		private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MoveObjectInHierarchy(false);
+			treeView1.SelectedNode = nodeDict[selectedObject];
+		}
+
+		private void moveDownToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MoveObjectInHierarchy(true);
+			treeView1.SelectedNode = nodeDict[selectedObject];
+		}
+
+		private void LoadProject(string filename)
         {
             currentProject = filename;
             ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename), lastProjectModeCategory);
