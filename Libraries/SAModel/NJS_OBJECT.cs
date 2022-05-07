@@ -371,6 +371,12 @@ namespace SAModel
 			children.Clear();
 		}
 
+		public void ClearSibling()
+		{
+			Sibling = null;
+		}
+
+
 		public void ProcessVertexData()
 		{
 #if modellog
