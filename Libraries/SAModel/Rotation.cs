@@ -153,6 +153,16 @@ namespace SAModel
 			return (int)(deg * (65536 / 360.0));
 		}
 
+		public static float BAMSToRad(float rad)
+		{
+			return (float)(rad / (65536 / (2 * Math.PI)));
+		}
+
+		public static int RadToBAMS(float rad)
+		{
+			return (int)(rad * (65536 / (2 * Math.PI)));
+		}
+
 		[Browsable(false)]
 		public bool IsEmpty
 		{

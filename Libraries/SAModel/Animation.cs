@@ -119,6 +119,7 @@ namespace SAModel
 			if (animtype.HasFlag(AnimFlags.Spot)) mdata++;
 			if (animtype.HasFlag(AnimFlags.Point)) mdata++;
 			if (animtype.HasFlag(AnimFlags.Roll)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Quaternion)) mdata++;
 			int mdatasize = 0;
 			bool lost = false;
 			switch (mdata)
@@ -305,6 +306,14 @@ namespace SAModel
 					pntoff = ByteConverter.ToUInt32(file, address);
 					if (pntoff > 0)
 						pntoff -= imageBase;
+					address += 4;
+				}
+				uint quatoff = 0;
+				if (animtype.HasFlag(AnimFlags.Quaternion))
+				{
+					quatoff = ByteConverter.ToUInt32(file, address);
+					if (quatoff > 0)
+						quatoff -= imageBase;
 					address += 4;
 				}
 				int tmpaddr;
@@ -616,6 +625,25 @@ namespace SAModel
 					}
 					address += 4;
 				}
+				if (animtype.HasFlag(AnimFlags.Quaternion))
+				{
+					int frames = ByteConverter.ToInt32(file, address);
+					if (quatoff != 0 && frames > 0)
+					{
+						hasdata = true;
+						tmpaddr = (int)quatoff;
+						if (labels != null && labels.ContainsKey(tmpaddr))
+							data.QuaternionName = labels[tmpaddr];
+						else data.QuaternionName = Name + "_mkey_" + i.ToString() + "_quat_" + tmpaddr.ToString("X8");
+						for (int j = 0; j < frames; j++)
+						{
+							//WXYZ order
+							data.Quaternion.Add(ByteConverter.ToInt32(file, tmpaddr), new float[] { ByteConverter.ToSingle(file, tmpaddr + 4), ByteConverter.ToSingle(file, tmpaddr + 8), ByteConverter.ToSingle(file, tmpaddr + 12), ByteConverter.ToSingle(file, tmpaddr + 16) });
+							tmpaddr += 20;
+						}
+					}
+					address += 4;
+				}
 				if (hasdata)
 				{
 					data.NbKeyframes = Frames;
@@ -780,6 +808,9 @@ namespace SAModel
 			uint[] pntoffs = new uint[ModelParts];
 			int[] pntframes = new int[ModelParts];
 			bool hasPnt = false;
+			uint[] quatoffs = new uint[ModelParts];
+			int[] quatframes = new int[ModelParts];
+			bool hasQuat = false;
 
 			pof0.Add(0x40); //NJ Motions all start with 0x40, ie address 0 after unmasking
 			pof0Real.Add(0);
@@ -1222,6 +1253,36 @@ namespace SAModel
 						result.AddRange(ByteConverter.GetBytes(item.Value[1]));
 					}
 				}
+				if (model.Value.Quaternion.Count > 0)
+				{
+					hasQuat = true;
+					result.Align(4);
+					quatoffs[model.Key] = imageBase + (uint)result.Count;
+
+					if (!labels.ContainsValue(quatoffs[model.Key]) && model.Value.QuaternionName != null)
+					{
+						if (!labels.ContainsKey(model.Value.QuaternionName))
+							labels.Add(model.Value.QuaternionName, quatoffs[model.Key]);
+						else
+						{
+							string newname = model.Value.QuaternionName;
+							do
+							{
+								newname += "_dup";
+							} while (labels.ContainsKey(newname));
+							labels.Add(newname, quatoffs[model.Key]);
+						}
+					}
+					quatframes[model.Key] = model.Value.Quaternion.Count;
+					foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
+					{
+						result.AddRange(ByteConverter.GetBytes(item.Key));
+						result.AddRange(ByteConverter.GetBytes(item.Value[0]));
+						result.AddRange(ByteConverter.GetBytes(item.Value[1]));
+						result.AddRange(ByteConverter.GetBytes(item.Value[2]));
+						result.AddRange(ByteConverter.GetBytes(item.Value[3]));
+					}
+				}
 			}
 			result.Align(4);
 			AnimFlags flags = 0;
@@ -1289,6 +1350,11 @@ namespace SAModel
 			if (hasPnt)
 			{
 				flags |= AnimFlags.Point;
+				numpairs++;
+			}
+			if (hasQuat)
+			{
+				flags |= AnimFlags.Quaternion;
 				numpairs++;
 			}
 			switch (flags)
@@ -1459,6 +1525,15 @@ namespace SAModel
 						pof0Real.Add(result.Count);
 					}
 				}
+				if (hasQuat)
+				{
+					result.AddRange(ByteConverter.GetBytes(quatoffs[i]));
+					if (quatoffs[i] != 0)
+					{
+						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
+						pof0Real.Add(result.Count);
+					}
+				}
 
 				//Frame count
 				if (hasPos)
@@ -1487,6 +1562,8 @@ namespace SAModel
 					result.AddRange(ByteConverter.GetBytes(spotframes[i]));
 				if (hasPnt)
 					result.AddRange(ByteConverter.GetBytes(pntframes[i]));
+				if (hasQuat)
+					result.AddRange(ByteConverter.GetBytes(quatframes[i]));
 			}
 			result.Align(4);
 			address = (uint)result.Count;
@@ -1561,6 +1638,7 @@ namespace SAModel
 			bool hasInt = false;
 			bool hasSpot = false;
 			bool hasPnt = false;
+			bool hasQuat = false;
 			string id = Name.MakeIdentifier();
 			if (labels == null) labels = new List<string>();
 			foreach (KeyValuePair<int, AnimModelData> model in Models)
@@ -1783,6 +1861,20 @@ namespace SAModel
 					writer.WriteLine();
 					labels.Add(model.Value.PointName);
 				}
+				if (model.Value.Quaternion.Count > 0 && !labels.Contains(model.Value.QuaternionName))
+				{
+					hasPnt = true;
+					writer.Write("NJS_MKEY_QUAT ");
+					writer.Write(model.Value.QuaternionName);
+					writer.WriteLine("[] = {");
+					List<string> lines = new List<string>(model.Value.Quaternion.Count);
+					foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
+						lines.Add("\t{ " + item.Key + ", " + item.Value[0].ToC() + ", " + item.Value[1].ToC() + item.Value[2].ToC() + item.Value[3].ToC() + " }");
+					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					writer.WriteLine("};");
+					writer.WriteLine();
+					labels.Add(model.Value.QuaternionName);
+				}
 			}
 			AnimFlags flags = 0;
 			ushort numpairs = 0;
@@ -1849,6 +1941,11 @@ namespace SAModel
 			if (hasPnt)
 			{
 				flags |= AnimFlags.Point;
+				numpairs++;
+			}
+			if (hasQuat)
+			{
+				flags |= AnimFlags.Quaternion;
 				numpairs++;
 			}
 			switch (flags)
@@ -1976,6 +2073,13 @@ namespace SAModel
 						else
 							elems.Add("NULL");
 					}
+					if (hasQuat)
+					{
+						if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
+							elems.Add(Models[i].QuaternionName);
+						else
+							elems.Add("NULL");
+					}
 					if (hasPos)
 					{
 						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
@@ -2064,6 +2168,13 @@ namespace SAModel
 					{
 						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
 							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName));
+						else
+							elems.Add("0");
+					}
+					if (hasQuat)
+					{
+						if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].QuaternionName));
 						else
 							elems.Add("0");
 					}
@@ -2198,6 +2309,7 @@ namespace SAModel
 		public Dictionary<int, float> Intensity = new Dictionary<int, float>();
 		public Dictionary<int, Spotlight> Spot = new Dictionary<int, Spotlight>();
 		public Dictionary<int, float[]> Point = new Dictionary<int, float[]>();
+		public Dictionary<int, float[]> Quaternion = new Dictionary<int, float[]>();
 		public string PositionName;
 		public string RotationName;
 		public string ScaleName;
@@ -2213,6 +2325,7 @@ namespace SAModel
 		public string IntensityName;
 		public string SpotName;
 		public string PointName;
+		public string QuaternionName;
 		public int NbKeyframes;
 		public AnimModelData()
 		{
@@ -2478,6 +2591,76 @@ namespace SAModel
 			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
 			int f2z = f2 != 0 ? f2 : keys[0];
 			return (int)Math.Round((((Angle[f2z] - Angle[f1]) / (double)diff) * (frame - f1)) + Angle[f1], MidpointRounding.AwayFromZero);
+		}
+
+		public Rotation GetQuaternion(float frame)
+		{
+			if (Math.Floor(frame) == frame && Quaternion.ContainsKey((int)Math.Floor(frame)))
+			{
+				return RotFromQuat(FloatsAsQuat(Quaternion[(int)Math.Floor(frame)]));
+			}
+			int f1 = 0;
+			int f2 = 0;
+			List<int> keys = new List<int>();
+			foreach (int k in Quaternion.Keys)
+				keys.Add(k);
+			for (int i = 0; i < Quaternion.Count; i++)
+			{
+				if (keys[i] < frame)
+					f1 = keys[i];
+			}
+			for (int i = Quaternion.Count - 1; i >= 0; i--)
+			{
+				if (keys[i] > frame)
+					f2 = keys[i];
+			}
+			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			int f2z = f2 != 0 ? f2 : keys[0];
+
+			return RotFromQuat(System.Numerics.Quaternion.Slerp(FloatsAsQuat(Quaternion[f1]), FloatsAsQuat(Quaternion[f2z]), diff * (frame - f1)));
+		}
+
+		public System.Numerics.Quaternion FloatsAsQuat(float[] ninjaQuats)
+		{
+			return new System.Numerics.Quaternion(ninjaQuats[1], ninjaQuats[2], ninjaQuats[3], ninjaQuats[0]);
+		}
+
+		public Rotation RotFromQuat(System.Numerics.Quaternion quat)
+		{
+			float X;
+			float Y;
+			float Z;
+
+			// roll (x-axis rotation)
+			double sinr_cosp = 2 * (quat.W * quat.X + quat.Y * quat.Z);
+			double cosr_cosp = 1 - 2 * (quat.X * quat.X + quat.Y * quat.Y);
+			X = (float)Math.Atan2(sinr_cosp, cosr_cosp);
+
+			// pitch (y-axis rotation)
+			double sinp = 2 * (quat.W * quat.Y - quat.Z * quat.X);
+			if (Math.Abs(sinp) >= 1)
+				Y = (float)CopySign(Math.PI / 2, sinp); // use 90 degrees if out of range
+			else
+				Y = (float)Math.Asin(sinp);
+
+			// yaw (z-axis rotation)
+			double siny_cosp = 2 * (quat.W * quat.Z + quat.X * quat.Y);
+			double cosy_cosp = 1 - 2 * (quat.Y * quat.Y + quat.Z * quat.Z);
+			Z = (float)Math.Atan2(siny_cosp, cosy_cosp);
+
+			return new Rotation(SAModel.Rotation.RadToBAMS(X), SAModel.Rotation.RadToBAMS(Y), SAModel.Rotation.RadToBAMS(Z));
+		}
+		public static double CopySign(double valMain, double valSign)
+		{
+			double final = Math.Abs(valMain);
+			if (valSign >= 0)
+			{
+				return final;
+			}
+			else
+			{
+				return -final;
+			}
 		}
 	}
 
