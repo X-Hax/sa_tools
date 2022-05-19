@@ -34,6 +34,51 @@ namespace SAModel.SAMDL
         string currentProject; // Path to currently loaded project, if it exists
         string lastProjectModeCategory = ""; // Last selected category in the model list
 
+		internal Device d3ddevice;
+		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
+		EditorOptionsEditor optionsEditor;
+
+		bool unsaved = false;
+		bool loaded;
+		bool DeviceResizing;
+		bool rootSiblingMode = false;
+		string currentFileName = "";
+		NJS_OBJECT model;
+		NJS_OBJECT tempmodel;
+		NJS_ACTION action;
+		bool hasWeight;
+		List<NJS_MOTION> animations;
+		NJS_MOTION animation;
+		ModelFile modelFile;
+		ModelFormat outfmt;
+		int animnum = -1;
+		float animframe = 0;
+		float animspeed = 1.0f;
+		Mesh[] meshes;
+		string TexturePackName;
+		TexnameArray TexList; // Current texlist
+		BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
+		BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
+		Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
+		ModelFileDialog modelinfo = new ModelFileDialog();
+		NJS_OBJECT selectedObject;
+		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
+		OnScreenDisplay osd;
+		Mesh sphereMesh, selectedSphereMesh, modelSphereMesh, selectedModelSphereMesh;
+
+		#region UI
+		bool lookKeyDown;
+		bool zoomKeyDown;
+		bool cameraKeyDown;
+
+		//int cameraMotionInterval = 1;
+
+		ActionMappingList actionList;
+		ActionInputCollector actionInputCollector;
+		ModelLibraryWindow modelLibraryWindow;
+		ModelLibraryControl modelLibrary;
+		#endregion
+
 		public MainForm()
 		{
 			Application.ThreadException += Application_ThreadException;
@@ -212,51 +257,6 @@ namespace SAModel.SAMDL
 					break;
 			}
 		}
-
-		internal Device d3ddevice;
-		EditorCamera cam = new EditorCamera(EditorOptions.RenderDrawDistance);
-		EditorOptionsEditor optionsEditor;
-
-		bool unsaved = false;
-		bool loaded;
-		bool DeviceResizing;
-		bool rootSiblingMode = false;
-		string currentFileName = "";
-		NJS_OBJECT model;
-		NJS_OBJECT tempmodel;
-		NJS_ACTION action;
-		bool hasWeight;
-		List<NJS_MOTION> animations;
-		NJS_MOTION animation;
-		ModelFile modelFile;
-		ModelFormat outfmt;
-		int animnum = -1;
-		float animframe = 0;
-		float animspeed = 1.0f;
-		Mesh[] meshes;
-		string TexturePackName;
-        TexnameArray TexList; // Current texlist
-        BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
-        BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
-        Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
-		ModelFileDialog modelinfo = new ModelFileDialog();
-		NJS_OBJECT selectedObject;
-		Dictionary<NJS_OBJECT, TreeNode> nodeDict;
-		OnScreenDisplay osd;
-		Mesh sphereMesh, selectedSphereMesh, modelSphereMesh, selectedModelSphereMesh;
-
-		#region UI
-		bool lookKeyDown;
-		bool zoomKeyDown;
-		bool cameraKeyDown;
-
-		//int cameraMotionInterval = 1;
-
-		ActionMappingList actionList;
-		ActionInputCollector actionInputCollector;
-		ModelLibraryWindow modelLibraryWindow;
-		ModelLibraryControl modelLibrary;
-		#endregion
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -2804,6 +2804,7 @@ namespace SAModel.SAMDL
 
 		private void RebuildModelCache()
 		{
+			CheckModelLabels();
 			model.ProcessVertexData();
             if (hasWeight = model.HasWeight)
                 meshes = model.ProcessWeightedModel().ToArray();
@@ -3552,6 +3553,117 @@ namespace SAModel.SAMDL
                 }
             }
         }
+
+		private string FixLabel(string label, List<string> labels, out string duplicate)
+		{
+			duplicate = null;
+			if (string.IsNullOrEmpty(label))
+				return label;
+			string result = label;
+			if (labels.Contains(result))
+			{
+				duplicate = result;
+				do
+					result += "_";
+				while (labels.Contains(result));
+			}
+			labels.Add(result);
+			return result;
+		}
+
+		private void CheckLabels(NJS_OBJECT obj, List<string> duplicateLabels)
+		{
+			List<string> checkingLabels = new List<string>();
+			string dup;
+
+			obj.Name = FixLabel(obj.Name, checkingLabels, out dup);
+			if (!string.IsNullOrEmpty(dup))
+				duplicateLabels.Add(dup);
+
+			if (obj.Attach != null)
+			{
+
+				obj.Attach.Name = FixLabel(obj.Attach.Name, checkingLabels, out dup);
+				if (!string.IsNullOrEmpty(dup))
+					duplicateLabels.Add(dup);
+
+				if (obj.Attach is BasicAttach)
+				{
+					BasicAttach basicatt = (BasicAttach)obj.Attach;
+
+					basicatt.MaterialName = FixLabel(basicatt.MaterialName, checkingLabels, out dup);
+					if (!string.IsNullOrEmpty(dup))
+						duplicateLabels.Add(dup);
+
+					basicatt.MeshName = FixLabel(basicatt.MeshName, checkingLabels, out dup);
+					if (!string.IsNullOrEmpty(dup))
+						duplicateLabels.Add(dup);
+
+					basicatt.NormalName = FixLabel(basicatt.NormalName, checkingLabels, out dup);
+					if (!string.IsNullOrEmpty(dup))
+						duplicateLabels.Add(dup);
+
+					basicatt.VertexName= FixLabel(basicatt.VertexName, checkingLabels, out dup);
+					if (!string.IsNullOrEmpty(dup))
+						duplicateLabels.Add(dup);
+
+					if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
+						foreach (NJS_MESHSET meshset in basicatt.Mesh)
+						{
+							meshset.PolyName = FixLabel(meshset.PolyName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							meshset.UVName = FixLabel(meshset.UVName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							meshset.VColorName = FixLabel(meshset.VColorName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							meshset.PolyNormalName = FixLabel(meshset.PolyNormalName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+						}
+				}
+				else if (obj.Attach is ChunkAttach)
+				{
+					ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+
+					chunkatt.PolyName = FixLabel(chunkatt.PolyName, checkingLabels, out dup);
+					if (!string.IsNullOrEmpty(dup))
+						duplicateLabels.Add(dup);
+
+					chunkatt.VertexName = FixLabel(chunkatt.VertexName, checkingLabels, out dup);
+					if (!string.IsNullOrEmpty(dup))
+						duplicateLabels.Add(dup);
+				}
+
+			}
+
+			if (obj.Children != null && obj.Children.Count > 0)
+				foreach (NJS_OBJECT child in obj.Children)
+					CheckLabels(child, checkingLabels);
+
+			if (obj.Sibling != null)
+				CheckLabels(obj.Sibling, checkingLabels);
+		}
+
+		private void CheckModelLabels()
+		{
+			List<string> duplicateLabels = new List<string>();
+			CheckLabels(model, duplicateLabels);
+			if (duplicateLabels.Count > 0)
+			{
+				StringBuilder str = new StringBuilder();
+				str.Append("SAMDL has detected the following duplicate labels in the model:\n\n");
+				for (int i = 0; i < duplicateLabels.Count; i++)
+					str.Append(duplicateLabels[i] + "\n");
+				str.Append("\nThe duplicate labels have been renamed automatically. It is recommended to recheck all labels in the model using Model Data Editor or Metadata Editor.");
+				MessageBox.Show(str.ToString(), "SAMDL Warning: Duplicate labels detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
+		}
 
         private void RandomizeLabels(NJS_OBJECT obj)
         {
