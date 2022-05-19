@@ -1200,8 +1200,19 @@ namespace SplitTools.Split
                     }
                     break;
                 case "stagelightdatalist":
-                    SADXStageLightDataList.Load(datafile, address).Save(fileOutputPath);
-                    break;
+					switch (game)
+					{
+						case Game.SA1:
+						case Game.SADX:
+						default:
+							SADXStageLightDataList.Load(datafile, address).Save(fileOutputPath);
+							break;
+						case Game.SA2:
+						case Game.SA2B:
+							SA2DefaultObjectLights.Load(datafile, address, data.Length).Save(fileOutputPath);
+							break;
+					}
+					break;
                 case "weldlist":
                     WeldList.Load(datafile, address, imageBase).Save(fileOutputPath);
                     break;
