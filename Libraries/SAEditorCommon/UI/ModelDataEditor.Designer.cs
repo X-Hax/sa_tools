@@ -86,7 +86,7 @@
             this.buttonMoveMeshUp.Location = new System.Drawing.Point(714, 21);
             this.buttonMoveMeshUp.Name = "buttonMoveMeshUp";
             this.buttonMoveMeshUp.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshUp.TabIndex = 6;
+            this.buttonMoveMeshUp.TabIndex = 10;
             this.buttonMoveMeshUp.Text = "↑";
             this.buttonMoveMeshUp.UseVisualStyleBackColor = true;
             this.buttonMoveMeshUp.Click += new System.EventHandler(this.buttonMoveMeshUp_Click);
@@ -97,7 +97,7 @@
             this.buttonMoveMeshDown.Location = new System.Drawing.Point(714, 51);
             this.buttonMoveMeshDown.Name = "buttonMoveMeshDown";
             this.buttonMoveMeshDown.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshDown.TabIndex = 6;
+            this.buttonMoveMeshDown.TabIndex = 11;
             this.buttonMoveMeshDown.Text = "↓";
             this.buttonMoveMeshDown.UseVisualStyleBackColor = true;
             this.buttonMoveMeshDown.Click += new System.EventHandler(this.buttonMoveMeshDown_Click);
@@ -123,7 +123,7 @@
             this.listViewMeshes.Name = "listViewMeshes";
             this.listViewMeshes.ShowGroups = false;
             this.listViewMeshes.Size = new System.Drawing.Size(703, 236);
-            this.listViewMeshes.TabIndex = 7;
+            this.listViewMeshes.TabIndex = 9;
             this.listViewMeshes.UseCompatibleStateImageBehavior = false;
             this.listViewMeshes.View = System.Windows.Forms.View.Details;
             this.listViewMeshes.SelectedIndexChanged += new System.EventHandler(this.listViewMeshes_SelectedIndexChanged);
@@ -167,7 +167,7 @@
             this.buttonCloneMesh.Location = new System.Drawing.Point(5, 261);
             this.buttonCloneMesh.Name = "buttonCloneMesh";
             this.buttonCloneMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonCloneMesh.TabIndex = 9;
+            this.buttonCloneMesh.TabIndex = 12;
             this.buttonCloneMesh.Text = "Clone Mesh";
             this.buttonCloneMesh.UseVisualStyleBackColor = true;
             this.buttonCloneMesh.Click += new System.EventHandler(this.buttonCloneMesh_Click);
@@ -178,7 +178,7 @@
             this.buttonDeleteMesh.Location = new System.Drawing.Point(100, 261);
             this.buttonDeleteMesh.Name = "buttonDeleteMesh";
             this.buttonDeleteMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonDeleteMesh.TabIndex = 10;
+            this.buttonDeleteMesh.TabIndex = 13;
             this.buttonDeleteMesh.Text = "Delete Mesh";
             this.buttonDeleteMesh.UseVisualStyleBackColor = true;
             this.buttonDeleteMesh.Click += new System.EventHandler(this.buttonDeleteMesh_Click);
@@ -199,7 +199,7 @@
             // toolStripStatusLabelInfo
             // 
             this.toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-            this.toolStripStatusLabelInfo.Size = new System.Drawing.Size(212, 17);
+            this.toolStripStatusLabelInfo.Size = new System.Drawing.Size(343, 17);
             this.toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
             // 
             // labelModelName
@@ -235,7 +235,7 @@
             this.textBoxMaterialName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMaterialName.Name = "textBoxMaterialName";
             this.textBoxMaterialName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxMaterialName.TabIndex = 18;
+            this.textBoxMaterialName.TabIndex = 1;
             this.textBoxMaterialName.TextChanged += new System.EventHandler(this.textBoxMaterialName_TextChanged);
             // 
             // textBoxMeshsetName
@@ -244,7 +244,7 @@
             this.textBoxMeshsetName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMeshsetName.Name = "textBoxMeshsetName";
             this.textBoxMeshsetName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxMeshsetName.TabIndex = 17;
+            this.textBoxMeshsetName.TabIndex = 2;
             this.textBoxMeshsetName.TextChanged += new System.EventHandler(this.textBoxMeshsetName_TextChanged);
             // 
             // textBoxModelName
@@ -253,7 +253,7 @@
             this.textBoxModelName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelName.Name = "textBoxModelName";
             this.textBoxModelName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxModelName.TabIndex = 16;
+            this.textBoxModelName.TabIndex = 0;
             this.textBoxModelName.TextChanged += new System.EventHandler(this.textBoxModelName_TextChanged);
             // 
             // textBoxModelY
@@ -262,7 +262,7 @@
             this.textBoxModelY.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelY.Name = "textBoxModelY";
             this.textBoxModelY.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelY.TabIndex = 19;
+            this.textBoxModelY.TabIndex = 6;
             this.textBoxModelY.TextChanged += new System.EventHandler(this.textBoxModelY_TextChanged);
             // 
             // textBoxModelZ
@@ -271,7 +271,7 @@
             this.textBoxModelZ.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelZ.Name = "textBoxModelZ";
             this.textBoxModelZ.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelZ.TabIndex = 20;
+            this.textBoxModelZ.TabIndex = 7;
             this.textBoxModelZ.TextChanged += new System.EventHandler(this.textBoxModelZ_TextChanged);
             // 
             // textBoxModelX
@@ -280,7 +280,7 @@
             this.textBoxModelX.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelX.Name = "textBoxModelX";
             this.textBoxModelX.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelX.TabIndex = 21;
+            this.textBoxModelX.TabIndex = 5;
             this.textBoxModelX.TextChanged += new System.EventHandler(this.textBoxModelX_TextChanged);
             // 
             // label4
@@ -337,7 +337,7 @@
             this.textBoxNormalName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxNormalName.Name = "textBoxNormalName";
             this.textBoxNormalName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxNormalName.TabIndex = 22;
+            this.textBoxNormalName.TabIndex = 4;
             this.textBoxNormalName.TextChanged += new System.EventHandler(this.textBoxNormalName_TextChanged);
             // 
             // label3
@@ -355,7 +355,7 @@
             this.textBoxVertexName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxVertexName.Name = "textBoxVertexName";
             this.textBoxVertexName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxVertexName.TabIndex = 20;
+            this.textBoxVertexName.TabIndex = 3;
             this.textBoxVertexName.TextChanged += new System.EventHandler(this.textBoxVertexName_TextChanged);
             // 
             // label2
@@ -392,7 +392,7 @@
             this.textBoxModelRadius.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelRadius.Name = "textBoxModelRadius";
             this.textBoxModelRadius.Size = new System.Drawing.Size(93, 23);
-            this.textBoxModelRadius.TabIndex = 32;
+            this.textBoxModelRadius.TabIndex = 8;
             this.textBoxModelRadius.TextChanged += new System.EventHandler(this.textBoxModelRadius_TextChanged);
             // 
             // labelR
@@ -426,7 +426,7 @@
             this.buttonResetMeshes.Location = new System.Drawing.Point(618, 261);
             this.buttonResetMeshes.Name = "buttonResetMeshes";
             this.buttonResetMeshes.Size = new System.Drawing.Size(90, 24);
-            this.buttonResetMeshes.TabIndex = 11;
+            this.buttonResetMeshes.TabIndex = 14;
             this.buttonResetMeshes.Text = "Reset Meshes";
             this.buttonResetMeshes.UseVisualStyleBackColor = true;
             this.buttonResetMeshes.Click += new System.EventHandler(this.buttonResetMeshes_Click);
@@ -438,7 +438,7 @@
             this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(84, 24);
-            this.buttonClose.TabIndex = 30;
+            this.buttonClose.TabIndex = 15;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             // 
