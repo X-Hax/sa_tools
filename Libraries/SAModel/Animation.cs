@@ -634,7 +634,7 @@ namespace SAModel
 						tmpaddr = (int)quatoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.QuaternionName = labels[tmpaddr];
-						else data.QuaternionName = Name + "_mkey_" + i.ToString() + "_point_" + tmpaddr.ToString("X8");
+						else data.QuaternionName = Name + "_mkey_" + i.ToString() + "_quat_" + tmpaddr.ToString("X8");
 						for (int j = 0; j < frames; j++)
 						{
 							//WXYZ order
