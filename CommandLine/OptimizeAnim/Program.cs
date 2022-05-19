@@ -64,6 +64,7 @@ namespace OptimizeAnim
 					CheckValues(node.Value.Intensity);
 					CheckValues(node.Value.Spot);
 					CheckValues(node.Value.Point);
+					CheckValues(node.Value.Quaternion);
 				}
 				if (removedFrames > 0)
 				{
