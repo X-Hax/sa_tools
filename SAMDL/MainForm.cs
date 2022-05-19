@@ -1811,7 +1811,7 @@ namespace SAModel.SAMDL
                 for (int j = 0; j < TextureInfoCurrent.Length; j++)
                     Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
             }
-            unloadTextureToolStripMenuItem.Enabled = true;
+			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
         }
 
 		private void LoadTextures(string filename)
