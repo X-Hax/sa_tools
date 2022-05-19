@@ -69,7 +69,7 @@
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_BIGBOGY" CmnName="Boss King Boom Boo"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_LAST1" CmnName="Boss Biolizard"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="BOSS_LAST2" CmnName="Boss FinalHazard"/>
-  <SplitEntry SourceFile="sonic2app.exe" IniFile="CART" CmnName="Cart Texlists"/>
+  <SplitEntry SourceFile="sonic2app.exe" IniFile="CART" CmnName="Kart Racing Cars and Background"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGDARK" CmnName="Dark Garden"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGHERO" CmnName="Hero Garden"/>
   <SplitEntry SourceFile="sonic2app.exe" IniFile="CHAOSTGKARATE" CmnName="Chao Karate"/>
@@ -89,7 +89,7 @@
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="ADVERTISE_DLL" CmnName="Battle GUI Elements"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_DLL" CmnName="Boss Egg Golem (Sonic) Boss Models and Landtable"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="BOSS_GOLEM_E_DLL" CmnName="Boss Egg Golem (Eggman) Boss Models and Landtable"/>
-  <SplitEntry SourceFile="Data_DLL.dll" IniFile="CART_DLL" CmnName="Cart Data"/>
+  <SplitEntry SourceFile="Data_DLL.dll" IniFile="CART_DLL" CmnName="Kart Racing Track and Kart Models"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="Chao_DLL" CmnName="Chao Landtables, Objects, and Texlists"/>
   <SplitEntry SourceFile="Data_DLL.dll" IniFile="LeftoverDLL" CmnName="Stage Landtables and Texlists"/>
   <SplitEntryMDL BigEndian="true" ModelFile="resource\gd_PC\amymdl.prs">

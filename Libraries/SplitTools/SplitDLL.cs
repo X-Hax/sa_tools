@@ -783,6 +783,9 @@ namespace SplitTools.SplitDLL
 									hashes.Add($"{chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim")));
 									ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
 									hashes.Add($"{chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl")));
+									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										output.SAMDLData.Add(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
 									int ptr = BitConverter.ToInt32(datafile, address + 16);
 									if (ptr != 0)
 									{
@@ -791,6 +794,9 @@ namespace SplitTools.SplitDLL
 										chara.AccessoryAttachNode = "object_" + (BitConverter.ToInt32(datafile, address + 20) - imageBase).ToString("X8");
 										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), model, null, null, null, null, ModelFormat.Chunk, nometa);
 										hashes.Add($"{chnm} Accessory.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl")));
+										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
+											output.SAMDLData.Add(Path.Combine(fileOutputPath, $"{chnm} Accessory.sa2mdl"), new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_a"]));
 									}
 									ptr = BitConverter.ToInt32(datafile, address + 24);
 									if (ptr != 0)
@@ -811,6 +817,9 @@ namespace SplitTools.SplitDLL
 										hashes.Add($"Super {chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim")));
 										ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
 										hashes.Add($"Super {chnm}.sa2mdl:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl")));
+										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_s"))
+											output.SAMDLData.Add(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_s"]));
 									}
 									chara.Unknown1 = BitConverter.ToInt32(datafile, address + 40);
 									chara.Rating = BitConverter.ToInt32(datafile, address + 44);
@@ -864,6 +873,9 @@ namespace SplitTools.SplitDLL
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
+									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
 									if (File.Exists(outputFN) && !overwrite)
 										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
@@ -886,6 +898,9 @@ namespace SplitTools.SplitDLL
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ModelFile.CreateFile(outputFN_l, model, null, null, null, null, ModelFormat.Chunk, nometa);
 										output.Files[fn_l] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN_l));
+										// Metadata for SAMDL project mode
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_l"))
+											output.SAMDLData.Add(fn_l, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_l"]));
 									}
 									kart.TexList = ByteConverter.ToUInt32(datafile, address + 12);
 									kart.Unknown1 = ByteConverter.ToInt32(datafile, address + 16);
@@ -919,6 +934,9 @@ namespace SplitTools.SplitDLL
 											outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
 										}
+										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+											output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
 										if (File.Exists(outputFN) && !overwrite)
 											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
@@ -934,6 +952,9 @@ namespace SplitTools.SplitDLL
 											outputFN_col = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
 											fn_col = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
 										}
+										// Metadata for SAMDL project mode
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_c"))
+											output.SAMDLData.Add(fn_col, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_c"]));
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ModelFile.CreateFile(outputFN_col, collision, null, null, null, null, ModelFormat.Basic, nometa);
@@ -985,6 +1006,10 @@ namespace SplitTools.SplitDLL
 										ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
 										output.Files[fn] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN));
 
+										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+											output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+
 									}
 									kartset.Property = ByteConverter.ToUInt32(datafile, address + 4);
 									ptr = BitConverter.ToInt32(datafile, address + 8);
@@ -1019,6 +1044,9 @@ namespace SplitTools.SplitDLL
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
+									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
@@ -1061,6 +1089,9 @@ namespace SplitTools.SplitDLL
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
+									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
 									if (File.Exists(outputFN) && !overwrite)
 										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))

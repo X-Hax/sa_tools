@@ -3457,6 +3457,87 @@ namespace SplitTools
 		}
 	}
 
+	public static class SA2DefaultObjectLights
+	{
+		public static List<SA2DefaultObjectLightData> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2DefaultObjectLightData>>(filename);
+		}
+
+		public static SA2DefaultObjectLightData[] Load(byte[] file, int address, int count)
+		{
+			SA2DefaultObjectLightData[] result = new SA2DefaultObjectLightData[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new SA2DefaultObjectLightData(file, address);
+				address += SA2DefaultObjectLightData.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this SA2DefaultObjectLightData[] startpos, string filename)
+		{
+			IniSerializer.Serialize(startpos, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2DefaultObjectLightData
+	{
+		public SA2DefaultObjectLightData() { Direction = new Vertex(); }
+
+		public SA2DefaultObjectLightData(byte[] file, int address)
+		{
+			Direction = new Vertex(file, address);
+			address += Vertex.Size;
+			Intensity = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			Ambient = ByteConverter.ToSingle(file, address);
+			address += sizeof(float);
+			RGB = new Vertex(file, address);
+			address += Vertex.Size;
+		}
+
+		[IniAlwaysInclude]
+		public Vertex Direction { get; set; }
+		[IniAlwaysInclude]
+		public float Intensity { get; set; }
+		[IniAlwaysInclude]
+		public float Ambient { get; set; }
+		[IniAlwaysInclude]
+		public Vertex RGB { get; set; }
+
+		public static int Size { get { return 0x20; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(Direction.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Intensity));
+			result.AddRange(ByteConverter.GetBytes(Ambient));
+			result.AddRange(RGB.GetBytes());
+			return result.ToArray();
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Direction.ToStruct());
+			result.Append(", ");
+			result.Append(Intensity.ToC());
+			result.Append(", ");
+			result.Append(Ambient.ToC());
+			result.Append(", ");
+			result.Append(RGB.ToStruct());
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
 	public static class WeldList
 	{
 		public static List<WeldInfo> Load(string filename)

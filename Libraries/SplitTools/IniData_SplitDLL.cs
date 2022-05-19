@@ -160,13 +160,15 @@ namespace SplitTools.SplitDLL
         public string[] TextureArchives { get; set; }
         public string TextureNameFile { get; set; }
         public int[] TextureIDs { get; set; }
+		public string TexturePalette { get; set; }
 
-        public SAMDLMetadata(string name, string[] textures, int[] textureIDs = null, string texnameFile = null)
+		public SAMDLMetadata(string name, string[] textures, int[] textureIDs = null, string texnameFile = null, string texpalette = null)
         {
             ModelName = name;
             TextureArchives = textures;
             TextureIDs = textureIDs;
             TextureNameFile = texnameFile;
+			TexturePalette = texpalette;
         }
 
         public SAMDLMetadata(string data)
@@ -188,7 +190,14 @@ namespace SplitTools.SplitDLL
                 TextureIDs = null;
                 TextureNameFile = split[3];
             }
-        }
+
+			if (split.Length > 4)
+			{
+				TextureIDs = null;
+				TextureNameFile = null;
+				TexturePalette = split[4];
+			}
+		}
 
         public override string ToString()
         {
@@ -203,16 +212,18 @@ namespace SplitTools.SplitDLL
                         result += ",";
                 }
             }
-            if (TextureNameFile != null && TextureNameFile!="")
-                result += "|0|" + TextureNameFile;
-            else if (TextureIDs != null)
-            {
-                StringBuilder sb = new StringBuilder();
-                for (int t = 0; t < TextureIDs.Length; t++)
-                {
-                    sb.Append(TextureIDs[t].ToString());
-                    if (t < TextureIDs.Length - 1)
-                        sb.Append(",");
+			if (TexturePalette != null)
+				result += "|0|" + "|null|";
+			else if (TextureNameFile != null && TextureNameFile != "")
+				result += "|0|" + TextureNameFile;
+			else if (TextureIDs != null)
+			{
+				StringBuilder sb = new StringBuilder();
+				for (int t = 0; t < TextureIDs.Length; t++)
+				{
+					sb.Append(TextureIDs[t].ToString());
+					if (t < TextureIDs.Length - 1)
+						sb.Append(",");
 				}
 				result += "|" + sb.ToString();
 			}
