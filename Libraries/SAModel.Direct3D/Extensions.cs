@@ -1225,6 +1225,8 @@ namespace SAModel.Direct3D
 			Rotation rotation = obj.Rotation;
 			if (anim.Rotation.Count > 0)
 				rotation = anim.GetRotation(animframe);
+			else if (anim.Quaternion.Count > 0)
+				rotation = anim.GetQuaternion(animframe);
 			if (obj.RotateZYX)
 				MatrixFunctions.RotateZYX(ref matrix, rotation);
 			else
