@@ -18,21 +18,21 @@ namespace SAModel.SAMDL
 			{
 				if (NeedUpdateAnimation)
 				{
-					if (AnimationPlaying && animation != null)
+					if (AnimationPlaying && currentAnimation != null)
 					{
 						animframe += animspeed;
-						if (animframe >= animation.Frames - 1)
+						if (animframe >= currentAnimation.Frames - 1)
 							animframe = 0;
 						else if (animframe < 0)
-							animframe = animation.Frames - 1;
+							animframe = currentAnimation.Frames - 1;
 						NeedRedraw = true;
 					}
 					NeedUpdateAnimation = false;
 				}
 				if (hasWeight)
 				{
-					if (animation != null)
-						model.UpdateWeightedModelAnimated(new MatrixStack(), animation, animframe, meshes);
+					if (currentAnimation != null)
+						model.UpdateWeightedModelAnimated(new MatrixStack(), currentAnimation, animframe, meshes);
 					else
 						model.UpdateWeightedModel(new MatrixStack(), meshes);
 				}
