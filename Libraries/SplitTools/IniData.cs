@@ -2363,7 +2363,7 @@ namespace SplitTools
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>(Size)
-		{ 
+		{
 				(byte)Flags,
 				Constant1,
 				Constant2,
@@ -4088,13 +4088,19 @@ namespace SplitTools
 
 	public class LabelMESHSET
 	{
+		[IniName("pl")]
 		public string PolyName;
+		[IniName("uv")]
 		public string UVName;
+		[IniName("pn")]
 		public string PolyNormalName;
+		[IniName("vc")]
 		public string VColorName;
 
-		public LabelMESHSET(string polyName, string uvName, string polyNormalName, string vColorName) 
-		{ 
+		public LabelMESHSET() { }
+
+		public LabelMESHSET(string polyName, string uvName, string polyNormalName, string vColorName)
+		{
 			PolyName = polyName;
 			UVName = uvName;
 			PolyNormalName = polyNormalName;
@@ -4103,7 +4109,7 @@ namespace SplitTools
 
 		public LabelMESHSET(NJS_MESHSET mesh)
 		{
-			if (mesh.Poly!=null)
+			if (mesh.Poly != null)
 				PolyName = mesh.PolyName;
 			if (mesh.UV != null)
 				UVName = mesh.UVName;
@@ -4128,13 +4134,23 @@ namespace SplitTools
 
 	public class LabelOBJECT
 	{
+		[IniName("obj")]
 		public string ObjectName;
+		[IniName("att")]
 		public string AttachName;
+		[IniName("msh")]
 		public string MeshsetOrPolyName; // Also polys for chunk
+		[IniName("m")]
+		[IniCollection(IniCollectionMode.NoSquareBrackets)]
 		public List<LabelMESHSET> MeshsetItemNames;
+		[IniName("vtx")]
 		public string VertexName;
+		[IniName("nml")]
 		public string NormalName;
+		[IniName("mat")]
 		public string MaterialName;
+
+		public LabelOBJECT() { }
 
 		public LabelOBJECT(NJS_OBJECT obj)
 		{
@@ -4233,10 +4249,14 @@ namespace SplitTools
 		public string SpotName;
 		[IniName("pnt")]
 		public string PointName;
-		[IniName("vt")]
+		[IniName("qut")]
+		public string QuaternionName;
+		[IniName("vtx")]
 		public string[] VertexItemNames;
-		[IniName("nm")]
+		[IniName("nml")]
 		public string[] NormalItemNames;
+
+		public LabelMKEY() { }
 	}
 
 	public class LabelMOTION
@@ -4245,8 +4265,11 @@ namespace SplitTools
 		public string MotionName;
 		[IniName("mdt")]
 		public string MdataName;
-		[IniName("mk")]
+		[IniName("m")]
+		[IniCollection(IniCollectionMode.NoSquareBrackets)]
 		public Dictionary<int, LabelMKEY> MkeyNames;
+
+		public LabelMOTION() { }
 	}
 
 	public class LabelACTION
@@ -4257,6 +4280,8 @@ namespace SplitTools
 		public string MotionName;
 		[IniName("obj")]
 		public string ObjectName;
+
+		public LabelACTION() { }
 	}
 
 	public class LabelLANDTABLE
@@ -4273,6 +4298,8 @@ namespace SplitTools
 		public string[] GeoAnimActionNames;
 		[IniName("go")]
 		public string[] GeoAnimObjectNames;
+
+		public LabelLANDTABLE() { }
 	}
 
 	public class CharaObjectData
