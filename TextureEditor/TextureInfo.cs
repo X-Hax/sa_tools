@@ -5,10 +5,12 @@ using System.IO;
 using System.Text;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
+using VrSharp.Xvr;
+using static VrSharp.Xvr.DirectXTexUtility;
 
 namespace TextureEditor
 {
-    enum TextureFormat { PVM, GVM, PVMX, PAK }
+    enum TextureFormat { PVM, GVM, PVMX, PAK, XVM }
 
     public abstract class TextureInfo
     {
@@ -323,4 +325,67 @@ namespace TextureEditor
             return true;
         }
     }
+
+	class XvrTextureInfo : TextureInfo
+	{
+		public DXGIFormat DataFormat { get; set; }
+		public DXGIFormat PixelFormat { get; set; }
+		public bool useAlpha { get; set; }
+		public MemoryStream TextureData { get; set; }
+		public XvrTextureInfo() { }
+
+		public XvrTextureInfo(TextureInfo tex)
+		{
+			Name = tex.Name;
+			GlobalIndex = tex.GlobalIndex;
+			Image = tex.Image;
+			Mipmap = tex.Mipmap;
+			if (tex is PvrTextureInfo pv)
+			{
+				TextureData = pv.TextureData;
+				PixelFormat = DXGIFormat.BC3UNORM;
+				DataFormat = DXGIFormat.BC3UNORM;
+			}
+			else if (tex is GvrTextureInfo gv)
+			{
+				PixelFormat = DXGIFormat.BC3UNORM;
+				DataFormat = DXGIFormat.BC3UNORM;
+			}
+			else
+			{
+				PixelFormat = DXGIFormat.BC3UNORM;
+				DataFormat = DXGIFormat.BC3UNORM;
+			}
+		}
+
+		public XvrTextureInfo(string name, uint gbix, Bitmap bitmap)
+		{
+			Name = name;
+			GlobalIndex = gbix;
+			DataFormat = DXGIFormat.BC3UNORM;
+			PixelFormat = DXGIFormat.BC3UNORM;
+			if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
+				Image = new Bitmap(TextureEditor.Properties.Resources.error);
+			else
+				Image = bitmap;
+		}
+
+		public XvrTextureInfo(string name, MemoryStream str)
+		{
+			TextureData = str;
+			XvrTexture texture = new XvrTexture(str);
+			Name = name;
+			useAlpha = texture.UseAlpha;
+			GlobalIndex = texture.GlobalIndex;
+			DataFormat = texture.DXGIPixelFormat;
+			Mipmap = true;
+			PixelFormat = texture.DXGIPixelFormat;
+			Image = texture.ToBitmap();
+		}
+
+		public override bool CheckMipmap()
+		{
+			return true;
+		}
+	}
 }

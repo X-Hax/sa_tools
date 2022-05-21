@@ -14,6 +14,8 @@ using SAModel.SAEditorCommon;
 using static ArchiveLib.GenericArchive;
 using static TextureEditor.TexturePalette;
 using static SAModel.SAEditorCommon.SettingsFile;
+using static ArchiveLib.XVM;
+using VrSharp.Xvr;
 
 namespace TextureEditor
 {
@@ -84,7 +86,7 @@ namespace TextureEditor
 			recentFilesToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename.Replace("&", "&&")));
 			Text = currentFormat.ToString() + " Editor - " + filename;
 			// Remove archive filename for individual PVR/GVR textures because only archives can be saved
-			if (Path.GetExtension(archiveFilename).ToLowerInvariant() == ".pvr" || Path.GetExtension(archiveFilename).ToLowerInvariant() == ".gvr")
+			if (Path.GetExtension(archiveFilename).ToLowerInvariant() == ".pvr" || Path.GetExtension(archiveFilename).ToLowerInvariant() == ".gvr" || Path.GetExtension(archiveFilename).ToLowerInvariant() == ".xvr")
 				archiveFilename = null;
 		}
 
@@ -197,6 +199,18 @@ namespace TextureEditor
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = gvr.Image.Width;
 						numericUpDownOrigSizeY.Value = gvr.Image.Height;
+						checkBoxPAKUseAlpha.Enabled = false;
+						checkBoxPAKUseAlpha.Hide();
+						textureSizeLabel.Hide();
+						break;
+					case XvrTextureInfo xvr:
+						pixelFormatLabel.Text = $"Pixel Format: {xvr.PixelFormat}";
+						dataFormatLabel.Hide();
+						dataFormatLabel.Show();
+						pixelFormatLabel.Show();
+						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
+						numericUpDownOrigSizeX.Value = xvr.Image.Width;
+						numericUpDownOrigSizeY.Value = xvr.Image.Height;
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
 						textureSizeLabel.Hide();
@@ -314,6 +328,17 @@ namespace TextureEditor
 					newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(new MemoryStream(dds)), entry.Type, entry.fSurfaceFlags));
 				}
 			}
+			else if(XVM.Identify(datafile))
+			{
+				XVM arc = new XVM(datafile);
+				newtextures = new List<TextureInfo>(arc.Entries.Count);
+				foreach (GenericArchiveEntry file in arc.Entries)
+				{
+					MemoryStream str = new MemoryStream(file.Data);
+					str.Seek(0, SeekOrigin.Begin);
+					newtextures.Add(new XvrTextureInfo(Path.GetFileNameWithoutExtension(file.Name), str));
+				}
+			}
 			else
 			{
 				PuyoArchiveType idResult = PuyoFile.Identify(datafile);
@@ -355,6 +380,10 @@ namespace TextureEditor
 						if (!(newtextures[i] is PakTextureInfo))
 							newtextures[i] = new PakTextureInfo(newtextures[i]);
 						break;
+					case TextureFormat.XVM:
+						if (!(newtextures[i] is XvrTextureInfo))
+							newtextures[i] = new XvrTextureInfo(newtextures[i]);
+						break;
 				}
 			}
 			return newtextures;
@@ -392,6 +421,21 @@ namespace TextureEditor
 				UpdateMRUList(Path.GetFullPath(filename));
 				listBox1.SelectedIndex = 0;
 				return true;
+			} else if (XvrTexture.Is(datafile))
+			{
+				currentFormat = TextureFormat.XVM;
+				XVM arc = new XVM();
+				string nameNoExtension = Path.GetFileNameWithoutExtension(filename);
+				arc.Entries.Add(new XVMEntry(datafile, nameNoExtension));
+				MemoryStream str = new MemoryStream(arc.Entries[0].Data);
+				textures.Clear();
+				textures.Add(new XvrTextureInfo(nameNoExtension.Split('.')[0], str));
+				listBox1.Items.Clear();
+				listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
+				UpdateTextureCount();
+				UpdateMRUList(Path.GetFullPath(filename));
+				listBox1.SelectedIndex = 0;
+				return true;
 			}
 
 			// Otherwise load the file as an archive
@@ -399,6 +443,8 @@ namespace TextureEditor
 				currentFormat = TextureFormat.PVMX;
 			else if (PAKFile.Identify(filename))
 				currentFormat = TextureFormat.PAK;
+			else if (XVM.Identify(datafile))
+				currentFormat = TextureFormat.XVM;
 			else
 			{
 				PuyoArchiveType identifyResult = PuyoFile.Identify(datafile);
@@ -499,6 +545,12 @@ namespace TextureEditor
 			listBox1_SelectedIndexChanged(sender, e);
 		}
 
+		private void newXVMToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFile(TextureFormat.XVM);
+			listBox1_SelectedIndexChanged(sender, e);
+		}
+
 		private void newPVMXToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			NewFile(TextureFormat.PVMX);
@@ -508,6 +560,12 @@ namespace TextureEditor
 		private void newPAKToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			NewFile(TextureFormat.PAK);
+			listBox1_SelectedIndexChanged(sender, e);
+		}
+
+		private void xVMToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			NewFile(TextureFormat.XVM);
 			listBox1_SelectedIndexChanged(sender, e);
 		}
 
@@ -527,7 +585,7 @@ namespace TextureEditor
 						break;
 				}
 			}
-			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak" })
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvm", Filter = "Texture Files|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pak" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
 					LoadArchive(dlg.FileName);
@@ -564,6 +622,18 @@ namespace TextureEditor
 			return gvr;
 		}
 
+		private MemoryStream EncodeXVR(XvrTextureInfo tex)
+		{
+			XvrTextureEncoder encoder = new XvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
+			encoder.GlobalIndex = tex.GlobalIndex;
+			encoder.HasAlpha = tex.useAlpha;
+			encoder.HasMipmaps = tex.Mipmap;
+			MemoryStream xvr = new MemoryStream();
+			encoder.Save(xvr);
+			xvr.Seek(0, SeekOrigin.Begin);
+			return xvr;
+		}
+
 		private void SaveTextures()
 		{
 			byte[] data;
@@ -583,6 +653,13 @@ namespace TextureEditor
 						foreach (GvrTextureInfo tex in textures)
 							puyog.Entries.Add(new GVMEntry(EncodeGVR(tex).ToArray(), tex.Name));
 						data = puyog.GetBytes();
+						unsaved = false;
+						break;
+					case TextureFormat.XVM:
+						XVM xvm = new XVM();
+						foreach (XvrTextureInfo tex in textures)
+							xvm.Entries.Add(new XVMEntry(EncodeXVR(tex).ToArray(), tex.Name));
+						data = xvm.GetBytes();
 						unsaved = false;
 						break;
 					case TextureFormat.PVMX:
@@ -660,6 +737,7 @@ namespace TextureEditor
 							break;
 						case TextureFormat.PVMX:
 						case TextureFormat.PAK:
+						case TextureFormat.XVM:
 							textures = new List<TextureInfo>(textures.Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
@@ -672,6 +750,7 @@ namespace TextureEditor
 							break;
 						case TextureFormat.PVMX:
 						case TextureFormat.PAK:
+						case TextureFormat.XVM:
 							textures = new List<TextureInfo>(textures.Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
@@ -682,6 +761,7 @@ namespace TextureEditor
 						case TextureFormat.PVM:
 						case TextureFormat.GVM:
 						case TextureFormat.PAK:
+						case TextureFormat.XVM:
 							textures = new List<TextureInfo>(textures.Select(a => new PvmxTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
@@ -692,7 +772,19 @@ namespace TextureEditor
 						case TextureFormat.PVM:
 						case TextureFormat.GVM:
 						case TextureFormat.PVMX:
+						case TextureFormat.XVM:
 							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)).Cast<TextureInfo>());
+							break;
+					}
+					break;
+				case TextureFormat.XVM:
+					switch (currentFormat)
+					{
+						case TextureFormat.PVM:
+						case TextureFormat.GVM:
+						case TextureFormat.PAK:
+						case TextureFormat.PVMX:
+							textures = new List<TextureInfo>(textures.Select(a => new XvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
 					break;
@@ -722,12 +814,15 @@ namespace TextureEditor
 				case TextureFormat.PAK:
 					ext = "pak";
 					break;
+				case TextureFormat.XVM:
+					ext = "xvm";
+					break;
 				case TextureFormat.PVM:
 				default:
 					ext = "pvm";
 					break;
 			}
-			using (SaveFileDialog dlg = new SaveFileDialog() { FilterIndex = (int)savefmt + 1, DefaultExt = ext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak" })
+			using (SaveFileDialog dlg = new SaveFileDialog() { FilterIndex = (int)savefmt + 1, DefaultExt = ext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak|XVM Files|*.xvm;*.prs" })
 			{
 				if (archiveFilename != null)
 				{
@@ -768,6 +863,10 @@ namespace TextureEditor
 		private void saveAsPAKToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveAs(TextureFormat.PAK);
+		}
+		private void xVMToolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			SaveAs(TextureFormat.XVM);
 		}
 
 		private void importTexturePackToolStripMenuItem_Click(object sender, EventArgs e)
@@ -812,6 +911,9 @@ namespace TextureEditor
 										break;
 									case TextureFormat.PAK:
 										textures.Add(new PakTextureInfo(name, gbix, bmp));
+										break;
+									case TextureFormat.XVM:
+										textures.Add(new XvrTextureInfo(name, gbix, bmp));
 										break;
 								}
 								listBox1.Items.Add(name);
@@ -1033,7 +1135,7 @@ namespace TextureEditor
 		private void addTextureButton_Click(object sender, EventArgs e)
 		{
 			string defext = null;
-			string filter = "Supported Files|*.prs;*.pvm;*.gvm;*.pvmx;*.pak;*.pvr;*.gvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds";
+			string filter = "Supported Files|*.prs;*.pvm;*.gvm;*.pvmx;*.pak;*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds";
 			switch (currentFormat)
 			{
 				case TextureFormat.PVM:
@@ -1045,6 +1147,9 @@ namespace TextureEditor
 				case TextureFormat.PVMX:
 				case TextureFormat.PAK:
 					defext = "png";
+					break;
+				case TextureFormat.XVM:
+					defext = "xvr";
 					break;
 			}
 			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = defext, Filter = filter, Multiselect = true })
@@ -1062,6 +1167,7 @@ namespace TextureEditor
 							case ".prs":
 							case ".pvm":
 							case ".gvm":
+							case ".xvm":
 							case ".pak":
 							case ".pvmx":
 								foreach (TextureInfo tex in GetTexturesFromFile(file))
@@ -1078,6 +1184,8 @@ namespace TextureEditor
 										textures.Add(new PvrTextureInfo(name, str));
 									else if (currentFormat == TextureFormat.GVM && GvrTexture.Is(file))
 										textures.Add(new GvrTextureInfo(name, str));
+									else if (currentFormat == TextureFormat.XVM && XvrTexture.Is(file))
+										textures.Add(new XvrTextureInfo(name, str));
 									else
 									{
 										switch (currentFormat)
@@ -1099,6 +1207,12 @@ namespace TextureEditor
 												break;
 											case TextureFormat.PAK:
 												textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str)));
+												break;
+											case TextureFormat.XVM:
+												Bitmap xp = CreateBitmapFromStream(str);
+												if (TextureFunctions.CheckTextureDimensions(xp.Width, xp.Height))
+													textures.Add(new GvrTextureInfo(name, gbix, xp));
+												else return;
 												break;
 										}
 										if (gbix != uint.MaxValue)
@@ -1280,6 +1394,11 @@ namespace TextureEditor
 				GvrTexture gvrt = new GvrTexture(texmemstr);
 				bitmap_temp = gvrt.ToBitmap();
 			}
+			else if (XvrTexture.Is(texmemstr))
+			{
+				XvrTexture xvrt = new XvrTexture(texmemstr);
+				bitmap_temp = xvrt.ToBitmap();
+			}
 			else
 			{
 				// Check if the texture is DDS
@@ -1325,7 +1444,7 @@ namespace TextureEditor
 
 		private void importButton_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.gvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp" };
+			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp" };
 			if (!string.IsNullOrEmpty(listBox1.GetItemText(listBox1.SelectedItem)))
 				dlg.FileName = listBox1.GetItemText(listBox1.SelectedItem);
 			DialogResult res = dlg.ShowDialog(this);
@@ -1415,6 +1534,22 @@ namespace TextureEditor
 							newgvr.PixelFormat = gvrPixelFormat;
 							newgvr.TextureData = null;
 							textures[listBox1.SelectedIndex] = newgvr;
+						}
+						break;
+					case TextureFormat.XVM:
+						XvrTextureInfo oldxvr = (XvrTextureInfo)textures[listBox1.SelectedIndex];
+						if (XvrTexture.Is(dlg.FileName))
+							textures[listBox1.SelectedIndex] = new XvrTextureInfo(oldxvr.Name, texmemstr);
+						else
+						{
+							Bitmap bmp = CreateBitmapFromStream(texmemstr);
+							if (!TextureFunctions.CheckTextureDimensions(bmp.Width, bmp.Height))
+								return;
+							XvrTextureInfo newxvr = new XvrTextureInfo(oldxvr.Name, oldxvr.GlobalIndex, bmp);
+							newxvr.DataFormat = DirectXTexUtility.DXGIFormat.BC3UNORM;
+							newxvr.PixelFormat = DirectXTexUtility.DXGIFormat.BC3UNORM;
+							newxvr.TextureData = null;
+							textures[listBox1.SelectedIndex] = newxvr;
 						}
 						break;
 					case TextureFormat.PVMX:

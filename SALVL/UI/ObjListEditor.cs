@@ -412,7 +412,7 @@ namespace SAModel.SALVL
 		private void btnBrowseTexture_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = "Texture Files (*.pvm;*.prs;*.gvm;*.pak)|*.pvm;*.prs;*.gvm;*.pak";
+			dlg.Filter = "Texture Files (*.pvm;*.prs;*.gvm;*.xvm;*.pak)|*.pvm;*.prs;*.gvm;*.xvm;*.pak";
 			dlg.InitialDirectory = modFolder;
 			if (dlg.ShowDialog() == DialogResult.OK)
 			{

@@ -42,6 +42,7 @@
             this.newGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.xVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,6 +105,7 @@
             this.labelPaletteFormat = new System.Windows.Forms.Label();
             this.texturePreviewZoomTrackBar = new System.Windows.Forms.TrackBar();
             this.textureImage = new System.Windows.Forms.PictureBox();
+            this.labelZoomInfo = new System.Windows.Forms.Label();
             this.globalIndex = new System.Windows.Forms.NumericUpDown();
             this.textureName = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -112,7 +114,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.labelZoomInfo = new System.Windows.Forms.Label();
+            this.xVMToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -143,45 +145,50 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(3, 32);
+            label1.Location = new System.Drawing.Point(4, 37);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(38, 13);
+            label1.Size = new System.Drawing.Size(42, 15);
             label1.TabIndex = 0;
             label1.Text = "Name:";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(3, 57);
+            label2.Location = new System.Drawing.Point(4, 66);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(69, 13);
+            label2.Size = new System.Drawing.Size(76, 15);
             label2.TabIndex = 2;
             label2.Text = "Global Index:";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(3, 6);
+            label3.Location = new System.Drawing.Point(4, 7);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(36, 13);
+            label3.Size = new System.Drawing.Size(39, 15);
             label3.TabIndex = 8;
             label3.Text = "Index:";
             // 
             // labelOriginalSize
             // 
             labelOriginalSize.AutoSize = true;
-            labelOriginalSize.Location = new System.Drawing.Point(3, 83);
+            labelOriginalSize.Location = new System.Drawing.Point(4, 96);
+            labelOriginalSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             labelOriginalSize.Name = "labelOriginalSize";
-            labelOriginalSize.Size = new System.Drawing.Size(30, 13);
+            labelOriginalSize.Size = new System.Drawing.Size(30, 15);
             labelOriginalSize.TabIndex = 11;
             labelOriginalSize.Text = "Size:";
             // 
             // labelX
             // 
             labelX.AutoSize = true;
-            labelX.Location = new System.Drawing.Point(136, 83);
+            labelX.Location = new System.Drawing.Point(159, 96);
+            labelX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             labelX.Name = "labelX";
-            labelX.Size = new System.Drawing.Size(12, 13);
+            labelX.Size = new System.Drawing.Size(13, 15);
             labelX.TabIndex = 14;
             labelX.Text = "x";
             // 
@@ -193,8 +200,8 @@
             this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(604, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(705, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -222,10 +229,11 @@
             this.newPVMToolStripMenuItem,
             this.newGVMToolStripMenuItem,
             this.newPVMXToolStripMenuItem,
-            this.newPAKToolStripMenuItem});
+            this.newPAKToolStripMenuItem,
+            this.xVMToolStripMenuItem});
             this.newToolStripMenuItem.Image = global::TextureEditor.Properties.Resources._new;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.newToolStripMenuItem.Text = "&New";
             // 
             // newPVMToolStripMenuItem
@@ -264,12 +272,19 @@
             this.newPAKToolStripMenuItem.Text = "PA&K";
             this.newPAKToolStripMenuItem.Click += new System.EventHandler(this.newPAKToolStripMenuItem_Click);
             // 
+            // xVMToolStripMenuItem
+            // 
+            this.xVMToolStripMenuItem.Name = "xVMToolStripMenuItem";
+            this.xVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.xVMToolStripMenuItem.Text = "XVM";
+            this.xVMToolStripMenuItem.Click += new System.EventHandler(this.xVMToolStripMenuItem_Click);
+            // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.openToolStripMenuItem.Text = "&Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -278,7 +293,7 @@
             this.saveToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -288,54 +303,55 @@
             this.saveAsPVMToolStripMenuItem,
             this.saveAsGVMToolStripMenuItem,
             this.saveAsPVMXToolStripMenuItem,
-            this.saveAsPAKToolStripMenuItem});
+            this.saveAsPAKToolStripMenuItem,
+            this.xVMToolStripMenuItem1});
             this.saveAsToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.saveAsToolStripMenuItem.Text = "Save &As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // saveAsPVMToolStripMenuItem
             // 
             this.saveAsPVMToolStripMenuItem.Name = "saveAsPVMToolStripMenuItem";
-            this.saveAsPVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.saveAsPVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsPVMToolStripMenuItem.Text = "&PVM";
             this.saveAsPVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMToolStripMenuItem_Click);
             // 
             // saveAsGVMToolStripMenuItem
             // 
             this.saveAsGVMToolStripMenuItem.Name = "saveAsGVMToolStripMenuItem";
-            this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.saveAsGVMToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsGVMToolStripMenuItem.Text = "&GVM";
             this.saveAsGVMToolStripMenuItem.Click += new System.EventHandler(this.saveAsGVMToolStripMenuItem_Click);
             // 
             // saveAsPVMXToolStripMenuItem
             // 
             this.saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
-            this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.saveAsPVMXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsPVMXToolStripMenuItem.Text = "PVM&X";
             this.saveAsPVMXToolStripMenuItem.Click += new System.EventHandler(this.saveAsPVMXToolStripMenuItem_Click);
             // 
             // saveAsPAKToolStripMenuItem
             // 
             this.saveAsPAKToolStripMenuItem.Name = "saveAsPAKToolStripMenuItem";
-            this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.saveAsPAKToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsPAKToolStripMenuItem.Text = "PA&K";
             this.saveAsPAKToolStripMenuItem.Click += new System.EventHandler(this.saveAsPAKToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(220, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(230, 6);
             // 
             // importTexturePackToolStripMenuItem
             // 
             this.importTexturePackToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.import;
             this.importTexturePackToolStripMenuItem.Name = "importTexturePackToolStripMenuItem";
             this.importTexturePackToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.importTexturePackToolStripMenuItem.Text = "&Import texture pack...";
             this.importTexturePackToolStripMenuItem.ToolTipText = "Import a folder texture pack with an index file.";
             this.importTexturePackToolStripMenuItem.Click += new System.EventHandler(this.importTexturePackToolStripMenuItem_Click);
@@ -345,7 +361,7 @@
             this.exportTexturePackToolStripMenuItem.Image = global::TextureEditor.Properties.Resources.export;
             this.exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
             this.exportTexturePackToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.exportTexturePackToolStripMenuItem.Text = "&Export texture pack...";
             this.exportTexturePackToolStripMenuItem.ToolTipText = "Export a folder texture pack with an index file.";
             this.exportTexturePackToolStripMenuItem.Click += new System.EventHandler(this.exportTexturePackToolStripMenuItem_Click);
@@ -353,25 +369,25 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(220, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
             // 
             // recentFilesToolStripMenuItem
             // 
             this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.recentFilesToolStripMenuItem.Text = "&Recent Files";
             this.recentFilesToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentFilesToolStripMenuItem_DropDownItemClicked);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(220, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(230, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(233, 30);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -505,6 +521,7 @@
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -531,17 +548,20 @@
             this.splitContainer1.Panel2.Controls.Add(this.textureName);
             this.splitContainer1.Panel2.Controls.Add(label1);
             this.splitContainer1.Panel2.SizeChanged += new System.EventHandler(this.SplitContainer1_Panel2_SizeChanged);
-            this.splitContainer1.Size = new System.Drawing.Size(604, 515);
-            this.splitContainer1.SplitterDistance = 212;
+            this.splitContainer1.Size = new System.Drawing.Size(705, 601);
+            this.splitContainer1.SplitterDistance = 247;
+            this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 1;
             // 
             // listBox1
             // 
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.IntegralHeight = false;
+            this.listBox1.ItemHeight = 15;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
+            this.listBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(208, 482);
+            this.listBox1.Size = new System.Drawing.Size(243, 566);
             this.listBox1.TabIndex = 0;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -554,9 +574,10 @@
             this.panel1.Controls.Add(this.removeTextureButton);
             this.panel1.Controls.Add(this.addTextureButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 482);
+            this.panel1.Location = new System.Drawing.Point(0, 566);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(208, 29);
+            this.panel1.Size = new System.Drawing.Size(243, 31);
             this.panel1.TabIndex = 1;
             // 
             // textureDownButton
@@ -564,9 +585,10 @@
             this.textureDownButton.AutoSize = true;
             this.textureDownButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.textureDownButton.Enabled = false;
-            this.textureDownButton.Location = new System.Drawing.Point(154, 3);
+            this.textureDownButton.Location = new System.Drawing.Point(180, 3);
+            this.textureDownButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textureDownButton.Name = "textureDownButton";
-            this.textureDownButton.Size = new System.Drawing.Size(45, 23);
+            this.textureDownButton.Size = new System.Drawing.Size(48, 25);
             this.textureDownButton.TabIndex = 3;
             this.textureDownButton.Text = "Down";
             this.textureDownButton.UseVisualStyleBackColor = true;
@@ -577,9 +599,10 @@
             this.textureUpButton.AutoSize = true;
             this.textureUpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.textureUpButton.Enabled = false;
-            this.textureUpButton.Location = new System.Drawing.Point(117, 3);
+            this.textureUpButton.Location = new System.Drawing.Point(136, 3);
+            this.textureUpButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textureUpButton.Name = "textureUpButton";
-            this.textureUpButton.Size = new System.Drawing.Size(31, 23);
+            this.textureUpButton.Size = new System.Drawing.Size(32, 25);
             this.textureUpButton.TabIndex = 2;
             this.textureUpButton.Text = "Up";
             this.textureUpButton.UseVisualStyleBackColor = true;
@@ -590,9 +613,10 @@
             this.removeTextureButton.AutoSize = true;
             this.removeTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.removeTextureButton.Enabled = false;
-            this.removeTextureButton.Location = new System.Drawing.Point(54, 3);
+            this.removeTextureButton.Location = new System.Drawing.Point(63, 3);
+            this.removeTextureButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.removeTextureButton.Name = "removeTextureButton";
-            this.removeTextureButton.Size = new System.Drawing.Size(57, 23);
+            this.removeTextureButton.Size = new System.Drawing.Size(60, 25);
             this.removeTextureButton.TabIndex = 1;
             this.removeTextureButton.Text = "Remove";
             this.removeTextureButton.UseVisualStyleBackColor = true;
@@ -602,9 +626,10 @@
             // 
             this.addTextureButton.AutoSize = true;
             this.addTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.addTextureButton.Location = new System.Drawing.Point(3, 3);
+            this.addTextureButton.Location = new System.Drawing.Point(4, 3);
+            this.addTextureButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.addTextureButton.Name = "addTextureButton";
-            this.addTextureButton.Size = new System.Drawing.Size(45, 23);
+            this.addTextureButton.Size = new System.Drawing.Size(48, 25);
             this.addTextureButton.TabIndex = 0;
             this.addTextureButton.Text = "Add...";
             this.addTextureButton.UseVisualStyleBackColor = true;
@@ -614,9 +639,10 @@
             // 
             this.checkBoxPAKUseAlpha.AutoSize = true;
             this.checkBoxPAKUseAlpha.Enabled = false;
-            this.checkBoxPAKUseAlpha.Location = new System.Drawing.Point(272, 56);
+            this.checkBoxPAKUseAlpha.Location = new System.Drawing.Point(317, 65);
+            this.checkBoxPAKUseAlpha.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBoxPAKUseAlpha.Name = "checkBoxPAKUseAlpha";
-            this.checkBoxPAKUseAlpha.Size = new System.Drawing.Size(89, 17);
+            this.checkBoxPAKUseAlpha.Size = new System.Drawing.Size(98, 19);
             this.checkBoxPAKUseAlpha.TabIndex = 15;
             this.checkBoxPAKUseAlpha.Text = "Alpha Sorting";
             this.checkBoxPAKUseAlpha.UseVisualStyleBackColor = true;
@@ -626,37 +652,40 @@
             // numericUpDownOrigSizeY
             // 
             this.numericUpDownOrigSizeY.Enabled = false;
-            this.numericUpDownOrigSizeY.Location = new System.Drawing.Point(151, 81);
+            this.numericUpDownOrigSizeY.Location = new System.Drawing.Point(176, 93);
+            this.numericUpDownOrigSizeY.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDownOrigSizeY.Maximum = new decimal(new int[] {
             8192,
             0,
             0,
             0});
             this.numericUpDownOrigSizeY.Name = "numericUpDownOrigSizeY";
-            this.numericUpDownOrigSizeY.Size = new System.Drawing.Size(55, 20);
+            this.numericUpDownOrigSizeY.Size = new System.Drawing.Size(64, 23);
             this.numericUpDownOrigSizeY.TabIndex = 13;
             this.numericUpDownOrigSizeY.ValueChanged += new System.EventHandler(this.numericUpDownOrigSizeY_ValueChanged);
             // 
             // numericUpDownOrigSizeX
             // 
             this.numericUpDownOrigSizeX.Enabled = false;
-            this.numericUpDownOrigSizeX.Location = new System.Drawing.Point(78, 81);
+            this.numericUpDownOrigSizeX.Location = new System.Drawing.Point(91, 93);
+            this.numericUpDownOrigSizeX.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDownOrigSizeX.Maximum = new decimal(new int[] {
             8192,
             0,
             0,
             0});
             this.numericUpDownOrigSizeX.Name = "numericUpDownOrigSizeX";
-            this.numericUpDownOrigSizeX.Size = new System.Drawing.Size(53, 20);
+            this.numericUpDownOrigSizeX.Size = new System.Drawing.Size(62, 23);
             this.numericUpDownOrigSizeX.TabIndex = 12;
             this.numericUpDownOrigSizeX.ValueChanged += new System.EventHandler(this.numericUpDownOrigSizeX_ValueChanged);
             // 
             // hexIndexCheckBox
             // 
             this.hexIndexCheckBox.AutoSize = true;
-            this.hexIndexCheckBox.Location = new System.Drawing.Point(184, 5);
+            this.hexIndexCheckBox.Location = new System.Drawing.Point(215, 6);
+            this.hexIndexCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hexIndexCheckBox.Name = "hexIndexCheckBox";
-            this.hexIndexCheckBox.Size = new System.Drawing.Size(45, 17);
+            this.hexIndexCheckBox.Size = new System.Drawing.Size(47, 19);
             this.hexIndexCheckBox.TabIndex = 10;
             this.hexIndexCheckBox.Text = "Hex";
             this.hexIndexCheckBox.UseVisualStyleBackColor = true;
@@ -664,10 +693,11 @@
             // 
             // indexTextBox
             // 
-            this.indexTextBox.Location = new System.Drawing.Point(78, 3);
+            this.indexTextBox.Location = new System.Drawing.Point(91, 3);
+            this.indexTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.indexTextBox.Name = "indexTextBox";
             this.indexTextBox.ReadOnly = true;
-            this.indexTextBox.Size = new System.Drawing.Size(100, 20);
+            this.indexTextBox.Size = new System.Drawing.Size(116, 23);
             this.indexTextBox.TabIndex = 9;
             this.indexTextBox.Text = "0";
             // 
@@ -675,9 +705,10 @@
             // 
             this.mipmapCheckBox.AutoSize = true;
             this.mipmapCheckBox.Enabled = false;
-            this.mipmapCheckBox.Location = new System.Drawing.Point(204, 56);
+            this.mipmapCheckBox.Location = new System.Drawing.Point(238, 65);
+            this.mipmapCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mipmapCheckBox.Name = "mipmapCheckBox";
-            this.mipmapCheckBox.Size = new System.Drawing.Size(63, 17);
+            this.mipmapCheckBox.Size = new System.Drawing.Size(71, 19);
             this.mipmapCheckBox.TabIndex = 7;
             this.mipmapCheckBox.Text = "Mipmap";
             this.mipmapCheckBox.UseVisualStyleBackColor = true;
@@ -700,31 +731,32 @@
             this.tableLayoutPanel1.Controls.Add(this.texturePreviewZoomTrackBar, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.textureImage, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.labelZoomInfo, 0, 4);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 106);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 122);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 11;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(338, 365);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(396, 395);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // textureSizeLabel
             // 
             this.textureSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.textureSizeLabel.AutoSize = true;
-            this.textureSizeLabel.Location = new System.Drawing.Point(0, 41);
-            this.textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+            this.textureSizeLabel.Location = new System.Drawing.Point(0, 45);
+            this.textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
             this.textureSizeLabel.Name = "textureSizeLabel";
-            this.textureSizeLabel.Size = new System.Drawing.Size(75, 13);
+            this.textureSizeLabel.Size = new System.Drawing.Size(85, 15);
             this.textureSizeLabel.TabIndex = 11;
             this.textureSizeLabel.Text = "Actual Size: ---";
             this.textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -736,9 +768,10 @@
             this.importExportPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.importExportPanel.Controls.Add(this.exportButton);
             this.importExportPanel.Controls.Add(this.importButton);
-            this.importExportPanel.Location = new System.Drawing.Point(3, 195);
+            this.importExportPanel.Location = new System.Drawing.Point(4, 204);
+            this.importExportPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.importExportPanel.Name = "importExportPanel";
-            this.importExportPanel.Size = new System.Drawing.Size(123, 29);
+            this.importExportPanel.Size = new System.Drawing.Size(139, 31);
             this.importExportPanel.TabIndex = 5;
             // 
             // exportButton
@@ -746,9 +779,10 @@
             this.exportButton.AutoSize = true;
             this.exportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.exportButton.Enabled = false;
-            this.exportButton.Location = new System.Drawing.Point(64, 3);
+            this.exportButton.Location = new System.Drawing.Point(75, 3);
+            this.exportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(56, 23);
+            this.exportButton.Size = new System.Drawing.Size(60, 25);
             this.exportButton.TabIndex = 7;
             this.exportButton.Text = "Export...";
             this.exportButton.UseVisualStyleBackColor = true;
@@ -759,9 +793,10 @@
             this.importButton.AutoSize = true;
             this.importButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.importButton.Enabled = false;
-            this.importButton.Location = new System.Drawing.Point(3, 3);
+            this.importButton.Location = new System.Drawing.Point(4, 3);
+            this.importButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.importButton.Name = "importButton";
-            this.importButton.Size = new System.Drawing.Size(55, 23);
+            this.importButton.Size = new System.Drawing.Size(62, 25);
             this.importButton.TabIndex = 6;
             this.importButton.Text = "Import...";
             this.importButton.UseVisualStyleBackColor = true;
@@ -772,9 +807,9 @@
             this.dataFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.dataFormatLabel.AutoSize = true;
             this.dataFormatLabel.Location = new System.Drawing.Point(0, 3);
-            this.dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+            this.dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
             this.dataFormatLabel.Name = "dataFormatLabel";
-            this.dataFormatLabel.Size = new System.Drawing.Size(117, 13);
+            this.dataFormatLabel.Size = new System.Drawing.Size(129, 15);
             this.dataFormatLabel.TabIndex = 6;
             this.dataFormatLabel.Text = "Data Format: Unknown";
             this.dataFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -783,10 +818,10 @@
             // 
             this.pixelFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pixelFormatLabel.AutoSize = true;
-            this.pixelFormatLabel.Location = new System.Drawing.Point(0, 22);
-            this.pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+            this.pixelFormatLabel.Location = new System.Drawing.Point(0, 24);
+            this.pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
             this.pixelFormatLabel.Name = "pixelFormatLabel";
-            this.pixelFormatLabel.Size = new System.Drawing.Size(116, 13);
+            this.pixelFormatLabel.Size = new System.Drawing.Size(130, 15);
             this.pixelFormatLabel.TabIndex = 7;
             this.pixelFormatLabel.Text = "Pixel Format: Unknown";
             this.pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -794,7 +829,7 @@
             // palettePreview
             // 
             this.palettePreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.palettePreview.Location = new System.Drawing.Point(0, 227);
+            this.palettePreview.Location = new System.Drawing.Point(0, 238);
             this.palettePreview.Margin = new System.Windows.Forms.Padding(0);
             this.palettePreview.Name = "palettePreview";
             this.palettePreview.Size = new System.Drawing.Size(33, 33);
@@ -808,16 +843,18 @@
             this.panel3.Controls.Add(this.buttonLoadPalette);
             this.panel3.Controls.Add(this.buttonSavePalette);
             this.panel3.Controls.Add(this.buttonResetPalette);
-            this.panel3.Location = new System.Drawing.Point(3, 328);
+            this.panel3.Location = new System.Drawing.Point(4, 353);
+            this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(174, 34);
+            this.panel3.Size = new System.Drawing.Size(203, 39);
             this.panel3.TabIndex = 27;
             // 
             // buttonLoadPalette
             // 
-            this.buttonLoadPalette.Location = new System.Drawing.Point(3, 3);
+            this.buttonLoadPalette.Location = new System.Drawing.Point(4, 3);
+            this.buttonLoadPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.buttonLoadPalette.Name = "buttonLoadPalette";
-            this.buttonLoadPalette.Size = new System.Drawing.Size(52, 23);
+            this.buttonLoadPalette.Size = new System.Drawing.Size(61, 27);
             this.buttonLoadPalette.TabIndex = 17;
             this.buttonLoadPalette.Text = "Load...";
             this.buttonLoadPalette.UseVisualStyleBackColor = true;
@@ -826,9 +863,10 @@
             // 
             // buttonSavePalette
             // 
-            this.buttonSavePalette.Location = new System.Drawing.Point(61, 3);
+            this.buttonSavePalette.Location = new System.Drawing.Point(71, 3);
+            this.buttonSavePalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.buttonSavePalette.Name = "buttonSavePalette";
-            this.buttonSavePalette.Size = new System.Drawing.Size(52, 23);
+            this.buttonSavePalette.Size = new System.Drawing.Size(61, 27);
             this.buttonSavePalette.TabIndex = 18;
             this.buttonSavePalette.Text = "Save...";
             this.buttonSavePalette.UseVisualStyleBackColor = true;
@@ -837,9 +875,10 @@
             // 
             // buttonResetPalette
             // 
-            this.buttonResetPalette.Location = new System.Drawing.Point(119, 3);
+            this.buttonResetPalette.Location = new System.Drawing.Point(139, 3);
+            this.buttonResetPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.buttonResetPalette.Name = "buttonResetPalette";
-            this.buttonResetPalette.Size = new System.Drawing.Size(52, 23);
+            this.buttonResetPalette.Size = new System.Drawing.Size(61, 27);
             this.buttonResetPalette.TabIndex = 19;
             this.buttonResetPalette.Text = "Reset";
             this.buttonResetPalette.UseVisualStyleBackColor = true;
@@ -855,63 +894,69 @@
             this.panelPaletteInfo.Controls.Add(this.numericUpDownStartBank);
             this.panelPaletteInfo.Controls.Add(this.comboBoxCurrentPaletteBank);
             this.panelPaletteInfo.Controls.Add(this.labelPaletteFormat);
-            this.panelPaletteInfo.Location = new System.Drawing.Point(183, 230);
+            this.panelPaletteInfo.Location = new System.Drawing.Point(215, 241);
+            this.panelPaletteInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panelPaletteInfo.Name = "panelPaletteInfo";
-            this.panelPaletteInfo.Size = new System.Drawing.Size(152, 92);
+            this.panelPaletteInfo.Size = new System.Drawing.Size(177, 106);
             this.panelPaletteInfo.TabIndex = 20;
             this.panelPaletteInfo.Visible = false;
             // 
             // labelPaletteBankPreview
             // 
             this.labelPaletteBankPreview.AutoSize = true;
-            this.labelPaletteBankPreview.Location = new System.Drawing.Point(3, 24);
+            this.labelPaletteBankPreview.Location = new System.Drawing.Point(4, 28);
+            this.labelPaletteBankPreview.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelPaletteBankPreview.Name = "labelPaletteBankPreview";
-            this.labelPaletteBankPreview.Size = new System.Drawing.Size(71, 13);
+            this.labelPaletteBankPreview.Size = new System.Drawing.Size(75, 15);
             this.labelPaletteBankPreview.TabIndex = 21;
             this.labelPaletteBankPreview.Text = "Palette Bank:";
             this.labelPaletteBankPreview.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // numericUpDownStartColor
             // 
-            this.numericUpDownStartColor.Location = new System.Drawing.Point(84, 62);
+            this.numericUpDownStartColor.Location = new System.Drawing.Point(98, 72);
+            this.numericUpDownStartColor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDownStartColor.Maximum = new decimal(new int[] {
             1024,
             0,
             0,
             0});
             this.numericUpDownStartColor.Name = "numericUpDownStartColor";
-            this.numericUpDownStartColor.Size = new System.Drawing.Size(61, 20);
+            this.numericUpDownStartColor.Size = new System.Drawing.Size(71, 23);
             this.numericUpDownStartColor.TabIndex = 25;
             this.numericUpDownStartColor.ValueChanged += new System.EventHandler(this.numericUpDownStartColor_ValueChanged);
             // 
             // labelStartColor
             // 
             this.labelStartColor.AutoSize = true;
-            this.labelStartColor.Location = new System.Drawing.Point(81, 45);
+            this.labelStartColor.Location = new System.Drawing.Point(94, 52);
+            this.labelStartColor.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelStartColor.Name = "labelStartColor";
-            this.labelStartColor.Size = new System.Drawing.Size(59, 13);
+            this.labelStartColor.Size = new System.Drawing.Size(66, 15);
             this.labelStartColor.TabIndex = 24;
             this.labelStartColor.Text = "Start Color:";
             // 
             // labelStartBank
             // 
             this.labelStartBank.AutoSize = true;
-            this.labelStartBank.Location = new System.Drawing.Point(3, 45);
+            this.labelStartBank.Location = new System.Drawing.Point(4, 52);
+            this.labelStartBank.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelStartBank.Name = "labelStartBank";
-            this.labelStartBank.Size = new System.Drawing.Size(60, 13);
+            this.labelStartBank.Size = new System.Drawing.Size(63, 15);
             this.labelStartBank.TabIndex = 23;
             this.labelStartBank.Text = "Start Bank:";
             // 
             // numericUpDownStartBank
             // 
-            this.numericUpDownStartBank.Location = new System.Drawing.Point(4, 62);
+            this.numericUpDownStartBank.Location = new System.Drawing.Point(5, 72);
+            this.numericUpDownStartBank.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDownStartBank.Maximum = new decimal(new int[] {
             63,
             0,
             0,
             0});
             this.numericUpDownStartBank.Name = "numericUpDownStartBank";
-            this.numericUpDownStartBank.Size = new System.Drawing.Size(61, 20);
+            this.numericUpDownStartBank.Size = new System.Drawing.Size(71, 23);
             this.numericUpDownStartBank.TabIndex = 22;
             this.numericUpDownStartBank.ValueChanged += new System.EventHandler(this.numericUpDownStartBank_ValueChanged);
             // 
@@ -919,9 +964,10 @@
             // 
             this.comboBoxCurrentPaletteBank.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCurrentPaletteBank.FormattingEnabled = true;
-            this.comboBoxCurrentPaletteBank.Location = new System.Drawing.Point(85, 21);
+            this.comboBoxCurrentPaletteBank.Location = new System.Drawing.Point(99, 24);
+            this.comboBoxCurrentPaletteBank.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxCurrentPaletteBank.Name = "comboBoxCurrentPaletteBank";
-            this.comboBoxCurrentPaletteBank.Size = new System.Drawing.Size(60, 21);
+            this.comboBoxCurrentPaletteBank.Size = new System.Drawing.Size(69, 23);
             this.comboBoxCurrentPaletteBank.TabIndex = 20;
             this.comboBoxCurrentPaletteBank.SelectedIndexChanged += new System.EventHandler(this.comboBoxCurrentPaletteBank_SelectedIndexChanged);
             // 
@@ -931,9 +977,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelPaletteFormat.AutoSize = true;
-            this.labelPaletteFormat.Location = new System.Drawing.Point(3, 5);
+            this.labelPaletteFormat.Location = new System.Drawing.Point(4, 6);
+            this.labelPaletteFormat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelPaletteFormat.Name = "labelPaletteFormat";
-            this.labelPaletteFormat.Size = new System.Drawing.Size(46, 13);
+            this.labelPaletteFormat.Size = new System.Drawing.Size(49, 15);
             this.labelPaletteFormat.TabIndex = 12;
             this.labelPaletteFormat.Text = "Palette: ";
             this.labelPaletteFormat.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -941,10 +988,11 @@
             // 
             // texturePreviewZoomTrackBar
             // 
-            this.texturePreviewZoomTrackBar.Location = new System.Drawing.Point(3, 60);
+            this.texturePreviewZoomTrackBar.Location = new System.Drawing.Point(4, 66);
+            this.texturePreviewZoomTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.texturePreviewZoomTrackBar.Maximum = 8;
             this.texturePreviewZoomTrackBar.Name = "texturePreviewZoomTrackBar";
-            this.texturePreviewZoomTrackBar.Size = new System.Drawing.Size(171, 45);
+            this.texturePreviewZoomTrackBar.Size = new System.Drawing.Size(200, 45);
             this.texturePreviewZoomTrackBar.TabIndex = 28;
             this.texturePreviewZoomTrackBar.Value = 4;
             this.texturePreviewZoomTrackBar.Scroll += new System.EventHandler(this.texturePreviewZoomTrackBar_Scroll);
@@ -952,7 +1000,7 @@
             // textureImage
             // 
             this.textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.textureImage.Location = new System.Drawing.Point(0, 128);
+            this.textureImage.Location = new System.Drawing.Point(0, 137);
             this.textureImage.Margin = new System.Windows.Forms.Padding(0);
             this.textureImage.Name = "textureImage";
             this.textureImage.Size = new System.Drawing.Size(64, 64);
@@ -964,26 +1012,38 @@
             this.textureImage.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textureImage_MouseClick);
             this.textureImage.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textureImage_MouseMove);
             // 
+            // labelZoomInfo
+            // 
+            this.labelZoomInfo.AutoSize = true;
+            this.labelZoomInfo.Location = new System.Drawing.Point(4, 114);
+            this.labelZoomInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelZoomInfo.Name = "labelZoomInfo";
+            this.labelZoomInfo.Size = new System.Drawing.Size(67, 15);
+            this.labelZoomInfo.TabIndex = 29;
+            this.labelZoomInfo.Text = "Zoom: N/A";
+            // 
             // globalIndex
             // 
             this.globalIndex.Enabled = false;
-            this.globalIndex.Location = new System.Drawing.Point(78, 55);
+            this.globalIndex.Location = new System.Drawing.Point(91, 63);
+            this.globalIndex.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.globalIndex.Maximum = new decimal(new int[] {
             -1,
             0,
             0,
             0});
             this.globalIndex.Name = "globalIndex";
-            this.globalIndex.Size = new System.Drawing.Size(120, 20);
+            this.globalIndex.Size = new System.Drawing.Size(140, 23);
             this.globalIndex.TabIndex = 3;
             this.globalIndex.ValueChanged += new System.EventHandler(this.globalIndex_ValueChanged);
             // 
             // textureName
             // 
             this.textureName.Enabled = false;
-            this.textureName.Location = new System.Drawing.Point(78, 29);
+            this.textureName.Location = new System.Drawing.Point(91, 33);
+            this.textureName.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textureName.Name = "textureName";
-            this.textureName.Size = new System.Drawing.Size(185, 20);
+            this.textureName.Size = new System.Drawing.Size(215, 23);
             this.textureName.TabIndex = 1;
             this.textureName.TextChanged += new System.EventHandler(this.textureName_TextChanged);
             // 
@@ -992,16 +1052,17 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 539);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 625);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(604, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(705, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(57, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(58, 17);
             this.toolStripStatusLabel1.Text = "0 textures";
             // 
             // dummyPanel
@@ -1010,7 +1071,7 @@
             this.dummyPanel.Location = new System.Drawing.Point(0, 0);
             this.dummyPanel.Margin = new System.Windows.Forms.Padding(0);
             this.dummyPanel.Name = "dummyPanel";
-            this.dummyPanel.Size = new System.Drawing.Size(100, 100);
+            this.dummyPanel.Size = new System.Drawing.Size(117, 115);
             this.dummyPanel.TabIndex = 3;
             this.dummyPanel.Visible = false;
             // 
@@ -1039,26 +1100,25 @@
             this.pasteToolStripMenuItem.Text = "&Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
-            // labelZoomInfo
+            // xVMToolStripMenuItem1
             // 
-            this.labelZoomInfo.AutoSize = true;
-            this.labelZoomInfo.Location = new System.Drawing.Point(3, 108);
-            this.labelZoomInfo.Name = "labelZoomInfo";
-            this.labelZoomInfo.Size = new System.Drawing.Size(60, 13);
-            this.labelZoomInfo.TabIndex = 29;
-            this.labelZoomInfo.Text = "Zoom: N/A";
+            this.xVMToolStripMenuItem1.Name = "xVMToolStripMenuItem1";
+            this.xVMToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.xVMToolStripMenuItem1.Text = "XVM";
+            this.xVMToolStripMenuItem1.Click += new System.EventHandler(this.xVMToolStripMenuItem1_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(604, 561);
+            this.ClientSize = new System.Drawing.Size(705, 647);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.dummyPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PVM Editor";
@@ -1177,6 +1237,8 @@
 		private System.Windows.Forms.TrackBar texturePreviewZoomTrackBar;
 		private System.Windows.Forms.ToolStripMenuItem textureFilteringToolStripMenuItem;
 		private System.Windows.Forms.Label labelZoomInfo;
+		private System.Windows.Forms.ToolStripMenuItem xVMToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem xVMToolStripMenuItem1;
 	}
 }
 

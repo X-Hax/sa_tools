@@ -1968,7 +1968,7 @@ namespace SAModel.SALVL
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "pvm",
-				Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*",
+				Filter = "Texture Archives|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pak;*.txt|All Files|*.*",
 				InitialDirectory = modFolder,
 				Multiselect = false
 			})

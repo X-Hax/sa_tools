@@ -496,6 +496,7 @@ namespace SAToolsHub
                     case ".pvm":
                     case ".pvmx":
                     case ".gvm":
+					case ".xvm":
                     case ".pak":
                         {
                             subItemType = "Texture Archive";
@@ -505,7 +506,8 @@ namespace SAToolsHub
                             break;
                         }
                     case ".pvr":
-                    case ".gvr":
+					case ".gvr":
+					case ".xvr":
                         {
                             subItemType = "Sega VR Image";
                             tagType = "vr";

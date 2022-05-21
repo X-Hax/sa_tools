@@ -12,6 +12,7 @@ using static ArchiveLib.ARCXFile;
 using static ArchiveLib.MLTFile;
 using static ArchiveLib.gcaxMLTFile;
 using System.Runtime.InteropServices;
+using static ArchiveLib.XVM;
 
 namespace ArchiveTool
 {
@@ -87,6 +88,10 @@ namespace ArchiveTool
                         arc = new PuyoFile(true);
                         folderMode = ArchiveFromFolderMode.GVM;
                         break;
+					case ".xvr":
+						arc = new XVM();
+						folderMode = ArchiveFromFolderMode.XVM;
+						break;
                     case ".wav":
                     case ".adx":
                         folderMode = ArchiveFromFolderMode.DAT;
@@ -180,6 +185,10 @@ namespace ArchiveTool
                             }
                             arc.Entries.Add(new PVMXEntry(Path.GetFileName(filename), gbix, File.ReadAllBytes(Path.Combine(filePath, filename)), width, height));
                             break;
+						case ArchiveFromFolderMode.XVM:
+							arc.Entries.Add(new XVMEntry(Path.Combine(filePath, filename)));
+							extension = ".xvm";
+							break;
 						default:
                             extension = ".bin";
                             break;
@@ -367,6 +376,7 @@ namespace ArchiveTool
             PB,
             MLT,
             gcaxMLT,
+			XVM
         }
     }
 }

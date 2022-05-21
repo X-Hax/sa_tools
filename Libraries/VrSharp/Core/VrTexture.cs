@@ -213,7 +213,7 @@ namespace VrSharp
         /// Returns the decoded texture as a bitmap.
         /// </summary>
         /// <returns></returns>
-        public Bitmap ToBitmap()
+        public virtual Bitmap ToBitmap()
         {
             if (!initalized)
             {
@@ -277,7 +277,7 @@ namespace VrSharp
         }
 
         // Decodes a texture
-        private byte[] DecodeTexture()
+        protected virtual byte[] DecodeTexture()
         {
             // Make sure we can decode this texture
             if (!canDecode)
@@ -340,7 +340,7 @@ namespace VrSharp
         /// Returns the mipmaps of a texture as an array of bitmaps. The first index will contain the largest, original sized texture and the last index will contain the smallest texture.
         /// </summary>
         /// <returns></returns>
-        public Bitmap[] MipmapsToBitmap()
+        public virtual Bitmap[] MipmapsToBitmap()
         {
             if (!initalized)
             {
@@ -397,7 +397,7 @@ namespace VrSharp
         }
 
         // Decodes mipmaps
-        private byte[][] DecodeMipmaps()
+        protected virtual byte[][] DecodeMipmaps()
         {
             // Make sure we can decode this texture
             if (!canDecode)
