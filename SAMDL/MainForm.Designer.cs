@@ -84,7 +84,7 @@ namespace SAModel.SAMDL
             this.textureRemappingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.swapUVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
-            this.metadataEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelInfoEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetLabelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.modelLibraryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -612,7 +612,7 @@ namespace SAModel.SAMDL
             this.textureRemappingToolStripMenuItem,
             this.swapUVToolStripMenuItem,
             this.toolStripSeparator18,
-            this.metadataEditorToolStripMenuItem,
+            this.modelInfoEditorToolStripMenuItem,
             this.resetLabelsToolStripMenuItem,
             this.toolStripSeparator19,
             this.modelLibraryToolStripMenuItem});
@@ -658,18 +658,18 @@ namespace SAModel.SAMDL
             this.toolStripSeparator18.Name = "toolStripSeparator18";
             this.toolStripSeparator18.Size = new System.Drawing.Size(190, 6);
             // 
-            // metadataEditorToolStripMenuItem
+            // modelInfoEditorToolStripMenuItem
             // 
-            this.metadataEditorToolStripMenuItem.Enabled = false;
-            this.metadataEditorToolStripMenuItem.Name = "metadataEditorToolStripMenuItem";
-            this.metadataEditorToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
-            this.metadataEditorToolStripMenuItem.Text = "Metadata Editor...";
-            this.metadataEditorToolStripMenuItem.ToolTipText = "Edit the model\'s author, description, animation list and labels.";
-            this.metadataEditorToolStripMenuItem.Visible = false;
-            // 
-            // resetLabelsToolStripMenuItem
-            // 
-            this.resetLabelsToolStripMenuItem.Enabled = false;
+            this.modelInfoEditorToolStripMenuItem.Enabled = false;
+            this.modelInfoEditorToolStripMenuItem.Name = "modelInfoEditorToolStripMenuItem";
+            this.modelInfoEditorToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
+            this.modelInfoEditorToolStripMenuItem.Text = "Edit Model Info...";
+            this.modelInfoEditorToolStripMenuItem.ToolTipText = "Edit the model\'s author, description and animation list.";
+			this.modelInfoEditorToolStripMenuItem.Click+= new System.EventHandler(this.modelInfoEditorToolStripMenuItem_Click);
+			// 
+			// resetLabelsToolStripMenuItem
+			// 
+			this.resetLabelsToolStripMenuItem.Enabled = false;
             this.resetLabelsToolStripMenuItem.Name = "resetLabelsToolStripMenuItem";
             this.resetLabelsToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
             this.resetLabelsToolStripMenuItem.Text = "Reset Labels";
@@ -1667,7 +1667,7 @@ namespace SAModel.SAMDL
 		private System.Windows.Forms.ToolStripMenuItem moveDownToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
 		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem metadataEditorToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem modelInfoEditorToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator20;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator18;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator19;

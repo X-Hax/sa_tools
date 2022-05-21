@@ -746,7 +746,7 @@ namespace SAModel.SAMDL
             currentFileName = filename;
 
             RebuildModelCache();
-            loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+            loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animationList != null && animationList.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -4107,6 +4107,16 @@ namespace SAModel.SAMDL
 				RebuildModelCache();
 				NeedRedraw = true;
 				unsavedChanges = true;
+			}
+		}
+
+		private void modelInfoEditorToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			UI.ModelInfoEditor mtd = new UI.ModelInfoEditor(model, modelAuthor, modelDescription, currentFileName);
+			if (mtd.ShowDialog() == DialogResult.OK)
+			{
+				modelAuthor = mtd.ModelAuthor;
+				modelDescription = mtd.ModelDescription;
 			}
 		}
 	}
