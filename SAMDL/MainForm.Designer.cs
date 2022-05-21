@@ -294,7 +294,7 @@ namespace SAModel.SAMDL
             this.loadTexturesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
             this.loadTexturesToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.loadTexturesToolStripMenuItem.Text = "Load Textures...";
-            this.loadTexturesToolStripMenuItem.ToolTipText = "Load a PVM/GVM, PRS, PAK etc. file.";
+            this.loadTexturesToolStripMenuItem.ToolTipText = "Load a PVM/GVM/XVM, PRS, PAK etc. file.";
             this.loadTexturesToolStripMenuItem.Click += new System.EventHandler(this.loadTexturesToolStripMenuItem_Click);
             // 
             // addTexturestoolStripMenuItem
@@ -302,7 +302,7 @@ namespace SAModel.SAMDL
             this.addTexturestoolStripMenuItem.Name = "addTexturestoolStripMenuItem";
             this.addTexturestoolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.addTexturestoolStripMenuItem.Text = "Add Textures...";
-            this.addTexturestoolStripMenuItem.ToolTipText = "Add individual textures from PVR or GVR files.";
+            this.addTexturestoolStripMenuItem.ToolTipText = "Add individual textures from PVR, GVR, or XVR files.";
             this.addTexturestoolStripMenuItem.Click += new System.EventHandler(this.addTexturestoolStripMenuItem_Click);
             // 
             // unloadTextureToolStripMenuItem

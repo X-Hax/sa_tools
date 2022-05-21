@@ -235,8 +235,13 @@ namespace SAModel.SAMDL
                 {
                     extension = ".GVM";
                     modHasTexture = true;
-                }
-                else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PRS"))
+				}
+				else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".XVM"))
+				{
+					extension = ".XVM";
+					modHasTexture = true;
+				}
+				else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".PRS"))
                 {
                     extension = ".PRS";
                     modHasTexture = true;
@@ -260,15 +265,22 @@ namespace SAModel.SAMDL
                 {
                     extension = ".GVR";
                     modHasTexture = true;
-                }
-                // Fallback on the game's system folder
-                if (!modHasTexture)
+				}
+				else if (File.Exists(Path.Combine(modSystemFolder, pvmName) + ".XVR"))
+				{
+					extension = ".XVR";
+					modHasTexture = true;
+				}
+				// Fallback on the game's system folder
+				if (!modHasTexture)
                 {
                     if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PVM"))
                         extension = ".PVM";
                     else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".GVM"))
                         extension = ".GVM";
-                    else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PRS"))
+					else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".XVM"))
+						extension = ".XVM";
+					else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PRS"))
                         extension = ".PRS";
                     else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".PAK"))
                         extension = ".PAK";
@@ -278,7 +290,9 @@ namespace SAModel.SAMDL
                         extension = ".PVR";
                     else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".GVR"))
                         extension = ".GVR";
-                }
+					else if (File.Exists(Path.Combine(gameSystemFolder, pvmName) + ".XVR"))
+						extension = ".XVR";
+				}
                 return Path.Combine(modHasTexture ? modSystemFolder : gameSystemFolder, pvmName) + extension;
             }
         }

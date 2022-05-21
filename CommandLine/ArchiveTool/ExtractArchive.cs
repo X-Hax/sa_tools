@@ -54,7 +54,10 @@ namespace ArchiveTool
                 case (".gvm"):
                     arc = new PuyoFile(arcdata);
                     break;
-                case (".pb"):
+				case (".xvm"):
+					arc = new XVM(arcdata);
+					break;
+				case (".pb"):
                     arc = new PBFile(arcdata);
                     break;
                 case (".pak"):
@@ -232,6 +235,10 @@ namespace ArchiveTool
                         desc = "GVM";
                         extension = ".gvm";
                         break;
+					case "XVMH":
+						desc = "XVM";
+						extension = ".xvm";
+						break;
                 }
                 Console.WriteLine("Entry {0} is {1}", i, desc);
                 string outpath = Path.Combine(outputPath, i.ToString("D3") + extension);

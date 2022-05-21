@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using ArchiveLib;
 using static ArchiveLib.GenericArchive;
+using static ArchiveLib.XVM;
 
 namespace SAModel.Direct3D.TextureSystem
 {
@@ -58,6 +59,10 @@ namespace SAModel.Direct3D.TextureSystem
 					if (parcx.PaletteRequired)
                         parcx.AddPaletteFromDialog(Path.GetDirectoryName(filename));
                     break;
+				case ".xvr":
+					arc = new XVM();
+					arc.Entries.Add(new XVMEntry(filename));
+					break;
 				case ".png":
 				case ".jpg":
 				case ".gif":
@@ -68,6 +73,9 @@ namespace SAModel.Direct3D.TextureSystem
 				case ".prs":
                     file = FraGag.Compression.Prs.Decompress(file);
                     goto default;
+				case ".xvm":
+					arc = new XVM(file);
+					break;
                 case ".pvm":
                 case ".gvm":
                 default:

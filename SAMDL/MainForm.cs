@@ -183,11 +183,13 @@ namespace SAModel.SAMDL
 						break;
                     case ".pvm":
                     case ".gvm":
-                    case ".pb":
+					case ".xvm":
+					case ".pb":
                     case ".pvmx":
                     case ".pak":
                     case ".prs":
                     case ".pvr":
+					case ".xvr":
                         AddSingleTexture(file);
                         break;
                     case ".gvr":
@@ -1835,7 +1837,7 @@ namespace SAModel.SAMDL
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
             {
 				if (a.ShowDialog() == DialogResult.OK)
 				{
@@ -3757,7 +3759,7 @@ namespace SAModel.SAMDL
 
 		private void addTexturestoolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+            using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.xvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                     AddTextures(ofd.FileNames);
