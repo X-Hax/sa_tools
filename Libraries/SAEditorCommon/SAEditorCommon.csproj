@@ -12,6 +12,9 @@
 		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Update="UI\GCMaterialEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
 		<Compile Update="UI\ModelLibraryControl.cs">
 			<SubType>UserControl</SubType>
 		</Compile>

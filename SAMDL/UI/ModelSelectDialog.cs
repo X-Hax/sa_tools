@@ -306,8 +306,7 @@ namespace SAModel.SAMDL
                         if (model.TextureArchives.Length > 1)
                         {
                             for (int p = 0; p < model.TextureArchives.Length; p++)
-								if (!textureArchiveList.Contains(model.TextureArchives[p]))
-									textureArchiveList.Add(GetTextureFilename(model.TextureArchives[p]));
+								textureArchiveList.Add(GetTextureFilename(model.TextureArchives[p]));
                         }
                         // If not, use the whole field as texlist INI or PVM name + optional texture IDs
                         else
@@ -320,8 +319,7 @@ namespace SAModel.SAMDL
                                 for (int t = 0; t < ts.Length; t++)
                                 {
                                     if (ts[t].Name != null && ts[t].Name != "")
-										if (!textureArchiveList.Contains(ts[t].Name))
-											textureArchiveList.Add(GetTextureFilename(ts[t].Name));
+										textureArchiveList.Add(GetTextureFilename(ts[t].Name));
                                 }
                             }
                             // If not, use it as a single texture archive
