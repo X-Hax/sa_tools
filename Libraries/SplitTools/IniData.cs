@@ -4086,7 +4086,7 @@ namespace SplitTools
 		Credits
 	}
 
-	public struct Label_MESHSET
+	public struct LabelMESHSET
 	{
 		[IniName("pl")]
 		public string PolyName;
@@ -4097,28 +4097,26 @@ namespace SplitTools
 		[IniName("vc")]
 		public string VColorName;
 	}
-	public struct Label_OBJECT
+
+	public struct LabelOBJECT
 	{
 		[IniName("obj")]
 		public string ObjectName;
 		[IniName("att")]
 		public string AtachName;
 		[IniName("msh")]
-		public string MeshsetOrPolyName; //Also polys for chunk
+		public string MeshsetOrPolyName; // Also polys for chunk
 		[IniName("m")]
-		public Label_MESHSET[] MeshsetItemNames;
+		public LabelMESHSET[] MeshsetItemNames;
 		[IniName("vtx")]
 		public string VertexName;
 		[IniName("nml")]
 		public string NormalName;
 		[IniName("mat")]
 		public string MaterialName;
-		[IniName("ch")]
-		public string[] ChildNames;
-		[IniName("sb")]
-		public string SiblingName;
 	}
-	public struct Label_MKEY
+
+	public struct LabelMKEY
 	{
 		[IniName("pos")]
 		public string PositionName;
@@ -4151,16 +4149,18 @@ namespace SplitTools
 		[IniName("nm")]
 		public string[] NormalItemNames;
 	}
-	public struct Label_MOTION
+
+	public struct LabelMOTION
 	{
 		[IniName("mot")]
 		public string MotionName;
 		[IniName("mdt")]
 		public string MdataName;
 		[IniName("mk")]
-		public Dictionary<int, Label_MKEY> MkeyNames;
+		public Dictionary<int, LabelMKEY> MkeyNames;
 	}
-	public struct Label_ACTION
+
+	public struct LabelACTION
 	{
 		[IniName("act")]
 		public string ActionName;
@@ -4169,7 +4169,8 @@ namespace SplitTools
 		[IniName("obj")]
 		public string ObjectName;
 	}
-	public struct Label_LANDTABLE
+
+	public struct LabelLANDTABLE
 	{
 		[IniName("lnd")]
 		public string LandtableName;
