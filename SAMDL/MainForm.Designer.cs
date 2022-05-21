@@ -637,7 +637,8 @@ namespace SAModel.SAMDL
             // modelInfoEditorToolStripMenuItem
             // 
             this.modelInfoEditorToolStripMenuItem.Enabled = false;
-            this.modelInfoEditorToolStripMenuItem.Name = "modelInfoEditorToolStripMenuItem";
+			this.modelInfoEditorToolStripMenuItem.Image = global::SAModel.SAMDL.Properties.Resources.editinfo;
+			this.modelInfoEditorToolStripMenuItem.Name = "modelInfoEditorToolStripMenuItem";
             this.modelInfoEditorToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
             this.modelInfoEditorToolStripMenuItem.Text = "Edit Model Info...";
             this.modelInfoEditorToolStripMenuItem.ToolTipText = "Edit the model\'s author, description and animation list.";
@@ -674,20 +675,22 @@ namespace SAModel.SAMDL
             // importLabelsToolStripMenuItem
             // 
             this.importLabelsToolStripMenuItem.Enabled = false;
-            this.importLabelsToolStripMenuItem.Visible = false;
+            this.importLabelsToolStripMenuItem.Visible = true;
             this.importLabelsToolStripMenuItem.Name = "importLabelsToolStripMenuItem";
             this.importLabelsToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
             this.importLabelsToolStripMenuItem.Text = "Import Labels...";
-            this.importLabelsToolStripMenuItem.Click += new System.EventHandler(this.importLabelsToolStripMenuItem_Click);
+			this.importLabelsToolStripMenuItem.ToolTipText = "Import all data labels for this model hierarchy from an .salabel file.";
+			this.importLabelsToolStripMenuItem.Click += new System.EventHandler(this.importLabelsToolStripMenuItem_Click);
             // 
             // exportLabelsToolStripMenuItem
             // 
             this.exportLabelsToolStripMenuItem.Enabled = false;
-            this.exportLabelsToolStripMenuItem.Visible = false;
+            this.exportLabelsToolStripMenuItem.Visible = true;
             this.exportLabelsToolStripMenuItem.Name = "exportLabelsToolStripMenuItem";
             this.exportLabelsToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
             this.exportLabelsToolStripMenuItem.Text = "Export Labels...";
-            this.exportLabelsToolStripMenuItem.Click += new System.EventHandler(this.exportLabelsToolStripMenuItem_Click);
+			this.exportLabelsToolStripMenuItem.ToolTipText = "Export all data labels for this model hierarchy to an .salabel file.";
+			this.exportLabelsToolStripMenuItem.Click += new System.EventHandler(this.exportLabelsToolStripMenuItem_Click);
             // 
             // resetLabelsToolStripMenuItem
             // 

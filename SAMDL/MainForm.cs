@@ -3701,9 +3701,13 @@ namespace SAModel.SAMDL
 
 		private void resetLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            RandomizeLabels(model);
-            RebuildModelCache();
-			unsavedChanges = true;
+			DialogResult dostuff = MessageBox.Show(this, "This will replace all labels with random identifiers. Continue?", "SAMDL", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			if (dostuff == DialogResult.Yes)
+			{
+				RandomizeLabels(model);
+				RebuildModelCache();
+				unsavedChanges = true;
+			}
         }
 
         private void LoadTexlistFile(string filename)
@@ -4123,16 +4127,16 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		public Dictionary<int, LabelOBJECT> ExportLabels(NJS_OBJECT obj)
+		public List<LabelOBJECT> ExportLabels(NJS_OBJECT obj)
 		{
-			Dictionary<int, LabelOBJECT> result = new Dictionary<int, LabelOBJECT>();
+			List<LabelOBJECT> result = new List<LabelOBJECT>();
 			NJS_OBJECT[] objs = obj.GetObjects();
 			for (int i = 0; i < objs.Length; i++)
-				result.Add(i, new LabelOBJECT(objs[i]));
+				result.Add(new LabelOBJECT(objs[i]));
 			return result;
 		}
 
-		public void ImportLabels(NJS_OBJECT obj, Dictionary<int, LabelOBJECT> labels)
+		public void ImportLabels(NJS_OBJECT obj, List<LabelOBJECT> labels)
 		{
 			NJS_OBJECT[] objs = obj.GetObjects();
 			for (int i = 0; i < objs.Length; i++)
@@ -4146,9 +4150,9 @@ namespace SAModel.SAMDL
 			{
 				if (ofd.ShowDialog() == DialogResult.OK)
 				{
-					// Oops, can't deserialize this shit!
-					//ImportLabels(model, IniSerializer.Deserialize<Dictionary<int, LabelOBJECT>>(ofd.FileName));
+					ImportLabels(model, IniSerializer.Deserialize<List<LabelOBJECT>>(ofd.FileName));
 					RebuildModelCache();
+					unsavedChanges = true;
 				}
 			}
 		}
