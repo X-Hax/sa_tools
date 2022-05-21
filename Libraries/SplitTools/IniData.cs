@@ -4086,37 +4086,126 @@ namespace SplitTools
 		Credits
 	}
 
-	public struct LabelMESHSET
+	public class LabelMESHSET
 	{
-		[IniName("pl")]
 		public string PolyName;
-		[IniName("uv")]
 		public string UVName;
-		[IniName("nm")]
 		public string PolyNormalName;
-		[IniName("vc")]
 		public string VColorName;
+
+		public LabelMESHSET(string polyName, string uvName, string polyNormalName, string vColorName) 
+		{ 
+			PolyName = polyName;
+			UVName = uvName;
+			PolyNormalName = polyNormalName;
+			VColorName = vColorName;
+		}
+
+		public LabelMESHSET(NJS_MESHSET mesh)
+		{
+			if (mesh.Poly!=null)
+				PolyName = mesh.PolyName;
+			if (mesh.UV != null)
+				UVName = mesh.UVName;
+			if (mesh.PolyNormal != null)
+				PolyNormalName = mesh.PolyNormalName;
+			if (mesh.VColor != null)
+				VColorName = mesh.VColorName;
+		}
+
+		public void Apply(NJS_MESHSET mesh)
+		{
+			if (mesh.Poly != null)
+				mesh.PolyName = PolyName;
+			if (mesh.UV != null)
+				mesh.UVName = UVName;
+			if (mesh.Poly != null)
+				mesh.PolyNormalName = PolyNormalName;
+			if (mesh.VColor != null)
+				mesh.VColorName = VColorName;
+		}
 	}
 
-	public struct LabelOBJECT
+	public class LabelOBJECT
 	{
-		[IniName("obj")]
 		public string ObjectName;
-		[IniName("att")]
-		public string AtachName;
-		[IniName("msh")]
+		public string AttachName;
 		public string MeshsetOrPolyName; // Also polys for chunk
-		[IniName("m")]
-		public LabelMESHSET[] MeshsetItemNames;
-		[IniName("vtx")]
+		public List<LabelMESHSET> MeshsetItemNames;
 		public string VertexName;
-		[IniName("nml")]
 		public string NormalName;
-		[IniName("mat")]
 		public string MaterialName;
+
+		public LabelOBJECT(NJS_OBJECT obj)
+		{
+			ObjectName = obj.Name;
+			if (obj.Attach != null)
+			{
+				AttachName = obj.Attach.Name;
+				if (obj.Attach is BasicAttach batt)
+				{
+					if (batt.Vertex != null)
+						VertexName = batt.VertexName;
+					if (batt.Normal != null)
+						NormalName = batt.NormalName;
+					if (batt.Material != null)
+						MaterialName = batt.MaterialName;
+					if (batt.Mesh != null)
+					{
+						MeshsetOrPolyName = batt.MeshName;
+						MeshsetItemNames = new List<LabelMESHSET>();
+						foreach (NJS_MESHSET mesh in batt.Mesh)
+							MeshsetItemNames.Add(new LabelMESHSET(mesh));
+					}
+				}
+				else if (obj.Attach is ChunkAttach catt)
+				{
+					if (catt.Vertex != null)
+						VertexName = catt.VertexName;
+					if (catt.Poly != null)
+						NormalName = catt.PolyName;
+				}
+			}
+		}
+
+		public void Apply(NJS_OBJECT obj)
+		{
+			obj.Name = ObjectName;
+			if (obj.Attach != null)
+			{
+				obj.Attach.Name = AttachName;
+				if (obj.Attach is BasicAttach batt)
+				{
+					if (batt.Vertex != null)
+						batt.VertexName = VertexName;
+					if (batt.Normal != null)
+						batt.NormalName = NormalName;
+					if (batt.Material != null)
+						batt.MaterialName = MaterialName;
+					if (batt.Mesh != null)
+					{
+						batt.MeshName = MeshsetOrPolyName;
+						int i = 0;
+						foreach (NJS_MESHSET mesh in batt.Mesh)
+						{
+							MeshsetItemNames[i].Apply(mesh);
+							i++;
+						}
+							
+					}
+				}
+				else if (obj.Attach is ChunkAttach catt)
+				{
+					if (catt.Vertex != null)
+						catt.VertexName = VertexName;
+					if (catt.Poly != null)
+						catt.PolyName = NormalName;
+				}
+			}
+		}
 	}
 
-	public struct LabelMKEY
+	public class LabelMKEY
 	{
 		[IniName("pos")]
 		public string PositionName;
@@ -4150,7 +4239,7 @@ namespace SplitTools
 		public string[] NormalItemNames;
 	}
 
-	public struct LabelMOTION
+	public class LabelMOTION
 	{
 		[IniName("mot")]
 		public string MotionName;
@@ -4160,7 +4249,7 @@ namespace SplitTools
 		public Dictionary<int, LabelMKEY> MkeyNames;
 	}
 
-	public struct LabelACTION
+	public class LabelACTION
 	{
 		[IniName("act")]
 		public string ActionName;
@@ -4170,7 +4259,7 @@ namespace SplitTools
 		public string ObjectName;
 	}
 
-	public struct LabelLANDTABLE
+	public class LabelLANDTABLE
 	{
 		[IniName("lnd")]
 		public string LandtableName;
