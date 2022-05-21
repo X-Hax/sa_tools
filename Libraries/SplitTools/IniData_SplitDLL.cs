@@ -213,7 +213,7 @@ namespace SplitTools.SplitDLL
                 }
             }
 			if (TexturePalette != null)
-				result += "|0|" + "|null|";
+				result += "|0|null|" + TexturePalette;
 			else if (TextureNameFile != null && TextureNameFile != "")
 				result += "|0|" + TextureNameFile;
 			else if (TextureIDs != null)
