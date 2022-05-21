@@ -750,6 +750,7 @@ namespace SAModel.SAMDL
 			saveAnimationsToolStripMenuItem.Enabled = (animationList != null && animationList.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
+			importLabelsToolStripMenuItem.Enabled = exportLabelsToolStripMenuItem.Enabled = (loaded && model.GetModelFormat() != ModelFormat.GC);
 			if (cmdLoad == false)
 			{
 				selectedObject = model;
@@ -4117,6 +4118,46 @@ namespace SAModel.SAMDL
 			{
 				modelAuthor = mtd.ModelAuthor;
 				modelDescription = mtd.ModelDescription;
+			}
+		}
+
+		public Dictionary<int, LabelOBJECT> ExportLabels(NJS_OBJECT obj)
+		{
+			Dictionary<int, LabelOBJECT> result = new Dictionary<int, LabelOBJECT>();
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				result.Add(i, new LabelOBJECT(objs[i]));
+			return result;
+		}
+
+		public void ImportLabels(NJS_OBJECT obj, Dictionary<int, LabelOBJECT> labels)
+		{
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				labels[i].Apply(objs[i]);
+		}
+
+		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
+			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					// Oops, can't deserialize this shit!
+					//ImportLabels(model, IniSerializer.Deserialize<Dictionary<int, LabelOBJECT>>(ofd.FileName));
+					RebuildModelCache();
+				}
+			}
+		}
+
+		private void exportLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
+			using (SaveFileDialog sfd = new SaveFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			{
+				if (sfd.ShowDialog() == DialogResult.OK)
+					IniSerializer.Serialize(ExportLabels(model), sfd.FileName);
 			}
 		}
 	}
