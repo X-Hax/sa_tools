@@ -41,11 +41,16 @@ namespace SAModel
 			return finalPOF;
 		}
 
+		public static byte[] calcPOF0Pointer(uint lastPOF, uint currentAddress)
+		{
+			return calcPOF0Pointer((int)lastPOF, (int)currentAddress);
+		}
+
 		public static void finalizePOF0(List<byte> pof0)
 		{
 			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
 			pof0.Align(4);
-			pof0.InsertRange(0, ByteConverter.GetBytes(pof0.Count));
+			pof0.InsertRange(0, BitConverter.GetBytes(pof0.Count));
 			pof0.InsertRange(0, magic);
 		}
 

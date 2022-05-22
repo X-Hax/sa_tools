@@ -172,10 +172,14 @@ namespace SAModel
 			//AssimpLoad(scene, scene.RootNode);
 		}
 
-		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
+		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address, bool isFirst = false)
 		{
-			FixSiblings();
 			List<byte> result = new List<byte>();
+			if (isFirst)
+			{
+				result.AddRange(new byte[0x34]); //Add size of NGS_OBJECT if first since we're inserting later
+			}
+			FixSiblings();
 			uint childaddr = 0;
 			uint siblingaddr = 0;
 			uint attachaddr = 0;
@@ -187,8 +191,9 @@ namespace SAModel
 				else
 				{
 					result.Align(4);
-					result.AddRange(Children[0].GetBytes(imageBase, DX, labels, out childaddr));
-					childaddr += imageBase;
+					tmpbyte = Children[0].GetBytes(imageBase + (uint)result.Count, DX, labels, out childaddr);
+					childaddr += imageBase + (uint)result.Count;
+					result.AddRange(tmpbyte);
 				}
 			}
 			if (Sibling != null)
@@ -215,16 +220,27 @@ namespace SAModel
 					result.AddRange(tmpbyte);
 				}
 			}
+
 			result.Align(4);
-			address = (uint)result.Count;
+			address = isFirst ? 0 : (uint)result.Count;
 			ObjectFlags flags = GetFlags();
-			result.AddRange(ByteConverter.GetBytes((int)flags));
-			result.AddRange(ByteConverter.GetBytes(attachaddr));
-			result.AddRange(Position.GetBytes());
-			result.AddRange(Rotation.GetBytes());
-			result.AddRange(Scale.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(childaddr));
-			result.AddRange(ByteConverter.GetBytes(siblingaddr));
+			List<byte> objBytes = new List<byte>();
+			objBytes.AddRange(ByteConverter.GetBytes((int)flags));
+			objBytes.AddRange(ByteConverter.GetBytes(attachaddr));
+			objBytes.AddRange(Position.GetBytes());
+			objBytes.AddRange(Rotation.GetBytes());
+			objBytes.AddRange(Scale.GetBytes());
+			objBytes.AddRange(ByteConverter.GetBytes(childaddr));
+			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
+			
+			if (isFirst) //Formal ninja requires the initial object first since there's not a pointer to it
+			{
+				result.RemoveRange(0, 0x34);
+				result.InsertRange(0, objBytes);
+			} else
+			{
+				result.AddRange(objBytes);
+			}
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
 		}

@@ -103,7 +103,7 @@ namespace SA2StageSelEdit
 									uitexs[i] = LoadDDS(str);
 						}
 						else
-							uitexs = TextureArchive.GetTextures(prsFilePath).Select((tex) => tex.Image).ToArray();
+							uitexs = TextureArchive.GetTextures(prsFilePath, out bool hasNames).Select((tex) => tex.Image).ToArray();
 						saveToolStripMenuItem.Enabled = panel1.Enabled = panel2.Enabled = true;
 						selected = 0;
 						level.SelectedIndex = (int)levels[selected].Level;

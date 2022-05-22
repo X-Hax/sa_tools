@@ -14,10 +14,12 @@ namespace ArchiveLib
 
 		public XVM()
 		{
+			hasNameData = false;
 		}
 
 		public XVM(byte[] data)
 		{
+			hasNameData = false;
 			int fileCount = BitConverter.ToInt32(data, 0x8);
 			int offset = 0x40; //Start past XVM header
 

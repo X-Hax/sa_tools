@@ -1987,7 +1987,7 @@ namespace SAModel.SALVL
 						LevelData.Textures = new Dictionary<string, Texture[]>();
 
 					// Load or replace textures
-					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName);
+					BMPInfo[] TexBmps = TextureArchive.GetTextures(fileDialog.FileName, out bool hasNames);
 					if (TexBmps != null)
 					{
 						// Load texture bitmaps

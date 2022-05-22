@@ -55,6 +55,7 @@ namespace SAModel.SAMDL
 		// Texture related
 		string TexturePackName; // Name of the last loaded PVM/texture pack, used for texture enum export
 		TexnameArray TexList; // Current texlist
+		TexnameArray TempTexList; // Texture name list loaded through the model, ex. An .nj NJTL. Use if next loaded texture archive has no names. Clear after each texture load attempt.
 		BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
 		BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
 		Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
@@ -464,32 +465,6 @@ namespace SAModel.SAMDL
 			}
 			return positions;
 		}
-
-		public List<NJS_MOTION> LoadNMDM(byte[] file)
-		{
-			List<NJS_MOTION> motions = new List<NJS_MOTION>();
-			byte[] nmdmByte = new byte[] { 0x4E, 0x4D, 0x44, 0x4D };
-			List<int> nmdmAddr = SearchBytePattern(nmdmByte, file);
-
-			if (nmdmAddr.Count != 0)
-			{
-				foreach (int addr in nmdmAddr)
-				{
-					int nmdmLength = ByteConverter.ToInt32(file, addr + 0x4);
-					byte[] newFile = new byte[nmdmLength];
-					Array.Copy(file, (addr + 8), newFile, 0, newFile.Length);
-
-					string njmName = ("motion_" + addr.ToString());
-					Dictionary<int, string> label = new Dictionary<int, string>();
-					label.Add(0, njmName);
-					NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
-
-					motions.Add(njm);
-				}
-			}
-			
-			return motions;
-		}
 		*/
 
 		private void LoadFile(string filename, bool cmdLoad = false)
@@ -564,41 +539,18 @@ namespace SAModel.SAMDL
 							case "GJTL":
 							case "NJTL":
 								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-								int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
-								int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
-								int texListOffset = POF0Offset + POF0Size + 0x8;
-								ninjaDataOffset = texListOffset + 0x8;
-								int texCount = ByteConverter.ToInt32(file, 0xC);
-								int texOffset = 0;
-								List<string> texNames = new List<string>();
-								// Check if it's a basic model
-								if (System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, texListOffset))) == "NJBM")
-									basicModel = true;
-								for (int i = 0; i < texCount; i++)
-								{
-									int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
-									// Read null terminated string
-									List<byte> namestring = new List<byte>();
-									byte namechar = (file[textAddress]);
-									int j = 0;
-									while (namechar != 0)
-									{
-										namestring.Add(namechar);
-										j++;
-										namechar = (file[textAddress + j]);
-									}
-									texNames.Add(System.Text.Encoding.ASCII.GetString(namestring.ToArray()));
-									texOffset += 0xC;
-								}
-								TexList = new TexnameArray(texNames.ToArray());
+								modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
+								ninjaDataOffset = ReadNJTL(file, ref basicModel, ref TempTexList);
 								break;
 							case "GJCM":
 							case "NJCM":
 								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+								modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
 								ninjaDataOffset = 0x8;
 								break;
 							case "NJBM":
 								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+								modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
 								ninjaDataOffset = 0x8;
 								basicModel = true;
 								break;
@@ -635,7 +587,6 @@ namespace SAModel.SAMDL
 						// Get rid of the junk so that we can treat it like what SAMDL expects
 						byte[] newFile = new byte[file.Length - ninjaDataOffset];
 						Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
-
 						LoadBinFile(newFile);
 						animationList = new List<NJS_MOTION>();
 						buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
@@ -897,7 +848,7 @@ namespace SAModel.SAMDL
 					filterString = "SA2B MDL Files|*.sa2bmdl"; //|Sega GCNinja .gj|*.gj|Sega GCNinja Big Endian (Gamecube) .gj|*.gj";
 					break;
 				case ModelFormat.Chunk:
-					filterString = "SA2 MDL Files|*.sa2mdl"; //|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
+					filterString = "SA2 MDL Files|*.sa2mdl|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
 					break;
 				case ModelFormat.BasicDX:
 				case ModelFormat.Basic:
@@ -957,46 +908,28 @@ namespace SAModel.SAMDL
 							File.WriteAllBytes(filePath, rawAnim);
 						}
 					}
-					if (model != null)
+
+					bool isGC = extension.Contains("gj") ? true : false;
+					List<string> texList = new List<string>();
+					Dictionary<uint, byte[]> texDict = new Dictionary<uint, byte[]>();
+					if (TextureInfoCurrent != null)
 					{
-						byte[] rawModel;
-						bool isGC = extension.Contains("gj") ? true : false;
-						Dictionary<string, uint> labels = new Dictionary<string, uint>();
-
-						rawModel = model.GetBytes(0, false, labels, out uint testValue);
-
-						List<byte> njModel = new List<byte>();
-						List<string> texList = new List<string>();
-
-						if (TextureInfoCurrent != null)
+						foreach (BMPInfo tex in TextureInfoCurrent)
 						{
-							foreach (BMPInfo tex in TextureInfoCurrent)
+							if (tex != null)
 							{
-								if (tex != null)
+								if (tex.Name != null)
 								{
-									if (tex.Name != null)
-									{
-										texList.Add(tex.Name);
-									}
+									texList.Add(tex.Name);
 								}
 							}
 						}
-						if (texList.Count != 0)
-						{
-							njModel.AddRange(GenerateNJTexList(texList.ToArray(), isGC));
-						}
-
-						njModel.AddRange(rawModel);
-
-						using (StreamWriter file = new StreamWriter(fileName + "_labels.txt"))
-						{
-							foreach (var key in labels.Keys)
-							{
-								file.WriteLine($"{key} {labels[key].ToString("X")}");
-							}
-						}
-						File.WriteAllBytes(fileName, njModel.ToArray());
 					}
+					if (texList.Count != 0)
+					{
+						texDict.Add(uint.MaxValue, NJTLHelper.GenerateNJTexList(texList.ToArray(), isGC));
+					}
+					ModelFile.CreateFile(fileName, rootSiblingMode ? model.Children[0] : model, new string[0], modelAuthor, modelDescription, texDict, outfmt, true, true);
 					break;
 				default:
 					string[] animfiles;
@@ -1044,60 +977,6 @@ namespace SAModel.SAMDL
 				// ask us where to save
 				SaveAs(exportAnimationsToolStripMenuItem.Checked);
 			}
-		}
-
-		private byte[] GenerateNJTexList(string[] texList, bool isGC)
-		{
-			List<byte> njTexList = new List<byte>();
-			List<byte> njTLHeader = new List<byte>();
-			List<byte> pof0List = new List<byte>();
-
-			if (isGC)
-			{
-				njTLHeader.AddRange(new byte[] {0x47, 0x4A, 0x54, 0x4C});
-			} else
-			{
-				njTLHeader.AddRange(new byte[] { 0x4E, 0x4A, 0x54, 0x4C});
-			}
-			njTexList.AddRange(ByteConverter.GetBytes(0x8));
-			njTexList.AddRange(ByteConverter.GetBytes(texList.Length));
-			
-			for(int i = 0; i < texList.Length; i++)
-			{
-				int offset = texList.Length * 0xC;
-				
-				if(i > 0)
-				{
-					offset += texList[i].Length;
-				}
-				njTexList.AddRange(ByteConverter.GetBytes(offset));
-				njTexList.AddRange(ByteConverter.GetBytes(0));
-				njTexList.AddRange(ByteConverter.GetBytes(0));
-			}
-			for(int i = 0; i < texList.Length; i++)
-			{
-				njTexList.AddRange(Encoding.ASCII.GetBytes(texList[i]));
-			}
-			njTLHeader.AddRange(BitConverter.GetBytes(njTexList.Count));
-
-			pof0List.Add(0x40);
-			pof0List.Add(0x42);
-			for(int i = 1; i < texList.Length; i++)
-			{
-				pof0List.Add(0x43);
-			}
-			pof0List.Align(4);
-
-			int pofLength = pof0List.Count + (njTexList.Count % 4);
-			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
-
-			pof0List.InsertRange(0, BitConverter.GetBytes(pofLength));
-			pof0List.InsertRange(0, magic);
-
-			njTexList.InsertRange(0, njTLHeader.ToArray());
-			njTexList.AddRange(pof0List.ToArray());
-
-			return njTexList.ToArray();
 		}
 
 		private void NewFile(ModelFormat modelFormat)
@@ -1826,9 +1705,26 @@ namespace SAModel.SAMDL
 
 		private void LoadTextures(string filename)
 		{
-			TextureInfo = TextureArchive.GetTextures(filename);
+			TextureInfo = TextureArchive.GetTextures(filename, out bool hasNames);
+			
+			//Use names loaded from model, ex NJTL, if the archive didn't have texture names
+			if(hasNames == false && TempTexList?.TextureNames?.Length > 0)
+			{
+				int tempLen = TempTexList.TextureNames.Length;
+				for(int i = 0; i < TextureInfo.Length; i++)
+				{
+					if(tempLen > i)
+					{
+						TextureInfo[i].Name = TempTexList.TextureNames[i];
+					} else
+					{
+						break;
+					}
+				}
+			}
 			TexturePackName = Path.GetFileNameWithoutExtension(filename);
-            TexList = null;
+			TempTexList = null;
+			TexList = null;
             UpdateTexlist();
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
 			if (loaded) 
@@ -3740,7 +3636,7 @@ namespace SAModel.SAMDL
             List<BMPInfo> result = new List<BMPInfo>();
             if (TextureInfo != null && TextureInfo.Length > 0)
             result.AddRange(TextureInfo);
-                result.AddRange(TextureArchive.GetTextures(filename));
+                result.AddRange(TextureArchive.GetTextures(filename, out bool hasNames));
             TextureInfo = result.ToArray();
             UpdateTexlist();
         }
@@ -3753,7 +3649,7 @@ namespace SAModel.SAMDL
 			for (int i = 0; i < filenames.Length; i++)
 			{
 				if (File.Exists(filenames[i]))
-					result.AddRange(TextureArchive.GetTextures(filenames[i], paletteFile));
+					result.AddRange(TextureArchive.GetTextures(filenames[i], out bool hasNames, paletteFile));
 				else
 					MessageBox.Show(this, "Texture file " + filenames[i] + " doesn't exist.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -4165,6 +4061,40 @@ namespace SAModel.SAMDL
 				if (sfd.ShowDialog() == DialogResult.OK)
 					IniSerializer.Serialize(ExportLabels(model), sfd.FileName);
 			}
+		}
+
+		private int ReadNJTL(byte[] file, ref bool basicModel, ref TexnameArray texList)
+		{
+			int ninjaDataOffset;
+			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x8);
+			int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
+			int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
+			int texListOffset = POF0Offset + POF0Size + 0x8;
+			ninjaDataOffset = texListOffset + 0x8;
+			int texCount = ByteConverter.ToInt32(file, 0xC);
+			int texOffset = 0;
+			List<string> texNames = new List<string>();
+			// Check if it's a basic model
+			if (System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, texListOffset))) == "NJBM")
+				basicModel = true;
+			for (int i = 0; i < texCount; i++)
+			{
+				int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
+				// Read null terminated string
+				List<byte> namestring = new List<byte>();
+				byte namechar = (file[textAddress]);
+				int j = 0;
+				while (namechar != 0)
+				{
+					namestring.Add(namechar);
+					j++;
+					namechar = (file[textAddress + j]);
+				}
+				texNames.Add(Encoding.ASCII.GetString(namestring.ToArray()));
+				texOffset += 0xC;
+			}
+			texList = new TexnameArray(texNames.ToArray());
+			return ninjaDataOffset;
 		}
 	}
 }

@@ -10,6 +10,9 @@ namespace SAModel
 {
 	public class ModelFile
 	{
+		public const uint NJCMMagic = 0x4D434A4E;
+		public const uint NJBMMagic = 0x4D424A4E;
+		public const uint GJCMMagic = 0x4D434A47;
 		public const ulong SA1MDL = 0x4C444D314153u;
 		public const ulong SA2MDL = 0x4C444D324153u;
 		public const ulong SA2BMDL = 0x4C444D42324153u;
@@ -386,10 +389,15 @@ namespace SAModel
 		}
 
 		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
-			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false)
+			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false)
 		{
+			uint ninjaMagic;
+			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
 			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
+			if(useNinjaMetaData == false)
+			{
+				ByteConverter.BigEndian = false;
+			}
 			if (format == ModelFormat.BasicDX)
 				format = ModelFormat.Basic;
 			List<byte> file = new List<byte>();
@@ -399,21 +407,35 @@ namespace SAModel
 				case ModelFormat.Basic:
 				case ModelFormat.BasicDX:
 					magic = SA1MDLVer;
+					ninjaMagic = NJBMMagic;
 					break;
 				case ModelFormat.Chunk:
 					magic = SA2MDLVer;
+					ninjaMagic = NJCMMagic;
 					break;
 				case ModelFormat.GC:
 					magic = SA2BMDLVer;
+					ninjaMagic = GJCMMagic;
 					break;
 				default:
 					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");
 			}
-			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] mdl = model.GetBytes(0x10, false, labels, out uint addr);
-			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
+			byte[] mdl = model.GetBytes(imageBase, false, labels, out uint addr, useNinjaMetaData);
+
+			if(useNinjaMetaData == true)
+			{
+				//***Ninja metadata should always be little endian!***
+				file.AddRange(BitConverter.GetBytes(ninjaMagic));
+				file.AddRange(BitConverter.GetBytes(mdl.Length));
+				//***Ninja metadata should always be little endian!***
+			}
+			else
+			{
+				file.AddRange(ByteConverter.GetBytes(magic));
+				file.AddRange(ByteConverter.GetBytes(addr + 0x10));
+				file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
+			}
 			file.AddRange(mdl);
 			if (!nometa)
 			{
@@ -496,8 +518,32 @@ namespace SAModel
 					}
 				}
 			}
-			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
-			file.AddRange(new byte[4]);
+			if(useNinjaMetaData == true)
+			{
+				List<uint> addresses = new List<uint>();
+				foreach(var pair in labels)
+				{
+					addresses.Add(pair.Value);
+				}
+				addresses.Sort();
+				List<byte> pof0 = new List<byte>();
+				pof0.Add(0x41);
+				for(int i = 1; i < addresses.Count; i++)
+				{
+					pof0.AddRange(POF0Helper.calcPOF0Pointer(addresses[i - 1], addresses[i]));
+				}
+				POF0Helper.finalizePOF0(pof0);
+				file.AddRange(pof0);
+				
+				if(metadata.Count != 0 && metadata.ContainsKey(uint.MaxValue))
+				{
+					file.InsertRange(0, metadata[uint.MaxValue]);
+				}
+			} else
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
+				file.AddRange(new byte[4]);
+			}
 			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
 		}

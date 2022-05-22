@@ -242,7 +242,10 @@ namespace ArchiveLib
                         namestring[n] = ndt;
                     }
                     entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
-                }
+                } else
+				{
+					hasNameData = false;
+				}
 
                 if (t < numtextures - 1)  // Get the address of the next PVRT chunk, unless it's the last one
                     textureaddr = GetPVRTOffset(pvmdata, textureaddr + size + 8);

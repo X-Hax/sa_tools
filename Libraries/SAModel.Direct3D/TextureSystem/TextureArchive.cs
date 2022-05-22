@@ -12,8 +12,9 @@ namespace SAModel.Direct3D.TextureSystem
     /// </summary>
     public static class TextureArchive
     {
-        public static BMPInfo[] GetTextures(string filename, string paletteFile = null)
+		public static BMPInfo[] GetTextures(string filename, out bool hasNames, string paletteFile = null)
         {
+			hasNames = true;
             if (!File.Exists(filename))
                 return null;
             GenericArchive arc;
@@ -90,8 +91,10 @@ namespace SAModel.Direct3D.TextureSystem
             foreach (GenericArchiveEntry entry in arc.Entries)
             {
                 textures.Add(new BMPInfo(Path.GetFileNameWithoutExtension(entry.Name), entry.GetBitmap()));
-            }
-            return textures.ToArray();
+			}
+			hasNames = arc.hasNameData;
+
+			return textures.ToArray();
         }
     }
 }

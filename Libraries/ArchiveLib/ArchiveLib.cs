@@ -6,6 +6,7 @@ namespace ArchiveLib
 {
     public abstract class GenericArchive
     {
+		public bool hasNameData = true;
         public List<GenericArchiveEntry> Entries { get; set; }
 
         public GenericArchive()
