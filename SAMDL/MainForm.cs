@@ -4066,9 +4066,9 @@ namespace SAModel.SAMDL
 		private int ReadNJTL(byte[] file, ref bool basicModel, ref TexnameArray texList)
 		{
 			int ninjaDataOffset;
-			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x8);
-			int POF0Offset = BitConverter.ToInt32(file, 0x4) + 0x8;
-			int POF0Size = BitConverter.ToInt32(file, POF0Offset + 0x4);
+			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x4);
+			int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
+			int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
 			int texListOffset = POF0Offset + POF0Size + 0x8;
 			ninjaDataOffset = texListOffset + 0x8;
 			int texCount = ByteConverter.ToInt32(file, 0xC);
