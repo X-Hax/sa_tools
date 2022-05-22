@@ -251,7 +251,7 @@ namespace SA2EventViewer
 			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.prs";
 			if (!File.Exists(TexturePackName))
 				TexturePackName = Path.GetFileNameWithoutExtension(filename) + ".pvm";
-			TextureInfo = TextureArchive.GetTextures(TexturePackName);
+			TextureInfo = TextureArchive.GetTextures(TexturePackName, out bool hasNames);
 
 			Textures = new Texture[TextureInfo.Length];
 			for (int j = 0; j < TextureInfo.Length; j++)
