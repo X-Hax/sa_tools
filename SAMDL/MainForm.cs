@@ -699,7 +699,7 @@ namespace SAModel.SAMDL
             currentFileName = filename;
 
             RebuildModelCache();
-            loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+            loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animationList != null && animationList.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -998,7 +998,7 @@ namespace SAModel.SAMDL
             RebuildModelCache();
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			SelectedItemChanged();
@@ -2313,7 +2313,7 @@ namespace SAModel.SAMDL
 			}
             RebuildModelCache();
 			unsavedChanges = true;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animationList.Count > 0;
 			SelectedItemChanged();
@@ -3867,6 +3867,38 @@ namespace SAModel.SAMDL
         {
             LoadProject(currentProject);
         }
+
+		private void renderToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog sfd = new SaveFileDialog
+			{
+				DefaultExt = "png",
+				Title = "Render",
+				Filter = "PNG Files|*.png|All Files|*.*"
+			})
+			{
+				if (sfd.ShowDialog() == DialogResult.OK)
+				{
+					var bgcol = EditorOptions.FillColor;
+					EditorOptions.FillColor = Color.Transparent;
+					using (var backbuf = d3ddevice.GetRenderTarget(0))
+					using (var rt = Surface.CreateRenderTarget(d3ddevice, backbuf.Description.Width, backbuf.Description.Height, Format.A8R8G8B8, backbuf.Description.MultiSampleType, backbuf.Description.MultiSampleQuality, false))
+					{
+						d3ddevice.SetRenderTarget(0, rt);
+						DrawEntireModel();
+						using (var surf = Surface.CreateOffscreenPlain(d3ddevice, backbuf.Description.Width, backbuf.Description.Height, Format.A8R8G8B8, Pool.SystemMemory))
+						{
+							d3ddevice.GetRenderTargetData(rt, surf);
+							var rect = surf.LockRectangle(LockFlags.ReadOnly);
+							using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(backbuf.Description.Width, backbuf.Description.Height, rect.Pitch, System.Drawing.Imaging.PixelFormat.Format32bppArgb, rect.DataPointer))
+								bmp.Save(sfd.FileName);
+						}
+						d3ddevice.SetRenderTarget(0, backbuf);
+						EditorOptions.FillColor = bgcol;
+					}
+				}
+			}
+		}
 
 		private void importToolStripMenuItem_Click(object sender, EventArgs e)
 		{
