@@ -72,16 +72,6 @@ namespace SAModel
 
 		public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address);
 
-		public byte[] GetBytes(uint imageBase, bool DX, out uint address)
-		{
-			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
-		}
-
-		public byte[] GetBytes(uint imageBase, bool DX)
-		{
-			return GetBytes(imageBase, DX, out uint address);
-		}
-
 		public abstract string ToStruct(bool DX);
 
 		public abstract void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null);
