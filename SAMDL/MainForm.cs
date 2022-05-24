@@ -699,7 +699,7 @@ namespace SAModel.SAMDL
             currentFileName = filename;
 
             RebuildModelCache();
-            loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+            loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animationList != null && animationList.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -998,7 +998,7 @@ namespace SAModel.SAMDL
             RebuildModelCache();
 			selectedObject = model;
 			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			SelectedItemChanged();
@@ -1899,7 +1899,6 @@ namespace SAModel.SAMDL
 				exportContextMenuItem.Enabled = selectedObject.Attach != null;
 				importContextMenuItem.Enabled = true;
 				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
-				editModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null && selectedObject.Attach is BasicAttach;
 				moveDownToolStripMenuItem.Enabled = selectedObject.Parent != null && selectedObject.Parent.Children.IndexOf(selectedObject) < selectedObject.Parent.Children.Count - 1;
 				moveUpToolStripMenuItem.Enabled = selectedObject.Parent != null && selectedObject.Parent.Children.IndexOf(selectedObject) > 0;
 			}
@@ -1916,7 +1915,6 @@ namespace SAModel.SAMDL
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
 				importContextMenuItem.Enabled = false;
 				exportContextMenuItem.Enabled = false;
-				editModelDataToolStripMenuItem.Enabled = false;
 				moveDownToolStripMenuItem.Enabled = moveUpToolStripMenuItem.Enabled = false;
 			}
 			if (showWeightsToolStripMenuItem.Checked && hasWeight)
@@ -2313,7 +2311,7 @@ namespace SAModel.SAMDL
 			}
             RebuildModelCache();
 			unsavedChanges = true;
-			loaded = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animationList.Count > 0;
 			SelectedItemChanged();
@@ -4035,10 +4033,21 @@ namespace SAModel.SAMDL
 
 		private void editModelDataToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ModelDataEditor me = new ModelDataEditor(selectedObject.Attach);
+			int idx = 0;
+			if (selectedObject != null)
+			{
+				NJS_OBJECT[] objs = model.GetObjects();
+				for (int i = 0; i < objs.Length; i++)
+					if (objs[i] == selectedObject)
+					{
+						idx = i;
+						break;
+					}
+			}
+			ModelDataEditor me = new ModelDataEditor(model, idx);
 			if (me.ShowDialog(this) == DialogResult.OK)
 			{
-				selectedObject.Attach = me.editedModel.Clone();
+				model = me.editedHierarchy.Clone();
 				RebuildModelCache();
 				NeedRedraw = true;
 				unsavedChanges = true;
