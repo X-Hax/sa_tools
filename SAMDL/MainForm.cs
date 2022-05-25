@@ -3552,7 +3552,7 @@ namespace SAModel.SAMDL
 				str.Append("SAMDL has detected the following duplicate labels in the model:\n\n");
 				for (int i = 0; i < duplicateLabels.Count; i++)
 					str.Append(duplicateLabels[i] + "\n");
-				str.Append("\nThe duplicate labels have been renamed automatically. It is recommended to recheck all labels in the model using Model Data Editor or Metadata Editor.");
+				str.Append("\nThe duplicate labels have been renamed automatically. It is recommended to recheck all labels in the model using Model Data Editor.");
 				MessageBox.Show(str.ToString(), "SAMDL Warning: Duplicate labels detected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 		}
