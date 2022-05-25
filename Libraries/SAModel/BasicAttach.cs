@@ -124,7 +124,7 @@ namespace SAModel
 			Name = "attach_" + Extensions.GenerateIdentifier();
 		}
 
-		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
+		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
 			List<byte> result = new List<byte>();
 			uint materialAddress = 0;
@@ -214,7 +214,19 @@ namespace SAModel
 				meshAddress = (uint)result.Count + imageBase;
 				labels.Add(MeshName, meshAddress);
 				for (int i = 0; i < Mesh.Count; i++)
+				{
+					//POF0
+					if (polyAddrs[i] != 0)
+						njOffsets.Add((uint)(result.Count + imageBase + 0x4)); 
+					if (polyNormalAddrs[i] != 0)
+						njOffsets.Add((uint)(result.Count + imageBase + 0xC)); 
+					if (vColorAddrs[i] != 0)
+						njOffsets.Add((uint)(result.Count + imageBase + 0x10)); 
+					if (uVAddrs[i] != 0)
+						njOffsets.Add((uint)(result.Count + imageBase + 0x14)); 
+
 					result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], DX));
+				}
 			}
 			result.Align(4);
 			uint vertexAddress;
@@ -250,6 +262,17 @@ namespace SAModel
 			}
 			result.Align(4);
 			address = (uint)result.Count;
+
+			//POF0
+			if (vertexAddress != 0)
+				njOffsets.Add((uint)(result.Count + imageBase));
+			if (normalAddress != 0)
+				njOffsets.Add((uint)(result.Count + imageBase + 0x4));
+			if (meshAddress != 0)
+				njOffsets.Add((uint)(result.Count + imageBase + 0xC));
+			if (materialAddress != 0)
+				njOffsets.Add((uint)(result.Count + imageBase + 0x10));
+
 			result.AddRange(ByteConverter.GetBytes(vertexAddress));
 			result.AddRange(ByteConverter.GetBytes(normalAddress));
 			result.AddRange(ByteConverter.GetBytes(Vertex.Length));

@@ -116,7 +116,7 @@ namespace SAModel.GC
 		/// <param name="labels">The files labels</param>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
+		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
 			byte[] output;
 
@@ -140,7 +140,7 @@ namespace SAModel.GC
 				// writing vertex attributes
 				foreach (GCVertexSet vtx in vertexData)
 				{
-					vtx.WriteAttribute(writer, imageBase);
+					vtx.WriteAttribute(writer, imageBase, njOffsets);
 				}
 				writer.Write((byte)255);
 				writer.Write(new byte[15]); // empty vtx attribute
@@ -164,13 +164,21 @@ namespace SAModel.GC
 				uint opaqueAddress = (uint)writer.BaseStream.Length + imageBase;
 				foreach (GCMesh m in opaqueMeshes)
 				{
-					m.WriteProperties(writer, imageBase);
+					m.WriteProperties(writer, imageBase, njOffsets);
 				}
 				uint translucentAddress = (uint)writer.BaseStream.Length + imageBase;
 				foreach (GCMesh m in translucentMeshes)
 				{
-					m.WriteProperties(writer, imageBase);
+					m.WriteProperties(writer, imageBase, njOffsets);
 				}
+
+				// write POF0 Offsets
+				if (vtxAddr != 0)
+					njOffsets.Add(imageBase);
+				if (opaqueAddress != 0)
+					njOffsets.Add(imageBase + 8);
+				if (translucentAddress != 0)
+					njOffsets.Add(imageBase + 0xC);
 
 				// replacing the placeholders
 				writer.Seek(0, SeekOrigin.Begin);

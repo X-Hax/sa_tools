@@ -173,7 +173,7 @@ namespace SplitTools.SAArc
 				uint imageBase = (uint)(mdlinfo.Indexes.Count * 8) + 8;
 				foreach (KeyValuePair<int, NJS_OBJECT> item in models)
 				{
-					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, out uint address);
+					byte[] tmp = item.Value.GetBytes(imageBase, false, labels, new List<uint>(), out uint address);
 					modelbytes.AddRange(tmp);
 					imageBase += (uint)tmp.Length;
 				}

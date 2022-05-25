@@ -4,6 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
+using System.Diagnostics;
+
 namespace SAModel
 {
 	class CachedVertex : IEquatable<CachedVertex>
@@ -129,8 +131,10 @@ namespace SAModel
 				PolyChunk chunk = PolyChunk.Load(file, tmpaddr);
 				while (chunk.Type != ChunkType.End)
 				{
-					if (chunk.Type != ChunkType.Null)
-						Poly.Add(chunk);
+					Trace.Write(((byte)chunk.Type).ToString("X") + " - " + (tmpaddr + 8).ToString("X") + " " + chunk.Type + " Size: " + chunk.ByteSize.ToString("X"));
+					Trace.WriteLine("");
+					//if (chunk.Type != ChunkType.Null)
+					Poly.Add(chunk);
 					tmpaddr += chunk.ByteSize;
 					chunk = PolyChunk.Load(file, tmpaddr);
 				}
@@ -138,7 +142,7 @@ namespace SAModel
 			Bounds = new BoundingSphere(file, address + 8);
 		}
 
-		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
+		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
 			List<byte> result = new List<byte>();
 			uint vertexAddress = 0;
@@ -172,6 +176,13 @@ namespace SAModel
 			}
 			result.Align(4);
 			address = (uint)result.Count;
+
+			//POF0 offsets
+			if(vertexAddress != 0)
+				njOffsets.Add((uint)(imageBase + result.Count));
+			if (polyAddress != 0)
+				njOffsets.Add((uint)(imageBase + result.Count + 4));
+
 			result.AddRange(ByteConverter.GetBytes(vertexAddress));
 			result.AddRange(ByteConverter.GetBytes(polyAddress));
 			result.AddRange(Bounds.GetBytes());

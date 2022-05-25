@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -1209,9 +1210,12 @@ namespace SAModel
 			Strips = new List<Strip>(stripCount);
 			for (int i = 0; i < stripCount; i++)
 			{
+				Trace.Write($"Strip {i} Address: {(address + 8).ToString("X")}");
 				Strip str = new Strip(file, address, Type, UserFlags);
 				Strips.Add(str);
 				address += str.Size;
+				Trace.Write($" Count: {str.Size.ToString("X")} End Address: {(address + 8).ToString("X")}");
+				Trace.WriteLine("");
 			}
 		}
 
@@ -1221,10 +1225,20 @@ namespace SAModel
 			Size = 1;
 			foreach (Strip str in Strips)
 				Size += (ushort)(str.Size / 2);
+
+			int alignmentPadding = (Size % 2);
+			Size += (ushort)alignmentPadding;
+
 			List<byte> result = new List<byte>(base.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Header2));
 			foreach (Strip str in Strips)
 				result.AddRange(str.GetBytes(Type));
+
+			if (alignmentPadding > 0)
+			{
+				result.AddRange(new byte[2]);
+			}
+
 			return result.ToArray();
 		}
 

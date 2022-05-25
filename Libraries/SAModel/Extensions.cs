@@ -202,6 +202,22 @@ namespace SAModel
 			value = pair.Value;
 		}
 
+		public static int SetByteListInt(this List<byte> outBytes, int offset, int value)
+		{
+			if (offset != -1)
+			{
+				var newBytes = BitConverter.GetBytes(value);
+				for (int i = 0; i < 4; i++)
+				{
+					outBytes[offset + i] = newBytes[i];
+				}
+
+				return value;
+			}
+
+			return -1;
+		}
+
 #if modellog
 		internal static void Log(string message)
 		{

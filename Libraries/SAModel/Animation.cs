@@ -58,7 +58,7 @@ namespace SAModel
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(Model.GetBytes(imageBase, DX, labels, out uint modeladdr));
+			result.AddRange(Model.GetBytes(imageBase, DX, labels, new List<uint>(), out uint modeladdr));
 			uint tmp = (uint)result.Count;
 			result.AddRange(Animation.GetBytes(imageBase + tmp, labels, out uint head2));
 			address = (uint)result.Count;

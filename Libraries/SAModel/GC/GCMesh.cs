@@ -140,12 +140,16 @@ namespace SAModel.GC
 		/// </summary>
 		/// <param name="writer">The output stream</param>
 		/// <param name="imagebase">The imagebase</param>
-		public void WriteProperties(BinaryWriter writer, uint imagebase)
+		public void WriteProperties(BinaryWriter writer, uint imagebase, List<uint> njOffsets)
 		{
 			if (primitiveAddress == 0)
 				throw new Exception("Data has not been written yet");
 			if (primitiveSize == 0)
 				throw new Exception("Geometry is empty; No primitives found");
+
+			//POF0 offsets
+			njOffsets.Add((uint)writer.BaseStream.Position);
+			njOffsets.Add((uint)writer.BaseStream.Position + 8);
 
 			writer.Write(paramAddress + imagebase);
 			writer.Write((uint)parameters.Count);
