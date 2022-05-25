@@ -301,7 +301,7 @@ namespace SAModel
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] mdl = Model.GetBytes(0x10, false, labels, out uint addr);
+			byte[] mdl = Model.GetBytes(0x10, false, labels, new List<uint>(), out uint addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
 			file.AddRange(mdl);
@@ -421,7 +421,10 @@ namespace SAModel
 					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");
 			}
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] mdl = model.GetBytes(imageBase, false, labels, out uint addr, useNinjaMetaData);
+			List<uint> njOffsets = new List<uint>();
+			byte[] mdl;
+			uint addr;
+			mdl = model.GetBytes(imageBase, false, labels, njOffsets, out addr);
 
 			if(useNinjaMetaData == true)
 			{
@@ -520,17 +523,24 @@ namespace SAModel
 			}
 			if(useNinjaMetaData == true)
 			{
+				/*
 				List<uint> addresses = new List<uint>();
 				foreach(var pair in labels)
 				{
-					addresses.Add(pair.Value);
+					if(pair.Value != 0)
+					{
+						addresses.Add(pair.Value);
+					}
 				}
-				addresses.Sort();
+				addresses.Insert(0, 0x4);
+				addresses.Sort();*/
+				njOffsets = njOffsets.Distinct().ToList();
+				njOffsets.Sort();
 				List<byte> pof0 = new List<byte>();
 				pof0.Add(0x41);
-				for(int i = 1; i < addresses.Count; i++)
+				for(int i = 1; i < njOffsets.Count; i++)
 				{
-					pof0.AddRange(POF0Helper.calcPOF0Pointer(addresses[i - 1], addresses[i]));
+					pof0.AddRange(POF0Helper.calcPOF0Pointer(njOffsets[i - 1], njOffsets[i]));
 				}
 				POF0Helper.finalizePOF0(pof0);
 				file.AddRange(pof0);

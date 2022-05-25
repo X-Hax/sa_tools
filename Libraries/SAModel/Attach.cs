@@ -70,17 +70,7 @@ namespace SAModel
 			throw new ArgumentOutOfRangeException("format");
 		}
 
-		public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address);
-
-		public byte[] GetBytes(uint imageBase, bool DX, out uint address)
-		{
-			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
-		}
-
-		public byte[] GetBytes(uint imageBase, bool DX)
-		{
-			return GetBytes(imageBase, DX, out uint address);
-		}
+		public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address);
 
 		public abstract string ToStruct(bool DX);
 

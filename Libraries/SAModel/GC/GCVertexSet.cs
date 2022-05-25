@@ -198,10 +198,13 @@ namespace SAModel.GC
 		/// </summary>
 		/// <param name="writer">The output stream</param>
 		/// <param name="imagebase">The imagebase</param>
-		public void WriteAttribute(BinaryWriter writer, uint imagebase)
+		public void WriteAttribute(BinaryWriter writer, uint imagebase, List<uint> njOffsets)
 		{
 			if (dataAddress == 0)
 				throw new Exception("Data has not been written yet!");
+
+			//POF0 Offsets
+			njOffsets.Add((uint)(writer.BaseStream.Position + 8));
 
 			writer.Write((byte)attribute);
 			writer.Write((byte)StructSize);

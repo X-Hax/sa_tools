@@ -338,7 +338,7 @@ namespace SAModel
 				else
 				{
 					result.Align(4);
-					tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, format == LandTableFormat.SADX, labels, out tmpaddr);
+					tmpbyte = COL[i].Model.GetBytes(imageBase + (uint)result.Count, format == LandTableFormat.SADX, labels, new List<uint>(), out tmpaddr);
 					colmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
 					result.AddRange(tmpbyte);
 				}
@@ -352,7 +352,7 @@ namespace SAModel
 				else
 				{
 					result.Align(4);
-					tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, format == LandTableFormat.SADX, labels,
+					tmpbyte = Anim[i].Model.GetBytes(imageBase + (uint)result.Count, format == LandTableFormat.SADX, labels, new List<uint>(),
 						out tmpaddr);
 					animmdladdrs[i] = tmpaddr + (uint)result.Count + imageBase;
 					result.AddRange(tmpbyte);

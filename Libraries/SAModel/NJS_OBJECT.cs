@@ -172,76 +172,77 @@ namespace SAModel
 			//AssimpLoad(scene, scene.RootNode);
 		}
 
-		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address, bool isFirst = false)
+		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
 			List<byte> result = new List<byte>();
-			if (isFirst)
-			{
-				result.AddRange(new byte[0x34]); //Add size of NGS_OBJECT if first since we're inserting later
-			}
+			ObjectFlags flags = GetFlags();
 			FixSiblings();
-			uint childaddr = 0;
-			uint siblingaddr = 0;
-			uint attachaddr = 0;
-			byte[] tmpbyte;
+			int attachAddressAddress = result.Count + 0x4;
+			int childAddressAddress = result.Count + 0x2C;
+			int siblingAddressAddress = result.Count + 0x30;
+
+			address = 0;
+			result.AddRange(ByteConverter.GetBytes((int)flags));
+			result.AddRange(ByteConverter.GetBytes(0)); //Attach placeholder
+			result.AddRange(Position.GetBytes());
+			result.AddRange(Rotation.GetBytes());
+			result.AddRange(Scale.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(0)); //Child placeholder
+			result.AddRange(ByteConverter.GetBytes(0)); //Sibling placeholder
+			result.Align(4);
+
+			int currentEnd = result.Count;
+
+			if (Attach != null)
+			{
+				if (labels.ContainsKey(Attach.Name))
+				{ 
+					int attachAddress = (int)labels[Attach.Name];
+					result.SetByteListInt(attachAddressAddress, attachAddress);
+				}
+				else
+				{
+					result.AddRange(Attach.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint attachAddress));
+					result.SetByteListInt(attachAddressAddress, (int)(imageBase + currentEnd + attachAddress));
+					njOffsets.Add((uint)(imageBase + attachAddressAddress));
+					result.Align(4);
+					currentEnd = result.Count;
+				}
+			}
 			if (Children.Count > 0)
 			{
 				if (labels.ContainsKey(Children[0].Name))
-					childaddr = labels[Children[0].Name];
+				{
+					int childAddress = (int)labels[Children[0].Name];
+					result.SetByteListInt(childAddressAddress, childAddress);
+				}
 				else
 				{
+					result.AddRange(Children[0].GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint childAddress));
+					result.SetByteListInt(childAddressAddress, (int)(imageBase + currentEnd + childAddress));
+					njOffsets.Add((uint)(imageBase + childAddressAddress));
 					result.Align(4);
-					tmpbyte = Children[0].GetBytes(imageBase + (uint)result.Count, DX, labels, out childaddr);
-					childaddr += imageBase + (uint)result.Count;
-					result.AddRange(tmpbyte);
+					currentEnd = result.Count;
 				}
 			}
 			if (Sibling != null)
 			{
 				if (labels.ContainsKey(Sibling.Name))
-					siblingaddr = labels[Sibling.Name];
-				else
 				{
-					result.Align(4);
-					tmpbyte = Sibling.GetBytes(imageBase + (uint)result.Count, DX, labels, out siblingaddr);
-					siblingaddr += imageBase + (uint)result.Count;
-					result.AddRange(tmpbyte);
+					int siblingAddress = (int)labels[Sibling.Name];
+					result.SetByteListInt(siblingAddressAddress, siblingAddress);
 				}
-			}
-			if (Attach != null)
-			{
-				if (labels.ContainsKey(Attach.Name))
-					attachaddr = labels[Attach.Name];
 				else
 				{
+					result.AddRange(Sibling.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint siblingAddress));
+					result.SetByteListInt(siblingAddressAddress, (int)(imageBase + currentEnd + siblingAddress));
+					njOffsets.Add((uint)(imageBase + siblingAddressAddress));
 					result.Align(4);
-					tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, DX, labels, out attachaddr);
-					attachaddr += imageBase + (uint)result.Count;
-					result.AddRange(tmpbyte);
 				}
 			}
 
-			result.Align(4);
-			address = isFirst ? 0 : (uint)result.Count;
-			ObjectFlags flags = GetFlags();
-			List<byte> objBytes = new List<byte>();
-			objBytes.AddRange(ByteConverter.GetBytes((int)flags));
-			objBytes.AddRange(ByteConverter.GetBytes(attachaddr));
-			objBytes.AddRange(Position.GetBytes());
-			objBytes.AddRange(Rotation.GetBytes());
-			objBytes.AddRange(Scale.GetBytes());
-			objBytes.AddRange(ByteConverter.GetBytes(childaddr));
-			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
-			
-			if (isFirst) //Formal ninja requires the initial object first since there's not a pointer to it
-			{
-				result.RemoveRange(0, 0x34);
-				result.InsertRange(0, objBytes);
-			} else
-			{
-				result.AddRange(objBytes);
-			}
 			labels.Add(Name, address + imageBase);
+
 			return result.ToArray();
 		}
 
@@ -284,7 +285,7 @@ namespace SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX, out uint address)
 		{
-			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), out address);
+			return GetBytes(imageBase, DX, new Dictionary<string, uint>(), new List<uint>(), out address);
 		}
 
 		public byte[] GetBytes(uint imageBase, bool DX)
