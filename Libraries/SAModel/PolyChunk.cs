@@ -1210,12 +1210,9 @@ namespace SAModel
 			Strips = new List<Strip>(stripCount);
 			for (int i = 0; i < stripCount; i++)
 			{
-				Trace.Write($"Strip {i} Address: {(address + 8).ToString("X")}");
 				Strip str = new Strip(file, address, Type, UserFlags);
 				Strips.Add(str);
 				address += str.Size;
-				Trace.Write($" Count: {str.Size.ToString("X")} End Address: {(address + 8).ToString("X")}");
-				Trace.WriteLine("");
 			}
 		}
 

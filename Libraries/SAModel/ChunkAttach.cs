@@ -131,8 +131,6 @@ namespace SAModel
 				PolyChunk chunk = PolyChunk.Load(file, tmpaddr);
 				while (chunk.Type != ChunkType.End)
 				{
-					Trace.Write(((byte)chunk.Type).ToString("X") + " - " + (tmpaddr + 8).ToString("X") + " " + chunk.Type + " Size: " + chunk.ByteSize.ToString("X"));
-					Trace.WriteLine("");
 					//if (chunk.Type != ChunkType.Null)
 					Poly.Add(chunk);
 					tmpaddr += chunk.ByteSize;
