@@ -1,4 +1,5 @@
 root=true
 [*.{cs,c,h,cpp,hpp}]
+end_of_line = crlf
 indent_style=tab
 dotnet_diagnostic.CA1416.severity = none
