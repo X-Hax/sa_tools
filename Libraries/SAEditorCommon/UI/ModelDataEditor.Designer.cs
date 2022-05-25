@@ -58,6 +58,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBoxLabels = new System.Windows.Forms.GroupBox();
+            this.textBoxObjectName = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.textBoxNormalName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxVertexName = new System.Windows.Forms.TextBox();
@@ -73,6 +75,7 @@
             this.toolStripMenuItemEditUVName = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemEditVcolorName = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemEditPolynormalName = new System.Windows.Forms.ToolStripMenuItem();
+            this.comboBoxNode = new System.Windows.Forms.ComboBox();
             this.statusStrip1.SuspendLayout();
             this.groupBoxLabels.SuspendLayout();
             this.groupBoxBounds.SuspendLayout();
@@ -86,7 +89,7 @@
             this.buttonMoveMeshUp.Location = new System.Drawing.Point(714, 21);
             this.buttonMoveMeshUp.Name = "buttonMoveMeshUp";
             this.buttonMoveMeshUp.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshUp.TabIndex = 10;
+            this.buttonMoveMeshUp.TabIndex = 12;
             this.buttonMoveMeshUp.Text = "↑";
             this.buttonMoveMeshUp.UseVisualStyleBackColor = true;
             this.buttonMoveMeshUp.Click += new System.EventHandler(this.buttonMoveMeshUp_Click);
@@ -97,7 +100,7 @@
             this.buttonMoveMeshDown.Location = new System.Drawing.Point(714, 51);
             this.buttonMoveMeshDown.Name = "buttonMoveMeshDown";
             this.buttonMoveMeshDown.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshDown.TabIndex = 11;
+            this.buttonMoveMeshDown.TabIndex = 13;
             this.buttonMoveMeshDown.Text = "↓";
             this.buttonMoveMeshDown.UseVisualStyleBackColor = true;
             this.buttonMoveMeshDown.Click += new System.EventHandler(this.buttonMoveMeshDown_Click);
@@ -123,7 +126,7 @@
             this.listViewMeshes.Name = "listViewMeshes";
             this.listViewMeshes.ShowGroups = false;
             this.listViewMeshes.Size = new System.Drawing.Size(703, 236);
-            this.listViewMeshes.TabIndex = 9;
+            this.listViewMeshes.TabIndex = 11;
             this.listViewMeshes.UseCompatibleStateImageBehavior = false;
             this.listViewMeshes.View = System.Windows.Forms.View.Details;
             this.listViewMeshes.SelectedIndexChanged += new System.EventHandler(this.listViewMeshes_SelectedIndexChanged);
@@ -167,7 +170,7 @@
             this.buttonCloneMesh.Location = new System.Drawing.Point(5, 261);
             this.buttonCloneMesh.Name = "buttonCloneMesh";
             this.buttonCloneMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonCloneMesh.TabIndex = 12;
+            this.buttonCloneMesh.TabIndex = 14;
             this.buttonCloneMesh.Text = "Clone Mesh";
             this.buttonCloneMesh.UseVisualStyleBackColor = true;
             this.buttonCloneMesh.Click += new System.EventHandler(this.buttonCloneMesh_Click);
@@ -178,7 +181,7 @@
             this.buttonDeleteMesh.Location = new System.Drawing.Point(100, 261);
             this.buttonDeleteMesh.Name = "buttonDeleteMesh";
             this.buttonDeleteMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonDeleteMesh.TabIndex = 13;
+            this.buttonDeleteMesh.TabIndex = 15;
             this.buttonDeleteMesh.Text = "Delete Mesh";
             this.buttonDeleteMesh.UseVisualStyleBackColor = true;
             this.buttonDeleteMesh.Click += new System.EventHandler(this.buttonDeleteMesh_Click);
@@ -188,7 +191,7 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabelInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 446);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 487);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
             this.statusStrip1.Size = new System.Drawing.Size(758, 22);
@@ -205,7 +208,7 @@
             // labelModelName
             // 
             this.labelModelName.AutoSize = true;
-            this.labelModelName.Location = new System.Drawing.Point(21, 21);
+            this.labelModelName.Location = new System.Drawing.Point(16, 48);
             this.labelModelName.Name = "labelModelName";
             this.labelModelName.Size = new System.Drawing.Size(79, 15);
             this.labelModelName.TabIndex = 12;
@@ -214,7 +217,7 @@
             // labelMeshsetName
             // 
             this.labelMeshsetName.AutoSize = true;
-            this.labelMeshsetName.Location = new System.Drawing.Point(11, 75);
+            this.labelMeshsetName.Location = new System.Drawing.Point(266, 21);
             this.labelMeshsetName.Name = "labelMeshsetName";
             this.labelMeshsetName.Size = new System.Drawing.Size(89, 15);
             this.labelMeshsetName.TabIndex = 13;
@@ -223,7 +226,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 48);
+            this.label1.Location = new System.Drawing.Point(7, 75);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(88, 15);
             this.label1.TabIndex = 15;
@@ -231,29 +234,29 @@
             // 
             // textBoxMaterialName
             // 
-            this.textBoxMaterialName.Location = new System.Drawing.Point(105, 45);
+            this.textBoxMaterialName.Location = new System.Drawing.Point(100, 72);
             this.textBoxMaterialName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMaterialName.Name = "textBoxMaterialName";
             this.textBoxMaterialName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxMaterialName.TabIndex = 1;
+            this.textBoxMaterialName.TabIndex = 3;
             this.textBoxMaterialName.TextChanged += new System.EventHandler(this.textBoxMaterialName_TextChanged);
             // 
             // textBoxMeshsetName
             // 
-            this.textBoxMeshsetName.Location = new System.Drawing.Point(105, 72);
+            this.textBoxMeshsetName.Location = new System.Drawing.Point(360, 18);
             this.textBoxMeshsetName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxMeshsetName.Name = "textBoxMeshsetName";
             this.textBoxMeshsetName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxMeshsetName.TabIndex = 2;
+            this.textBoxMeshsetName.TabIndex = 4;
             this.textBoxMeshsetName.TextChanged += new System.EventHandler(this.textBoxMeshsetName_TextChanged);
             // 
             // textBoxModelName
             // 
-            this.textBoxModelName.Location = new System.Drawing.Point(105, 18);
+            this.textBoxModelName.Location = new System.Drawing.Point(100, 45);
             this.textBoxModelName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelName.Name = "textBoxModelName";
             this.textBoxModelName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxModelName.TabIndex = 0;
+            this.textBoxModelName.TabIndex = 2;
             this.textBoxModelName.TextChanged += new System.EventHandler(this.textBoxModelName_TextChanged);
             // 
             // textBoxModelY
@@ -262,7 +265,7 @@
             this.textBoxModelY.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelY.Name = "textBoxModelY";
             this.textBoxModelY.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelY.TabIndex = 6;
+            this.textBoxModelY.TabIndex = 8;
             this.textBoxModelY.TextChanged += new System.EventHandler(this.textBoxModelY_TextChanged);
             // 
             // textBoxModelZ
@@ -271,7 +274,7 @@
             this.textBoxModelZ.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelZ.Name = "textBoxModelZ";
             this.textBoxModelZ.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelZ.TabIndex = 7;
+            this.textBoxModelZ.TabIndex = 9;
             this.textBoxModelZ.TextChanged += new System.EventHandler(this.textBoxModelZ_TextChanged);
             // 
             // textBoxModelX
@@ -280,7 +283,7 @@
             this.textBoxModelX.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelX.Name = "textBoxModelX";
             this.textBoxModelX.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelX.TabIndex = 5;
+            this.textBoxModelX.TabIndex = 7;
             this.textBoxModelX.TextChanged += new System.EventHandler(this.textBoxModelX_TextChanged);
             // 
             // label4
@@ -312,6 +315,8 @@
             // 
             // groupBoxLabels
             // 
+            this.groupBoxLabels.Controls.Add(this.textBoxObjectName);
+            this.groupBoxLabels.Controls.Add(this.label7);
             this.groupBoxLabels.Controls.Add(this.textBoxNormalName);
             this.groupBoxLabels.Controls.Add(this.label3);
             this.groupBoxLabels.Controls.Add(this.textBoxVertexName);
@@ -322,7 +327,7 @@
             this.groupBoxLabels.Controls.Add(this.label1);
             this.groupBoxLabels.Controls.Add(this.textBoxMaterialName);
             this.groupBoxLabels.Controls.Add(this.textBoxMeshsetName);
-            this.groupBoxLabels.Location = new System.Drawing.Point(8, 10);
+            this.groupBoxLabels.Location = new System.Drawing.Point(8, 40);
             this.groupBoxLabels.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxLabels.Name = "groupBoxLabels";
             this.groupBoxLabels.Padding = new System.Windows.Forms.Padding(2);
@@ -331,19 +336,36 @@
             this.groupBoxLabels.TabStop = false;
             this.groupBoxLabels.Text = "Labels";
             // 
+            // textBoxObjectName
+            // 
+            this.textBoxObjectName.Location = new System.Drawing.Point(100, 18);
+            this.textBoxObjectName.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxObjectName.Name = "textBoxObjectName";
+            this.textBoxObjectName.Size = new System.Drawing.Size(145, 23);
+            this.textBoxObjectName.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(15, 21);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(80, 15);
+            this.label7.TabIndex = 23;
+            this.label7.Text = "Object Name:";
+            // 
             // textBoxNormalName
             // 
-            this.textBoxNormalName.Location = new System.Drawing.Point(358, 45);
+            this.textBoxNormalName.Location = new System.Drawing.Point(360, 72);
             this.textBoxNormalName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxNormalName.Name = "textBoxNormalName";
             this.textBoxNormalName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxNormalName.TabIndex = 4;
+            this.textBoxNormalName.TabIndex = 6;
             this.textBoxNormalName.TextChanged += new System.EventHandler(this.textBoxNormalName_TextChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(263, 48);
+            this.label3.Location = new System.Drawing.Point(265, 75);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 15);
             this.label3.TabIndex = 21;
@@ -351,17 +373,17 @@
             // 
             // textBoxVertexName
             // 
-            this.textBoxVertexName.Location = new System.Drawing.Point(358, 18);
+            this.textBoxVertexName.Location = new System.Drawing.Point(360, 45);
             this.textBoxVertexName.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxVertexName.Name = "textBoxVertexName";
             this.textBoxVertexName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxVertexName.TabIndex = 3;
+            this.textBoxVertexName.TabIndex = 5;
             this.textBoxVertexName.TextChanged += new System.EventHandler(this.textBoxVertexName_TextChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(268, 21);
+            this.label2.Location = new System.Drawing.Point(270, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 15);
             this.label2.TabIndex = 19;
@@ -377,7 +399,7 @@
             this.groupBoxBounds.Controls.Add(this.textBoxModelZ);
             this.groupBoxBounds.Controls.Add(this.label5);
             this.groupBoxBounds.Controls.Add(this.label4);
-            this.groupBoxBounds.Location = new System.Drawing.Point(522, 10);
+            this.groupBoxBounds.Location = new System.Drawing.Point(522, 40);
             this.groupBoxBounds.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxBounds.Name = "groupBoxBounds";
             this.groupBoxBounds.Padding = new System.Windows.Forms.Padding(2);
@@ -392,7 +414,7 @@
             this.textBoxModelRadius.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxModelRadius.Name = "textBoxModelRadius";
             this.textBoxModelRadius.Size = new System.Drawing.Size(93, 23);
-            this.textBoxModelRadius.TabIndex = 8;
+            this.textBoxModelRadius.TabIndex = 10;
             this.textBoxModelRadius.TextChanged += new System.EventHandler(this.textBoxModelRadius_TextChanged);
             // 
             // labelR
@@ -412,7 +434,7 @@
             this.groupBoxMeshList.Controls.Add(this.listViewMeshes);
             this.groupBoxMeshList.Controls.Add(this.buttonDeleteMesh);
             this.groupBoxMeshList.Controls.Add(this.buttonCloneMesh);
-            this.groupBoxMeshList.Location = new System.Drawing.Point(8, 118);
+            this.groupBoxMeshList.Location = new System.Drawing.Point(8, 160);
             this.groupBoxMeshList.Margin = new System.Windows.Forms.Padding(2);
             this.groupBoxMeshList.Name = "groupBoxMeshList";
             this.groupBoxMeshList.Padding = new System.Windows.Forms.Padding(2);
@@ -426,7 +448,7 @@
             this.buttonResetMeshes.Location = new System.Drawing.Point(618, 261);
             this.buttonResetMeshes.Name = "buttonResetMeshes";
             this.buttonResetMeshes.Size = new System.Drawing.Size(90, 24);
-            this.buttonResetMeshes.TabIndex = 14;
+            this.buttonResetMeshes.TabIndex = 16;
             this.buttonResetMeshes.Text = "Reset Meshes";
             this.buttonResetMeshes.UseVisualStyleBackColor = true;
             this.buttonResetMeshes.Click += new System.EventHandler(this.buttonResetMeshes_Click);
@@ -434,17 +456,18 @@
             // buttonClose
             // 
             this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonClose.Location = new System.Drawing.Point(670, 416);
+            this.buttonClose.Location = new System.Drawing.Point(670, 458);
             this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(84, 24);
-            this.buttonClose.TabIndex = 15;
+            this.buttonClose.TabIndex = 17;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
-            // 
-            // contextMenuStripLabels
-            // 
-            this.contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
+			this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+			// 
+			// contextMenuStripLabels
+			// 
+			this.contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemEditPolyName,
             this.toolStripMenuItemEditUVName,
@@ -481,11 +504,22 @@
             this.toolStripMenuItemEditPolynormalName.Text = "Edit Polynormal Name...";
             this.toolStripMenuItemEditPolynormalName.Click += new System.EventHandler(this.toolStripMenuItemEditPolynormalName_Click);
             // 
+            // comboBoxNode
+            // 
+            this.comboBoxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxNode.FormattingEnabled = true;
+            this.comboBoxNode.Location = new System.Drawing.Point(8, 12);
+            this.comboBoxNode.Name = "comboBoxNode";
+            this.comboBoxNode.Size = new System.Drawing.Size(355, 23);
+            this.comboBoxNode.TabIndex = 0;
+            this.comboBoxNode.SelectedIndexChanged += new System.EventHandler(this.comboBoxNode_SelectedIndexChanged);
+            // 
             // ModelDataEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(758, 468);
+            this.ClientSize = new System.Drawing.Size(758, 509);
+            this.Controls.Add(this.comboBoxNode);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.groupBoxMeshList);
             this.Controls.Add(this.groupBoxBounds);
@@ -557,5 +591,8 @@
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditUVName;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditVcolorName;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditPolynormalName;
+		private System.Windows.Forms.TextBox textBoxObjectName;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.ComboBox comboBoxNode;
 	}
 }

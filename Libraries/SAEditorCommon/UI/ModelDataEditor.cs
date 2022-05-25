@@ -7,36 +7,31 @@ namespace SAModel.SAEditorCommon.UI
 {
 	public partial class ModelDataEditor : Form
 	{
-		public BasicAttach editedModel;
-		
-		BasicAttach originalModel;
-		bool freeze;
+		public NJS_OBJECT editedHierarchy;
 
-		public ModelDataEditor(Attach att)
+		private Attach editedModel;
+		private Attach originalModel;
+		private bool freeze;
+		private int previousNodeIndex;
+
+		public ModelDataEditor(NJS_OBJECT objectOriginal, int index = 0)
 		{
-			if (att == null || !(att is BasicAttach))
+			if (objectOriginal == null)
 				return;
-			editedModel = (BasicAttach)att.Clone();
-			originalModel = (BasicAttach)att;
 			InitializeComponent();
 			freeze = true;
-			textBoxModelName.Text = editedModel.Name;
-			textBoxMaterialName.Text = editedModel.MaterialName;
-			textBoxMeshsetName.Text = editedModel.MeshName;
-			textBoxVertexName.Text = editedModel.VertexName;
-			textBoxNormalName.Text = editedModel.NormalName;
-			textBoxModelRadius.Text = editedModel.Bounds.Radius.ToString("0.#######");
-			textBoxModelX.Text = editedModel.Bounds.Center.X.ToString("0.#######");
-			textBoxModelY.Text = editedModel.Bounds.Center.Y.ToString("0.#######");
-			textBoxModelZ.Text = editedModel.Bounds.Center.Z.ToString("0.#######");
-			freeze = false;
+			comboBoxNode.Items.Clear();
+			editedHierarchy = objectOriginal.Clone();
+			BuildNodeList();
+			comboBoxNode.SelectedIndex = index;
 			BuildMeshsetList();
+			freeze = false;
 		}
 
 		#region Meshset label editing
 		private void toolStripMenuItemEditPolyName_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
 			using (LabelEditor le = new LabelEditor(selectedMesh.PolyName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
@@ -48,7 +43,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void toolStripMenuItemEditUVName_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
 			using (LabelEditor le = new LabelEditor(selectedMesh.UVName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
@@ -60,7 +55,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void toolStripMenuItemEditVcolorName_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
 			using (LabelEditor le = new LabelEditor(selectedMesh.VColorName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
@@ -72,7 +67,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void toolStripMenuItemEditPolynormalName_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
 			using (LabelEditor le = new LabelEditor(selectedMesh.PolyNormalName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
@@ -96,7 +91,7 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			List<string> labels = new List<string>();
 			int counter = 0;
-			foreach (NJS_MESHSET meshset in editedModel.Mesh)
+			foreach (NJS_MESHSET meshset in ((BasicAttach)editedModel).Mesh)
 			{
 				// Poly
 				counter = 0;
@@ -179,17 +174,17 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void buttonResetMeshes_Click(object sender, System.EventArgs e)
 		{
-			editedModel.Mesh.Clear();
-			foreach (NJS_MESHSET mesh in originalModel.Mesh)
-				editedModel.Mesh.Add(mesh);
+			((BasicAttach)editedModel).Mesh.Clear();
+			foreach (NJS_MESHSET mesh in ((BasicAttach)originalModel).Mesh)
+				((BasicAttach)editedModel).Mesh.Add(mesh);
 			BuildMeshsetList();
 		}
 
 		private void buttonCloneMesh_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = editedModel.Mesh.IndexOf(selectedMesh);
-			editedModel.Mesh.Insert(editedModel.Mesh.IndexOf(selectedMesh) + 1, selectedMesh.Clone());
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
+			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
+			((BasicAttach)editedModel).Mesh.Insert(((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh) + 1, selectedMesh.Clone());
 			FixLabels();
 			BuildMeshsetList();
 			SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
@@ -197,9 +192,9 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void buttonDeleteMesh_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = editedModel.Mesh.IndexOf(selectedMesh);
-			editedModel.Mesh.Remove(selectedMesh);
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
+			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
+			((BasicAttach)editedModel).Mesh.Remove(selectedMesh);
 			FixLabels();
 			BuildMeshsetList();
 			SelectMesh(Math.Max(0, index - 1));
@@ -207,10 +202,10 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void buttonMoveMeshUp_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = editedModel.Mesh.IndexOf(selectedMesh);
-			editedModel.Mesh.Insert(index - 1, selectedMesh);
-			editedModel.Mesh.RemoveAt(index + 1);
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
+			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
+			((BasicAttach)editedModel).Mesh.Insert(index - 1, selectedMesh);
+			((BasicAttach)editedModel).Mesh.RemoveAt(index + 1);
 			FixLabels();
 			BuildMeshsetList();
 			SelectMesh(Math.Max(0, index - 1));
@@ -218,10 +213,10 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void buttonMoveMeshDown_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = editedModel.Mesh.IndexOf(selectedMesh);
-			editedModel.Mesh.Insert(index + 2, selectedMesh);
-			editedModel.Mesh.RemoveAt(index);
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
+			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
+			((BasicAttach)editedModel).Mesh.Insert(index + 2, selectedMesh);
+			((BasicAttach)editedModel).Mesh.RemoveAt(index);
 			FixLabels();
 			BuildMeshsetList();
 			SelectMesh(Math.Min(listViewMeshes.Items.Count -1, index + 1));
@@ -237,32 +232,57 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void textBoxModelName_TextChanged(object sender, System.EventArgs e)
 		{
-			editedModel.Name = textBoxModelName.Text;
+			if (freeze)
+				return;
+			if (!string.IsNullOrEmpty(textBoxModelName.Text))
+				editedModel.Name = textBoxModelName.Text;
 		}
 
 		private void textBoxMaterialName_TextChanged(object sender, System.EventArgs e)
 		{
-			editedModel.MaterialName = textBoxMaterialName.Text;
+			if (freeze)
+				return;
+			if (editedModel is BasicAttach && !string.IsNullOrEmpty(textBoxMaterialName.Text))
+				((BasicAttach)editedModel).MaterialName = textBoxMaterialName.Text;
 		}
 
 		private void textBoxMeshsetName_TextChanged(object sender, System.EventArgs e)
 		{
-			editedModel.MeshName = textBoxMeshsetName.Text;
+			if (freeze)
+				return;
+			if (!string.IsNullOrEmpty(textBoxMeshsetName.Text))
+			{
+				if (editedModel is BasicAttach batt)
+					batt.MeshName = textBoxMeshsetName.Text;
+				else if (editedModel is ChunkAttach catt)
+					catt.PolyName = textBoxMeshsetName.Text;
+			}
 		}
 
 		private void textBoxVertexName_TextChanged(object sender, System.EventArgs e)
 		{
-			editedModel.VertexName = textBoxVertexName.Text;
+			if (freeze)
+				return;
+			if (!string.IsNullOrEmpty(textBoxVertexName.Text))
+			{
+				if (editedModel is BasicAttach)
+					((BasicAttach)editedModel).VertexName = textBoxVertexName.Text;
+				else if (editedModel is ChunkAttach catt)
+					((ChunkAttach)editedModel).VertexName = textBoxVertexName.Text;
+			}
 		}
 
 		private void textBoxNormalName_TextChanged(object sender, System.EventArgs e)
 		{
-			editedModel.NormalName = textBoxNormalName.Text;
+			if (freeze)
+				return;
+			if (editedModel is BasicAttach && !string.IsNullOrEmpty(textBoxNormalName.Text))
+				((BasicAttach)editedModel).NormalName = textBoxNormalName.Text;
 		}
 
 		private void textBoxModelX_TextChanged(object sender, System.EventArgs e)
 		{
-			if (freeze)
+			if (freeze || string.IsNullOrEmpty(textBoxModelX.Text))
 				return;
 			float newrad = originalModel.Bounds.Center.X;
 			bool result = float.TryParse(textBoxModelX.Text, out newrad);
@@ -274,7 +294,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void textBoxModelY_TextChanged(object sender, System.EventArgs e)
 		{
-			if (freeze)
+			if (freeze || string.IsNullOrEmpty(textBoxModelY.Text))
 				return;
 			float newrad = originalModel.Bounds.Center.Y;
 			bool result = float.TryParse(textBoxModelY.Text, out newrad);
@@ -286,7 +306,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void textBoxModelZ_TextChanged(object sender, System.EventArgs e)
 		{
-			if (freeze)
+			if (freeze || string.IsNullOrEmpty(textBoxModelZ.Text))
 				return;
 			float newrad = originalModel.Bounds.Center.Z;
 			bool result = float.TryParse(textBoxModelZ.Text, out newrad);
@@ -298,7 +318,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void textBoxModelRadius_TextChanged(object sender, System.EventArgs e)
 		{
-			if (freeze)
+			if (freeze || string.IsNullOrEmpty(textBoxModelRadius.Text))
 				return;
 			float newrad = originalModel.Bounds.Radius;
 			bool result = float.TryParse(textBoxModelRadius.Text, out newrad);
@@ -310,19 +330,28 @@ namespace SAModel.SAEditorCommon.UI
 		#endregion
 
 		#region UI
+		private void BuildNodeList()
+		{
+			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				comboBoxNode.Items.Add(i.ToString() + ": " + objs[i].Name.ToString());
+		}
+
 		private void BuildMeshsetList()
 		{
 			listViewMeshes.Items.Clear();
-			foreach (NJS_MESHSET meshset in editedModel.Mesh)
+			groupBoxMeshList.Enabled = editedModel != null && editedModel is BasicAttach;
+			if (editedModel is BasicAttach batt)
+			foreach (NJS_MESHSET meshset in batt.Mesh)
 			{
-				ListViewItem newmesh = new ListViewItem(editedModel.Mesh.IndexOf(meshset).ToString());
+				ListViewItem newmesh = new ListViewItem(batt.Mesh.IndexOf(meshset).ToString());
 				newmesh.SubItems.Add(meshset.MaterialID.ToString());
 				newmesh.SubItems.Add(meshset.PolyType.ToString());
 				newmesh.SubItems.Add(meshset.Poly != null ? meshset.PolyName : "N/A");
 				newmesh.SubItems.Add(meshset.UV != null ? meshset.UVName : "N/A");
 				newmesh.SubItems.Add(meshset.VColor != null ? meshset.VColorName : "N/A");
 				newmesh.SubItems.Add(meshset.PolyNormal != null ? meshset.PolyNormalName : "N/A");
-				newmesh.SubItems.Add(CheckAlpha(meshset, editedModel) ? "Yes" : "No");
+				newmesh.SubItems.Add(CheckAlpha(meshset, batt) ? "Yes" : "No");
 				listViewMeshes.Items.Add(newmesh);
 			}
 			listViewMeshes.SelectedIndices.Clear();
@@ -338,11 +367,11 @@ namespace SAModel.SAEditorCommon.UI
 				buttonCloneMesh.Enabled = buttonDeleteMesh.Enabled = buttonMoveMeshDown.Enabled = buttonMoveMeshUp.Enabled = false;
 				return;
 			}
-			NJS_MESHSET selectedMesh = editedModel.Mesh[listViewMeshes.SelectedIndices[0]];
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
 			buttonCloneMesh.Enabled = true;
-			buttonDeleteMesh.Enabled = editedModel.Mesh.Count > 1;
-			buttonMoveMeshUp.Enabled = editedModel.Mesh.IndexOf(selectedMesh) > 0;
-			buttonMoveMeshDown.Enabled = editedModel.Mesh.IndexOf(selectedMesh) < editedModel.Mesh.Count - 1;
+			buttonDeleteMesh.Enabled = ((BasicAttach)editedModel).Mesh.Count > 1;
+			buttonMoveMeshUp.Enabled = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh) > 0;
+			buttonMoveMeshDown.Enabled = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh) < ((BasicAttach)editedModel).Mesh.Count - 1;
 			// Status bar
 			StringBuilder sb = new StringBuilder();
 			if (selectedMesh.Poly != null)
@@ -364,6 +393,71 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			if (e.Button == MouseButtons.Right && listViewMeshes.SelectedIndices.Count != 0)
 				contextMenuStripLabels.Show(listViewMeshes, e.Location);
+		}
+
+		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			int index = comboBoxNode.SelectedIndex;
+			if (index == -1)
+				return;
+			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			// Apply changes
+			if (!freeze)
+				objs[previousNodeIndex].Name = textBoxObjectName.Text;
+			textBoxObjectName.Text = objs[index].Name;
+			if (objs[previousNodeIndex].Attach != null && editedModel != null)
+				objs[previousNodeIndex].Attach = editedModel.Clone();
+			// Load new stuff
+			if (objs[index].Attach != null)
+			{
+				editedModel = objs[index].Attach.Clone();
+				originalModel = objs[index].Attach.Clone();
+				textBoxModelName.Enabled = true;
+				textBoxModelName.Text = editedModel.Name;
+				textBoxModelRadius.Enabled = true;
+				textBoxModelRadius.Text = editedModel.Bounds.Radius.ToString("0.#######");
+				textBoxModelX.Enabled = true;
+				textBoxModelX.Text = editedModel.Bounds.Center.X.ToString("0.#######");
+				textBoxModelY.Enabled = true;
+				textBoxModelY.Text = editedModel.Bounds.Center.Y.ToString("0.#######");
+				textBoxModelZ.Enabled = true;
+				textBoxModelZ.Text = editedModel.Bounds.Center.Z.ToString("0.#######");
+				if (objs[index].Attach is BasicAttach batt)
+				{
+					textBoxMaterialName.Enabled = true;
+					textBoxMaterialName.Text = batt.MaterialName;
+					textBoxMeshsetName.Enabled = true;
+					textBoxMeshsetName.Text = batt.MeshName;
+					textBoxVertexName.Enabled = true;
+					textBoxVertexName.Text = batt.VertexName;
+					textBoxNormalName.Enabled = true;
+					textBoxNormalName.Text = batt.NormalName;
+					groupBoxMeshList.Enabled = true;
+					BuildMeshsetList();
+				}
+				else if (objs[index].Attach is ChunkAttach catt)
+				{
+					textBoxMeshsetName.Enabled = true;
+					textBoxMeshsetName.Text = catt.PolyName;
+					textBoxVertexName.Enabled = true;
+					textBoxVertexName.Text = catt.VertexName;
+					groupBoxMeshList.Enabled = textBoxMaterialName.Enabled = textBoxNormalName.Enabled = false;
+					textBoxMaterialName.Text = textBoxNormalName.Text = "";
+				}
+			}
+			else
+			{
+				textBoxMaterialName.Enabled = textBoxMeshsetName.Enabled = textBoxNormalName.Enabled = textBoxVertexName.Enabled = textBoxModelName.Enabled = textBoxModelRadius.Enabled = textBoxModelX.Enabled = textBoxModelY.Enabled = textBoxModelZ.Enabled = false;
+				textBoxModelName.Text = textBoxMaterialName.Text = textBoxMeshsetName.Text = textBoxNormalName.Text = textBoxVertexName.Text = textBoxModelName.Text = textBoxModelRadius.Text = textBoxModelX.Text = textBoxModelY.Text = textBoxModelZ.Text = "";
+				editedModel = null;
+			}
+			previousNodeIndex = comboBoxNode.SelectedIndex;
+			BuildMeshsetList();
+		}
+
+		private void buttonClose_Click(object sender, EventArgs e)
+		{
+			comboBoxNode_SelectedIndexChanged(sender, e);
 		}
 		#endregion
 	}

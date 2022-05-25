@@ -1220,7 +1220,7 @@ namespace SAModel.SAMDL
 			this.PolyNormalstoolStripMenuItem.Enabled = false;
 			this.PolyNormalstoolStripMenuItem.Name = "PolyNormalstoolStripMenuItem";
 			this.PolyNormalstoolStripMenuItem.Size = new System.Drawing.Size(213, 30);
-			this.PolyNormalstoolStripMenuItem.Text = "Poly Normals";
+			this.PolyNormalstoolStripMenuItem.Text = "Polynormals";
 			// 
 			// createPolyNormalToolStripMenuItem
 			// 
