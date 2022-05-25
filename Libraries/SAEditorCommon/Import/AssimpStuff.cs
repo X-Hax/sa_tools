@@ -63,8 +63,8 @@ namespace SAModel.SAEditorCommon.Import
 		private static void ProcessNodes(this NJS_OBJECT obj, Matrix parentMatrix, ref int mdlindex)
 		{
 			mdlindex++;
-            string nodename = $"n{mdlindex:000}_{obj.Name}";
-            NodeNames.Add(nodename);
+			string nodename = $"n{mdlindex:000}_{obj.Name}";
+			NodeNames.Add(nodename);
 
 			Matrix nodeTransform = Matrix.Identity;
 
@@ -440,9 +440,9 @@ namespace SAModel.SAEditorCommon.Import
 			}
 			else
 			{
-				int nameMeshIndex = 0;
-                if (attach.MeshInfo == null)
-                    attach.ProcessVertexData();
+				int nameMeshIndex = 0; 
+				if (attach.MeshInfo == null)
+					attach.ProcessVertexData();
 				foreach (MeshInfo meshInfo in attach.MeshInfo)
 				{
 					Assimp.Mesh mesh = new Assimp.Mesh($"{attach.Name}_mesh_{nameMeshIndex}");
@@ -737,7 +737,7 @@ namespace SAModel.SAEditorCommon.Import
 
 		private static WeightStatus GetWeightStatus(string name, List<VertWeight> weights)
 		{
-			if (weights.Count == 1) return (WeightStatus)3;
+			//if (weights.Count == 1) return (WeightStatus)3;
 			int i = weights.Select((w, ind) => (ind, w)).First(a => a.w.name == name).ind;
 			if (i == 0)
 				return WeightStatus.Start;
@@ -770,7 +770,6 @@ namespace SAModel.SAEditorCommon.Import
 			}
 			else
 				bones = null;
-			Dictionary<int, int> vertmap = null;
 			if (sortedbones.Count > 1)
 			{
 				result.FirstNode = sortedbones.First();
@@ -780,17 +779,6 @@ namespace SAModel.SAEditorCommon.Import
 				for (int i = 0; i < aiMesh.VertexCount; i++)
 					if (verts[i].weights.Count == 0)
 						verts[i].weights.Add(new VertWeight(lastbone, 1));
-				verts.Sort((a, b) =>
-				{
-					if (a.weights.Count > 1)
-						return -1;
-					if (b.weights.Count > 1)
-						return 1;
-					return nodeIndexForSort[a.weights[0].name].CompareTo(nodeIndexForSort[b.weights[0].name]);
-				});
-				vertmap = new Dictionary<int, int>();
-				for (int i = 0; i < aiMesh.VertexCount; i++)
-					vertmap[verts[i].index] = i;
 				foreach (var bonename in sortedbones)
 				{
 					List<VertexChunk> chunks = new List<VertexChunk>();
@@ -798,49 +786,20 @@ namespace SAModel.SAEditorCommon.Import
 					{
 						{ WeightStatus.Start, new List<VertInfo>() },
 						{ WeightStatus.Middle, new List<VertInfo>() },
-						{ WeightStatus.End, new List<VertInfo>() },
-						{ (WeightStatus)3, new List<VertInfo>() }
+						{ WeightStatus.End, new List<VertInfo>() }
 					};
 					foreach (var v in verts.Where(a => a.weights.Any(b => b.name == bonename)))
 						vertsbyweight[GetWeightStatus(bonename, v.weights)].Add(v);
 					foreach (var (weight, vertinds) in vertsbyweight.Where(a => a.Value.Count > 0))
 					{
-						if (weight == (WeightStatus)3)
+						VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => a.index), WeightStatus = weight };
+						foreach (var vert in vertinds)
 						{
-							ChunkType type = ChunkType.Vertex_Vertex;
-							bool hasnormal = false;
-							bool hasvcolor = false;
-							if (aiMesh.HasVertexColors(0))
-							{
-								hasvcolor = true;
-								type = ChunkType.Vertex_VertexDiffuse8;
-							}
-							else if (aiMesh.HasNormals)
-							{
-								hasnormal = true;
-								type = ChunkType.Vertex_VertexNormal;
-							}
-							VertexChunk vc = new VertexChunk(type) { IndexOffset = (ushort)vertinds.Min(a => vertmap[a.index]) };
-							foreach (var vert in vertinds)
-							{
-								vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
-								if (hasnormal)
-									vc.Normals.Add(Vector3.TransformNormal(aiMesh.Normals[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
-								if (hasvcolor)
-									vc.Diffuse.Add(aiMesh.VertexColorChannels[0][vert.index].ToColor());
-							}
+							vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
+							vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
+							vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vert.index - vc.IndexOffset)));
 						}
-						else
-						{
-							VertexChunk vc = new VertexChunk(ChunkType.Vertex_VertexNormalNinjaFlags) { IndexOffset = (ushort)vertinds.Min(a => vertmap[a.index]), WeightStatus = weight };
-							foreach (var vert in vertinds)
-							{
-								vc.Vertices.Add(Vector3.TransformCoordinate(aiMesh.Vertices[vert.index].ToSharpDX(), matrices[bonename]).ToVertex());
-								vc.Normals.Add(Vector3.TransformNormal(aiMesh.HasNormals ? aiMesh.Normals[vert.index].ToSharpDX() : Vector3.Up, matrices[bonename]).ToVertex());
-								vc.NinjaFlags.Add((uint)(((byte)(vert.weights.First(a => a.name == bonename).weight * 255.0f) << 16) | (vertmap[vert.index] - vc.IndexOffset)));
-							}
-							chunks.Add(vc);
-						}
+						chunks.Add(vc);
 					}
 
 					result.Vertex.Add(bonename, chunks);
@@ -895,7 +854,7 @@ namespace SAModel.SAEditorCommon.Import
 				for (var j = rev ? 1 : 0; j < grp.Indices.Length; j++)
 				{
 					var vertexIndex = grp.Indices[j];
-					stripIndices.Add((ushort)(vertmap != null ? vertmap[vertexIndex] : vertexIndex));
+					stripIndices.Add(vertexIndex);
 					if (hasUV)
 						stripuv.Add(new UV() { U = aiMesh.TextureCoordinateChannels[0][vertexIndex].X, V = aiMesh.TextureCoordinateChannels[0][vertexIndex].Y });
 				}
@@ -1176,7 +1135,7 @@ namespace SAModel.SAEditorCommon.Import
 				{
 					normals.Add(new Vertex(ve.X, ve.Y, ve.Z));
 				}
-				if (!lookupMaterial.ContainsKey(m.MaterialIndex)) 
+				if (!lookupMaterial.ContainsKey(m.MaterialIndex))
 					lookupMaterial.Add(m.MaterialIndex, attach.Material.Count);
 				attach.Material.Add(materials[m.MaterialIndex].ToSAModel());
 
@@ -1426,7 +1385,7 @@ namespace SAModel.SAEditorCommon.Import
 				{
 					foreach (Color4D texcoord in m.VertexColorChannels[0])
 						colors.Add(new GC.Color(texcoord.A, texcoord.B, texcoord.G, texcoord.R));//colors.Add(new Color(texcoord.A * 255.0f, texcoord.B * 255.0f, texcoord.G * 255.0f, texcoord.R * 255.0f));
-																																  //colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f)); rgba
+																								 //colors.Add(new Color4D(c.A / 255.0f, c.B / 255.0f, c.G / 255.0f, c.R / 255.0f)); rgba
 				}
 
 				//Parameter stuff
@@ -1519,7 +1478,7 @@ namespace SAModel.SAEditorCommon.Import
 					}
 				}
 				nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
-				
+
 				foreach (NvTriStripDotNet.PrimitiveGroup grp in primitiveGroups)
 				{
 					GC.GCPrimitive prim = new GC.GCPrimitive(GC.GCPrimitiveType.TriangleStrip);
