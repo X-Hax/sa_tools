@@ -424,10 +424,10 @@ namespace SAModel
 			List<uint> njOffsets = new List<uint>();
 			byte[] mdl;
 			uint addr;
-			mdl = model.GetBytes(imageBase, false, labels, njOffsets, out addr);
 
 			if(useNinjaMetaData == true)
 			{
+				mdl = model.NJGetBytes(imageBase, false, labels, njOffsets, out addr);
 				//***Ninja metadata should always be little endian!***
 				file.AddRange(BitConverter.GetBytes(ninjaMagic));
 				file.AddRange(BitConverter.GetBytes(mdl.Length));
@@ -435,6 +435,7 @@ namespace SAModel
 			}
 			else
 			{
+				mdl = model.GetBytes(imageBase, false, labels, njOffsets, out addr);
 				file.AddRange(ByteConverter.GetBytes(magic));
 				file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 				file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
