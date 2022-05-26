@@ -479,7 +479,7 @@ namespace SAModel.SAMDL
 			AnimationPlaying = false;
 			currentAnimation = null;
 			animationList = null;
-			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
+			setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
 			animnum = -1;
 			animframe = 0;
 			// Model file
@@ -505,7 +505,7 @@ namespace SAModel.SAMDL
 						rootSiblingMode = false;
 					}
 					animationList = new List<NJS_MOTION>(modelFile.Animations);
-					buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
+					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 				}
 				catch (Exception ex)
@@ -529,7 +529,7 @@ namespace SAModel.SAMDL
 					// Ninja/Ginja model file
 					case ".nj":
 					case ".gj":
-						int ninjaDataOffset = 0;
+						int ninjaDataOffset;
 						bool basicModel = false;
 
 						string magic = System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
@@ -589,7 +589,7 @@ namespace SAModel.SAMDL
 						Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 						LoadBinFile(newFile);
 						animationList = new List<NJS_MOTION>();
-						buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
+						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 						break;
 					// Project file
@@ -684,7 +684,7 @@ namespace SAModel.SAMDL
 													i = ByteConverter.ToInt32(file, address);
 												}
 												animationList = new List<NJS_MOTION>(anis.Values);
-												buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
+												setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
 													buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 											}
 										}
@@ -744,7 +744,7 @@ namespace SAModel.SAMDL
 				}
 				if (modelinfo.checkBoxLoadMotion.Checked)
 					animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
-					buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = 
+				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = 
 					buttonResetFrame.Enabled = (animationList != null && animationList.Count > 0);
 			}
 			else if (modelinfo.radioButtonAction.Checked)
@@ -752,7 +752,7 @@ namespace SAModel.SAMDL
 				NJS_ACTION action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				model = action.Model;
 				animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null) };
-				buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = 
+				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = 
 					buttonResetFrame.Enabled = animationList.Count > 0;
 			}
 			else
@@ -997,7 +997,7 @@ namespace SAModel.SAMDL
 			model.Morph = false;
             RebuildModelCache();
 			selectedObject = model;
-			buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
+			setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
 			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
@@ -2305,7 +2305,7 @@ namespace SAModel.SAMDL
 
             if (!selected)
 			{
-				if (animationList.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
+				if (animationList.Count > 0) setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 				selectedObject = model;
 				AddModelToLibrary(model, false);
 			}
@@ -2414,6 +2414,108 @@ namespace SAModel.SAMDL
 				{
 					LoadAnimation(ofd.FileNames);
 				}
+		}
+
+		private void SetAnimOrientations(Vertex position, Rotation rotation, Vertex scale)
+		{
+			for(int i = 0; i < animationList.Count; i++)
+			{
+				var anim = animationList[i];
+				int endFrame = anim.Frames -1;
+				if(anim.Models.ContainsKey(0))
+				{
+					AnimModelData animData = anim.Models[0];
+					if (position != null)
+					{
+						if (animData.Position.Count > 0)
+						{
+							foreach(var key in animData.Position.Keys)
+							{
+								animData.Position[key] += position;
+							}
+						}
+						else
+						{
+							animData.Position.Add(0, position);
+							animData.Position.Add(endFrame, position);
+						}
+					}
+					if (rotation != null)
+					{
+						if (animData.Rotation.Count > 0)
+						{
+							foreach (var key in animData.Position.Keys)
+							{
+								int X = BAMSFix(animData.Rotation[key].X + rotation.X);
+								int Y = BAMSFix(animData.Rotation[key].Y + rotation.Y);
+								int Z = BAMSFix(animData.Rotation[key].Z + rotation.Z);
+
+								animData.Rotation[key].X = X;
+								animData.Rotation[key].Y = Y;
+								animData.Rotation[key].Z = Z;
+							}
+						}
+						else
+						{
+							animData.Rotation.Add(0, rotation);
+							animData.Rotation.Add(endFrame, rotation);
+						}
+					}
+					if (scale != null)
+					{
+						if (animData.Scale.Count > 0)
+						{
+							foreach (var key in animData.Scale.Keys)
+							{
+								var oldScale = animData.Scale[key];
+								animData.Scale[key] = new Vertex(oldScale.X * scale.X, oldScale.Y * scale.Y, oldScale.Z * scale.Z);
+							}
+						}
+						else
+						{
+							animData.Scale.Add(0, scale);
+							animData.Scale.Add(endFrame, scale);
+						}
+					}
+				} else
+				{
+					AnimModelData orientationData = new AnimModelData();
+
+					if(position != null)
+					{
+						orientationData.Position.Add(0, position);
+						orientationData.Position.Add(endFrame, position);
+					}
+
+					if(rotation != null)
+					{
+						orientationData.Rotation.Add(0, rotation);
+						orientationData.Rotation.Add(endFrame, rotation);
+					}
+
+					if(scale != null)
+					{
+						orientationData.Scale.Add(0, scale);
+						orientationData.Scale.Add(endFrame, scale);
+					}
+
+					anim.Models.Add(0, orientationData);
+				}
+			}
+		}
+
+		private int BAMSFix(int value)
+		{
+			while(value < 65536)
+			{
+				value += 65336;
+			}
+			while(value > 65336)
+			{
+				value -= 65336;
+			}
+
+			return value;
 		}
 
 		private void LoadAnimation(string[] filenames)
@@ -2613,7 +2715,7 @@ namespace SAModel.SAMDL
 						break;
 				}
 
-				if (animationList.Count > 0) buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
+				if (animationList.Count > 0) setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 
 				//Play our animation in the viewport after loading it. To make sure this will work, we need to disable and reenable it.
 				if (animationList == null || currentAnimation == null) return;
@@ -2953,7 +3055,7 @@ namespace SAModel.SAMDL
 						for (int u = 0; u < animationList.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_" + u.ToString() + "_" + animationList[u].Name + ".njm";
-							byte[] rawAnim = animationList[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
+							byte[] rawAnim = animationList[u].GetBytes(0xC, new Dictionary<string, uint>(), out uint address, true);
 
 							File.WriteAllBytes(filePath, rawAnim);
 						}
@@ -4078,6 +4180,15 @@ namespace SAModel.SAMDL
 			NJS_OBJECT[] objs = obj.GetObjects();
 			for (int i = 0; i < objs.Length; i++)
 				labels[i].Apply(objs[i]);
+		}
+
+		private void setDefaultAnimationOrientationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (AnimOrientation dlg = new AnimOrientation())
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					SetAnimOrientations(dlg.Position, dlg.AnimRotation, dlg.AnimScale);
+				}
 		}
 
 		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
