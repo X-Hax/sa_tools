@@ -168,14 +168,14 @@ namespace SAModel
 		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null)
 		{
 			if (nummodels == 0) nummodels = CalculateModelParts(file, address, imageBase);
-            if (labels != null && labels.ContainsKey(address))
-            {
-                Name = labels[address];
-                   if (int.TryParse(Name, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int num) == true)
-                        Name = "animation_" + address.ToString("X8");
-            }
-            else
-                Name = "animation_" + address.ToString("X8");
+			if (labels != null && labels.ContainsKey(address))
+			{
+				Name = labels[address];
+				if (int.TryParse(Name, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int num) == true)
+					Name = "animation_" + address.ToString("X8");
+			}
+			else
+				Name = "animation_" + address.ToString("X8");
 			if (address > file.Length - 12) return;
 			Frames = ByteConverter.ToInt32(file, address + 4);
 			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
@@ -193,7 +193,7 @@ namespace SAModel
 					break;
 			}
 			ShortRot = shortrot;
-            int framesize = (tmp & 0xF) * 8;
+			int framesize = (tmp & 0xF) * 8;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
 			if (labels != null && labels.ContainsKey(address))
 				MdataName = labels[address];
@@ -349,14 +349,14 @@ namespace SAModel
 						{
 							if (ShortRot)
 							{
-								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, tmpaddr))) 
-                                    data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, tmpaddr)))
+									data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
 								tmpaddr += 8;
 							}
 							else
 							{
-								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) 
-                                    data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, tmpaddr)))
+									data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
 								tmpaddr += 16;
 							}
 						}
@@ -421,19 +421,19 @@ namespace SAModel
 							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString() + "_" + itemaddr.ToString("X8");
 							tmpaddr += 8;
 						}
-                        // Use vertex counts specified in split if available
-                        if (numverts != null && numverts.Length > 0)
-                            vtxcount = numverts[i];
-                        else
-                        {
-                            if (ptrs.Count > 1)
-                            {
-                                ptrs.Sort();
-                                vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
-                            }
-                            else
-                                vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
-                        }
+						// Use vertex counts specified in split if available
+						if (numverts != null && numverts.Length > 0)
+							vtxcount = numverts[i];
+						else
+						{
+							if (ptrs.Count > 1)
+							{
+								ptrs.Sort();
+								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+							}
+							else
+								vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
+						}
 						tmpaddr = (int)vertoff;
 						for (int j = 0; j < frames; j++)
 						{
@@ -453,30 +453,30 @@ namespace SAModel
 				if (animtype.HasFlag(AnimFlags.Normal))
 				{
 					int frames = ByteConverter.ToInt32(file, address);
-                    if (normoff != 0 && frames > 0)
-                    {
-                        hasdata = true;
-                        data.NormalItemName = new string[frames];
-                        // Use vertex counts specified in split if available
-                        if (numverts != null && numverts.Length > 0)
-                            vtxcount = numverts[i];
-                        else if (vtxcount < 0)
-                        {
-                            tmpaddr = (int)normoff;
-                            List<int> ptrs = new List<int>();
-                            for (int j = 0; j < frames; j++)
-                            {
-                                ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-                                tmpaddr += 8;
-                            }
-                            if (ptrs.Count > 1)
-                            {
-                                ptrs.Sort();
-                                vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
-                            }
-                            else
-                                vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
-                        }
+					if (normoff != 0 && frames > 0)
+					{
+						hasdata = true;
+						data.NormalItemName = new string[frames];
+						// Use vertex counts specified in split if available
+						if (numverts != null && numverts.Length > 0)
+							vtxcount = numverts[i];
+						else if (vtxcount < 0)
+						{
+							tmpaddr = (int)normoff;
+							List<int> ptrs = new List<int>();
+							for (int j = 0; j < frames; j++)
+							{
+								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
+								tmpaddr += 8;
+							}
+							if (ptrs.Count > 1)
+							{
+								ptrs.Sort();
+								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+							}
+							else
+								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
+						}
 						tmpaddr = (int)normoff;
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.NormalName = labels[tmpaddr];
@@ -678,7 +678,7 @@ namespace SAModel
 		}
 
 		public static NJS_MOTION Load(string filename, int nummodels = -1)
-		{			
+		{
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			byte[] file = File.ReadAllBytes(filename);
@@ -733,7 +733,7 @@ namespace SAModel
 				else
 				{
 					if (tmpaddr != 0)
-							labels.Add(aniaddr, file.GetCString(tmpaddr));
+						labels.Add(aniaddr, file.GetCString(tmpaddr));
 				}
 				if (version > 0)
 					nummodels = BitConverter.ToInt32(file, 0x10);
@@ -1409,131 +1409,33 @@ namespace SAModel
 			{
 				//Offsets
 				if (hasPos)
-				{
-					result.AddRange(ByteConverter.GetBytes(posoffs[i]));
-					if(posoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, posoffs[i]);
 				if (hasRot)
-				{
-					result.AddRange(ByteConverter.GetBytes(rotoffs[i]));
-					if (rotoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, rotoffs[i]);
 				if (hasScl)
-				{
-					result.AddRange(ByteConverter.GetBytes(scloffs[i]));
-					if (scloffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, scloffs[i]);
 				if (hasVec)
-				{
-					result.AddRange(ByteConverter.GetBytes(vecoffs[i]));
-					if (vecoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, vecoffs[i]);
 				if (hasVert)
-				{
-					result.AddRange(ByteConverter.GetBytes(vertoffs[i]));
-					if (vertoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, vertoffs[i]);
 				if (hasNorm)
-				{
-					result.AddRange(ByteConverter.GetBytes(normoffs[i]));
-					if (normoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, normoffs[i]);
 				if (hasTarg)
-				{
-					result.AddRange(ByteConverter.GetBytes(targoffs[i]));
-					if (targoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, targoffs[i]);
 				if (hasRoll)
-				{
-					result.AddRange(ByteConverter.GetBytes(rolloffs[i]));
-					if (rolloffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, rolloffs[i]);
 				if (hasAng)
-				{
-					result.AddRange(ByteConverter.GetBytes(angoffs[i]));
-					if (angoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, angoffs[i]);
 				if (hasCol)
-				{
-					result.AddRange(ByteConverter.GetBytes(coloffs[i]));
-					if (coloffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, coloffs[i]);
 				if (hasInt)
-				{
-					result.AddRange(ByteConverter.GetBytes(intoffs[i]));
-					if (intoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, intoffs[i]);
 				if (hasSpot)
-				{
-					result.AddRange(ByteConverter.GetBytes(spotoffs[i]));
-					if (spotoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, spotoffs[i]);
 				if (hasPnt)
-				{
-					result.AddRange(ByteConverter.GetBytes(pntoffs[i]));
-					if (pntoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, pntoffs[i]);
 				if (hasQuat)
-				{
-					result.AddRange(ByteConverter.GetBytes(quatoffs[i]));
-					if (quatoffs[i] != 0)
-					{
-						pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), result.Count));
-						pof0Real.Add(result.Count);
-					}
-				}
+					AddOffsets(result, imageBase, pof0Real, pof0, quatoffs[i]);
 
 				//Frame count
 				if (hasPos)
@@ -1605,12 +1507,24 @@ namespace SAModel
 				result.InsertRange(0, BitConverter.GetBytes(result.Count())); //This int is always little endian!
 				result.InsertRange(0, new byte[] { 0x4E, 0x4D, 0x44, 0x4D }); //NMDM Magic
 				result.AddRange(pof0);
-			} else
+			}
+			else
 			{
 				result.AddRange(parameterData.ToArray());
 			}
 
 			return result.ToArray();
+		}
+
+		private void AddOffsets(List<byte> result, uint imageBase, List<int> pof0Real, List<byte> pof0, uint offset)
+		{
+			int pointerOffset = (int)(result.Count + imageBase);
+			result.AddRange(ByteConverter.GetBytes(offset));
+			if (offset != 0)
+			{
+				pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), pointerOffset));
+				pof0Real.Add(pointerOffset);
+			}
 		}
 
 		public byte[] GetBytes(uint imageBase, out uint address)
@@ -1667,13 +1581,13 @@ namespace SAModel
 					writer.Write(model.Value.RotationName);
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Rotation.Count);
-                    foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
-                    {
-                        if (ShortRot)
-                            lines.Add("\t{ " + item.Key + ", " + ((short)item.Value.X).ToCHex() + ", " + ((short)item.Value.Y).ToCHex() + ", " + ((short)item.Value.Z).ToCHex() + " }");
-                        else
-                            lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
-                    }
+					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
+					{
+						if (ShortRot)
+							lines.Add("\t{ " + item.Key + ", " + ((short)item.Value.X).ToCHex() + ", " + ((short)item.Value.Y).ToCHex() + ", " + ((short)item.Value.Z).ToCHex() + " }");
+						else
+							lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
+					}
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
@@ -2703,4 +2617,4 @@ namespace SAModel
 		Description = 0x43534544,
 		End = 0x444E45
 	}
-} 
+}
