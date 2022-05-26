@@ -28,6 +28,9 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Resources.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="UI\AnimOrientation.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Update="Properties\Resources.resx">
