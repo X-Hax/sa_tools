@@ -950,7 +950,7 @@ namespace TextureEditor
 							System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
 							PalettedTextureFormat indexedfmt = GetPalettedTextureFormat(tex);
 							if (indexedfmt != PalettedTextureFormat.NotIndexed)
-								bmp = ProcessIndexedBitmap(textures[listBox1.SelectedIndex], indexedfmt);
+								bmp = ProcessIndexedBitmap(tex, indexedfmt);
 							bmp.Save(Path.Combine(dir, tex.Name + ".png"));
 							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
