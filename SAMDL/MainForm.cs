@@ -1962,7 +1962,16 @@ namespace SAModel.SAMDL
 
 		private void editMaterialsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenMaterialEditor();
+			switch (selectedObject.Attach)
+			{
+				case GC.GCAttach:
+					OpenGCMaterialEditor();
+					break;
+				case BasicAttach:
+				case ChunkAttach:
+					OpenMaterialEditor();
+					break;
+			}
 		}
 
 		private void OpenMaterialEditor()
@@ -1971,9 +1980,6 @@ namespace SAModel.SAMDL
 			string matname = null;
 			switch (selectedObject.Attach)
 			{
-				case GC.GCAttach:
-					MessageBox.Show("Unsupported model format.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-					return;
 				case BasicAttach bscatt:
 					mats = bscatt.Material;
 					matname = bscatt.MaterialName;
@@ -2008,8 +2014,24 @@ namespace SAModel.SAMDL
 						}
 					cnkatt.Poly = chunks;
 					break;
+			}
+			unsavedChanges = true;
+		}
+
+		private void OpenGCMaterialEditor()
+		{
+			List<NJS_MATERIAL> mats;
+			string matname = null;
+			mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+			using (GCMaterialEditor dlg = new GCMaterialEditor(mats, TextureInfoCurrent, matname))
+			{
+				dlg.FormUpdated += (s, ev) => NeedRedraw = true;
+				dlg.ShowDialog(this);
+			}
+			switch (selectedObject.Attach)
+			{
 				case GC.GCAttach gcatt:
-					matind = 0;
+					int matind = 0;
 					foreach (var msh in gcatt.opaqueMeshes.Concat(gcatt.translucentMeshes))
 					{
 						msh.parameters.RemoveAll(a => a is GC.TextureParameter);
@@ -3003,7 +3025,16 @@ namespace SAModel.SAMDL
 
 		private void materialEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenMaterialEditor();
+			switch (selectedObject.Attach)
+			{
+				case GC.GCAttach:
+					OpenGCMaterialEditor();
+					break;
+				case BasicAttach:
+				case ChunkAttach:
+					OpenMaterialEditor();
+					break;
+			}
 		}
 
 		private void saveAnimationsToolStripMenuItem1_Click(object sender, EventArgs e)
