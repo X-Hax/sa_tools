@@ -16,11 +16,13 @@ namespace SAModel
 		public const ulong SA1MDL = 0x4C444D314153u;
 		public const ulong SA2MDL = 0x4C444D324153u;
 		public const ulong SA2BMDL = 0x4C444D42324153u;
+		public const ulong XJMDL = 0x4C444D4A58u;
 		public const ulong FormatMask = 0xFFFFFFFFFFFFFFu;
 		public const ulong CurrentVersion = 3;
 		public const ulong SA1MDLVer = SA1MDL | (CurrentVersion << 56);
 		public const ulong SA2MDLVer = SA2MDL | (CurrentVersion << 56);
 		public const ulong SA2BMDLVer = SA2BMDL | (CurrentVersion << 56);
+		public const ulong XJMDLVer = XJMDL | (CurrentVersion << 56);
 
 		public ModelFormat Format { get; private set; }
 		public NJS_OBJECT Model { get; private set; }
@@ -212,6 +214,9 @@ namespace SAModel
 					case SA2BMDL:
 						Format = ModelFormat.GC;
 						break;
+					case XJMDL:
+						Format = ModelFormat.XJ;
+						break;
 					default:
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
@@ -273,6 +278,7 @@ namespace SAModel
 				case SA1MDL:
 				case SA2MDL:
 				case SA2BMDL:
+				case XJMDL:
 					return file[7] <= CurrentVersion;
 				default:
 					return false;
@@ -295,6 +301,9 @@ namespace SAModel
 					break;
 				case ModelFormat.GC:
 					magic = SA2BMDLVer;
+					break;
+				case ModelFormat.XJ:
+					magic = XJMDLVer;
 					break;
 				default:
 					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
@@ -416,6 +425,10 @@ namespace SAModel
 				case ModelFormat.GC:
 					magic = SA2BMDLVer;
 					ninjaMagic = GJCMMagic;
+					break;
+				case ModelFormat.XJ:
+					magic = XJMDLVer;
+					ninjaMagic = NJCMMagic; //XJ uses Chunk's magic
 					break;
 				default:
 					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");

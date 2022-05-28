@@ -410,8 +410,8 @@ namespace SAModel.SAMDL
 			OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
-				Filter = "All supported files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel;*.sap;*.dae;*.fbx;*.obj|All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|Other Model Formats|*.obj;*.fbx;*.dae|All Files|*.*"
-            };
+				Filter = "All supported files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.xj;*.exe;*.dll;*.bin;*.prs;*.rel;*.sap;*.dae;*.fbx;*.obj|All Model Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl;*.nj;*.gj;*.xj;*.exe;*.dll;*.bin;*.prs;*.rel|SA Tools Files|*.sa1mdl;*.sa2mdl;*.sa2bmdl|Ninja Files|*.nj;*.gj|Binary Files|*.exe;*.dll;*.bin;*.prs;*.rel|Other Model Formats|*.obj;*.fbx;*.dae|All Files|*.*"
+			};
 			goto loadfiledlg;
 		loadfiledlg:
 			DialogResult result = a.ShowDialog(this);
@@ -529,6 +529,7 @@ namespace SAModel.SAMDL
 					// Ninja/Ginja model file
 					case ".nj":
 					case ".gj":
+					case ".xj":
 						int ninjaDataOffset;
 						bool basicModel = false;
 
@@ -567,13 +568,21 @@ namespace SAModel.SAMDL
 						{
 							modelinfo.comboBoxModelFormat.SelectedIndex = 0;
 						}
-						else if (extension.Equals(".nj"))
+						else
 						{
-							modelinfo.comboBoxModelFormat.SelectedIndex = 2;
-						}
-						else if (extension.Equals(".gj"))
-						{
-							modelinfo.comboBoxModelFormat.SelectedIndex = 3;
+							switch (extension)
+							{
+								case ".gj":
+									modelinfo.comboBoxModelFormat.SelectedIndex = 3;
+									break;
+								case ".nj":
+									modelinfo.comboBoxModelFormat.SelectedIndex = 2;
+									break;
+								case ".xj":
+									modelinfo.comboBoxModelFormat.SelectedIndex = 4;
+									break;
+							}
+
 						}
 
 						modelinfo.numericUpDownMotionAddress.Value = 0;
@@ -582,7 +591,6 @@ namespace SAModel.SAMDL
 
 						modelinfo.numericUpDownKey.Value = 0;
 						modelinfo.numericUpDownKey.Value = 0;
-
 
 						// Get rid of the junk so that we can treat it like what SAMDL expects
 						byte[] newFile = new byte[file.Length - ninjaDataOffset];
@@ -772,6 +780,9 @@ namespace SAModel.SAMDL
 					case ModelFormat.GC:
 						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, null);
 						break;
+					case ModelFormat.XJ:
+						model.Attach = new XJ.XJAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
+						break;
 				}
 			}
 			switch ((ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex)
@@ -787,6 +798,10 @@ namespace SAModel.SAMDL
 					break;
 				case ModelFormat.GC:
 					outfmt = ModelFormat.GC;
+					swapUVToolStripMenuItem.Enabled = false;
+					break;
+				case ModelFormat.XJ:
+					outfmt = ModelFormat.XJ;
 					swapUVToolStripMenuItem.Enabled = false;
 					break;
 			}
@@ -844,8 +859,11 @@ namespace SAModel.SAMDL
 
 			switch(outfmt)
 			{
+				case ModelFormat.XJ:
+					filterString = "Sega Xbox Ninja .xj|*.xj";
+					break;
 				case ModelFormat.GC:
-					filterString = "SA2B MDL Files|*.sa2bmdl"; //|Sega GCNinja .gj|*.gj|Sega GCNinja Big Endian (Gamecube) .gj|*.gj";
+					filterString = "SA2B MDL Files|*.sa2bmdl|Sega GCNinja .gj|*.gj|Sega GCNinja Big Endian (Gamecube) .gj|*.gj";
 					break;
 				case ModelFormat.Chunk:
 					filterString = "SA2 MDL Files|*.sa2mdl|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
@@ -853,7 +871,7 @@ namespace SAModel.SAMDL
 				case ModelFormat.BasicDX:
 				case ModelFormat.Basic:
 				default:
-					filterString = "SA1 MDL Files|*.sa1mdl"; //|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
+					filterString = "SA1 MDL Files|*.sa1mdl|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
 					break;
 			}
 			filterString += "|All files *.*|*.*";
@@ -891,6 +909,7 @@ namespace SAModel.SAMDL
 				case ".gj":
 				case ".nj?BE?":
 				case ".gj?BE?":
+				case ".xj":
 					if (extension.Contains("?BE?"))
 					{
 						bigEndian = true;
@@ -1871,6 +1890,8 @@ namespace SAModel.SAMDL
 					return typeof(ChunkAttach);
 				case ModelFormat.GC:
 					return typeof(GC.GCAttach);
+				case ModelFormat.XJ:
+					return typeof(XJ.XJAttach);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}

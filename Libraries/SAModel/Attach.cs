@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SAModel.GC;
+using SAModel.XJ;
 
 namespace SAModel
 {
@@ -66,6 +67,8 @@ namespace SAModel
 					return new ChunkAttach(file, address, imageBase, labels);
 				case ModelFormat.GC:
 					return new GCAttach(file, address, imageBase, labels);
+				case ModelFormat.XJ:
+					return new XJAttach(file, address, imageBase, labels);
 			}
 			throw new ArgumentOutOfRangeException("format");
 		}
