@@ -26,10 +26,14 @@ namespace SAModel
 		{
 		}
 
-		public UV(byte[] file, int address, bool UVH, bool chunk = false)
+		public UV(byte[] file, int address, bool UVH, bool chunk = false, bool xj = false)
 		{
-			//"Reverse" is for the order used in SADX Gamecube
-			if (ByteConverter.Reverse || !ByteConverter.BigEndian || chunk)
+			if(xj)
+			{
+				U = ByteConverter.ToSingle(file, address);
+				V = ByteConverter.ToSingle(file, address + 4);
+			} //"Reverse" is for the order used in SADX Gamecube
+			else if (ByteConverter.Reverse || !ByteConverter.BigEndian || chunk)
 			{
 				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
 				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
@@ -64,6 +68,14 @@ namespace SAModel
 			List<byte> result = new List<byte>();
 			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1023f : 255f))));
 			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1023f : 255f))));
+			return result.ToArray();
+		}
+
+		public byte[] GetBytesXJ()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(U));
+			result.AddRange(ByteConverter.GetBytes(V));
 			return result.ToArray();
 		}
 

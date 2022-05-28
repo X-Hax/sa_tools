@@ -14,6 +14,9 @@ namespace SAModel
 		{
 			switch (type)
 			{
+				case ColorType.RGBA8888_32:
+					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
+					return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 				case ColorType.ARGB8888_32:
 					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
 					// "Reverse" mode is for SADX Gamecube/SA2B/SA2PC where the color order is ABGR
@@ -69,6 +72,8 @@ namespace SAModel
 		{
 			switch (type)
 			{
+				case ColorType.RGBA8888_32:
+					return new byte[] { color.R, color.G, color.B, color.A};
 				case ColorType.ARGB8888_32:
 					return ByteConverter.GetBytes(color.ToArgb());
 				case ColorType.XRGB8888_32:
@@ -105,6 +110,7 @@ namespace SAModel
 			switch (type)
 			{
 				case ColorType.ARGB8888_32:
+				case ColorType.RGBA8888_32:
 				case ColorType.XRGB8888_32:
 				case ColorType.ARGB8888_16:
 				case ColorType.XRGB8888_16:
@@ -119,6 +125,7 @@ namespace SAModel
 
 	public enum ColorType
 	{
+		RGBA8888_32,
 		ARGB8888_32,
 		XRGB8888_32,
 		ARGB8888_16,

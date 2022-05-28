@@ -147,7 +147,8 @@ namespace SAModel
 		Basic,
 		BasicDX,
 		Chunk,
-		GC
+		GC,
+		XJ
 	}
 
 	public enum ChunkType : byte
