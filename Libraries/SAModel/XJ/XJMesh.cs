@@ -153,7 +153,11 @@ namespace SAModel.XJ
 						mat6_08 = ByteConverter.ToInt32(file, curAddress); curAddress += 4;
 						break;
 					default:
-						throw new Exception($"Unexpected xj material type {type} at {(curAddress - 4).ToString("X")}");
+						ByteConverter.ToInt32(file, curAddress); curAddress += 4;
+						ByteConverter.ToInt32(file, curAddress); curAddress += 4;
+						ByteConverter.ToInt32(file, curAddress); curAddress += 4;
+						//Debug.WriteLine($"Unexpected xj material type {type} at {(curAddress - 4).ToString("X")}");
+						break;
 				}
 			}
 
