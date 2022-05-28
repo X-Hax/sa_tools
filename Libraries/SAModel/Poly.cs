@@ -12,6 +12,14 @@ namespace SAModel
 			Indexes = new ushort[3];
 		}
 
+		public Triangle(ushort a, ushort b, ushort c)
+		{
+			Indexes = new ushort[3];
+			Indexes[0] = a;
+			Indexes[1] = b;
+			Indexes[2] = c;
+		}
+
 		public Triangle(byte[] file, int address)
 			: this()
 		{

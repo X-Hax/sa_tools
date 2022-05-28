@@ -132,7 +132,8 @@ namespace SAModel.SAMDL
             "Basic",
             "SADX Basic",
             "Chunk",
-            "GC"});
+            "GC",
+			"XJ"});
             this.comboBoxModelFormat.Location = new System.Drawing.Point(86, 121);
             this.comboBoxModelFormat.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboBoxModelFormat.Name = "comboBoxModelFormat";
