@@ -4086,6 +4086,106 @@ namespace SplitTools
 		Credits
 	}
 
+	public static class ChaoItemStats
+	{
+		public static ChaoItemStatsEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<ChaoItemStatsEntry[]>(filename);
+		}
+
+		public static ChaoItemStatsEntry[] Load(byte[] file, int address, int count)
+		{
+			ChaoItemStatsEntry[] result = new ChaoItemStatsEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new ChaoItemStatsEntry(file, address);
+				address += ChaoItemStatsEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this ChaoItemStatsEntry[] list, string filename)
+		{
+			IniSerializer.Serialize(list, filename);
+		}
+	}
+
+	[Serializable]
+	public class ChaoItemStatsEntry
+	{
+		public ChaoItemStatsEntry() {}
+		public ChaoItemStatsEntry(byte[] file, int address)
+		{
+			Mood = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Belly = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Swim = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Fly = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Run = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Power = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Stamina = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Luck = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Intelligence = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Unknown = ByteConverter.ToInt16(file, address);
+		}
+
+		[IniAlwaysInclude]
+		public short Mood { get; set; }
+		[IniAlwaysInclude]
+		public short Belly { get; set; }
+		[IniAlwaysInclude]
+		public short Swim { get; set; }
+		[IniAlwaysInclude]
+		public short Fly { get; set; }
+		[IniAlwaysInclude]
+		public short Run { get; set; }
+		[IniAlwaysInclude]
+		public short Power { get; set; }
+		[IniAlwaysInclude]
+		public short Stamina { get; set; }
+		[IniAlwaysInclude]
+		public short Luck { get; set; }
+		[IniAlwaysInclude]
+		public short Intelligence { get; set; }
+		[IniAlwaysInclude]
+		public short Unknown { get; set; }
+
+		public static int Size { get { return 0x14; } }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Mood);
+			sb.AppendFormat(", ");
+			sb.Append(Belly);
+			sb.AppendFormat(", ");
+			sb.Append(Swim);
+			sb.AppendFormat(", ");
+			sb.Append(Fly);
+			sb.AppendFormat(", ");
+			sb.Append(Run);
+			sb.AppendFormat(", ");
+			sb.Append(Power);
+			sb.AppendFormat(", ");
+			sb.Append(Stamina);
+			sb.AppendFormat(", ");
+			sb.Append(Luck);
+			sb.AppendFormat(", ");
+			sb.Append(Intelligence);
+			sb.AppendFormat(", ");
+			sb.Append(Unknown);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
 	public class LabelMESHSET
 	{
 		[IniName("pl")]
