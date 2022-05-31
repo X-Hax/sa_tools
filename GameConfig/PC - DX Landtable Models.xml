@@ -13,12 +13,6 @@
   <SplitEntry SourceFile="sonic.exe" IniFile="stg09_land" CmnName="Casinopolis" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg10_land" CmnName="Final Egg" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg12_land" CmnName="Hot Shelter" />
-  <SplitEntry SourceFile="system/adv00models.dll" IniFile="adv00_dll_land" CmnName="Station Square (DLL)" />
-  <SplitEntry SourceFile="system/adv02models.dll" IniFile="adv02_dll_land" CmnName="Mystic Ruins (DLL)" />
-  <SplitEntry SourceFile="system/adv01models.dll" IniFile="adv0100_dll_land" CmnName="Egg Carrier Exterior (DLL)" />
-  <SplitEntry SourceFile="system/adv01cmodels.dll" IniFile="adv0130_dll_land" CmnName="Egg Carrier Interior (DLL)" />
-  <SplitEntry SourceFile="system/adv03models.dll" IniFile="adv03_dll_land" CmnName="The Past (DLL)" />
-  <SplitEntry SourceFile="system/bosschaos0models.dll" IniFile="b_chaos0_dll_land" CmnName="Chaos 0 (DLL)" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_chaos2_land" CmnName="Chaos 2" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_chaos4_land" CmnName="Chaos 4" />
   <SplitEntry SourceFile="sonic.exe" IniFile="b_chaos6_land" CmnName="Chaos 6" />
@@ -32,7 +26,4 @@
   <SplitEntry SourceFile="sonic.exe" IniFile="minicart_land" CmnName="Twinkle Circuit" />
   <SplitEntry SourceFile="sonic.exe" IniFile="sboard_land" CmnName="Sand Hill" />
   <SplitEntry SourceFile="sonic.exe" IniFile="chao_land" CmnName="Chao, Chao Race, SS Garden, EC Garden" />
-  <SplitEntry SourceFile="system/chaostggarden02mr_daytime.dll" IniFile="chaostggarden02mr_daytime_land" CmnName="Mystic Ruins Chao Garden (Daytime)" />
-  <SplitEntry SourceFile="system/chaostggarden02mr_evening.dll" IniFile="chaostggarden02mr_evening_land" CmnName="Mystic Ruins Chao Garden (Evening)" />
-  <SplitEntry SourceFile="system/chaostggarden02mr_night.dll" IniFile="chaostggarden02mr_night_land" CmnName="Mystic Ruins Chao Garden (Nighttime)" />
 </SplitTemplate>
