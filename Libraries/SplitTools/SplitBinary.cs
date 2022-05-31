@@ -656,7 +656,7 @@ namespace SplitTools.Split
 											file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
 										string file = Path.Combine(path, file_tosave);
 										flags.Add(new SA2DeathZoneFlags(datafile, address, file_tosave));
-										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
 										hashes.Add(HelperFunctions.FileHash(file));
 										address += 8;
 
@@ -682,7 +682,7 @@ namespace SplitTools.Split
 											file_tosave = num++.ToString(NumberFormatInfo.InvariantInfo) + ".sa1mdl";
 										string file = Path.Combine(path, file_tosave);
 										flags.Add(new SA2BDeathZoneFlags(datafile, address, file_tosave));
-										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
+										ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ModelFormat.Basic, labels, new Dictionary<int, Attach>()), null, null, null, null, ModelFormat.Basic, nometa);
 										hashes.Add(HelperFunctions.FileHash(file));
 										address += 8;
 
@@ -711,7 +711,7 @@ namespace SplitTools.Split
                                         string file = Path.Combine(path, file_tosave);
                                         flags.Add(new DeathZoneFlags(datafile, address, file_tosave));
                                         ModelFormat modelfmt_death = game == Game.SADX ? ModelFormat.BasicDX : ModelFormat.Basic; // Death zones in all games except SADXPC use Basic non-DX models
-                                        ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
+                                        ModelFile.CreateFile(file, new NJS_OBJECT(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, modelfmt_death, labels, new Dictionary<int, Attach>()), null, null, null, null, modelfmt_death, nometa);
                                         hashes.Add(HelperFunctions.FileHash(file));
                                         address += 8;
 
