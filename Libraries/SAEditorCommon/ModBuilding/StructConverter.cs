@@ -70,6 +70,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "stagelightdatalist", "Stage Light Data List" },
 			{ "weldlist", "Weld List" },
 			{ "bmitemattrlist", "BM Item Attributes List" },
+			{ "chaoitemstats", "Chao Item Stats" },
 			{ "creditstextlist", "Credits Text List" },
 			{ "animindexlist", "Animation Index List" },
 			{ "storysequence", "Story Sequence" },
@@ -1234,6 +1235,18 @@ namespace SAModel.SAEditorCommon.StructConverter
 							}
 							break;
 						case "stagelightdatalist":
+							if (SA2)
+							{
+								List<SA2DefaultObjectLightData> list = SA2DefaultObjectLights.Load(data.Filename);
+								writer.WriteLine("DefaultLightData {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Count);
+								foreach (SA2DefaultObjectLightData obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+								
+							else
 							{
 								List<SADXStageLightData> list = SADXStageLightDataList.Load(data.Filename);
 								writer.WriteLine("StageLightData {0}[] = {{", name);
@@ -1315,6 +1328,17 @@ namespace SAModel.SAEditorCommon.StructConverter
 									writer.WriteLine("SA2CreditsList {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
 									initlines.Add(string.Format("*(SA2CreditsList*)0x{0:X} = {1};", data.Address + imagebase, name));
 								}
+							}
+							break;
+						case "chaoitemstats":
+							{
+								ChaoItemStatsEntry[] list = ChaoItemStats.Load(data.Filename);
+								writer.WriteLine("ChaoItemStats {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Length);
+								foreach (ChaoItemStatsEntry obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
 							}
 							break;
 						case "animindexlist":

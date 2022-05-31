@@ -1256,6 +1256,21 @@ namespace SplitTools.Split
                     else
                         SA2DCStoryList.Load(datafile, address).Save(fileOutputPath);
                     break;
+				case "chaoitemstats":
+					switch (game)
+					{
+						case Game.SA1:
+							break;
+						case Game.SA2:
+							break;
+						case Game.SADX:
+							break;
+						case Game.SA2B:
+						default:
+							ChaoItemStats.Load(datafile, address, data.Length).Save(fileOutputPath);
+							break;
+					}
+					break;
                 case "camera":
                     NinjaCamera cam = new NinjaCamera(datafile, address);
                     cam.Save(fileOutputPath);
