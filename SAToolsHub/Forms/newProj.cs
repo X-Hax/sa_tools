@@ -195,7 +195,7 @@ namespace SAToolsHub
 			// Put SADXPC first and SA2PC second
 			foreach (string file in ordered)
 			{
-				if (file.Contains("DX") && file.Contains("PC"))
+				if (file.Contains("SADX") && file.Contains("PC"))
 					result.Insert(0, file);
 				else if (file.Contains("SA2") && file.Contains("PC"))
 					result.Add(file);
