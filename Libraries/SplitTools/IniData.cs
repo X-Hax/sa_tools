@@ -4155,7 +4155,6 @@ namespace SplitTools
 		public short Luck { get; set; }
 		[IniAlwaysInclude]
 		public short Intelligence { get; set; }
-		[IniAlwaysInclude]
 		public short Unknown { get; set; }
 
 		public static int Size { get { return 0x14; } }
@@ -4182,6 +4181,71 @@ namespace SplitTools
 			sb.Append(Intelligence);
 			sb.AppendFormat(", ");
 			sb.Append(Unknown);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public static class DCChaoItemStats
+	{
+		public static DCChaoItemStatsEntry[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<DCChaoItemStatsEntry[]>(filename);
+		}
+
+		public static DCChaoItemStatsEntry[] Load(byte[] file, int address, int count)
+		{
+			DCChaoItemStatsEntry[] result = new DCChaoItemStatsEntry[count];
+			for (int i = 0; i < count; i++)
+			{
+				result[i] = new DCChaoItemStatsEntry(file, address);
+				address += DCChaoItemStatsEntry.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this DCChaoItemStatsEntry[] list, string filename)
+		{
+			IniSerializer.Serialize(list, filename);
+		}
+	}
+
+	[Serializable]
+	public class DCChaoItemStatsEntry
+	{
+		public DCChaoItemStatsEntry() { }
+		public DCChaoItemStatsEntry(byte[] file, int address)
+		{
+			Swim = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Fly = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Run = ByteConverter.ToInt16(file, address);
+			address += sizeof(short);
+			Power = ByteConverter.ToInt16(file, address);
+		}
+
+		[IniAlwaysInclude]
+		public short Swim { get; set; }
+		[IniAlwaysInclude]
+		public short Fly { get; set; }
+		[IniAlwaysInclude]
+		public short Run { get; set; }
+		[IniAlwaysInclude]
+		public short Power { get; set; }
+
+		public static int Size { get { return 0x8; } }
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(Swim);
+			sb.AppendFormat(", ");
+			sb.Append(Fly);
+			sb.AppendFormat(", ");
+			sb.Append(Run);
+			sb.AppendFormat(", ");
+			sb.Append(Power);
 			sb.Append(" }");
 			return sb.ToString();
 		}

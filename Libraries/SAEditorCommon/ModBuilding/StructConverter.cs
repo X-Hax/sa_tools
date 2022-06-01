@@ -1332,13 +1332,33 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "chaoitemstats":
 							{
-								ChaoItemStatsEntry[] list = ChaoItemStats.Load(data.Filename);
-								writer.WriteLine("ChaoItemStats {0}[] = {{", name);
-								List<string> objs = new List<string>(list.Length);
-								foreach (ChaoItemStatsEntry obj in list)
-									objs.Add(obj.ToStruct());
-								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
-								writer.WriteLine("};");
+								switch (iniData.Game)
+								{
+									case Game.SA2B:
+									case Game.SADX:
+										{
+											ChaoItemStatsEntry[] list = ChaoItemStats.Load(data.Filename);
+											writer.WriteLine("ChaoItemStats {0}[] = {{", name);
+											List<string> objs = new List<string>(list.Length);
+											foreach (ChaoItemStatsEntry obj in list)
+												objs.Add(obj.ToStruct());
+											writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+											writer.WriteLine("};");
+										}
+										break;
+									case Game.SA2:
+									case Game.SA1:
+										{
+											DCChaoItemStatsEntry[] list = DCChaoItemStats.Load(data.Filename);
+											writer.WriteLine("ChaoItemStats {0}[] = {{", name);
+											List<string> objs = new List<string>(list.Length);
+											foreach (DCChaoItemStatsEntry obj in list)
+												objs.Add(obj.ToStruct());
+											writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+											writer.WriteLine("};");
+										}
+										break;
+								}
 							}
 							break;
 						case "animindexlist":
