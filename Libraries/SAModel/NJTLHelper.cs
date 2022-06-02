@@ -39,6 +39,8 @@ namespace SAModel
 				njTexList.AddRange(Encoding.ASCII.GetBytes(texList[i]));
 				njTexList.Add(0);
 			}
+			njTexList.Align(0x4);
+
 			njTLHeader.AddRange(BitConverter.GetBytes(njTexList.Count));
 
 			pof0List.Add(0x40);
@@ -49,7 +51,7 @@ namespace SAModel
 			}
 			pof0List.Align(4);
 
-			int pofLength = pof0List.Count + (njTexList.Count % 4);
+			int pofLength = pof0List.Count;
 			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
 
 			pof0List.InsertRange(0, BitConverter.GetBytes(pofLength));

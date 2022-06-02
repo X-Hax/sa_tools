@@ -1260,11 +1260,10 @@ namespace SplitTools.Split
 					switch (game)
 					{
 						case Game.SA1:
-							break;
 						case Game.SA2:
+							DCChaoItemStats.Load(datafile, address, data.Length).Save(fileOutputPath);
 							break;
 						case Game.SADX:
-							break;
 						case Game.SA2B:
 						default:
 							ChaoItemStats.Load(datafile, address, data.Length).Save(fileOutputPath);
