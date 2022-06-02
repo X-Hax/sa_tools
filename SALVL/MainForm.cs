@@ -1798,7 +1798,7 @@ namespace SAModel.SALVL
 						else if (selectedItem is LevelAnim)
 						{
 							LevelAnim levelAnim = selectedItem as LevelAnim;
-							string path = Path.Combine(folderBrowser.SelectedPath, levelAnim.GeoAnimationData.ActionName + ".sa1mdl");
+							string path = Path.Combine(folderBrowser.SelectedPath, levelAnim.GeoAnimationData.Animation.ActionName + ".sa1mdl");
 
 							ModelFile.CreateFile(path, levelAnim.GeoAnimationData.Model, null, "", "", null, ModelFormat.Basic);
 							levelAnim.GeoAnimationData.Animation.Save(Path.ChangeExtension(path, ".saanim"));

@@ -46,8 +46,9 @@ namespace SAModel
 			}
 			else
 				Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
-					Model.CountAnimated(), labels, false, Model.GetVertexCounts());
+					Model.CountAnimated(), labels, false, Model.GetVertexCounts(), Name, Model.Name);
 		}
+
 		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
 		{
 			Name = "action_" + animation.Name;
@@ -92,6 +93,8 @@ namespace SAModel
 		public int ModelParts { get; set; }
 		public InterpolationMode InterpolationMode { get; set; }
 		public bool ShortRot { get; set; }
+		public string ActionName { get; set; }
+		public string ObjectName { get; set; }
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
 
@@ -175,9 +178,12 @@ namespace SAModel
 			return false;
 		}
 
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null)
+		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null, string actionName = null, string objectName = null)
 		{
-			if (nummodels == 0) nummodels = CalculateModelParts(file, address, imageBase);
+			if (nummodels == 0) 
+				nummodels = CalculateModelParts(file, address, imageBase);
+			ActionName = actionName;
+			ObjectName = objectName;
 			if (labels != null && labels.ContainsKey(address))
 			{
 				Name = labels[address];
@@ -702,6 +708,8 @@ namespace SAModel
 					throw new FormatException("Not a valid SAANIM file.");
 				}
 				string description = null;
+				string actionName = null;
+				string objectName = null;
 				int aniaddr = ByteConverter.ToInt32(file, 8);
 				Dictionary<int, string> labels = new Dictionary<int, string>();
 				int tmpaddr = BitConverter.ToInt32(file, 0xC);
@@ -732,6 +740,12 @@ namespace SAModel
 								case ChunkTypes.Description:
 									description = file.GetCString(tmpaddr);
 									break;
+								case ChunkTypes.ActionName:
+									actionName = file.GetCString(tmpaddr);
+									break;
+								case ChunkTypes.ObjectName:
+									objectName = file.GetCString(tmpaddr);
+									break;
 								case ChunkTypes.End:
 									finished = true;
 									break;
@@ -752,7 +766,7 @@ namespace SAModel
 					ByteConverter.BigEndian = be;
 					throw new NotImplementedException("Cannot open version 0 animations without a model!");
 				}
-				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0) { Description = description };
+				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0) { Description = description, ActionName = actionName, ObjectName = objectName };
 				ByteConverter.BigEndian = be;
 				return anim;
 			}
@@ -1564,7 +1578,8 @@ namespace SAModel
 			bool hasPnt = false;
 			bool hasQuat = false;
 			string id = Name.MakeIdentifier();
-			if (labels == null) labels = new List<string>();
+			if (labels == null) 
+				labels = new List<string>();
 			foreach (KeyValuePair<int, AnimModelData> model in Models)
 			{
 				if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
@@ -2134,6 +2149,18 @@ namespace SAModel
 				writer.Write(numpairs);
 				writer.WriteLine(" };");
 				labels.Add(Name);
+				writer.WriteLine();
+			}
+			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName) && !labels.Contains(ActionName))
+			{
+				writer.Write("NJS_ACTION ");
+				writer.Write(ActionName);
+				writer.Write(" = { &");
+				writer.Write(ObjectName);
+				writer.Write(", &");
+				writer.Write(Name);
+				writer.WriteLine(" };");
+				labels.Add(ActionName);
 			}
 		}
 
@@ -2146,7 +2173,7 @@ namespace SAModel
 			}
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels = null, string actionName = null, string objectName = null)
+		public void ToNJA(TextWriter writer, List<string> labels = null)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -2176,7 +2203,7 @@ namespace SAModel
 					writer.WriteLine("POSITION {0}[]", model.Value.PositionName);
 					writer.WriteLine("START");
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
-						writer.WriteLine("\tMKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+						writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(model.Value.PositionName);
@@ -2195,9 +2222,9 @@ namespace SAModel
 					{
 
 						if (ShortRot)
-							writer.WriteLine("\tMKEYSA( " + item.Key + ",   " + (((short)item.Value.X) / 182.044f).ToNJA() + ", " + (((short)item.Value.Y) / 182.044f).ToNJA() + ", " + (((short)item.Value.Z) / 182.044f).ToNJA() + " ),");
+							writer.WriteLine("         MKEYSA( " + item.Key + ",   " + (((short)item.Value.X) / 182.044f).ToNJA() + ", " + (((short)item.Value.Y) / 182.044f).ToNJA() + ", " + (((short)item.Value.Z) / 182.044f).ToNJA() + " ),");
 						else
-							writer.WriteLine("\tMKEYA( " + item.Key + ",   " + (item.Value.X / 182.044f).ToNJA() + ", " + (item.Value.Y / 182.044f).ToNJA() + ", " + (item.Value.Z / 182.044f).ToNJA() + " ),");
+							writer.WriteLine("         MKEYA( " + item.Key + ",   " + (item.Value.X / 182.044f).ToNJA() + ", " + (item.Value.Y / 182.044f).ToNJA() + ", " + (item.Value.Z / 182.044f).ToNJA() + " ),");
 					}
 					writer.WriteLine("END");
 					writer.WriteLine();
@@ -2209,7 +2236,7 @@ namespace SAModel
 					writer.WriteLine("SCALE {0}[]", model.Value.ScaleName);
 					writer.WriteLine("START");
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
-						writer.WriteLine("\tMKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+						writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(model.Value.ScaleName);
@@ -2220,7 +2247,7 @@ namespace SAModel
 					writer.WriteLine("VECTOR {0}[]", model.Value.VectorName);
 					writer.WriteLine("START");
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
-						writer.WriteLine("\tMKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+						writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(model.Value.VectorName);
@@ -2235,7 +2262,7 @@ namespace SAModel
 						writer.WriteLine("START");
 						List<string> l2 = new List<string>(item.Value.Length);
 						foreach (Vertex v in item.Value)
-							writer.WriteLine("\tVERT{0},", v.ToNJA());
+							writer.WriteLine("         VERT{0},", v.ToNJA());
 						writer.WriteLine("END");
 						writer.WriteLine();
 					}
@@ -2245,7 +2272,7 @@ namespace SAModel
 					List<string> lines = new List<string>(model.Value.Vertex.Count);
 					int v_c = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						writer.WriteLine("\tMKEYP( " + item.Key + ", " + model.Value.VertexItemName[v_c++] + "),");
+						writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.VertexItemName[v_c++] + "),");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(model.Value.VertexName);
@@ -2259,7 +2286,7 @@ namespace SAModel
 						writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z++]);
 						writer.WriteLine("START");
 						foreach (Vertex v in item.Value)
-							writer.WriteLine("\tNORM{0},", v.ToNJA());
+							writer.WriteLine("         NORM{0},", v.ToNJA());
 						writer.WriteLine("END");
 						writer.WriteLine();
 					}
@@ -2268,7 +2295,7 @@ namespace SAModel
 					writer.WriteLine("START");
 					int v_c = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
-						writer.WriteLine("\tMKEYP( " + item.Key + ", " + model.Value.NormalItemName[v_c++] + "),");
+						writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.NormalItemName[v_c++] + "),");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(model.Value.NormalName);
@@ -2279,7 +2306,7 @@ namespace SAModel
 					writer.Write("QROTATION {0}[]", model.Value.QuaternionName);
 					writer.WriteLine("START");
 					foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
-						writer.WriteLine("\tMKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + item.Value[2].ToC() + item.Value[3].ToNJA() + " ),");
+						writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + item.Value[2].ToC() + item.Value[3].ToNJA() + " ),");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(model.Value.QuaternionName);
@@ -2606,20 +2633,20 @@ namespace SAModel
 				writer.Write(Name);
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
-				writer.WriteLine("MdataArray\t{0}, ", MdataName);
-				writer.WriteLine("MFrameNum\t{0},", Frames);
-				writer.WriteLine("MotionBit\t0x{0},", flags.ToString("X"));
-				writer.WriteLine("InterpolFct\t{0},", ((int)InterpolationMode).ToString());
+				writer.WriteLine("MdataArray     {0}, ", MdataName);
+				writer.WriteLine("MFrameNum      {0},", Frames);
+				writer.WriteLine("MotionBit      0x{0},", ((int)flags).ToString("X"));
+				writer.WriteLine("InterpolFct    0x{0},", ((int)InterpolationMode).ToString("X"));
 				writer.WriteLine("END");
 				writer.WriteLine();
 			}
-			if (!string.IsNullOrEmpty(actionName) && !string.IsNullOrEmpty(objectName))
+			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
 			{
 				writer.WriteLine();
-				writer.WriteLine("ACTION {0}[]", actionName);
+				writer.WriteLine("ACTION {0}[]", ActionName);
 				writer.WriteLine("START");
-				writer.WriteLine("ObjectHead\t{0},", objectName);
-				writer.WriteLine("Motion\t" + Name);
+				writer.WriteLine("ObjectHead      {0},", ObjectName);
+				writer.WriteLine("Motion          " + Name);
 				writer.WriteLine("END");
 			}
 			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END");
@@ -2629,10 +2656,10 @@ namespace SAModel
 			writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
 			writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name);
 			writer.WriteLine("#endif");
-			if (!string.IsNullOrEmpty(actionName))
+			if (!string.IsNullOrEmpty(ActionName))
 			{
 				writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
-				writer.WriteLine("#define DEFAULT_ACTION_NAME " + actionName);
+				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName);
 				writer.WriteLine("#endif");
 			}
 			writer.WriteLine();
@@ -2700,6 +2727,26 @@ namespace SAModel
 					chunkd.Add(0);
 					chunkd.Align(4);
 					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
+					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
+					file.AddRange(chunkd);
+				}
+				if (!string.IsNullOrEmpty(ActionName))
+				{
+					List<byte> chunkd = new List<byte>(ActionName.Length + 1);
+					chunkd.AddRange(Encoding.UTF8.GetBytes(ActionName));
+					chunkd.Add(0);
+					chunkd.Align(4);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.ActionName));
+					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
+					file.AddRange(chunkd);
+				}
+				if (!string.IsNullOrEmpty(ObjectName))
+				{
+					List<byte> chunkd = new List<byte>(ObjectName.Length + 1);
+					chunkd.AddRange(Encoding.UTF8.GetBytes(ObjectName));
+					chunkd.Add(0);
+					chunkd.Align(4);
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.ObjectName));
 					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
 					file.AddRange(chunkd);
 				}
@@ -3118,6 +3165,8 @@ namespace SAModel
 	{
 		Label = 0x4C42414C,
 		Description = 0x43534544,
+		ActionName = 0x4143544E,
+		ObjectName = 0x4F424A4E,
 		End = 0x444E45
 	}
 }

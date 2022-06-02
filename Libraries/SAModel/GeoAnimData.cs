@@ -13,7 +13,6 @@ namespace SAModel
 		public NJS_MOTION Animation { get; set; }
 		public uint TexlistPointer { get; set; } // Unused
 
-		public string ActionName { get; set; }
 		public static int Size
 		{
 			get { return 0x18; }
@@ -30,14 +29,14 @@ namespace SAModel
 			Animation = animation;
 			MaxFrame = animation.Frames;
 			AnimationSpeed = 1.0f;
-			ActionName = "action_" + Extensions.GenerateIdentifier();
+			Animation.ActionName = "action_" + Extensions.GenerateIdentifier();
+			Animation.ObjectName = model.Name;
 		}
 
 		public GeoAnimData(NJS_ACTION action)
 		{
 			Model = action.Model;
 			Animation = action.Animation;
-			ActionName = action.Name;
 		}
 
 		public GeoAnimData(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
@@ -60,16 +59,9 @@ namespace SAModel
 			MaxFrame = ByteConverter.ToSingle(file, address + 8);
 			Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address + 0xC) - imageBase), imageBase, mfmt, labels, attaches);
 			int actionaddr = (int)(ByteConverter.ToUInt32(file, address + 0x10) - imageBase);
-			int motionaddr = (int)(ByteConverter.ToUInt32(file, actionaddr + 4) - imageBase);
-			Animation = NJS_MOTION.ReadDirect(file, Model.CountAnimated(), motionaddr, imageBase, labels, attaches);
 			TexlistPointer = ByteConverter.ToUInt32(file, address + 0x14);
-			if (labels.ContainsKey(actionaddr)) ActionName = labels[actionaddr];
-			else
-			{
-				NJS_ACTION action = new NJS_ACTION(file, actionaddr, imageBase, mfmt, labels, attaches);
-				ActionName = action.Name;
-				labels.Add(actionaddr + (int)imageBase, ActionName);
-			}
+			NJS_ACTION action = new NJS_ACTION(file, actionaddr, imageBase, mfmt, labels, attaches);
+			Animation = action.Animation;
 		}
 
 		public byte[] GetBytes(uint imageBase, uint modelptr, uint animptr)
@@ -95,7 +87,7 @@ namespace SAModel
 			result.Append(", ");
 			result.Append(Model != null ? "&" + Model.Name : "NULL");
 			result.Append(", ");
-			result.Append(Animation != null ? "&" + ActionName : "NULL");
+			result.Append(Animation != null ? "&" + Animation.ActionName : "NULL");
 			result.Append(", (NJS_TEXLIST *)");
 			result.Append(TexlistPointer.ToCHex());
 			result.Append(" }");
@@ -113,18 +105,7 @@ namespace SAModel
 			{
 				Animation.ToStructVariables(writer, labels);
 				labels.Add(Animation.Name);
-			}
-			if (!labels.Contains(ActionName))
-			{
-				writer.Write("NJS_ACTION ");
-				writer.Write(ActionName);
-				writer.Write(" = { &");
-				writer.Write(Model.Name);
-				writer.Write(", &");
-				writer.Write(Animation.Name);
-				writer.WriteLine(" };");
 				writer.WriteLine();
-				labels.Add(ActionName);
 			}
 		}
 	}

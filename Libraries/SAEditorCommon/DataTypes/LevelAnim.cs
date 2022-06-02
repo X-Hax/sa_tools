@@ -111,11 +111,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			get
 			{
-				return GeoAnim.ActionName;
+				return GeoAnim.Animation.ActionName;
 			}
 			set
 			{
-				GeoAnim.ActionName = value;
+				GeoAnim.Animation.ActionName = value;
 			}
 		}
 

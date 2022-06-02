@@ -219,7 +219,7 @@ namespace SAModel.SALVL
 					else if (selectedItem is LevelAnim)
 					{
 						LevelAnim levelAnim = selectedItem as LevelAnim;
-						string path = Path.Combine(filename, levelAnim.GeoAnimationData.ActionName + ".c");
+						string path = Path.Combine(filename, levelAnim.GeoAnimationData.Animation.ActionName + ".c");
 						using (StreamWriter sw = File.CreateText(path))
 						{
 							WriteStructMetadata(sw, false, fmt, texnames);
