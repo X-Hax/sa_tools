@@ -383,7 +383,7 @@
             this.checkBoxBinaryNJA.Name = "checkBoxBinaryNJA";
             this.checkBoxBinaryNJA.Size = new System.Drawing.Size(134, 17);
             this.checkBoxBinaryNJA.TabIndex = 43;
-            this.checkBoxBinaryNJA.Text = "Convert models to NJA";
+            this.checkBoxBinaryNJA.Text = "Export Ninja ASCII";
             this.checkBoxBinaryNJA.UseVisualStyleBackColor = true;
             this.checkBoxBinaryNJA.CheckedChanged += new System.EventHandler(this.checkBox_NJA_CheckedChanged);
             // 
@@ -475,7 +475,7 @@
             this.checkBoxStructConvNJA.Name = "checkBoxStructConvNJA";
             this.checkBoxStructConvNJA.Size = new System.Drawing.Size(134, 17);
             this.checkBoxStructConvNJA.TabIndex = 46;
-            this.checkBoxStructConvNJA.Text = "Convert models to NJA";
+            this.checkBoxStructConvNJA.Text = "Export Ninja ASCII";
             this.checkBoxStructConvNJA.UseVisualStyleBackColor = true;
             this.checkBoxStructConvNJA.CheckedChanged += new System.EventHandler(this.checkBox_StructConvNJA_CheckedChanged);
             // 

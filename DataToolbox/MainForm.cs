@@ -246,7 +246,7 @@ namespace SAModel.DataToolbox
 						string saanimPath = Path.Combine(Path.GetDirectoryName(sd.FileName), Path.GetFileNameWithoutExtension(sd.FileName) + ".saanim");
 
 						tempaction.Animation.Save(saanimPath);
-						ConvertToText(saanimPath, checkBoxBinaryStructs.Checked, false, checkBoxBinaryJSON.Checked);
+						ConvertToText(saanimPath, checkBoxBinaryStructs.Checked, checkBoxBinaryNJA.Checked, checkBoxBinaryJSON.Checked);
 
 						if (checkBoxBinarySAModel.Checked)
 						{
@@ -388,7 +388,7 @@ namespace SAModel.DataToolbox
             }
 			if (NJA)
 			{
-				outext = ".nja";
+				outext = Path.GetExtension(FileName).ToLowerInvariant() == ".saanim" ? ".nam" : ".nja";
 				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.NJA, outpath + outext, dx, false);
 			}
 			if (JSON)
