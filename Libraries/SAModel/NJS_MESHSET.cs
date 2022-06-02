@@ -200,29 +200,27 @@ namespace SAModel
 			return result.ToString();
 		}
 		
-		public string ToNJA(bool DX)
+		public string ToNJA()
 		{
 			StringBuilder result = new StringBuilder("MESHSTART"+ Environment.NewLine);
-			result.Append("TypeMatId ( " + (StructEnums.NJD_MESHSET)((int)PolyType << 0xE) + ",");
+			result.Append("TypeMatId ( 0x" + ((int)PolyType << 0xE).ToString("x4") + ", ");
 			result.Append(MaterialID & 0x3FFF);
-			result.Append(")," + Environment.NewLine);
-			result.Append("MeshNum ");
+			result.Append(" )," + Environment.NewLine);
+			result.Append("MeshNum     ");
 			result.Append(Poly != null ? (ushort)Poly.Count : 0);
 			result.Append("," + Environment.NewLine);
-			result.Append("Meshes ");
+			result.Append("Meshes      ");
 			result.Append(Poly != null ? PolyName : "NULL");
 			result.Append("," + Environment.NewLine);
-			result.Append("PolyAttrs NULL," + Environment.NewLine);
-			result.Append("PolyNormal ");
+			result.Append("PolyAttrs   NULL," + Environment.NewLine);
+			result.Append("PolyNormal  ");
 			result.Append(PolyNormal != null ? PolyNormalName : "NULL");
 			result.Append("," + Environment.NewLine);
-			result.Append("VertColor ");
+			result.Append("VertColor   ");
 			result.Append(VColor != null ? VColorName : "NULL");
 			result.Append("," + Environment.NewLine);
-			result.Append("VertUV ");
-			result.Append(UV != null ? UVName : "NULL");
-			if (DX)
-				result.Append(", NULL");
+			result.Append("VertUV      ");
+			result.Append((UV != null ? UVName : "NULL") + ",");
 			result.Append(Environment.NewLine + "MESHEND" + Environment.NewLine);
 			return result.ToString();
 		}

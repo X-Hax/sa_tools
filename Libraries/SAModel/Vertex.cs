@@ -81,12 +81,12 @@ namespace SAModel
 				return "{ 0 }";
 			return "{ " + X.ToC() + ", " + Y.ToC() + ", " + Z.ToC() + " }";
 		}
+
 		public string ToNJA()
 		{
-			if (X == 0 && Y == 0 && Z == 0)
-				return "( 0 )";
-			return "( " + X.ToC() + ", " + Y.ToC() + ", " + Z.ToC() + " )";
+			return "( " + X.ToNJA() + ", " + Y.ToNJA() + ", " + Z.ToNJA() + " )";
 		}
+
 		public float[] ToArray()
 		{
 			float[] result = new float[3];

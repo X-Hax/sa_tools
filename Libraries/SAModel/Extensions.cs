@@ -36,6 +36,11 @@ namespace SAModel
 			return result;
 		}
 
+		public static string ToNJA(this float num, bool trim = false)
+		{
+			return (num >= 0 ? " " : "") + num.ToString(trim ? "F" : "F6", CultureInfo.InvariantCulture) + "F";
+		}
+
 		public static string ToLongString(this float input)
 		{
 			string str = input.ToString(NumberFormatInfo.InvariantInfo);

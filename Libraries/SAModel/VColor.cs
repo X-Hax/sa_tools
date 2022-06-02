@@ -105,6 +105,13 @@ namespace SAModel
 			return "{ 0x" + color.ToArgb().ToString("X8") + " }";
 		}
 
+		public static string ToNJA(this Color color)
+		{
+			if (color == Color.Empty)
+				return "ARGB ( 0, 0, 0, 0)";
+			return "ARGB ( " + color.A.ToString() + ", " + color.R.ToString() + ", " + color.G.ToString() + ", " + color.B.ToString() + ")";
+		}
+
 		public static int Size(ColorType type)
 		{
 			switch (type)

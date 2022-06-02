@@ -569,7 +569,7 @@ namespace SAModel
 			if (Attach is BasicAttach)
 			{
 				BasicAttach basicattach = Attach as BasicAttach;
-				basicattach.ToNJA(writer, DX, labels, textures);
+				basicattach.ToNJA(writer, labels, textures);
 			}
 			else if (Attach is ChunkAttach)
 			{
@@ -577,17 +577,17 @@ namespace SAModel
 				//ChunkAttach.ToNJA(writer, labels, textures);
 			}
 
-			writer.Write("OBJECT ");
+			writer.Write("OBJECT      ");
 			writer.Write(Name);
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
-			writer.WriteLine("EvalFlags ( " + ((StructEnums.NJD_EVAL)GetFlags()).ToString().Replace(", ", " | ") + " ),");
-			writer.WriteLine("Model " + (Attach != null ? Attach.Name : "NULL") + ",");
-			writer.WriteLine("OPosition ( " + Position.X.ToC() + ", " + Position.Y.ToC() + ", " + Position.Z.ToC()+" ),");
-			writer.WriteLine("OAngle ( " + ((float)Rotation.X / 182.044f).ToC() + ", " + ((float)Rotation.Y / 182.044f).ToC() + ", " + ((float)Rotation.Z / 182.044f).ToC() + " ),");
-			writer.WriteLine("OScale ( " + Scale.X.ToC() + ", " + Scale.Y.ToC() + ", "+ Scale.Z.ToC() + " ),");
-			writer.WriteLine("Child " + (Children.Count > 0 ? Children[0].Name : "NULL") + ",");
-			writer.WriteLine("Sibling " + (Sibling != null ? Sibling.Name : "NULL"));
+			writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
+			writer.WriteLine("Model       " + (Attach != null ? Attach.Name : "NULL") + ",");
+			writer.WriteLine("OPosition  {0},", Position.ToNJA());
+			writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
+			writer.WriteLine("OScale     {0},", Scale.ToNJA());
+			writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name : "NULL") + ",");
+			writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name : "NULL") + ",");
 			writer.WriteLine("END" + Environment.NewLine);
 			writer.WriteLine("OBJECT_END");
 			if (Parent == null)

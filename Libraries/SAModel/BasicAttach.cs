@@ -441,12 +441,13 @@ namespace SAModel
 			writer.Write(ToStruct(DX));
 			writer.WriteLine(";");
 		}
-		public void ToNJA(TextWriter writer, bool DX, List<string> labels, string[] textures)
+
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
 		{
 			if (Material != null && Material.Count > 0 && !labels.Contains(MaterialName))
 			{
 				labels.Add(MaterialName);
-				writer.Write("MATERIAL ");
+				writer.Write("MATERIAL    ");
 				writer.Write(MaterialName + "[]" + Environment.NewLine);
 				writer.WriteLine("START" + Environment.NewLine);
 				List<string> mtls = new List<string>(Material.Count);
@@ -463,7 +464,7 @@ namespace SAModel
 					if (!labels.Contains(Mesh[i].PolyName))
 					{
 						labels.Add(Mesh[i].PolyName);
-						writer.Write("POLYGON ");
+						writer.Write("POLYGON     ");
 						writer.Write(Mesh[i].PolyName);
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
@@ -475,7 +476,7 @@ namespace SAModel
 							if (item.PolyType == Basic_PolyType.Strips)
 							{
 								Strip strip = item as Strip;
-								plys.Add("Strip(" + (strip.Reversed ? "0x8000, " : "0x0,") + strip.Indexes.Length.ToString() + ")");
+								plys.Add("Strip(" + (strip.Reversed ? "0x8000, " : "0x0, ") + strip.Indexes.Length.ToString() + ")");
 								plys.Add(item.ToNJA());
 							}
 							else
@@ -483,7 +484,7 @@ namespace SAModel
 								plys.Add(item.ToNJA());
 							}
 						}
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()) + ",");
 						writer.WriteLine("END");
 						writer.WriteLine();
 					}
@@ -493,14 +494,14 @@ namespace SAModel
 					if (Mesh[i].PolyNormal != null && !labels.Contains(Mesh[i].PolyNormalName))
 					{
 						labels.Add(Mesh[i].PolyNormalName);
-						writer.Write("POLYNORMAL ");
+						writer.Write("POLYNORMAL  ");
 						writer.Write(Mesh[i].PolyNormalName);
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 						List<string> plys = new List<string>(Mesh[i].PolyNormal.Length);
 						foreach (Vertex item in Mesh[i].PolyNormal)
 							plys.Add("PNORM " + item.ToNJA());
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()) + ",");
 						writer.WriteLine("END");
 						writer.WriteLine();
 					}
@@ -510,14 +511,14 @@ namespace SAModel
 					if (Mesh[i].VColor != null && !labels.Contains(Mesh[i].VColorName))
 					{
 						labels.Add(Mesh[i].VColorName);
-						writer.Write("VERTCOLOR ");
+						writer.Write("VERTCOLOR   ");
 						writer.Write(Mesh[i].VColorName);
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 						List<string> vcs = new List<string>(Mesh[i].VColor.Length);
 						foreach (Color item in Mesh[i].VColor)
-							vcs.Add(item.ToStruct());
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vcs.ToArray()));
+							vcs.Add(item.ToNJA());
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vcs.ToArray()) + ",");
 						writer.WriteLine("END");
 						writer.WriteLine();
 					}
@@ -527,28 +528,28 @@ namespace SAModel
 					if (Mesh[i].UV != null && !labels.Contains(Mesh[i].UVName))
 					{
 						labels.Add(Mesh[i].UVName);
-						writer.Write("VERTUV ");
+						writer.Write("VERTUV      ");
 						writer.Write(Mesh[i].UVName);
-						writer.WriteLine("[] = {");
+						writer.WriteLine("[]");
+						writer.WriteLine("START");
 						List<string> uvs = new List<string>(Mesh[i].UV.Length);
 						foreach (UV item in Mesh[i].UV)
-							uvs.Add(item.ToNJA()); //someone check this out, i dont understand how it works
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", uvs.ToArray()));
+							uvs.Add(item.ToNJA());
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", uvs.ToArray()) + ",");
 						writer.WriteLine("END");
 						writer.WriteLine();
 					}
 				}
 				labels.Add(MeshName);
 				writer.Write("MESHSET");
-				if (DX)
-					writer.Write("_SADX");
-				writer.Write(" ");
+				writer.Write("     ");
 				writer.Write(MeshName);
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
+				writer.WriteLine();
 				List<string> mshs = new List<string>(Mesh.Count);
 				foreach (NJS_MESHSET item in Mesh)
-					mshs.Add(item.ToNJA(DX));
+					mshs.Add(item.ToNJA());
 				writer.WriteLine(string.Join(Environment.NewLine, mshs.ToArray()));
 				writer.WriteLine("END");
 				writer.WriteLine();
@@ -556,49 +557,48 @@ namespace SAModel
 			if (!labels.Contains(VertexName))
 			{
 				labels.Add(VertexName);
-				writer.Write("POINT ");
+				writer.Write("POINT      ");
 				writer.Write(VertexName);
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
 				List<string> vtxs = new List<string>(Vertex.Length);
 				foreach (Vertex item in Vertex)
-					vtxs.Add("VERT " + (item != null ? item.ToNJA() : "{ 0 }"));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
+					vtxs.Add("VERT " + item.ToNJA());
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()) + ",");
 				writer.WriteLine("END");
 				writer.WriteLine();
 			}
 			if (Normal != null && !labels.Contains(NormalName))
 			{
 				labels.Add(VertexName);
-				writer.Write("NORMAL ");
+				writer.Write("NORMAL      ");
 				writer.Write(NormalName);
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
 				List<string> vtxs = new List<string>(Normal.Length);
 				foreach (Vertex item in Normal)
-					vtxs.Add("NORM " + (item != null ? item.ToNJA() : "{ 0 }"));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()));
+					vtxs.Add("NORM " + item.ToNJA());
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtxs.ToArray()) + ",");
 				writer.WriteLine("END");
 				writer.WriteLine();
 			}
 			writer.Write("MODEL");
-			if (DX)
-				writer.Write("_SADX");
-			writer.Write(" ");
+			writer.Write("       ");
 			writer.Write(Name);
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
-			writer.WriteLine("Points " + VertexName + ",");
-			writer.WriteLine("Normal " + NormalName + ",");
-			writer.WriteLine("PointNum " + Vertex.Length + ",");
-			writer.WriteLine("Meshset " + MeshName + ",");
-			writer.WriteLine("Materials " + MaterialName + ",");
-			writer.WriteLine("MeshsetNum " + Mesh.Count + ",");
-			writer.WriteLine("MatNum " + Material.Count + ",");
-			writer.WriteLine("Center " + Bounds.Center.X.ToC() + ", " + Bounds.Center.Y.ToC() + ", " + Bounds.Center.Z.ToC()  + ",");
-			writer.WriteLine("Radius " + Bounds.Radius.ToC() + ",");
+			writer.WriteLine("Points      " + VertexName + ",");
+			writer.WriteLine("Normal      " + NormalName + ",");
+			writer.WriteLine("PointNum    " + Vertex.Length + ",");
+			writer.WriteLine("Meshset     " + MeshName + ",");
+			writer.WriteLine("Materials   " + MaterialName + ",");
+			writer.WriteLine("MeshsetNum  " + Mesh.Count + ",");
+			writer.WriteLine("MatNum      " + Material.Count + ",");
+			writer.WriteLine("Center      " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
+			writer.WriteLine("Radius      " + Bounds.Radius.ToNJA() + ",");
 			writer.WriteLine("END" + Environment.NewLine);
 		}
+
 		public override void ProcessVertexData()
 		{
 			List<MeshInfo> result = new List<MeshInfo>();
