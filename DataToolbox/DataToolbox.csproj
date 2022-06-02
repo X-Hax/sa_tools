@@ -9,7 +9,11 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<DebugType>embedded</DebugType>
 		<Platforms>x64;x86</Platforms>
+		<ApplicationIcon>datatoolbox.ico</ApplicationIcon>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Include="datatoolbox.ico" />
+	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
 		</ProjectReference>
