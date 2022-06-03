@@ -62,6 +62,12 @@ namespace SAToolsHub
 			comboBoxLabels.SelectedIndex = 0;
 		}
 
+		private void newProj_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (backgroundWorker1.IsBusy)
+				e.Cancel = true;
+		}
+
 		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fsd = new FolderBrowserDialog { Description = "Please select the path for split data to be stored at", UseDescriptionForTitle = true };
@@ -90,6 +96,8 @@ namespace SAToolsHub
 
 		private void btnCreate_Click(object sender, EventArgs e)
 		{
+			if (backgroundWorker1.IsBusy)
+				return;
 			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			saveFileDialog1.RestoreDirectory = true;
@@ -200,6 +208,11 @@ namespace SAToolsHub
 		private void newProj_HelpButtonClicked(object sender, CancelEventArgs e)
 		{
 			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/SA-Tools-Hub#creating-a-project") { CreateNoWindow = true });
+		}
+
+		private void checkBoxAdvanced_CheckedChanged(object sender, EventArgs e)
+		{
+			groupBoxAdvancedOptions.Enabled = checkBoxAdvanced.Checked;
 		}
 		#endregion
 
@@ -505,10 +518,5 @@ namespace SAToolsHub
 			}
 		}
 		#endregion
-
-		private void checkBoxAdvanced_CheckedChanged(object sender, EventArgs e)
-		{
-			groupBoxAdvancedOptions.Enabled = checkBoxAdvanced.Checked;
-		}
 	}
 }

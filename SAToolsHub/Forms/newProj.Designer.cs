@@ -240,6 +240,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "New Project";
             this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.newProj_HelpButtonClicked);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.newProj_FormClosing);
             this.Shown += new System.EventHandler(this.newProj_Shown);
             this.groupBoxAdvancedOptions.ResumeLayout(false);
             this.groupBoxAdvancedOptions.PerformLayout();
