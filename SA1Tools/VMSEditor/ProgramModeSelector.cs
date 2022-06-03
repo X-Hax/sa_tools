@@ -37,10 +37,7 @@ namespace VMSEditor
         }
 
         private void buttonOpenFile_Click(object sender, EventArgs e)
-        {
-            
-            
-            
+        {          
             using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "Supported Files|*.vms;*.vmi|VMS Files|*.vms|VMI Files|*.vmi|All Files|*.*" })
                 if (od.ShowDialog(this) == DialogResult.OK)
                 {

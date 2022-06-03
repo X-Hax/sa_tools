@@ -165,7 +165,7 @@ namespace VMSEditor
             if (prs_value != 0)
                 Console.WriteLine("PRS at {0}", prs_pointer.ToString("X"));
             // Checksum
-            uint crc = CalculateChecksum(ref file, 0x2C0, file.Length);
+            uint crc = VMSFile.CalculateChecksum(ref file, 0x2C0, file.Length);
             Console.WriteLine("Checksum file / calculated: {0} ({1}) / {2} ({3})", BitConverter.ToInt32(file, 0x2AC).ToString("X"), BitConverter.ToInt32(file, 0x2AC), crc.ToString("X"), (int)crc);
             // Retrieve sections
             // Get PVM

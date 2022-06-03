@@ -943,10 +943,11 @@ namespace VMSEditor
             this.numericUpDownKey1.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey1.TabIndex = 46;
             this.numericUpDownKey1.Click += new System.EventHandler(this.numericUpDownKey1_Click);
-            // 
-            // label68
-            // 
-            this.label68.AutoSize = true;
+			this.numericUpDownKey1.Maximum = 255;
+			// 
+			// label68
+			// 
+			this.label68.AutoSize = true;
             this.label68.Location = new System.Drawing.Point(11, 54);
             this.label68.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label68.Name = "label68";
@@ -962,19 +963,21 @@ namespace VMSEditor
             this.numericUpDownKey2.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey2.TabIndex = 47;
             this.numericUpDownKey2.Click += new System.EventHandler(this.numericUpDownKey1_Click);
-            // 
-            // numericUpDownKey3
-            // 
-            this.numericUpDownKey3.Location = new System.Drawing.Point(34, 80);
+			this.numericUpDownKey2.Maximum = 255;
+			// 
+			// numericUpDownKey3
+			// 
+			this.numericUpDownKey3.Location = new System.Drawing.Point(34, 80);
             this.numericUpDownKey3.Margin = new System.Windows.Forms.Padding(2);
             this.numericUpDownKey3.Name = "numericUpDownKey3";
             this.numericUpDownKey3.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey3.TabIndex = 48;
             this.numericUpDownKey3.Click += new System.EventHandler(this.numericUpDownKey1_Click);
-            // 
-            // label67
-            // 
-            this.label67.AutoSize = true;
+			this.numericUpDownKey3.Maximum = 255;
+			// 
+			// label67
+			// 
+			this.label67.AutoSize = true;
             this.label67.Location = new System.Drawing.Point(11, 26);
             this.label67.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label67.Name = "label67";
@@ -990,10 +993,11 @@ namespace VMSEditor
             this.numericUpDownKey4.Size = new System.Drawing.Size(54, 23);
             this.numericUpDownKey4.TabIndex = 49;
             this.numericUpDownKey4.Click += new System.EventHandler(this.numericUpDownKey1_Click);
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.labelAffectionValue);
+			this.numericUpDownKey4.Maximum = 255;
+			// 
+			// groupBox6
+			// 
+			this.groupBox6.Controls.Add(this.labelAffectionValue);
             this.groupBox6.Controls.Add(this.trackBarAffection);
             this.groupBox6.Controls.Add(this.label16);
             this.groupBox6.Controls.Add(this.labelHappyValue);

@@ -592,7 +592,7 @@ namespace VMSEditor
                 if (ContainsSound) final.AddRange(SoundData);
                 final.AddRange(ModelData);
                 byte[] finalarr = final.ToArray();
-                uint checksum = CalculateChecksum(ref finalarr, 0, finalarr.Length);
+                uint checksum = VMSFile.CalculateChecksum(ref finalarr, 0, finalarr.Length);
                 result.AddRange(BitConverter.GetBytes(checksum));
                 for (int u = 0; u < 16; u++)
                     result.Add(0);
@@ -601,8 +601,6 @@ namespace VMSEditor
                 {
                     do
                     {
-                        //System.Windows.Forms.MessageBox.Show("Adding to " + result.Count.ToString());
-                        //File.WriteAllBytes("C:\\Users\\Pkr\\Desktop\\ass", result.ToArray());
                         result.Add(0);
                     }
                     while (result.Count % 512 != 0);
@@ -794,23 +792,6 @@ namespace VMSEditor
             }
             return result.ToArray();
         }
-
-       
-        public static uint CalculateChecksum(ref byte[] buf, int start, int end)
-        {
-            // Code by Sappharad
-            uint result = 0;
-            for (int i = start; i < end; i++)
-            {
-                int notByte = buf[i];
-                if (notByte >= 128)
-                {
-                    notByte -= 256;
-                }
-                result = (uint)(result + notByte);
-            }
-            return ~result;
-        }  
 
         public static Bitmap GetIconFromFile(byte[] file)
         {

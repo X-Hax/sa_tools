@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Text;
 
 namespace VMSEditor
 {
@@ -19,8 +20,10 @@ namespace VMSEditor
 				default:
 					byte[] file = File.ReadAllBytes(filepath);
 					// Garden save or upload file
-					if (System.Text.Encoding.GetEncoding(932).GetString(file, 0, 4) == "CHAO" || System.Text.Encoding.GetEncoding(932).GetString(file, 0, 6) == "A-LIFE")
+					if (Encoding.GetEncoding(932).GetString(file, 0, 4) == "CHAO" || Encoding.GetEncoding(932).GetString(file, 0, 6) == "A-LIFE" || BitConverter.ToUInt32(file,0) == 0x5FB5ACC1)
 						return new EditorChao();
+					else if (Encoding.GetEncoding(932).GetString(file, 0, 12) == "EVENT_RESULT" || BitConverter.ToUInt32(file, 0) == 0xDDDECDB2)
+						return new EditorChallengeResult();
 					// Download Data / Chao Adventure
 					else
 						for (int u = 0; u < file.Length - 11; u++)
@@ -67,7 +70,7 @@ namespace VMSEditor
 			}
 			else
 			{
-				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "SA2EventViewer.log");
+				string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools", "VMSEditor.log");
 				if (!Directory.Exists(Path.GetDirectoryName(logPath)))
 					Directory.CreateDirectory(Path.GetDirectoryName(logPath));
 				File.WriteAllText(logPath, e.ExceptionObject.ToString());
