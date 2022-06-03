@@ -375,11 +375,11 @@ namespace SAModel.SAMDL
         public string ModelName;
         public string ModelFilePath;
         public string[] TextureArchives;
-        public TexnameArray TextureNames;
+        public NJS_TEXLIST TextureNames;
         public int[] TextureIDs;
 		public string TexturePalettePath;
 
-        public ModelLoadInfo(string name, string modelFile, string[] textures, TexnameArray texnames, int[] texids, string texturePaletteFile)
+        public ModelLoadInfo(string name, string modelFile, string[] textures, NJS_TEXLIST texnames, int[] texids, string texturePaletteFile)
         {
             ModelName = name;
             ModelFilePath = modelFile;
@@ -408,7 +408,7 @@ namespace SAModel.SAMDL
 			else if (split.CustomProperties.ContainsKey("texnames"))
 			{
 				string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
-				TextureNames = new TexnameArray(texnamefile);
+				TextureNames = NJS_TEXLIST.Load(texnamefile);
 			}
         }
 
@@ -422,7 +422,7 @@ namespace SAModel.SAMDL
             if (meta.TextureNameFile != null && meta.TextureNameFile != "")
             {
                 string texnamefile = Path.Combine(modFolder, meta.TextureNameFile);
-                TextureNames = new TexnameArray(texnamefile);
+                TextureNames = NJS_TEXLIST.Load(texnamefile);
             }
         }
     }

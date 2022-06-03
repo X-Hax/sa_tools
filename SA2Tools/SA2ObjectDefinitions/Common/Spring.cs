@@ -15,7 +15,7 @@ namespace SA2ObjectDefinitions.Common
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
-		protected TexnameArray texarr;
+		protected NJS_TEXLIST texarr;
 		protected Texture[] texs;
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -110,7 +110,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_SPRINGA.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = new TexnameArray("object/tls/SPRING.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/SPRING.tls");
 		}
 
 		public override string Name { get { return "Ground Spring"; } }
@@ -122,7 +122,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_SPRINGB.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = new TexnameArray("object/tls/SPRING.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/SPRING.tls");
 		}
 
 		public override string Name { get { return "Air Spring"; } }

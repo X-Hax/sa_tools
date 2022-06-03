@@ -526,11 +526,8 @@ namespace SplitTools.Split
                     TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
                     break;
                 case "texnamearray":
-                    TexnameArray texnames = new TexnameArray(datafile, address, imageBase);
-                    string ext = "pvr";
-                    if (data.CustomProperties.ContainsKey("extension"))
-                        ext = data.CustomProperties["extension"];
-                    texnames.Save(fileOutputPath, ext);
+                    NJS_TEXLIST texnames = new NJS_TEXLIST(datafile, address, imageBase);
+                    texnames.Save(fileOutputPath);
                     break;
                 case "texlistarray":
                     {
@@ -539,19 +536,16 @@ namespace SplitTools.Split
                             uint ptr = ByteConverter.ToUInt32(datafile, address);
                             if (data.Filename != null && ptr != 0)
                             {
-                                string exta = "pvr";
-                                if (data.CustomProperties.ContainsKey("extension"))
-                                    exta = data.CustomProperties["extension"];
                                 ptr -= imageBase;
-                                TexnameArray texarr = new TexnameArray(datafile, (int)ptr, imageBase);
-                                string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".tls");
+                                NJS_TEXLIST texarr = new NJS_TEXLIST(datafile, (int)ptr, imageBase);
+                                string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".satex");
                                 if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
                                 {
-                                    fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".tls");
+                                    fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".satex");
                                 }
                                 if (!Directory.Exists(Path.GetDirectoryName(fn)))
                                     Directory.CreateDirectory(Path.GetDirectoryName(fn));
-                                texarr.Save(fn, exta);
+                                texarr.Save(fn);
                             }
                             address += 4;
                         }

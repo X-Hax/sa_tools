@@ -726,13 +726,32 @@ namespace SplitTools
 		}
 	}
 
-	public class TexnameArray
+	[Serializable]
+	public class NJS_TEXLIST
 	{
+		public string Name { get; set; }
+		public string TexnameArrayName { get; set; }
+		public uint NumTextures { get; set; }
 		public string[] TextureNames { get; set; }
-		public TexnameArray(byte[] file, int address, uint imageBase)
+
+		public NJS_TEXLIST()
 		{
-			uint TexnameArrayAddr = ByteConverter.ToUInt32(file, address);
-			uint NumTextures = ByteConverter.ToUInt32(file, address + 4);
+			TextureNames = new string[NumTextures];
+		}
+
+		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "texlist_" + address.ToString("X8");
+			uint TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
+			int TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
+			NumTextures = ByteConverter.ToUInt32(file, address + 4);
+			if (labels != null && labels.ContainsKey(TexnameArrayAddr))
+				TexnameArrayName = labels[TexnameArrayAddr];
+			else
+				TexnameArrayName = "textures_" + TexnameArrayAddr.ToString("X8");
 			TextureNames = new string[NumTextures];
 			if (TexnameArrayAddr == 0)
 				return;
@@ -741,62 +760,133 @@ namespace SplitTools
 				TextureNames = new string[NumTextures];
 				for (int u = 0; u < NumTextures; u++)
 				{
-					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayAddr + u * 12 - imageBase));
+					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
 					if (TexnamePointer != 0)
 						TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
 					else
-						TextureNames[u] = "empty";
+						TextureNames[u] = null;
 				}
 			}
 		}
 
-		public TexnameArray(string[] list)
+		public NJS_TEXLIST(string[] textureNamelist)
 		{
-			TextureNames = list;
+			TextureNames = textureNamelist;
 		}
 
-		public TexnameArray(string textFile)
+		public static NJS_TEXLIST Load(string textFile)
 		{
+			// Old SA2 projects fallback: Load the .tls file
+			if (!File.Exists(textFile))
+				return Load(Path.ChangeExtension(textFile, ".tls"));
 			string extension = "pvr";
 			string[] texnames_raw = File.ReadAllLines(textFile);
-			if (texnames_raw.Length > 0)
+			// If this is an INI file, deserialize it
+			if (texnames_raw.Length > 0 && texnames_raw[0].Contains("="))
+				return IniSerializer.Deserialize<NJS_TEXLIST>(textFile);
+			// Otherwise load it as a list of texture filenames
+			else
 			{
-				switch (Path.GetExtension(texnames_raw[0]))
+				if (texnames_raw.Length > 0)
 				{
-					case ".gvr":
-						extension = "gvr";
-						break;
-					case ".dds":
-						extension = "dds";
-						break;
-					case ".pvr":
-					default:
-						break;
+					switch (Path.GetExtension(texnames_raw[0]))
+					{
+						case ".gvr":
+							extension = "gvr";
+							break;
+						case ".dds":
+							extension = "dds";
+							break;
+						case ".pvr":
+						default:
+							break;
+					}
 				}
-			}
-			TextureNames = new string[texnames_raw.Length];
-			for (int i = 0; i < texnames_raw.Length; i++)
-			{
-				if (texnames_raw[i] == "")
-					break;
-				TextureNames[i] = texnames_raw[i].Replace("." + extension, "");
+				string[] textureNames = new string[texnames_raw.Length];
+				for (int i = 0; i < texnames_raw.Length; i++)
+				{
+					if (texnames_raw[i] == "")
+						break;
+					textureNames[i] = texnames_raw[i].Replace("." + extension, "");
+				}
+				return new NJS_TEXLIST { TextureNames = textureNames };
 			}
 		}
 
-		public int GetNumTextures()
-		{
-			return TextureNames.Length;
-		}
-
-		public void Save(string fileOutputPath, string extension = "pvr")
+		public void SaveAsList(string fileOutputPath, string extension = "pvr")
 		{
 			StreamWriter sw = File.CreateText(fileOutputPath);
 			for (int u = 0; u < TextureNames.Length; u++)
 			{
-				sw.WriteLine(TextureNames[u] + "." + extension);
+				sw.WriteLine(TextureNames[u] != null ? TextureNames[u] : "empty" + "." + extension);
 			}
 			sw.Flush();
 			sw.Close();
+		}
+
+		public void Save(string fileOutputPath)
+		{
+			IniSerializer.Serialize(this, fileOutputPath);
+		}
+
+		public void ToStruct(TextWriter tw, List<string> labels = null)
+		{
+			if (labels == null)
+				labels = new List<string>();
+			if (!labels.Contains(TexnameArrayName))
+			{
+				tw.WriteLine("NJS_TEXNAME {0}[] =", TexnameArrayName);
+				tw.WriteLine("{");
+				List<string> texs = new List<string>();
+				for (int u = 0; u < TextureNames.Length; u++)
+				{
+					string tname = TextureNames[u] != null ? "\t{ \"" + TextureNames[u] + "\" }" : "\tNULL";
+					texs.Add(tname);
+				}
+				tw.WriteLine(string.Join(",\n", texs));
+				tw.WriteLine("};\n");
+				labels.Add(TexnameArrayName);
+			}
+			if (!labels.Contains(Name))
+			{
+				tw.Write("NJS_TEXLIST {0}", Name);
+				tw.Write("[] = { arrayptrandlength (");
+				tw.Write(TexnameArrayName);
+				tw.Write(") };");
+				labels.Add(Name);
+			}
+		}
+
+		public void ToNJA(TextWriter tw, List<string> labels = null)
+		{
+			if (labels == null)
+				labels = new List<string>();
+			if (!labels.Contains(Name))
+			{
+				tw.WriteLine("TEXTURE_START");
+				tw.WriteLine();
+				if (!labels.Contains(TexnameArrayName))
+				{
+					tw.WriteLine("TEXTURENAME {0}[]", TexnameArrayName);
+					tw.WriteLine("START");
+					for (int u = 0; u < TextureNames.Length; u++)
+					{
+						string tname = TextureNames[u] != null ? "\"" + TextureNames[u] + "\"" : "NULL";
+						tw.WriteLine("\tTEXN ( {0} ),", tname);
+					}
+					tw.WriteLine("END");
+					labels.Add(TexnameArrayName);
+				}
+				tw.WriteLine();
+				tw.WriteLine("TEXTURELIST {0}", Name);
+				tw.WriteLine("START");
+				tw.WriteLine("TextureList {0},", TexnameArrayName);
+				tw.WriteLine("TextureNum  {0},", NumTextures);
+				tw.WriteLine("END");
+				tw.WriteLine();
+				tw.WriteLine("TEXTURE_END");
+				labels.Add(Name);
+			}
 		}
 	}
 

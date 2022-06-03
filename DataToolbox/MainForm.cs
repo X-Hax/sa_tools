@@ -388,7 +388,20 @@ namespace SAModel.DataToolbox
             }
 			if (NJA)
 			{
-				outext = Path.GetExtension(FileName).ToLowerInvariant() == ".saanim" ? ".nam" : ".nja";
+				switch (Path.GetExtension(FileName).ToLowerInvariant())
+				{
+					case ".saanim":
+						outext = ".nam";
+						break;
+					case ".satex":
+						outext = ".tls";
+						break;
+					case ".sa1mdl":
+					case ".sa2mdl":
+					default:
+						outext = ".nja";
+						break;
+				}
 				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.NJA, outpath + outext, dx, false);
 			}
 			if (JSON)
@@ -406,7 +419,7 @@ namespace SAModel.DataToolbox
 
 		private void button1_Click_1(object sender, EventArgs e)
 		{
-			OpenFileDialog op = new OpenFileDialog() { Filter = "Levels, models and animations|*.sa?lvl;*.sa?mdl;*.saanim|All files|*.*", Multiselect = true };
+			OpenFileDialog op = new OpenFileDialog() { Filter = "Levels, models, texlists and animations|*.sa?lvl;*.sa?mdl;*.satex;*.saanim|All files|*.*", Multiselect = true };
 			if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
 				listBoxStructConverter.Items.AddRange(op.FileNames);
@@ -464,7 +477,8 @@ namespace SAModel.DataToolbox
                         case ".sa1lvl":
                         case ".sa2lvl":
                         case ".saanim":
-                            if (!listBoxStructConverter.Items.Contains(files[i]))
+						case ".satex":
+							if (!listBoxStructConverter.Items.Contains(files[i]))
                                 listBoxStructConverter.Items.Add(files[i]);
                             break;
                         default:

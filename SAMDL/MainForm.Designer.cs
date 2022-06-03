@@ -329,7 +329,7 @@ namespace SAModel.SAMDL
             | System.Windows.Forms.Keys.T)));
             this.loadTexlistToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.loadTexlistToolStripMenuItem.Text = "Load Texture List...";
-            this.loadTexlistToolStripMenuItem.ToolTipText = "Load a texture list from a .TLS file. Useful for models that use partial texture " +
+            this.loadTexlistToolStripMenuItem.ToolTipText = "Load a texture list from a .SATEX file. Useful for models that use partial texture " +
     "lists.";
             this.loadTexlistToolStripMenuItem.Click += new System.EventHandler(this.loadTexlistToolStripMenuItem_Click);
             // 

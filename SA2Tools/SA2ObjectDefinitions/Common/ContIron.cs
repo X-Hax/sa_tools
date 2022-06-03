@@ -16,14 +16,14 @@ namespace SA2ObjectDefinitions.Common
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
-		private TexnameArray texarr;
+		private NJS_TEXLIST texarr;
 		private Texture[] texs;
 
 		public override void Init(ObjectData data, string name)
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_CONTIRON.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = new TexnameArray("object/tls/CONTIRON.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/CONTIRON.tls");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)

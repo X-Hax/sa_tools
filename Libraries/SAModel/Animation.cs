@@ -2149,10 +2149,10 @@ namespace SAModel
 				writer.Write(numpairs);
 				writer.WriteLine(" };");
 				labels.Add(Name);
-				writer.WriteLine();
 			}
 			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName) && !labels.Contains(ActionName))
 			{
+				writer.WriteLine();
 				writer.Write("NJS_ACTION ");
 				writer.Write(ActionName);
 				writer.Write(" = { &");

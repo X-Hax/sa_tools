@@ -136,8 +136,8 @@ namespace SAModel.SALVL
 			}
 
 			// Save texture list
-			SplitTools.TexnameArray textureNamesArray = new SplitTools.TexnameArray(texlist.ToArray());
-			textureNamesArray.Save(Path.Combine(rootPath, Path.GetFileNameWithoutExtension(fileName) + ".tls"));
+			SplitTools.NJS_TEXLIST textureNamesArray = new SplitTools.NJS_TEXLIST(texlist.ToArray());
+			textureNamesArray.Save(Path.Combine(rootPath, Path.GetFileNameWithoutExtension(fileName) + ".satex"));
 
 			for (int i = 0; i < cols.Count; i++)
 			{

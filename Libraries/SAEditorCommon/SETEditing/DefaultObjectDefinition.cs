@@ -28,7 +28,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private string rottype;
 		private string scltype;
 		private Texture[] texs;
-		private TexnameArray texnames;
+		private NJS_TEXLIST texnames;
 
 		public override void Init(ObjectData data, string name)
 		{
@@ -38,7 +38,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 				model = ObjectHelper.LoadModel(data.Model);
 				meshes = ObjectHelper.GetMeshes(model);
 				if (!string.IsNullOrEmpty(data.Texlist))
-					texnames = new TexnameArray(data.Texlist);
+					texnames = NJS_TEXLIST.Load(data.Texlist);
 			}
 
 			texture = data.Texture;

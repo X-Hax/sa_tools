@@ -41,7 +41,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 			return Meshes;
 		}
 
-		public static Texture[] GetTextures(string name, SplitTools.TexnameArray texnames = null, Device dev = null)
+		public static Texture[] GetTextures(string name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
 		{
 			Texture[] result = null;
 			if (LevelData.Textures == null || EditorOptions.DisableTextures)

@@ -19,7 +19,7 @@ namespace SA2ObjectDefinitions.Common
 		protected Mesh[] meshes;
 		protected int childindex;
 		protected UInt16 ItemBoxLength = 11;
-		protected TexnameArray texarr;
+		protected NJS_TEXLIST texarr;
 		protected Texture[] texs;
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -97,7 +97,7 @@ namespace SA2ObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOX.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 2;
-			texarr = new TexnameArray("object/tls/itembox.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/itembox.tls");
 		}
 
 		public override void SetOrientation(SETItem item, Vertex direction)
@@ -119,7 +119,7 @@ namespace SA2ObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOXAIR.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 1;
-			texarr = new TexnameArray("object/tls/itemboxair.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/itemboxair.tls");
 		}
 
 		public override string Name { get { return "Floating Item Box"; } }

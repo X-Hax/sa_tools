@@ -436,7 +436,7 @@ namespace SAModel.SALVL
 		private void btnBrowseTexlist1_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = "Texlist Files (*.tls)|*.tls";
+			dlg.Filter = "Texlist Files (*.satex)|*.satex";
 			dlg.InitialDirectory = modFolder;
 			if (dlg.ShowDialog() == DialogResult.OK)
 			{

@@ -2114,10 +2114,16 @@ namespace SAModel.SALVL
 			{
 				int i = AppConfig.MRUList.IndexOf(filename);
 				AppConfig.MRUList.RemoveAt(i);
-				recentFilesToolStripMenuItem.DropDownItems.RemoveAt(i);
 			}
 			AppConfig.MRUList.Insert(0, filename);
-			recentFilesToolStripMenuItem.DropDownItems.Insert(0, new ToolStripMenuItem(filename.Replace("&", "&&")));
+			recentFilesToolStripMenuItem.DropDownItems.Clear();
+			foreach (string file in AppConfig.MRUList)
+			{
+				if (File.Exists(file))
+				{
+					recentFilesToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+				}
+			}
 		}
 
 		private void recentFilesToolStripMenuItem_DropDownItemClicked_1(object sender, ToolStripItemClickedEventArgs e)

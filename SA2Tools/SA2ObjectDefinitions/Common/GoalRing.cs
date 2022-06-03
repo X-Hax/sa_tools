@@ -19,8 +19,8 @@ namespace SA2ObjectDefinitions.Common
 		private NJS_OBJECT child;
 		private Mesh[] meshesChild;
 
-		private TexnameArray texarr;
-		private TexnameArray texarrChild;
+		private NJS_TEXLIST texarr;
+		private NJS_TEXLIST texarrChild;
 		private Texture[] texs;
 		private Texture[] texsChild;
 
@@ -28,11 +28,11 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_GOALRING.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = new TexnameArray("object/tls/GOALRING.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/GOALRING.tls");
 
 			child = ObjectHelper.LoadModel("object/OBJECT_GOALRING_GOAL.sa2mdl");
 			meshesChild = ObjectHelper.GetMeshes(child);
-			texarrChild = new TexnameArray("object/tls/GOALRING_GOAL.tls");
+			texarrChild = NJS_TEXLIST.Load("object/tls/GOALRING_GOAL.tls");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)

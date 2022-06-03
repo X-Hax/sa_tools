@@ -54,8 +54,8 @@ namespace SAModel.SAMDL
 
 		// Texture related
 		string TexturePackName; // Name of the last loaded PVM/texture pack, used for texture enum export
-		TexnameArray TexList; // Current texlist
-		TexnameArray TempTexList; // Texture name list loaded through the model, ex. An .nj NJTL. Use if next loaded texture archive has no names. Clear after each texture load attempt.
+		NJS_TEXLIST TexList; // Current texlist
+		NJS_TEXLIST TempTexList; // Texture name list loaded through the model, ex. An .nj NJTL. Use if next loaded texture archive has no names. Clear after each texture load attempt.
 		BMPInfo[] TextureInfo; // Textures in the whole PVM/texture pack
 		BMPInfo[] TextureInfoCurrent; // TextureInfo updated for the current texlist. Used for Material Editor, texture remapping, C++ export etc.
 		Texture[] Textures; // Created from TextureInfoCurrent; used for rendering
@@ -197,7 +197,7 @@ namespace SAModel.SAMDL
                     case ".txt":
                         LoadTextures(file);
                         break;
-                    case ".tls":
+                    case ".satex":
                         LoadTexlistFile(file);
                         break;
                     case ".sap":
@@ -225,12 +225,12 @@ namespace SAModel.SAMDL
 							NewFile(ModelFormat.BasicDX);
 							// Load textures if there is a texlist file
 							string rootPath = Path.GetDirectoryName(modelFilename);
-							string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(modelFilename) + ".tls");
+							string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(modelFilename) + ".satex");
 							if (File.Exists(texlistFilename))
 							{
 								UnloadTextures();
 								List<string> texturesPngFilenames = new List<string>();
-								TexList = new TexnameArray(texlistFilename);
+								TexList = NJS_TEXLIST.Load(texlistFilename);
 								foreach (string texture in TexList.TextureNames)
 								{
 									texturesPngFilenames.Add(Path.Combine(rootPath, Path.ChangeExtension(texture, ".png")));
@@ -1701,7 +1701,7 @@ namespace SAModel.SAMDL
                 List<BMPInfo> texinfo = new List<BMPInfo>();
                 for (int i = 0; i < TexList.TextureNames.Length; i++)
                     for (int j = 0; j < TextureInfo.Length; j++)
-                        if (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() || TexList.TextureNames[i] == "empty")
+                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant())
                         {
                             texinfo.Add(TextureInfo[j]);
                             textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
@@ -2288,13 +2288,13 @@ namespace SAModel.SAMDL
 		private void ImportModel_Assimp(string objFileName, bool importAsSingle, bool selected = false, bool importColladaRoot = false)
 		{
 			string rootPath = Path.GetDirectoryName(objFileName);
-			string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(objFileName) + ".tls");
+			string texlistFilename = Path.Combine(rootPath, Path.GetFileNameWithoutExtension(objFileName) + ".satex");
 			// Load textures if there is a texlist file
 			if (File.Exists(texlistFilename))
 			{
 				UnloadTextures();
 				List<string> texturesPngFilenames = new List<string>();
-				TexList = new TexnameArray(texlistFilename);
+				TexList = NJS_TEXLIST.Load(texlistFilename);
 				foreach (string texture in TexList.TextureNames)
 				{
 					texturesPngFilenames.Add(Path.Combine(rootPath, Path.ChangeExtension(texture, ".png")));
@@ -2397,8 +2397,8 @@ namespace SAModel.SAMDL
 						bmp.Image.Save(savePath);
 				}
 				// Save texture list
-				TexnameArray textureNamesArray = TexList != null ? TexList : new TexnameArray(textureNames.ToArray());
-				textureNamesArray.Save(Path.Combine(rootPath, Path.GetFileNameWithoutExtension(filename) + ".tls"));
+				NJS_TEXLIST textureNamesArray = TexList != null ? TexList : new NJS_TEXLIST(textureNames.ToArray());
+				textureNamesArray.Save(Path.Combine(rootPath, Path.GetFileNameWithoutExtension(filename) + ".satex"));
 			}
 
 			// Export the whole model, the first child (in root sibling mode), or the selection
@@ -3760,13 +3760,13 @@ namespace SAModel.SAMDL
 
         private void LoadTexlistFile(string filename)
         {
-            TexList = new TexnameArray(filename);
+            TexList = NJS_TEXLIST.Load(filename);
             UpdateTexlist();
         }
 
         private void loadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Load Texlist", Filter = "Texlist Files (*.tls)|*.tls|All Files (*.*)|*.*", DefaultExt = "tls" })
+            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Load Texlist", Filter = "Texlist Files (*.satex)|*.satex|All Files (*.*)|*.*", DefaultExt = "satex" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
@@ -4079,7 +4079,7 @@ namespace SAModel.SAMDL
                 List<string> texnames = new List<string>();
                 for (int i = texIDs[0]; i <= texIDs[texIDs.Length - 1]; i++)
                     texnames.Add(TextureInfo[i].Name);
-                TexList = new TexnameArray(texnames.ToArray());
+                TexList = new NJS_TEXLIST(texnames.ToArray());
             }
             UpdateTexlist();
         }
@@ -4102,12 +4102,12 @@ namespace SAModel.SAMDL
             {
                 // Load texture archives
                 AddTextures(info.TextureArchives, info.TexturePalettePath);
-                // Set texture IDs for partial texlist if defined
-                if (info.TextureIDs != null)
-                    SetPartialTexlist(info.TextureIDs);
-                // Set texture names for partial texlist if defined
-                else if (info.TextureNames != null)
-                    TexList = info.TextureNames;
+				// Set texture IDs for partial texlist if defined
+				if (info.TextureIDs != null)
+					SetPartialTexlist(info.TextureIDs);
+				// Set texture names for partial texlist if defined
+				else if (info.TextureNames != null)
+					TexList = info.TextureNames;
                 UpdateTexlist();
             }
         }
@@ -4267,7 +4267,7 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		private int ReadNJTL(byte[] file, ref bool basicModel, ref TexnameArray texList)
+		private int ReadNJTL(byte[] file, ref bool basicModel, ref NJS_TEXLIST texList)
 		{
 			int ninjaDataOffset;
 			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x4);
@@ -4297,7 +4297,7 @@ namespace SAModel.SAMDL
 				texNames.Add(Encoding.ASCII.GetString(namestring.ToArray()));
 				texOffset += 0xC;
 			}
-			texList = new TexnameArray(texNames.ToArray());
+			texList = new NJS_TEXLIST(texNames.ToArray());
 			return ninjaDataOffset;
 		}
 	}

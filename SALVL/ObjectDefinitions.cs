@@ -125,15 +125,15 @@ namespace SAModel.SALVL
 
             if (compileErrors.Count > 0)
             {
-                DialogResult result = MessageBox.Show("There were compile errors. Would you like to try upgrading the object definitions? This will over-write any changes to them that you've made!",
-                    "Would you like to try upgrading?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult result = MessageBox.Show(this, "Could not compile object definitions. Would you like to update them to the latest defaults? This will reset any custom object code.",
+                    "Object Definitions Compilation Error", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
                     initerror = true;
                     bool error = CopyDefaultObjectDefinitions();
-                    if (!error)
-                        MessageBox.Show("Please restart SALVL to complete the operation.", "SALVL", MessageBoxButtons.OK);
+					if (!error)
+						MessageBox.Show("Please restart SALVL to complete the operation.", "SALVL", MessageBoxButtons.OK);
                     return;
                 }
             }
@@ -244,7 +244,7 @@ namespace SAModel.SALVL
             try
             {
                 // get our original objdefs folder
-                string originalObjdefsPath = GetObjDefsDirectory();
+                string originalObjdefsPath = GetObjDefsDirectory(salvlini.IsSA2);
 
                 // get our project objdefs folder
                 string projectObjdefsPath = Path.Combine(modFolder, "objdefs");
@@ -279,7 +279,8 @@ namespace SAModel.SALVL
             foreach (string objdef in files)
             {
                 System.IO.FileInfo objdefFileInfo = new System.IO.FileInfo(objdef);
-                if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj")) continue;
+                if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj") || objdefFileInfo.Name.Equals("SA2ObjectDefinitions.csproj"))
+						continue;
 
                 // copy
                 string filePath = Path.Combine(sourceFolder, objdefFileInfo.Name);
@@ -301,11 +302,13 @@ namespace SAModel.SALVL
             }
         }
 
-        private string GetObjDefsDirectory()
+        private string GetObjDefsDirectory(bool sa2)
         {
-            string objdp = Path.GetDirectoryName(Application.ExecutablePath) + "/../../SA1Tools/SADXObjectDefinitions/";
-            if (Directory.Exists(objdp)) return objdp;
-            else return Path.GetDirectoryName(Application.ExecutablePath) + "/../GameConfig/PC_SADX/objdefs/";
+			string objdp = Path.GetDirectoryName(Application.ExecutablePath) + (sa2 ? "/../../SA2Tools/SA2ObjectDefinitions/" : "/../../SA1Tools/SADXObjectDefinitions/");
+            if (Directory.Exists(objdp)) 
+				return objdp;
+            else 
+				return Path.GetDirectoryName(Application.ExecutablePath) + (sa2 ? "/../GameConfig/PC_SA2/objdefs/" : "/../GameConfig/PC_SADX/objdefs/");
         }
 
     }
