@@ -7,8 +7,6 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using SAModel.SAEditorCommon.ModManagement;
 using SAModel.SAEditorCommon.ProjectManagement;
-using SplitTools.Split;
-using SplitTools.SAArc;
 using System.Xml;
 
 namespace SAToolsHub
@@ -31,6 +29,7 @@ namespace SAToolsHub
 		int splitCheck;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
+		Dictionary<string, string> Platforms = new Dictionary<string, string>();
 
 		public newProj()
 		{
@@ -42,22 +41,24 @@ namespace SAToolsHub
 		#region Form Functions
 		private void newProj_Shown(object sender, EventArgs e)
 		{
-			comboBox1.Items.Clear();
+			Platforms.Add("PC", "PC");
+			Platforms.Add("Dreamcast", "DC");
+			Platforms.Add("Gamecube", "GC");
+			Platforms.Add("Xbox 360", "X360");
+			Platforms.Add("Playstation 3", "PS3");
+			buttonCreateProject.Enabled = false;
+			comboBoxPlatform.Items.Clear();
+			comboBoxTemplate.Items.Clear();
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 
 			if (Directory.Exists(Path.Combine(appPath, "GameConfig")))
 				templatesPath = Path.Combine(appPath, "GameConfig");
 			else
 				templatesPath = Path.Combine(appPath, "..\\GameConfig");
-			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
-
-			foreach (KeyValuePair<string, string> entry in templateList)
-			{
-				comboBox1.Items.Add(entry);
-			}
-			comboBox1.DisplayMember = "Key";
-
-			btnCreate.Enabled = false;
+			foreach (var item in Platforms)
+				comboBoxPlatform.Items.Add(item.Key);
+			comboBoxPlatform.SelectedIndex = 0;
+			comboBoxLabels.SelectedIndex = 0;
 		}
 
 		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
@@ -65,24 +66,24 @@ namespace SAToolsHub
 			FolderBrowserDialog fsd = new FolderBrowserDialog { Description = "Please select the path for split data to be stored at", UseDescriptionForTitle = true };
 			if (fsd.ShowDialog() == DialogResult.OK)
 			{
-				txtProjFolder.Text = fsd.SelectedPath;
+				textBoxProjFolder.Text = fsd.SelectedPath;
 				// If a game template is selected, enable the Create button
-				if (comboBox1.SelectedIndex != -1)
-					btnCreate.Enabled = true; //
+				if (comboBoxTemplate.SelectedIndex != -1)
+					buttonCreateProject.Enabled = true; //
 			}
 		}
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
-			if (checkBox1.Checked)
+			if (checkBoxSaveDifferentFolder.Checked)
 			{
-				txtProjFolder.Enabled = true;
-				btnBrowse.Enabled = true;
+				textBoxProjFolder.Enabled = true;
+				buttonBrowse.Enabled = true;
 			}
 			else
 			{
-				txtProjFolder.Enabled = false;
-				btnBrowse.Enabled = false;
+				textBoxProjFolder.Enabled = false;
+				buttonBrowse.Enabled = false;
 			}
 		}
 
@@ -92,9 +93,9 @@ namespace SAToolsHub
 			saveFileDialog1.Filter = "Project File (*.sap)|*.sap";
 			saveFileDialog1.RestoreDirectory = true;
 
-			if (checkBox1.Checked && txtProjFolder.Text != "")
+			if (checkBoxSaveDifferentFolder.Checked && textBoxProjFolder.Text != "")
 			{
-				saveFileDialog1.InitialDirectory = txtProjFolder.Text;
+				saveFileDialog1.InitialDirectory = textBoxProjFolder.Text;
 			}
 
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -103,9 +104,9 @@ namespace SAToolsHub
 				{
 					XmlSerializer serializer = new(typeof(Templates.ProjectTemplate));
 					XmlWriter xmlWriter = XmlWriter.Create(projFileStream, new XmlWriterSettings() { Indent = true });
-					if (checkBox1.Checked && (txtProjFolder.Text != null))
+					if (checkBoxSaveDifferentFolder.Checked && (textBoxProjFolder.Text != null))
 					{
-						projFolder = txtProjFolder.Text;
+						projFolder = textBoxProjFolder.Text;
 					}
 					else
 					{
@@ -123,7 +124,7 @@ namespace SAToolsHub
 					projInfo.GameName = gameName;
 					projInfo.CheckFile = checkFile;
 					projInfo.GameDataFolder = gameDataFolder;
-					projInfo.ProjectFolder = (checkBox1.Checked && txtProjFolder.Text != "") ? projFolder : Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
+					projInfo.ProjectFolder = (checkBoxSaveDifferentFolder.Checked && textBoxProjFolder.Text != "") ? projFolder : Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
 					projInfo.CanBuild = (gameName == "SADXPC" || gameName == "SA2PC");
 
 					projectFile.GameInfo = projInfo;
@@ -149,21 +150,55 @@ namespace SAToolsHub
 		{
 			// This is needed to prevent opening the template file twice.
 			// SelectedIndexChanged fires after a dialog closes even if the selection didn't change.
-			if (selectedTemplateIndex == comboBox1.SelectedIndex)
+			if (selectedTemplateIndex == comboBoxTemplate.SelectedIndex)
 				return;
-
-			selectedTemplateIndex = comboBox1.SelectedIndex;
+			selectedTemplateIndex = comboBoxTemplate.SelectedIndex;
 			string templateFile = "";
-			if (comboBox1.SelectedIndex > -1)
+			if (comboBoxTemplate.SelectedIndex > -1)
 			{
-				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBox1.SelectedItem).Value.ToString());
+				templateFile = Path.Combine(templatesPath, ((KeyValuePair<string, string>)comboBoxTemplate.SelectedItem).Value.ToString());
 			}
 
 			if (templateFile.Length > 0)
 				openTemplate(templateFile);
 
 			if (gameName != null && gamePath != null)
-				btnCreate.Enabled = true;
+				buttonCreateProject.Enabled = true;
+		}
+
+		private void comboBoxPlatform_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			FilterByPlatform(Platforms[comboBoxPlatform.SelectedItem.ToString()]);
+		}
+
+		private void FilterByPlatform(string platform)
+		{
+			comboBoxTemplate.Items.Clear();
+			Dictionary<string, string> templateList = loadTemplateList(templatesPath);
+			foreach (KeyValuePair<string, string> entry in templateList)
+			{
+				if (entry.Key.Contains(platform))
+				{
+					if (radioButtonSA2.Checked && entry.Key.Contains("SA2"))
+						comboBoxTemplate.Items.Add(entry);
+					else if (radioButtonSA1.Checked && !entry.Key.Contains("SA2"))
+						comboBoxTemplate.Items.Add(entry);
+				}
+			}
+			buttonCreateProject.Enabled = false;
+			comboBoxTemplate.DisplayMember = "Key";
+			comboBoxTemplate.SelectedIndex = -1;
+			selectedTemplateIndex = -1;
+		}
+
+		private void radioButtonSA2_CheckedChanged(object sender, EventArgs e)
+		{
+			FilterByPlatform(Platforms[comboBoxPlatform.SelectedItem.ToString()]);
+		}
+
+		private void newProj_HelpButtonClicked(object sender, CancelEventArgs e)
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/SA-Tools-Hub#creating-a-project") { CreateNoWindow = true });
 		}
 		#endregion
 
@@ -240,7 +275,7 @@ namespace SAToolsHub
 				splitMdlEntries = template.SplitMDLEntries;
 			}
 			else
-				comboBox1.SelectedIndex = -1;
+				comboBoxTemplate.SelectedIndex = -1;
 
 		}
 
@@ -389,7 +424,7 @@ namespace SAToolsHub
 				File.Delete(Path.Combine(projFolder, "SplitLog.log"));
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
 			{
-				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder);
+				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, nometa: comboBoxLabels.SelectedIndex == 2, nolabel: comboBoxLabels.SelectedIndex != 1);
 				if (File.Exists(Path.Combine(projFolder, "SplitLog.log")))
 					return 0;
 			}
@@ -469,5 +504,10 @@ namespace SAToolsHub
 			}
 		}
 		#endregion
+
+		private void checkBoxAdvanced_CheckedChanged(object sender, EventArgs e)
+		{
+			groupBoxAdvancedOptions.Enabled = checkBoxAdvanced.Checked;
+		}
 	}
 }
