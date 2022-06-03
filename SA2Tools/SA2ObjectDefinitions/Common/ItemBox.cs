@@ -97,7 +97,7 @@ namespace SA2ObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOX.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 2;
-			texarr = NJS_TEXLIST.Load("object/tls/itembox.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/itembox.satex");
 		}
 
 		public override void SetOrientation(SETItem item, Vertex direction)
@@ -119,7 +119,7 @@ namespace SA2ObjectDefinitions.Common
 			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOXAIR.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
 			childindex = 1;
-			texarr = NJS_TEXLIST.Load("object/tls/itemboxair.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/itemboxair.satex");
 		}
 
 		public override string Name { get { return "Floating Item Box"; } }

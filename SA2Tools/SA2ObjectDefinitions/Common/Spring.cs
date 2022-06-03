@@ -110,7 +110,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_SPRINGA.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/SPRING.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/SPRING.satex");
 		}
 
 		public override string Name { get { return "Ground Spring"; } }
@@ -122,7 +122,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_SPRINGB.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/SPRING.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/SPRING.satex");
 		}
 
 		public override string Name { get { return "Air Spring"; } }

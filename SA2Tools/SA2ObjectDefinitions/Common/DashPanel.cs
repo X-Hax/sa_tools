@@ -29,11 +29,11 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_KASOKU_PANEL.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/KASOKU_PANEL.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/KASOKU_PANEL.satex");
 
 			child = ObjectHelper.LoadModel("object/OBJECT_KASOKU.sa2mdl");
 			meshesChild = ObjectHelper.GetMeshes(child);
-			texarrChild = NJS_TEXLIST.Load("object/tls/KASOKU.tls");
+			texarrChild = NJS_TEXLIST.Load("object/tls/KASOKU.satex");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)

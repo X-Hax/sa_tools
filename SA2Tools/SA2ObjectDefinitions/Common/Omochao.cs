@@ -23,7 +23,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			model = ObjectHelper.LoadModel("object/OBJECT_OMOCHAO.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/OMOCHAO.tls");
+			texarr = NJS_TEXLIST.Load("object/tls/OMOCHAO.satex");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
