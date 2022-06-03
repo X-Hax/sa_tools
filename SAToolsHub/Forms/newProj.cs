@@ -41,6 +41,7 @@ namespace SAToolsHub
 		#region Form Functions
 		private void newProj_Shown(object sender, EventArgs e)
 		{
+			Platforms.Clear();
 			Platforms.Add("PC", "PC");
 			Platforms.Add("Dreamcast", "DC");
 			Platforms.Add("Gamecube", "GC");
