@@ -98,6 +98,8 @@ namespace SAModel
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
 
+		const bool optimizeMotions = true; // Set to false to preserve duplicate data
+
 		public NJS_MOTION()
 		{
 			Name = "animation_" + Extensions.GenerateIdentifier();
@@ -975,10 +977,10 @@ namespace SAModel
 								found = true;
 								break;
 							}
-						if (found) continue;
+						if (optimizeMotions && found) continue;
 						result.Align(4);
 						offs.Add(imageBase + (uint)result.Count);
-						voffs.Add((item.Value, imageBase + (uint)result.Count));
+						if (optimizeMotions) voffs.Add((item.Value, imageBase + (uint)result.Count));
 						foreach (Vertex v in item.Value)
 							result.AddRange(v.GetBytes());
 					}
@@ -1039,10 +1041,10 @@ namespace SAModel
 								found = true;
 								break;
 							}
-						if (found) continue;
+						if (optimizeMotions && found) continue;
 						result.Align(4);
 						offs.Add(imageBase + (uint)result.Count);
-						voffs.Add((item.Value, imageBase + (uint)result.Count));
+						if (optimizeMotions) voffs.Add((item.Value, imageBase + (uint)result.Count));
 						foreach (Vertex v in item.Value)
 							result.AddRange(v.GetBytes());
 					}
