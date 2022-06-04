@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SADX360" dataFolder="X360_SADXBETA" gameDataFolderName="Package" checkFile="SonicPackage.xlast" checkHashes="e1f01f48442cf711e2206370c60b7218" />
+  <SplitEntry SourceFile="Test\Release\SonicApp.exe" IniFile="Texlists" />
   <SplitEntry SourceFile="Test\Release\SonicApp.exe" IniFile="STG00" />
   <SplitEntry SourceFile="Test\Release\SonicApp.exe" IniFile="STG01" />
   <SplitEntry SourceFile="Test\Release\SonicApp.exe" IniFile="STG02" />
