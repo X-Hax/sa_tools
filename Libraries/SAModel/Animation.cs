@@ -1654,15 +1654,20 @@ namespace SAModel
 					int z = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
 					{
-						writer.Write("NJS_VECTOR ");
-						writer.Write(model.Value.VertexItemName[z++]);
-						writer.WriteLine("[] = {");
-						List<string> l2 = new List<string>(item.Value.Length);
-						foreach (Vertex v in item.Value)
-							l2.Add("\t" + v.ToStruct());
-						writer.WriteLine(string.Join("," + Environment.NewLine, l2.ToArray()));
-						writer.WriteLine("};");
-						writer.WriteLine();
+						if (!labels.Contains(model.Value.VertexItemName[z]))
+						{
+							writer.Write("NJS_VECTOR ");
+							writer.Write(model.Value.VertexItemName[z]);
+							writer.WriteLine("[] = {");
+							List<string> l2 = new List<string>(item.Value.Length);
+							foreach (Vertex v in item.Value)
+								l2.Add("\t" + v.ToStruct());
+							writer.WriteLine(string.Join("," + Environment.NewLine, l2.ToArray()));
+							writer.WriteLine("};");
+							writer.WriteLine();
+							labels.Add(model.Value.VertexItemName[z]);
+						}
+						z++;					
 					}
 					writer.Write("NJS_MKEY_P ");
 					writer.Write(model.Value.VertexName);
@@ -1682,15 +1687,20 @@ namespace SAModel
 					int z = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
 					{
-						writer.Write("NJS_VECTOR ");
-						writer.Write(model.Value.NormalItemName[z++]);
-						writer.WriteLine("[] = {");
-						List<string> l2 = new List<string>(item.Value.Length);
-						foreach (Vertex v in item.Value)
-							l2.Add("\t" + v.ToStruct());
-						writer.WriteLine(string.Join("," + Environment.NewLine, l2.ToArray()));
-						writer.WriteLine("};");
-						writer.WriteLine();
+						if (!labels.Contains(model.Value.NormalItemName[z]))
+						{
+							writer.Write("NJS_VECTOR ");
+							writer.Write(model.Value.NormalItemName[z]);
+							writer.WriteLine("[] = {");
+							List<string> l2 = new List<string>(item.Value.Length);
+							foreach (Vertex v in item.Value)
+								l2.Add("\t" + v.ToStruct());
+							writer.WriteLine(string.Join("," + Environment.NewLine, l2.ToArray()));
+							writer.WriteLine("};");
+							writer.WriteLine();
+							labels.Add(model.Value.NormalItemName[z]);
+						}
+						z++;			
 					}
 					writer.Write("NJS_MKEY_P ");
 					writer.Write(model.Value.NormalName);
@@ -2260,13 +2270,18 @@ namespace SAModel
 					int z = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
 					{
-						writer.WriteLine("POINT    {0}[]", model.Value.VertexItemName[z++]);
-						writer.WriteLine("START");
-						List<string> l2 = new List<string>(item.Value.Length);
-						foreach (Vertex v in item.Value)
-							writer.WriteLine("         VERT{0},", v.ToNJA());
-						writer.WriteLine("END");
-						writer.WriteLine();
+						if (!labels.Contains(model.Value.VertexItemName[z]))
+						{
+							writer.WriteLine("POINT    {0}[]", model.Value.VertexItemName[z]);
+							writer.WriteLine("START");
+							List<string> l2 = new List<string>(item.Value.Length);
+							foreach (Vertex v in item.Value)
+								writer.WriteLine("         VERT{0},", v.ToNJA());
+							writer.WriteLine("END");
+							writer.WriteLine();
+							labels.Add(model.Value.VertexItemName[z]);
+						}
+						z++;
 					}
 					writer.WriteLine();
 					writer.WriteLine("POINTER    {0}[]", model.Value.VertexName);
@@ -2285,12 +2300,17 @@ namespace SAModel
 					int z = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
 					{
-						writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z++]);
-						writer.WriteLine("START");
-						foreach (Vertex v in item.Value)
-							writer.WriteLine("         NORM{0},", v.ToNJA());
-						writer.WriteLine("END");
-						writer.WriteLine();
+						if (!labels.Contains(model.Value.NormalItemName[z]))
+						{
+							writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z]);
+							writer.WriteLine("START");
+							foreach (Vertex v in item.Value)
+								writer.WriteLine("         NORM{0},", v.ToNJA());
+							writer.WriteLine("END");
+							writer.WriteLine();
+							labels.Add(model.Value.NormalItemName[z]);
+						}
+						z++;
 					}
 					writer.WriteLine();
 					writer.WriteLine("POINTER    {0}[]", model.Value.NormalName);
