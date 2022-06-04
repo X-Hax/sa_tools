@@ -13,10 +13,7 @@ namespace SAToolsHub
 {
 	public partial class newProj : Form
 	{
-		Stream projFileStream;
-		Templates.ProjectTemplate projectFile;
-		SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
-
+		// Variables
 		string templatesPath;
 		string gameName;
 		string gamePath;
@@ -25,28 +22,36 @@ namespace SAToolsHub
 		string gameDataFolder;
 		string checkFile;
 		string projName;
-		int selectedTemplateIndex = -1;
-		int splitCheck;
+
+		// Variables (split)
+		Stream projFileStream;
+		Templates.ProjectTemplate projectFile;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
-		Dictionary<string, string> Platforms = new Dictionary<string, string>();
+		ProjectSplitResult splitCheck;
+
+		// UI
+		Dictionary<string, string> gamePlatforms = new Dictionary<string, string>();
+		SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
+		int selectedTemplateIndex = -1;
 
 		public newProj()
 		{
 			InitializeComponent();
 			backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+			backgroundWorker1.WorkerSupportsCancellation = true;
 			backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundWorker1_RunWorkerCompleted);
 		}
 
 		#region Form Functions
 		private void newProj_Shown(object sender, EventArgs e)
 		{
-			Platforms.Clear();
-			Platforms.Add("PC", "PC");
-			Platforms.Add("Dreamcast", "DC");
-			Platforms.Add("Gamecube", "GC");
-			Platforms.Add("Xbox 360", "X360");
-			Platforms.Add("Playstation 3", "PS3");
+			gamePlatforms.Clear();
+			gamePlatforms.Add("PC", "PC");
+			gamePlatforms.Add("Dreamcast", "DC");
+			gamePlatforms.Add("Gamecube", "GC");
+			gamePlatforms.Add("Xbox 360", "X360");
+			//gamePlatforms.Add("Playstation 3", "PS3");
 			buttonCreateProject.Enabled = false;
 			comboBoxPlatform.Items.Clear();
 			comboBoxTemplate.Items.Clear();
@@ -56,7 +61,7 @@ namespace SAToolsHub
 				templatesPath = Path.Combine(appPath, "GameConfig");
 			else
 				templatesPath = Path.Combine(appPath, "..\\GameConfig");
-			foreach (var item in Platforms)
+			foreach (var item in gamePlatforms)
 				comboBoxPlatform.Items.Add(item.Key);
 			comboBoxPlatform.SelectedIndex = 0;
 			comboBoxLabels.SelectedIndex = 0;
@@ -65,7 +70,7 @@ namespace SAToolsHub
 		private void newProj_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (backgroundWorker1.IsBusy)
-				e.Cancel = true;
+				backgroundWorker1.CancelAsync();
 		}
 
 		private void btnAltFolderBrowse_Click(object sender, EventArgs e)
@@ -76,7 +81,7 @@ namespace SAToolsHub
 				textBoxProjFolder.Text = fsd.SelectedPath;
 				// If a game template is selected, enable the Create button
 				if (comboBoxTemplate.SelectedIndex != -1)
-					buttonCreateProject.Enabled = true; //
+					buttonCreateProject.Enabled = true;
 			}
 		}
 
@@ -177,7 +182,7 @@ namespace SAToolsHub
 
 		private void comboBoxPlatform_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			FilterByPlatform(Platforms[comboBoxPlatform.SelectedItem.ToString()]);
+			FilterByPlatform(gamePlatforms[comboBoxPlatform.SelectedItem.ToString()]);
 		}
 
 		private void FilterByPlatform(string platform)
@@ -202,7 +207,7 @@ namespace SAToolsHub
 
 		private void radioButtonSA2_CheckedChanged(object sender, EventArgs e)
 		{
-			FilterByPlatform(Platforms[comboBoxPlatform.SelectedItem.ToString()]);
+			FilterByPlatform(gamePlatforms[comboBoxPlatform.SelectedItem.ToString()]);
 		}
 
 		private void newProj_HelpButtonClicked(object sender, CancelEventArgs e)
@@ -313,12 +318,12 @@ namespace SAToolsHub
 			};
 
 			string systemPath;
-			//Source Folder
+			// Source Folder
 			string sourceFolderPath = Path.Combine(projFolder, "Code");
 			if (!Directory.Exists(sourceFolderPath))
 				Directory.CreateDirectory(sourceFolderPath);
 
-			//Game System Folder
+			// Game System Folder
 			string projReadMePath = Path.Combine(projFolder, "ReadMe.txt");
 
 			switch (game)
@@ -420,7 +425,7 @@ namespace SAToolsHub
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
-		int splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress)
+		ProjectSplitResult splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress, DoWorkEventArgs e)
 		{
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
@@ -438,9 +443,14 @@ namespace SAToolsHub
 				File.Delete(Path.Combine(projFolder, "SplitLog.log"));
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
 			{
+				if (backgroundWorker1.CancellationPending == true)
+				{
+					e.Cancel = true;
+					return ProjectSplitResult.Cancelled;
+				}
 				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, nometa: comboBoxLabels.SelectedIndex == 2, nolabel: comboBoxLabels.SelectedIndex != 1);
 				if (File.Exists(Path.Combine(projFolder, "SplitLog.log")))
-					return 0;
+					return ProjectSplitResult.ItemFailure;
 			}
 			// SALVL stuff
 			if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
@@ -470,7 +480,14 @@ namespace SAToolsHub
 			{
 				progress.SetTask("Splitting Character Models");
 				foreach (Templates.SplitEntryMDL splitMDL in splitMdlEntries)
+				{
+					if (backgroundWorker1.CancellationPending == true)
+					{
+						e.Cancel = true;
+						return ProjectSplitResult.Cancelled;
+					}
 					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder);
+				}
 			}
 			// Project folders for buildable PC games
 			if (game == "SADXPC" || game == "SA2PC")
@@ -481,7 +498,7 @@ namespace SAToolsHub
 				progress.StepProgress();
 			}
 
-			return 1;
+			return ProjectSplitResult.Success;
 		}
 		#endregion
 
@@ -493,29 +510,37 @@ namespace SAToolsHub
 			{
 				Invoke((Action)splitProgress.Show);
 
-				splitCheck = splitGame(gameName, splitProgress);
-
-				Invoke((Action)splitProgress.Close);
+				splitCheck = splitGame(gameName, splitProgress, e);
 			}
 		}
 
 		private void BackgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			if (e != null && e.Error != null)
+			switch (splitCheck)
 			{
-				MessageBox.Show("Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			else
-			{
-				if (splitCheck == 0)
+				case ProjectSplitResult.Cancelled:
+					MessageBox.Show(this, "Project split has been cancelled.", "SA Tools Hub", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					break;
+				case ProjectSplitResult.ProjectFailure:
+					MessageBox.Show(this, "Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					break;
+				case ProjectSplitResult.ItemFailure:
 					MessageBox.Show(this, "Item failed to split properly. Please check the SplitLog.log file at:\n\n" + projFolder, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				else
-				{
+					break;
+				case ProjectSplitResult.Success:
 					MessageBox.Show(this, "Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
 					SAToolsHub.newProjFile = Path.Combine(projFolder, projName);
-					this.Close();
-				}
+					Close();
+					break;
 			}
+		}
+
+		private enum ProjectSplitResult
+		{
+			ItemFailure,
+			Success,
+			ProjectFailure,
+			Cancelled
 		}
 		#endregion
 	}
