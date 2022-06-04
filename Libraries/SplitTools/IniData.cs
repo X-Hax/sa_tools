@@ -739,7 +739,7 @@ namespace SplitTools
 			TextureNames = new string[NumTextures];
 		}
 
-		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null)
+		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset=0)
 		{
 			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
@@ -762,7 +762,10 @@ namespace SplitTools
 				{
 					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
 					if (TexnamePointer != 0)
-						TextureNames[u] = file.GetCString((int)(TexnamePointer - imageBase)).TrimEnd();
+					{
+						int TexnameAddress = (int)(TexnamePointer - imageBase);
+						TextureNames[u] = file.GetCString(TexnameAddress + (int)offset).TrimEnd();
+					}
 					else
 						TextureNames[u] = null;
 				}

@@ -35,7 +35,7 @@ namespace SplitTools.Split
                     byte[] datafile_new = new byte[inifile.StartOffset + datafile_temp.Length];
                     datafile_temp.CopyTo(datafile_new, inifile.StartOffset);
                     datafile = datafile_new;
-                }
+				}
                 else datafile = datafile_temp;
                 // Check the file's MD5 hash if it exists
                 if (inifile.MD5 != null && inifile.MD5.Count > 0)
@@ -126,7 +126,7 @@ namespace SplitTools.Split
                             break;
                         // Single split mode for everything else
                         default:
-                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, masterobjlist, nometa, nolabel, overwrite);
+                            itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, masterobjlist, nometa, nolabel, overwrite, inifile.StartOffset);
                             break;
                     }
                 }
@@ -163,7 +163,7 @@ namespace SplitTools.Split
             return (int)SplitERRORVALUE.Success;
         }
 
-		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, Dictionary<string, MasterObjectListEntry> masterobjlist, bool nometa = false, bool nolabel = false, bool overwrite = true)
+		public static int SplitSingle(string itemName, SplitTools.FileInfo data, string fileOutputPath, byte[] datafile, uint imageBase, Dictionary<int, string> labels, Game game, Dictionary<string, MasterObjectListEntry> masterobjlist, bool nometa = false, bool nolabel = false, bool overwrite = true, uint offset = 0)
         {
             if (string.IsNullOrEmpty(itemName))
                 return 0;
@@ -526,7 +526,7 @@ namespace SplitTools.Split
                     TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
                     break;
                 case "texnamearray":
-                    NJS_TEXLIST texnames = new NJS_TEXLIST(datafile, address, imageBase);
+                    NJS_TEXLIST texnames = new NJS_TEXLIST(datafile, address, imageBase, labels, offset);
                     texnames.Save(fileOutputPath);
                     break;
                 case "texlistarray":
@@ -537,7 +537,7 @@ namespace SplitTools.Split
                             if (data.Filename != null && ptr != 0)
                             {
                                 ptr -= imageBase;
-                                NJS_TEXLIST texarr = new NJS_TEXLIST(datafile, (int)ptr, imageBase);
+                                NJS_TEXLIST texarr = new NJS_TEXLIST(datafile, (int)ptr, imageBase, labels, offset);
                                 string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".satex");
                                 if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
                                 {
@@ -1404,7 +1404,7 @@ namespace SplitTools.Split
 				datafile.CopyTo(datafile_new, offset);
 				datafile = datafile_new;
 			}
-			SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, datafile, imageBase_new, new Dictionary<int, string>(), gameBase, null, nometa, nolabel);
+			SplitSingle(itemname == "" ? itemType + "_" + address.ToString("X8") : itemname, info, outputFilename, datafile, imageBase_new, new Dictionary<int, string>(), gameBase, null, nometa, nolabel, offset: (uint)offset);
         }
     }
 
