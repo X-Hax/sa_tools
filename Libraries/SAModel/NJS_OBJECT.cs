@@ -546,7 +546,7 @@ namespace SAModel
 			return result.ToString();
 		}
 
-		public void ToNJA(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null)
 		{
 			for (int i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
@@ -555,14 +555,14 @@ namespace SAModel
 				if (!labels.Contains(Children[i].Name))
 				{
 					labels.Add(Children[i].Name);
-					Children[i].ToNJA(writer, DX, labels, textures);
+					Children[i].ToNJA(writer, labels, textures);
 					writer.WriteLine();
 				}
 			}
 			if (Parent == null && Sibling != null && !labels.Contains(Sibling.Name))
 			{
 				labels.Add(Sibling.Name);
-				Sibling.ToNJA(writer, DX, labels, textures);
+				Sibling.ToNJA(writer, labels, textures);
 				writer.WriteLine();
 			}
 			writer.WriteLine("OBJECT_START" + Environment.NewLine);

@@ -179,13 +179,13 @@ namespace SAModel.SAEditorCommon
 						{
 							while (File.Exists(destination))
 							{
-								destination = destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
+								destination = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileNameWithoutExtension(destination) + "_" + outext);
 							}
 						}
 						using (StreamWriter sw2 = File.CreateText(destination))
 						{
 							List<string> labels_nj = new List<string>() { model.Name };
-							model.ToNJA(sw2, basicDX, labels_nj, null);
+							model.ToNJA(sw2, labels_nj, null);
 							sw2.Flush();
 							sw2.Close();
 						}
