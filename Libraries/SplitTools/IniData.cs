@@ -775,6 +775,7 @@ namespace SplitTools
 		public NJS_TEXLIST(string[] textureNamelist)
 		{
 			TextureNames = textureNamelist;
+			NumTextures = (uint)textureNamelist.Length;
 		}
 
 		public static NJS_TEXLIST Load(string textFile)
