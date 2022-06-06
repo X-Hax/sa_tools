@@ -392,6 +392,8 @@ namespace SAModel.DataToolbox
 				{
 					case ".saanim":
 						outext = ".nam";
+						if (FileName.Contains(".nas") || FileName.Contains(".NAS"))
+							outext = ".nas";
 						break;
 					case ".satex":
 						outext = ".tls";
