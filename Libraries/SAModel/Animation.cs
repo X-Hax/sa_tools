@@ -98,7 +98,7 @@ namespace SAModel
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
 
-		const bool optimizeMotions = true; // Set to false to preserve duplicate data
+		const bool optimizeMotions = false; // Set to false to preserve duplicate data
 
 		public NJS_MOTION()
 		{
@@ -2658,7 +2658,21 @@ namespace SAModel
 				writer.WriteLine("MdataArray     {0}, ", MdataName);
 				writer.WriteLine("MFrameNum      {0},", Frames);
 				writer.WriteLine("MotionBit      0x{0},", ((int)flags).ToString("X"));
-				writer.WriteLine("InterpolFct    0x{0},", ((int)InterpolationMode).ToString("X"));
+				int interpol = numpairs > 0 ? numpairs : 2;
+				switch (InterpolationMode)
+				{
+					case InterpolationMode.Spline:
+						interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE);
+						break;
+					case InterpolationMode.User:
+						interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER);
+						break;
+					// Technically does nothing because it's 0000
+					//case InterpolationMode.Linear:
+						//interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER);
+						//break;
+				}
+				writer.WriteLine("InterpolFct    0x{0},", ((int)interpol).ToString("X"));
 				writer.WriteLine("END");
 				writer.WriteLine();
 			}
