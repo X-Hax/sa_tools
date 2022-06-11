@@ -76,6 +76,8 @@
             this.toolStripMenuItemEditVcolorName = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemEditPolynormalName = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBoxNode = new System.Windows.Forms.ComboBox();
+            this.toolStripMenuItemEditMaterialID = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.statusStrip1.SuspendLayout();
             this.groupBoxLabels.SuspendLayout();
             this.groupBoxBounds.SuspendLayout();
@@ -463,18 +465,20 @@
             this.buttonClose.TabIndex = 17;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
-			this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
-			// 
-			// contextMenuStripLabels
-			// 
-			this.contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            // 
+            // contextMenuStripLabels
+            // 
+            this.contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemEditMaterialID,
+            this.toolStripSeparator1,
             this.toolStripMenuItemEditPolyName,
             this.toolStripMenuItemEditUVName,
             this.toolStripMenuItemEditVcolorName,
             this.toolStripMenuItemEditPolynormalName});
             this.contextMenuStripLabels.Name = "contextMenuStripLabels";
-            this.contextMenuStripLabels.Size = new System.Drawing.Size(203, 92);
+            this.contextMenuStripLabels.Size = new System.Drawing.Size(203, 142);
             // 
             // toolStripMenuItemEditPolyName
             // 
@@ -513,6 +517,18 @@
             this.comboBoxNode.Size = new System.Drawing.Size(355, 23);
             this.comboBoxNode.TabIndex = 0;
             this.comboBoxNode.SelectedIndexChanged += new System.EventHandler(this.comboBoxNode_SelectedIndexChanged);
+            // 
+            // toolStripMenuItemEditMaterialID
+            // 
+            this.toolStripMenuItemEditMaterialID.Name = "toolStripMenuItemEditMaterialID";
+            this.toolStripMenuItemEditMaterialID.Size = new System.Drawing.Size(202, 22);
+            this.toolStripMenuItemEditMaterialID.Text = "Edit Material ID...";
+            this.toolStripMenuItemEditMaterialID.Click += new System.EventHandler(this.toolStripMenuItemEditMaterialID_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(199, 6);
             // 
             // ModelDataEditor
             // 
@@ -594,5 +610,7 @@
 		private System.Windows.Forms.TextBox textBoxObjectName;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.ComboBox comboBoxNode;
+		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditMaterialID;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 	}
 }

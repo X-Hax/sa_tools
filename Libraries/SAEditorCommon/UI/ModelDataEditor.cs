@@ -28,14 +28,31 @@ namespace SAModel.SAEditorCommon.UI
 			freeze = false;
 		}
 
-		#region Meshset label editing
+		#region Meshset label and material ID editing
+
+		private void toolStripMenuItemEditMaterialID_Click(object sender, EventArgs e)
+		{
+			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
+			using (LabelEditor le = new LabelEditor(selectedMesh.MaterialID.ToString(), "", true))
+			{
+				if (le.ShowDialog(this) == DialogResult.OK)
+				{
+					int.TryParse(le.Result, out int result);
+					selectedMesh.MaterialID = (ushort)result;
+				}
+
+			}
+			FixLabels();
+			BuildMeshsetList();
+		}
+
 		private void toolStripMenuItemEditPolyName_Click(object sender, System.EventArgs e)
 		{
 			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
 			using (LabelEditor le = new LabelEditor(selectedMesh.PolyName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.PolyName = le.result;
+					selectedMesh.PolyName = le.Result;
 			}
 			FixLabels();
 			BuildMeshsetList();
@@ -47,7 +64,7 @@ namespace SAModel.SAEditorCommon.UI
 			using (LabelEditor le = new LabelEditor(selectedMesh.UVName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.UVName = le.result;
+					selectedMesh.UVName = le.Result;
 			}
 			FixLabels();
 			BuildMeshsetList();
@@ -59,7 +76,7 @@ namespace SAModel.SAEditorCommon.UI
 			using (LabelEditor le = new LabelEditor(selectedMesh.VColorName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.VColorName = le.result;
+					selectedMesh.VColorName = le.Result;
 			}
 			FixLabels();
 			BuildMeshsetList();
@@ -71,7 +88,7 @@ namespace SAModel.SAEditorCommon.UI
 			using (LabelEditor le = new LabelEditor(selectedMesh.PolyNormalName))
 			{
 				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.PolyNormalName = le.result;
+					selectedMesh.PolyNormalName = le.Result;
 			}
 			FixLabels();
 			BuildMeshsetList();
