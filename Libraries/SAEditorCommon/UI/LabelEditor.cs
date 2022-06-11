@@ -13,7 +13,8 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			IsNumeric = numeric;
 			InitializeComponent();
-			Text = !string.IsNullOrEmpty(headerText) ? headerText : (numeric ? "Edit Value: " : "Edit Label: " + originalValue);
+			Text = !string.IsNullOrEmpty(headerText) ? headerText : ((numeric ? "Edit Value: " : "Edit Label: ") + originalValue);
+			label1.Text = "Enter a new " + (numeric ? "value:" : "label:");
 			textBox1.Text = originalValue;
 			OriginalValue = originalValue;
 			textBox1.SelectAll();
