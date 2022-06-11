@@ -135,7 +135,7 @@
             this.flagsGroupBox.Name = "flagsGroupBox";
             this.flagsGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.flagsGroupBox.Size = new System.Drawing.Size(279, 210);
-            this.flagsGroupBox.TabIndex = 4;
+            this.flagsGroupBox.TabIndex = 8;
             this.flagsGroupBox.TabStop = false;
             this.flagsGroupBox.Text = "Flags";
             // 
@@ -394,7 +394,7 @@
             this.generalSettingBox.Name = "generalSettingBox";
             this.generalSettingBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.generalSettingBox.Size = new System.Drawing.Size(337, 257);
-            this.generalSettingBox.TabIndex = 3;
+            this.generalSettingBox.TabIndex = 7;
             this.generalSettingBox.TabStop = false;
             this.generalSettingBox.Text = "General";
             // 
@@ -409,7 +409,7 @@
             0});
             this.alphaSpecularNumeric.Name = "alphaSpecularNumeric";
             this.alphaSpecularNumeric.Size = new System.Drawing.Size(63, 23);
-            this.alphaSpecularNumeric.TabIndex = 16;
+            this.alphaSpecularNumeric.TabIndex = 4;
             this.alphaSpecularNumeric.ValueChanged += new System.EventHandler(this.alphaSpecularNumeric_ValueChanged);
             // 
             // label3
@@ -443,7 +443,7 @@
             0});
             this.alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
             this.alphaDiffuseNumeric.Size = new System.Drawing.Size(63, 23);
-            this.alphaDiffuseNumeric.TabIndex = 3;
+            this.alphaDiffuseNumeric.TabIndex = 2;
             this.alphaDiffuseNumeric.ValueChanged += new System.EventHandler(this.alphaDiffuseNumeric_ValueChanged);
             this.alphaDiffuseNumeric.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             // 
@@ -464,7 +464,7 @@
             this.dstAlphaCombo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.dstAlphaCombo.Name = "dstAlphaCombo";
             this.dstAlphaCombo.Size = new System.Drawing.Size(164, 23);
-            this.dstAlphaCombo.TabIndex = 14;
+            this.dstAlphaCombo.TabIndex = 8;
             this.dstAlphaCombo.SelectedIndexChanged += new System.EventHandler(this.dstAlphaCombo_SelectedIndexChanged);
             this.dstAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             // 
@@ -475,7 +475,8 @@
             this.specColorBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.specColorBox.Name = "specColorBox";
             this.specColorBox.Size = new System.Drawing.Size(43, 22);
-            this.specColorBox.TabIndex = 5;
+            this.specColorBox.TabIndex = 3;
+            this.specColorBox.TabStop = true;
             this.toolTip.SetToolTip(this.specColorBox, "Specular reflection is the mirror-like reflection of light from a surface. This s" +
         "pecular color will tint the apparent highlights on the model.");
             this.specColorBox.Click += new System.EventHandler(this.specColorBox_Click);
@@ -488,6 +489,7 @@
             this.diffuseColorBox.Name = "diffuseColorBox";
             this.diffuseColorBox.Size = new System.Drawing.Size(43, 22);
             this.diffuseColorBox.TabIndex = 1;
+            this.diffuseColorBox.TabStop = true;
             this.toolTip.SetToolTip(this.diffuseColorBox, "Diffuse lighting is scattered as opposed to direct. Specifically, this \'diffuse c" +
         "olor\' will act as a tint to the model.");
             this.diffuseColorBox.Click += new System.EventHandler(this.diffuseColorBox_Click);
@@ -508,7 +510,7 @@
             this.exponentTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.exponentTextBox.Name = "exponentTextBox";
             this.exponentTextBox.Size = new System.Drawing.Size(42, 23);
-            this.exponentTextBox.TabIndex = 7;
+            this.exponentTextBox.TabIndex = 5;
             this.exponentTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             this.exponentTextBox.Leave += new System.EventHandler(this.exponentTextBox_Leave);
             // 
@@ -529,7 +531,7 @@
             this.srcAlphaCombo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.srcAlphaCombo.Name = "srcAlphaCombo";
             this.srcAlphaCombo.Size = new System.Drawing.Size(164, 23);
-            this.srcAlphaCombo.TabIndex = 12;
+            this.srcAlphaCombo.TabIndex = 7;
             this.srcAlphaCombo.SelectionChangeCommitted += new System.EventHandler(this.srcAlphaCombo_SelectionChangeCommitted);
             this.srcAlphaCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             // 
@@ -579,7 +581,7 @@
             this.filterModeDropDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.filterModeDropDown.Name = "filterModeDropDown";
             this.filterModeDropDown.Size = new System.Drawing.Size(164, 23);
-            this.filterModeDropDown.TabIndex = 10;
+            this.filterModeDropDown.TabIndex = 6;
             this.filterModeDropDown.SelectionChangeCommitted += new System.EventHandler(this.filterModeDropDown_SelectionChangeCommitted);
             this.filterModeDropDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
             // 
@@ -638,7 +640,7 @@
             this.upButton.Location = new System.Drawing.Point(358, 14);
             this.upButton.Name = "upButton";
             this.upButton.Size = new System.Drawing.Size(23, 23);
-            this.upButton.TabIndex = 5;
+            this.upButton.TabIndex = 2;
             this.upButton.Text = "↑";
             this.toolTip.SetToolTip(this.upButton, "Move the material up on the material list.");
             this.upButton.UseVisualStyleBackColor = true;
@@ -649,7 +651,7 @@
             this.downButton.Location = new System.Drawing.Point(387, 14);
             this.downButton.Name = "downButton";
             this.downButton.Size = new System.Drawing.Size(23, 23);
-            this.downButton.TabIndex = 6;
+            this.downButton.TabIndex = 3;
             this.downButton.Text = "↓";
             this.toolTip.SetToolTip(this.downButton, "Move the material down on the material list.");
             this.downButton.UseVisualStyleBackColor = true;
@@ -660,7 +662,7 @@
             this.cloneButton.Location = new System.Drawing.Point(416, 14);
             this.cloneButton.Name = "cloneButton";
             this.cloneButton.Size = new System.Drawing.Size(57, 23);
-            this.cloneButton.TabIndex = 7;
+            this.cloneButton.TabIndex = 4;
             this.cloneButton.Text = "Clone";
             this.toolTip.SetToolTip(this.cloneButton, "Create an identical copy of the material.");
             this.cloneButton.UseVisualStyleBackColor = true;
@@ -672,7 +674,7 @@
             this.deleteButton.Location = new System.Drawing.Point(479, 14);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(57, 23);
-            this.deleteButton.TabIndex = 8;
+            this.deleteButton.TabIndex = 5;
             this.deleteButton.Text = "Delete";
             this.toolTip.SetToolTip(this.deleteButton, "Delete the material.");
             this.deleteButton.UseVisualStyleBackColor = true;
@@ -683,7 +685,7 @@
             this.resetButton.Location = new System.Drawing.Point(542, 14);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(57, 23);
-            this.resetButton.TabIndex = 9;
+            this.resetButton.TabIndex = 6;
             this.resetButton.Text = "Reset";
             this.toolTip.SetToolTip(this.resetButton, "Reset the material list to the state it was when this dialog opened.");
             this.resetButton.UseVisualStyleBackColor = true;
