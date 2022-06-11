@@ -70,6 +70,11 @@
             this.diffuseLabel = new System.Windows.Forms.Label();
             this.doneButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.upButton = new System.Windows.Forms.Button();
+            this.downButton = new System.Windows.Forms.Button();
+            this.cloneButton = new System.Windows.Forms.Button();
+            this.deleteButton = new System.Windows.Forms.Button();
+            this.resetButton = new System.Windows.Forms.Button();
             this.flagsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).BeginInit();
             this.generalSettingBox.SuspendLayout();
@@ -85,7 +90,7 @@
             this.comboMaterial.Location = new System.Drawing.Point(119, 14);
             this.comboMaterial.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboMaterial.Name = "comboMaterial";
-            this.comboMaterial.Size = new System.Drawing.Size(191, 23);
+            this.comboMaterial.Size = new System.Drawing.Size(232, 23);
             this.comboMaterial.TabIndex = 1;
             this.comboMaterial.SelectedIndexChanged += new System.EventHandler(this.comboMaterial_SelectedIndexChanged);
             this.comboMaterial.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -189,7 +194,7 @@
             this.ignoreLightCheck.Size = new System.Drawing.Size(107, 19);
             this.ignoreLightCheck.TabIndex = 12;
             this.ignoreLightCheck.Text = "Ignore Lighting";
-            this.toolTip.SetToolTip(this.ignoreLightCheck, "If checked, the model will not have any lighting applied.");
+            this.toolTip.SetToolTip(this.ignoreLightCheck, "If checked, the mesh will not have any lighting applied.");
             this.ignoreLightCheck.UseVisualStyleBackColor = true;
             this.ignoreLightCheck.Click += new System.EventHandler(this.ignoreLightCheck_Click);
             this.ignoreLightCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -204,7 +209,7 @@
             this.flatShadeCheck.TabIndex = 11;
             this.flatShadeCheck.Text = "Flat Shaded";
             this.toolTip.SetToolTip(this.flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted," +
-        " like a cut gem or die.");
+        " like a cut gem or die. This flag does nothing in SADX.");
             this.flatShadeCheck.UseVisualStyleBackColor = true;
             this.flatShadeCheck.Click += new System.EventHandler(this.flatShadeCheck_Click);
             this.flatShadeCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -277,7 +282,8 @@
             this.ignoreSpecCheck.Size = new System.Drawing.Size(108, 19);
             this.ignoreSpecCheck.TabIndex = 6;
             this.ignoreSpecCheck.Text = "Ignore Specular";
-            this.toolTip.SetToolTip(this.ignoreSpecCheck, "If checked, no specular (commonly mis-identified as \"gloss\") will be present.");
+            this.toolTip.SetToolTip(this.ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX. In SA" +
+        "1 DC it is used for specular palette selection.");
             this.ignoreSpecCheck.UseVisualStyleBackColor = true;
             this.ignoreSpecCheck.Click += new System.EventHandler(this.ignoreSpecCheck_Click);
             this.ignoreSpecCheck.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -549,12 +555,13 @@
             // 
             // textureBox
             // 
+            this.textureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.textureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textureBox.Location = new System.Drawing.Point(9, 111);
+            this.textureBox.Location = new System.Drawing.Point(14, 110);
             this.textureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textureBox.Name = "textureBox";
-            this.textureBox.Size = new System.Drawing.Size(135, 130);
-            this.textureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.textureBox.Size = new System.Drawing.Size(136, 136);
+            this.textureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.textureBox.TabIndex = 4;
             this.textureBox.TabStop = false;
             this.textureBox.Click += new System.EventHandler(this.textureBox_Click);
@@ -625,6 +632,63 @@
             this.toolTip.InitialDelay = 500;
             this.toolTip.ReshowDelay = 100;
             // 
+            // upButton
+            // 
+            this.upButton.Enabled = false;
+            this.upButton.Location = new System.Drawing.Point(358, 14);
+            this.upButton.Name = "upButton";
+            this.upButton.Size = new System.Drawing.Size(23, 23);
+            this.upButton.TabIndex = 5;
+            this.upButton.Text = "↑";
+            this.toolTip.SetToolTip(this.upButton, "Move the material up on the material list.");
+            this.upButton.UseVisualStyleBackColor = true;
+            this.upButton.Click += new System.EventHandler(this.upButton_Click);
+            // 
+            // downButton
+            // 
+            this.downButton.Location = new System.Drawing.Point(387, 14);
+            this.downButton.Name = "downButton";
+            this.downButton.Size = new System.Drawing.Size(23, 23);
+            this.downButton.TabIndex = 6;
+            this.downButton.Text = "↓";
+            this.toolTip.SetToolTip(this.downButton, "Move the material down on the material list.");
+            this.downButton.UseVisualStyleBackColor = true;
+            this.downButton.Click += new System.EventHandler(this.downButton_Click);
+            // 
+            // cloneButton
+            // 
+            this.cloneButton.Location = new System.Drawing.Point(416, 14);
+            this.cloneButton.Name = "cloneButton";
+            this.cloneButton.Size = new System.Drawing.Size(57, 23);
+            this.cloneButton.TabIndex = 7;
+            this.cloneButton.Text = "Clone";
+            this.toolTip.SetToolTip(this.cloneButton, "Create an identical copy of the material.");
+            this.cloneButton.UseVisualStyleBackColor = true;
+            this.cloneButton.Click += new System.EventHandler(this.cloneButton_Click);
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.Enabled = false;
+            this.deleteButton.Location = new System.Drawing.Point(479, 14);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(57, 23);
+            this.deleteButton.TabIndex = 8;
+            this.deleteButton.Text = "Delete";
+            this.toolTip.SetToolTip(this.deleteButton, "Delete the material.");
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            // 
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(542, 14);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(57, 23);
+            this.resetButton.TabIndex = 9;
+            this.resetButton.Text = "Reset";
+            this.toolTip.SetToolTip(this.resetButton, "Reset the material list to the state it was when this dialog opened.");
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
             // MaterialEditor
             // 
             this.AcceptButton = this.doneButton;
@@ -633,6 +697,11 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(648, 310);
             this.ControlBox = false;
+            this.Controls.Add(this.resetButton);
+            this.Controls.Add(this.deleteButton);
+            this.Controls.Add(this.cloneButton);
+            this.Controls.Add(this.downButton);
+            this.Controls.Add(this.upButton);
             this.Controls.Add(this.doneButton);
             this.Controls.Add(this.generalSettingBox);
             this.Controls.Add(this.flagsGroupBox);
@@ -706,5 +775,10 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.NumericUpDown alphaSpecularNumeric;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Button upButton;
+		private System.Windows.Forms.Button downButton;
+		private System.Windows.Forms.Button cloneButton;
+		private System.Windows.Forms.Button deleteButton;
+		private System.Windows.Forms.Button resetButton;
 	}
 }
