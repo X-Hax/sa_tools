@@ -80,6 +80,16 @@ namespace SAModel.SAEditorCommon.UI
 
 		#region Mesh management
 
+		private int CheckInvalidMaterials(NJS_MESHSET meshset, BasicAttach att)
+		{
+			if (meshset.MaterialID > att.Material.Count - 1)
+			{
+				meshset.MaterialID = (ushort)(att.Material.Count - 1);
+				return 1;
+			}
+			return 0;
+		}
+
 		private bool CheckAlpha(NJS_MESHSET meshset, BasicAttach att)
 		{
 			if (att.Material[meshset.MaterialID] != null)
@@ -341,18 +351,26 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			listViewMeshes.Items.Clear();
 			groupBoxMeshList.Enabled = editedModel != null && editedModel is BasicAttach;
+			int invalidMaterials = 0;
 			if (editedModel is BasicAttach batt)
-			foreach (NJS_MESHSET meshset in batt.Mesh)
 			{
-				ListViewItem newmesh = new ListViewItem(batt.Mesh.IndexOf(meshset).ToString());
-				newmesh.SubItems.Add(meshset.MaterialID.ToString());
-				newmesh.SubItems.Add(meshset.PolyType.ToString());
-				newmesh.SubItems.Add(meshset.Poly != null ? meshset.PolyName : "N/A");
-				newmesh.SubItems.Add(meshset.UV != null ? meshset.UVName : "N/A");
-				newmesh.SubItems.Add(meshset.VColor != null ? meshset.VColorName : "N/A");
-				newmesh.SubItems.Add(meshset.PolyNormal != null ? meshset.PolyNormalName : "N/A");
-				newmesh.SubItems.Add(CheckAlpha(meshset, batt) ? "Yes" : "No");
-				listViewMeshes.Items.Add(newmesh);
+				foreach (NJS_MESHSET meshset in batt.Mesh)
+				{
+					invalidMaterials += CheckInvalidMaterials(meshset, batt);
+					ListViewItem newmesh = new ListViewItem(batt.Mesh.IndexOf(meshset).ToString());
+					newmesh.SubItems.Add(meshset.MaterialID.ToString());
+					newmesh.SubItems.Add(meshset.PolyType.ToString());
+					newmesh.SubItems.Add(meshset.Poly != null ? meshset.PolyName : "N/A");
+					newmesh.SubItems.Add(meshset.UV != null ? meshset.UVName : "N/A");
+					newmesh.SubItems.Add(meshset.VColor != null ? meshset.VColorName : "N/A");
+					newmesh.SubItems.Add(meshset.PolyNormal != null ? meshset.PolyNormalName : "N/A");
+					newmesh.SubItems.Add(CheckAlpha(meshset, batt) ? "Yes" : "No");
+					listViewMeshes.Items.Add(newmesh);
+				}
+				if (invalidMaterials > 0)
+					MessageBox.Show(this, invalidMaterials.ToString() + " materials were using invalid material IDs. " +
+						"Those material IDs have been reset to the value " + 
+						(batt.Material.Count - 1).ToString() + ".", "Model Data Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			listViewMeshes.SelectedIndices.Clear();
 			listViewMeshes.SelectedItems.Clear();
