@@ -519,6 +519,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 		// Form property update event method
 		void pw_FormUpdated(object sender, EventArgs e)
 		{
+			COL.Model.ProcessVertexData();
+			mesh = COL.Model.Attach.CreateD3DMesh();
 			LevelData.InvalidateRenderState();
 		}
 

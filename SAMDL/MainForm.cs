@@ -1995,6 +1995,12 @@ namespace SAModel.SAMDL
 			}
 		}
 
+		private void UpdateMaterials()
+		{
+			RebuildModelCache();
+			NeedRedraw = true;
+		}
+
 		private void OpenMaterialEditor()
 		{
 			List<NJS_MATERIAL> mats;
@@ -2011,7 +2017,7 @@ namespace SAModel.SAMDL
 			}
 			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
 			{
-				dlg.FormUpdated += (s, ev) => NeedRedraw = true;
+				dlg.FormUpdated += (s, ev) => UpdateMaterials();
 				dlg.ShowDialog(this);
 			}
 			switch (selectedObject.Attach)
