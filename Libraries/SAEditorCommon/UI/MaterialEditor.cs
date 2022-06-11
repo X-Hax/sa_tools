@@ -96,6 +96,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void RaiseFormUpdated()
 		{
+			comboMaterial.Items[comboMaterial.SelectedIndex] = (comboMaterial.SelectedIndex + ": " + GetMaterialDescription(materials[comboMaterial.SelectedIndex]));
 			FormUpdated?.Invoke(this, EventArgs.Empty);
 			DisplayFlags(comboMaterial.SelectedIndex);
 		}
@@ -127,11 +128,31 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
+		private string GetMaterialDescription(NJS_MATERIAL material)
+		{
+			List<string> matdescs = new List<string>();
+			System.Text.StringBuilder sb = new ();
+			matdescs.Add(material.UseTexture ? "Tex " + material.TextureID : "No Tex");
+			if (material.UseAlpha)
+			{
+				if (material.DestinationAlpha == AlphaInstruction.One || material.SourceAlpha == AlphaInstruction.One)
+					matdescs.Add("Alpha ONE");
+				else
+					matdescs.Add("Alpha " + material.DiffuseColor.A);
+			}
+			if (material.IgnoreLighting)
+				matdescs.Add("IgnoreLight");
+			if (material.EnvironmentMap)
+				matdescs.Add("EnvMap");
+			sb.AppendJoin(" / ", matdescs);
+			return sb.ToString();
+		}
+
 		private void UpdateComboBox()
 		{
 			comboMaterial.Items.Clear();
 			for (int i = 0; i < materials.Count; i++)
-				comboMaterial.Items.Add(i + ": " + (materials[i].UseTexture ? "Texture " + materials[i].TextureID : "No Texture") + " / " + (materials[i].UseAlpha ? "Alpha " + materials[i].DiffuseColor.A : "Opaque") + (materials[i].IgnoreLighting ? " / Ignore Light" : ""));
+				comboMaterial.Items.Add(i + ": " + GetMaterialDescription(materials[i]));
 			if (comboMaterial.Items.Count > 0)
 				comboMaterial.SelectedIndex = 0;
 			SetControls(comboMaterial.SelectedIndex);

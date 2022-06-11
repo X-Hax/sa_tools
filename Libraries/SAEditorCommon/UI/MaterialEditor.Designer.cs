@@ -90,7 +90,7 @@
             this.comboMaterial.Location = new System.Drawing.Point(119, 14);
             this.comboMaterial.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboMaterial.Name = "comboMaterial";
-            this.comboMaterial.Size = new System.Drawing.Size(232, 23);
+            this.comboMaterial.Size = new System.Drawing.Size(271, 23);
             this.comboMaterial.TabIndex = 1;
             this.comboMaterial.SelectedIndexChanged += new System.EventHandler(this.comboMaterial_SelectedIndexChanged);
             this.comboMaterial.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -637,7 +637,7 @@
             // upButton
             // 
             this.upButton.Enabled = false;
-            this.upButton.Location = new System.Drawing.Point(358, 14);
+            this.upButton.Location = new System.Drawing.Point(397, 14);
             this.upButton.Name = "upButton";
             this.upButton.Size = new System.Drawing.Size(23, 23);
             this.upButton.TabIndex = 2;
@@ -648,7 +648,7 @@
             // 
             // downButton
             // 
-            this.downButton.Location = new System.Drawing.Point(387, 14);
+            this.downButton.Location = new System.Drawing.Point(426, 14);
             this.downButton.Name = "downButton";
             this.downButton.Size = new System.Drawing.Size(23, 23);
             this.downButton.TabIndex = 3;
@@ -659,7 +659,7 @@
             // 
             // cloneButton
             // 
-            this.cloneButton.Location = new System.Drawing.Point(416, 14);
+            this.cloneButton.Location = new System.Drawing.Point(455, 14);
             this.cloneButton.Name = "cloneButton";
             this.cloneButton.Size = new System.Drawing.Size(57, 23);
             this.cloneButton.TabIndex = 4;
@@ -671,7 +671,7 @@
             // deleteButton
             // 
             this.deleteButton.Enabled = false;
-            this.deleteButton.Location = new System.Drawing.Point(479, 14);
+            this.deleteButton.Location = new System.Drawing.Point(518, 14);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(57, 23);
             this.deleteButton.TabIndex = 5;
@@ -682,7 +682,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(542, 14);
+            this.resetButton.Location = new System.Drawing.Point(581, 14);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(57, 23);
             this.resetButton.TabIndex = 6;
