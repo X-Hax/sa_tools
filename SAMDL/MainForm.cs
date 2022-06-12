@@ -1675,8 +1675,6 @@ namespace SAModel.SAMDL
 			if (!loaded) return;
 			mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 			EditorCamera.CameraUpdateFlags camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, alternativeCameraModeToolStripMenuItem.Checked);
-			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedObject != null && propertyGrid1.ActiveControl == null) 
-				propertyGrid1.Refresh();
 			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
 				NeedRedraw = true;
 		}

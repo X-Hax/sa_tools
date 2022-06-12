@@ -519,6 +519,7 @@ namespace SAModel.SALVL
                     {
                         unsaved = true;
                         if (transformGizmo.SelectedAxes != GizmoSelectedAxes.NONE) gizmo = true;
+						NeedPropertyRefresh = true;
                     }
                     foreach (PointHelper pointHelper in PointHelper.Instances)
                     {
@@ -562,8 +563,6 @@ namespace SAModel.SALVL
             mouseBounds = (wrapAroundScreenEdgesToolStripMenuItem.Checked) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
             EditorCamera.CameraUpdateFlags camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown, hideCursorDuringCameraMovementToolStripMenuItem.Checked, gizmo);
 
-            if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedItems != null && selectedItems.ItemCount > 0 && propertyGrid1.ActiveControl == null)
-				NeedPropertyRefresh = true;
 			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw) || draw)
 				NeedRedraw = true;
 		}

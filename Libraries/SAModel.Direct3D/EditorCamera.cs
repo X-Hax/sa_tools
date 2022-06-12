@@ -47,8 +47,7 @@ namespace SAModel.Direct3D
 		public enum CameraUpdateFlags
 		{
 			None,
-			Redraw,
-			RefreshControls
+			Redraw
 		}
 
 		public EditorCamera(float drawDistance)
@@ -389,7 +388,6 @@ namespace SAModel.Direct3D
 			if (performedWrap || Math.Abs(mouseDelta.X / 2) * moveSpeedAdjusted > 0 || Math.Abs(mouseDelta.Y / 2) * moveSpeedAdjusted > 0)
 			{
 				mouseLast = mouseEvent;
-				result |= CameraUpdateFlags.RefreshControls;
 				if (lookKeyDown || zoomKeyDown || moveKeyDown)
 					result |= CameraUpdateFlags.Redraw;
 			}

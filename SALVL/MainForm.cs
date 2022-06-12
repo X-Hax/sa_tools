@@ -856,7 +856,6 @@ namespace SAModel.SALVL
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			LevelData.InvalidateRenderState();
-			NeedPropertyRefresh = true;
 			SetGizmoPivotAndLocality(true);
 			unsaved = true;
 		}
@@ -877,7 +876,8 @@ namespace SAModel.SALVL
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo == null) transformGizmo = new TransformGizmo();
+			if (transformGizmo == null) 
+				transformGizmo = new TransformGizmo();
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			SetGizmoPivotAndLocality(true);
 			NeedRedraw = NeedPropertyRefresh = true;

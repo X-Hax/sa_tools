@@ -555,8 +555,6 @@ namespace SA2EventViewer
 				System.Drawing.Rectangle mouseBounds = (mouseWrapScreen) ? Screen.GetBounds(ClientRectangle) : RenderPanel.RectangleToScreen(RenderPanel.Bounds);
 				camresult = cam.UpdateCamera(new Point(Cursor.Position.X, Cursor.Position.Y), mouseBounds, lookKeyDown, zoomKeyDown, cameraKeyDown);
 			}
-			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.RefreshControls) && selectedObject != null)
-				propertyGrid1.Refresh();
 			if (camresult.HasFlag(EditorCamera.CameraUpdateFlags.Redraw))
 				NeedRedraw = true;
 		}
