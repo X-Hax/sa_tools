@@ -42,13 +42,30 @@ namespace SAModel.SAEditorCommon.UI
 		private Image DrawPreviewImage(Image image)
 		{
 			Bitmap bmp = new Bitmap(textureBox.Size.Width, textureBox.Size.Height);
+			float scale = (float)image.Width / (float)image.Height;
+			int xpos = 0;
+			int ypos = 0;
+			int width = textureBox.Size.Width;
+			int height = textureBox.Size.Width;
+			if (scale > 1.0f)
+			{
+				width = textureBox.Size.Width;
+				height = (int)(textureBox.Size.Height / scale);
+				ypos = (textureBox.Size.Height - height) / 2;
+			}
+			else if (scale < 1.0f)
+			{
+				width = (int)(textureBox.Size.Width * scale);
+				height = textureBox.Size.Height;
+				xpos = (textureBox.Size.Width - width) / 2;
+			}
 			using (Graphics gfx = Graphics.FromImage(bmp))
 			{
 				gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
 				gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 				gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
 				gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-				gfx.DrawImage(image, 0, 0, textureBox.Width, textureBox.Height);
+				gfx.DrawImage(image, xpos, ypos, width, height);
 			}
 			return bmp;
 		}
@@ -155,7 +172,6 @@ namespace SAModel.SAEditorCommon.UI
 				comboMaterial.Items.Add(i + ": " + GetMaterialDescription(materials[i]));
 			if (comboMaterial.Items.Count > 0)
 				comboMaterial.SelectedIndex = 0;
-			SetControls(comboMaterial.SelectedIndex);
 		}
 		#endregion
 
