@@ -141,6 +141,8 @@ namespace buildSATools
 					{
 						switch (exefile.Name.ToLowerInvariant())
 						{
+							case "7z.exe":
+								break;
 							case "buildsatools.exe":
 								break;
 							case "satoolshub.exe":
