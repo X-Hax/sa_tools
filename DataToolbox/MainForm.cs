@@ -16,6 +16,9 @@ namespace SAModel.DataToolbox
         public MainForm()
 		{
 			InitializeComponent();
+			numericUpDownBinaryKey.ValueChanged += NumericUpDownBinaryKey_ValueChanged;
+			numericUpDownBinaryAddress.ValueChanged += NumericUpDownBinaryAddress_ValueChanged;
+			numericUpDownBinaryOffset.ValueChanged += NumericUpDownBinaryOffset_ValueChanged;
 		}
 
         string[] SortTemplateList(string[] originalList)
