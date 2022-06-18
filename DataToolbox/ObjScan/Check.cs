@@ -2,7 +2,7 @@
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
+	public static partial class ObjScan
 	{
 		static bool CheckForModelData(NJS_OBJECT obj)
 		{

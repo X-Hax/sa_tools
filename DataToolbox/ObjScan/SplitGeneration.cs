@@ -3,8 +3,8 @@ using System.IO;
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
-{
+	public static partial class ObjScan
+	{
 		static void CreateSplitIni(string filename)
 		{
 			if (addresslist.Count == 0)

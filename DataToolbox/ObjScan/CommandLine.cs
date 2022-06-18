@@ -6,14 +6,18 @@ using System.IO;
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
+	public static partial class ObjScan
 	{
 		public static void ProcessCommandLine(string[] args)
 		{
 			Game game = Game.SADX;
-			ModelFormat modelfmt = ModelFormat.BasicDX;
 			ConsoleMode = true;
 			string type;
+			if (args.Length == 0)
+			{
+				PrintHelp();
+				return;
+			}
 			switch (args[0].ToLowerInvariant())
 			{
 				case "-?":
@@ -22,47 +26,38 @@ namespace SAModel.DataToolbox
 					return;
 				case "sa1":
 					game = Game.SA1;
-					modelfmt = ModelFormat.Basic;
 					break;
 				case "sa1_b":
 					BigEndian = true;
 					game = Game.SA1;
-					modelfmt = ModelFormat.Basic;
 					break;
 				case "sadx":
 					game = Game.SADX;
-					modelfmt = ModelFormat.BasicDX;
 					BasicModelsAreDX = true;
 					break;
 				case "sadx_b":
 					BigEndian = true;
 					game = Game.SADX;
-					modelfmt = ModelFormat.BasicDX;
 					BasicModelsAreDX = true;
 					break;
 				case "sadx_g":
 					BigEndian = true;
-					modelfmt = ModelFormat.Basic;
 					ReverseColors = true;
 					game = Game.SA1;
 					break;
 				case "sa2":
 					game = Game.SA2;
-					modelfmt = ModelFormat.Chunk;
 					break;
 				case "sa2_b":
 					BigEndian = true;
 					game = Game.SA2;
-					modelfmt = ModelFormat.Chunk;
 					break;
 				case "sa2b":
 					game = Game.SA2B;
-					modelfmt = ModelFormat.GC;
 					break;
 				case "sa2b_b":
 					BigEndian = true;
 					game = Game.SA2B;
-					modelfmt = ModelFormat.GC;
 					break;
 				default:
 					Console.WriteLine("Error parsing game type.\nCorrect game types are: SA1, SADX, SADX_b, SADX_g, SA2, SA2B, SA2_b, SA2B_b");

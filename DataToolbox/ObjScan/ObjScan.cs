@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
+	public static partial class ObjScan
 	{
 		// Input parameters
 		static public string SourceFilename;

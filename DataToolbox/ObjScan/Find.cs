@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
+	public static partial class ObjScan
 	{
 		static bool CompareModels(NJS_OBJECT model1, NJS_OBJECT model2)
 		{

@@ -6,7 +6,7 @@ using ByteConverter = SAModel.ByteConverter;
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
+	public static partial class ObjScan
 	{
 		// Scan for models
 		static void ScanModel(ModelFormat modelfmt)

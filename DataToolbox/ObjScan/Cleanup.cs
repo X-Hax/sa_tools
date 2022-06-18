@@ -1,11 +1,10 @@
-﻿using SAModel;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 
 namespace SAModel.DataToolbox
 {
-	public partial class ObjScan
+	public static partial class ObjScan
 	{
 		static void DeleteChildModels(NJS_OBJECT mdl, string model_dir, string model_extension)
 		{
