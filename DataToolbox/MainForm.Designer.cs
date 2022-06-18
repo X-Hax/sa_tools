@@ -94,6 +94,48 @@
             this.buttonAnimFilesAdd = new System.Windows.Forms.Button();
             this.animationFilesLabel = new System.Windows.Forms.Label();
             this.listBoxMDLAnimationFiles = new System.Windows.Forms.ListBox();
+            this.tabPageScanner = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.numericUpDownNodes = new System.Windows.Forms.NumericUpDown();
+            this.labelNodes = new System.Windows.Forms.Label();
+            this.buttonFindBrowse = new System.Windows.Forms.Button();
+            this.checkBoxSearchAction = new System.Windows.Forms.CheckBox();
+            this.textBoxFindModel = new System.Windows.Forms.TextBox();
+            this.checkBoxSearchLandtables = new System.Windows.Forms.CheckBox();
+            this.checkBoxSearchBasic = new System.Windows.Forms.CheckBox();
+            this.radioButtonFindModel = new System.Windows.Forms.RadioButton();
+            this.checkBoxSearchMotion = new System.Windows.Forms.CheckBox();
+            this.radioButtonSearchData = new System.Windows.Forms.RadioButton();
+            this.checkBoxSearchChunk = new System.Windows.Forms.CheckBox();
+            this.checkBoxSearchGinja = new System.Windows.Forms.CheckBox();
+            this.buttonScanStart = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.checkBoxKeepLevel = new System.Windows.Forms.CheckBox();
+            this.buttonOutputBrowse = new System.Windows.Forms.Button();
+            this.checkBoxKeepChild = new System.Windows.Forms.CheckBox();
+            this.checkBoxSkipMeta = new System.Windows.Forms.CheckBox();
+            this.checkBoxSingleOutput = new System.Windows.Forms.CheckBox();
+            this.textBoxOutputFolder = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.numericUpDownOffset = new System.Windows.Forms.NumericUpDown();
+            this.buttonInputBrowse = new System.Windows.Forms.Button();
+            this.listBoxBaseGame = new System.Windows.Forms.ListBox();
+            this.numericUpDownScanBinaryKey = new System.Windows.Forms.NumericUpDown();
+            this.label12 = new System.Windows.Forms.Label();
+            this.numericUpDownStartAddr = new System.Windows.Forms.NumericUpDown();
+            this.textBoxInputFile = new System.Windows.Forms.TextBox();
+            this.numericUpDownEndAddr = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxSimpleScan = new System.Windows.Forms.CheckBox();
+            this.checkBoxShortRot = new System.Windows.Forms.CheckBox();
+            this.checkBoxBasicSADX = new System.Windows.Forms.CheckBox();
+            this.checkBoxBigEndian = new System.Windows.Forms.CheckBox();
             this.groupBoxBinary.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBinaryKey)).BeginInit();
@@ -103,15 +145,25 @@
             this.tabPageStructConverter.SuspendLayout();
             this.tabPageSplit.SuspendLayout();
             this.tabPageSplitMDL.SuspendLayout();
+            this.tabPageScanner.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNodes)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownOffset)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScanBinaryKey)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartAddr)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEndAddr)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonBinaryExtract
             // 
             this.buttonBinaryExtract.Enabled = false;
-            this.buttonBinaryExtract.Location = new System.Drawing.Point(412, 412);
-            this.buttonBinaryExtract.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonBinaryExtract.Location = new System.Drawing.Point(589, 687);
+            this.buttonBinaryExtract.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonBinaryExtract.Name = "buttonBinaryExtract";
-            this.buttonBinaryExtract.Size = new System.Drawing.Size(78, 26);
+            this.buttonBinaryExtract.Size = new System.Drawing.Size(111, 43);
             this.buttonBinaryExtract.TabIndex = 18;
             this.buttonBinaryExtract.Text = "&Start";
             this.buttonBinaryExtract.Click += new System.EventHandler(this.button1_Click);
@@ -125,19 +177,19 @@
             "BasicDX (SADX PC)",
             "Chunk (SA2)",
             "GC (SA2B/SA2PC)"});
-            this.comboBoxBinaryFormat.Location = new System.Drawing.Point(75, 155);
-            this.comboBoxBinaryFormat.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBoxBinaryFormat.Location = new System.Drawing.Point(107, 258);
+            this.comboBoxBinaryFormat.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.comboBoxBinaryFormat.Name = "comboBoxBinaryFormat";
-            this.comboBoxBinaryFormat.Size = new System.Drawing.Size(140, 23);
+            this.comboBoxBinaryFormat.Size = new System.Drawing.Size(198, 33);
             this.comboBoxBinaryFormat.TabIndex = 26;
             // 
             // labelFormat
             // 
             this.labelFormat.AutoSize = true;
-            this.labelFormat.Location = new System.Drawing.Point(19, 155);
-            this.labelFormat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelFormat.Location = new System.Drawing.Point(27, 258);
+            this.labelFormat.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelFormat.Name = "labelFormat";
-            this.labelFormat.Size = new System.Drawing.Size(48, 15);
+            this.labelFormat.Size = new System.Drawing.Size(73, 25);
             this.labelFormat.TabIndex = 25;
             this.labelFormat.Text = "Format:";
             // 
@@ -146,10 +198,10 @@
             this.checkBoxBinaryHex.AutoSize = true;
             this.checkBoxBinaryHex.Checked = true;
             this.checkBoxBinaryHex.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBinaryHex.Location = new System.Drawing.Point(206, 58);
-            this.checkBoxBinaryHex.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinaryHex.Location = new System.Drawing.Point(294, 97);
+            this.checkBoxBinaryHex.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinaryHex.Name = "checkBoxBinaryHex";
-            this.checkBoxBinaryHex.Size = new System.Drawing.Size(47, 19);
+            this.checkBoxBinaryHex.Size = new System.Drawing.Size(68, 29);
             this.checkBoxBinaryHex.TabIndex = 23;
             this.checkBoxBinaryHex.Text = "Hex";
             this.checkBoxBinaryHex.UseVisualStyleBackColor = true;
@@ -158,10 +210,10 @@
             // labelAddress
             // 
             this.labelAddress.AutoSize = true;
-            this.labelAddress.Location = new System.Drawing.Point(12, 55);
-            this.labelAddress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelAddress.Location = new System.Drawing.Point(17, 92);
+            this.labelAddress.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelAddress.Name = "labelAddress";
-            this.labelAddress.Size = new System.Drawing.Size(52, 15);
+            this.labelAddress.Size = new System.Drawing.Size(81, 25);
             this.labelAddress.TabIndex = 22;
             this.labelAddress.Text = "Address:";
             // 
@@ -179,48 +231,48 @@
             "SA2 Event File",
             "SA2PC Event File",
             "Model File"});
-            this.ComboBoxBinaryType.Location = new System.Drawing.Point(206, 23);
-            this.ComboBoxBinaryType.Margin = new System.Windows.Forms.Padding(4);
+            this.ComboBoxBinaryType.Location = new System.Drawing.Point(294, 38);
+            this.ComboBoxBinaryType.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.ComboBoxBinaryType.Name = "ComboBoxBinaryType";
-            this.ComboBoxBinaryType.Size = new System.Drawing.Size(143, 23);
+            this.ComboBoxBinaryType.Size = new System.Drawing.Size(203, 33);
             this.ComboBoxBinaryType.TabIndex = 20;
             this.ComboBoxBinaryType.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
             // 
             // labelKey
             // 
             this.labelKey.AutoSize = true;
-            this.labelKey.Location = new System.Drawing.Point(35, 25);
-            this.labelKey.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelKey.Location = new System.Drawing.Point(50, 42);
+            this.labelKey.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelKey.Name = "labelKey";
-            this.labelKey.Size = new System.Drawing.Size(29, 15);
+            this.labelKey.Size = new System.Drawing.Size(44, 25);
             this.labelKey.TabIndex = 19;
             this.labelKey.Text = "Key:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(32, 290);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(46, 483);
+            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(47, 15);
+            this.label4.Size = new System.Drawing.Size(71, 25);
             this.label4.TabIndex = 28;
             this.label4.Text = "Author:";
             // 
             // textBoxBinaryAuthor
             // 
-            this.textBoxBinaryAuthor.Location = new System.Drawing.Point(86, 286);
-            this.textBoxBinaryAuthor.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxBinaryAuthor.Location = new System.Drawing.Point(123, 477);
+            this.textBoxBinaryAuthor.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.textBoxBinaryAuthor.Name = "textBoxBinaryAuthor";
-            this.textBoxBinaryAuthor.Size = new System.Drawing.Size(403, 23);
+            this.textBoxBinaryAuthor.Size = new System.Drawing.Size(574, 31);
             this.textBoxBinaryAuthor.TabIndex = 29;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 321);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(9, 535);
+            this.label5.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(70, 15);
+            this.label5.Size = new System.Drawing.Size(106, 25);
             this.label5.TabIndex = 30;
             this.label5.Text = "Description:";
             // 
@@ -228,20 +280,20 @@
             // 
             this.textBoxBinaryDescription.AcceptsReturn = true;
             this.textBoxBinaryDescription.AcceptsTab = true;
-            this.textBoxBinaryDescription.Location = new System.Drawing.Point(88, 321);
-            this.textBoxBinaryDescription.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxBinaryDescription.Location = new System.Drawing.Point(126, 535);
+            this.textBoxBinaryDescription.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.textBoxBinaryDescription.Multiline = true;
             this.textBoxBinaryDescription.Name = "textBoxBinaryDescription";
-            this.textBoxBinaryDescription.Size = new System.Drawing.Size(402, 64);
+            this.textBoxBinaryDescription.Size = new System.Drawing.Size(573, 104);
             this.textBoxBinaryDescription.TabIndex = 31;
             // 
             // checkBoxBinaryBigEndian
             // 
             this.checkBoxBinaryBigEndian.AutoSize = true;
-            this.checkBoxBinaryBigEndian.Location = new System.Drawing.Point(206, 84);
-            this.checkBoxBinaryBigEndian.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinaryBigEndian.Location = new System.Drawing.Point(294, 140);
+            this.checkBoxBinaryBigEndian.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinaryBigEndian.Name = "checkBoxBinaryBigEndian";
-            this.checkBoxBinaryBigEndian.Size = new System.Drawing.Size(82, 19);
+            this.checkBoxBinaryBigEndian.Size = new System.Drawing.Size(121, 29);
             this.checkBoxBinaryBigEndian.TabIndex = 32;
             this.checkBoxBinaryBigEndian.Text = "Big Endian";
             this.checkBoxBinaryBigEndian.UseVisualStyleBackColor = true;
@@ -254,29 +306,29 @@
             "Level",
             "Model",
             "Action"});
-            this.comboBoxBinaryItemType.Location = new System.Drawing.Point(75, 119);
-            this.comboBoxBinaryItemType.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBoxBinaryItemType.Location = new System.Drawing.Point(107, 198);
+            this.comboBoxBinaryItemType.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.comboBoxBinaryItemType.Name = "comboBoxBinaryItemType";
-            this.comboBoxBinaryItemType.Size = new System.Drawing.Size(140, 23);
+            this.comboBoxBinaryItemType.Size = new System.Drawing.Size(198, 33);
             this.comboBoxBinaryItemType.TabIndex = 33;
             // 
             // labelType
             // 
             this.labelType.AutoSize = true;
-            this.labelType.Location = new System.Drawing.Point(2, 122);
-            this.labelType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelType.Location = new System.Drawing.Point(3, 203);
+            this.labelType.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelType.Name = "labelType";
-            this.labelType.Size = new System.Drawing.Size(60, 15);
+            this.labelType.Size = new System.Drawing.Size(93, 25);
             this.labelType.TabIndex = 34;
             this.labelType.Text = "Data type:";
             // 
             // checkBoxBinaryMemory
             // 
             this.checkBoxBinaryMemory.AutoSize = true;
-            this.checkBoxBinaryMemory.Location = new System.Drawing.Point(266, 58);
-            this.checkBoxBinaryMemory.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinaryMemory.Location = new System.Drawing.Point(380, 97);
+            this.checkBoxBinaryMemory.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinaryMemory.Name = "checkBoxBinaryMemory";
-            this.checkBoxBinaryMemory.Size = new System.Drawing.Size(114, 19);
+            this.checkBoxBinaryMemory.Size = new System.Drawing.Size(172, 29);
             this.checkBoxBinaryMemory.TabIndex = 35;
             this.checkBoxBinaryMemory.Text = "Memory address";
             this.checkBoxBinaryMemory.UseVisualStyleBackColor = true;
@@ -284,10 +336,10 @@
             // labelFile
             // 
             this.labelFile.AutoSize = true;
-            this.labelFile.Location = new System.Drawing.Point(14, 50);
-            this.labelFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelFile.Location = new System.Drawing.Point(20, 83);
+            this.labelFile.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.labelFile.Name = "labelFile";
-            this.labelFile.Size = new System.Drawing.Size(28, 15);
+            this.labelFile.Size = new System.Drawing.Size(42, 25);
             this.labelFile.TabIndex = 36;
             this.labelFile.Text = "File:";
             // 
@@ -307,11 +359,11 @@
             this.groupBoxBinary.Controls.Add(this.comboBoxBinaryItemType);
             this.groupBoxBinary.Controls.Add(this.checkBoxBinaryHex);
             this.groupBoxBinary.Controls.Add(this.labelFormat);
-            this.groupBoxBinary.Location = new System.Drawing.Point(13, 84);
-            this.groupBoxBinary.Margin = new System.Windows.Forms.Padding(4);
+            this.groupBoxBinary.Location = new System.Drawing.Point(19, 140);
+            this.groupBoxBinary.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.groupBoxBinary.Name = "groupBoxBinary";
-            this.groupBoxBinary.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxBinary.Size = new System.Drawing.Size(477, 190);
+            this.groupBoxBinary.Padding = new System.Windows.Forms.Padding(6, 7, 6, 7);
+            this.groupBoxBinary.Size = new System.Drawing.Size(681, 317);
             this.groupBoxBinary.TabIndex = 39;
             this.groupBoxBinary.TabStop = false;
             this.groupBoxBinary.Text = "Binary Data";
@@ -319,18 +371,18 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(23, 85);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(33, 142);
+            this.label6.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(42, 15);
+            this.label6.Size = new System.Drawing.Size(65, 25);
             this.label6.TabIndex = 37;
             this.label6.Text = "Offset:";
             // 
             // numericUpDownBinaryOffset
             // 
             this.numericUpDownBinaryOffset.Hexadecimal = true;
-            this.numericUpDownBinaryOffset.Location = new System.Drawing.Point(76, 83);
-            this.numericUpDownBinaryOffset.Margin = new System.Windows.Forms.Padding(4);
+            this.numericUpDownBinaryOffset.Location = new System.Drawing.Point(109, 138);
+            this.numericUpDownBinaryOffset.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.numericUpDownBinaryOffset.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -342,14 +394,14 @@
             0,
             -2147483648});
             this.numericUpDownBinaryOffset.Name = "numericUpDownBinaryOffset";
-            this.numericUpDownBinaryOffset.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownBinaryOffset.Size = new System.Drawing.Size(163, 31);
             this.numericUpDownBinaryOffset.TabIndex = 36;
             // 
             // numericUpDownBinaryKey
             // 
             this.numericUpDownBinaryKey.Hexadecimal = true;
-            this.numericUpDownBinaryKey.Location = new System.Drawing.Point(75, 23);
-            this.numericUpDownBinaryKey.Margin = new System.Windows.Forms.Padding(4);
+            this.numericUpDownBinaryKey.Location = new System.Drawing.Point(107, 38);
+            this.numericUpDownBinaryKey.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.numericUpDownBinaryKey.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -361,14 +413,14 @@
             0,
             -2147483648});
             this.numericUpDownBinaryKey.Name = "numericUpDownBinaryKey";
-            this.numericUpDownBinaryKey.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownBinaryKey.Size = new System.Drawing.Size(163, 31);
             this.numericUpDownBinaryKey.TabIndex = 24;
             // 
             // numericUpDownBinaryAddress
             // 
             this.numericUpDownBinaryAddress.Hexadecimal = true;
-            this.numericUpDownBinaryAddress.Location = new System.Drawing.Point(75, 53);
-            this.numericUpDownBinaryAddress.Margin = new System.Windows.Forms.Padding(4);
+            this.numericUpDownBinaryAddress.Location = new System.Drawing.Point(107, 88);
+            this.numericUpDownBinaryAddress.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.numericUpDownBinaryAddress.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -380,7 +432,7 @@
             0,
             -2147483648});
             this.numericUpDownBinaryAddress.Name = "numericUpDownBinaryAddress";
-            this.numericUpDownBinaryAddress.Size = new System.Drawing.Size(114, 23);
+            this.numericUpDownBinaryAddress.Size = new System.Drawing.Size(163, 31);
             this.numericUpDownBinaryAddress.TabIndex = 21;
             // 
             // tabControl1
@@ -389,12 +441,12 @@
             this.tabControl1.Controls.Add(this.tabPageStructConverter);
             this.tabControl1.Controls.Add(this.tabPageSplit);
             this.tabControl1.Controls.Add(this.tabPageSplitMDL);
+            this.tabControl1.Controls.Add(this.tabPageScanner);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(510, 479);
+            this.tabControl1.Size = new System.Drawing.Size(729, 798);
             this.tabControl1.TabIndex = 40;
             // 
             // tabPageBinaryData
@@ -413,20 +465,19 @@
             this.tabPageBinaryData.Controls.Add(this.textBoxBinaryAuthor);
             this.tabPageBinaryData.Controls.Add(this.label5);
             this.tabPageBinaryData.Controls.Add(this.buttonBinaryExtract);
-            this.tabPageBinaryData.Location = new System.Drawing.Point(4, 24);
-            this.tabPageBinaryData.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPageBinaryData.Location = new System.Drawing.Point(4, 34);
             this.tabPageBinaryData.Name = "tabPageBinaryData";
-            this.tabPageBinaryData.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPageBinaryData.Size = new System.Drawing.Size(502, 451);
+            this.tabPageBinaryData.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageBinaryData.Size = new System.Drawing.Size(721, 760);
             this.tabPageBinaryData.TabIndex = 0;
             this.tabPageBinaryData.Text = "Binary Data Extractor";
             // 
             // buttonBinaryBrowse
             // 
-            this.buttonBinaryBrowse.Location = new System.Drawing.Point(406, 44);
-            this.buttonBinaryBrowse.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonBinaryBrowse.Location = new System.Drawing.Point(580, 73);
+            this.buttonBinaryBrowse.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonBinaryBrowse.Name = "buttonBinaryBrowse";
-            this.buttonBinaryBrowse.Size = new System.Drawing.Size(88, 26);
+            this.buttonBinaryBrowse.Size = new System.Drawing.Size(126, 43);
             this.buttonBinaryBrowse.TabIndex = 46;
             this.buttonBinaryBrowse.Text = "Browse...";
             this.buttonBinaryBrowse.UseVisualStyleBackColor = true;
@@ -435,10 +486,10 @@
             // textBoxBinaryFilename
             // 
             this.textBoxBinaryFilename.AllowDrop = true;
-            this.textBoxBinaryFilename.Location = new System.Drawing.Point(51, 46);
-            this.textBoxBinaryFilename.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxBinaryFilename.Location = new System.Drawing.Point(73, 77);
+            this.textBoxBinaryFilename.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.textBoxBinaryFilename.Name = "textBoxBinaryFilename";
-            this.textBoxBinaryFilename.Size = new System.Drawing.Size(347, 23);
+            this.textBoxBinaryFilename.Size = new System.Drawing.Size(494, 31);
             this.textBoxBinaryFilename.TabIndex = 45;
             this.textBoxBinaryFilename.TextChanged += new System.EventHandler(this.textBoxBinaryFilename_TextChanged);
             this.textBoxBinaryFilename.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxBinaryFilename_DragDrop);
@@ -447,10 +498,10 @@
             // checkBoxBinaryJSON
             // 
             this.checkBoxBinaryJSON.AutoSize = true;
-            this.checkBoxBinaryJSON.Location = new System.Drawing.Point(184, 419);
-            this.checkBoxBinaryJSON.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinaryJSON.Location = new System.Drawing.Point(263, 698);
+            this.checkBoxBinaryJSON.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinaryJSON.Name = "checkBoxBinaryJSON";
-            this.checkBoxBinaryJSON.Size = new System.Drawing.Size(175, 19);
+            this.checkBoxBinaryJSON.Size = new System.Drawing.Size(262, 29);
             this.checkBoxBinaryJSON.TabIndex = 44;
             this.checkBoxBinaryJSON.Text = "Convert animations to JSON";
             this.checkBoxBinaryJSON.UseVisualStyleBackColor = true;
@@ -459,10 +510,10 @@
             // checkBoxBinaryNJA
             // 
             this.checkBoxBinaryNJA.AutoSize = true;
-            this.checkBoxBinaryNJA.Location = new System.Drawing.Point(9, 419);
-            this.checkBoxBinaryNJA.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinaryNJA.Location = new System.Drawing.Point(13, 698);
+            this.checkBoxBinaryNJA.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinaryNJA.Name = "checkBoxBinaryNJA";
-            this.checkBoxBinaryNJA.Size = new System.Drawing.Size(122, 19);
+            this.checkBoxBinaryNJA.Size = new System.Drawing.Size(182, 29);
             this.checkBoxBinaryNJA.TabIndex = 43;
             this.checkBoxBinaryNJA.Text = "Export Ninja ASCII";
             this.checkBoxBinaryNJA.UseVisualStyleBackColor = true;
@@ -471,10 +522,10 @@
             // checkBoxBinaryStructs
             // 
             this.checkBoxBinaryStructs.AutoSize = true;
-            this.checkBoxBinaryStructs.Location = new System.Drawing.Point(184, 392);
-            this.checkBoxBinaryStructs.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinaryStructs.Location = new System.Drawing.Point(263, 653);
+            this.checkBoxBinaryStructs.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinaryStructs.Name = "checkBoxBinaryStructs";
-            this.checkBoxBinaryStructs.Size = new System.Drawing.Size(109, 19);
+            this.checkBoxBinaryStructs.Size = new System.Drawing.Size(162, 29);
             this.checkBoxBinaryStructs.TabIndex = 42;
             this.checkBoxBinaryStructs.Text = "Export C structs";
             this.checkBoxBinaryStructs.UseVisualStyleBackColor = true;
@@ -485,10 +536,10 @@
             this.checkBoxBinarySAModel.AutoSize = true;
             this.checkBoxBinarySAModel.Checked = true;
             this.checkBoxBinarySAModel.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxBinarySAModel.Location = new System.Drawing.Point(9, 392);
-            this.checkBoxBinarySAModel.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxBinarySAModel.Location = new System.Drawing.Point(13, 653);
+            this.checkBoxBinarySAModel.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxBinarySAModel.Name = "checkBoxBinarySAModel";
-            this.checkBoxBinarySAModel.Size = new System.Drawing.Size(135, 19);
+            this.checkBoxBinarySAModel.Size = new System.Drawing.Size(203, 29);
             this.checkBoxBinarySAModel.TabIndex = 41;
             this.checkBoxBinarySAModel.Text = "Export SAModel files";
             this.checkBoxBinarySAModel.UseVisualStyleBackColor = true;
@@ -497,10 +548,9 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 14);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(9, 23);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(404, 15);
+            this.label1.Size = new System.Drawing.Size(610, 25);
             this.label1.TabIndex = 40;
             this.label1.Text = "Extract data from binary files and export it as C structs, Ninja ASCII or JSON.";
             // 
@@ -516,11 +566,10 @@
             this.tabPageStructConverter.Controls.Add(this.label2);
             this.tabPageStructConverter.Controls.Add(this.buttonStructConvAddBatch);
             this.tabPageStructConverter.Controls.Add(this.listBoxStructConverter);
-            this.tabPageStructConverter.Location = new System.Drawing.Point(4, 24);
-            this.tabPageStructConverter.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPageStructConverter.Location = new System.Drawing.Point(4, 34);
             this.tabPageStructConverter.Name = "tabPageStructConverter";
-            this.tabPageStructConverter.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPageStructConverter.Size = new System.Drawing.Size(502, 451);
+            this.tabPageStructConverter.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageStructConverter.Size = new System.Drawing.Size(721, 760);
             this.tabPageStructConverter.TabIndex = 1;
             this.tabPageStructConverter.Text = "Struct Converter";
             // 
@@ -529,10 +578,9 @@
             this.checkBoxStructConvStructs.AutoSize = true;
             this.checkBoxStructConvStructs.Checked = true;
             this.checkBoxStructConvStructs.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxStructConvStructs.Location = new System.Drawing.Point(184, 392);
-            this.checkBoxStructConvStructs.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxStructConvStructs.Location = new System.Drawing.Point(263, 653);
             this.checkBoxStructConvStructs.Name = "checkBoxStructConvStructs";
-            this.checkBoxStructConvStructs.Size = new System.Drawing.Size(109, 19);
+            this.checkBoxStructConvStructs.Size = new System.Drawing.Size(162, 29);
             this.checkBoxStructConvStructs.TabIndex = 48;
             this.checkBoxStructConvStructs.Text = "Export C structs";
             this.checkBoxStructConvStructs.UseVisualStyleBackColor = true;
@@ -541,10 +589,9 @@
             // checkBoxStructConvJSON
             // 
             this.checkBoxStructConvJSON.AutoSize = true;
-            this.checkBoxStructConvJSON.Location = new System.Drawing.Point(184, 419);
-            this.checkBoxStructConvJSON.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxStructConvJSON.Location = new System.Drawing.Point(263, 698);
             this.checkBoxStructConvJSON.Name = "checkBoxStructConvJSON";
-            this.checkBoxStructConvJSON.Size = new System.Drawing.Size(175, 19);
+            this.checkBoxStructConvJSON.Size = new System.Drawing.Size(262, 29);
             this.checkBoxStructConvJSON.TabIndex = 47;
             this.checkBoxStructConvJSON.Text = "Convert animations to JSON";
             this.checkBoxStructConvJSON.UseVisualStyleBackColor = true;
@@ -553,10 +600,9 @@
             // checkBoxStructConvNJA
             // 
             this.checkBoxStructConvNJA.AutoSize = true;
-            this.checkBoxStructConvNJA.Location = new System.Drawing.Point(9, 419);
-            this.checkBoxStructConvNJA.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxStructConvNJA.Location = new System.Drawing.Point(13, 698);
             this.checkBoxStructConvNJA.Name = "checkBoxStructConvNJA";
-            this.checkBoxStructConvNJA.Size = new System.Drawing.Size(122, 19);
+            this.checkBoxStructConvNJA.Size = new System.Drawing.Size(182, 29);
             this.checkBoxStructConvNJA.TabIndex = 46;
             this.checkBoxStructConvNJA.Text = "Export Ninja ASCII";
             this.checkBoxStructConvNJA.UseVisualStyleBackColor = true;
@@ -564,10 +610,10 @@
             // 
             // buttonStructConvRemoveAllBatch
             // 
-            this.buttonStructConvRemoveAllBatch.Location = new System.Drawing.Point(399, 110);
-            this.buttonStructConvRemoveAllBatch.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonStructConvRemoveAllBatch.Location = new System.Drawing.Point(570, 183);
+            this.buttonStructConvRemoveAllBatch.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonStructConvRemoveAllBatch.Name = "buttonStructConvRemoveAllBatch";
-            this.buttonStructConvRemoveAllBatch.Size = new System.Drawing.Size(93, 26);
+            this.buttonStructConvRemoveAllBatch.Size = new System.Drawing.Size(133, 43);
             this.buttonStructConvRemoveAllBatch.TabIndex = 45;
             this.buttonStructConvRemoveAllBatch.Text = "Clear all";
             this.buttonStructConvRemoveAllBatch.UseVisualStyleBackColor = true;
@@ -576,10 +622,10 @@
             // buttonStructConvRemoveSelBatch
             // 
             this.buttonStructConvRemoveSelBatch.Enabled = false;
-            this.buttonStructConvRemoveSelBatch.Location = new System.Drawing.Point(399, 76);
-            this.buttonStructConvRemoveSelBatch.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonStructConvRemoveSelBatch.Location = new System.Drawing.Point(570, 127);
+            this.buttonStructConvRemoveSelBatch.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonStructConvRemoveSelBatch.Name = "buttonStructConvRemoveSelBatch";
-            this.buttonStructConvRemoveSelBatch.Size = new System.Drawing.Size(93, 26);
+            this.buttonStructConvRemoveSelBatch.Size = new System.Drawing.Size(133, 43);
             this.buttonStructConvRemoveSelBatch.TabIndex = 44;
             this.buttonStructConvRemoveSelBatch.Text = "&Remove";
             this.buttonStructConvRemoveSelBatch.UseVisualStyleBackColor = true;
@@ -588,10 +634,9 @@
             // buttonStructConvConvertBatch
             // 
             this.buttonStructConvConvertBatch.Enabled = false;
-            this.buttonStructConvConvertBatch.Location = new System.Drawing.Point(412, 412);
-            this.buttonStructConvConvertBatch.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonStructConvConvertBatch.Location = new System.Drawing.Point(589, 687);
             this.buttonStructConvConvertBatch.Name = "buttonStructConvConvertBatch";
-            this.buttonStructConvConvertBatch.Size = new System.Drawing.Size(78, 26);
+            this.buttonStructConvConvertBatch.Size = new System.Drawing.Size(111, 43);
             this.buttonStructConvConvertBatch.TabIndex = 43;
             this.buttonStructConvConvertBatch.Text = "&Start";
             this.buttonStructConvConvertBatch.UseVisualStyleBackColor = true;
@@ -600,10 +645,9 @@
             // checkBoxStructConvSameOutputFolderBatch
             // 
             this.checkBoxStructConvSameOutputFolderBatch.AutoSize = true;
-            this.checkBoxStructConvSameOutputFolderBatch.Location = new System.Drawing.Point(9, 392);
-            this.checkBoxStructConvSameOutputFolderBatch.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxStructConvSameOutputFolderBatch.Location = new System.Drawing.Point(13, 653);
             this.checkBoxStructConvSameOutputFolderBatch.Name = "checkBoxStructConvSameOutputFolderBatch";
-            this.checkBoxStructConvSameOutputFolderBatch.Size = new System.Drawing.Size(141, 19);
+            this.checkBoxStructConvSameOutputFolderBatch.Size = new System.Drawing.Size(211, 29);
             this.checkBoxStructConvSameOutputFolderBatch.TabIndex = 42;
             this.checkBoxStructConvSameOutputFolderBatch.Text = "Same output folder(s)";
             this.checkBoxStructConvSameOutputFolderBatch.UseVisualStyleBackColor = true;
@@ -611,19 +655,17 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 14);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(9, 23);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(421, 15);
+            this.label2.Size = new System.Drawing.Size(632, 25);
             this.label2.TabIndex = 41;
             this.label2.Text = "Batch export level, model and animation files to C structs, Ninja ASCII or JSON.";
             // 
             // buttonStructConvAddBatch
             // 
-            this.buttonStructConvAddBatch.Location = new System.Drawing.Point(399, 41);
-            this.buttonStructConvAddBatch.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonStructConvAddBatch.Location = new System.Drawing.Point(570, 68);
             this.buttonStructConvAddBatch.Name = "buttonStructConvAddBatch";
-            this.buttonStructConvAddBatch.Size = new System.Drawing.Size(93, 29);
+            this.buttonStructConvAddBatch.Size = new System.Drawing.Size(133, 48);
             this.buttonStructConvAddBatch.TabIndex = 1;
             this.buttonStructConvAddBatch.Text = "&Add...";
             this.buttonStructConvAddBatch.UseVisualStyleBackColor = true;
@@ -634,12 +676,11 @@
             this.listBoxStructConverter.AllowDrop = true;
             this.listBoxStructConverter.FormattingEnabled = true;
             this.listBoxStructConverter.HorizontalScrollbar = true;
-            this.listBoxStructConverter.ItemHeight = 15;
-            this.listBoxStructConverter.Location = new System.Drawing.Point(9, 41);
-            this.listBoxStructConverter.Margin = new System.Windows.Forms.Padding(2);
+            this.listBoxStructConverter.ItemHeight = 25;
+            this.listBoxStructConverter.Location = new System.Drawing.Point(13, 68);
             this.listBoxStructConverter.Name = "listBoxStructConverter";
             this.listBoxStructConverter.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxStructConverter.Size = new System.Drawing.Size(384, 334);
+            this.listBoxStructConverter.Size = new System.Drawing.Size(547, 554);
             this.listBoxStructConverter.TabIndex = 0;
             this.listBoxStructConverter.SelectedIndexChanged += new System.EventHandler(this.listBoxStructConverter_SelectedIndexChanged);
             this.listBoxStructConverter.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxStructConverter_DragDrop);
@@ -657,10 +698,10 @@
             this.tabPageSplit.Controls.Add(this.label3);
             this.tabPageSplit.Controls.Add(this.buttonAddFilesSplit);
             this.tabPageSplit.Controls.Add(this.listBoxSplitFiles);
-            this.tabPageSplit.Location = new System.Drawing.Point(4, 24);
-            this.tabPageSplit.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPageSplit.Location = new System.Drawing.Point(4, 34);
+            this.tabPageSplit.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.tabPageSplit.Name = "tabPageSplit";
-            this.tabPageSplit.Size = new System.Drawing.Size(502, 451);
+            this.tabPageSplit.Size = new System.Drawing.Size(721, 760);
             this.tabPageSplit.TabIndex = 2;
             this.tabPageSplit.Text = "Split";
             // 
@@ -672,28 +713,27 @@
             "Address-based (object_0000...)",
             "Full labels from debug symbols",
             "No labels"});
-            this.comboBoxLabels.Location = new System.Drawing.Point(281, 37);
-            this.comboBoxLabels.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBoxLabels.Location = new System.Drawing.Point(401, 62);
+            this.comboBoxLabels.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.comboBoxLabels.Name = "comboBoxLabels";
-            this.comboBoxLabels.Size = new System.Drawing.Size(213, 23);
+            this.comboBoxLabels.Size = new System.Drawing.Size(303, 33);
             this.comboBoxLabels.TabIndex = 53;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(226, 40);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Location = new System.Drawing.Point(323, 67);
+            this.label9.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(43, 15);
+            this.label9.Size = new System.Drawing.Size(65, 25);
             this.label9.TabIndex = 52;
             this.label9.Text = "Labels:";
             // 
             // buttonClearAllSplit
             // 
-            this.buttonClearAllSplit.Location = new System.Drawing.Point(401, 139);
-            this.buttonClearAllSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonClearAllSplit.Location = new System.Drawing.Point(573, 232);
             this.buttonClearAllSplit.Name = "buttonClearAllSplit";
-            this.buttonClearAllSplit.Size = new System.Drawing.Size(93, 29);
+            this.buttonClearAllSplit.Size = new System.Drawing.Size(133, 48);
             this.buttonClearAllSplit.TabIndex = 51;
             this.buttonClearAllSplit.Text = "Clear &all";
             this.buttonClearAllSplit.UseVisualStyleBackColor = true;
@@ -702,10 +742,9 @@
             // buttonRemoveSplit
             // 
             this.buttonRemoveSplit.Enabled = false;
-            this.buttonRemoveSplit.Location = new System.Drawing.Point(401, 105);
-            this.buttonRemoveSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonRemoveSplit.Location = new System.Drawing.Point(573, 175);
             this.buttonRemoveSplit.Name = "buttonRemoveSplit";
-            this.buttonRemoveSplit.Size = new System.Drawing.Size(93, 29);
+            this.buttonRemoveSplit.Size = new System.Drawing.Size(133, 48);
             this.buttonRemoveSplit.TabIndex = 50;
             this.buttonRemoveSplit.Text = "&Remove";
             this.buttonRemoveSplit.UseVisualStyleBackColor = true;
@@ -715,19 +754,18 @@
             // 
             this.comboBoxSplitGameSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxSplitGameSelect.FormattingEnabled = true;
-            this.comboBoxSplitGameSelect.Location = new System.Drawing.Point(8, 37);
-            this.comboBoxSplitGameSelect.Margin = new System.Windows.Forms.Padding(4);
+            this.comboBoxSplitGameSelect.Location = new System.Drawing.Point(11, 62);
+            this.comboBoxSplitGameSelect.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.comboBoxSplitGameSelect.Name = "comboBoxSplitGameSelect";
-            this.comboBoxSplitGameSelect.Size = new System.Drawing.Size(213, 23);
+            this.comboBoxSplitGameSelect.Size = new System.Drawing.Size(303, 33);
             this.comboBoxSplitGameSelect.TabIndex = 49;
             // 
             // buttonSplitStart
             // 
             this.buttonSplitStart.Enabled = false;
-            this.buttonSplitStart.Location = new System.Drawing.Point(412, 412);
-            this.buttonSplitStart.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonSplitStart.Location = new System.Drawing.Point(589, 687);
             this.buttonSplitStart.Name = "buttonSplitStart";
-            this.buttonSplitStart.Size = new System.Drawing.Size(78, 26);
+            this.buttonSplitStart.Size = new System.Drawing.Size(111, 43);
             this.buttonSplitStart.TabIndex = 48;
             this.buttonSplitStart.Text = "&Start";
             this.buttonSplitStart.UseVisualStyleBackColor = true;
@@ -736,10 +774,9 @@
             // checkBoxSameFolderSplit
             // 
             this.checkBoxSameFolderSplit.AutoSize = true;
-            this.checkBoxSameFolderSplit.Location = new System.Drawing.Point(9, 416);
-            this.checkBoxSameFolderSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxSameFolderSplit.Location = new System.Drawing.Point(13, 693);
             this.checkBoxSameFolderSplit.Name = "checkBoxSameFolderSplit";
-            this.checkBoxSameFolderSplit.Size = new System.Drawing.Size(212, 19);
+            this.checkBoxSameFolderSplit.Size = new System.Drawing.Size(318, 29);
             this.checkBoxSameFolderSplit.TabIndex = 47;
             this.checkBoxSameFolderSplit.Text = "Same output folder as source file(s)";
             this.checkBoxSameFolderSplit.UseVisualStyleBackColor = true;
@@ -747,19 +784,17 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 14);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Location = new System.Drawing.Point(9, 23);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(418, 15);
+            this.label3.Size = new System.Drawing.Size(633, 25);
             this.label3.TabIndex = 46;
             this.label3.Text = "Split binary files using a template for a supported game with or without labels.";
             // 
             // buttonAddFilesSplit
             // 
-            this.buttonAddFilesSplit.Location = new System.Drawing.Point(401, 71);
-            this.buttonAddFilesSplit.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonAddFilesSplit.Location = new System.Drawing.Point(573, 118);
             this.buttonAddFilesSplit.Name = "buttonAddFilesSplit";
-            this.buttonAddFilesSplit.Size = new System.Drawing.Size(93, 29);
+            this.buttonAddFilesSplit.Size = new System.Drawing.Size(133, 48);
             this.buttonAddFilesSplit.TabIndex = 45;
             this.buttonAddFilesSplit.Text = "&Add...";
             this.buttonAddFilesSplit.UseVisualStyleBackColor = true;
@@ -770,12 +805,11 @@
             this.listBoxSplitFiles.AllowDrop = true;
             this.listBoxSplitFiles.FormattingEnabled = true;
             this.listBoxSplitFiles.HorizontalScrollbar = true;
-            this.listBoxSplitFiles.ItemHeight = 15;
-            this.listBoxSplitFiles.Location = new System.Drawing.Point(9, 71);
-            this.listBoxSplitFiles.Margin = new System.Windows.Forms.Padding(2);
+            this.listBoxSplitFiles.ItemHeight = 25;
+            this.listBoxSplitFiles.Location = new System.Drawing.Point(13, 118);
             this.listBoxSplitFiles.Name = "listBoxSplitFiles";
             this.listBoxSplitFiles.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxSplitFiles.Size = new System.Drawing.Size(384, 334);
+            this.listBoxSplitFiles.Size = new System.Drawing.Size(547, 554);
             this.listBoxSplitFiles.TabIndex = 44;
             this.listBoxSplitFiles.SelectedIndexChanged += new System.EventHandler(this.listBox_SplitFiles_SelectedIndexChanged);
             this.listBoxSplitFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox_SplitFiles_DragDrop);
@@ -795,20 +829,20 @@
             this.tabPageSplitMDL.Controls.Add(this.buttonAnimFilesAdd);
             this.tabPageSplitMDL.Controls.Add(this.animationFilesLabel);
             this.tabPageSplitMDL.Controls.Add(this.listBoxMDLAnimationFiles);
-            this.tabPageSplitMDL.Location = new System.Drawing.Point(4, 24);
-            this.tabPageSplitMDL.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPageSplitMDL.Location = new System.Drawing.Point(4, 34);
+            this.tabPageSplitMDL.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.tabPageSplitMDL.Name = "tabPageSplitMDL";
-            this.tabPageSplitMDL.Size = new System.Drawing.Size(502, 451);
+            this.tabPageSplitMDL.Size = new System.Drawing.Size(721, 760);
             this.tabPageSplitMDL.TabIndex = 3;
             this.tabPageSplitMDL.Text = "SplitMDL";
             // 
             // buttonMDLBrowse
             // 
             this.buttonMDLBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonMDLBrowse.Location = new System.Drawing.Point(401, 43);
-            this.buttonMDLBrowse.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonMDLBrowse.Location = new System.Drawing.Point(573, 72);
+            this.buttonMDLBrowse.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonMDLBrowse.Name = "buttonMDLBrowse";
-            this.buttonMDLBrowse.Size = new System.Drawing.Size(93, 29);
+            this.buttonMDLBrowse.Size = new System.Drawing.Size(133, 48);
             this.buttonMDLBrowse.TabIndex = 52;
             this.buttonMDLBrowse.Text = "Browse...";
             this.buttonMDLBrowse.UseVisualStyleBackColor = true;
@@ -817,10 +851,10 @@
             // textBoxMDLFilename
             // 
             this.textBoxMDLFilename.AllowDrop = true;
-            this.textBoxMDLFilename.Location = new System.Drawing.Point(49, 46);
-            this.textBoxMDLFilename.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxMDLFilename.Location = new System.Drawing.Point(70, 77);
+            this.textBoxMDLFilename.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.textBoxMDLFilename.Name = "textBoxMDLFilename";
-            this.textBoxMDLFilename.Size = new System.Drawing.Size(341, 23);
+            this.textBoxMDLFilename.Size = new System.Drawing.Size(485, 31);
             this.textBoxMDLFilename.TabIndex = 51;
             this.textBoxMDLFilename.TextChanged += new System.EventHandler(this.textBoxMDLFilename_TextChanged);
             this.textBoxMDLFilename.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBoxMDLFilename_DragDrop);
@@ -829,10 +863,9 @@
             // checkBoxMDLSameFolder
             // 
             this.checkBoxMDLSameFolder.AutoSize = true;
-            this.checkBoxMDLSameFolder.Location = new System.Drawing.Point(9, 419);
-            this.checkBoxMDLSameFolder.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBoxMDLSameFolder.Location = new System.Drawing.Point(13, 698);
             this.checkBoxMDLSameFolder.Name = "checkBoxMDLSameFolder";
-            this.checkBoxMDLSameFolder.Size = new System.Drawing.Size(209, 19);
+            this.checkBoxMDLSameFolder.Size = new System.Drawing.Size(315, 29);
             this.checkBoxMDLSameFolder.TabIndex = 50;
             this.checkBoxMDLSameFolder.Text = "Same output folder as the MDL file";
             this.checkBoxMDLSameFolder.UseVisualStyleBackColor = true;
@@ -840,20 +873,19 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(14, 50);
-            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Location = new System.Drawing.Point(20, 83);
+            this.label8.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(28, 15);
+            this.label8.Size = new System.Drawing.Size(42, 25);
             this.label8.TabIndex = 48;
             this.label8.Text = "File:";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 14);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Location = new System.Drawing.Point(9, 23);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(140, 15);
+            this.label7.Size = new System.Drawing.Size(215, 25);
             this.label7.TabIndex = 47;
             this.label7.Text = "Split SA2/SA2B MDL files.";
             // 
@@ -861,10 +893,10 @@
             // 
             this.buttonMDLAnimFilesRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonMDLAnimFilesRemove.Enabled = false;
-            this.buttonMDLAnimFilesRemove.Location = new System.Drawing.Point(401, 134);
-            this.buttonMDLAnimFilesRemove.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonMDLAnimFilesRemove.Location = new System.Drawing.Point(573, 223);
+            this.buttonMDLAnimFilesRemove.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonMDLAnimFilesRemove.Name = "buttonMDLAnimFilesRemove";
-            this.buttonMDLAnimFilesRemove.Size = new System.Drawing.Size(93, 29);
+            this.buttonMDLAnimFilesRemove.Size = new System.Drawing.Size(133, 48);
             this.buttonMDLAnimFilesRemove.TabIndex = 23;
             this.buttonMDLAnimFilesRemove.Text = "Remove";
             this.buttonMDLAnimFilesRemove.UseVisualStyleBackColor = true;
@@ -873,10 +905,10 @@
             // buttonAnimFilesClear
             // 
             this.buttonAnimFilesClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAnimFilesClear.Location = new System.Drawing.Point(401, 170);
-            this.buttonAnimFilesClear.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonAnimFilesClear.Location = new System.Drawing.Point(573, 283);
+            this.buttonAnimFilesClear.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonAnimFilesClear.Name = "buttonAnimFilesClear";
-            this.buttonAnimFilesClear.Size = new System.Drawing.Size(93, 29);
+            this.buttonAnimFilesClear.Size = new System.Drawing.Size(133, 48);
             this.buttonAnimFilesClear.TabIndex = 23;
             this.buttonAnimFilesClear.Text = "Clear all";
             this.buttonAnimFilesClear.UseVisualStyleBackColor = true;
@@ -887,10 +919,10 @@
             this.checkBoxMDLBigEndian.AutoSize = true;
             this.checkBoxMDLBigEndian.Checked = true;
             this.checkBoxMDLBigEndian.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxMDLBigEndian.Location = new System.Drawing.Point(358, 75);
-            this.checkBoxMDLBigEndian.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxMDLBigEndian.Location = new System.Drawing.Point(511, 125);
+            this.checkBoxMDLBigEndian.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.checkBoxMDLBigEndian.Name = "checkBoxMDLBigEndian";
-            this.checkBoxMDLBigEndian.Size = new System.Drawing.Size(129, 19);
+            this.checkBoxMDLBigEndian.Size = new System.Drawing.Size(187, 29);
             this.checkBoxMDLBigEndian.TabIndex = 22;
             this.checkBoxMDLBigEndian.Text = "Big Endian (GC/PC)";
             this.checkBoxMDLBigEndian.UseVisualStyleBackColor = true;
@@ -898,10 +930,10 @@
             // buttonSplitMDL
             // 
             this.buttonSplitMDL.Enabled = false;
-            this.buttonSplitMDL.Location = new System.Drawing.Point(412, 412);
-            this.buttonSplitMDL.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonSplitMDL.Location = new System.Drawing.Point(589, 687);
+            this.buttonSplitMDL.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonSplitMDL.Name = "buttonSplitMDL";
-            this.buttonSplitMDL.Size = new System.Drawing.Size(78, 26);
+            this.buttonSplitMDL.Size = new System.Drawing.Size(111, 43);
             this.buttonSplitMDL.TabIndex = 18;
             this.buttonSplitMDL.Text = "&Start";
             this.buttonSplitMDL.UseVisualStyleBackColor = true;
@@ -910,10 +942,10 @@
             // buttonAnimFilesAdd
             // 
             this.buttonAnimFilesAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAnimFilesAdd.Location = new System.Drawing.Point(401, 98);
-            this.buttonAnimFilesAdd.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonAnimFilesAdd.Location = new System.Drawing.Point(573, 163);
+            this.buttonAnimFilesAdd.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.buttonAnimFilesAdd.Name = "buttonAnimFilesAdd";
-            this.buttonAnimFilesAdd.Size = new System.Drawing.Size(93, 29);
+            this.buttonAnimFilesAdd.Size = new System.Drawing.Size(133, 48);
             this.buttonAnimFilesAdd.TabIndex = 17;
             this.buttonAnimFilesAdd.Text = "Add...";
             this.buttonAnimFilesAdd.UseVisualStyleBackColor = true;
@@ -924,10 +956,10 @@
             this.animationFilesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.animationFilesLabel.AutoSize = true;
-            this.animationFilesLabel.Location = new System.Drawing.Point(9, 80);
-            this.animationFilesLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.animationFilesLabel.Location = new System.Drawing.Point(13, 133);
+            this.animationFilesLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.animationFilesLabel.Name = "animationFilesLabel";
-            this.animationFilesLabel.Size = new System.Drawing.Size(89, 15);
+            this.animationFilesLabel.Size = new System.Drawing.Size(133, 25);
             this.animationFilesLabel.TabIndex = 16;
             this.animationFilesLabel.Text = "Animation Files";
             // 
@@ -938,25 +970,474 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBoxMDLAnimationFiles.FormattingEnabled = true;
-            this.listBoxMDLAnimationFiles.ItemHeight = 15;
-            this.listBoxMDLAnimationFiles.Location = new System.Drawing.Point(9, 98);
-            this.listBoxMDLAnimationFiles.Margin = new System.Windows.Forms.Padding(4);
+            this.listBoxMDLAnimationFiles.ItemHeight = 25;
+            this.listBoxMDLAnimationFiles.Location = new System.Drawing.Point(13, 163);
+            this.listBoxMDLAnimationFiles.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.listBoxMDLAnimationFiles.Name = "listBoxMDLAnimationFiles";
-            this.listBoxMDLAnimationFiles.Size = new System.Drawing.Size(384, 304);
+            this.listBoxMDLAnimationFiles.Size = new System.Drawing.Size(547, 504);
             this.listBoxMDLAnimationFiles.TabIndex = 15;
             this.listBoxMDLAnimationFiles.SelectedIndexChanged += new System.EventHandler(this.listBoxMDLAnimationFiles_SelectedIndexChanged);
             this.listBoxMDLAnimationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxMDLAnimationFiles_DragDrop);
             this.listBoxMDLAnimationFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBoxMDLAnimationFiles_DragEnter);
             // 
+            // tabPageScanner
+            // 
+            this.tabPageScanner.Controls.Add(this.groupBox5);
+            this.tabPageScanner.Controls.Add(this.buttonScanStart);
+            this.tabPageScanner.Controls.Add(this.groupBox4);
+            this.tabPageScanner.Controls.Add(this.groupBox2);
+            this.tabPageScanner.Controls.Add(this.groupBox1);
+            this.tabPageScanner.Location = new System.Drawing.Point(4, 34);
+            this.tabPageScanner.Name = "tabPageScanner";
+            this.tabPageScanner.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageScanner.Size = new System.Drawing.Size(721, 760);
+            this.tabPageScanner.TabIndex = 4;
+            this.tabPageScanner.Text = "Scanner";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.numericUpDownNodes);
+            this.groupBox5.Controls.Add(this.labelNodes);
+            this.groupBox5.Controls.Add(this.buttonFindBrowse);
+            this.groupBox5.Controls.Add(this.checkBoxSearchAction);
+            this.groupBox5.Controls.Add(this.textBoxFindModel);
+            this.groupBox5.Controls.Add(this.checkBoxSearchLandtables);
+            this.groupBox5.Controls.Add(this.checkBoxSearchBasic);
+            this.groupBox5.Controls.Add(this.radioButtonFindModel);
+            this.groupBox5.Controls.Add(this.checkBoxSearchMotion);
+            this.groupBox5.Controls.Add(this.radioButtonSearchData);
+            this.groupBox5.Controls.Add(this.checkBoxSearchChunk);
+            this.groupBox5.Controls.Add(this.checkBoxSearchGinja);
+            this.groupBox5.Location = new System.Drawing.Point(8, 461);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(705, 251);
+            this.groupBox5.TabIndex = 44;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Scan Settings";
+            // 
+            // numericUpDownNodes
+            // 
+            this.numericUpDownNodes.Location = new System.Drawing.Point(531, 136);
+            this.numericUpDownNodes.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.numericUpDownNodes.Name = "numericUpDownNodes";
+            this.numericUpDownNodes.Size = new System.Drawing.Size(72, 31);
+            this.numericUpDownNodes.TabIndex = 24;
+            this.numericUpDownNodes.Visible = false;
+            // 
+            // labelNodes
+            // 
+            this.labelNodes.AutoSize = true;
+            this.labelNodes.Location = new System.Drawing.Point(457, 138);
+            this.labelNodes.Name = "labelNodes";
+            this.labelNodes.Size = new System.Drawing.Size(68, 25);
+            this.labelNodes.TabIndex = 44;
+            this.labelNodes.Text = "Nodes:";
+            this.labelNodes.Visible = false;
+            // 
+            // buttonFindBrowse
+            // 
+            this.buttonFindBrowse.Location = new System.Drawing.Point(611, 182);
+            this.buttonFindBrowse.Name = "buttonFindBrowse";
+            this.buttonFindBrowse.Size = new System.Drawing.Size(88, 35);
+            this.buttonFindBrowse.TabIndex = 27;
+            this.buttonFindBrowse.Text = "Browse...";
+            this.buttonFindBrowse.UseVisualStyleBackColor = true;
+            this.buttonFindBrowse.Click += new System.EventHandler(this.buttonFindBrowse_Click);
+            // 
+            // checkBoxSearchAction
+            // 
+            this.checkBoxSearchAction.AutoSize = true;
+            this.checkBoxSearchAction.Location = new System.Drawing.Point(213, 100);
+            this.checkBoxSearchAction.Name = "checkBoxSearchAction";
+            this.checkBoxSearchAction.Size = new System.Drawing.Size(97, 29);
+            this.checkBoxSearchAction.TabIndex = 22;
+            this.checkBoxSearchAction.Text = "Actions";
+            this.checkBoxSearchAction.UseVisualStyleBackColor = true;
+            // 
+            // textBoxFindModel
+            // 
+            this.textBoxFindModel.Location = new System.Drawing.Point(6, 184);
+            this.textBoxFindModel.Name = "textBoxFindModel";
+            this.textBoxFindModel.Size = new System.Drawing.Size(597, 31);
+            this.textBoxFindModel.TabIndex = 26;
+            // 
+            // checkBoxSearchLandtables
+            // 
+            this.checkBoxSearchLandtables.AutoSize = true;
+            this.checkBoxSearchLandtables.Location = new System.Drawing.Point(17, 100);
+            this.checkBoxSearchLandtables.Name = "checkBoxSearchLandtables";
+            this.checkBoxSearchLandtables.Size = new System.Drawing.Size(123, 29);
+            this.checkBoxSearchLandtables.TabIndex = 21;
+            this.checkBoxSearchLandtables.Text = "Landtables";
+            this.checkBoxSearchLandtables.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSearchBasic
+            // 
+            this.checkBoxSearchBasic.AutoSize = true;
+            this.checkBoxSearchBasic.Checked = true;
+            this.checkBoxSearchBasic.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxSearchBasic.Location = new System.Drawing.Point(17, 65);
+            this.checkBoxSearchBasic.Name = "checkBoxSearchBasic";
+            this.checkBoxSearchBasic.Size = new System.Drawing.Size(141, 29);
+            this.checkBoxSearchBasic.TabIndex = 18;
+            this.checkBoxSearchBasic.Text = "Basic Models";
+            this.checkBoxSearchBasic.UseVisualStyleBackColor = true;
+            this.checkBoxSearchBasic.CheckedChanged += new System.EventHandler(this.checkBoxSearchBasic_CheckedChanged);
+            // 
+            // radioButtonFindModel
+            // 
+            this.radioButtonFindModel.AutoSize = true;
+            this.radioButtonFindModel.Location = new System.Drawing.Point(6, 150);
+            this.radioButtonFindModel.Name = "radioButtonFindModel";
+            this.radioButtonFindModel.Size = new System.Drawing.Size(131, 29);
+            this.radioButtonFindModel.TabIndex = 25;
+            this.radioButtonFindModel.Text = "Find Model:";
+            this.radioButtonFindModel.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSearchMotion
+            // 
+            this.checkBoxSearchMotion.AutoSize = true;
+            this.checkBoxSearchMotion.Location = new System.Drawing.Point(423, 100);
+            this.checkBoxSearchMotion.Name = "checkBoxSearchMotion";
+            this.checkBoxSearchMotion.Size = new System.Drawing.Size(104, 29);
+            this.checkBoxSearchMotion.TabIndex = 23;
+            this.checkBoxSearchMotion.Text = "Motions";
+            this.checkBoxSearchMotion.UseVisualStyleBackColor = true;
+            this.checkBoxSearchMotion.CheckedChanged += new System.EventHandler(this.checkBoxSearchMotion_CheckedChanged);
+            // 
+            // radioButtonSearchData
+            // 
+            this.radioButtonSearchData.AutoSize = true;
+            this.radioButtonSearchData.Location = new System.Drawing.Point(6, 30);
+            this.radioButtonSearchData.Name = "radioButtonSearchData";
+            this.radioButtonSearchData.Size = new System.Drawing.Size(163, 29);
+            this.radioButtonSearchData.TabIndex = 17;
+            this.radioButtonSearchData.Text = "Search for Data:";
+            this.radioButtonSearchData.UseVisualStyleBackColor = true;
+            this.radioButtonSearchData.CheckedChanged += new System.EventHandler(this.radioButtonSearchData_CheckedChanged);
+            // 
+            // checkBoxSearchChunk
+            // 
+            this.checkBoxSearchChunk.AutoSize = true;
+            this.checkBoxSearchChunk.Location = new System.Drawing.Point(213, 65);
+            this.checkBoxSearchChunk.Name = "checkBoxSearchChunk";
+            this.checkBoxSearchChunk.Size = new System.Drawing.Size(152, 29);
+            this.checkBoxSearchChunk.TabIndex = 19;
+            this.checkBoxSearchChunk.Text = "Chunk Models";
+            this.checkBoxSearchChunk.UseVisualStyleBackColor = true;
+            this.checkBoxSearchChunk.CheckedChanged += new System.EventHandler(this.checkBoxSearchChunk_CheckedChanged);
+            // 
+            // checkBoxSearchGinja
+            // 
+            this.checkBoxSearchGinja.AutoSize = true;
+            this.checkBoxSearchGinja.Location = new System.Drawing.Point(423, 65);
+            this.checkBoxSearchGinja.Name = "checkBoxSearchGinja";
+            this.checkBoxSearchGinja.Size = new System.Drawing.Size(141, 29);
+            this.checkBoxSearchGinja.TabIndex = 20;
+            this.checkBoxSearchGinja.Text = "Ginja Models";
+            this.checkBoxSearchGinja.UseVisualStyleBackColor = true;
+            this.checkBoxSearchGinja.CheckedChanged += new System.EventHandler(this.checkBoxSearchGinja_CheckedChanged);
+            // 
+            // buttonScanStart
+            // 
+            this.buttonScanStart.Enabled = false;
+            this.buttonScanStart.Location = new System.Drawing.Point(601, 718);
+            this.buttonScanStart.Name = "buttonScanStart";
+            this.buttonScanStart.Size = new System.Drawing.Size(112, 34);
+            this.buttonScanStart.TabIndex = 40;
+            this.buttonScanStart.Text = "Start";
+            this.buttonScanStart.UseVisualStyleBackColor = true;
+            this.buttonScanStart.Click += new System.EventHandler(this.buttonScanStart_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label10);
+            this.groupBox4.Controls.Add(this.checkBoxKeepLevel);
+            this.groupBox4.Controls.Add(this.buttonOutputBrowse);
+            this.groupBox4.Controls.Add(this.checkBoxKeepChild);
+            this.groupBox4.Controls.Add(this.checkBoxSkipMeta);
+            this.groupBox4.Controls.Add(this.checkBoxSingleOutput);
+            this.groupBox4.Controls.Add(this.textBoxOutputFolder);
+            this.groupBox4.Location = new System.Drawing.Point(8, 280);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(509, 175);
+            this.groupBox4.TabIndex = 43;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Output Settings";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 99);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(128, 25);
+            this.label10.TabIndex = 40;
+            this.label10.Text = "Output Folder:";
+            // 
+            // checkBoxKeepLevel
+            // 
+            this.checkBoxKeepLevel.AutoSize = true;
+            this.checkBoxKeepLevel.Location = new System.Drawing.Point(218, 30);
+            this.checkBoxKeepLevel.Name = "checkBoxKeepLevel";
+            this.checkBoxKeepLevel.Size = new System.Drawing.Size(185, 29);
+            this.checkBoxKeepLevel.TabIndex = 9;
+            this.checkBoxKeepLevel.Text = "Keep Level Models";
+            this.checkBoxKeepLevel.UseVisualStyleBackColor = true;
+            // 
+            // buttonOutputBrowse
+            // 
+            this.buttonOutputBrowse.Location = new System.Drawing.Point(415, 125);
+            this.buttonOutputBrowse.Name = "buttonOutputBrowse";
+            this.buttonOutputBrowse.Size = new System.Drawing.Size(88, 35);
+            this.buttonOutputBrowse.TabIndex = 12;
+            this.buttonOutputBrowse.Text = "Browse...";
+            this.buttonOutputBrowse.UseVisualStyleBackColor = true;
+            this.buttonOutputBrowse.Click += new System.EventHandler(this.buttonOutputBrowse_Click);
+            // 
+            // checkBoxKeepChild
+            // 
+            this.checkBoxKeepChild.AutoSize = true;
+            this.checkBoxKeepChild.Location = new System.Drawing.Point(218, 65);
+            this.checkBoxKeepChild.Name = "checkBoxKeepChild";
+            this.checkBoxKeepChild.Size = new System.Drawing.Size(186, 29);
+            this.checkBoxKeepChild.TabIndex = 10;
+            this.checkBoxKeepChild.Text = "Keep Child Models";
+            this.checkBoxKeepChild.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSkipMeta
+            // 
+            this.checkBoxSkipMeta.AutoSize = true;
+            this.checkBoxSkipMeta.Location = new System.Drawing.Point(6, 30);
+            this.checkBoxSkipMeta.Name = "checkBoxSkipMeta";
+            this.checkBoxSkipMeta.Size = new System.Drawing.Size(152, 29);
+            this.checkBoxSkipMeta.TabIndex = 7;
+            this.checkBoxSkipMeta.Text = "Skip Metadata";
+            this.checkBoxSkipMeta.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSingleOutput
+            // 
+            this.checkBoxSingleOutput.AutoSize = true;
+            this.checkBoxSingleOutput.Location = new System.Drawing.Point(6, 65);
+            this.checkBoxSingleOutput.Name = "checkBoxSingleOutput";
+            this.checkBoxSingleOutput.Size = new System.Drawing.Size(203, 29);
+            this.checkBoxSingleOutput.TabIndex = 8;
+            this.checkBoxSingleOutput.Text = "Single Output Folder";
+            this.checkBoxSingleOutput.UseVisualStyleBackColor = true;
+            // 
+            // textBoxOutputFolder
+            // 
+            this.textBoxOutputFolder.Location = new System.Drawing.Point(6, 127);
+            this.textBoxOutputFolder.Name = "textBoxOutputFolder";
+            this.textBoxOutputFolder.Size = new System.Drawing.Size(397, 31);
+            this.textBoxOutputFolder.TabIndex = 11;
+            this.textBoxOutputFolder.TextChanged += new System.EventHandler(this.textBoxOutputFolder_TextChanged);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.numericUpDownOffset);
+            this.groupBox2.Controls.Add(this.buttonInputBrowse);
+            this.groupBox2.Controls.Add(this.listBoxBaseGame);
+            this.groupBox2.Controls.Add(this.numericUpDownScanBinaryKey);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.numericUpDownStartAddr);
+            this.groupBox2.Controls.Add(this.textBoxInputFile);
+            this.groupBox2.Controls.Add(this.numericUpDownEndAddr);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.label14);
+            this.groupBox2.Controls.Add(this.label15);
+            this.groupBox2.Controls.Add(this.label16);
+            this.groupBox2.Location = new System.Drawing.Point(8, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(705, 268);
+            this.groupBox2.TabIndex = 42;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Input Settings";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(406, 213);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(107, 25);
+            this.label11.TabIndex = 35;
+            this.label11.Text = "Data Offset:";
+            // 
+            // numericUpDownOffset
+            // 
+            this.numericUpDownOffset.Location = new System.Drawing.Point(519, 211);
+            this.numericUpDownOffset.Name = "numericUpDownOffset";
+            this.numericUpDownOffset.Size = new System.Drawing.Size(180, 31);
+            this.numericUpDownOffset.TabIndex = 6;
+            // 
+            // buttonInputBrowse
+            // 
+            this.buttonInputBrowse.Location = new System.Drawing.Point(611, 28);
+            this.buttonInputBrowse.Name = "buttonInputBrowse";
+            this.buttonInputBrowse.Size = new System.Drawing.Size(88, 35);
+            this.buttonInputBrowse.TabIndex = 1;
+            this.buttonInputBrowse.Text = "Browse...";
+            this.buttonInputBrowse.UseVisualStyleBackColor = true;
+            this.buttonInputBrowse.Click += new System.EventHandler(this.buttonInputBrowse_Click);
+            // 
+            // listBoxBaseGame
+            // 
+            this.listBoxBaseGame.FormattingEnabled = true;
+            this.listBoxBaseGame.ItemHeight = 25;
+            this.listBoxBaseGame.Items.AddRange(new object[] {
+            "SA1 Dreamcast",
+            "SADX Gamecube",
+            "SADX PC",
+            "SADX X360",
+            "SA2 Dreamcast",
+            "SA2B Gamecube",
+            "SA2 PC"});
+            this.listBoxBaseGame.Location = new System.Drawing.Point(6, 100);
+            this.listBoxBaseGame.Name = "listBoxBaseGame";
+            this.listBoxBaseGame.Size = new System.Drawing.Size(379, 154);
+            this.listBoxBaseGame.TabIndex = 2;
+            this.listBoxBaseGame.SelectedIndexChanged += new System.EventHandler(this.listBoxBaseGame_SelectedIndexChanged);
+            // 
+            // numericUpDownScanBinaryKey
+            // 
+            this.numericUpDownScanBinaryKey.Location = new System.Drawing.Point(519, 100);
+            this.numericUpDownScanBinaryKey.Name = "numericUpDownScanBinaryKey";
+            this.numericUpDownScanBinaryKey.Size = new System.Drawing.Size(180, 31);
+            this.numericUpDownScanBinaryKey.TabIndex = 3;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 33);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(42, 25);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "File:";
+            // 
+            // numericUpDownStartAddr
+            // 
+            this.numericUpDownStartAddr.Location = new System.Drawing.Point(519, 137);
+            this.numericUpDownStartAddr.Name = "numericUpDownStartAddr";
+            this.numericUpDownStartAddr.Size = new System.Drawing.Size(180, 31);
+            this.numericUpDownStartAddr.TabIndex = 4;
+            // 
+            // textBoxInputFile
+            // 
+            this.textBoxInputFile.Location = new System.Drawing.Point(54, 30);
+            this.textBoxInputFile.Name = "textBoxInputFile";
+            this.textBoxInputFile.Size = new System.Drawing.Size(549, 31);
+            this.textBoxInputFile.TabIndex = 0;
+            this.textBoxInputFile.TextChanged += new System.EventHandler(this.textBoxInputFile_TextChanged);
+            // 
+            // numericUpDownEndAddr
+            // 
+            this.numericUpDownEndAddr.Location = new System.Drawing.Point(519, 174);
+            this.numericUpDownEndAddr.Name = "numericUpDownEndAddr";
+            this.numericUpDownEndAddr.Size = new System.Drawing.Size(180, 31);
+            this.numericUpDownEndAddr.TabIndex = 5;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(391, 139);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(122, 25);
+            this.label13.TabIndex = 17;
+            this.label13.Text = "Start Address:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 72);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(103, 25);
+            this.label14.TabIndex = 29;
+            this.label14.Text = "Base Game:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(397, 176);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(116, 25);
+            this.label15.TabIndex = 18;
+            this.label15.Text = "End Address:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(416, 102);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(97, 25);
+            this.label16.TabIndex = 19;
+            this.label16.Text = "Binary Key:";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.checkBoxSimpleScan);
+            this.groupBox1.Controls.Add(this.checkBoxShortRot);
+            this.groupBox1.Controls.Add(this.checkBoxBasicSADX);
+            this.groupBox1.Controls.Add(this.checkBoxBigEndian);
+            this.groupBox1.Location = new System.Drawing.Point(534, 280);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(173, 175);
+            this.groupBox1.TabIndex = 41;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "General Settings";
+            // 
+            // checkBoxSimpleScan
+            // 
+            this.checkBoxSimpleScan.AutoSize = true;
+            this.checkBoxSimpleScan.Location = new System.Drawing.Point(6, 100);
+            this.checkBoxSimpleScan.Name = "checkBoxSimpleScan";
+            this.checkBoxSimpleScan.Size = new System.Drawing.Size(134, 29);
+            this.checkBoxSimpleScan.TabIndex = 15;
+            this.checkBoxSimpleScan.Text = "Simple Scan";
+            this.checkBoxSimpleScan.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxShortRot
+            // 
+            this.checkBoxShortRot.AutoSize = true;
+            this.checkBoxShortRot.Location = new System.Drawing.Point(6, 135);
+            this.checkBoxShortRot.Name = "checkBoxShortRot";
+            this.checkBoxShortRot.Size = new System.Drawing.Size(153, 29);
+            this.checkBoxShortRot.TabIndex = 16;
+            this.checkBoxShortRot.Text = "Short Rotation";
+            this.checkBoxShortRot.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxBasicSADX
+            // 
+            this.checkBoxBasicSADX.AutoSize = true;
+            this.checkBoxBasicSADX.Location = new System.Drawing.Point(6, 65);
+            this.checkBoxBasicSADX.Name = "checkBoxBasicSADX";
+            this.checkBoxBasicSADX.Size = new System.Drawing.Size(153, 29);
+            this.checkBoxBasicSADX.TabIndex = 14;
+            this.checkBoxBasicSADX.Text = "Basic+ Models";
+            this.checkBoxBasicSADX.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxBigEndian
+            // 
+            this.checkBoxBigEndian.AutoSize = true;
+            this.checkBoxBigEndian.Location = new System.Drawing.Point(6, 30);
+            this.checkBoxBigEndian.Name = "checkBoxBigEndian";
+            this.checkBoxBigEndian.Size = new System.Drawing.Size(121, 29);
+            this.checkBoxBigEndian.TabIndex = 13;
+            this.checkBoxBigEndian.Text = "Big Endian";
+            this.checkBoxBigEndian.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(510, 479);
+            this.ClientSize = new System.Drawing.Size(729, 798);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -976,6 +1457,20 @@
             this.tabPageSplit.PerformLayout();
             this.tabPageSplitMDL.ResumeLayout(false);
             this.tabPageSplitMDL.PerformLayout();
+            this.tabPageScanner.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNodes)).EndInit();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownOffset)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownScanBinaryKey)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartAddr)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEndAddr)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1047,6 +1542,48 @@
 		private System.Windows.Forms.TextBox textBoxBinaryFilename;
 		private System.Windows.Forms.ComboBox comboBoxLabels;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.TabPage tabPageScanner;
+		private System.Windows.Forms.GroupBox groupBox5;
+		private System.Windows.Forms.NumericUpDown numericUpDownNodes;
+		private System.Windows.Forms.Label labelNodes;
+		private System.Windows.Forms.Button buttonFindBrowse;
+		private System.Windows.Forms.CheckBox checkBoxSearchAction;
+		private System.Windows.Forms.TextBox textBoxFindModel;
+		private System.Windows.Forms.CheckBox checkBoxSearchLandtables;
+		private System.Windows.Forms.CheckBox checkBoxSearchBasic;
+		private System.Windows.Forms.RadioButton radioButtonFindModel;
+		private System.Windows.Forms.CheckBox checkBoxSearchMotion;
+		private System.Windows.Forms.RadioButton radioButtonSearchData;
+		private System.Windows.Forms.CheckBox checkBoxSearchChunk;
+		private System.Windows.Forms.CheckBox checkBoxSearchGinja;
+		private System.Windows.Forms.Button buttonScanStart;
+		private System.Windows.Forms.GroupBox groupBox4;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.CheckBox checkBoxKeepLevel;
+		private System.Windows.Forms.Button buttonOutputBrowse;
+		private System.Windows.Forms.CheckBox checkBoxKeepChild;
+		private System.Windows.Forms.CheckBox checkBoxSkipMeta;
+		private System.Windows.Forms.CheckBox checkBoxSingleOutput;
+		private System.Windows.Forms.TextBox textBoxOutputFolder;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.NumericUpDown numericUpDownOffset;
+		private System.Windows.Forms.Button buttonInputBrowse;
+		private System.Windows.Forms.ListBox listBoxBaseGame;
+		private System.Windows.Forms.NumericUpDown numericUpDownScanBinaryKey;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.NumericUpDown numericUpDownStartAddr;
+		private System.Windows.Forms.TextBox textBoxInputFile;
+		private System.Windows.Forms.NumericUpDown numericUpDownEndAddr;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.CheckBox checkBoxSimpleScan;
+		private System.Windows.Forms.CheckBox checkBoxShortRot;
+		private System.Windows.Forms.CheckBox checkBoxBasicSADX;
+		private System.Windows.Forms.CheckBox checkBoxBigEndian;
 	}
 }
 

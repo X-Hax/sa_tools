@@ -16,12 +16,45 @@ namespace SAModel.DataToolbox
         public MainForm()
 		{
 			InitializeComponent();
+			InitializeNumberBoxes();
+			radioButtonSearchData.Checked = true; // Scan tab
+		}
+
+		private void InitializeNumberBoxes()
+		{
+			// Binary tab
 			numericUpDownBinaryKey.ValueChanged += NumericUpDownBinaryKey_ValueChanged;
 			numericUpDownBinaryAddress.ValueChanged += NumericUpDownBinaryAddress_ValueChanged;
 			numericUpDownBinaryOffset.ValueChanged += NumericUpDownBinaryOffset_ValueChanged;
+			// Scanner tab
+			numericUpDownScanBinaryKey.ValueChanged += NumericUpDownScanBinaryKey_ValueChanged;
+			numericUpDownStartAddr.ValueChanged += NumericUpDownStartAddr_ValueChanged;
+			numericUpDownEndAddr.ValueChanged += NumericUpDownEndAddr_ValueChanged;
+			numericUpDownOffset.ValueChanged += NumericUpDownOffset_ValueChanged;
+			numericUpDownStartAddr.Hexadecimal =
+			   numericUpDownEndAddr.Hexadecimal =
+			   numericUpDownScanBinaryKey.Hexadecimal =
+			   numericUpDownOffset.Hexadecimal = true;
+			numericUpDownStartAddr.Maximum =
+				numericUpDownEndAddr.Maximum =
+				numericUpDownScanBinaryKey.Maximum =
+				numericUpDownOffset.Maximum = new decimal(new int[] {
+			-1,
+			0,
+			0,
+			0});
+			numericUpDownStartAddr.Minimum =
+			numericUpDownEndAddr.Minimum =
+			numericUpDownScanBinaryKey.Minimum =
+			numericUpDownOffset.Minimum
+			= new decimal(new int[] {
+			-1,
+			0,
+			0,
+			-2147483648});
 		}
 
-        string[] SortTemplateList(string[] originalList)
+		string[] SortTemplateList(string[] originalList)
         {
             var ordered = originalList.OrderBy(str => Path.GetFileNameWithoutExtension(str));
             List<string> result = new List<string>();
@@ -700,6 +733,387 @@ namespace SAModel.DataToolbox
 		private void listBoxMDLAnimationFiles_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			buttonMDLAnimFilesRemove.Enabled = listBoxMDLAnimationFiles.SelectedIndices.Count > 0;
+		}
+		#endregion
+
+		#region Scanner Tab
+		private string FileBrowser(string caption, string filter)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog { Filter = filter, Title = caption })
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+					return ofd.FileName;
+			}
+			return "";
+		}
+
+		private void buttonScanStart_Click(object sender, EventArgs e)
+		{
+			// Initialize variables
+			ObjScan.CancelScan = false;
+			ObjScan.NumSteps = 0;
+			ObjScan.CurrentStep = 0;
+			ObjScan.CurrentScanData = "";
+			ObjScan.FoundBasicModels = 0;
+			ObjScan.FoundChunkModels = 0;
+			ObjScan.FoundGCModels = 0;
+			ObjScan.FoundSA1Landtables = 0;
+			ObjScan.FoundSA2Landtables = 0;
+			ObjScan.FoundSA2BLandtables = 0;
+			ObjScan.FoundActions = 0;
+			ObjScan.FoundMotions = 0;
+			ObjScan.FoundSADXLandtables = 0;
+			// Set input parameters
+			ObjScan.SourceFilename = textBoxInputFile.Text;
+			ObjScan.OutputFolder = textBoxOutputFolder.Text;
+			ObjScan.BigEndian = checkBoxBigEndian.Checked;
+			ObjScan.NoMeta = checkBoxSkipMeta.Checked;
+			ObjScan.ReverseColors = listBoxBaseGame.SelectedItem.ToString() == "SADX Gamecube";
+			ObjScan.SingleOutputFolder = checkBoxSingleOutput.Checked;
+			ObjScan.StartAddress = (uint)numericUpDownStartAddr.Value;
+			ObjScan.EndAddress = (uint)numericUpDownEndAddr.Value;
+			ObjScan.ImageBase = (uint)numericUpDownScanBinaryKey.Value;
+			ObjScan.DataOffset = (uint)numericUpDownOffset.Value;
+			ObjScan.BasicModelsAreDX = checkBoxBasicSADX.Checked;
+
+			if (radioButtonSearchData.Checked)
+			{
+				ObjScan.matchfile = "";
+				ObjScan.KeepLandtableModels = checkBoxKeepLevel.Checked;
+				ObjScan.KeepChildModels = checkBoxKeepChild.Checked;
+				ObjScan.SimpleSearch = checkBoxSimpleScan.Checked;
+				ObjScan.ModelParts = (int)numericUpDownNodes.Value;
+				ObjScan.ShortRot = checkBoxShortRot.Checked;
+
+				// Scan parameters
+				if (checkBoxSearchLandtables.Checked)
+				{
+					switch (listBoxBaseGame.SelectedItem.ToString())
+					{
+						case "SA1 Dreamcast":
+							ObjScan.scan_sa1_land = true;
+							ObjScan.scan_sa2_land = false;
+							ObjScan.scan_sa2b_land = false;
+							break;
+						case "SADX Gamecube":
+							ObjScan.scan_sa1_land = true;
+							ObjScan.scan_sa2_land = false;
+							ObjScan.scan_sa2b_land = false;
+							break;
+						case "SADX PC":
+						case "SADX X360":
+							ObjScan.scan_sa1_land = false;
+							ObjScan.scan_sa2_land = false;
+							ObjScan.scan_sa2b_land = false;
+							break;
+						case "SA2 Dreamcast":
+							ObjScan.scan_sa1_land = false;
+							ObjScan.scan_sa2_land = true;
+							ObjScan.scan_sa2b_land = false;
+							break;
+						case "SA2B Gamecube":
+							ObjScan.scan_sa1_land = false;
+							ObjScan.scan_sa2_land = true;
+							ObjScan.scan_sa2b_land = true;
+							break;
+						case "SA2 PC":
+							ObjScan.scan_sa1_land = false;
+							ObjScan.scan_sa2_land = true;
+							ObjScan.scan_sa2b_land = true;
+							break;
+					}
+				}
+				ObjScan.scan_sa1_model = checkBoxSearchBasic.Checked;
+				ObjScan.scan_sa2_model = checkBoxSearchChunk.Checked;
+				ObjScan.scan_sa2b_model = checkBoxSearchGinja.Checked;
+				ObjScan.scan_action = checkBoxSearchAction.Checked;
+				ObjScan.scan_motion = checkBoxSearchMotion.Checked;
+			}
+			else
+				ObjScan.matchfile = textBoxFindModel.Text;
+			using ScanProgress scanProgress = new ScanProgress();
+			scanProgress.ShowDialog();
+		}
+
+		private void listBoxBaseGame_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			switch (listBoxBaseGame.SelectedItem.ToString())
+			{
+				case "SA1 Dreamcast":
+					checkBoxBasicSADX.Checked = false;
+					checkBoxSearchBasic.Checked = true;
+					checkBoxSearchGinja.Checked = false;
+					checkBoxSearchChunk.Checked = false;
+					checkBoxBigEndian.Checked = false;
+					numericUpDownOffset.Value = 0;
+					break;
+				case "SADX Gamecube":
+					checkBoxBasicSADX.Checked = false;
+					checkBoxSearchBasic.Checked = true;
+					checkBoxSearchGinja.Checked = false;
+					checkBoxBigEndian.Checked = true;
+					numericUpDownOffset.Value = 0;
+					break;
+				case "SADX PC":
+					checkBoxBasicSADX.Checked = true;
+					checkBoxSearchBasic.Checked = true;
+					checkBoxSearchGinja.Checked = false;
+					checkBoxBigEndian.Checked = false;
+					numericUpDownOffset.Value = 0;
+					break;
+				case "SADX X360":
+					checkBoxBasicSADX.Checked = true;
+					checkBoxSearchBasic.Checked = true;
+					checkBoxSearchGinja.Checked = false;
+					checkBoxBigEndian.Checked = true;
+					numericUpDownOffset.Value = 0xC800;
+					break;
+				case "SA2 Dreamcast":
+					checkBoxBasicSADX.Checked = false;
+					checkBoxSearchBasic.Checked = false;
+					checkBoxSearchGinja.Checked = false;
+					checkBoxSearchChunk.Checked = true;
+					checkBoxBigEndian.Checked = false;
+					numericUpDownOffset.Value = 0;
+					break;
+				case "SA2B Gamecube":
+					checkBoxBasicSADX.Checked = false;
+					checkBoxSearchBasic.Checked = false;
+					checkBoxSearchGinja.Checked = true;
+					checkBoxSearchChunk.Checked = true;
+					checkBoxBigEndian.Checked = true;
+					numericUpDownOffset.Value = 0;
+					break;
+				case "SA2 PC":
+					checkBoxBasicSADX.Checked = false;
+					checkBoxSearchBasic.Checked = false;
+					checkBoxSearchGinja.Checked = true;
+					checkBoxSearchChunk.Checked = true;
+					checkBoxBigEndian.Checked = false;
+					numericUpDownOffset.Value = 0;
+					break;
+			}
+		}
+
+		private void checkBoxSearchMotion_CheckedChanged(object sender, EventArgs e)
+		{
+			numericUpDownNodes.Visible = labelNodes.Visible = checkBoxSearchMotion.Checked;
+		}
+
+		private void radioButtonSearchData_CheckedChanged(object sender, EventArgs e)
+		{
+			checkBoxSearchBasic.Enabled = checkBoxSearchChunk.Enabled = checkBoxSearchGinja.Enabled =
+				checkBoxSearchAction.Enabled = checkBoxSearchMotion.Enabled = checkBoxSearchLandtables.Enabled =
+				labelNodes.Enabled = labelNodes.Enabled = radioButtonSearchData.Checked;
+			textBoxFindModel.Enabled = buttonFindBrowse.Enabled = radioButtonFindModel.Checked;
+			CheckPaths();
+		}
+
+		private void NumericUpDownScanBinaryKey_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownScanBinaryKey.Value < 0)
+				numericUpDownScanBinaryKey.Value = unchecked((uint)int.Parse(numericUpDownScanBinaryKey.Value.ToString()));
+		}
+
+		private void NumericUpDownStartAddr_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownStartAddr.Value < 0)
+				numericUpDownStartAddr.Value = unchecked((uint)int.Parse(numericUpDownStartAddr.Value.ToString()));
+		}
+
+		private void NumericUpDownEndAddr_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownEndAddr.Value < 0)
+				numericUpDownEndAddr.Value = unchecked((uint)int.Parse(numericUpDownEndAddr.Value.ToString()));
+		}
+
+		private void NumericUpDownOffset_ValueChanged(object sender, EventArgs e)
+		{
+			if (numericUpDownOffset.Value < 0)
+				numericUpDownOffset.Value = unchecked((uint)int.Parse(numericUpDownOffset.Value.ToString()));
+		}
+
+		private void buttonInputBrowse_Click(object sender, EventArgs e)
+		{
+			textBoxInputFile.Text = FileBrowser("Select the input file", "Binary Files|*.exe;*.dll;*.bin;*.rel;*.prs|All Files|*.*");
+			if (!File.Exists(textBoxInputFile.Text))
+				buttonScanStart.Enabled = false;
+			else
+			{
+				FileInfo fi = new FileInfo(textBoxInputFile.Text);
+				numericUpDownEndAddr.Value = fi.Length - numericUpDownOffset.Value;
+				numericUpDownScanBinaryKey.Value = CheckBinaryFile(textBoxInputFile.Text);
+				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))
+					textBoxOutputFolder.Text = Path.Combine(Path.GetDirectoryName(textBoxInputFile.Text), Path.GetFileNameWithoutExtension(textBoxInputFile.Text));
+				buttonScanStart.Enabled = true;
+			}
+		}
+
+		private uint CheckBinaryFile(string path)
+		{
+			if (Path.GetFileName(path).ToLowerInvariant() == "sonicapp.exe")
+			{
+				listBoxBaseGame.SelectedItem = "SADX X360";
+				return 0x82000000;
+			}
+			else if (Path.GetFileName(path).ToLowerInvariant() == "sonic2app.exe")
+			{
+				listBoxBaseGame.SelectedItem = "SA2 PC";
+			}
+			// Common extensions
+			switch (Path.GetExtension(path).ToLowerInvariant())
+			{
+				case ".exe":
+					return 0x400000;
+				case ".dll":
+					return 0x1000000;
+				case ".rel":
+					return 0xC900000;
+			}
+			// Known filenames
+			string filename = Path.GetFileNameWithoutExtension(path).ToUpperInvariant();
+			// Events
+			if (filename.Contains("EV") && filename.Length == 6)
+			{
+				listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+				return 0xCB80000;
+			}
+			else if (filename.Contains("E0") && filename.Length == 5)
+			{
+				return 0xC600000;
+			}
+			// Other known files
+			switch (filename)
+			{
+				case "1ST_READ":
+					return 0x8C010000;
+				case "ADV00":
+				case "ADV02":
+				case "ADV03":
+				case "AL_MAIN":
+				case "B_CHAOS0":
+				case "B_CHAOS2":
+				case "B_CHAOS4":
+				case "B_CHAOS6":
+				case "B_CHAOS7":
+				case "B_E101":
+				case "B_E101R":
+				case "B_EGM1":
+				case "B_EGM2":
+				case "B_EGM3":
+				case "B_ROBO":
+				case "SBOARD":
+				case "SHOOTING":
+				case "MINICART":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0xC900000;
+				case "ADV0100":
+				case "ADV01OBJ":
+				case "ADV0130":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0xC920000;
+				case "A_MOT":
+				case "B_MOT":
+				case "E_MOT":
+				case "S_MOT":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0xCC00000;
+				case "S_SBMOT":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0xCB08000;
+				case "M_SBMOT":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0xCADC000;
+				case "AL_GARDEN00":
+				case "AL_GARDEN01":
+				case "AL_GARDEN02":
+				case "AL_RACE":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0x0CB80000;
+				case "TIKAL_PROG":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0xCB00000;
+				case "ADVERTISE":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0x8C900000;
+				case "MOVIE":
+					listBoxBaseGame.SelectedItem = "SA1 Dreamcast";
+					return 0x8CEB0000;
+				default:
+					return 0;
+			}
+		}
+
+		private void buttonOutputBrowse_Click(object sender, EventArgs e)
+		{
+			using (FolderBrowserDialog fd = new FolderBrowserDialog { Description = "Select the output folder", UseDescriptionForTitle = true })
+				if (fd.ShowDialog() == DialogResult.OK)
+					textBoxOutputFolder.Text = fd.SelectedPath;
+				else
+					textBoxOutputFolder.Text = "";
+		}
+
+		private void CheckPaths()
+		{
+			if (radioButtonSearchData.Checked)
+			{
+				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))
+					buttonScanStart.Enabled = false;
+				else
+					buttonScanStart.Enabled = File.Exists(textBoxInputFile.Text);
+			}
+			else
+			{
+				if (string.IsNullOrEmpty(textBoxFindModel.Text))
+					buttonScanStart.Enabled = false;
+				else
+					buttonScanStart.Enabled = File.Exists(textBoxFindModel.Text);
+			}
+		}
+
+		private void textBoxOutputFolder_TextChanged(object sender, EventArgs e)
+		{
+			CheckPaths();
+		}
+
+		private void textBoxInputFile_TextChanged(object sender, EventArgs e)
+		{
+			CheckPaths();
+		}
+
+		private void buttonFindBrowse_Click(object sender, EventArgs e)
+		{
+			textBoxFindModel.Text = FileBrowser("Select the model file", "Model Files|*.sa1mdl|All Files|*.*");
+			if (!File.Exists(textBoxInputFile.Text) || !File.Exists(textBoxFindModel.Text))
+				buttonScanStart.Enabled = false;
+			else
+			{
+				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))
+					textBoxOutputFolder.Text = Path.Combine(Path.GetDirectoryName(textBoxInputFile.Text), Path.GetFileNameWithoutExtension(textBoxInputFile.Text));
+				buttonScanStart.Enabled = true;
+			}
+		}
+
+		private void EnableOrDisableActions()
+		{
+			checkBoxSearchAction.Enabled = true;
+			if (!checkBoxSearchBasic.Checked && !checkBoxSearchChunk.Checked && !checkBoxSearchGinja.Checked)
+				checkBoxSearchAction.Enabled = checkBoxSearchAction.Checked = false;
+		}
+
+		private void checkBoxSearchBasic_CheckedChanged(object sender, EventArgs e)
+		{
+			EnableOrDisableActions();
+		}
+
+		private void checkBoxSearchChunk_CheckedChanged(object sender, EventArgs e)
+		{
+			EnableOrDisableActions();
+		}
+
+		private void checkBoxSearchGinja_CheckedChanged(object sender, EventArgs e)
+		{
+			EnableOrDisableActions();
 		}
 		#endregion
 	}

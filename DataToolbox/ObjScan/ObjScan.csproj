@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<OutputPath>..\..\build\bin\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<DebugType>embedded</DebugType>
+		<Platforms>x64;x86</Platforms>
+		<UseWindowsForms>True</UseWindowsForms>
+		<ApplicationIcon>objscan.ico</ApplicationIcon>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Content Include="objscan.ico" />
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\sa_tools\DataToolbox\DataToolbox.csproj" />
+    <ProjectReference Include="..\..\sa_tools\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+    <ProjectReference Include="..\..\sa_tools\Libraries\SplitTools\SplitTools.csproj" />
+    <ProjectReference Include="..\..\sa_tools\Libraries\SAModel\SAModel.csproj" />
+  </ItemGroup>
+</Project>
