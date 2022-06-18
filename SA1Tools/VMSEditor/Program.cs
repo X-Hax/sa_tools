@@ -19,10 +19,14 @@ namespace VMSEditor
 				case ".vms":
 				default:
 					byte[] file = File.ReadAllBytes(filepath);
-					// Garden save or upload file
+					// Garden save or Chao upload
 					if (Encoding.GetEncoding(932).GetString(file, 0, 4) == "CHAO" || Encoding.GetEncoding(932).GetString(file, 0, 6) == "A-LIFE" || BitConverter.ToUInt32(file,0) == 0x5FB5ACC1)
 						return new EditorChao();
+					// Event result
 					else if (Encoding.GetEncoding(932).GetString(file, 0, 12) == "EVENT_RESULT" || BitConverter.ToUInt32(file, 0) == 0xDDDECDB2)
+						return new EditorChallengeResult();
+					// World Ranking
+					else if (Encoding.GetEncoding(932).GetString(file, 0, 11) == "DATA_UPLOAD" || BitConverter.ToUInt32(file, 0) == 0xC0B0DEC3)
 						return new EditorChallengeResult();
 					// Download Data / Chao Adventure
 					else

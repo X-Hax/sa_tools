@@ -22,9 +22,10 @@ namespace VMSEditor
 		{
 			if (Program.args.Length > 0)
 			{
-				VMSChallengeResult result = new VMSChallengeResult(File.ReadAllBytes(Program.args[0]));
+				byte[] decr = VMSFile.GetDataFromHTML(File.ReadAllBytes(Program.args[0]));
+				//VMSChallengeResult result = new VMSChallengeResult(File.ReadAllBytes(Program.args[0]));
 				string filename = Path.Combine(Path.GetDirectoryName(Program.args[0]), Path.GetFileNameWithoutExtension(Program.args[0] + "_data.bin"));
-				File.WriteAllBytes(filename, result.GetBytes());
+				File.WriteAllBytes(filename, decr);
 				MessageBox.Show("Decrypted data saved as " + filename + ".");
 			}
 			Close();
