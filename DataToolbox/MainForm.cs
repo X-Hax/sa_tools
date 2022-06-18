@@ -17,6 +17,7 @@ namespace SAModel.DataToolbox
 		{
 			InitializeComponent();
 			InitializeNumberBoxes();
+			tabControl1_SelectedIndexChanged(null, null);
 			radioButtonSearchData.Checked = true; // Scan tab
 		}
 
@@ -897,7 +898,7 @@ namespace SAModel.DataToolbox
 
 		private void checkBoxSearchMotion_CheckedChanged(object sender, EventArgs e)
 		{
-			numericUpDownNodes.Visible = labelNodes.Visible = checkBoxSearchMotion.Checked;
+			numericUpDownNodes.Enabled = labelNodes.Enabled = checkBoxSearchMotion.Checked;
 		}
 
 		private void radioButtonSearchData_CheckedChanged(object sender, EventArgs e)
@@ -1116,5 +1117,27 @@ namespace SAModel.DataToolbox
 			EnableOrDisableActions();
 		}
 		#endregion
+
+		private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			switch (tabControl1.SelectedTab.Text)
+			{
+				case "Binary Data Extractor":
+					toolStripStatusLabelTabDesc.Text = "Extract data from binary files and export it as C structs, Ninja ASCII or JSON.";
+					break;
+				case "Struct Converter":
+					toolStripStatusLabelTabDesc.Text = "Batch export level, model and animation files to C structs, Ninja ASCII or JSON.";
+					break;				
+				case "Split":
+					toolStripStatusLabelTabDesc.Text = "Split binary files using a template for a supported game with or without labels.";
+					break;
+				case "SplitMDL":
+					toolStripStatusLabelTabDesc.Text = "Split SA2/SA2B MDL files.";
+					break;
+				case "Scanner":
+					toolStripStatusLabelTabDesc.Text = "Scan binary files for different types of data.";
+					break;
+			}
+		}
 	}
 }
