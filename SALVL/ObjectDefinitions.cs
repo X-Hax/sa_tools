@@ -44,6 +44,7 @@ namespace SAModel.SALVL
         // Load a level's object list and compile object definitions
         private void LoadObjectList(string objectList, bool Mission = false)
         {
+			bool skipDefsNow = skipDefs;
             List<ObjectData> objectErrors = new List<ObjectData>();
             ObjectListEntry[] objlstini = ObjectList.Load(objectList, false);
             if (Mission)
@@ -63,7 +64,7 @@ namespace SAModel.SALVL
                 ObjectDefinition def;
                 if (objdefini == null)
                 {
-                    skipDefs = true;
+					skipDefsNow = true;
                     defgroup = new ObjectData();
                 }
                 else
@@ -73,7 +74,7 @@ namespace SAModel.SALVL
                     defgroup = objdefini[codeaddr];
                 }
 
-                if (!skipDefs && !string.IsNullOrEmpty(defgroup.CodeFile))
+                if (!skipDefsNow && !string.IsNullOrEmpty(defgroup.CodeFile))
                 {
                     if (progress != null) progress.SetStep("Compiling: " + defgroup.CodeFile);
 

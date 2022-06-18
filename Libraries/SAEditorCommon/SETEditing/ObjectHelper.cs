@@ -27,6 +27,8 @@ namespace SAModel.SAEditorCommon.SETEditing
 
 		public static NJS_OBJECT LoadModel(string file)
 		{
+			if (!System.IO.File.Exists(file))
+				return QuestionBoxModel;
 			return new ModelFile(file).Model;
 		}
 

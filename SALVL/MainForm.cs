@@ -1163,11 +1163,6 @@ namespace SAModel.SALVL
 			NeedRedraw = true;
 		}
 
-		private void changeLevelToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			ShowLevelSelect();
-		}
-
 		private void toolClearGeometry_Click(object sender, EventArgs e)
 		{
 			DialogResult result = MessageBox.Show("This will remove all of the geometry from the stage.\n\nAre you sure you want to continue?",
@@ -1928,7 +1923,7 @@ namespace SAModel.SALVL
 			OpenNewProject();
 		}
 
-		private void changeLevelToolStripMenuItem_Click_1(object sender, EventArgs e)
+		private void changeLevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ShowLevelSelect();
 		}

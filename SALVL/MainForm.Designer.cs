@@ -376,7 +376,7 @@
             this.changeLevelToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.changeLevelToolStripMenuItem.Text = "&Level List...";
             this.changeLevelToolStripMenuItem.ToolTipText = "Show a list of levels in the current Project.";
-            this.changeLevelToolStripMenuItem.Click += new System.EventHandler(this.changeLevelToolStripMenuItem_Click_1);
+            this.changeLevelToolStripMenuItem.Click += new System.EventHandler(this.changeLevelToolStripMenuItem_Click);
             // 
             // noneToolStripMenuItem
             // 
