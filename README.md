@@ -3,9 +3,9 @@ SA Tools is a toolkit for modifying and extracting data from the Sonic Adventure
 
 ## Download SA Tools
 
-[Download SA Tools - x64 version (recommended)](http://mm.reimuhakurei.net/SA%20Tools%20x64.7z)
+[Download SA Tools - x64 version (recommended)](https://mm.reimuhakurei.net/SA%20Tools%20x64.7z)
 
-[Download SA Tools - x86 version](http://mm.reimuhakurei.net/SA%20Tools.7z)
+[Download SA Tools - x86 version](https://mm.reimuhakurei.net/SA%20Tools.7z)
 
 [.NET Desktop Runtime 5.0](https://dotnet.microsoft.com/download/dotnet/5.0) - install the `Desktop` runtime matching the version of SA Tools (x86 or x64).
 
