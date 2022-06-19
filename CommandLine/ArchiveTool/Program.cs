@@ -23,7 +23,7 @@ namespace ArchiveTool
                 Console.WriteLine("Converting GVM to PVM (lossy): ArchiveTool -gvm2pvm <file.gvm> [-prs]\n");
                 Console.WriteLine("Creating a PVM from a folder texture pack (CompilePVM mode): ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
                 Console.WriteLine("Creating a PVM/GVM/XVM/DAT/PB/PVMX/PAK from a folder with textures/sounds: ArchiveTool <foldername> [-pb] [-prs]\nOnly PVR/GVR/XVR textures can be used for PVMs/GVMs/XVMs in this mode.\nThe program will create an archive from files listed in 'index.txt' (or INI file for PAK) in the folder.\nThe -prs option will make the program output a PRS compressed archive.\nThe -pb option will make it output a PB archive instead of PVM.\n");
-                Console.WriteLine("Creating a PRS compressed binary: ArchiveTool <file.bin>\nFile extension must be .BIN for this option to work.\n");
+                Console.WriteLine("Creating a PRS compressed binary: ArchiveTool -prs <file>\n");
                 Console.WriteLine("Press ENTER to exit.");
                 Console.ReadLine();
                 return;
