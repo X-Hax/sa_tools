@@ -170,10 +170,10 @@
             this.comboBoxBinaryFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxBinaryFormat.FormattingEnabled = true;
             this.comboBoxBinaryFormat.Items.AddRange(new object[] {
-            "Basic (SA1/SADX GC)",
-            "BasicDX (SADX PC)",
+            "Basic (SA1/DX GC)",
+            "Basic+ (DX PC/X360)",
             "Chunk (SA2)",
-            "GC (SA2B/SA2PC)"});
+            "Ginja (SA2B/SA2PC)"});
             this.comboBoxBinaryFormat.Location = new System.Drawing.Point(74, 145);
             this.comboBoxBinaryFormat.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxBinaryFormat.Name = "comboBoxBinaryFormat";

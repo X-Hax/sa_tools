@@ -1766,7 +1766,7 @@ namespace SAModel.SAMDL
 				{
 					bool dx = false;
 					if (outfmt == ModelFormat.Basic)
-						dx = MessageBox.Show(this, "Do you want to export in SADX format?", "SAMDL", MessageBoxButtons.YesNo) == DialogResult.Yes;
+						dx = MessageBox.Show(this, "Do you want to export in Basic+ format?", "SAMDL", MessageBoxButtons.YesNo) == DialogResult.Yes;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
@@ -1776,7 +1776,7 @@ namespace SAModel.SAMDL
 							case ModelFormat.Basic:
 							case ModelFormat.BasicDX:
 								if (dx)
-									sw.Write("Basic (with Sonic Adventure DX additions)");
+									sw.Write("Basic+ (with Sonic Adventure DX PC additions)");
 								else
 									sw.Write("Basic");
 								break;

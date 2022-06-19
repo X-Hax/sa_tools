@@ -130,9 +130,9 @@ namespace SAModel.SAMDL
             this.comboBoxModelFormat.FormattingEnabled = true;
             this.comboBoxModelFormat.Items.AddRange(new object[] {
             "Basic",
-            "SADX Basic",
+            "Basic+",
             "Chunk",
-            "GC",
+            "Ginja",
 			"XJ"});
             this.comboBoxModelFormat.Location = new System.Drawing.Point(86, 121);
             this.comboBoxModelFormat.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
