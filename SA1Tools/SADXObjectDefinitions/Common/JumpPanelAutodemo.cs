@@ -44,7 +44,7 @@ namespace SADXObjectDefinitions.Common
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation);
 			((BasicAttach)numbermodel.Attach).Material[0].TextureID =
-				62 + Math.Min(Math.Max((int)item.Scale.X, 0), 9);
+				38 + Math.Min(Math.Max((int)item.Scale.X, 0), 9);
 			result.AddRange(numbermodel.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("CON_REGULAR"), numbermeshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("OBJ_REGULAR"), meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
