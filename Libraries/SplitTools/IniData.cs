@@ -2520,7 +2520,17 @@ namespace SplitTools
 	{
 		public static SkyboxScale[] Load(string filename)
 		{
-			return IniSerializer.Deserialize<SkyboxScale[]>(filename);
+			if (File.Exists(filename))
+				return IniSerializer.Deserialize<SkyboxScale[]>(filename);
+			else
+			{
+				List<SkyboxScale> defaultScaleList = new List<SkyboxScale>();
+				for (int act = 0; act < 6; act++)
+				{
+					defaultScaleList.Add(new SkyboxScale { Far = new Vertex(1.0f, 1.0f, 1.0f), Near = new Vertex(1.0f, 1.0f, 1.0f), Normal = new Vertex(1.0f, 1.0f, 1.0f) });
+				}
+				return defaultScaleList.ToArray();
+			}	
 		}
 
 		public static SkyboxScale[] Load(byte[] file, int address, uint imageBase, int count)
