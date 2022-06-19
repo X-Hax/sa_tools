@@ -62,6 +62,11 @@
             this.diffuseLabel = new System.Windows.Forms.Label();
             this.doneButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.resetButton = new System.Windows.Forms.Button();
+            this.deleteButton = new System.Windows.Forms.Button();
+            this.cloneButton = new System.Windows.Forms.Button();
+            this.downButton = new System.Windows.Forms.Button();
+            this.upButton = new System.Windows.Forms.Button();
             this.flagsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.userFlagsNumeric)).BeginInit();
             this.generalSettingBox.SuspendLayout();
@@ -76,7 +81,7 @@
             this.comboMaterial.Location = new System.Drawing.Point(119, 14);
             this.comboMaterial.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.comboMaterial.Name = "comboMaterial";
-            this.comboMaterial.Size = new System.Drawing.Size(191, 23);
+            this.comboMaterial.Size = new System.Drawing.Size(263, 23);
             this.comboMaterial.TabIndex = 1;
             this.comboMaterial.SelectedIndexChanged += new System.EventHandler(this.comboMaterial_SelectedIndexChanged);
             this.comboMaterial.KeyDown += new System.Windows.Forms.KeyEventHandler(this.onKeyDown);
@@ -490,9 +495,9 @@
             this.diffuseLabel.Location = new System.Drawing.Point(16, 25);
             this.diffuseLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.diffuseLabel.Name = "diffuseLabel";
-            this.diffuseLabel.Size = new System.Drawing.Size(88, 15);
+            this.diffuseLabel.Size = new System.Drawing.Size(79, 15);
             this.diffuseLabel.TabIndex = 0;
-            this.diffuseLabel.Text = "Ambient Color:";
+            this.diffuseLabel.Text = "Diffuse Color:";
             // 
             // doneButton
             // 
@@ -513,6 +518,63 @@
             this.toolTip.InitialDelay = 500;
             this.toolTip.ReshowDelay = 100;
             // 
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(573, 13);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(57, 23);
+            this.resetButton.TabIndex = 11;
+            this.resetButton.Text = "Reset";
+            this.toolTip.SetToolTip(this.resetButton, "Reset the material list to the state it was when this dialog opened.");
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.Enabled = false;
+            this.deleteButton.Location = new System.Drawing.Point(510, 13);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(57, 23);
+            this.deleteButton.TabIndex = 10;
+            this.deleteButton.Text = "Delete";
+            this.toolTip.SetToolTip(this.deleteButton, "Delete the material.");
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            // 
+            // cloneButton
+            // 
+            this.cloneButton.Location = new System.Drawing.Point(447, 13);
+            this.cloneButton.Name = "cloneButton";
+            this.cloneButton.Size = new System.Drawing.Size(57, 23);
+            this.cloneButton.TabIndex = 9;
+            this.cloneButton.Text = "Clone";
+            this.toolTip.SetToolTip(this.cloneButton, "Create an identical copy of the material.");
+            this.cloneButton.UseVisualStyleBackColor = true;
+            this.cloneButton.Click += new System.EventHandler(this.cloneButton_Click);
+            // 
+            // downButton
+            // 
+            this.downButton.Location = new System.Drawing.Point(418, 13);
+            this.downButton.Name = "downButton";
+            this.downButton.Size = new System.Drawing.Size(23, 23);
+            this.downButton.TabIndex = 8;
+            this.downButton.Text = "↓";
+            this.toolTip.SetToolTip(this.downButton, "Move the material down on the material list.");
+            this.downButton.UseVisualStyleBackColor = true;
+            this.downButton.Click += new System.EventHandler(this.downButton_Click);
+            // 
+            // upButton
+            // 
+            this.upButton.Enabled = false;
+            this.upButton.Location = new System.Drawing.Point(389, 13);
+            this.upButton.Name = "upButton";
+            this.upButton.Size = new System.Drawing.Size(23, 23);
+            this.upButton.TabIndex = 7;
+            this.upButton.Text = "↑";
+            this.toolTip.SetToolTip(this.upButton, "Move the material up on the material list.");
+            this.upButton.UseVisualStyleBackColor = true;
+            this.upButton.Click += new System.EventHandler(this.upButton_Click);
+            // 
             // GCMaterialEditor
             // 
             this.AcceptButton = this.doneButton;
@@ -521,6 +583,11 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(648, 310);
             this.ControlBox = false;
+            this.Controls.Add(this.resetButton);
+            this.Controls.Add(this.deleteButton);
+            this.Controls.Add(this.cloneButton);
+            this.Controls.Add(this.downButton);
+            this.Controls.Add(this.upButton);
             this.Controls.Add(this.doneButton);
             this.Controls.Add(this.generalSettingBox);
             this.Controls.Add(this.flagsGroupBox);
@@ -585,5 +652,10 @@
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.Label labelFlags;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button resetButton;
+		private System.Windows.Forms.Button deleteButton;
+		private System.Windows.Forms.Button cloneButton;
+		private System.Windows.Forms.Button downButton;
+		private System.Windows.Forms.Button upButton;
 	}
 }

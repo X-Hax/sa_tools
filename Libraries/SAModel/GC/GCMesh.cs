@@ -180,7 +180,7 @@ namespace SAModel.GC
 						break;
 					case ParameterType.AmbientColor:
 						AmbientColorParameter ambientCol = param as AmbientColorParameter;
-						material.AmbientColor = ambientCol.AmbientColor.SystemCol;
+						material.DiffuseColor = ambientCol.AmbientColor.SystemCol;
 						break;
 					case ParameterType.Texture:
 						TextureParameter tex = param as TextureParameter;
@@ -237,7 +237,7 @@ namespace SAModel.GC
 			}
 
 			// creating the vertex data
-			SAModel.VertexData[] vertData = new SAModel.VertexData[corners.Count];
+			VertexData[] vertData = new VertexData[corners.Count];
 			bool hasNormals = normals != null;
 			bool hasColors = colors != null;
 			bool hasUVs = uvs != null;

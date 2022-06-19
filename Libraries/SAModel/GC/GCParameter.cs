@@ -391,7 +391,7 @@ namespace SAModel.GC
 	public class AmbientColorParameter : GCParameter
 	{
 		/// <summary>
-		/// The Color of the 
+		/// The Color of the gemoetry
 		/// </summary>
 		public Color AmbientColor
 		{
