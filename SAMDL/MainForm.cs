@@ -1972,6 +1972,8 @@ namespace SAModel.SAMDL
 					catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 					catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
 					break;
+				case GC.GCAttach:
+					break;
 			}
 			selectedObject.Attach = attach;
             RebuildModelCache();
@@ -3610,57 +3612,64 @@ namespace SAModel.SAMDL
 				if (!string.IsNullOrEmpty(dup))
 					duplicateLabels.Add(dup);
 
-				if (obj.Attach is BasicAttach)
+				switch (obj.Attach)
 				{
-					BasicAttach basicatt = (BasicAttach)obj.Attach;
-
-					basicatt.MaterialName = FixLabel(basicatt.MaterialName, checkingLabels, out dup);
-					if (!string.IsNullOrEmpty(dup))
-						duplicateLabels.Add(dup);
-
-					basicatt.MeshName = FixLabel(basicatt.MeshName, checkingLabels, out dup);
-					if (!string.IsNullOrEmpty(dup))
-						duplicateLabels.Add(dup);
-
-					basicatt.NormalName = FixLabel(basicatt.NormalName, checkingLabels, out dup);
-					if (!string.IsNullOrEmpty(dup))
-						duplicateLabels.Add(dup);
-
-					basicatt.VertexName= FixLabel(basicatt.VertexName, checkingLabels, out dup);
-					if (!string.IsNullOrEmpty(dup))
-						duplicateLabels.Add(dup);
-
-					if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
-						foreach (NJS_MESHSET meshset in basicatt.Mesh)
+					case BasicAttach:
 						{
-							meshset.PolyName = FixLabel(meshset.PolyName, checkingLabels, out dup);
+							BasicAttach basicatt = (BasicAttach)obj.Attach;
+
+							basicatt.MaterialName = FixLabel(basicatt.MaterialName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
 
-							meshset.UVName = FixLabel(meshset.UVName, checkingLabels, out dup);
+							basicatt.MeshName = FixLabel(basicatt.MeshName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
 
-							meshset.VColorName = FixLabel(meshset.VColorName, checkingLabels, out dup);
+							basicatt.NormalName = FixLabel(basicatt.NormalName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
 
-							meshset.PolyNormalName = FixLabel(meshset.PolyNormalName, checkingLabels, out dup);
+							basicatt.VertexName = FixLabel(basicatt.VertexName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
+								foreach (NJS_MESHSET meshset in basicatt.Mesh)
+								{
+									meshset.PolyName = FixLabel(meshset.PolyName, checkingLabels, out dup);
+									if (!string.IsNullOrEmpty(dup))
+										duplicateLabels.Add(dup);
+
+									meshset.UVName = FixLabel(meshset.UVName, checkingLabels, out dup);
+									if (!string.IsNullOrEmpty(dup))
+										duplicateLabels.Add(dup);
+
+									meshset.VColorName = FixLabel(meshset.VColorName, checkingLabels, out dup);
+									if (!string.IsNullOrEmpty(dup))
+										duplicateLabels.Add(dup);
+
+									meshset.PolyNormalName = FixLabel(meshset.PolyNormalName, checkingLabels, out dup);
+									if (!string.IsNullOrEmpty(dup))
+										duplicateLabels.Add(dup);
+								}
+						}
+						break;
+					case ChunkAttach:
+						{
+							ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+
+							chunkatt.PolyName = FixLabel(chunkatt.PolyName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							chunkatt.VertexName = FixLabel(chunkatt.VertexName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
 						}
-				}
-				else if (obj.Attach is ChunkAttach)
-				{
-					ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
-
-					chunkatt.PolyName = FixLabel(chunkatt.PolyName, checkingLabels, out dup);
-					if (!string.IsNullOrEmpty(dup))
-						duplicateLabels.Add(dup);
-
-					chunkatt.VertexName = FixLabel(chunkatt.VertexName, checkingLabels, out dup);
-					if (!string.IsNullOrEmpty(dup))
-						duplicateLabels.Add(dup);
+						break;
+					case GC.GCAttach:
+						break;
 				}
 
 			}
@@ -4177,14 +4186,14 @@ namespace SAModel.SAMDL
 						break;
 					}
 			}
-			ModelDataEditor me = new ModelDataEditor(model, idx);
-			if (me.ShowDialog(this) == DialogResult.OK)
-			{
-				model = me.editedHierarchy.Clone();
-				RebuildModelCache();
-				NeedRedraw = true;
-				unsavedChanges = true;
-			}
+				ModelDataEditor me = new ModelDataEditor(model, idx);
+				if (me.ShowDialog(this) == DialogResult.OK)
+				{
+					model = me.editedHierarchy.Clone();
+					RebuildModelCache();
+					NeedRedraw = true;
+					unsavedChanges = true;
+				}
 		}
 
 		private void modelInfoEditorToolStripMenuItem_Click(object sender, EventArgs e)
