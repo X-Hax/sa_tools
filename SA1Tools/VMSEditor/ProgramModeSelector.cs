@@ -35,6 +35,7 @@ namespace VMSEditor
             editor.Show();
 			Hide();
 		}
+
 		private void buttonChallengeResultEditor_Click(object sender, EventArgs e)
 		{
 			EditorChallengeResult editor = new EditorChallengeResult();
@@ -55,5 +56,5 @@ namespace VMSEditor
 					Hide();
 				}
         }
-    }
+	}
 }

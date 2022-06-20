@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using VMSEditor.Properties;
 
 namespace VMSEditor
 {
@@ -33,12 +27,14 @@ namespace VMSEditor
 			numericUpDownFrames.Value = result.ResultData.EventTime;
 			comboBoxCharacter.SelectedIndex = (int)result.ResultData.Character;
 			labelTime.Text = FramesToTimeString((int)result.ResultData.EventTime);
+			radioButtonCart.Checked = result.DataType == DataIDs.CartResultChecksum;
+			radioButtonEvent.Checked = result.DataType == DataIDs.EventResultChecksum;
 		}
 
 		private string FramesToTimeString(int frames)
 		{
 			int miliseconds = (int)((float)(frames % 60) / 60.0f * 100.0f);
-			int seconds = frames / 60;
+			int seconds = frames / 60 - 60 * (frames / 3600);
 			int minutes = frames / 3600;
 			return minutes.ToString("D2") + ":" + seconds.ToString("D2") + ":" + miliseconds.ToString("D2");
 		}
@@ -55,7 +51,7 @@ namespace VMSEditor
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog { Filter = "Event Result US|SONICADV_H06*.VMS|Event Result JP|SONICADV_H03*.VMS|VMS Files|*.VMS|All Files|*.*" })
+			using (OpenFileDialog dlg = new OpenFileDialog { Filter = "Cart Result US|SONICADV_H05*.VMS|Cart Result JP|SONICADV_H02*.VMS|Minigame Result US|SONICADV_H06*.VMS|Minigame Result JP|SONICADV_H03*.VMS|VMS Files|*.VMS|All Files|*.*" })
 			{
 				if (dlg.ShowDialog() == DialogResult.OK)
 					LoadEventResult(dlg.FileName);
@@ -70,6 +66,11 @@ namespace VMSEditor
 		private void EditorChallengeResult_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			Application.Exit();
+		}
+
+		private void radioButtonCart_CheckedChanged(object sender, EventArgs e)
+		{
+			pictureBoxDataType.Image = radioButtonCart.Checked ? Resources.cartresult : Resources.eventresult;
 		}
 	}
 }

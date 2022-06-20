@@ -25,6 +25,9 @@ namespace VMSEditor
 					// Event result
 					else if (Encoding.GetEncoding(932).GetString(file, 0, 12) == "EVENT_RESULT" || BitConverter.ToUInt32(file, 0) == 0xDDDECDB2)
 						return new EditorChallengeResult();
+					// Cart result
+					else if (Encoding.GetEncoding(932).GetString(file, 0, 9) == "CART_TIME" || BitConverter.ToUInt32(file, 0) == 0xC0C4B0B6)
+						return new EditorChallengeResult();
 					// World Ranking
 					else if (Encoding.GetEncoding(932).GetString(file, 0, 11) == "DATA_UPLOAD" || BitConverter.ToUInt32(file, 0) == 0xC0B0DEC3)
 						return new EditorChallengeResult();
