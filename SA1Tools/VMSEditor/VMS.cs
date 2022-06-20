@@ -1,6 +1,7 @@
 ﻿using SplitTools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace VMSEditor
@@ -118,6 +119,14 @@ namespace VMSEditor
 				}
 			}
 			return null;
+		}
+
+		private void SaveDecodedData(string source)
+		{
+			byte[] decr = VMSFile.GetDataFromHTML(File.ReadAllBytes(source));
+			string filename = Path.Combine(Path.GetDirectoryName(source), Path.GetFileNameWithoutExtension(source + "_data.bin"));
+			File.WriteAllBytes(filename, decr);
+			System.Windows.Forms.MessageBox.Show("Decrypted data saved as " + filename + ".");
 		}
 
 		public VMSFile() { }

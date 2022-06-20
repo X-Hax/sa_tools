@@ -32,11 +32,17 @@ namespace VMSEditor
 		private void buttonVMIEditor_Click(object sender, EventArgs e)
 		{
             EditorVMI editor = new EditorVMI();
-            Hide();
             editor.Show();
-        }
+			Hide();
+		}
+		private void buttonChallengeResultEditor_Click(object sender, EventArgs e)
+		{
+			EditorChallengeResult editor = new EditorChallengeResult();
+			editor.Show();
+			Hide();
+		}
 
-        private void buttonOpenFile_Click(object sender, EventArgs e)
+		private void buttonOpenFile_Click(object sender, EventArgs e)
         {          
             using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "Supported Files|*.vms;*.vmi|VMS Files|*.vms|VMI Files|*.vmi|All Files|*.*" })
                 if (od.ShowDialog(this) == DialogResult.OK)
@@ -45,9 +51,9 @@ namespace VMSEditor
                     Program.args = new string[1];
                     Program.args[0] = od.FileName;
                     editor = Program.CheckFile(od.FileName);
-                    Hide();
                     editor.Show();
-                }
+					Hide();
+				}
         }
     }
 }

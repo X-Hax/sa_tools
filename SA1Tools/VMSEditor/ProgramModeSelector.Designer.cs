@@ -181,18 +181,19 @@ namespace VMSEditor
 			// 
 			// buttonChallengeResultEditor
 			// 
-			this.buttonChallengeResultEditor.Enabled = false;
+			this.buttonChallengeResultEditor.Enabled = true;
 			this.buttonChallengeResultEditor.Location = new System.Drawing.Point(404, 60);
             this.buttonChallengeResultEditor.Name = "buttonChallengeResultEditor";
             this.buttonChallengeResultEditor.Size = new System.Drawing.Size(210, 48);
             this.buttonChallengeResultEditor.TabIndex = 10;
-            this.buttonChallengeResultEditor.Text = "Challenge Result Editor";
+            this.buttonChallengeResultEditor.Text = "Challenge Result Viewer";
             this.buttonChallengeResultEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.buttonChallengeResultEditor.UseVisualStyleBackColor = true;
-            // 
-            // pictureBox6
-            // 
-            this.pictureBox6.Enabled = false;
+			this.buttonChallengeResultEditor.Click += buttonChallengeResultEditor_Click;
+			// 
+			// pictureBox6
+			// 
+			this.pictureBox6.Enabled = false;
             this.pictureBox6.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox6.Image")));
             this.pictureBox6.InitialImage = null;
             this.pictureBox6.Location = new System.Drawing.Point(340, 128);
