@@ -910,28 +910,6 @@ namespace VMSEditor
             toolStripStatusHint.Text = "Unknown.";
         }
 
-        private void encryptVMSFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "VMS Files|*.vms|All Files|*.*" })
-                if (od.ShowDialog(this) == DialogResult.OK)
-                {
-                    byte[] data = File.ReadAllBytes(od.FileName);
-                    ProcessVMS(ref data);
-                    File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(od.FileName), Path.GetFileNameWithoutExtension(od.FileName)) + "_dec.vms", data);
-                }
-        }
-
-        private void encryptRawDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "bin", Filter = "All Files|*.*" })
-                if (od.ShowDialog(this) == DialogResult.OK)
-                {
-                    byte[] data = File.ReadAllBytes(od.FileName);
-                    VMSFile.DecryptData(ref data);
-                    File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(od.FileName), Path.GetFileNameWithoutExtension(od.FileName)) + "_dec.bin", data);
-                }
-        }
-
         private void checkBoxSonic_Click(object sender, EventArgs e)
         {
             toolStripStatusHint.Text = "";

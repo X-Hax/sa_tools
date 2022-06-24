@@ -46,10 +46,6 @@ namespace VMSEditor
             this.encryptDLCFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createVMIFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportBinaryDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.encryptDecryptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.encryptVMSFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.encryptRawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.VMSEditorManualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gitHubIssueTrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -156,7 +152,6 @@ namespace VMSEditor
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
-            this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -296,41 +291,6 @@ namespace VMSEditor
             this.exportBinaryDataToolStripMenuItem.ToolTipText = "When a DLC is exported as a folder, save raw model data together with the convert" +
     "ed model.";
             // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.encryptDecryptToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 22);
-            this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // encryptDecryptToolStripMenuItem
-            // 
-            this.encryptDecryptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.encryptVMSFileToolStripMenuItem,
-            this.encryptRawDataToolStripMenuItem});
-            this.encryptDecryptToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.encrypt;
-            this.encryptDecryptToolStripMenuItem.Name = "encryptDecryptToolStripMenuItem";
-            this.encryptDecryptToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.encryptDecryptToolStripMenuItem.Text = "Encrypt/Decrypt";
-            this.encryptDecryptToolStripMenuItem.ToolTipText = "Encrypt or decrypt VMS files manually.";
-            // 
-            // encryptVMSFileToolStripMenuItem
-            // 
-            this.encryptVMSFileToolStripMenuItem.Name = "encryptVMSFileToolStripMenuItem";
-            this.encryptVMSFileToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.encryptVMSFileToolStripMenuItem.Text = "VMS File...";
-            this.encryptVMSFileToolStripMenuItem.ToolTipText = "Encrypt or decrypt a VMS file. This mode ignores the VMS header.";
-            this.encryptVMSFileToolStripMenuItem.Click += new System.EventHandler(this.encryptVMSFileToolStripMenuItem_Click);
-            // 
-            // encryptRawDataToolStripMenuItem
-            // 
-            this.encryptRawDataToolStripMenuItem.Name = "encryptRawDataToolStripMenuItem";
-            this.encryptRawDataToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.encryptRawDataToolStripMenuItem.Text = "Raw Data...";
-            this.encryptRawDataToolStripMenuItem.ToolTipText = "Encrypt or decrypt raw data.";
-            this.encryptRawDataToolStripMenuItem.Click += new System.EventHandler(this.encryptRawDataToolStripMenuItem_Click);
-            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -344,7 +304,7 @@ namespace VMSEditor
             // 
             this.VMSEditorManualToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.help;
             this.VMSEditorManualToolStripMenuItem.Name = "VMSEditorManualToolStripMenuItem";
-            this.VMSEditorManualToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.VMSEditorManualToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.VMSEditorManualToolStripMenuItem.Text = "DLC Tool Help";
             this.VMSEditorManualToolStripMenuItem.Click += new System.EventHandler(this.dLCToolManualToolStripMenuItem_Click);
             // 
@@ -352,7 +312,7 @@ namespace VMSEditor
             // 
             this.gitHubIssueTrackerToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.bug;
             this.gitHubIssueTrackerToolStripMenuItem.Name = "gitHubIssueTrackerToolStripMenuItem";
-            this.gitHubIssueTrackerToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.gitHubIssueTrackerToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.gitHubIssueTrackerToolStripMenuItem.Text = "Issue Tracker";
             this.gitHubIssueTrackerToolStripMenuItem.Click += new System.EventHandler(this.gitHubIssueTrackerToolStripMenuItem_Click);
             // 
@@ -748,7 +708,7 @@ namespace VMSEditor
             this.tabPageStrings.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageStrings.Name = "tabPageStrings";
             this.tabPageStrings.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPageStrings.Size = new System.Drawing.Size(611, 190);
+            this.tabPageStrings.Size = new System.Drawing.Size(611, 204);
             this.tabPageStrings.TabIndex = 1;
             this.tabPageStrings.Text = "Messages";
             // 
@@ -949,7 +909,7 @@ namespace VMSEditor
             this.tabPageTextures.Location = new System.Drawing.Point(4, 24);
             this.tabPageTextures.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabPageTextures.Name = "tabPageTextures";
-            this.tabPageTextures.Size = new System.Drawing.Size(611, 190);
+            this.tabPageTextures.Size = new System.Drawing.Size(611, 204);
             this.tabPageTextures.TabIndex = 4;
             this.tabPageTextures.Text = "Textures";
             // 
@@ -1111,7 +1071,7 @@ namespace VMSEditor
             this.tabPageModel.Margin = new System.Windows.Forms.Padding(2);
             this.tabPageModel.Name = "tabPageModel";
             this.tabPageModel.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPageModel.Size = new System.Drawing.Size(611, 190);
+            this.tabPageModel.Size = new System.Drawing.Size(611, 204);
             this.tabPageModel.TabIndex = 3;
             this.tabPageModel.Text = "Model";
             // 
@@ -1211,7 +1171,7 @@ namespace VMSEditor
             this.tabPageSound.Location = new System.Drawing.Point(4, 24);
             this.tabPageSound.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabPageSound.Name = "tabPageSound";
-            this.tabPageSound.Size = new System.Drawing.Size(611, 190);
+            this.tabPageSound.Size = new System.Drawing.Size(611, 204);
             this.tabPageSound.TabIndex = 5;
             this.tabPageSound.Text = "Sound";
             // 
@@ -1454,9 +1414,5 @@ namespace VMSEditor
 		private System.Windows.Forms.CheckBox checkBoxRectangleTexture;
 		private System.Windows.Forms.ToolStripMenuItem createVMIFileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusHint;
-		private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem encryptDecryptToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem encryptVMSFileToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem encryptRawDataToolStripMenuItem;
 	}
 }

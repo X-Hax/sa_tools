@@ -19,7 +19,7 @@ namespace VMSEditor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -65,7 +65,17 @@ namespace VMSEditor.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap _new {
             get {
-                object obj = ResourceManager.GetObject("_new", resourceCulture);
+                object obj = ResourceManager.GetObject("new", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap additionaltools {
+            get {
+                object obj = ResourceManager.GetObject("additionaltools", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -283,6 +293,16 @@ namespace VMSEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cartresult {
+            get {
+                object obj = ResourceManager.GetObject("cartresult", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap chaoAdv {
             get {
                 object obj = ResourceManager.GetObject("chaoAdv", resourceCulture);
@@ -416,6 +436,16 @@ namespace VMSEditor.Properties {
         internal static System.Drawing.Bitmap encrypt {
             get {
                 object obj = ResourceManager.GetObject("encrypt", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap eventresult {
+            get {
+                object obj = ResourceManager.GetObject("eventresult", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -701,12 +731,42 @@ namespace VMSEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] INTERNAT {
+            get {
+                object obj = ResourceManager.GetObject("INTERNAT", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ml_panel {
             get {
                 object obj = ResourceManager.GetObject("ml_panel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NTSCJ {
+            get {
+                object obj = ResourceManager.GetObject("NTSCJ", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NTSCU {
+            get {
+                object obj = ResourceManager.GetObject("NTSCU", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -831,6 +891,26 @@ namespace VMSEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] save_jp {
+            get {
+                object obj = ResourceManager.GetObject("save_jp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] save_us {
+            get {
+                object obj = ResourceManager.GetObject("save_us", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap saveas {
@@ -859,66 +939,15 @@ namespace VMSEditor.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-
-		/// <summary>
-		///   Looks up a localized resource of type System.Drawing.Bitmap.
-		/// </summary>
-		internal static System.Drawing.Bitmap cartresult
-		{
-			get
-			{
-				object obj = ResourceManager.GetObject("cartresult", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized resource of type System.Drawing.Bitmap.
-		/// </summary>
-		internal static System.Drawing.Bitmap eventresult
-		{
-			get
-			{
-				object obj = ResourceManager.GetObject("eventresult", resourceCulture);
-				return ((System.Drawing.Bitmap)(obj));
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized resource of type System.Byte[].
-		/// </summary>
-		internal static byte[] save_int
-		{
-			get
-			{
-				object obj = ResourceManager.GetObject("save_int", resourceCulture);
-				return ((byte[])(obj));
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized resource of type System.Byte[].
-		/// </summary>
-		internal static byte[] save_jp
-		{
-			get
-			{
-				object obj = ResourceManager.GetObject("save_jp", resourceCulture);
-				return ((byte[])(obj));
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized resource of type System.Byte[].
-		/// </summary>
-		internal static byte[] save_us
-		{
-			get
-			{
-				object obj = ResourceManager.GetObject("save_us", resourceCulture);
-				return ((byte[])(obj));
-			}
-		}
-
-	}
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap vmi_smol {
+            get {
+                object obj = ResourceManager.GetObject("vmi_smol", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+    }
 }

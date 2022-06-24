@@ -118,259 +118,271 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="icon_lion" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_lion.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="_new" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\new.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="rub" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\rub.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="saveas" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\saveas.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="save" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_banb" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_banb.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="additionaltools" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\additionaltools.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="al_eye00" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\al_eye00.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="r_nuckles2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_nuckles2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_grape" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_grape.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_plum" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_plum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_lazynut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_lazynut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_goma" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_goma.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_eye01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_eye01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="al_eye02" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\al_eye02.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_suka" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_suka.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi01" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="bug" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\bug.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="help" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\help.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi02" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi02.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_rak" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_rak.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_lemon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_lemon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi08" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi08.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_chaonut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_chaonut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi05" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi05.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_eye03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_eye03.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="al_eye04" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\al_eye04.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="fruit_coconut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_coconut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_eye07" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_eye07.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="eme" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\eme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_koa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_koa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="download_jp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\download_jp.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="icon_usa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_usa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cartresult" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cartresult.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ss_panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ss_panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_mog" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_mog.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="chaoUpload" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\chaoUpload.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="r_e102" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_e102.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="editorRankings" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\editorRankings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_eye03" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_eye03.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_eye01" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_eye01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="pal" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_tuba" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_tuba.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="r_chao" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_chao.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_wara" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_wara.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_eye05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_eye05.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="al_eye06" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\al_eye06.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ame" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ame.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_eye09" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_eye09.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_kuj" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_kuj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="r_big3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_big3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi00" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi00.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="editorDLC" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\editorDLC.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ec_panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ec_panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="encrypt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\encrypt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_cherry" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_cherry.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_hastnut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_hastnut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi03" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi03.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="chaoadv_us" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\chaoadv_us.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="download_us" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\download_us.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="r_sonic2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_sonic2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fruit_lifenut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_lifenut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="export" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\export.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="chaoDownload" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\chaoDownload.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi07" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi07.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ml_panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ml_panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_eye05" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_eye05.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_eye07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_eye07.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="al_eye08" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\al_eye08.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="r_amy" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_amy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_eye09" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_eye09.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_pen" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_pen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_kuchi00" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi00.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_gori" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_gori.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_kuchi01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="r_tailes2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\r_tailes2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_kuchi02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi02.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icon_oum" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_oum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="import" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\import.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="icon_zou" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icon_zou.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="editorChao" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\editorChao.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="chaoAdv" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\chaoAdv.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="editorChao2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\editorChao2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="chaoadv_jp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\chaoadv_jp.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="saf" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\saf.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="vmi" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\vmi.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="al_kuchi06" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\al_kuchi06.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_kuchi03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi03.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="al_kuchi04" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\al_kuchi04.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="fruit_starnut" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fruit_starnut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="al_kuchi05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi05.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="al_kuchi06" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi06.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="al_kuchi07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi07.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="al_kuchi08" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\al_kuchi08.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ame" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ame.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bug" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bug.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cartresult" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cartresult.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="chaoAdv" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\chaoAdv.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="chaoadv_jp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\chaoadv_jp.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chaoadv_us" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\chaoadv_us.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="chaoDownload" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\chaoDownload.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="chaoUpload" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\chaoUpload.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="download_jp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\download_jp.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="download_us" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\download_us.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ec_panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ec_panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="editorChao" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\editorChao.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="editorChao2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\editorChao2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="editorDLC" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\editorDLC.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="editorRankings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\editorRankings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="eme" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eme.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="encrypt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\encrypt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="eventresult" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\eventresult.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="save_int" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="export" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\export.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_chaonut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_chaonut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_cherry" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_cherry.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_coconut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_coconut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_grape" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_grape.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_hastnut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_hastnut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_lazynut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_lazynut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_lemon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_lemon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_lifenut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_lifenut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_plum" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_plum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fruit_starnut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fruit_starnut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="help" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\help.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_banb" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_banb.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_goma" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_goma.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_gori" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_gori.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_koa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_koa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_kuj" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_kuj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_lion" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_lion.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_mog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_mog.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_oum" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_oum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_pen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_pen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_rak" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_rak.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_suka" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_suka.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_tuba" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_tuba.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_usa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_usa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_wara" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_wara.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icon_zou" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icon_zou.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="import" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\import.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="INTERNAT" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\INTERNAT.VMS;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="save_jp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="ml_panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ml_panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="new" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NTSCJ" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\NTSCJ.VMS;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="save_us" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="NTSCU" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\NTSCU.vms;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="open" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="rub" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rub.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_amy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_amy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_big3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_big3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_chao" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_chao.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_e102" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_e102.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_nuckles2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_nuckles2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_sonic2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_sonic2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="r_tailes2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\r_tailes2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="saf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\saf.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="saveas" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\saveas.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="save_jp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_jp.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="save_us" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_us.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ss_panel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ss_panel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="vmi" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\vmi.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="vmi_smol" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\vmi_smol.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

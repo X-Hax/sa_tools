@@ -29,6 +29,7 @@ namespace VMSEditor
 		/// </summary>
 		private void InitializeComponent()
 		{
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProgramModeSelector));
             this.label1 = new System.Windows.Forms.Label();
             this.buttonExit = new System.Windows.Forms.Button();
@@ -44,12 +45,21 @@ namespace VMSEditor
             this.buttonChallengeResultEditor = new System.Windows.Forms.Button();
             this.pictureBox7 = new System.Windows.Forms.PictureBox();
             this.buttonWorldRankingsEditor = new System.Windows.Forms.Button();
+            this.pictureBox6 = new System.Windows.Forms.PictureBox();
+            this.buttonAdditional = new System.Windows.Forms.Button();
+            this.contextMenuStripTools = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.encryptDecryptDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vMSFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wholeFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decodeUploadDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
+            this.contextMenuStripTools.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -209,7 +219,6 @@ namespace VMSEditor
             // 
             // buttonWorldRankingsEditor
             // 
-            this.buttonWorldRankingsEditor.Enabled = true;
             this.buttonWorldRankingsEditor.Location = new System.Drawing.Point(265, 85);
             this.buttonWorldRankingsEditor.Margin = new System.Windows.Forms.Padding(2);
             this.buttonWorldRankingsEditor.Name = "buttonWorldRankingsEditor";
@@ -218,13 +227,81 @@ namespace VMSEditor
             this.buttonWorldRankingsEditor.Text = "World Rank Converter";
             this.buttonWorldRankingsEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.buttonWorldRankingsEditor.UseVisualStyleBackColor = true;
-			this.buttonWorldRankingsEditor.Click += buttonWorldRankEditor_Click;
-			// 
-			// ProgramModeSelector
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            // 
+            // pictureBox6
+            // 
+            this.pictureBox6.Enabled = false;
+            this.pictureBox6.Image = global::VMSEditor.Properties.Resources.additionaltools;
+            this.pictureBox6.InitialImage = null;
+            this.pictureBox6.Location = new System.Drawing.Point(227, 130);
+            this.pictureBox6.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox6.Name = "pictureBox6";
+            this.pictureBox6.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox6.TabIndex = 16;
+            this.pictureBox6.TabStop = false;
+            // 
+            // buttonAdditional
+            // 
+            this.buttonAdditional.Location = new System.Drawing.Point(265, 130);
+            this.buttonAdditional.Name = "buttonAdditional";
+            this.buttonAdditional.Size = new System.Drawing.Size(150, 32);
+            this.buttonAdditional.TabIndex = 17;
+            this.buttonAdditional.Text = "Additional Tools";
+            this.buttonAdditional.UseVisualStyleBackColor = true;
+            this.buttonAdditional.Click += new System.EventHandler(this.buttonAdditional_Click);
+            // 
+            // contextMenuStripTools
+            // 
+            this.contextMenuStripTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.encryptDecryptDataToolStripMenuItem,
+            this.decodeUploadDataToolStripMenuItem});
+            this.contextMenuStripTools.Name = "contextMenuStripTools";
+            this.contextMenuStripTools.Size = new System.Drawing.Size(192, 48);
+            // 
+            // encryptDecryptDataToolStripMenuItem
+            // 
+            this.encryptDecryptDataToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.vMSFileToolStripMenuItem,
+            this.wholeFileToolStripMenuItem});
+            this.encryptDecryptDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.encrypt;
+            this.encryptDecryptDataToolStripMenuItem.Name = "encryptDecryptDataToolStripMenuItem";
+            this.encryptDecryptDataToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.encryptDecryptDataToolStripMenuItem.Text = "Encrypt/Decrypt Data";
+            this.encryptDecryptDataToolStripMenuItem.ToolTipText = "Encrypt or decrypt data using DLC/Upload Data encryption";
+            // 
+            // vMSFileToolStripMenuItem
+            // 
+            this.vMSFileToolStripMenuItem.Name = "vMSFileToolStripMenuItem";
+            this.vMSFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.vMSFileToolStripMenuItem.Text = "VMS File...";
+            this.vMSFileToolStripMenuItem.ToolTipText = "Encrypt or decrypt a VMS file except its VMS header.";
+            this.vMSFileToolStripMenuItem.Click += new System.EventHandler(this.vMSFileToolStripMenuItem_Click);
+            // 
+            // wholeFileToolStripMenuItem
+            // 
+            this.wholeFileToolStripMenuItem.Name = "wholeFileToolStripMenuItem";
+            this.wholeFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.wholeFileToolStripMenuItem.Text = "Whole File...";
+            this.wholeFileToolStripMenuItem.ToolTipText = "Encrypt or decrypt the whole file.";
+            this.wholeFileToolStripMenuItem.Click += new System.EventHandler(this.wholeFileToolStripMenuItem_Click);
+            // 
+            // decodeUploadDataToolStripMenuItem
+            // 
+            this.decodeUploadDataToolStripMenuItem.Name = "decodeUploadDataToolStripMenuItem";
+            this.decodeUploadDataToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.decodeUploadDataToolStripMenuItem.Text = "Decode Upload Data...";
+            this.decodeUploadDataToolStripMenuItem.ToolTipText = "Decode and decrypt raw data from the HTML page embedded in Upload Data VMS files." +
+    "";
+            this.decodeUploadDataToolStripMenuItem.Click += new System.EventHandler(this.decodeUploadDataToolStripMenuItem_Click);
+            // 
+            // ProgramModeSelector
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(427, 220);
+            this.Controls.Add(this.buttonAdditional);
+            this.Controls.Add(this.pictureBox6);
             this.Controls.Add(this.pictureBox7);
             this.Controls.Add(this.buttonWorldRankingsEditor);
             this.Controls.Add(this.pictureBox5);
@@ -252,6 +329,8 @@ namespace VMSEditor
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
+            this.contextMenuStripTools.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -273,5 +352,12 @@ namespace VMSEditor
 		private System.Windows.Forms.Button buttonChallengeResultEditor;
 		private System.Windows.Forms.PictureBox pictureBox7;
 		private System.Windows.Forms.Button buttonWorldRankingsEditor;
+		private System.Windows.Forms.PictureBox pictureBox6;
+		private System.Windows.Forms.Button buttonAdditional;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripTools;
+		private System.Windows.Forms.ToolStripMenuItem encryptDecryptDataToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem vMSFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem wholeFileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem decodeUploadDataToolStripMenuItem;
 	}
 }
