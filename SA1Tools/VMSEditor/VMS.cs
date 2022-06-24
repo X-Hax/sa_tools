@@ -97,6 +97,25 @@ namespace VMSEditor
 			return val;
 		}
 
+		public static string GetFieldFromHTML(byte[] file, string fieldName)
+		{
+			StringBuilder result = new StringBuilder();
+			for (int u = 0; u < file.Length - 15; u++)
+			{
+				if (System.Text.Encoding.GetEncoding(932).GetString(file, u, 7+ fieldName.Length) == "NAME=\"" + fieldName + "\"")
+				{
+					for (int k = u + 15 + fieldName.Length; k < file.Length - 2; k++)
+					{
+						if (file[k] == 0x22 && file[k + 1] == 0x3E)
+							break;
+						else
+							result.Append((Convert.ToChar(file[k])).ToString());
+					}
+				}
+			}
+			return result.ToString();
+		}
+
 		public static byte[] GetDataFromHTML(byte[] file)
 		{
 			for (int u = 0; u < file.Length - 15; u++)

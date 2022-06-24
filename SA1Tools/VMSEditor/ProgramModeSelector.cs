@@ -43,6 +43,13 @@ namespace VMSEditor
 			Hide();
 		}
 
+		private void buttonWorldRankEditor_Click(object sender, EventArgs e)
+		{
+			EditorWorldRank editor = new EditorWorldRank();
+			editor.Show();
+			Hide();
+		}
+
 		private void buttonOpenFile_Click(object sender, EventArgs e)
         {          
             using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "Supported Files|*.vms;*.vmi|VMS Files|*.vms|VMI Files|*.vmi|All Files|*.*" })

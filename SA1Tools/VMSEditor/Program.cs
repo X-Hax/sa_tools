@@ -30,7 +30,7 @@ namespace VMSEditor
 						return new EditorChallengeResult();
 					// World Ranking
 					else if (Encoding.GetEncoding(932).GetString(file, 0, 11) == "DATA_UPLOAD" || BitConverter.ToUInt32(file, 0) == 0xC0B0DEC3)
-						return new EditorChallengeResult();
+						return new EditorWorldRank();
 					// Download Data / Chao Adventure
 					else
 						for (int u = 0; u < file.Length - 11; u++)

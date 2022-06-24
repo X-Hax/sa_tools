@@ -1577,7 +1577,7 @@ namespace VMSEditor
 
         private void chaoEditorHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/VMS-Editor#chao-editor") { CreateNoWindow = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/Chao-Editor") { CreateNoWindow = true });
         }
 
 		private void NumericUpDownID_ValueChanged(object sender, EventArgs e)

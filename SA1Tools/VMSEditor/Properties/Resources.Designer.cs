@@ -883,5 +883,42 @@ namespace VMSEditor.Properties {
 				return ((System.Drawing.Bitmap)(obj));
 			}
 		}
+
+		/// <summary>
+		///   Looks up a localized resource of type System.Byte[].
+		/// </summary>
+		internal static byte[] save_int
+		{
+			get
+			{
+				object obj = ResourceManager.GetObject("save_int", resourceCulture);
+				return ((byte[])(obj));
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized resource of type System.Byte[].
+		/// </summary>
+		internal static byte[] save_jp
+		{
+			get
+			{
+				object obj = ResourceManager.GetObject("save_jp", resourceCulture);
+				return ((byte[])(obj));
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized resource of type System.Byte[].
+		/// </summary>
+		internal static byte[] save_us
+		{
+			get
+			{
+				object obj = ResourceManager.GetObject("save_us", resourceCulture);
+				return ((byte[])(obj));
+			}
+		}
+
 	}
 }

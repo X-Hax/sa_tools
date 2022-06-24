@@ -209,19 +209,20 @@ namespace VMSEditor
             // 
             // buttonWorldRankingsEditor
             // 
-            this.buttonWorldRankingsEditor.Enabled = false;
+            this.buttonWorldRankingsEditor.Enabled = true;
             this.buttonWorldRankingsEditor.Location = new System.Drawing.Point(265, 85);
             this.buttonWorldRankingsEditor.Margin = new System.Windows.Forms.Padding(2);
             this.buttonWorldRankingsEditor.Name = "buttonWorldRankingsEditor";
             this.buttonWorldRankingsEditor.Size = new System.Drawing.Size(150, 32);
             this.buttonWorldRankingsEditor.TabIndex = 14;
-            this.buttonWorldRankingsEditor.Text = "World Rankings Viewer";
+            this.buttonWorldRankingsEditor.Text = "World Rank Converter";
             this.buttonWorldRankingsEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.buttonWorldRankingsEditor.UseVisualStyleBackColor = true;
-            // 
-            // ProgramModeSelector
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.buttonWorldRankingsEditor.Click += buttonWorldRankEditor_Click;
+			// 
+			// ProgramModeSelector
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(427, 220);
             this.Controls.Add(this.pictureBox7);

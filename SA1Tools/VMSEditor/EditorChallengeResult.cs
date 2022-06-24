@@ -22,13 +22,18 @@ namespace VMSEditor
 
 		private void LoadEventResult(string filename)
 		{
-			VMSChallengeResult result = new VMSChallengeResult(File.ReadAllBytes(filename));
+			byte[] file = File.ReadAllBytes(filename);
+			VMSChallengeResult result = new VMSChallengeResult(file);
 			numericUpDownEventID.Value = result.ResultData.EventID;
 			numericUpDownFrames.Value = result.ResultData.EventTime;
 			comboBoxCharacter.SelectedIndex = (int)result.ResultData.Character;
-			labelTime.Text = FramesToTimeString((int)result.ResultData.EventTime);
+			labelTime.Text = "Total Time: " + FramesToTimeString((int)result.ResultData.EventTime);
 			radioButtonCart.Checked = result.DataType == DataIDs.CartResultChecksum;
 			radioButtonEvent.Checked = result.DataType == DataIDs.EventResultChecksum;
+			textBoxIndividualID.Text = VMSFile.GetFieldFromHTML(file, "dcid");
+			textBoxSubmitted.Text = VMSFile.GetFieldFromHTML(file, "mailid");
+			radioButtonJapan.Checked = (BitConverter.ToUInt32(file, 0) == 0xDDDECDB2) || (BitConverter.ToUInt32(file, 0) == 0xC0C4B0B6);
+			radioButtonInternational.Checked = System.Text.Encoding.GetEncoding(932).GetString(file, 0, 12) == "EVENT_RESULT" || System.Text.Encoding.GetEncoding(932).GetString(file, 0, 9) == "CART_TIME";
 		}
 
 		private string FramesToTimeString(int frames)
@@ -46,7 +51,7 @@ namespace VMSEditor
 
 		private void numericUpDownFrames_ValueChanged(object sender, EventArgs e)
 		{
-			labelTime.Text = FramesToTimeString((int)numericUpDownFrames.Value);
+			labelTime.Text = "Total Time: " + FramesToTimeString((int)numericUpDownFrames.Value);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -71,6 +76,16 @@ namespace VMSEditor
 		private void radioButtonCart_CheckedChanged(object sender, EventArgs e)
 		{
 			pictureBoxDataType.Image = radioButtonCart.Checked ? Resources.cartresult : Resources.eventresult;
+		}
+
+		private void issueTrackerToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/issues") { CreateNoWindow = true });
+		}
+
+		private void challengeResultViewerHelpToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/Challenge-Result-Viewer") { CreateNoWindow = true });
 		}
 	}
 }

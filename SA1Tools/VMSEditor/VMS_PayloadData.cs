@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-// A 60-byte block of data referenced to as PDATA in website CGI scripts. It is embedded in uploadable VMS files in the region 0x08-0x68.
+// A 60-byte block of data referenced to as PDATA in website CGI scripts. It is embedded in uploadable VMS files in the region 0x08-0x44 of the decrypted data.
 // This data seems to be created from various parts of DC flash memory and depends on the version of the game.
 
 namespace VMSEditor

@@ -36,7 +36,6 @@ namespace VMSEditor
 	{
 		public DataIDs DataType { get; set; }
 
-
 		public PDATA UserData { get; set; }
 		public EventResultDataChild ResultData { get; set; }
 
