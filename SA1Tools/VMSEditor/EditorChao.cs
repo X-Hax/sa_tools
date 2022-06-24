@@ -882,7 +882,7 @@ namespace VMSEditor
 
         private void chaoDownloadDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sv = new SaveFileDialog() { FileName = Path.ChangeExtension(Path.GetFileName(currentFilename), "vms"), Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
+            using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
             {
                 if (sv.ShowDialog() == DialogResult.OK)
                     CreateVMS(sv.FileName, ChaoSaveMode.DownloadData);
@@ -891,7 +891,7 @@ namespace VMSEditor
 
         private void chaoAdventureDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sv = new SaveFileDialog() { FileName = Path.ChangeExtension(Path.GetFileName(currentFilename), "vms"), Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
+            using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
             {
                 if (sv.ShowDialog() == DialogResult.OK)
                     CreateVMS(sv.FileName, ChaoSaveMode.ChaoAdventure);
