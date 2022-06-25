@@ -1028,20 +1028,22 @@
             this.numericUpDownNodes.Name = "numericUpDownNodes";
             this.numericUpDownNodes.Size = new System.Drawing.Size(50, 23);
             this.numericUpDownNodes.TabIndex = 24;
-            // 
-            // labelNodes
-            // 
-            this.labelNodes.AutoSize = true;
+			this.numericUpDownNodes.Enabled = false;
+			// 
+			// labelNodes
+			// 
+			this.labelNodes.AutoSize = true;
             this.labelNodes.Location = new System.Drawing.Point(391, 67);
             this.labelNodes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelNodes.Name = "labelNodes";
             this.labelNodes.Size = new System.Drawing.Size(44, 15);
             this.labelNodes.TabIndex = 44;
             this.labelNodes.Text = "Nodes:";
-            // 
-            // buttonFindBrowse
-            // 
-            this.buttonFindBrowse.Location = new System.Drawing.Point(413, 111);
+			this.labelNodes.Enabled = false;
+			// 
+			// buttonFindBrowse
+			// 
+			this.buttonFindBrowse.Location = new System.Drawing.Point(413, 111);
             this.buttonFindBrowse.Margin = new System.Windows.Forms.Padding(2);
             this.buttonFindBrowse.Name = "buttonFindBrowse";
             this.buttonFindBrowse.Size = new System.Drawing.Size(74, 25);

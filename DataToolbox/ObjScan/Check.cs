@@ -70,7 +70,7 @@ namespace SAModel.DataToolbox
 					{
 						if (scl.X == 1.0f && scl.Y == 1.0f && scl.Z == 1.0f)
 						{
-							Console.WriteLine("{0} model at {1}", modelfmt.ToString(), address.ToString("X"));
+							Console.WriteLine("Trying {0} model at {1}", modelfmt.ToString(), address.ToString("X"));
 							return true;
 						}
 					}
@@ -274,7 +274,7 @@ namespace SAModel.DataToolbox
 					if (attach == 0 && flags == 0) return false;
 					break;
 			}
-			if (numhierarchy != -1) Console.WriteLine("{0} model at {1}", modelfmt.ToString(), address.ToString("X"));
+			if (numhierarchy != -1) Console.WriteLine("Trying {0} model at {1}", modelfmt.ToString(), address.ToString("X"));
 			return true;
 		}
 

@@ -56,8 +56,8 @@ namespace SAModel.DataToolbox
             labelCurrentAddress.Text = ObjScan.CurrentAddress.ToString("X8");
             labelEndAddress.Text = ObjScan.EndAddress.ToString("X8");
             progressBarAddress.Maximum = (int)ObjScan.EndAddress + (int)ObjScan.DataOffset;
-            progressBarAddress.Value = (int)ObjScan.CurrentAddress;
-            List<string> results = new List<string>();
+			progressBarAddress.Value = (int)ObjScan.CurrentAddress;
+			List<string> results = new List<string>();
             if (ObjScan.FoundSA1Landtables > 0)
                 results.Add(ObjScan.FoundSA1Landtables.ToString() + " SA1 levels");
             if (ObjScan.FoundSADXLandtables > 0)
@@ -94,7 +94,8 @@ namespace SAModel.DataToolbox
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            timerScan.Stop();
+			timerScan_Tick(sender, e);
+			timerScan.Stop();
             completed = true;
             buttonCancelScan.Text = "Close";
         }
