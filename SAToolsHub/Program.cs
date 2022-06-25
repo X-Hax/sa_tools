@@ -15,6 +15,15 @@ namespace SAToolsHub
 		public static Form mainForm;
 		private static readonly Mutex mutex = new Mutex(true, pipeName);
 
+		private static readonly string[] installerfiles =
+		{
+			"7z.exe",
+			"7z.dll",
+			"SAToolsInstaller.exe",
+			"SAToolsInstaller.exe.config",
+			"SAToolsInstaller.pdb"
+		};
+
 		[STAThread]
 		static void Main(string[] args)
 		{
@@ -51,6 +60,8 @@ namespace SAToolsHub
 				{
 					File.Delete(args[1] + ".7z");
 					Directory.Delete(args[1], true);
+					foreach (var item in installerfiles)
+						File.Delete(item);
 				}
 				catch { }
 			}
