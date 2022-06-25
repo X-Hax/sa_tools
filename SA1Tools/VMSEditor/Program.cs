@@ -53,6 +53,8 @@ namespace VMSEditor
 			// No arguments: Select program mode
 			if (args.Length == 0)
 				primaryForm = new ProgramModeSelector();
+			else if (args.Length == 2)
+				GetPdata(args[0]);
 			else
 				primaryForm = CheckFile(args[0]);
 			Application.Run(primaryForm);
@@ -83,6 +85,14 @@ namespace VMSEditor
 				File.WriteAllText(logPath, e.ExceptionObject.ToString());
 				MessageBox.Show("Unhandled Exception " + e.ExceptionObject.GetType().Name + "\nLog file has been saved to:\n" + logPath + ".", "VMS Editor Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		static void GetPdata(string filepath)
+		{
+			byte[] file = File.ReadAllBytes(filepath);
+			byte[] data = VMSFile.GetDataFromHTML(file);
+			PDATA pd = new PDATA(data, 8);
+			File.WriteAllBytes(Path.ChangeExtension(filepath, ".pd"), pd.GetBytes());
 		}
 	}
 }
