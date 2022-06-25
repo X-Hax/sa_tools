@@ -9,6 +9,7 @@ namespace VMSEditor
         public ProgramModeSelector()
 		{
 			InitializeComponent();
+			Application.ThreadException += Application_ThreadException;
 		}
 
 		private void buttonExit_Click(object sender, EventArgs e)
@@ -18,35 +19,35 @@ namespace VMSEditor
 
 		private void buttonChaoEditor_Click(object sender, EventArgs e)
 		{
-            EditorChao editor = new EditorChao();
+            EditorChao editor = new EditorChao(this);
             editor.Show();
             Hide();
         }
 
 		private void buttonDLCEditor_Click(object sender, EventArgs e)
 		{
-            EditorDLC editor = new EditorDLC();
+            EditorDLC editor = new EditorDLC(this);
             editor.Show();
             Hide();
         }
 
 		private void buttonVMIEditor_Click(object sender, EventArgs e)
 		{
-            EditorVMI editor = new EditorVMI();
+            EditorVMI editor = new EditorVMI(this);
             editor.Show();
 			Hide();
 		}
 
 		private void buttonChallengeResultEditor_Click(object sender, EventArgs e)
 		{
-			EditorChallengeResult editor = new EditorChallengeResult();
+			EditorChallengeResult editor = new EditorChallengeResult(this);
 			editor.Show();
 			Hide();
 		}
 
-		private void buttonWorldRankEditor_Click(object sender, EventArgs e)
+		private void buttonWorldRankingsEditor_Click(object sender, EventArgs e)
 		{
-			EditorWorldRank editor = new EditorWorldRank();
+			EditorWorldRank editor = new EditorWorldRank(this);
 			editor.Show();
 			Hide();
 		}
@@ -112,6 +113,21 @@ namespace VMSEditor
 					File.WriteAllBytes(outpath, result);
 					MessageBox.Show(this, "Binary file saved as:\n" + outpath, "VMS Editor", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
+		}
+
+		public static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+		{
+			string errDesc = "VMS Editor has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
+				"If you wish to report a bug, please include the following in your report:";
+			SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("VMS Editor", errDesc, e.Exception.ToString());
+			DialogResult dgresult = report.ShowDialog();
+			switch (dgresult)
+			{
+				case DialogResult.Abort:
+				case DialogResult.OK:
+					Application.Exit();
+					break;
+			}
 		}
 	}
 }

@@ -93,6 +93,7 @@ namespace VMSEditor
 			byte[] data = VMSFile.GetDataFromHTML(file);
 			PDATA pd = new PDATA(data, 8);
 			File.WriteAllBytes(Path.ChangeExtension(filepath, ".pd"), pd.GetBytes());
+			Application.Exit();
 		}
 	}
 }
