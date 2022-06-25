@@ -70,6 +70,10 @@ namespace SAModel.GC
 		/// The vertex data
 		/// </summary>
 		public readonly List<IOVtx> data;
+		public List<Vector3> Positions = new List<Vector3>();
+		public List<Vector3> Normals = new List<Vector3>();
+		public List<Color> Colors = new List<Color>();
+		public List<UV> UVs = new List<UV>();
 
 		/// <summary>
 		/// The address of the vertex attribute (gets set after writing
@@ -216,6 +220,49 @@ namespace SAModel.GC
 			writer.Write((uint)(data.Count * StructSize));
 
 			dataAddress = 0;
+		}
+
+		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
+		{
+			List<byte> result = new List<byte>();
+			switch (attribute)
+			{
+				case GCVertexAttribute.Position:
+				case GCVertexAttribute.Normal:
+					for (int i = 0; i < Positions.Count; i++)
+					{
+						result.AddRange(Positions[i].GetBytes());
+					}
+					break;
+				case GCVertexAttribute.Color0:
+					for (int i = 0; i < Colors.Count; i++)
+					{
+						result.AddRange(Color.GetBytes(Colors[i], GCDataType.RGBA8));
+					}
+					break;
+				case GCVertexAttribute.Tex0:
+					for (int i = 0; i < UVs.Count; i++)
+					{
+						result.AddRange(UVs[i].GetBytes());
+					}
+					break;
+			}
+			result.Align(0x10);
+
+			address = (uint)result.Count;
+						njOffsets.Add((uint)result.Count + imageBase);
+						result.AddRange(ByteConverter.GetBytes((byte)attribute));
+						result.AddRange(ByteConverter.GetBytes((byte)StructSize));
+						result.AddRange(ByteConverter.GetBytes(data.Count));
+						uint structure = (uint)structType;
+						structure |= (uint)((byte)dataType << 4);
+						result.AddRange(ByteConverter.GetBytes(structure));
+						result.AddRange(ByteConverter.GetBytes(dataAddress));
+						result.AddRange(ByteConverter.GetBytes(data.Count * StructSize));
+
+						result.Align(0x10);
+
+						return result.ToArray();
 		}
 	}
 }

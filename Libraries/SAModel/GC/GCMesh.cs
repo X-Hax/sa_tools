@@ -21,6 +21,10 @@ namespace SAModel.GC
 		/// </summary>
 		public readonly List<GCPrimitive> primitives;
 
+		public BlendAlphaParameter blend;
+		public AmbientColorParameter diff;
+		public TextureParameter tex;
+		public byte[] indices;
 		/// <summary>
 		/// The index attribute flags of this mesh. If it has no IndexAttribParam, it will return null
 		/// </summary>
@@ -155,6 +159,45 @@ namespace SAModel.GC
 			writer.Write((uint)parameters.Count);
 			writer.Write(primitiveAddress + imagebase);
 			writer.Write(primitiveSize);
+		}
+
+		public static byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, List<GCMesh> gcMeshes, out uint address)
+		{
+			List<byte> result = new List<byte>();
+			List<int> paramOffsetList = new List<int>();
+			List<int> primOffsetList = new List<int>();
+
+			address = (uint)result.Count;
+			for (int i = 0; i < gcMeshes.Count; i++)
+			{
+				paramOffsetList.Add(result.Count);
+				primOffsetList.Add(result.Count + 0x8);
+				njOffsets.Add((uint)(result.Count + imageBase));
+				njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+			}
+			result.Align(0x10);
+
+			for (int i = 0; i < gcMeshes.Count; i++)
+			{
+				var mesh = gcMeshes[i];
+
+				//Material
+				result.SetByteListInt(paramOffsetList[i], (int)(result.Count + imageBase));
+				//Blend types
+				result.AddRange(ByteConverter.GetBytes((uint)mesh.blend.NJSourceAlpha));
+				result.AddRange(ByteConverter.GetBytes((uint)mesh.blend.NJDestAlpha));
+				//Texture ID
+				result.AddRange(ByteConverter.GetBytes((uint)mesh.tex.TextureID));
+				//Diffuse color
+				result.AddRange(Color.GetBytes(mesh.diff.AmbientColor, GCDataType.RGBA8));
+				result.Align(0x10);
+				//Strips
+				result.SetByteListInt(primOffsetList[i], (int)(result.Count + imageBase));
+				result.AddRange(mesh.indices);
+				result.Align(0x10);
+			}
+
+			return result.ToArray();
 		}
 
 		/// <summary>

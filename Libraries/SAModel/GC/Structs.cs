@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace SAModel.GC
 {
@@ -42,6 +44,15 @@ namespace SAModel.GC
 			writer.Write(x);
 			writer.Write(y);
 			writer.Write(z);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(x));
+			result.AddRange(ByteConverter.GetBytes(y));
+			result.AddRange(ByteConverter.GetBytes(z));
+			return result.ToArray();
 		}
 	}
 
@@ -96,6 +107,14 @@ namespace SAModel.GC
 		{
 			writer.Write(x);
 			writer.Write(y);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(x));
+			result.AddRange(ByteConverter.GetBytes(y));
+			return result.ToArray();
 		}
 	}
 
@@ -334,6 +353,23 @@ namespace SAModel.GC
 				default:
 					throw new ArgumentException($"{dataType} is not a valid output color type");
 			}
+		}
+
+		public static byte[] GetBytes(Color Color)
+		{
+			return GetBytes(Color, GCDataType.RGBA8);
+		}
+
+		public static byte[] GetBytes(Color color, GCDataType type)
+		{
+			switch (type)
+			{
+				case GCDataType.RGB8:
+					return new byte[] { color.red, color.green, color.blue, 255 };
+				case GCDataType.RGBA8:
+					return new byte[] { color.red, color.green, color.blue, color.alpha };
+			}
+			throw new ArgumentOutOfRangeException("type");
 		}
 	}
 }
