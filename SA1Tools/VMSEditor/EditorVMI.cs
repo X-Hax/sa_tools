@@ -7,20 +7,24 @@ namespace VMSEditor
 {
 	public partial class EditorVMI : Form
 	{
+		private readonly Form ProgramModeSelectorForm;
         public VMIFile vmi;
 
-        public EditorVMI()
-        {
-            InitializeComponent();
-            if (Program.args.Length > 0)
-                if (File.Exists(Program.args[0]))
-                {
-                    vmi = new VMIFile(File.ReadAllBytes(Program.args[0]));
-                    UpdateAllLabels();
-                }
-        }
+		public EditorVMI(Form parent = null)
+		{
+			ProgramModeSelectorForm = parent;
+			InitializeComponent();
+			if (Program.args.Length > 0)
+				if (File.Exists(Program.args[0]))
+				{
+					vmi = new VMIFile(File.ReadAllBytes(Program.args[0]));
+					UpdateAllLabels();
+				}
+			if (parent == null)
+				Application.ThreadException += ProgramModeSelector.Application_ThreadException;
+		}
 
-        private void UpdateAllLabels()
+		private void UpdateAllLabels()
         {
             textBoxDescription.Text = vmi.Description;
             textBoxCopyright.Text = vmi.Copyright;
@@ -191,7 +195,10 @@ namespace VMSEditor
 
 		private void EditorVMI_FormClosing(object sender, FormClosingEventArgs e)
 		{
-            Application.Exit();
+			if (ProgramModeSelectorForm != null)
+				ProgramModeSelectorForm.Show();
+			else
+				Application.Exit();
         }
 	}
 }

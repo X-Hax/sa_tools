@@ -23,15 +23,19 @@ namespace VMSEditor
 		public List<VMS_Chao> chaoDataList = new List<VMS_Chao>();
 		string currentFilename = "";
 		int previousChaoIndex = -1;
+		private readonly Form ProgramModeSelectorForm;
 
-		public EditorChao()
+		public EditorChao(Form parent = null)
 		{
+			ProgramModeSelectorForm = parent;
 			InitializeComponent();
 			DrawChaoEvolution();
 			CreateFacePreview();
 			if (Program.args.Length > 0)
 				if (File.Exists(Program.args[0]))
 					LoadChaoVMSFile(Program.args[0]);
+			if (parent == null)
+				Application.ThreadException += ProgramModeSelector.Application_ThreadException;
 		}
 
 		private void RefreshLabels()
@@ -721,12 +725,15 @@ namespace VMSEditor
 
         private void EditorChao_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
-        }
+			if (ProgramModeSelectorForm != null)
+				ProgramModeSelectorForm.Show();
+			else
+				Application.Exit();
+		}
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+			Close();
         }
 
         private void CreateVMI(string filename, byte[] data)
