@@ -7,16 +7,20 @@ namespace VMSEditor
 {
 	public partial class EditorWorldRank : Form
 	{
+		private readonly Form ProgramModeSelectorForm;
 		private byte[] DecryptedData;
 
-		public EditorWorldRank()
+		public EditorWorldRank(Form parent = null)
 		{
+			ProgramModeSelectorForm = parent;
 			InitializeComponent();
 			saveAsToolStripMenuItem.Enabled = false;
 			if (Program.args.Length > 0)
 				LoadWorldRankFile(Program.args[0]);
 			else
 				radioButtonInternational.Checked = true;
+			if (parent == null)
+				Application.ThreadException += ProgramModeSelector.Application_ThreadException;
 		}
 
 		private string FramesToTimeString(int frames)
@@ -63,7 +67,10 @@ namespace VMSEditor
 
 		private void EditorWorldRank_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Application.Exit();
+			if (ProgramModeSelectorForm != null)
+				ProgramModeSelectorForm.Show();
+			else
+				Application.Exit();
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)

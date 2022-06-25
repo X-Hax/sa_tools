@@ -227,10 +227,11 @@ namespace VMSEditor
             this.buttonWorldRankingsEditor.Text = "World Rank Converter";
             this.buttonWorldRankingsEditor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.buttonWorldRankingsEditor.UseVisualStyleBackColor = true;
-            // 
-            // pictureBox6
-            // 
-            this.pictureBox6.Enabled = false;
+			this.buttonWorldRankingsEditor.Click += new System.EventHandler(this.buttonWorldRankingsEditor_Click);
+			// 
+			// pictureBox6
+			// 
+			this.pictureBox6.Enabled = false;
             this.pictureBox6.Image = global::VMSEditor.Properties.Resources.additionaltools;
             this.pictureBox6.InitialImage = null;
             this.pictureBox6.Location = new System.Drawing.Point(227, 130);

@@ -7,9 +7,14 @@ namespace VMSEditor
 {
 	public partial class EditorChallengeResult : Form
 	{
-		public EditorChallengeResult()
+		private readonly Form ProgramModeSelectorForm;
+
+		public EditorChallengeResult(Form parent = null)
 		{
 			InitializeComponent();
+			ProgramModeSelectorForm = parent;
+			if (parent == null)
+				Application.ThreadException += ProgramModeSelector.Application_ThreadException;
 		}
 
 		private void EditorChallengeResult_Load(object sender, EventArgs e)
@@ -70,7 +75,10 @@ namespace VMSEditor
 
 		private void EditorChallengeResult_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Application.Exit();
+			if (ProgramModeSelectorForm != null)
+				ProgramModeSelectorForm.Show();
+			else
+				Application.Exit();
 		}
 
 		private void radioButtonCart_CheckedChanged(object sender, EventArgs e)

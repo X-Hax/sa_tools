@@ -894,19 +894,20 @@ namespace SAModel.DataToolbox
 					numericUpDownOffset.Value = 0;
 					break;
 			}
+			CheckPaths();
 		}
 
 		private void checkBoxSearchMotion_CheckedChanged(object sender, EventArgs e)
 		{
-			numericUpDownNodes.Enabled = labelNodes.Enabled = checkBoxSearchMotion.Checked;
+			numericUpDownNodes.Enabled = labelNodes.Enabled = (checkBoxSearchMotion.Checked && radioButtonSearchData.Checked);
 		}
 
 		private void radioButtonSearchData_CheckedChanged(object sender, EventArgs e)
 		{
 			checkBoxSearchBasic.Enabled = checkBoxSearchChunk.Enabled = checkBoxSearchGinja.Enabled =
-				checkBoxSearchAction.Enabled = checkBoxSearchMotion.Enabled = checkBoxSearchLandtables.Enabled =
-				labelNodes.Enabled = labelNodes.Enabled = radioButtonSearchData.Checked;
+				checkBoxSearchAction.Enabled = checkBoxSearchMotion.Enabled = checkBoxSearchLandtables.Enabled = radioButtonSearchData.Checked;
 			textBoxFindModel.Enabled = buttonFindBrowse.Enabled = radioButtonFindModel.Checked;
+			labelNodes.Enabled = numericUpDownNodes.Enabled = (checkBoxSearchMotion.Checked && radioButtonSearchData.Checked);
 			CheckPaths();
 		}
 
@@ -943,10 +944,14 @@ namespace SAModel.DataToolbox
 			{
 				FileInfo fi = new FileInfo(textBoxInputFile.Text);
 				numericUpDownEndAddr.Value = fi.Length - numericUpDownOffset.Value;
+				if (Path.GetExtension(textBoxInputFile.Text).ToLowerInvariant() == ".prs")
+				{
+					numericUpDownEndAddr.Value = FraGag.Compression.Prs.Decompress(File.ReadAllBytes(textBoxInputFile.Text)).Length;
+				}
 				numericUpDownScanBinaryKey.Value = CheckBinaryFile(textBoxInputFile.Text);
 				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))
 					textBoxOutputFolder.Text = Path.Combine(Path.GetDirectoryName(textBoxInputFile.Text), Path.GetFileNameWithoutExtension(textBoxInputFile.Text));
-				buttonScanStart.Enabled = true;
+				CheckPaths();
 			}
 		}
 
@@ -1056,6 +1061,11 @@ namespace SAModel.DataToolbox
 
 		private void CheckPaths()
 		{
+			if (listBoxBaseGame.SelectedIndex == -1)
+			{
+				buttonScanStart.Enabled = false;
+				return;
+			}
 			if (radioButtonSearchData.Checked)
 			{
 				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))
@@ -1091,7 +1101,7 @@ namespace SAModel.DataToolbox
 			{
 				if (string.IsNullOrEmpty(textBoxOutputFolder.Text))
 					textBoxOutputFolder.Text = Path.Combine(Path.GetDirectoryName(textBoxInputFile.Text), Path.GetFileNameWithoutExtension(textBoxInputFile.Text));
-				buttonScanStart.Enabled = true;
+				CheckPaths();
 			}
 		}
 

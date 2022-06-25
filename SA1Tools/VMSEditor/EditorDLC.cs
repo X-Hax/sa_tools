@@ -14,6 +14,7 @@ namespace VMSEditor
 {
     public partial class EditorDLC : Form
     {
+		private readonly Form ProgramModeSelectorForm;
         string currentFilename = "";
         string currentFullPath = "";
         int currentLanguage = 0;
@@ -21,33 +22,20 @@ namespace VMSEditor
         VMS_DLC metaBackup;
         PuyoFile puyo;
 
-        public EditorDLC()
-        {
-            Application.ThreadException += Application_ThreadException;
-            InitializeComponent();
-            if (Program.args.Length > 0)
-                if (File.Exists(Program.args[0]))
-                    LoadVMS_DLC(Program.args[0]);
-        }
+		public EditorDLC(Form parent = null)
+		{
+			ProgramModeSelectorForm = parent;
+			InitializeComponent();
+			if (Program.args.Length > 0)
+				if (File.Exists(Program.args[0]))
+					LoadVMS_DLC(Program.args[0]);
+			if (parent == null)
+				Application.ThreadException += ProgramModeSelector.Application_ThreadException;
+		}
 
-        void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string errDesc = "DLC Tool has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
-                "If you wish to report a bug, please include the following in your report:";
-            SAModel.SAEditorCommon.ErrorDialog report = new SAModel.SAEditorCommon.ErrorDialog("DLC Tool", errDesc, e.Exception.ToString());
-            DialogResult dgresult = report.ShowDialog();
-            switch (dgresult)
-            {
-                case DialogResult.Abort:
-                case DialogResult.OK:
-                    Application.Exit();
-                    break;
-            }
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
+			Close();
         }
 
         private Bitmap ResizeBitmap(Bitmap src, int width, int height)
@@ -917,7 +905,10 @@ namespace VMSEditor
 
         private void EditorDLC_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+			if (ProgramModeSelectorForm != null)
+				ProgramModeSelectorForm.Show();
+			else
+				Application.Exit();
         }
     }
 }
