@@ -760,6 +760,12 @@ namespace SplitTools
 				TextureNames = new string[NumTextures];
 				for (int u = 0; u < NumTextures; u++)
 				{
+					// Hack for uninitialized data
+					if (TexnameArrayAddr > file.Length - offset)
+					{
+						TextureNames[u] = null;
+						continue;
+					}
 					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
 					if (TexnamePointer != 0)
 					{
@@ -842,9 +848,9 @@ namespace SplitTools
 				tw.WriteLine("NJS_TEXNAME {0}[] =", TexnameArrayName);
 				tw.WriteLine("{");
 				List<string> texs = new List<string>();
-				for (int u = 0; u < TextureNames.Length; u++)
+				for (int u = 0; u < NumTextures; u++)
 				{
-					string tname = TextureNames[u] != null ? "\t{ \"" + TextureNames[u] + "\" }" : "\tNULL";
+					string tname = (u < TextureNames.Length && TextureNames[u] != null) ? "\t{ \"" + TextureNames[u] + "\" }" : "\tNULL";
 					texs.Add(tname);
 				}
 				tw.WriteLine(string.Join(",\n", texs));
@@ -873,9 +879,9 @@ namespace SplitTools
 				{
 					tw.WriteLine("TEXTURENAME {0}[]", TexnameArrayName);
 					tw.WriteLine("START");
-					for (int u = 0; u < TextureNames.Length; u++)
+					for (int u = 0; u < NumTextures; u++)
 					{
-						string tname = TextureNames[u] != null ? "\"" + TextureNames[u] + "\"" : "NULL";
+						string tname = (u < TextureNames.Length && TextureNames[u] != null) ? "\"" + TextureNames[u] + "\"" : "NULL";
 						tw.WriteLine("\tTEXN ( {0} ),", tname);
 					}
 					tw.WriteLine("END");
