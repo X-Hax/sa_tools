@@ -85,7 +85,7 @@ namespace SAModel.SALVL
 				objList = new List<ObjectListEntry>(objListArr);
 			}
 
-			if (objdefspath == "")
+			if (objdefspath == "" || !File.Exists(Path.Combine(folder, objdefspath)))
 			{
 				DialogResult error = MessageBox.Show(("Level Object Definitions not found. Please select a location to save the Definitions file."), "Definitions Not Located", MessageBoxButtons.OK);
 				if (error == DialogResult.OK)
@@ -153,12 +153,15 @@ namespace SAModel.SALVL
 				tempObjDefs.Add("0", new ObjectData());
 				foreach (ObjectListEntry obj in objList)
 				{
-					ObjectData objData = new ObjectData();
-					objData.Name = obj.Name;
-					objData.RotType = "XYZ";
-					objData.SclType = "None";
 					if (!tempObjDefs.ContainsKey(obj.Name))
-						tempObjDefs.Add(obj.Name, objData);
+					{
+						ObjectData objData = new ObjectData();
+						objData.Name = obj.Name;
+						objData.RotType = "XYZ";
+						objData.SclType = "None";
+						if (!tempObjDefs.ContainsKey(obj.Name))
+							tempObjDefs.Add(obj.Name, objData);
+					}
 				}
 
 				IniSerializer.Serialize(tempObjDefs, dialog.FileName);
