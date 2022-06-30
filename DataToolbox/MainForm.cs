@@ -429,8 +429,12 @@ namespace SAModel.DataToolbox
 				{
 					case ".saanim":
 						outext = ".nam";
-						if (FileName.Contains(".nas") || FileName.Contains(".NAS"))
+						if (FileName.ToLowerInvariant().Contains(".nas"))
 							outext = ".nas";
+						else if (FileName.ToLowerInvariant().Contains(".dum"))
+							outext = ".dum";
+						else if (FileName.ToLowerInvariant().Contains(".cut"))
+							outext = ".cut";
 						break;
 					case ".satex":
 						outext = ".tls";
@@ -439,6 +443,8 @@ namespace SAModel.DataToolbox
 					case ".sa2mdl":
 					default:
 						outext = ".nja";
+						if (FileName.ToLowerInvariant().Contains(".dup"))
+							outext = ".dup";
 						break;
 				}
 				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.NJA, outpath + outext, dx, false);
