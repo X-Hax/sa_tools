@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace VMSEditor
@@ -31,11 +30,24 @@ namespace VMSEditor
 			InitializeComponent();
 			DrawChaoEvolution();
 			CreateFacePreview();
+			SetUpNumberBoxes();
 			if (Program.args.Length > 0)
 				if (File.Exists(Program.args[0]))
 					LoadChaoVMSFile(Program.args[0]);
 			if (parent == null)
 				Application.ThreadException += ProgramModeSelector.Application_ThreadException;
+		}
+
+		private void SetUpNumberBoxes()
+		{
+			numericUpDownMemoriesID_0.ValueChanged += numericUpDownMemoriesID_0_ValueChanged;
+			numericUpDownMemoriesID_1.ValueChanged += numericUpDownMemoriesID_1_ValueChanged;
+			numericUpDownMemoriesID_2.ValueChanged += numericUpDownMemoriesID_2_ValueChanged;
+			numericUpDownMemoriesID_3.ValueChanged += numericUpDownMemoriesID_3_ValueChanged;
+			numericUpDownMemoriesID_4.ValueChanged += numericUpDownMemoriesID_4_ValueChanged;
+			numericUpDownMemoriesID_5.ValueChanged += numericUpDownMemoriesID_5_ValueChanged;
+			numericUpDownMemoriesID_6.ValueChanged += numericUpDownMemoriesID_6_ValueChanged;
+			numericUpDownMemoriesID_7.ValueChanged += numericUpDownMemoriesID_7_ValueChanged;
 		}
 
 		private void RefreshLabels()
@@ -194,21 +206,22 @@ namespace VMSEditor
 			numericUpDownExists.Value = chaoData.Exists;
 			numericUpDownCocoonTimer.Value = chaoData.CocoonTimer;
 			// Chao Race results
-			numericUpDownRace0.Value = chaoData.RaceTime[0];
+			numericUpDownRace0.Value = chaoData.RaceTime[0] * 10 / 6; // Miliseconds in frames
 			numericUpDownRace1.Value = chaoData.RaceTime[1];
 			numericUpDownRace2.Value = chaoData.RaceTime[2];
-			numericUpDownRace3.Value = chaoData.RaceTime[3];
+			numericUpDownRace3.Value = chaoData.RaceTime[3] * 10 / 6;
 			numericUpDownRace4.Value = chaoData.RaceTime[4];
 			numericUpDownRace5.Value = chaoData.RaceTime[5];
-			numericUpDownRace6.Value = chaoData.RaceTime[6];
+			numericUpDownRace6.Value = chaoData.RaceTime[6] * 10 / 6;
 			numericUpDownRace7.Value = chaoData.RaceTime[7];
 			numericUpDownRace8.Value = chaoData.RaceTime[8];
-			numericUpDownRace9.Value = chaoData.RaceTime[9];
+			numericUpDownRace9.Value = chaoData.RaceTime[9] * 10 / 6;
 			numericUpDownRace10.Value = chaoData.RaceTime[10];
 			numericUpDownRace11.Value = chaoData.RaceTime[11];
-			numericUpDownRace12.Value = chaoData.RaceTime[12];
+			numericUpDownRace12.Value = chaoData.RaceTime[12] * 10 / 6;
 			numericUpDownRace13.Value = chaoData.RaceTime[13];
 			numericUpDownRace14.Value = chaoData.RaceTime[14];
+			// Unused?
 			numericUpDownRace15.Value = chaoData.RaceTime[15];
 			numericUpDownRace16.Value = chaoData.RaceTime[16];
 			numericUpDownRace17.Value = chaoData.RaceTime[17];
@@ -370,19 +383,19 @@ namespace VMSEditor
 			chaoData.Exists = (sbyte)numericUpDownExists.Value;
 			chaoData.CocoonTimer = (ushort)numericUpDownCocoonTimer.Value;
 			// Chao Race results
-			chaoData.RaceTime[0] = (byte)numericUpDownRace0.Value;
+			chaoData.RaceTime[0] = (byte)(numericUpDownRace0.Value * 6 / 10);
 			chaoData.RaceTime[1] = (byte)numericUpDownRace1.Value;
 			chaoData.RaceTime[2] = (byte)numericUpDownRace2.Value;
-			chaoData.RaceTime[3] = (byte)numericUpDownRace3.Value;
+			chaoData.RaceTime[3] = (byte)(numericUpDownRace3.Value * 6 / 10);
 			chaoData.RaceTime[4] = (byte)numericUpDownRace4.Value;
 			chaoData.RaceTime[5] = (byte)numericUpDownRace5.Value;
-			chaoData.RaceTime[6] = (byte)numericUpDownRace6.Value;
+			chaoData.RaceTime[6] = (byte)(numericUpDownRace6.Value * 6 / 10);
 			chaoData.RaceTime[7] = (byte)numericUpDownRace7.Value;
 			chaoData.RaceTime[8] = (byte)numericUpDownRace8.Value;
-			chaoData.RaceTime[9] = (byte)numericUpDownRace9.Value;
+			chaoData.RaceTime[9] = (byte)(numericUpDownRace9.Value * 6 / 10);
 			chaoData.RaceTime[10] = (byte)numericUpDownRace10.Value;
 			chaoData.RaceTime[11] = (byte)numericUpDownRace11.Value;
-			chaoData.RaceTime[12] = (byte)numericUpDownRace12.Value;
+			chaoData.RaceTime[12] = (byte)(numericUpDownRace12.Value * 6 / 10);
 			chaoData.RaceTime[13] = (byte)numericUpDownRace13.Value;
 			chaoData.RaceTime[14] = (byte)numericUpDownRace14.Value;
 			chaoData.RaceTime[15] = (byte)numericUpDownRace15.Value;
@@ -905,11 +918,6 @@ namespace VMSEditor
             }
         }
 
-        private void checkBoxColorFlagJewel_CheckedChanged(object sender, EventArgs e)
-        {
-            comboBoxJewelColor.Enabled = checkBoxColorFlagJewel.Checked;
-        }
-
 		private void numericUpDownMemoriesMeet_ValueChanged(object sender, EventArgs e)
 		{
 			WriteChaoMemories();
@@ -1243,8 +1251,8 @@ namespace VMSEditor
 
         private void numericUpDownID_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unique identifier used to tell whether Chao data is a copy or not.";
-        }
+			toolStripStatusLabelHint.Text = "A Chao's unique identifier generated by the game.";
+		}
 
         private void numericUpDownLifeSpan_Click(object sender, EventArgs e)
         {
@@ -1266,7 +1274,12 @@ namespace VMSEditor
             toolStripStatusLabelHint.Text = "Unknown.";
         }
 
-        private void numericUpDownExists_Click(object sender, EventArgs e)
+		private void numericUpDownRace15_Click(object sender, EventArgs e)
+		{
+			toolStripStatusLabelHint.Text = "Unknown.";
+		}
+
+		private void numericUpDownExists_Click(object sender, EventArgs e)
         {
             toolStripStatusLabelHint.Text = "Unknown.";
         }
@@ -1301,7 +1314,6 @@ namespace VMSEditor
             toolStripStatusLabelHint.Text = "This slider affects the Chao's evolution progress.";
         }
 
-
         private void comboBoxGarden_Click(object sender, EventArgs e)
         {
             toolStripStatusLabelHint.Text = "Location of the Chao.";
@@ -1322,7 +1334,12 @@ namespace VMSEditor
             toolStripStatusLabelHint.Text = "Probably unused.";
         }
 
-        private void checkBoxColorFlagBlack_Click(object sender, EventArgs e)
+		private void checkBoxColorFlag0x80_Click(object sender, EventArgs e)
+		{
+			toolStripStatusLabelHint.Text = "Makes Chao Daycare unavailable. Doesn't seem to affect appearance.";
+		}
+
+		private void checkBoxColorFlagBlack_Click(object sender, EventArgs e)
         {
             toolStripStatusLabelHint.Text = "Sets the Chao color. Multiple color flags can be mixed.";
         }
@@ -1399,68 +1416,68 @@ namespace VMSEditor
 
         private void numericUpDownCharm_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unknown.";
+			toolStripStatusLabelHint.Text = "Unknown. Value: " + numericUpDownCharm.Value / 50 + ".";
         }
 
         private void numericUpDownHorny_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Controls the Chao's desire to mate.";
-        }
+            toolStripStatusLabelHint.Text = "Controls the Chao's desire to mate. Value: " + numericUpDownHorny.Value / 50 + ".";
+		}
 
         private void numericUpDownSleepy_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Controls how likely the Chao is to fall asleep. A sleeping Chao will wake up when this reaches 0.";
-        }
+            toolStripStatusLabelHint.Text = "Controls how likely the Chao is to fall asleep. A sleeping Chao will wake up when this reaches 0. Value: " + numericUpDownSleepy.Value / 50 + ".";
+		}
 
         private void numericUpDownHungry_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Controls the Chao's hunger level.";
-        }
+            toolStripStatusLabelHint.Text = "Controls the Chao's hunger level. Value: " + numericUpDownHungry.Value / 50 + ".";
+		}
 
         private void numericUpDownBored_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Controls how likely the Chao will use animal abilities.";
-        }
+            toolStripStatusLabelHint.Text = "Controls how likely the Chao will use animal abilities. Value: " + numericUpDownBored.Value / 50 + ".";
+		}
 
         private void numericUpDownTired_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "The Chao's tiredness level, increases during Chao Race.";
-        }
+            toolStripStatusLabelHint.Text = "The Chao's tiredness level, increases during Chao Race. Value: " + numericUpDownTired.Value / 50 + ".";
+		}
 
         private void numericUpDownStressed_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Controls how likely the Chao is to stop or trip during the race.";
-        }
+            toolStripStatusLabelHint.Text = "Controls how likely the Chao is to stop or trip during the race. Value: " + numericUpDownStressed.Value / 50 + ".";
+		}
 
         private void numericUpDownNarrow_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unknown.";
-        }
+            toolStripStatusLabelHint.Text = "Unknown. Value: " + numericUpDownNarrow.Value / 50 + ".";
+		}
 
         private void numericUpDownJoyful_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "When set to a high value, the Chao will show a heart emoticon.";
-        }
+            toolStripStatusLabelHint.Text = "When set to a high value, the Chao will show a heart emoticon. Value: " + numericUpDownJoyful.Value / 50 + ".";
+		}
 
         private void numericUpDownAngry_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unknown. Increased by giving the Chao a Starnut or attacking the Chao if it has positive aggression.";
-        }
+            toolStripStatusLabelHint.Text = "Unknown. Increased by giving the Chao a Starnut or attacking the Chao if it has positive aggression. Value: " + numericUpDownAngry.Value / 50 + ".";
+		}
 
         private void numericUpDownSad_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Controls how likely the Chao is to cry. Increased by giving the Chao a Lazynut.";
-        }
+            toolStripStatusLabelHint.Text = "Controls how likely the Chao is to cry. Increased by giving the Chao a Lazynut. Value: " + numericUpDownSad.Value / 50 + ".";
+		}
 
         private void numericUpDownFearful_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unknown. Increased by giving the Chao a Lazynut or by attacking the Chao if it has negative aggression.";
-        }
+            toolStripStatusLabelHint.Text = "Unknown. Increased by giving the Chao a Lazynut or by attacking the Chao if it has negative aggression. Value: " + numericUpDownFearful.Value / 50 + ".";
+		}
 
         private void numericUpDownLonely_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unknown.";
-        }
+            toolStripStatusLabelHint.Text = "Unknown. Value: " + numericUpDownLonely.Value / 50 + ".";
+		}
 
         private void comboBoxFruit0_Click(object sender, EventArgs e)
         {
@@ -1554,7 +1571,7 @@ namespace VMSEditor
 
         private void numericUpDownRace0_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabelHint.Text = "Unknown.";
+            toolStripStatusLabelHint.Text = "The Chao's personal race record (minutes:seconds:miliseconds).";
         }
 
         private void checkBoxPearl_Click(object sender, EventArgs e)
@@ -1593,10 +1610,9 @@ namespace VMSEditor
 				numericUpDownID.Value = unchecked((uint)int.Parse(numericUpDownID.Value.ToString()));
 		}
 
-		private void NumericUpDown_ColorFlags_ValueChanged(object sender, EventArgs e)
+		private void numericUpDownAge_ValueChanged(object sender, EventArgs e)
 		{
-			if (numericUpDown_ColorFlags.Value < 0)
-				numericUpDown_ColorFlags.Value = unchecked((uint)int.Parse(numericUpDown_ColorFlags.Value.ToString()));
+			labelAge.Text = ((float)numericUpDownAge.Value / 60.0f).ToString("0.00") + " yrs";
 		}
 	}
 }
