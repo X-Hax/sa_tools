@@ -77,7 +77,7 @@ namespace VMSEditor
         RunChao = 4,
         [Description("Power Chao")]
         PowerChao = 5,
-        [Description("Chao Chao")]
+        [Description("Chaos Chao")]
         ChaosChao = 6,
         [Description("Chao Egg")]
         ChaoEgg = 7,
@@ -307,7 +307,7 @@ namespace VMSEditor
                 }
                 if (added)
                     continue;
-                result.Add(Encoding.ASCII.GetBytes(Name[s].ToString())[0]);
+                result.Add(Encoding.ASCII.GetBytes(Name[s].ToString().ToUpperInvariant())[0]);
             }
             // Add extra bytes if the name is less than 8 characters
             if (result.Count < 8)
@@ -331,7 +331,7 @@ namespace VMSEditor
             StringBuilder sb = new StringBuilder();
             for (int a = 0; a < 8; a++)
             {
-                //MessageBox.Show(namearray[a].ToString("X"));
+				//System.Windows.Forms.MessageBox.Show(namearray[a].ToString("X"));
                 switch (namearray[a])
                 {
                     case 0:
