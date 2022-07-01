@@ -335,6 +335,7 @@ namespace VMSEditor
             this.numericUpDownMemoriesLike_0 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownMemoriesID_0 = new System.Windows.Forms.NumericUpDown();
             this.tabPageRace = new System.Windows.Forms.TabPage();
+            this.buttonEditGardenRaceData = new System.Windows.Forms.Button();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.label75 = new System.Windows.Forms.Label();
             this.numericUpDownRaceTrack = new System.Windows.Forms.NumericUpDown();
@@ -4825,6 +4826,7 @@ namespace VMSEditor
             // 
             // tabPageRace
             // 
+            this.tabPageRace.Controls.Add(this.buttonEditGardenRaceData);
             this.tabPageRace.Controls.Add(this.groupBox16);
             this.tabPageRace.Controls.Add(this.groupBox17);
             this.tabPageRace.Controls.Add(this.groupBox5);
@@ -4834,6 +4836,16 @@ namespace VMSEditor
             this.tabPageRace.Size = new System.Drawing.Size(686, 351);
             this.tabPageRace.TabIndex = 6;
             this.tabPageRace.Text = "Chao Race";
+            // 
+            // buttonEditGardenRaceData
+            // 
+            this.buttonEditGardenRaceData.Location = new System.Drawing.Point(3, 282);
+            this.buttonEditGardenRaceData.Name = "buttonEditGardenRaceData";
+            this.buttonEditGardenRaceData.Size = new System.Drawing.Size(151, 31);
+            this.buttonEditGardenRaceData.TabIndex = 3;
+            this.buttonEditGardenRaceData.Text = "Edit Garden Race Data...";
+            this.buttonEditGardenRaceData.UseVisualStyleBackColor = true;
+            this.buttonEditGardenRaceData.Click += new System.EventHandler(this.buttonEditGardenRaceData_Click);
             // 
             // groupBox16
             // 
@@ -5458,27 +5470,27 @@ namespace VMSEditor
             // 
             this.openAVMSFileToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.open;
             this.openAVMSFileToolStripMenuItem.Name = "openAVMSFileToolStripMenuItem";
-            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.openAVMSFileToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.openAVMSFileToolStripMenuItem.Text = "Open a VMS File...";
             this.openAVMSFileToolStripMenuItem.Click += new System.EventHandler(this.openAVMSFileToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.chaoDownloadDataToolStripMenuItem,
             this.gardenFileToolStripMenuItem,
+            this.chaoDownloadDataToolStripMenuItem,
             this.chaoAdventureDataToolStripMenuItem,
             this.chaoUploadDataToolStripMenuItem});
             this.saveAsToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.saveas;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.saveAsToolStripMenuItem.Text = "Save as";
             // 
             // chaoDownloadDataToolStripMenuItem
             // 
             this.chaoDownloadDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.chaoDownload;
             this.chaoDownloadDataToolStripMenuItem.Name = "chaoDownloadDataToolStripMenuItem";
-            this.chaoDownloadDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.chaoDownloadDataToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
             this.chaoDownloadDataToolStripMenuItem.Text = "Chao Download Data...";
             this.chaoDownloadDataToolStripMenuItem.ToolTipText = "Chao that can be loaded from the transfer machine. Can contain a Chao and an Egg." +
     "";
@@ -5486,19 +5498,18 @@ namespace VMSEditor
             // 
             // gardenFileToolStripMenuItem
             // 
-            this.gardenFileToolStripMenuItem.Enabled = false;
             this.gardenFileToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.editorChao;
             this.gardenFileToolStripMenuItem.Name = "gardenFileToolStripMenuItem";
-            this.gardenFileToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.gardenFileToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
             this.gardenFileToolStripMenuItem.Text = "Garden Save...";
             this.gardenFileToolStripMenuItem.ToolTipText = "Regular SA1 garden save. Can contain up to 24 Chao.";
-            this.gardenFileToolStripMenuItem.Visible = false;
+            this.gardenFileToolStripMenuItem.Click += new System.EventHandler(this.gardenFileToolStripMenuItem_Click);
             // 
             // chaoAdventureDataToolStripMenuItem
             // 
             this.chaoAdventureDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.chaoAdv;
             this.chaoAdventureDataToolStripMenuItem.Name = "chaoAdventureDataToolStripMenuItem";
-            this.chaoAdventureDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.chaoAdventureDataToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
             this.chaoAdventureDataToolStripMenuItem.Text = "Chao Adventure Data...";
             this.chaoAdventureDataToolStripMenuItem.ToolTipText = "Chao Adventure with Chao data embedded. Can contain a Chao and an egg.";
             this.chaoAdventureDataToolStripMenuItem.Click += new System.EventHandler(this.chaoAdventureDataToolStripMenuItem_Click);
@@ -5508,7 +5519,7 @@ namespace VMSEditor
             this.chaoUploadDataToolStripMenuItem.Enabled = false;
             this.chaoUploadDataToolStripMenuItem.Image = global::VMSEditor.Properties.Resources.chaoUpload;
             this.chaoUploadDataToolStripMenuItem.Name = "chaoUploadDataToolStripMenuItem";
-            this.chaoUploadDataToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.chaoUploadDataToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
             this.chaoUploadDataToolStripMenuItem.Text = "Chao Upload Data...";
             this.chaoUploadDataToolStripMenuItem.ToolTipText = "Chao data that can be uploaded using the browser. Can only contain one Chao.";
             this.chaoUploadDataToolStripMenuItem.Visible = false;
@@ -5516,7 +5527,7 @@ namespace VMSEditor
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -5622,6 +5633,7 @@ namespace VMSEditor
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
             this.Name = "EditorChao";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sonic Adventure Chao Editor";
@@ -6238,5 +6250,6 @@ namespace VMSEditor
 		private System.Windows.Forms.Label label109;
 		private System.Windows.Forms.Label label108;
 		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Button buttonEditGardenRaceData;
 	}
 }
