@@ -39,6 +39,12 @@ namespace VMSEditor
             }
         }
 
+		public ChaoMemoriesSA1()
+		{
+			player = new ADV1_AL_IMPLESSION[6];
+			chao = new ADV1_AL_IMPLESSION2[32];
+		}
+
         public byte[] GetBytes()
         {
             List<byte> result = new List<byte>();
@@ -258,35 +264,35 @@ namespace VMSEditor
         public byte Key3;
         public byte Key4;
 
-        private char[] JapaneseChaoNameCharacters =
-       {
-            'ァ', 'ア', 'ィ', 'イ', 'ゥ', 'ウ', 'ェ', 'エ', 'ォ', 'オ',
-            'カ', 'ガ', 'キ', 'ギ', 'ク', 'グ', 'ケ', 'ゲ', 'コ', 'ゴ',
-            'サ', 'ザ', 'シ', 'ジ', 'ス', 'ズ', 'セ', 'ゼ', 'ソ', 'ゾ',
-            'タ', 'ダ', 'チ', 'ヂ', 'ッ', 'ツ', 'ヅ', 'テ', 'デ', 'ト', 'ド',
-            'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',
-            'ハ', 'バ', 'パ', 'ヒ', 'ビ', 'ピ', 'フ', 'ブ', 'プ', 'ヘ', 'ベ', 'ペ', 'ホ', 'ボ', 'ポ',
-            'マ', 'ミ', 'ム', 'メ', 'モ',
-            'ャ', 'ヤ', 'ュ', 'ユ', 'ョ', 'ヨ',
-            'ラ', 'リ', 'ル', 'レ', 'ロ',
-            'ヮ', 'ワ', '〃', '゜', 'を', 'ん'
-        };
+		private static char[] JapaneseChaoNameCharacters =
+	    {
+			'ァ', 'ア', 'ィ', 'イ', 'ゥ', 'ウ', 'ェ', 'エ', 'ォ', 'オ',
+			'カ', 'ガ', 'キ', 'ギ', 'ク', 'グ', 'ケ', 'ゲ', 'コ', 'ゴ',
+			'サ', 'ザ', 'シ', 'ジ', 'ス', 'ズ', 'セ', 'ゼ', 'ソ', 'ゾ',
+			'タ', 'ダ', 'チ', 'ヂ', 'ッ', 'ツ', 'ヅ', 'テ', 'デ', 'ト', 'ド',
+			'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',
+			'ハ', 'バ', 'パ', 'ヒ', 'ビ', 'ピ', 'フ', 'ブ', 'プ', 'ヘ', 'ベ', 'ペ', 'ホ', 'ボ', 'ポ',
+			'マ', 'ミ', 'ム', 'メ', 'モ',
+			'ャ', 'ヤ', 'ュ', 'ユ', 'ョ', 'ヨ',
+			'ラ', 'リ', 'ル', 'レ', 'ロ',
+			'ヮ', 'ワ', '〃', '゜', 'を', 'ん'
+		};
 
-        private char[] SpecialChaoNameCharacters =
+        private static char[] SpecialChaoNameCharacters =
         {
              '。', '♥', '～', '♀', '♂', '♪', '…', '＼', '〇'
         };
 
-        private byte[] GetChaoNameBytes()
+        public static byte[] GetChaoNameBytes(string name)
         {
             List<byte> result = new List<byte>();
-            for (int s = 0; s < Name.Length; s++)
+            for (int s = 0; s < name.Length; s++)
             {
                 bool added = false;
                 // Check Japanese characters
                 for (int j = 0; j < JapaneseChaoNameCharacters.Length; j++)
                 {
-                    if (Name[s] == JapaneseChaoNameCharacters[j])
+                    if (name[s] == JapaneseChaoNameCharacters[j])
                     {
                         result.Add((byte)(0x64 + j));
                         added = true;
@@ -298,7 +304,7 @@ namespace VMSEditor
                 // Check Japanese special characters
                 for (int j = 0; j < SpecialChaoNameCharacters.Length; j++)
                 {
-                    if (Name[s] == SpecialChaoNameCharacters[j])
+                    if (name[s] == SpecialChaoNameCharacters[j])
                     {
                         result.Add((byte)(0xB7 + j));
                         added = true;
@@ -307,7 +313,7 @@ namespace VMSEditor
                 }
                 if (added)
                     continue;
-                result.Add(Encoding.ASCII.GetBytes(Name[s].ToString().ToUpperInvariant())[0]);
+                result.Add(Encoding.ASCII.GetBytes(name[s].ToString().ToUpperInvariant())[0]);
             }
             // Add extra bytes if the name is less than 8 characters
             if (result.Count < 8)
@@ -326,13 +332,13 @@ namespace VMSEditor
             return result.ToArray();
         }
 
-        private string ReadChaoName(byte[] namearray)
+        public static string ReadChaoName(byte[] file, int index)
         {
             StringBuilder sb = new StringBuilder();
             for (int a = 0; a < 8; a++)
             {
-				//System.Windows.Forms.MessageBox.Show(namearray[a].ToString("X"));
-                switch (namearray[a])
+				//System.Windows.Forms.MessageBox.Show(file[index + a].ToString("X"));
+				switch (file[index + a])
                 {
                     case 0:
                         break;
@@ -340,87 +346,90 @@ namespace VMSEditor
                         sb.Append("￥");
                         break;
                     default:
-                        if (namearray[a] >= 0x64 && namearray[a] < 0xB7)
+                        if (file[index + a] >= 0x64 && file[index + a] < 0xB7)
                         {
-                            sb.Append(JapaneseChaoNameCharacters[namearray[a] - 0x64].ToString());
+                            sb.Append(JapaneseChaoNameCharacters[file[index + a] - 0x64].ToString());
                         }
-                        else if (namearray[a] >= 0xB7)
+                        else if (file[index + a] >= 0xB7)
                         {
-                            sb.Append(SpecialChaoNameCharacters[namearray[a] - 0xB7].ToString());
+                            sb.Append(SpecialChaoNameCharacters[file[index + a] - 0xB7].ToString());
                         }
                         else
-                            sb.Append((Convert.ToChar(namearray[a])).ToString());
+                            sb.Append((Convert.ToChar(file[index + a])).ToString());
                         break;
                 }
             }
             return sb.ToString();
         }
 
-        public VMS_Chao() { }
+        public VMS_Chao() 
+		{
+			Name = "";
+			Position = new Vertex();
+			Memories = new ChaoMemoriesSA1();
+		}
 
-        public VMS_Chao(byte[] file)
+        public VMS_Chao(byte[] file, int index)
         {
-            Type = (ChaoTypeSA1)file[0];
-            Garden = (ChaoLocationSA1)file[1];
-            Happiness = (sbyte)file[2];
-            Key1 = file[3];
-            byte[] chaoname = new byte[8];
-            Array.Copy(file, 0x04, chaoname, 0, 8);
-            Name = ReadChaoName(chaoname);
-            Swim = BitConverter.ToUInt16(file, 0x0C);
-            Run = BitConverter.ToUInt16(file, 0x0E);
-            Fly = BitConverter.ToUInt16(file, 0x10);
-            Power = BitConverter.ToUInt16(file, 0x12);
-            HP = BitConverter.ToUInt16(file, 0x14);
-            HP_Max = BitConverter.ToUInt16(file, 0x16);
+            Type = (ChaoTypeSA1)file[index];
+            Garden = (ChaoLocationSA1)file[index + 1];
+            Happiness = (sbyte)file[index + 2];
+            Key1 = file[index + 3];
+            Name = ReadChaoName(file, index + 0x04);
+            Swim = BitConverter.ToUInt16(file, index + 0x0C);
+            Run = BitConverter.ToUInt16(file, index + 0x0E);
+            Fly = BitConverter.ToUInt16(file, index + 0x10);
+            Power = BitConverter.ToUInt16(file, index + 0x12);
+            HP = BitConverter.ToUInt16(file, index + 0x14);
+            HP_Max = BitConverter.ToUInt16(file, index + 0x16);
             for (int f = 0; f < 8; f++)
-                Fruits[f] = (ChaoFruitsSA1)file[0x18 + f];
-            RunOrPower = BitConverter.ToSingle(file, 0x20);
-            FlyOrSwim = BitConverter.ToSingle(file, 0x24);
-            Magnitude = BitConverter.ToSingle(file, 0x28);
-            Affection = BitConverter.ToUInt16(file, 0x2C);
-            LifeLeft = BitConverter.ToUInt16(file, 0x2E);
-            AgingFactor = BitConverter.ToUInt16(file, 0x30);
-            AnimalAbilities = (AnimalFlagsSA1)BitConverter.ToUInt16(file, 0x32);
-            Jewels = (ChaoJewelsSA1)file[0x34];
-            Key2 = file[0x35];
-            Flags = (ChaoColorFlagsSA1)BitConverter.ToUInt16(file, 0x36);
-            Position = new Vertex(file, 0x38);
-            Age = BitConverter.ToUInt32(file, 0x44);
-            ID = BitConverter.ToUInt32(file, 0x48);
+                Fruits[f] = (ChaoFruitsSA1)file[index + 0x18 + f];
+            RunOrPower = BitConverter.ToSingle(file, index + 0x20);
+            FlyOrSwim = BitConverter.ToSingle(file, index + 0x24);
+            Magnitude = BitConverter.ToSingle(file, index + 0x28);
+            Affection = BitConverter.ToUInt16(file, index + 0x2C);
+            LifeLeft = BitConverter.ToUInt16(file, index + 0x2E);
+            AgingFactor = BitConverter.ToUInt16(file, index + 0x30);
+            AnimalAbilities = (AnimalFlagsSA1)BitConverter.ToUInt16(file, index + 0x32);
+            Jewels = (ChaoJewelsSA1)file[index + 0x34];
+            Key2 = file[index + 0x35];
+            Flags = (ChaoColorFlagsSA1)BitConverter.ToUInt16(file, index + 0x36);
+            Position = new Vertex(file, index + 0x38);
+            Age = BitConverter.ToUInt32(file, index + 0x44);
+            ID = BitConverter.ToUInt32(file, index + 0x48);
             for (int p = 0; p < 7; p++)
-                AnimalParts[p] = (AnimalPartsSA1)file[0x4C + p];
-            Key3 = file[0x53];
-            SwimPoints = BitConverter.ToUInt16(file, 0x54);
-            FlyPoints = BitConverter.ToUInt16(file, 0x56);
-            RunPoints = BitConverter.ToUInt16(file, 0x58);
-            PowerPoints = BitConverter.ToUInt16(file, 0x5A);
-            Kindness = (sbyte)file[0x5C];
-            Aggressive = (sbyte)file[0x5D];
-            Curiosity = (sbyte)file[0x5E];
-            Charm = file[0x5F];
-            Breed = file[0x60];
-            Sleep = file[0x61];
-            Hunger = file[0x62];
-            Tedious = file[0x63];
-            Tiredness = file[0x64];
-            Stress = file[0x65];
-            Narrow = file[0x66];
-            Pleasure = file[0x67];
-            Anger = file[0x68];
-            Sorrow = file[0x69];
-            Fear = file[0x6A];
-            Loneliness = file[0x6B];
+                AnimalParts[p] = (AnimalPartsSA1)file[index + 0x4C + p];
+            Key3 = file[index + 0x53];
+            SwimPoints = BitConverter.ToUInt16(file, index + 0x54);
+            FlyPoints = BitConverter.ToUInt16(file, index + 0x56);
+            RunPoints = BitConverter.ToUInt16(file, index + 0x58);
+            PowerPoints = BitConverter.ToUInt16(file, index + 0x5A);
+            Kindness = (sbyte)file[index + 0x5C];
+            Aggressive = (sbyte)file[index + 0x5D];
+            Curiosity = (sbyte)file[index + 0x5E];
+            Charm = file[index + 0x5F];
+            Breed = file[index + 0x60];
+            Sleep = file[index + 0x61];
+            Hunger = file[index + 0x62];
+            Tedious = file[index + 0x63];
+            Tiredness = file[index + 0x64];
+            Stress = file[index + 0x65];
+            Narrow = file[index + 0x66];
+            Pleasure = file[index + 0x67];
+            Anger = file[index + 0x68];
+            Sorrow = file[index + 0x69];
+            Fear = file[index + 0x6A];
+            Loneliness = file[index + 0x6B];
             // IsCPU is at 0x17A in the struct but it's missing in the data, so everything shifts back 1 byte
-            Memories = new ChaoMemoriesSA1(file, 0x6C);
-            Reincarnations = file[0x178];
-            Lane = file[0x179];
-            Key4 = file[0x17A];
-            Exists = (sbyte)file[0x17B];
-            CocoonTimer = BitConverter.ToUInt16(file, 0x17C);
+            Memories = new ChaoMemoriesSA1(file, index + 0x6C);
+            Reincarnations = file[index + 0x178];
+            Lane = file[index + 0x179];
+            Key4 = file[index + 0x17A];
+            Exists = (sbyte)file[index + 0x17B];
+            CocoonTimer = BitConverter.ToUInt16(file, index + 0x17C);
             for (int r = 0; r < 20; r++)
-                RaceTime[r] = file[0x17E + r];
-            JewelBreed = (ChaoJewelBreedsSA1)BitConverter.ToUInt16(file, 0x192);
+                RaceTime[r] = file[index + 0x17E + r];
+            JewelBreed = (ChaoJewelBreedsSA1)BitConverter.ToUInt16(file, index + 0x192);
         }
 
         public byte[] GetBytes()
@@ -430,7 +439,7 @@ namespace VMSEditor
             result.Add((byte)Garden);
             result.Add((byte)Happiness);
             result.Add(Key1);
-            result.AddRange(GetChaoNameBytes());
+            result.AddRange(GetChaoNameBytes(Name));
             result.AddRange(BitConverter.GetBytes(Swim));
             result.AddRange(BitConverter.GetBytes(Run));
             result.AddRange(BitConverter.GetBytes(Fly));

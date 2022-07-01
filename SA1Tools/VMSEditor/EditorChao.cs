@@ -11,15 +11,7 @@ namespace VMSEditor
 {
 	public partial class EditorChao : Form
 	{
-		enum ChaoSaveMode
-		{
-			DownloadData,
-			ChaoAdventure,
-			UploadData,
-			GardenFile
-		}
-
-		public List<VMS_Chao> chaoDataList = new List<VMS_Chao>();
+		VMS_ChaoGardenSave chaoDataList = new VMS_ChaoGardenSave();
 		string currentFilename = "";
 		int previousChaoIndex = -1;
 		private readonly Form ProgramModeSelectorForm;
@@ -54,7 +46,7 @@ namespace VMSEditor
 		{
 			if (listBoxDataSlots.SelectedIndex == -1)
 				return;
-			VMS_Chao chaoData = chaoDataList[listBoxDataSlots.SelectedIndex];
+			VMS_Chao chaoData = chaoDataList.GardenChao[listBoxDataSlots.SelectedIndex];
 			checkBoxDeerBow.Checked = checkBoxSwallowTwirl.Checked = checkBoxSkunkDraw.Checked = checkBoxRabbitSomersault.Checked =
 				checkBoxPeacockPose.Checked = checkBoxElephantSumo.Checked = checkBoxGorillaChest.Checked = checkBoxKoalaTrumpet.Checked =
 				checkBoxLionWash.Checked = checkBoxMoleDig.Checked = checkBoxOtterSwim.Checked = checkBoxParrotSing.Checked =
@@ -237,9 +229,9 @@ namespace VMSEditor
 
 		private void RefreshData(int index)
 		{
-			if (index == -1 || (chaoDataList.Count - 1) < index)
+			if (index == -1 || (chaoDataList.GardenChao.Count - 1) < index)
 				return;
-			VMS_Chao chaoData = chaoDataList[index];
+			VMS_Chao chaoData = chaoDataList.GardenChao[index];
 			chaoData.Name = textBoxName.Text;
 			chaoData.Type = (ChaoTypeSA1)comboBoxType.SelectedIndex;
 			chaoData.Garden = (ChaoLocationSA1)comboBoxGarden.SelectedIndex;
@@ -410,10 +402,10 @@ namespace VMSEditor
 		private void RefreshChaoList()
 		{
 			listBoxDataSlots.Items.Clear();
-			for (int i = 0; i < chaoDataList.Count; i++)
+			for (int i = 0; i < chaoDataList.GardenChao.Count; i++)
 			{
-				if (chaoDataList[i].Type != ChaoTypeSA1.EmptySlot)
-					listBoxDataSlots.Items.Add(i.ToString() + ": " + chaoDataList[i].Name + " " + ToStringEnums(chaoDataList[i].Type) + " in " + ToStringEnums(chaoDataList[i].Garden));
+				if (chaoDataList.GardenChao[i].Type != ChaoTypeSA1.EmptySlot)
+					listBoxDataSlots.Items.Add(i.ToString() + ": " + chaoDataList.GardenChao[i].Name + " " + ToStringEnums(chaoDataList.GardenChao[i].Type) + " in " + ToStringEnums(chaoDataList.GardenChao[i].Garden));
 				else
 					listBoxDataSlots.Items.Add("Empty");
 			}
@@ -429,13 +421,7 @@ namespace VMSEditor
 			if (System.Text.Encoding.GetEncoding(932).GetString(file, 0, 6) == "CHAO_S" || System.Text.Encoding.GetEncoding(932).GetString(file, 0, 6) == "A-LIFE")
 			{
 				listBoxDataSlots.Items.Clear();
-				chaoDataList.Clear();
-				for (int i = 0; i < 24; i++)
-				{
-					byte[] data = new byte[512];
-					Array.Copy(file, 0x800 + i * 512, data, 0, 512);
-					chaoDataList.Add(new VMS_Chao(data));
-				}
+				chaoDataList = new VMS_ChaoGardenSave(file);
 				RefreshChaoList();
 				listBoxDataSlots.SelectedIndex = 0;
 				RefreshLabels();
@@ -458,12 +444,12 @@ namespace VMSEditor
 			}
 			if (found)
 			{
-				chaoDataList.Clear();
-				chaoDataList.Add(new VMS_Chao(chaodata_s1));
-				VMS_Chao slot2 = new VMS_Chao(chaodata_s2);
+				chaoDataList.GardenChao.Clear();
+				chaoDataList.GardenChao.Add(new VMS_Chao(chaodata_s1, 0));
+				VMS_Chao slot2 = new VMS_Chao(chaodata_s2, 0);
 				// Slot 2 can only contain an egg
 				if (slot2.Type == ChaoTypeSA1.ChaoEgg)
-					chaoDataList.Add(slot2);
+					chaoDataList.GardenChao.Add(slot2);
 				RefreshChaoList();
 				listBoxDataSlots.SelectedIndex = 0;
 				RefreshLabels();
@@ -477,8 +463,8 @@ namespace VMSEditor
 			{
 				// Looks like it's Slot 1 only
 				Array.Copy(hdata, 68, chaodata_s1, 0, 512);
-				chaoDataList.Clear();
-				chaoDataList.Add(new VMS_Chao(chaodata_s1));
+				chaoDataList.GardenChao.Clear();
+				chaoDataList.GardenChao.Add(new VMS_Chao(chaodata_s1, 68));
 				RefreshChaoList();
 				listBoxDataSlots.SelectedIndex = 0;
 				RefreshLabels();
@@ -520,7 +506,7 @@ namespace VMSEditor
         {
             if (listBoxDataSlots.SelectedIndex == -1)
                 return;
-            VMS_Chao chaoData = chaoDataList[listBoxDataSlots.SelectedIndex];
+            VMS_Chao chaoData = chaoDataList.GardenChao[listBoxDataSlots.SelectedIndex];
 
             int page = (int)numericUpDownMemoriesPage.Value - 1;
 
@@ -565,7 +551,7 @@ namespace VMSEditor
         {
             if (listBoxDataSlots.SelectedIndex == -1)
                 return;
-            VMS_Chao chaoData = chaoDataList[listBoxDataSlots.SelectedIndex];
+            VMS_Chao chaoData = chaoDataList.GardenChao[listBoxDataSlots.SelectedIndex];
 
             int page = (int)numericUpDownMemoriesPage.Value - 1;
 
@@ -806,43 +792,45 @@ namespace VMSEditor
                 // Download data and Chao Adventure can only store one Chao and one Egg
                 case ChaoSaveMode.DownloadData:
                 case ChaoSaveMode.ChaoAdventure:
-                    switch (chaoDataList.Count)
+                    switch (chaoDataList.GardenChao.Count)
                     {
                         // Nothing
                         case 0:
                             return;
                         // Just Chao
                         case 1:
-                            chao1 = chaoDataList[0];
-                            chao2 = new VMS_Chao(new byte[512]);
+                            chao1 = chaoDataList.GardenChao[0];
+                            chao2 = new VMS_Chao(new byte[512], 0);
                             break;
                         // Chao + Egg
                         case 2:
-                            chao1 = chaoDataList[0];
-                            chao2 = chaoDataList[1];
+                            chao1 = chaoDataList.GardenChao[0];
+                            chao2 = chaoDataList.GardenChao[1];
                             hasEgg = true;
                             break;
                         // More than 2 slots
                         default:
-                            using (EditorChaoSelectChao selectChao = new EditorChaoSelectChao(chaoDataList))
+                            using (EditorChaoSelectChao selectChao = new EditorChaoSelectChao(chaoDataList.GardenChao))
                             {
                                 selectChao.ShowDialog();
                                 if (selectChao.resultChao == -2) return;
-                                chao1 = selectChao.resultChao != -1 ? chaoDataList[selectChao.resultChao] : new VMS_Chao(new byte[512]);
+                                chao1 = selectChao.resultChao != -1 ? chaoDataList.GardenChao[selectChao.resultChao] : new VMS_Chao(new byte[512], 0);
                                 if (selectChao.resultEgg != -1)
                                 {
-                                    chao2 = chaoDataList[selectChao.resultEgg];
+                                    chao2 = chaoDataList.GardenChao[selectChao.resultEgg];
                                     hasEgg = true;
                                 }
                                 else
-                                    chao2 = new VMS_Chao(new byte[512]);
+                                    chao2 = new VMS_Chao(new byte[512], 0);
                             }
                             break;
                     }
                     break;
-                // TODO
                 case ChaoSaveMode.GardenFile:
-                case ChaoSaveMode.UploadData:
+					File.WriteAllBytes(filename, chaoDataList.GetBytes(japaneseHeaderToolStripMenuItem.Checked));
+					return;
+				// TODO maybe
+				case ChaoSaveMode.UploadData:
                 default:
                     return;
             }
@@ -852,7 +840,7 @@ namespace VMSEditor
                 if (save == DialogResult.No)
                 {
                     hasEgg = false;
-                    chao2 = new VMS_Chao(new byte[512]);
+                    chao2 = new VMS_Chao(new byte[512], 0);
                 }
             }
             switch (mode)
@@ -1613,6 +1601,32 @@ namespace VMSEditor
 		private void numericUpDownAge_ValueChanged(object sender, EventArgs e)
 		{
 			labelAge.Text = ((float)numericUpDownAge.Value / 60.0f).ToString("0.00") + " yrs";
+		}
+
+		enum ChaoSaveMode
+		{
+			DownloadData,
+			ChaoAdventure,
+			UploadData,
+			GardenFile
+		}
+
+		private void buttonEditGardenRaceData_Click(object sender, EventArgs e)
+		{
+			using (EditorChaoRaceData raceEditor = new EditorChaoRaceData(chaoDataList))
+			{
+				if (raceEditor.ShowDialog() == DialogResult.OK)
+					chaoDataList = raceEditor.SaveFile;
+			}
+		}
+
+		private void gardenFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV_ALF.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
+			{
+				if (sv.ShowDialog() == DialogResult.OK)
+					CreateVMS(sv.FileName, ChaoSaveMode.GardenFile);
+			}
 		}
 	}
 }
