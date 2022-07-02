@@ -123,7 +123,7 @@ namespace SAModel
 			return result.ToArray();
 		}
 
-		public string ToStruct(LandTableFormat format)
+		public string ToStruct(LandTableFormat format, bool decomp = false)
 		{
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(Bounds.ToStruct(true));
@@ -136,12 +136,12 @@ namespace SAModel
 					result.Append(", ");
 					result.Append(WidthZ.ToC());
 					result.Append(", ");
-					result.Append(Model != null ? "&" + Model.Name : "NULL");
+					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
 					result.Append(", ");
 					result.AppendFormat(BlockBits.ToCHex());
 					break;
 				case LandTableFormat.SA2:
-					result.Append(Model != null ? "&" + Model.Name : "NULL");
+					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
 					result.Append(", ");
 					result.Append(WidthZ.ToC());
 					result.Append(", ");
