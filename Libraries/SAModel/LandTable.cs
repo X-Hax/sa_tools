@@ -462,7 +462,7 @@ namespace SAModel
 			return GetBytes(imageBase, format, out uint address);
 		}
 
-		public void ToStructVariables(TextWriter writer, LandTableFormat format, List<string> labels, string[] textures = null)
+		public void ToStructVariables(TextWriter writer, LandTableFormat format, List<string> labels, string[] textures = null, bool decomp = false)
 		{
 			List<COL> cnk = new List<COL>();
 			List<COL> bas = new List<COL>();
@@ -481,7 +481,10 @@ namespace SAModel
 				if (!labels.Contains(COL[i].Model.Name))
 				{
 					labels.Add(COL[i].Model.Name);
-					COL[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
+					if (!decomp)
+						COL[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
+					else 
+						writer.WriteLine("extern NJS_OBJECT " + COL[i].Model.Name + "[1];");
 				}
 			}
 			for (int i = 0; i < Anim.Count; i++)
@@ -489,15 +492,25 @@ namespace SAModel
 				if (!labels.Contains(Anim[i].Model.Name))
 				{
 					labels.Add(Anim[i].Model.Name);
-					Anim[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
+					if (!decomp)
+						Anim[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
+					else
+						writer.WriteLine("extern NJS_OBJECT " + Anim[i].Model.Name + "[1];");
+					if (!decomp)
+						writer.WriteLine();
 				}
 				if (!labels.Contains(Anim[i].Animation.Name))
 				{
-					Anim[i].Animation.ToStructVariables(writer, labels);
+					if (!decomp)
+						Anim[i].Animation.ToStructVariables(writer, labels);
+					else
+						writer.WriteLine("extern NJS_ACTION " + Anim[i].Animation.ActionName + "[1];");
 					labels.Add(Anim[i].Animation.Name);
-					writer.WriteLine();
+					if (!decomp)
+						writer.WriteLine();
 				}
 			}
+			writer.WriteLine();
 			if (!labels.Contains(COLName))
 			{
 				labels.Add(COLName);
@@ -506,7 +519,7 @@ namespace SAModel
 				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(COL.Count);
 				foreach (COL item in COL)
-					lines.Add(item.ToStruct(format));
+					lines.Add(item.ToStruct(format, decomp));
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
 				writer.WriteLine("};");
 				writer.WriteLine();
@@ -519,21 +532,26 @@ namespace SAModel
 				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(Anim.Count);
 				foreach (GeoAnimData item in Anim)
-					lines.Add(item.ToStruct());
+					lines.Add(item.ToStruct(decomp));
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
 				writer.WriteLine("};");
 				writer.WriteLine();
 			}
 			writer.Write("_OBJ_LANDTABLE ");
 			writer.Write(Name);
-			writer.Write(" = { LengthOfArray<int16_t>(");
-			writer.Write(COLName);
-			writer.Write("), ");
+			writer.Write(" = { ");
+			if (decomp)
+				writer.Write(COL.Count.ToString() + ", ");
+			else
+				writer.Write("LengthOfArray<int16_t>(" + COLName + "), ");
 			switch (format)
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
-					writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
+					if (decomp)
+						writer.Write(Anim.Count);
+					else
+						writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
 					writer.Write(", ");
 					writer.Write("0x" + Attributes.ToString("X"));
 					writer.Write(", ");

@@ -546,7 +546,7 @@ namespace SAModel
 			return result.ToString();
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false)
 		{
 			for (int i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
@@ -566,7 +566,7 @@ namespace SAModel
 				writer.WriteLine();
 			}
 			writer.WriteLine("OBJECT_START" + Environment.NewLine);
-			if (Attach is BasicAttach)
+			if (!isDup && Attach is BasicAttach)
 			{
 				BasicAttach basicattach = Attach as BasicAttach;
 				basicattach.ToNJA(writer, labels, textures);
