@@ -1717,6 +1717,41 @@ namespace SAModel.SAMDL
                 for (int j = 0; j < TextureInfoCurrent.Length; j++)
                     Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
             }
+=======
+		#endregion
+
+		private void UpdateTexlist()
+		{
+			if (TextureInfo == null)
+			{
+				unloadTextureToolStripMenuItem.Enabled = false;
+				return;
+			}
+			if (TexList != null)
+			{
+				List<Texture> textures = new List<Texture>();
+				List<BMPInfo> texinfo = new List<BMPInfo>();
+				for (int i = 0; i < TexList.TextureNames.Length; i++)
+					for (int j = 0; j < TextureInfo.Length; j++)
+						if (string.IsNullOrEmpty(TexList.TextureNames[i]) || TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant())
+						{
+							texinfo.Add(TextureInfo[j]);
+							textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
+							continue;
+						}
+				Textures = textures.ToArray();
+				TextureInfoCurrent = texinfo.ToArray();
+			}
+			else
+			{
+				TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+				for (int i = 0; i < TextureInfo.Length; i++)
+					TextureInfoCurrent[i] = TextureInfo[i];
+				Textures = new Texture[TextureInfoCurrent.Length];
+				for (int j = 0; j < TextureInfoCurrent.Length; j++)
+					Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
+			}
+>>>>>>> GC Models: Fixed bugs related to vertex/opaque mesh/transparent mesh label generation; WIP additions for struct compatibility.
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 		}
 
@@ -2850,6 +2885,7 @@ namespace SAModel.SAMDL
 		{
 			CheckModelLabels();
 			model.ProcessVertexData();
+<<<<<<< HEAD
             if (hasWeight = model.HasWeight)
                 meshes = model.ProcessWeightedModel().ToArray();
             else
@@ -2862,6 +2898,19 @@ namespace SAModel.SAMDL
                         catch { }
             }
 			treeView1.BeginUpdate();
+=======
+			if (hasWeight = model.HasWeight)
+				meshes = model.ProcessWeightedModel().ToArray();
+			else
+			{
+				NJS_OBJECT[] models = model.GetObjects();
+				meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+						catch { }
+			}
+>>>>>>> GC Models: Fixed bugs related to vertex/opaque mesh/transparent mesh label generation; WIP additions for struct compatibility.
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
@@ -4246,6 +4295,7 @@ namespace SAModel.SAMDL
 						break;
 					}
 			}
+<<<<<<< HEAD
 			ModelDataEditor me = new ModelDataEditor(model, idx);
 			if (me.ShowDialog(this) == DialogResult.OK)
 			{
@@ -4257,6 +4307,35 @@ namespace SAModel.SAMDL
 				unsavedChanges = true;
 				selectedObject = model.GetObjects()[idx];
 				SelectedItemChanged();
+=======
+			switch (selectedObject.Attach)
+			{
+				case BasicAttach:
+				case ChunkAttach:
+					{
+						ModelDataEditor me = new ModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+						}
+					}
+					break;
+				case GC.GCAttach:
+					{
+						GCModelDataEditor me = new GCModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+						}
+					}
+					break;
+>>>>>>> GC Models: Fixed bugs related to vertex/opaque mesh/transparent mesh label generation; WIP additions for struct compatibility.
 			}
 		}
 
