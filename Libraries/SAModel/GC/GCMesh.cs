@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -21,10 +22,6 @@ namespace SAModel.GC
 		/// </summary>
 		public readonly List<GCPrimitive> primitives;
 
-		public BlendAlphaParameter blend;
-		public AmbientColorParameter diff;
-		public TextureParameter tex;
-		public byte[] indices;
 		/// <summary>
 		/// The index attribute flags of this mesh. If it has no IndexAttribParam, it will return null
 		/// </summary>
@@ -42,11 +39,13 @@ namespace SAModel.GC
 		/// The location to which the parameters have been written
 		/// </summary>
 		private uint paramAddress;
+		public string ParameterName { get; set; }
 
 		/// <summary>
 		/// The location to which the primitives have been written
 		/// </summary>
 		private uint primitiveAddress;
+		public string PrimitiveName { get; set; }
 
 		/// <summary>
 		/// The amount of bytes which have been written for the primitives
@@ -74,6 +73,11 @@ namespace SAModel.GC
 			this.primitives = primitives;
 		}
 
+		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
+		: this(file, address, imageBase, indexFlags, new Dictionary<int, string>())
+		{
+		}
+
 		/// <summary>
 		/// Read a mesh from a file
 		/// </summary>
@@ -81,7 +85,7 @@ namespace SAModel.GC
 		/// <param name="address">The address at which the mesh is located</param>
 		/// <param name="imageBase">The imagebase (used for when reading from an exe)</param>
 		/// <param name="index">Indexattribute parameter of the previous mesh</param>
-		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
+		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags, Dictionary<int, string> labels)
 		{
 			// getting the addresses and sizes
 			int parameters_offset = (int)(ByteConverter.ToInt32(file, address) - imageBase);
@@ -92,6 +96,10 @@ namespace SAModel.GC
 
 			// reading the parameters
 			parameters = new List<GCParameter>();
+			if (labels.ContainsKey(parameters_offset))
+				ParameterName = labels[parameters_offset];
+			else
+				ParameterName = "param_" + parameters_offset.ToString("X8");
 			for (int i = 0; i < parameters_count; i++)
 			{
 				parameters.Add(GCParameter.Read(file, parameters_offset));
@@ -105,6 +113,10 @@ namespace SAModel.GC
 
 			// reading the primitives
 			primitives = new List<GCPrimitive>();
+			if (labels.ContainsKey(primitives_offset))
+				PrimitiveName = labels[primitives_offset];
+			else
+				PrimitiveName = "prim_" + primitives_offset.ToString("X8");
 			int end_pos = primitives_offset + primitives_size;
 
 			while (primitives_offset < end_pos)
@@ -161,43 +173,18 @@ namespace SAModel.GC
 			writer.Write(primitiveSize);
 		}
 
-		public static byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, List<GCMesh> gcMeshes, out uint address)
+		public string ToStruct()
 		{
-			List<byte> result = new List<byte>();
-			List<int> paramOffsetList = new List<int>();
-			List<int> primOffsetList = new List<int>();
-
-			address = (uint)result.Count;
-			for (int i = 0; i < gcMeshes.Count; i++)
-			{
-				paramOffsetList.Add(result.Count);
-				primOffsetList.Add(result.Count + 0x8);
-				njOffsets.Add((uint)(result.Count + imageBase));
-				njOffsets.Add((uint)(result.Count + imageBase + 0x8));
-			}
-			result.Align(0x10);
-
-			for (int i = 0; i < gcMeshes.Count; i++)
-			{
-				var mesh = gcMeshes[i];
-
-				//Material
-				result.SetByteListInt(paramOffsetList[i], (int)(result.Count + imageBase));
-				//Blend types
-				result.AddRange(ByteConverter.GetBytes((uint)mesh.blend.NJSourceAlpha));
-				result.AddRange(ByteConverter.GetBytes((uint)mesh.blend.NJDestAlpha));
-				//Texture ID
-				result.AddRange(ByteConverter.GetBytes((uint)mesh.tex.TextureID));
-				//Diffuse color
-				result.AddRange(Color.GetBytes(mesh.diff.AmbientColor, GCDataType.RGBA8));
-				result.Align(0x10);
-				//Strips
-				result.SetByteListInt(primOffsetList[i], (int)(result.Count + imageBase));
-				result.AddRange(mesh.indices);
-				result.Align(0x10);
-			}
-
-			return result.ToArray();
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(parameters != null ? ParameterName : "NULL");
+			result.Append(", ");
+			result.Append(parameters != null ? (ushort)parameters.Count : 0);
+			result.Append(", ");
+			result.Append(primitives != null ? PrimitiveName : "NULL");
+			result.Append(", ");
+			result.Append(primitiveSize);
+			result.Append(" }");
+			return result.ToString();
 		}
 
 		/// <summary>
@@ -297,6 +284,23 @@ namespace SAModel.GC
 			}
 
 			return new MeshInfo(new NJS_MATERIAL(material), polys.ToArray(), vertData, hasUVs, hasColors);
+		}
+
+		public GCMesh Clone()
+		{
+			//throw new NotImplementedException();
+			GCMesh result = (GCMesh)MemberwiseClone();
+			//result.Vertices = new List<Vertex>(Vertices.Count);
+			//foreach (Vertex item in Vertices)
+			//	result.Vertices.Add(item.Clone());
+			//result.Normals = new List<Vertex>(Normals.Count);
+			//foreach (Vertex item in Normals)
+			//	result.Normals.Add(item.Clone());
+			//result.Diffuse = new List<Color>(Diffuse);
+			//result.Specular = new List<Color>(Specular);
+			//result.UserFlags = new List<uint>(UserFlags);
+			//result.NinjaFlags = new List<uint>(NinjaFlags);
+			return result;
 		}
 	}
 }

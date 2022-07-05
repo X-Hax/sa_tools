@@ -25,9 +25,9 @@ namespace SAModel.SAMDL
 		// Editor settings
 		Settings_SAMDL settingsfile; // For user editable settings
 		Properties.Settings AppConfig = Properties.Settings.Default; // For non-user editable settings in SAMDL.config
-        Logger log = new Logger();
-        string currentProject; // Path to currently loaded project, if it exists
-        string lastProjectModeCategory = ""; // Last selected category in the model list
+		Logger log = new Logger();
+		string currentProject; // Path to currently loaded project, if it exists
+		string lastProjectModeCategory = ""; // Last selected category in the model list
 
 		// Editor variables
 		bool loaded;
@@ -92,7 +92,7 @@ namespace SAModel.SAMDL
 			InitializeComponent();
 			AddMouseMoveHandler(this);
 			this.MouseWheel += panel1_MouseWheel;
-            this.AllowDrop = true;
+			this.AllowDrop = true;
 			this.DragEnter += new DragEventHandler(SAMDL_DragEnter);
 			this.DragDrop += new DragEventHandler(SAMDL_DragDrop);
 		}
@@ -134,7 +134,7 @@ namespace SAModel.SAMDL
 		{
 			bool modelLoaded = false; // We can only load one model at once for now. Set to true when user loads first file and ignore others.
 			bool modelLoadedWarning = false; // Flag so we can warn users that they should do one model at a time.
-			
+
 			List<string> modelFiles = new List<string>(); // For multi support, if that happens
 			List<string> modelImportFiles = new List<string>();
 			List<string> animFiles = new List<string>();
@@ -182,28 +182,28 @@ namespace SAModel.SAMDL
 					case ".njm":
 						animFiles.Add(file);
 						break;
-                    case ".pvm":
-                    case ".gvm":
+					case ".pvm":
+					case ".gvm":
 					case ".xvm":
 					case ".pb":
-                    case ".pvmx":
-                    case ".pak":
-                    case ".prs":
-                    case ".pvr":
+					case ".pvmx":
+					case ".pak":
+					case ".prs":
+					case ".pvr":
 					case ".xvr":
-                        AddSingleTexture(file);
-                        break;
-                    case ".gvr":
-                    case ".txt":
-                        LoadTextures(file);
-                        break;
-                    case ".satex":
-                        LoadTexlistFile(file);
-                        break;
-                    case ".sap":
-                        LoadFile(file);
-                        break;
-                    default:
+						AddSingleTexture(file);
+						break;
+					case ".gvr":
+					case ".txt":
+						LoadTextures(file);
+						break;
+					case ".satex":
+						LoadTexlistFile(file);
+						break;
+					case ".sap":
+						LoadFile(file);
+						break;
+					default:
 						break;
 				}
 			}
@@ -271,33 +271,33 @@ namespace SAModel.SAMDL
 			AnimationTimer = new HiResTimer(16.667f);
 			AnimationTimer.Elapsed += new EventHandler<HiResTimerElapsedEventArgs>(AdvanceAnimation);
 			log.DeleteLogFile();
-            log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
-            log.Add("Build Date: ");
-            log.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
-            log.Add("OS Version: ");
-            log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
-            log.WriteLog();
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
+			log.Add("SAMDL: New log entry on " + DateTime.Now.ToString("G") + "\n");
+			log.Add("Build Date: ");
+			log.Add(File.GetLastWriteTime(Application.ExecutablePath).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			log.Add("OS Version: ");
+			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
+			log.WriteLog();
+			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
-				{
-					Windowed = true,
-					SwapEffect = SwapEffect.Discard,
-					EnableAutoDepthStencil = true,
-					AutoDepthStencilFormat = Format.D24X8
-				});
+			{
+				Windowed = true,
+				SwapEffect = SwapEffect.Discard,
+				EnableAutoDepthStencil = true,
+				AutoDepthStencilFormat = Format.D24X8
+			});
 			osd = new OnScreenDisplay(d3ddevice, Color.Red.ToRawColorBGRA());
 			AppConfig.Reload();
 			settingsfile = Settings_SAMDL.Load();
 			EditorOptions.FillColor = settingsfile.BackgroundColor;
-            
-            if (settingsfile.ShowWelcomeScreen)
+
+			if (settingsfile.ShowWelcomeScreen)
 			{
 				ShowWelcomeScreen();
 			}
 
-			EditorOptions.RenderDrawDistance = settingsfile.DrawDistanceGeneral;			
+			EditorOptions.RenderDrawDistance = settingsfile.DrawDistanceGeneral;
 			EditorOptions.Initialize(d3ddevice);
 			cam.MoveSpeed = settingsfile.CamMoveSpeed;
 			cam.ModifierKey = settingsfile.CameraModifier;
@@ -438,7 +438,7 @@ namespace SAModel.SAMDL
 						case DialogResult.Abort:
 							Application.Exit();
 							break;
-					}			
+					}
 				}
 			}
 		}
@@ -505,7 +505,7 @@ namespace SAModel.SAMDL
 						rootSiblingMode = false;
 					}
 					animationList = new List<NJS_MOTION>(modelFile.Animations);
-					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
+					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 				}
 				catch (Exception ex)
@@ -597,7 +597,7 @@ namespace SAModel.SAMDL
 						Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 						LoadBinFile(newFile);
 						animationList = new List<NJS_MOTION>();
-						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
+						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 						break;
 					// Project file
@@ -692,7 +692,7 @@ namespace SAModel.SAMDL
 													i = ByteConverter.ToInt32(file, address);
 												}
 												animationList = new List<NJS_MOTION>(anis.Values);
-												setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
+												setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 													buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 											}
 										}
@@ -704,10 +704,10 @@ namespace SAModel.SAMDL
 						break;
 				}
 			}
-            currentFileName = filename;
+			currentFileName = filename;
 
-            RebuildModelCache();
-            loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			RebuildModelCache();
+			loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animationList != null && animationList.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -752,7 +752,7 @@ namespace SAModel.SAMDL
 				}
 				if (modelinfo.checkBoxLoadMotion.Checked)
 					animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
-				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = 
+				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled =
 					buttonResetFrame.Enabled = (animationList != null && animationList.Count > 0);
 			}
 			else if (modelinfo.radioButtonAction.Checked)
@@ -760,7 +760,7 @@ namespace SAModel.SAMDL
 				NJS_ACTION action = new NJS_ACTION(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null);
 				model = action.Model;
 				animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadHeader(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, (ModelFormat)modelinfo.comboBoxModelFormat.SelectedIndex, null) };
-				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = 
+				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled =
 					buttonResetFrame.Enabled = animationList.Count > 0;
 			}
 			else
@@ -778,7 +778,7 @@ namespace SAModel.SAMDL
 						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
 						break;
 					case ModelFormat.GC:
-						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, null);
+						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
 						break;
 					case ModelFormat.XJ:
 						model.Attach = new XJ.XJAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
@@ -806,7 +806,7 @@ namespace SAModel.SAMDL
 					break;
 			}
 		}
-	
+
 		private void AddTreeNode(NJS_OBJECT model, TreeNodeCollection nodes)
 		{
 			int index = 0;
@@ -857,7 +857,7 @@ namespace SAModel.SAMDL
 		{
 			string filterString;
 
-			switch(outfmt)
+			switch (outfmt)
 			{
 				case ModelFormat.XJ:
 					filterString = "Sega Xbox Ninja .xj|*.xj";
@@ -885,7 +885,7 @@ namespace SAModel.SAMDL
 
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
-					switch(a.FilterIndex)
+					switch (a.FilterIndex)
 					{
 						case 3:
 							a.FileName = a.FileName + "?BE?";
@@ -1014,10 +1014,10 @@ namespace SAModel.SAMDL
 
 			model = new NJS_OBJECT();
 			model.Morph = false;
-            RebuildModelCache();
+			RebuildModelCache();
 			selectedObject = model;
 			setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
-			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			SelectedItemChanged();
@@ -1089,7 +1089,7 @@ namespace SAModel.SAMDL
 				cameraAngleLabel.Text = $"Pitch: " + cam.Pitch.ToString("X5") + " Yaw: " + cam.Yaw.ToString("X5") + (cam.mode == 1 ? " Distance: " + cam.Distance : "");
 				cameraModeLabel.Text = $"Mode: " + cameramode + ", Speed: " + cam.MoveSpeed;
 			}
-			else 
+			else
 			{
 				cameraAngleLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.None;
 				cameraModeLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.None;
@@ -1204,7 +1204,7 @@ namespace SAModel.SAMDL
 			{
 				if (obj.Attach != null)
 				{
-					if (buttonShowVertexIndices.Checked) 
+					if (buttonShowVertexIndices.Checked)
 						DrawVertexIndices(obj, transform);
 					for (int j = 0; j < obj.Attach.MeshInfo.Length; j++)
 					{
@@ -1462,16 +1462,16 @@ namespace SAModel.SAMDL
 				case ("Zoom to Target"):
 					if (selectedObject != null)
 					{
-						BoundingSphere bounds = (selectedObject.Attach != null) ? 
-                            new BoundingSphere(selectedObject.Attach.Bounds.Center, selectedObject.Attach.Bounds.Radius) :
+						BoundingSphere bounds = (selectedObject.Attach != null) ?
+							new BoundingSphere(selectedObject.Attach.Bounds.Center, selectedObject.Attach.Bounds.Radius) :
 							new BoundingSphere(selectedObject.Position.X, selectedObject.Position.Y, selectedObject.Position.Z, 10);
 						bounds.Center += selectedObject.Position;
 						cam.MoveToShowBounds(bounds);
 					}
 					else
 					{
-						BoundingSphere bounds = (model.Attach != null) ? 
-                            new BoundingSphere(model.Attach.Bounds.Center, model.Attach.Bounds.Radius) :
+						BoundingSphere bounds = (model.Attach != null) ?
+							new BoundingSphere(model.Attach.Bounds.Center, model.Attach.Bounds.Radius) :
 							new BoundingSphere(model.Position.X, model.Position.Y, model.Position.Z, 10);
 						bounds.Center += model.Position;
 						cam.MoveToShowBounds(bounds);
@@ -1681,59 +1681,60 @@ namespace SAModel.SAMDL
 
 		private void panel1_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Middle) 
+			if (e.Button == MouseButtons.Middle)
 				actionInputCollector.KeyUp(Keys.MButton);
 		}
-        #endregion
+		#endregion
 
-        private void UpdateTexlist()
-        {
-            if (TextureInfo == null)
-            {
-                unloadTextureToolStripMenuItem.Enabled = false;
-                return;
-            }
-            if (TexList != null)
-            {
-                List<Texture> textures = new List<Texture>();
-                List<BMPInfo> texinfo = new List<BMPInfo>();
-                for (int i = 0; i < TexList.TextureNames.Length; i++)
-                    for (int j = 0; j < TextureInfo.Length; j++)
-                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant())
-                        {
-                            texinfo.Add(TextureInfo[j]);
-                            textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
-                            continue;
-                        }
-                Textures = textures.ToArray();
-                TextureInfoCurrent = texinfo.ToArray();
-            }
-            else
-            {
-                TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
-                for (int i = 0; i < TextureInfo.Length; i++)
-                    TextureInfoCurrent[i] = TextureInfo[i];
-                Textures = new Texture[TextureInfoCurrent.Length];
-                for (int j = 0; j < TextureInfoCurrent.Length; j++)
-                    Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
-            }
+		private void UpdateTexlist()
+		{
+			if (TextureInfo == null)
+			{
+				unloadTextureToolStripMenuItem.Enabled = false;
+				return;
+			}
+			if (TexList != null)
+			{
+				List<Texture> textures = new List<Texture>();
+				List<BMPInfo> texinfo = new List<BMPInfo>();
+				for (int i = 0; i < TexList.TextureNames.Length; i++)
+					for (int j = 0; j < TextureInfo.Length; j++)
+						if (string.IsNullOrEmpty(TexList.TextureNames[i]) || TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant())
+						{
+							texinfo.Add(TextureInfo[j]);
+							textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
+							continue;
+						}
+				Textures = textures.ToArray();
+				TextureInfoCurrent = texinfo.ToArray();
+			}
+			else
+			{
+				TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+				for (int i = 0; i < TextureInfo.Length; i++)
+					TextureInfoCurrent[i] = TextureInfo[i];
+				Textures = new Texture[TextureInfoCurrent.Length];
+				for (int j = 0; j < TextureInfoCurrent.Length; j++)
+					Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
+			}
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
-        }
+		}
 
 		private void LoadTextures(string filename)
 		{
 			TextureInfo = TextureArchive.GetTextures(filename, out bool hasNames);
-			
+
 			//Use names loaded from model, ex NJTL, if the archive didn't have texture names
-			if(hasNames == false && TempTexList?.TextureNames?.Length > 0)
+			if (hasNames == false && TempTexList?.TextureNames?.Length > 0)
 			{
 				int tempLen = TempTexList.TextureNames.Length;
-				for(int i = 0; i < TextureInfo.Length; i++)
+				for (int i = 0; i < TextureInfo.Length; i++)
 				{
-					if(tempLen > i)
+					if (tempLen > i)
 					{
 						TextureInfo[i].Name = TempTexList.TextureNames[i];
-					} else
+					}
+					else
 					{
 						break;
 					}
@@ -1742,16 +1743,16 @@ namespace SAModel.SAMDL
 			TexturePackName = Path.GetFileNameWithoutExtension(filename);
 			TempTexList = null;
 			TexList = null;
-            UpdateTexlist();
+			UpdateTexlist();
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = loaded;
-			if (loaded) 
-                NeedRedraw = true;
+			if (loaded)
+				NeedRedraw = true;
 		}
 
 		private void loadTexturesToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog a = new OpenFileDialog() {  Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
-            {
+			using (OpenFileDialog a = new OpenFileDialog() { Title = "Load Textures", DefaultExt = "pvm", Filter = "Texture Archives|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak|Texture Pack|*.txt|Supported Files|*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
 					LoadTextures(a.FileName);
@@ -1815,7 +1816,7 @@ namespace SAModel.SAMDL
 							sw.WriteLine("};");
 							sw.WriteLine();
 						}
-						if (rootSiblingMode) 
+						if (rootSiblingMode)
 							model.Children[0].ToStructVariables(sw, dx, labels, texnames);
 						else
 							model.ToStructVariables(sw, dx, labels, texnames);
@@ -1910,6 +1911,7 @@ namespace SAModel.SAMDL
 				addChildToolStripMenuItem.Enabled = true;
 				clearChildrenToolStripMenuItem1.Enabled = selectedObject.Children.Count > 0;
 				deleteToolStripMenuItem.Enabled = true;
+				editModelDataToolStripMenuItem.Enabled = true;
 				deleteNodeToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				emptyModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				splitToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1929,6 +1931,7 @@ namespace SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
+				editModelDataToolStripMenuItem.Enabled = false;
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				splitToolStripMenuItem.Enabled = sortToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
@@ -1972,11 +1975,14 @@ namespace SAModel.SAMDL
 					catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 					catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
 					break;
-				case GC.GCAttach:
+				case GC.GCAttach gatt:
+					gatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					gatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+					gatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
 					break;
 			}
 			selectedObject.Attach = attach;
-            RebuildModelCache();
+			RebuildModelCache();
 			NeedRedraw = true;
 			unsavedChanges = true;
 		}
@@ -2288,8 +2294,8 @@ namespace SAModel.SAMDL
 					if (a.ShowDialog() == DialogResult.OK)
 					{
 						LoadTextures(a.FileName);
-                        NeedRedraw = true;
-                    }
+						NeedRedraw = true;
+					}
 					else
 						MessageBox.Show("No textures are loaded. Materials may not be imported properly.", "SAMDL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
@@ -2298,13 +2304,13 @@ namespace SAModel.SAMDL
 			context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
 			Assimp.Scene scene = context.ImportFile(objFileName, Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.FlipUVs);
 			Assimp.Node importnode = scene.RootNode;
-            loaded = false;
+			loaded = false;
 			if (newModelUnloadsTexturesToolStripMenuItem.Checked) UnloadTextures();
 			AnimationPlaying = false;
 			// Collada adds a root node, so use the first child node instead
 			if (!importColladaRoot)
-                importnode = scene.RootNode.Children[0];
-            NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfoCurrent?.Select(t => t.Name).ToArray(), importAsSingle);
+				importnode = scene.RootNode.Children[0];
+			NJS_OBJECT newmodel = SAEditorCommon.Import.AssimpStuff.AssimpImport(scene, importnode, outfmt, TextureInfoCurrent?.Select(t => t.Name).ToArray(), importAsSingle);
 			if (!selected)
 			{
 				currentAnimation = null;
@@ -2325,15 +2331,15 @@ namespace SAModel.SAMDL
 			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
 
-            if (!selected)
+			if (!selected)
 			{
 				if (animationList.Count > 0) setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = true;
 				selectedObject = model;
 				AddModelToLibrary(model, false);
 			}
-            RebuildModelCache();
+			RebuildModelCache();
 			unsavedChanges = true;
-			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animationList.Count > 0;
 			SelectedItemChanged();
@@ -2388,7 +2394,7 @@ namespace SAModel.SAMDL
 				exportmodel = model.Children[0];
 			else
 				exportmodel = model;
-				SAEditorCommon.Import.AssimpStuff.AssimpExport(exportmodel, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
+			SAEditorCommon.Import.AssimpStuff.AssimpExport(exportmodel, scene, Matrix.Identity, texturePaths.Count > 0 ? texturePaths.ToArray() : null, scene.RootNode);
 
 			string format = "collada";
 			switch (Path.GetExtension(filename).ToLowerInvariant())
@@ -2430,8 +2436,12 @@ namespace SAModel.SAMDL
 
 		private void loadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog ofd = new OpenFileDialog() {Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm;*.motions|SA Tools Animation Files|*.saanim;*.action|" +
-																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*", Multiselect = true })
+			using (OpenFileDialog ofd = new OpenFileDialog()
+			{
+				Filter = "All Animation Files|*.action;*.saanim;*.json;*MTN.BIN;*MTN.PRS;*.njm;*.motions|SA Tools Animation Files|*.saanim;*.action|" +
+																		"Ninja Motion Files|*.njm|JSON Files|*.json|Motion Files|*MTN.BIN;*MTN.PRS|All Files|*.*",
+				Multiselect = true
+			})
 				if (ofd.ShowDialog(this) == DialogResult.OK)
 				{
 					LoadAnimation(ofd.FileNames);
@@ -2440,18 +2450,18 @@ namespace SAModel.SAMDL
 
 		private void SetAnimOrientations(Vertex position, Rotation rotation, Vertex scale)
 		{
-			for(int i = 0; i < animationList.Count; i++)
+			for (int i = 0; i < animationList.Count; i++)
 			{
 				var anim = animationList[i];
 				int endFrame = anim.Frames -1;
-				if(anim.Models.ContainsKey(0))
+				if (anim.Models.ContainsKey(0))
 				{
 					AnimModelData animData = anim.Models[0];
 					if (position != null)
 					{
 						if (animData.Position.Count > 0)
 						{
-							foreach(var key in animData.Position.Keys)
+							foreach (var key in animData.Position.Keys)
 							{
 								animData.Position[key] += position;
 							}
@@ -2499,23 +2509,24 @@ namespace SAModel.SAMDL
 							animData.Scale.Add(endFrame, scale);
 						}
 					}
-				} else
+				}
+				else
 				{
 					AnimModelData orientationData = new AnimModelData();
 
-					if(position != null)
+					if (position != null)
 					{
 						orientationData.Position.Add(0, position);
 						orientationData.Position.Add(endFrame, position);
 					}
 
-					if(rotation != null)
+					if (rotation != null)
 					{
 						orientationData.Rotation.Add(0, rotation);
 						orientationData.Rotation.Add(endFrame, rotation);
 					}
 
-					if(scale != null)
+					if (scale != null)
 					{
 						orientationData.Scale.Add(0, scale);
 						orientationData.Scale.Add(endFrame, scale);
@@ -2528,11 +2539,11 @@ namespace SAModel.SAMDL
 
 		private int BAMSFix(int value)
 		{
-			while(value < 65536)
+			while (value < 65536)
 			{
 				value += 65336;
 			}
-			while(value > 65336)
+			while (value > 65336)
 			{
 				value -= 65336;
 			}
@@ -2758,11 +2769,11 @@ namespace SAModel.SAMDL
 
 		private void UnloadTextures()
 		{
-            TextureInfo = null;
-            TextureInfoCurrent = null;
+			TextureInfo = null;
+			TextureInfoCurrent = null;
 			Textures = null;
-            TexList = null;
-            unloadTextureToolStripMenuItem.Enabled = false;
+			TexList = null;
+			unloadTextureToolStripMenuItem.Enabled = false;
 		}
 
 		private void unloadTextureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2796,8 +2807,8 @@ namespace SAModel.SAMDL
 		private void swapUVToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (model != null) SwapUV(model);
-            RebuildModelCache();
-            NeedRedraw = true;
+			RebuildModelCache();
+			NeedRedraw = true;
 		}
 
 		private void DeleteSelectedModel()
@@ -2816,7 +2827,7 @@ namespace SAModel.SAMDL
 					SelectedItemChanged();
 					unsavedChanges = true;
 					osd.UpdateOSDItem("Model deleted", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-                    NeedRedraw = true;
+					NeedRedraw = true;
 				}
 			}
 			else
@@ -2827,17 +2838,17 @@ namespace SAModel.SAMDL
 		{
 			CheckModelLabels();
 			model.ProcessVertexData();
-            if (hasWeight = model.HasWeight)
-                meshes = model.ProcessWeightedModel().ToArray();
-            else
-            {
-                NJS_OBJECT[] models = model.GetObjects();
-                meshes = new Mesh[models.Length];
-                for (int i = 0; i < models.Length; i++)
-                    if (models[i].Attach != null)
-                        try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-                        catch { }
-            }
+			if (hasWeight = model.HasWeight)
+				meshes = model.ProcessWeightedModel().ToArray();
+			else
+			{
+				NJS_OBJECT[] models = model.GetObjects();
+				meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+						catch { }
+			}
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
@@ -3053,7 +3064,7 @@ namespace SAModel.SAMDL
 
 				if (a.ShowDialog(this) == DialogResult.OK)
 				{
-					switch(a.FilterIndex)
+					switch (a.FilterIndex)
 					{
 						case 3:
 							a.FileName = a.FileName + "?BE?";
@@ -3144,7 +3155,7 @@ namespace SAModel.SAMDL
 				text.export += "enum " + TexturePackName + "TexName";
 				text.export += System.Environment.NewLine;
 				text.export += "{";
-				text.export += "\t"+ string.Join("," + Environment.NewLine + "\t", texnames);
+				text.export += "\t" + string.Join("," + Environment.NewLine + "\t", texnames);
 				text.export += System.Environment.NewLine;
 				text.export += "};";
 				text.export += System.Environment.NewLine;
@@ -3347,7 +3358,7 @@ namespace SAModel.SAMDL
 			foreach (NJS_MESHSET ms in basicatt.Mesh)
 				if (basicatt.Material[ms.MaterialID].UseAlpha == false)
 					hasopaque = true;
-			if (!hasopaque) 
+			if (!hasopaque)
 				transonly = false;
 			// Add opaque meshes to a child model
 			if (transonly)
@@ -3394,7 +3405,7 @@ namespace SAModel.SAMDL
 				opaqueatt.VertexName = basicatt.VertexName + "_" + id.ToString();
 				opaqueatt.NormalName = basicatt.NormalName + "_" + id.ToString();
 				opaqueatt.MeshName = basicatt.MeshName + "_" + id.ToString();
-                id++;
+				id++;
 			}
 			// Add meshes to a child model (or both opaque and transparent if the option is off)
 			foreach (NJS_MESHSET m in basicatt.Mesh)
@@ -3542,42 +3553,42 @@ namespace SAModel.SAMDL
 			FormResizing = true;
 		}
 
-        private void ImportOBJLegacy(NJS_OBJECT obj, string filename)
-        {
-            obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfoCurrent != null ? TextureInfoCurrent?.Select(a => a.Name).ToArray() : null);
-            RebuildModelCache();
-            NeedRedraw = true;
-        }
+		private void ImportOBJLegacy(NJS_OBJECT obj, string filename)
+		{
+			obj.Attach = SAModel.Direct3D.Extensions.obj2nj(filename, TextureInfoCurrent != null ? TextureInfoCurrent?.Select(a => a.Name).ToArray() : null);
+			RebuildModelCache();
+			NeedRedraw = true;
+		}
 
 		private void legacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            using (OpenFileDialog ofd = new OpenFileDialog
-            {
-                DefaultExt = "obj",
-                Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
-            })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    ImportOBJLegacy(model, ofd.FileName);
-                }
-            }
-        }
+			using (OpenFileDialog ofd = new OpenFileDialog
+			{
+				DefaultExt = "obj",
+				Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
+			})
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					ImportOBJLegacy(model, ofd.FileName);
+				}
+			}
+		}
 
 		private void selectedLegacyOBJImportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            using (OpenFileDialog ofd = new OpenFileDialog
-            {
-                DefaultExt = "obj",
-                Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
-            })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    ImportOBJLegacy(selectedObject, ofd.FileName);
-                }
-            }
-        }
+			using (OpenFileDialog ofd = new OpenFileDialog
+			{
+				DefaultExt = "obj",
+				Filter = "Wavefront OBJ Files|*.obj|All Files|*.*"
+			})
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					ImportOBJLegacy(selectedObject, ofd.FileName);
+				}
+			}
+		}
 
 		private string FixLabel(string label, List<string> labels, out string duplicate)
 		{
@@ -3669,6 +3680,21 @@ namespace SAModel.SAMDL
 						}
 						break;
 					case GC.GCAttach:
+						{
+							GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
+
+							gcatt.OpaqueMeshName = FixLabel(gcatt.OpaqueMeshName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							gcatt.TranslucentMeshName = FixLabel(gcatt.TranslucentMeshName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+
+							gcatt.VertexName = FixLabel(gcatt.VertexName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+						}
 						break;
 				}
 
@@ -3697,41 +3723,54 @@ namespace SAModel.SAMDL
 			}
 		}
 
-        private void RandomizeLabels(NJS_OBJECT obj)
-        {
-            obj.Name = "object_" + Extensions.GenerateIdentifier();
-            if (obj.Attach != null)
-            {
-                obj.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
-                if (obj.Attach is BasicAttach)
-                {
-                    BasicAttach basicatt = (BasicAttach)obj.Attach;
-                    basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
-                    basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
-                    basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
-                    basicatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-                    if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
-                        foreach (NJS_MESHSET meshset in basicatt.Mesh)
-                        {
-                            meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
-                            meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
-                            meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
-                            meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
-                        }
-                }
-                else if (obj.Attach is ChunkAttach)
-                {
-                    ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
-                    chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
-                    chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-                }
-            }
-            if (obj.Children != null && obj.Children.Count > 0)
-                foreach (NJS_OBJECT child in obj.Children)
-                    RandomizeLabels(child);
-            if (obj.Sibling != null)
-                    RandomizeLabels(obj.Sibling);
-        }
+		private void RandomizeLabels(NJS_OBJECT obj)
+		{
+			obj.Name = "object_" + Extensions.GenerateIdentifier();
+			if (obj.Attach != null)
+			{
+				obj.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
+				switch (obj.Attach)
+				{
+					case BasicAttach:
+						{
+							BasicAttach basicatt = (BasicAttach)obj.Attach;
+							basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+							basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
+							basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+							basicatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+							if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
+								foreach (NJS_MESHSET meshset in basicatt.Mesh)
+								{
+									meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+									meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+									meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+									meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+								}
+						}
+						break;
+					case ChunkAttach:
+						{
+							ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+							chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+							chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+						}
+						break;
+					case GC.GCAttach:
+						{
+							GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
+							gcatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+							gcatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+						}
+						break;
+				}
+			}
+			if (obj.Children != null && obj.Children.Count > 0)
+				foreach (NJS_OBJECT child in obj.Children)
+					RandomizeLabels(child);
+			if (obj.Sibling != null)
+				RandomizeLabels(obj.Sibling);
+		}
 
 		private void resetLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -3742,42 +3781,42 @@ namespace SAModel.SAMDL
 				RebuildModelCache();
 				unsavedChanges = true;
 			}
-        }
+		}
 
-        private void LoadTexlistFile(string filename)
-        {
-            TexList = NJS_TEXLIST.Load(filename);
-            UpdateTexlist();
-        }
+		private void LoadTexlistFile(string filename)
+		{
+			TexList = NJS_TEXLIST.Load(filename);
+			UpdateTexlist();
+		}
 
-        private void loadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Load Texlist", Filter = "Texlist Files (*.satex)|*.satex|All Files (*.*)|*.*", DefaultExt = "satex" })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    LoadTexlistFile(ofd.FileName);
-                    unloadTexlistToolStripMenuItem.Enabled = true;
-                }
-            }
-        }
+		private void loadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Load Texlist", Filter = "Texlist Files (*.satex)|*.satex|All Files (*.*)|*.*", DefaultExt = "satex" })
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					LoadTexlistFile(ofd.FileName);
+					unloadTexlistToolStripMenuItem.Enabled = true;
+				}
+			}
+		}
 
-        private void unloadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TexList = null;
-            UpdateTexlist();
-            unloadTexlistToolStripMenuItem.Enabled = false;
-        }
+		private void unloadTexlistToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			TexList = null;
+			UpdateTexlist();
+			unloadTexlistToolStripMenuItem.Enabled = false;
+		}
 
-        private void AddSingleTexture(string filename)
-        {
-            List<BMPInfo> result = new List<BMPInfo>();
-            if (TextureInfo != null && TextureInfo.Length > 0)
-            result.AddRange(TextureInfo);
-                result.AddRange(TextureArchive.GetTextures(filename, out bool hasNames));
-            TextureInfo = result.ToArray();
-            UpdateTexlist();
-        }
+		private void AddSingleTexture(string filename)
+		{
+			List<BMPInfo> result = new List<BMPInfo>();
+			if (TextureInfo != null && TextureInfo.Length > 0)
+				result.AddRange(TextureInfo);
+			result.AddRange(TextureArchive.GetTextures(filename, out bool hasNames));
+			TextureInfo = result.ToArray();
+			UpdateTexlist();
+		}
 
 		private void AddTextures(string[] filenames, string paletteFile = null)
 		{
@@ -3797,16 +3836,16 @@ namespace SAModel.SAMDL
 
 		private void addTexturestoolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.xvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
-                    AddTextures(ofd.FileNames);
-            }
+			using (OpenFileDialog ofd = new OpenFileDialog() { Multiselect = true, Filter = "Supported Files|*.pvr;*.gvr;*.xvr;*.bmp;*.jpg;*.png;*.gif;*.dds;*.pvm;*.gvm;*.xvm;*.prs;*.pvmx;*.pb;*.pak;*.txt|All Files|*.*" })
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+					AddTextures(ofd.FileNames);
+			}
 		}
 
 		private void modelListToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-            LoadProject(currentProject);
+			LoadProject(currentProject);
 		}
 
 		private void byFaceToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3896,9 +3935,9 @@ namespace SAModel.SAMDL
 							transparent.Add(newobj);
 						else
 							opaque.Add(newobj);
-						if (isTransparent) 
-							id_trans++; 
-						else 
+						if (isTransparent)
+							id_trans++;
+						else
 							id_opaque++;
 					}
 				}
@@ -3914,7 +3953,7 @@ namespace SAModel.SAMDL
 				unsavedChanges = true;
 			}
 		}
-        
+
 		// Meshset sorting
 		private void SortModel(NJS_OBJECT mdl, bool withchildren)
 		{
@@ -3956,16 +3995,16 @@ namespace SAModel.SAMDL
 					if (basicatt.Material[m.MaterialID].UseAlpha)
 					{
 						mesh_trans.Add(m);
-                        if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
-                        {
-                            mats_trans.Add(basicatt.Material[m.MaterialID]);
-                            matids.Add(matid_current);
-                            matid_current++;
-                        }
-                        else
-                        {
-                            matids.Add((ushort)(mats_opaque.Count + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
-                        }
+						if (!mats_trans.Contains(basicatt.Material[m.MaterialID]))
+						{
+							mats_trans.Add(basicatt.Material[m.MaterialID]);
+							matids.Add(matid_current);
+							matid_current++;
+						}
+						else
+						{
+							matids.Add((ushort)(mats_opaque.Count + mats_trans.IndexOf(basicatt.Material[m.MaterialID])));
+						}
 					}
 				}
 				mesh_opaque.AddRange(mesh_trans);
@@ -4001,10 +4040,10 @@ namespace SAModel.SAMDL
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
 
-        private void buttonModelList_Click(object sender, EventArgs e)
-        {
-            LoadProject(currentProject);
-        }
+		private void buttonModelList_Click(object sender, EventArgs e)
+		{
+			LoadProject(currentProject);
+		}
 
 		private void renderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -4055,20 +4094,20 @@ namespace SAModel.SAMDL
 		}
 
 		private void SetPartialTexlist(int[] texIDs)
-        {
-            // If a partial texlist isn't set, remove all of it
-            if (texIDs == null)
-                TexList = null;
-            // If a partial texlist exists, trim the texlist
-            else
-            {
-                List<string> texnames = new List<string>();
-                for (int i = texIDs[0]; i <= texIDs[texIDs.Length - 1]; i++)
-                    texnames.Add(TextureInfo[i].Name);
-                TexList = new NJS_TEXLIST(texnames.ToArray());
-            }
-            UpdateTexlist();
-        }
+		{
+			// If a partial texlist isn't set, remove all of it
+			if (texIDs == null)
+				TexList = null;
+			// If a partial texlist exists, trim the texlist
+			else
+			{
+				List<string> texnames = new List<string>();
+				for (int i = texIDs[0]; i <= texIDs[texIDs.Length - 1]; i++)
+					texnames.Add(TextureInfo[i].Name);
+				TexList = new NJS_TEXLIST(texnames.ToArray());
+			}
+			UpdateTexlist();
+		}
 
 		private void buttonTextures_CheckedChanged(object sender, EventArgs e)
 		{
@@ -4077,17 +4116,17 @@ namespace SAModel.SAMDL
 		}
 
 		private void LoadModelInfo(ModelLoadInfo info)
-        {
-            if (info == null)
-                return;
-            // Load model file
-            if (info.ModelFilePath != "" && File.Exists(info.ModelFilePath))
-                LoadFile(info.ModelFilePath);
-            // Load textures
-            if (info.TextureArchives != null)
-            {
-                // Load texture archives
-                AddTextures(info.TextureArchives, info.TexturePalettePath);
+		{
+			if (info == null)
+				return;
+			// Load model file
+			if (info.ModelFilePath != "" && File.Exists(info.ModelFilePath))
+				LoadFile(info.ModelFilePath);
+			// Load textures
+			if (info.TextureArchives != null)
+			{
+				// Load texture archives
+				AddTextures(info.TextureArchives, info.TexturePalettePath);
 				if (info.TextureArchives.Length == 1)
 					TexturePackName = Path.GetFileNameWithoutExtension(info.TextureArchives[0]);
 				// Set texture IDs for partial texlist if defined
@@ -4096,9 +4135,9 @@ namespace SAModel.SAMDL
 				// Set texture names for partial texlist if defined
 				else if (info.TextureNames != null)
 					TexList = info.TextureNames;
-                UpdateTexlist();
-            }
-        }
+				UpdateTexlist();
+			}
+		}
 
 		private void MoveObjectInHierarchy(bool down)
 		{
@@ -4147,18 +4186,18 @@ namespace SAModel.SAMDL
 		}
 
 		private void LoadProject(string filename)
-        {
-            currentProject = filename;
-            ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename), lastProjectModeCategory);
-            DialogResult result = mdldialog.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                UnloadTextures();
-                lastProjectModeCategory = mdldialog.SelectedCategory;
-                LoadModelInfo(mdldialog.ModelInfo);
-            }
-            modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
-        }
+		{
+			currentProject = filename;
+			ModelSelectDialog mdldialog = new ModelSelectDialog(ProjectFunctions.openProjectFileString(filename), lastProjectModeCategory);
+			DialogResult result = mdldialog.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				UnloadTextures();
+				lastProjectModeCategory = mdldialog.SelectedCategory;
+				LoadModelInfo(mdldialog.ModelInfo);
+			}
+			modelListToolStripMenuItem.Enabled = buttonModelList.Enabled = true;
+		}
 
 		private void panel1_MouseWheel(object sender, MouseEventArgs e)
 		{
@@ -4186,14 +4225,34 @@ namespace SAModel.SAMDL
 						break;
 					}
 			}
-				ModelDataEditor me = new ModelDataEditor(model, idx);
-				if (me.ShowDialog(this) == DialogResult.OK)
-				{
-					model = me.editedHierarchy.Clone();
-					RebuildModelCache();
-					NeedRedraw = true;
-					unsavedChanges = true;
-				}
+			switch (selectedObject.Attach)
+			{
+				case BasicAttach:
+				case ChunkAttach:
+					{
+						ModelDataEditor me = new ModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+						}
+					}
+					break;
+				case GC.GCAttach:
+					{
+						GCModelDataEditor me = new GCModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+						}
+					}
+					break;
+			}
 		}
 
 		private void modelInfoEditorToolStripMenuItem_Click(object sender, EventArgs e)

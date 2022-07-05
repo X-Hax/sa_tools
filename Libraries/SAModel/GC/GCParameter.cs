@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -98,6 +99,16 @@ namespace SAModel.GC
 		{
 			writer.Write((uint)type);
 			writer.Write(data);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(type);
+			result.Append(", ");
+			result.Append(data);
+			result.Append(" }");
+			return result.ToString();
 		}
 	}
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Drawing;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -46,13 +45,16 @@ namespace SAModel.GC
 			writer.Write(z);
 		}
 
-		public byte[] GetBytes()
+		public string ToStruct()
 		{
-			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(x));
-			result.AddRange(ByteConverter.GetBytes(y));
-			result.AddRange(ByteConverter.GetBytes(z));
-			return result.ToArray();
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(x);
+			result.Append(", ");
+			result.Append(y);
+			result.Append(", ");
+			result.Append(z);
+			result.Append(" }");
+			return result.ToString();
 		}
 	}
 
@@ -109,12 +111,14 @@ namespace SAModel.GC
 			writer.Write(y);
 		}
 
-		public byte[] GetBytes()
+		public string ToStruct()
 		{
-			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(x));
-			result.AddRange(ByteConverter.GetBytes(y));
-			return result.ToArray();
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(x);
+			result.Append(", ");
+			result.Append(y);
+			result.Append(" }");
+			return result.ToString();
 		}
 	}
 
@@ -355,21 +359,18 @@ namespace SAModel.GC
 			}
 		}
 
-		public static byte[] GetBytes(Color Color)
+		public string ToStruct()
 		{
-			return GetBytes(Color, GCDataType.RGBA8);
-		}
-
-		public static byte[] GetBytes(Color color, GCDataType type)
-		{
-			switch (type)
-			{
-				case GCDataType.RGB8:
-					return new byte[] { color.red, color.green, color.blue, 255 };
-				case GCDataType.RGBA8:
-					return new byte[] { color.red, color.green, color.blue, color.alpha };
-			}
-			throw new ArgumentOutOfRangeException("type");
+			StringBuilder result = new StringBuilder("{ ");
+					result.Append(red);
+					result.Append(", ");
+					result.Append(green);
+					result.Append(", ");
+					result.Append(blue);
+					result.Append(", ");
+					result.Append(alpha);
+					result.Append(" }");
+			return result.ToString();
 		}
 	}
 }

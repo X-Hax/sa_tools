@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -69,16 +70,14 @@ namespace SAModel.GC
 		/// <summary>
 		/// The vertex data
 		/// </summary>
-		public readonly List<IOVtx> data;
-		public List<Vector3> Positions = new List<Vector3>();
-		public List<Vector3> Normals = new List<Vector3>();
-		public List<Color> Colors = new List<Color>();
-		public List<UV> UVs = new List<UV>();
+		public List<IOVtx> data;
 
 		/// <summary>
 		/// The address of the vertex attribute (gets set after writing
 		/// </summary>
 		private uint dataAddress;
+
+		public string DataName { get; set; }
 
 		/// <summary>
 		/// Creates a new empty vertex attribute using the default struct setups
@@ -128,13 +127,18 @@ namespace SAModel.GC
 			data = new List<IOVtx>();
 		}
 
+		public GCVertexSet(byte[] file, uint address, uint imageBase)
+		: this(file, address, imageBase, new Dictionary<int, string>())
+		{
+		}
+
 		/// <summary>
 		/// Read an entire vertex data set
 		/// </summary>
 		/// <param name="file">The files contents</param>
 		/// <param name="address">The starting address of the file</param>
 		/// <param name="imageBase">The image base of the addresses</param>
-		public GCVertexSet(byte[] file, uint address, uint imageBase)
+		public GCVertexSet(byte[] file, uint address, uint imageBase, Dictionary<int, string> labels)
 		{
 			attribute = (GCVertexAttribute)file[address];
 			if (attribute == GCVertexAttribute.Null) return;
@@ -156,7 +160,21 @@ namespace SAModel.GC
 			switch (attribute)
 			{
 				case GCVertexAttribute.Position:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "vpos_" + tmpaddr.ToString("X8");
+					for (int i = 0; i < count; i++)
+					{
+						data.Add(new Vector3(file, tmpaddr));
+						tmpaddr += 12;
+					}
+					break;
 				case GCVertexAttribute.Normal:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "vnorm_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Vector3(file, tmpaddr));
@@ -164,12 +182,20 @@ namespace SAModel.GC
 					}
 					break;
 				case GCVertexAttribute.Color0:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "vcolor_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Color(file, tmpaddr, dataType, out tmpaddr));
 					}
 					break;
 				case GCVertexAttribute.Tex0:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "uv_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new UV(file, tmpaddr));
@@ -222,47 +248,38 @@ namespace SAModel.GC
 			dataAddress = 0;
 		}
 
-		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
+		public string ToStruct()
 		{
-			List<byte> result = new List<byte>();
-			switch (attribute)
-			{
-				case GCVertexAttribute.Position:
-				case GCVertexAttribute.Normal:
-					for (int i = 0; i < Positions.Count; i++)
-					{
-						result.AddRange(Positions[i].GetBytes());
-					}
-					break;
-				case GCVertexAttribute.Color0:
-					for (int i = 0; i < Colors.Count; i++)
-					{
-						result.AddRange(Color.GetBytes(Colors[i], GCDataType.RGBA8));
-					}
-					break;
-				case GCVertexAttribute.Tex0:
-					for (int i = 0; i < UVs.Count; i++)
-					{
-						result.AddRange(UVs[i].GetBytes());
-					}
-					break;
-			}
-			result.Align(0x10);
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(attribute);
+			result.Append(", ");
+			result.Append(StructSize);
+			result.Append(", ");
+			result.Append(data.Count);
+			result.Append(", ");
+			uint structure = (uint)structType;
+			structure |= (uint)((byte)dataType << 4);
+			result.Append(structure);
+			result.Append(", ");
+			result.Append(data != null ? DataName : "NULL");
+			result.Append(", ");
+			result.Append((uint)(data.Count * StructSize));
+			result.Append(" }");
+			return result.ToString();
+		}
 
-			address = (uint)result.Count;
-						njOffsets.Add((uint)result.Count + imageBase);
-						result.AddRange(ByteConverter.GetBytes((byte)attribute));
-						result.AddRange(ByteConverter.GetBytes((byte)StructSize));
-						result.AddRange(ByteConverter.GetBytes(data.Count));
-						uint structure = (uint)structType;
-						structure |= (uint)((byte)dataType << 4);
-						result.AddRange(ByteConverter.GetBytes(structure));
-						result.AddRange(ByteConverter.GetBytes(dataAddress));
-						result.AddRange(ByteConverter.GetBytes(data.Count * StructSize));
-
-						result.Align(0x10);
-
-						return result.ToArray();
+		public GCVertexSet Clone()
+		{
+			GCVertexSet result = (GCVertexSet)MemberwiseClone();
+			//result.data = new List<IOVtx>(data.Count);
+			//foreach (IOVtx item in data)
+				//result.data.Add(item.Clone());
+			//result.Normals = new List<Vector3>(Normals.Count);
+			//foreach (Vector3 item in Normals)
+			//	result.Normals.Add(item.Clone());
+			//result.Colors = new List<Color>(Colors);
+			//result.UVs = new List<UV>(UVs);
+			return result;
 		}
 	}
 }
