@@ -171,12 +171,30 @@ namespace SAModel.GC
 				if (labels.ContainsKey(VertexName))
 					vtxAddr = labels[VertexName];
 				else
+				{
+					uint[] vertAddrs = new uint[writer.BaseStream.Length + imageBase];
+					for (int i = 0; i < vertexData.Count; i++)
+					{
+						if (vertexData[i].data != null)
+						{
+							if (labels.ContainsKey(vertexData[i].DataName))
+								vertAddrs[i] = labels[vertexData[i].DataName];
+							else
+								labels.Add(vertexData[i].DataName, vertAddrs[i]);
+						}							
+					}
 					labels.Add(VertexName, vtxAddr);
+				}
 				// writing vertex attributes
 				foreach (GCVertexSet vtx in vertexData)
 				{
 					vtx.WriteAttribute(writer, imageBase, njOffsets);
 				}
+				//foreach (IOVtx data in vertexData)
+				//{
+				//	data.WriteAttribute(writer, imageBase, njOffsets);
+				//}
+
 				writer.Write((byte)255);
 				writer.Write(new byte[15]); // empty vtx attribute
 
@@ -208,17 +226,67 @@ namespace SAModel.GC
 					if (labels.ContainsKey(OpaqueMeshName))
 						opaqueAddress = labels[OpaqueMeshName];
 					else
+					{
+						uint[] paramAddrs = new uint[opaqueMeshes.Count];
+						uint[] primAddrs = new uint[opaqueMeshes.Count];
+						for (int i = 0; i < opaqueMeshes.Count; i++)
+						{
+							if (opaqueMeshes[i].parameters != null)
+							{
+								if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
+									paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
+								else
+									labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
+							}
+						}
+
+						for (int i = 0; i < opaqueMeshes.Count; i++)
+						{
+							if (opaqueMeshes[i].primitives != null)
+							{
+								if (labels.ContainsKey(opaqueMeshes[i].PrimitiveName))
+									primAddrs[i] = labels[opaqueMeshes[i].PrimitiveName];
+								else
+									labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
+							}
+						}
 						labels.Add(OpaqueMeshName, opaqueAddress);
+					}
 				}
-					foreach (GCMesh m in opaqueMeshes)
-						m.WriteProperties(writer, imageBase, njOffsets);
+				foreach (GCMesh m in opaqueMeshes)
+					m.WriteProperties(writer, imageBase, njOffsets);
 				uint translucentAddress = (uint)writer.BaseStream.Length + imageBase;
 				if (translucentMeshes.Count != 0)
 				{
 					if (labels.ContainsKey(TranslucentMeshName))
 						translucentAddress = labels[TranslucentMeshName];
 					else
+					{
+						uint[] paramAddrs = new uint[translucentMeshes.Count];
+						uint[] primAddrs = new uint[translucentMeshes.Count];
+						for (int i = 0; i < translucentMeshes.Count; i++)
+						{
+							if (translucentMeshes[i].parameters != null)
+							{
+								if (labels.ContainsKey(translucentMeshes[i].ParameterName))
+									paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
+								else
+									labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
+							}
+						}
+
+						for (int i = 0; i < translucentMeshes.Count; i++)
+						{
+							if (translucentMeshes[i].primitives != null)
+							{
+								if (labels.ContainsKey(translucentMeshes[i].PrimitiveName))
+									primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
+								else
+									labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
+							}
+						}
 						labels.Add(TranslucentMeshName, translucentAddress);
+					}
 				}
 					foreach (GCMesh m in translucentMeshes)
 						m.WriteProperties(writer, imageBase, njOffsets);
@@ -282,9 +350,9 @@ namespace SAModel.GC
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(vertexData != null ? VertexName : "NULL");
 			result.Append(", ");
-			result.Append(opaqueMeshes != null ? OpaqueMeshName : "NULL");
+			result.Append(opaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
-			result.Append(translucentMeshes != null ? TranslucentMeshName : "NULL");
+			result.Append(translucentMeshes.Count != 0 ? TranslucentMeshName : "NULL");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			result.Append(" }");
@@ -300,7 +368,7 @@ namespace SAModel.GC
 		/// <param name="textures"></param>
 		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
 		{
-			if (vertexData != null && !labels.Contains(VertexName))
+			if (vertexData.Count != 0 && !labels.Contains(VertexName))
 			{
 				for (int i = 0; i < vertexData.Count; i++)
 				{
@@ -311,11 +379,13 @@ namespace SAModel.GC
 						{
 							case GCVertexAttribute.Position:
 							case GCVertexAttribute.Normal:
+								writer.Write("Vector3 ");
+								break;
 							case GCVertexAttribute.Color0:
-								writer.Write("Sint32 ");
+								writer.Write("Color ");
 								break;
 							case GCVertexAttribute.Tex0:
-								writer.Write("Sint16 ");
+								writer.Write("UV ");
 								break;
 						}
 								writer.Write(vertexData[i].DataName);
@@ -324,11 +394,6 @@ namespace SAModel.GC
 						switch (vertexData[i].attribute)
 						{
 							case GCVertexAttribute.Position:
-								{
-									foreach (Vector3 item in vertexData[i].data)
-										vtx.Add(item.ToStruct());
-								}
-								break;
 							case GCVertexAttribute.Normal:
 								{
 									foreach (Vector3 item in vertexData[i].data)
@@ -365,7 +430,7 @@ namespace SAModel.GC
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			if (opaqueMeshes != null && !labels.Contains(OpaqueMeshName))
+			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
 				for (int i = 0; i < opaqueMeshes.Count; i++)
 				{
@@ -391,10 +456,10 @@ namespace SAModel.GC
 						writer.Write("Sint16 ");
 						writer.Write(opaqueMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
-						//List<string> prim = new List<string>(vertexData[i].data.Count);
-						//foreach (GCVertexSet item in vertexData[i].data)
+						//List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
+						//foreach (GCPrimitive item in opaqueMeshes[i].primitives)
 						//prim.Add(item.ToStruct());
-						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", plys.ToArray()));
+						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
@@ -410,7 +475,7 @@ namespace SAModel.GC
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			if (translucentMeshes != null && !labels.Contains(TranslucentMeshName))
+			if (translucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
 				for (int i = 0; i < translucentMeshes.Count; i++)
 				{
