@@ -1193,6 +1193,12 @@ namespace SplitTools.Split
                         nohash = true;
                     }
                     break;
+				case "pathtag":
+					{
+						PathData path = new PathData(datafile, address, imageBase);
+						path.Save(fileOutputPath);
+					}
+					break;
                 case "stagelightdatalist":
 					switch (game)
 					{
