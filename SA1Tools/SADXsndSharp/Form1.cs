@@ -93,7 +93,6 @@ namespace SADXsndSharp
 					string dir = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileName(a.FileName));
 					using (StreamWriter sw = File.CreateText(Path.Combine(dir, "index.txt")))
 					{
-						archive.Entries.Sort((f1, f2) => StringComparer.OrdinalIgnoreCase.Compare(f1.Name, f2.Name));
                         for (int i = 0; i < archive.Entries.Count; i++)
                         {
 							Text = $"SADXsndSharp - Saving item " + i.ToString() + " of " + archive.Entries.Count.ToString() + ", please wait...";
