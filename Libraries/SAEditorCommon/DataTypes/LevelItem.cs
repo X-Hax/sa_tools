@@ -190,27 +190,37 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Edit Materials")]
 		public void EditMaterials()
 		{
-            BMPInfo[] textures;
-            if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
-            if (COL.Model.Attach is BasicAttach attach)
-            {
-                using (MaterialEditor pw = new MaterialEditor(attach.Material, textures, attach.MaterialName))
-                {
-                    pw.FormUpdated += pw_FormUpdated;
-                    pw.ShowDialog();
-                }
-            }
-            else if (COL.Model.Attach is ChunkAttach)
-            {
-                using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.MeshInfo.Select(a => a.Material).ToList(), textures))
-                {
-                    pw.FormUpdated += pw_FormUpdated;
-                    pw.ShowDialog();
-                }
-            }
-			else if (COL.Model.Attach is GC.GCAttach)
+			BMPInfo[] textures;
+			if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
+			switch (COL.Model.Attach)
 			{
-				System.Windows.Forms.MessageBox.Show("Unsupported model format.", "SALVL", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+				case BasicAttach attach:
+					{
+						using (MaterialEditor pw = new MaterialEditor(attach.Material, textures, attach.MaterialName))
+						{
+							pw.FormUpdated += pw_FormUpdated;
+							pw.ShowDialog();
+						}
+					}
+					break;
+				case ChunkAttach:
+					{
+						using (MaterialEditor pw = new MaterialEditor(COL.Model.Attach.MeshInfo.Select(a => a.Material).ToList(), textures))
+						{
+							pw.FormUpdated += pw_FormUpdated;
+							pw.ShowDialog();
+						}
+					}
+					break;
+				case GC.GCAttach:
+					{
+						using (GCMaterialEditor pw = new GCMaterialEditor(COL.Model.Attach.MeshInfo.Select(a => a.Material).ToList(), textures))
+						{
+							pw.FormUpdated += pw_FormUpdated;
+							pw.ShowDialog();
+						}
+					}
+					break;
 			}
 		}
 
