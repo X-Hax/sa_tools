@@ -20,17 +20,26 @@ namespace PLTool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            if (args.Length > 0 && File.Exists(args[0]))
-                switch (Path.GetFileNameWithoutExtension(args[0]).Substring(0, 2).ToUpperInvariant())
-                {
-                    case "SL":
-                        primaryForm = new SLEditor(args[0]);
-                        break;
-                    case "PL":
-                    default:
-                        primaryForm = new PLEditor(args[0]);
-                        break;
-                }
+			if (args.Length > 0 && File.Exists(args[0]))
+			{
+				string trname = Path.GetFileNameWithoutExtension(args[0]);
+				if (trname.Length >= 2)
+				{
+					trname = trname.Substring(0, 2);
+					switch (trname)
+					{
+						case "SL":
+							primaryForm = new SLEditor(args[0]);
+							break;
+						case "PL":
+						default:
+							primaryForm = new PLEditor(args[0]);
+							break;
+					}
+				}
+				else
+					primaryForm = new PLEditor(args[0]);
+			}
 			else
 				primaryForm = new PLEditor();
 			Application.Run(primaryForm);
