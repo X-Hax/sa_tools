@@ -26,6 +26,8 @@ namespace SAModel.SAEditorCommon
             if (LevelList == null)
                 BuildLevelList();
             string originalName = Path.GetFileNameWithoutExtension(name);
+			if (originalName.Length < 3)
+				return "Unknown file";
             string trimmedName = originalName.Substring(2, originalName.Length - 2);
             string result = "";
             foreach (var item in LevelList)
