@@ -73,7 +73,7 @@ namespace SAModel.GC
 		public List<IOVtx> data;
 
 		/// <summary>
-		/// The address of the vertex attribute (gets set after writing
+		/// The address of the vertex attribute (gets set after writing)
 		/// </summary>
 		private uint dataAddress;
 
@@ -163,7 +163,7 @@ namespace SAModel.GC
 					if (labels.ContainsKey(tmpaddr))
 						DataName = labels[tmpaddr];
 					else
-						DataName = "vpos_" + tmpaddr.ToString("X8");
+						DataName = "position_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Vector3(file, tmpaddr));
@@ -174,7 +174,7 @@ namespace SAModel.GC
 					if (labels.ContainsKey(tmpaddr))
 						DataName = labels[tmpaddr];
 					else
-						DataName = "vnorm_" + tmpaddr.ToString("X8");
+						DataName = "normal_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Vector3(file, tmpaddr));

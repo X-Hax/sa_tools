@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -263,6 +264,20 @@ namespace SAModel.GC
 					}
 				}
 			}
+		}
+
+		public virtual string ToStruct()
+		{
+			//ushort vtxCount = ByteConverter.ToUInt16(file, address + 1);
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(primitiveType);
+			result.Append(", ");
+			result.Append((ushort)loops.Count);
+			result.Append(", ");
+			for (int i = 0; i < loops.Count; i++)
+				result.Append(loops[i]);
+			result.Append(" }");
+			return result.ToString();
 		}
 
 		/// <summary>

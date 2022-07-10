@@ -168,32 +168,32 @@ namespace SAModel.GC
 				}
 
 				uint vtxAddr = (uint)writer.BaseStream.Length + imageBase;
-				if (labels.ContainsKey(VertexName))
-					vtxAddr = labels[VertexName];
-				else
-				{
-					uint[] vertAddrs = new uint[writer.BaseStream.Length + imageBase];
-					for (int i = 0; i < vertexData.Count; i++)
-					{
-						if (vertexData[i].data != null)
-						{
-							if (labels.ContainsKey(vertexData[i].DataName))
-								vertAddrs[i] = labels[vertexData[i].DataName];
-							else
-								labels.Add(vertexData[i].DataName, vertAddrs[i]);
-						}							
-					}
-					labels.Add(VertexName, vtxAddr);
-				}
+				
 				// writing vertex attributes
 				foreach (GCVertexSet vtx in vertexData)
 				{
 					vtx.WriteAttribute(writer, imageBase, njOffsets);
+					if (labels.ContainsKey(VertexName))
+						vtxAddr = labels[VertexName];
+					else
+					{
+						uint[] vertAddrs = new uint[vertexData.Count];
+						for (int i = 0; i < vertexData.Count; i++)
+						{
+							if (vertexData[i].data != null)
+							{
+								if (labels.ContainsKey(vertexData[i].DataName))
+									vertAddrs[i] = labels[vertexData[i].DataName];
+								else
+								{
+									vertAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i) + 8;
+									labels.Add(vertexData[i].DataName, vertAddrs[i]);
+								}
+							}
+						}
+						labels.Add(VertexName, vtxAddr);
+					}
 				}
-				//foreach (IOVtx data in vertexData)
-				//{
-				//	data.WriteAttribute(writer, imageBase, njOffsets);
-				//}
 
 				writer.Write((byte)255);
 				writer.Write(new byte[15]); // empty vtx attribute
@@ -221,41 +221,56 @@ namespace SAModel.GC
 
 				// writing geometry properties
 				uint opaqueAddress = (uint)writer.BaseStream.Length + imageBase;
-				if (opaqueMeshes.Count != 0)
-				{
-					if (labels.ContainsKey(OpaqueMeshName))
-						opaqueAddress = labels[OpaqueMeshName];
-					else
-					{
-						uint[] paramAddrs = new uint[opaqueMeshes.Count];
-						uint[] primAddrs = new uint[opaqueMeshes.Count];
-						for (int i = 0; i < opaqueMeshes.Count; i++)
-						{
-							if (opaqueMeshes[i].parameters != null)
-							{
-								if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
-									paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
-								else
-									labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
-							}
-						}
 
-						for (int i = 0; i < opaqueMeshes.Count; i++)
+				foreach (GCMesh m in opaqueMeshes)
+				{
+					m.WriteProperties(writer, imageBase, njOffsets);
+					if (opaqueMeshes.Count != 0)
+					{
+						if (labels.ContainsKey(OpaqueMeshName))
+							opaqueAddress = labels[OpaqueMeshName];
+						else
 						{
-							if (opaqueMeshes[i].primitives != null)
+							uint[] paramAddrs = new uint[opaqueMeshes.Count];
+							uint[] primAddrs = new uint[opaqueMeshes.Count];
+
+							// This prints a duplicate label, crashing SAMDL when attempting to view the model
+
+							//for (int i = 0; i < opaqueMeshes.Count; i++)
+							//{
+							//	if (opaqueMeshes[i].parameters != null)
+							//	{
+							//		if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
+							//			paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
+							//		else
+							//		{
+							//			paramAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i);
+							//			labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
+							//		}
+							//	}
+							//}
+
+							for (int i = 0; i < opaqueMeshes.Count; i++)
 							{
-								if (labels.ContainsKey(opaqueMeshes[i].PrimitiveName))
-									primAddrs[i] = labels[opaqueMeshes[i].PrimitiveName];
-								else
-									labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
+								if (opaqueMeshes[i].primitives != null)
+								{
+									if (labels.ContainsKey(opaqueMeshes[i].PrimitiveName))
+										primAddrs[i] = labels[opaqueMeshes[i].PrimitiveName];
+									else
+									{
+										primAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i) + 8;
+										labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
+									}
+								}
 							}
+							labels.Add(OpaqueMeshName, opaqueAddress);
 						}
-						labels.Add(OpaqueMeshName, opaqueAddress);
 					}
 				}
-				foreach (GCMesh m in opaqueMeshes)
-					m.WriteProperties(writer, imageBase, njOffsets);
 				uint translucentAddress = (uint)writer.BaseStream.Length + imageBase;
+
+					foreach (GCMesh m in translucentMeshes)
+						m.WriteProperties(writer, imageBase, njOffsets);
 				if (translucentMeshes.Count != 0)
 				{
 					if (labels.ContainsKey(TranslucentMeshName))
@@ -266,13 +281,18 @@ namespace SAModel.GC
 						uint[] primAddrs = new uint[translucentMeshes.Count];
 						for (int i = 0; i < translucentMeshes.Count; i++)
 						{
-							if (translucentMeshes[i].parameters != null)
-							{
-								if (labels.ContainsKey(translucentMeshes[i].ParameterName))
-									paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
-								else
-									labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
-							}
+							// This prints a duplicate label, crashing SAMDL when attempting to view the model
+
+							//if (translucentMeshes[i].parameters != null)
+							//{
+							//	if (labels.ContainsKey(translucentMeshes[i].ParameterName))
+							//		paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
+							//	else
+							//	{
+							//		paramAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i);
+							//		labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
+							//	}
+							//}
 						}
 
 						for (int i = 0; i < translucentMeshes.Count; i++)
@@ -282,14 +302,15 @@ namespace SAModel.GC
 								if (labels.ContainsKey(translucentMeshes[i].PrimitiveName))
 									primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
 								else
+								{
+									primAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i) + 8;
 									labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
+								}
 							}
 						}
 						labels.Add(TranslucentMeshName, translucentAddress);
 					}
 				}
-					foreach (GCMesh m in translucentMeshes)
-						m.WriteProperties(writer, imageBase, njOffsets);
 
 				// write POF0 Offsets
 				if (vtxAddr != 0)
@@ -456,10 +477,10 @@ namespace SAModel.GC
 						writer.Write("Sint16 ");
 						writer.Write(opaqueMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
-						//List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
-						//foreach (GCPrimitive item in opaqueMeshes[i].primitives)
-						//prim.Add(item.ToStruct());
-						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
+						List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
+						foreach (GCPrimitive item in opaqueMeshes[i].primitives)
+						prim.Add(item.ToStruct());
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
@@ -501,10 +522,10 @@ namespace SAModel.GC
 						writer.Write("Sint16 ");
 						writer.Write(translucentMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
-						//List<string> prim = new List<string>(translucentMeshes[i].primitiveSize);
-						//foreach (GCPrimitive item in translucentMeshes[i].primitives)
-						//prim.Add(item.ToStruct(GCIndexAttributeFlags));
-						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
+						List<string> prim = new List<string>(translucentMeshes[i].primitives.Count);
+						foreach (GCPrimitive item in translucentMeshes[i].primitives)
+						prim.Add(item.ToStruct());
+						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
@@ -517,7 +538,6 @@ namespace SAModel.GC
 				foreach (GCMesh item in translucentMeshes)
 				chunks.Add(item.ToStruct());
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
-				writer.WriteLine(" };");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}

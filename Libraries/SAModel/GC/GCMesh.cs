@@ -99,7 +99,7 @@ namespace SAModel.GC
 			if (labels.ContainsKey(parameters_offset))
 				ParameterName = labels[parameters_offset];
 			else
-				ParameterName = "param_" + parameters_offset.ToString("X8");
+				ParameterName = "parameter_" + parameters_offset.ToString("X8");
 			for (int i = 0; i < parameters_count; i++)
 			{
 				parameters.Add(GCParameter.Read(file, parameters_offset));
@@ -116,7 +116,7 @@ namespace SAModel.GC
 			if (labels.ContainsKey(primitives_offset))
 				PrimitiveName = labels[primitives_offset];
 			else
-				PrimitiveName = "prim_" + primitives_offset.ToString("X8");
+				PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
 			int end_pos = primitives_offset + primitives_size;
 
 			while (primitives_offset < end_pos)
@@ -182,7 +182,7 @@ namespace SAModel.GC
 			result.Append(", ");
 			result.Append(primitives != null ? PrimitiveName : "NULL");
 			result.Append(", ");
-			result.Append(primitiveSize);
+			result.Append(primitives != null ? (ushort)primitives.Count : 0);
 			result.Append(" }");
 			return result.ToString();
 		}

@@ -106,7 +106,7 @@ namespace SAModel.GC
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(type);
 			result.Append(", ");
-			result.Append(data);
+			result.AppendFormat(data.ToCHex());
 			result.Append(" }");
 			return result.ToString();
 		}
