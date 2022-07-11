@@ -4317,9 +4317,17 @@ namespace SAModel.SAMDL
 		private int ReadNJTL(byte[] file, ref bool basicModel, ref NJS_TEXLIST texList)
 		{
 			int ninjaDataOffset;
+
+			//FUCK YOU Skys of Arcadia GC
 			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x4);
 			int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
+
+			//POF0Size will use same endianness
+			//Checking again because SOA compatibility requires it
 			int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
+
+			//Set to main endianness for general reading
+			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x8);
 			int texListOffset = POF0Offset + POF0Size + 0x8;
 			ninjaDataOffset = texListOffset + 0x8;
 			int texCount = ByteConverter.ToInt32(file, 0xC);
