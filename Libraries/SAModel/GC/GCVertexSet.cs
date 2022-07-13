@@ -248,6 +248,19 @@ namespace SAModel.GC
 			dataAddress = 0;
 		}
 
+		public byte[] GetBytes(uint dataAddress)
+		{
+			List<byte> result = new List<byte>();
+			result.Add((byte)attribute);
+			result.Add((byte)StructSize);
+			result.AddRange(ByteConverter.GetBytes((ushort)data.Count));
+			uint structure = (uint)structType;
+			structure |= (uint)((byte)dataType << 4);
+			result.AddRange(ByteConverter.GetBytes(structure));
+			result.AddRange(ByteConverter.GetBytes(dataAddress));
+			result.AddRange(ByteConverter.GetBytes((uint)(data.Count * StructSize)));
+			return result.ToArray();
+		}
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SAModel.GC
 {
@@ -15,6 +16,7 @@ namespace SAModel.GC
 		/// <param name="writer">The output stream</param>
 		/// <param name="attrib"></param>
 		void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType);
+		public abstract byte[] GetBytes();
 	}
 
 	[Serializable]
@@ -43,6 +45,15 @@ namespace SAModel.GC
 			writer.Write(x);
 			writer.Write(y);
 			writer.Write(z);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(x));
+			result.AddRange(ByteConverter.GetBytes(y));
+			result.AddRange(ByteConverter.GetBytes(z));
+			return result.ToArray();
 		}
 
 		public string ToStruct()
@@ -109,6 +120,14 @@ namespace SAModel.GC
 		{
 			writer.Write(x);
 			writer.Write(y);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(x));
+			result.AddRange(ByteConverter.GetBytes(y));
+			return result.ToArray();
 		}
 
 		public string ToStruct()
@@ -357,6 +376,16 @@ namespace SAModel.GC
 				default:
 					throw new ArgumentException($"{dataType} is not a valid output color type");
 			}
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.Add(red);
+			result.Add(green);
+			result.Add(blue);
+			result.Add(alpha);
+			return result.ToArray();
 		}
 
 		public string ToStruct()

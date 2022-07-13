@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SAModel.GC
 {
@@ -99,6 +100,14 @@ namespace SAModel.GC
 		{
 			writer.Write((uint)type);
 			writer.Write(data);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes((uint)type));
+			result.AddRange(ByteConverter.GetBytes(data));
+			return result.ToArray();
 		}
 
 		public string ToStruct()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace SAModel.GC
 {
@@ -171,6 +172,23 @@ namespace SAModel.GC
 			writer.Write((uint)parameters.Count);
 			writer.Write(primitiveAddress + imagebase);
 			writer.Write(primitiveSize);
+		}
+
+		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress)
+		{
+			List<byte> result = new List<byte>();
+			for (int i = 0; i < primitives.Count; i++)
+			{
+				GCPrimitive prim = primitives[i];
+				uint[] primitiveSingleSizes = new uint[(primitives[i].loops.Count + 1) * 3];
+				primitiveSize = (uint)primitiveSingleSizes.Sum(x => Convert.ToUInt32(x));
+			}
+			//primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
+			result.AddRange(ByteConverter.GetBytes(parameterAddress));
+			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
+			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
+			result.AddRange(ByteConverter.GetBytes(primitiveSize));
+			return result.ToArray();
 		}
 
 		public string ToStruct()
