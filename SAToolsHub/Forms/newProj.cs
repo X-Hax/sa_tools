@@ -342,6 +342,9 @@ namespace SAToolsHub
 					systemPath = Path.Combine(projFolder, "gd_PC");
 					if (!Directory.Exists(systemPath))
 						Directory.CreateDirectory(systemPath);
+					string prsysPath = Path.Combine(projFolder, "gd_PC", "PRS");
+					if (!Directory.Exists(prsysPath))
+						Directory.CreateDirectory(prsysPath);
 					File.WriteAllLines(projReadMePath, readMeSA2PC);
 					break;
 				default:
