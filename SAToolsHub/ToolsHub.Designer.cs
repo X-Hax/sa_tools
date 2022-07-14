@@ -141,6 +141,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelFileTip = new System.Windows.Forms.ToolStripStatusLabel();
+            this.configSchemaBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.rightToolStrip.SuspendLayout();
             this.topToolStrip.SuspendLayout();
@@ -231,7 +232,7 @@
             // updateMetadataToolStripMenuItem
             // 
             this.updateMetadataToolStripMenuItem.Name = "updateMetadataToolStripMenuItem";
-            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.updateMetadataToolStripMenuItem.Text = "Update Metadata";
             this.updateMetadataToolStripMenuItem.ToolTipText = "Updates metadata in split _data.ini files.";
             this.updateMetadataToolStripMenuItem.Click += new System.EventHandler(this.updateMetadataToolStripMenuItem_Click);
@@ -239,7 +240,7 @@
             // replitItemsToolStripMenuItem
             // 
             this.replitItemsToolStripMenuItem.Name = "replitItemsToolStripMenuItem";
-            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.replitItemsToolStripMenuItem.Text = "Resplit Item(s)";
             this.replitItemsToolStripMenuItem.ToolTipText = "Option to resplit specific ini files for the project.";
             this.replitItemsToolStripMenuItem.Click += new System.EventHandler(this.resplitItemsToolStripMenuItem_Click);
@@ -392,7 +393,8 @@
             this.toolStripSeparator4,
             this.splitToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.projectConverterToolStripMenuItem});
+            this.projectConverterToolStripMenuItem,
+            this.configSchemaBuilderToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -404,7 +406,7 @@
             this.sALVLToolStripMenuItem,
             this.textureEditorToolStripMenuItem});
             this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
-            this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.generalToolsToolStripMenuItem.Text = "General Tools";
             // 
             // sAMDLToolStripMenuItem
@@ -447,7 +449,7 @@
             this.sASaveToolStripMenuItem,
             this.sADLCToolToolStripMenuItem});
             this.sADXToolsToolStripMenuItem.Name = "sADXToolsToolStripMenuItem";
-            this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.sADXToolsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.sADXToolsToolStripMenuItem.Text = "SA1/DX Tools";
             // 
             // sADXTweakerToolStripMenuItem
@@ -512,7 +514,7 @@
             this.sA2MessageEditorToolStripMenuItem,
             this.sA2StageSelectEditorToolStripMenuItem});
             this.sA2ToolsToolStripMenuItem.Name = "sA2ToolsToolStripMenuItem";
-            this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.sA2ToolsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.sA2ToolsToolStripMenuItem.Text = "SA2 Tools";
             // 
             // sA2EventViewerToolStripMenuItem
@@ -558,12 +560,12 @@
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(163, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(192, 6);
             // 
             // splitToolStripMenuItem
             // 
             this.splitToolStripMenuItem.Name = "splitToolStripMenuItem";
-            this.splitToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.splitToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.splitToolStripMenuItem.Text = "Data Toolbox";
             this.splitToolStripMenuItem.ToolTipText = "Opens the Data Toolbox tool.";
             this.splitToolStripMenuItem.Click += new System.EventHandler(this.splitToolStripMenuItem_Click);
@@ -571,7 +573,7 @@
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(166, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(195, 22);
             this.toolStripMenuItem1.Text = "Template Writer";
             this.toolStripMenuItem1.ToolTipText = "Open Template Writer";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
@@ -579,7 +581,7 @@
             // projectConverterToolStripMenuItem
             // 
             this.projectConverterToolStripMenuItem.Name = "projectConverterToolStripMenuItem";
-            this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.projectConverterToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.projectConverterToolStripMenuItem.Text = "Project Converter";
             this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
             this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
@@ -602,7 +604,7 @@
             this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
             this.checkForUpdatesToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
             this.checkForUpdatesToolStripMenuItem.ToolTipText = "Checks for updates to any of the SA Tools programs.";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
@@ -610,12 +612,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(207, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
             // 
             // autoUpdateToolStripMenuItem
             // 
             this.autoUpdateToolStripMenuItem.Name = "autoUpdateToolStripMenuItem";
-            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
+            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.autoUpdateToolStripMenuItem.Text = "Check on Statup";
             this.autoUpdateToolStripMenuItem.ToolTipText = "Enables update checks every time you start the program.";
             this.autoUpdateToolStripMenuItem.Click += new System.EventHandler(this.autoUpdateToolStripMenuItem_Click);
@@ -627,7 +629,7 @@
             this.dailyToolStripMenuItem,
             this.weeklyToolStripMenuItem});
             this.frequencyToolStripMenuItem.Name = "frequencyToolStripMenuItem";
-            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
+            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.frequencyToolStripMenuItem.Text = "Update Frequency";
             this.frequencyToolStripMenuItem.ToolTipText = "Choose the frequency at which the program checks for updates.";
             // 
@@ -657,7 +659,7 @@
             // openSettingsLogsToolStripMenuItem
             // 
             this.openSettingsLogsToolStripMenuItem.Name = "openSettingsLogsToolStripMenuItem";
-            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
+            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.openSettingsLogsToolStripMenuItem.Text = "Open Settings/Logs";
             this.openSettingsLogsToolStripMenuItem.ToolTipText = "Opens the folder where SA Tools store logs and preferences.";
             this.openSettingsLogsToolStripMenuItem.Click += new System.EventHandler(this.openSettingsLogsToolStripMenuItem_Click);
@@ -666,7 +668,7 @@
             // 
             this.disableOSWarningToolStripMenuItem.CheckOnClick = true;
             this.disableOSWarningToolStripMenuItem.Name = "disableOSWarningToolStripMenuItem";
-            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
+            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
             this.disableOSWarningToolStripMenuItem.Text = "Disable OS Warning";
             this.disableOSWarningToolStripMenuItem.ToolTipText = "Disables the warning that appears when trying to update an x86 version of SA Tool" +
     "s on an x64 version of Windows.";
@@ -905,7 +907,7 @@
             this.tsSA2StgSel.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsSA2StgSel.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsSA2StgSel.Name = "tsSA2StgSel";
-            this.tsSA2StgSel.Size = new System.Drawing.Size(52, 52);
+            this.tsSA2StgSel.Size = new System.Drawing.Size(63, 52);
             this.tsSA2StgSel.Text = "Open SA2 Stage Select Editor";
             this.tsSA2StgSel.Visible = false;
             this.tsSA2StgSel.Click += new System.EventHandler(this.tsSA2StgSel_Click);
@@ -1271,6 +1273,13 @@
             this.toolStripStatusLabelFileTip.Size = new System.Drawing.Size(14, 19);
             this.toolStripStatusLabelFileTip.Text = " ";
             // 
+            // configSchemaBuilderToolStripMenuItem
+            // 
+            this.configSchemaBuilderToolStripMenuItem.Name = "configSchemaBuilderToolStripMenuItem";
+            this.configSchemaBuilderToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.configSchemaBuilderToolStripMenuItem.Text = "Config Schema Builder";
+            this.configSchemaBuilderToolStripMenuItem.Click += new System.EventHandler(this.configSchemaBuilderToolStripMenuItem_Click);
+            // 
             // SAToolsHub
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1423,5 +1432,6 @@
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelFileTip;
 		private System.Windows.Forms.ToolStripMenuItem openSettingsLogsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem disableOSWarningToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem configSchemaBuilderToolStripMenuItem;
 	}
 }

@@ -43,6 +43,7 @@ namespace SAToolsHub
 		private projConv projectConverter;
 		private ListViewColumnSorter lvwColumnSorter;
 		private resplitMenu resplitTool;
+		private Forms.configEditor configEditor;
 
 		// Variables
 		public static string newProjFile { get; set; }
@@ -106,6 +107,7 @@ namespace SAToolsHub
 			gameOptionsDiag = new gameOptions();
 			projectConverter = new projConv();
 			resplitTool = new resplitMenu();
+			configEditor = new Forms.configEditor();
 
 			SetProgramPaths();
 
@@ -1962,6 +1964,11 @@ namespace SAToolsHub
 					if (result == DialogResult.Cancel) return;
 				}
 			} while (result == DialogResult.Retry);
+		}
+
+		private void configSchemaBuilderToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			configEditor.ShowDialog();
 		}
 	}
 }
