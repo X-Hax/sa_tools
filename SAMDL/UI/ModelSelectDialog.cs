@@ -125,6 +125,17 @@ namespace SAModel.SAMDL
                 }
         }
 
+		private void ListModels()
+		{
+			listModels.Items.Clear();
+			foreach (var item in Models)
+			{
+				if (textBoxFilter.Text != "" && !item.ModelName.ToLowerInvariant().Contains(textBoxFilter.Text.ToLowerInvariant()))
+					continue;
+				listModels.Items.Add(item.ModelName);
+			}
+		}
+
         private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboCategories.SelectedItem == null)
@@ -132,7 +143,6 @@ namespace SAModel.SAMDL
             if (comboCategories.GetItemText(comboCategories.SelectedItem) == SelectedCategory)
                 return;
             Models.Clear();
-            listModels.Items.Clear();
             SelectedCategory = comboCategories.GetItemText(comboCategories.SelectedItem);
             foreach (SplitEntry entry in Categories[SelectedCategory])
             {
@@ -200,12 +210,8 @@ namespace SAModel.SAMDL
                         break;
                 }
             }
-            // Fill in models
-            foreach (var item in Models)
-            {
-                listModels.Items.Add(item.ModelName);
-            }
-        }
+			ListModels();
+		}
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
@@ -369,8 +375,14 @@ namespace SAModel.SAMDL
             this.DialogResult = DialogResult.OK;
             Close();
         }
-    }
-    public class ModelLoadInfo
+
+		private void textBoxFilter_TextChanged(object sender, EventArgs e)
+		{
+			ListModels();
+		}
+	}
+
+	public class ModelLoadInfo
     {
         public string ModelName;
         public string ModelFilePath;
