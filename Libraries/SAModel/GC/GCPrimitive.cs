@@ -40,98 +40,6 @@ namespace SAModel.GC
 		{
 			return $"({PositionIndex}, {NormalIndex}, {Color0Index}, {UV0Index})";
 		}
-
-		public byte[] GetBytes()
-		{
-			GCIndexAttributeFlags indexFlags;
-			indexFlags = GCIndexAttributeFlags.HasPosition;
-			List<byte> result = new List<byte>();
-			List<Loop>loops = new List<Loop>();
-			byte[] bytes = BitConverter.GetBytes((ushort)loops.Count);
-			// writing count as big endian
-			result.AddRange(BitConverter.GetBytes(bytes[1]));
-			result.AddRange(BitConverter.GetBytes(bytes[0]));
-
-			// checking the flags
-			bool hasFlag(GCIndexAttributeFlags flag)
-			{
-				return indexFlags.HasFlag(flag);
-			}
-
-			// position always exists
-			bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
-			bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
-			bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
-
-			bool is_position_16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
-			bool is_color_16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
-			bool is_normal_16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
-			bool is_uv_16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
-
-			foreach (Loop v in loops)
-			{
-				// Position should always exist
-
-				if (is_position_16bit)
-				{
-					bytes = BitConverter.GetBytes(v.PositionIndex);
-					// writing big endian
-					result.AddRange(BitConverter.GetBytes(bytes[1]));
-					result.AddRange(BitConverter.GetBytes(bytes[0]));
-				}
-				else
-				{
-					result.AddRange(BitConverter.GetBytes((byte)v.PositionIndex));
-				}
-
-				if (has_normal)
-				{
-					if (is_normal_16bit)
-					{
-						bytes = BitConverter.GetBytes(v.NormalIndex);
-						// writing big endian
-						result.Add(bytes[1]);
-						result.Add(bytes[0]);
-					}
-					else
-					{
-						result.Add((byte)v.NormalIndex);
-					}
-				}
-
-				if (has_color)
-				{
-					if (is_color_16bit)
-					{
-						bytes = BitConverter.GetBytes(v.Color0Index);
-						// writing big endian
-						result.Add(bytes[1]);
-						result.Add(bytes[0]);
-					}
-					else
-					{
-						result.Add((byte)v.Color0Index);
-					}
-				}
-
-				if (has_uv)
-				{
-					if (is_uv_16bit)
-					{
-						bytes = BitConverter.GetBytes(v.UV0Index);
-						// writing big endian
-						result.Add(bytes[1]);
-						result.Add(bytes[0]);
-					}
-					else
-					{
-						result.Add((byte)v.UV0Index);
-					}
-
-				}
-			}
-			return result.ToArray();
-		}
 	}
 
 		/// <summary>
@@ -358,14 +266,78 @@ namespace SAModel.GC
 				}
 			}
 
-			public byte[] GetBytes()
+			public byte[] GetBytes(GCIndexAttributeFlags indexFlags)
 			{
 				List<byte> result = new List<byte>();
 				result.Add((byte)primitiveType);
-				result.AddRange(ByteConverter.GetBytes((ushort)loops.Count));
-				foreach (Loop item in loops)
+				byte[] bytes = BitConverter.GetBytes((ushort)loops.Count);
+				// writing count as big endian
+				result.Add(bytes[1]);
+				result.Add(bytes[0]);
+				// checking the flags
+				bool hasFlag(GCIndexAttributeFlags flag)
 				{
-					result.AddRange(item.GetBytes());
+					return indexFlags.HasFlag(flag);
+				}
+
+				// position always exists
+				bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
+				bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
+				bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
+
+				bool is_position_16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
+				bool is_color_16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
+				bool is_normal_16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
+				bool is_uv_16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
+
+				foreach (Loop v in loops)
+				{
+					// Position should always exist
+
+					if (is_position_16bit)
+					{
+						bytes = BitConverter.GetBytes(v.PositionIndex);
+						// writing big endian
+						result.Add(bytes[0]);
+					}
+					else
+						result.Add((byte)v.PositionIndex);
+
+					if (has_normal)
+					{
+						if (is_normal_16bit)
+						{
+						bytes = BitConverter.GetBytes(v.NormalIndex);
+						// writing big endian
+						result.Add(bytes[0]);
+						}
+						else
+							result.Add((byte)v.NormalIndex);
+					}
+
+					if (has_color)
+					{
+						if (is_color_16bit)
+						{
+						bytes = BitConverter.GetBytes(v.Color0Index);
+						// writing big endian
+						result.Add(bytes[0]);
+						}
+						else
+							result.Add((byte)v.Color0Index);
+					}
+
+					if (has_uv)
+					{
+						if (is_uv_16bit)
+						{
+						bytes = BitConverter.GetBytes(v.UV0Index);
+						// writing big endian
+						result.Add(bytes[0]);
+						}
+						else
+							result.Add((byte)v.UV0Index);
+					}
 				}
 				return result.ToArray();
 			}

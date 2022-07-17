@@ -191,6 +191,8 @@ namespace SAModel.GC
 				}
 			}
 			uint opolyAddress = 0;
+			// writing geometry data
+			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
 			if (opaqueMeshes != null && opaqueMeshes.Count > 0)
 			{
 				if (labels.ContainsKey(OpaqueMeshName))
@@ -201,15 +203,18 @@ namespace SAModel.GC
 					uint[] primAddrs = new uint[opaqueMeshes.Count];
 					for (int i = 0; i < opaqueMeshes.Count; i++)
 					{
-						if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
-							paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
-						else
+						if (opaqueMeshes[i].parameters != null && opaqueMeshes[i].parameters.Count > 0)
 						{
-							result.Align(4);
-							paramAddrs[i] = (uint)result.Count + imageBase;
-							labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
-							for (int j = 0; j < opaqueMeshes[i].parameters.Count; j++)
-								result.AddRange(opaqueMeshes[i].parameters[j].GetBytes());
+							if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
+								paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
+							else
+							{
+								result.Align(4);
+								paramAddrs[i] = (uint)result.Count + imageBase;
+								labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
+								for (int j = 0; j < opaqueMeshes[i].parameters.Count; j++)
+									result.AddRange(opaqueMeshes[i].parameters[j].GetBytes());
+							}
 						}
 					}
 					for (int i = 0; i < opaqueMeshes.Count; i++)
@@ -221,10 +226,15 @@ namespace SAModel.GC
 							else
 							{
 								result.Align(4);
+								foreach (GCMesh m in opaqueMeshes)
+								{
+									GCIndexAttributeFlags? t = m.IndexFlags;
+									if (t.HasValue) indexFlags = t.Value;
+								}
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
 								for (int j = 0; j < opaqueMeshes[i].primitives.Count; j++)
-									result.AddRange(opaqueMeshes[i].primitives[j].GetBytes());
+									result.AddRange(opaqueMeshes[i].primitives[j].GetBytes(indexFlags));
 							}
 						}
 					}
@@ -239,7 +249,7 @@ namespace SAModel.GC
 						if (primAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 
-						result.AddRange(opaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i]));
+						result.AddRange(opaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
 					}
 				}
 			}
@@ -255,15 +265,18 @@ namespace SAModel.GC
 					uint[] primAddrs = new uint[translucentMeshes.Count];
 					for (int i = 0; i < translucentMeshes.Count; i++)
 					{
-						if (labels.ContainsKey(translucentMeshes[i].ParameterName))
-							paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
-						else
+						if (translucentMeshes[i].parameters != null && translucentMeshes[i].parameters.Count > 0)
 						{
-							result.Align(4);
-							paramAddrs[i] = (uint)result.Count + imageBase;
-							labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
-							for (int j = 0; j < translucentMeshes[i].parameters.Count; j++)
-								result.AddRange(translucentMeshes[i].parameters[j].GetBytes());
+							if (labels.ContainsKey(translucentMeshes[i].ParameterName))
+								paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
+							else
+							{
+								result.Align(4);
+								paramAddrs[i] = (uint)result.Count + imageBase;
+								labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
+								for (int j = 0; j < translucentMeshes[i].parameters.Count; j++)
+									result.AddRange(translucentMeshes[i].parameters[j].GetBytes());
+							}
 						}
 					}
 					for (int i = 0; i < translucentMeshes.Count; i++)
@@ -274,11 +287,16 @@ namespace SAModel.GC
 								primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
 							else
 							{
+								foreach (GCMesh m in translucentMeshes)
+								{
+									GCIndexAttributeFlags? t = m.IndexFlags;
+									if (t.HasValue) indexFlags = t.Value;
+								}
 								result.Align(4);
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
 								for (int j = 0; j < translucentMeshes[i].primitives.Count; j++)
-									result.AddRange(translucentMeshes[i].primitives[j].GetBytes());
+									result.AddRange(translucentMeshes[i].primitives[j].GetBytes(indexFlags));
 							}
 						}
 					}
@@ -293,7 +311,7 @@ namespace SAModel.GC
 						if (primAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 
-						result.AddRange(translucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i]));
+						result.AddRange(translucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
 					}
 				}
 			}
@@ -576,7 +594,7 @@ namespace SAModel.GC
 								writer.Write("UV ");
 								break;
 						}
-								writer.Write(vertexData[i].DataName);
+						writer.Write(vertexData[i].DataName);
 						writer.WriteLine("[] = {");
 						List<string> vtx = new List<string>(vertexData[i].data.Count);
 						switch (vertexData[i].attribute)
@@ -610,11 +628,12 @@ namespace SAModel.GC
 				labels.Add(VertexName);
 				writer.Write("Sint32 ");
 				writer.Write(VertexName);
-				writer.Write("[] = { ");
+				writer.Write("[] = {");
 				List<string> chunks = new List<string>(vertexData.Count);
 				foreach (GCVertexSet item in vertexData)
 					chunks.Add(item.ToStruct());
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
+				writer.WriteLine("\t" + string.Join(Environment.NewLine + "\t", "{ Null, 0, 0, 0, NULL, 0 }"));
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
@@ -655,7 +674,7 @@ namespace SAModel.GC
 				labels.Add(OpaqueMeshName);
 				writer.Write("Sint32 ");
 				writer.Write(OpaqueMeshName);
-				writer.Write("[] = { ");
+				writer.Write("[] = {");
 				List<string> chunks = new List<string>();
 				foreach (GCMesh item in opaqueMeshes)
 				chunks.Add(item.ToStruct());
@@ -700,7 +719,7 @@ namespace SAModel.GC
 				labels.Add(TranslucentMeshName);
 				writer.Write("Sint32 ");
 				writer.Write(TranslucentMeshName);
-				writer.Write("[] = { ");
+				writer.Write("[] = {");
 				List<string> chunks = new List<string>();
 				foreach (GCMesh item in translucentMeshes)
 				chunks.Add(item.ToStruct());

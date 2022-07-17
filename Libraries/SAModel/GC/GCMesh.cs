@@ -97,10 +97,13 @@ namespace SAModel.GC
 
 			// reading the parameters
 			parameters = new List<GCParameter>();
-			if (labels.ContainsKey(parameters_offset))
-				ParameterName = labels[parameters_offset];
-			else
-				ParameterName = "parameter_" + parameters_offset.ToString("X8");
+			if (parameters_count != 0)
+			{
+				if (labels.ContainsKey(parameters_offset))
+					ParameterName = labels[parameters_offset];
+				else
+					ParameterName = "parameter_" + parameters_offset.ToString("X8");
+			}
 			for (int i = 0; i < parameters_count; i++)
 			{
 				parameters.Add(GCParameter.Read(file, parameters_offset));
@@ -114,19 +117,27 @@ namespace SAModel.GC
 
 			// reading the primitives
 			primitives = new List<GCPrimitive>();
-			if (labels.ContainsKey(primitives_offset))
-				PrimitiveName = labels[primitives_offset];
-			else
-				PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
+			if (primitives_size != 0)
+			{
+				if (labels.ContainsKey(primitives_offset))
+					PrimitiveName = labels[primitives_offset];
+				else
+					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
+			}
 			int end_pos = primitives_offset + primitives_size;
 
 			while (primitives_offset < end_pos)
 			{
-				// if the primitive isnt valid
-				if (file[primitives_offset] == 0) break;
-				primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
+				if (file[primitives_offset] == 0)
+				{
+					primitives_offset++;
+					continue;
+				}
+					primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
+
+				}
+
 			}
-		}
 
 		/// <summary>
 		/// Writes the parameters and primitives to a stream
@@ -174,16 +185,13 @@ namespace SAModel.GC
 			writer.Write(primitiveSize);
 		}
 
-		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress)
+		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress, GCIndexAttributeFlags indexFlags)
 		{
 			List<byte> result = new List<byte>();
-			for (int i = 0; i < primitives.Count; i++)
+			foreach (GCPrimitive prim in primitives)
 			{
-				GCPrimitive prim = primitives[i];
-				uint[] primitiveSingleSizes = new uint[(primitives[i].loops.Count + 1) * 3];
-				primitiveSize = (uint)primitiveSingleSizes.Sum(x => Convert.ToUInt32(x));
+				primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
 			}
-			//primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
 			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
 			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
@@ -193,14 +201,18 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
+			foreach (GCPrimitive prim in primitives)
+			{
+				primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
+			}
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(parameters != null ? ParameterName : "NULL");
+			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
 			result.Append(", ");
-			result.Append(parameters != null ? (ushort)parameters.Count : 0);
+			result.Append(parameters != null ? (uint)parameters.Count : 0);
 			result.Append(", ");
-			result.Append(primitives != null ? PrimitiveName : "NULL");
+			result.Append(primitiveSize != 0 ? PrimitiveName : "NULL");
 			result.Append(", ");
-			result.Append(primitives != null ? (ushort)primitives.Count : 0);
+			result.Append(primitives != null ? (uint)primitiveSize : 0);
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -304,6 +316,114 @@ namespace SAModel.GC
 			return new MeshInfo(new NJS_MATERIAL(material), polys.ToArray(), vertData, hasUVs, hasColors);
 		}
 
+		private void ReadGCPrimitives(byte[] file, int address, int size, GCIndexAttributeFlags indexFlags)
+		{
+			int end_pos = address + size;
+
+			while (address < end_pos)
+			{
+				if (file[address] == 0)
+				{
+					address++;
+					continue;
+				}
+
+				GCPrimitive prim = new GCPrimitive((GCPrimitiveType)file[address]);
+
+				bool wasBigEndian = ByteConverter.BigEndian;
+				ByteConverter.BigEndian = true;
+
+				ushort vtxCount = ByteConverter.ToUInt16(file, address + 1);
+
+				// checking the flags
+				bool hasFlag(GCIndexAttributeFlags flag)
+				{
+					return indexFlags.HasFlag(flag);
+				}
+
+				// position always exists
+				bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
+				bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
+				bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
+
+				//whether any of the indices use 16 bits instead of 8
+				bool pos16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
+				bool col16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
+				bool nrm16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
+				bool uv16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
+
+				int tmpaddr = address + 3;
+
+				List<Loop> loops = new List<Loop>();
+
+				for (ushort i = 0; i < vtxCount; i++)
+				{
+					Loop l = new Loop();
+
+					// reading position, which should always exist
+					if (pos16bit)
+					{
+						l.PositionIndex = ByteConverter.ToUInt16(file, tmpaddr);
+						tmpaddr += 2;
+					}
+					else
+					{
+						l.PositionIndex = file[tmpaddr];
+						tmpaddr++;
+					}
+
+					// reading normals
+					if (has_normal)
+					{
+						if (nrm16bit)
+						{
+							l.NormalIndex = ByteConverter.ToUInt16(file, tmpaddr);
+							tmpaddr += 2;
+						}
+						else
+						{
+							l.NormalIndex = file[tmpaddr];
+							tmpaddr++;
+						}
+					}
+
+					// reading colors
+					if (has_color)
+					{
+						if (col16bit)
+						{
+							l.Color0Index = ByteConverter.ToUInt16(file, tmpaddr);
+							tmpaddr += 2;
+						}
+						else
+						{
+							l.Color0Index = file[tmpaddr];
+							tmpaddr++;
+						}
+					}
+
+					// reading uvs
+					if (has_uv)
+					{
+						if (uv16bit)
+						{
+							l.UV0Index = ByteConverter.ToUInt16(file, tmpaddr);
+							tmpaddr += 2;
+						}
+						else
+						{
+							l.UV0Index = file[tmpaddr];
+							tmpaddr++;
+						}
+					}
+
+					loops.Add(l);
+				}
+				ByteConverter.BigEndian = wasBigEndian;
+				primitives.Add(prim);	
+				}
+
+			}
 		public GCMesh Clone()
 		{
 			//throw new NotImplementedException();
