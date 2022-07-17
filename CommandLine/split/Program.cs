@@ -414,7 +414,7 @@ namespace Split
                                     numparts = int.Parse(args[a + 1], System.Globalization.NumberStyles.Integer);
                             }
                             NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
-                            fileOutputPath = MakePathThatExists(fileOutputPath, ani.Name + "saanim");
+                            fileOutputPath = MakePathThatExists(fileOutputPath, ani.Name + ".saanim");
                             string outpath = Path.GetDirectoryName(Path.GetFullPath(fileOutputPath));
                             Console.WriteLine("Output file: {0}", Path.GetFullPath(fileOutputPath));
                             if (!Directory.Exists(outpath))
