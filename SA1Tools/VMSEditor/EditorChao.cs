@@ -464,7 +464,7 @@ namespace VMSEditor
 				// Looks like it's Slot 1 only
 				Array.Copy(hdata, 68, chaodata_s1, 0, 512);
 				chaoDataList.GardenChao.Clear();
-				chaoDataList.GardenChao.Add(new VMS_Chao(chaodata_s1, 68));
+				chaoDataList.GardenChao.Add(new VMS_Chao(chaodata_s1, 0));
 				RefreshChaoList();
 				listBoxDataSlots.SelectedIndex = 0;
 				RefreshLabels();
