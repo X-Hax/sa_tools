@@ -12,20 +12,20 @@ using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class ContChao : ObjectDefinition
+	public class Cage : ObjectDefinition
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
 		private NJS_TEXLIST texarr;
 		private Texture[] texs;
-		
+
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("object/OBJECT_CONTCHAO.sa2mdl");
+			model = ObjectHelper.LoadModel("object/OBJECT_ORI.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/CONTCHAO.satex");
+			texarr = NJS_TEXLIST.Load("object/tls/ORI.satex");
 		}
-		
+
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
@@ -50,7 +50,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Pop();
 			return result;
 		}
-		
+
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
@@ -86,8 +86,8 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
-		
-		public override string Name { get { return "Chao Box"; } }
+
+		public override string Name { get { return "Steel Cage"; } }
 
 		public override float DefaultXScale { get { return 0; } }
 

@@ -127,4 +127,36 @@ namespace SA2ObjectDefinitions.Common
 
 		public override string Name { get { return "Air Spring"; } }
 	}
+
+	public class SpringWide : SpringBase
+	{
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("object/OBJECT_3SPRING.sa2mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+			texarr = NJS_TEXLIST.Load("object/tls/3SPRING.satex");
+		}
+
+		public override string Name { get { return "Wide Spring"; } }
+	}
+	
+	public class MstSpring : Spring
+	{
+		public override string Name { get { return "Ground Spring (Mystic Melody)"; } }
+	}
+	
+	public class MstSpringB : SpringB
+	{
+		public override string Name { get { return "Air Spring (Mystic Melody)"; } }
+	}
+	
+	public class HidSpring : Spring
+	{
+		public override string Name { get { return "Ground Spring (Hidden)"; } }
+	}
+	
+	public class HidSpringB : SpringB
+	{
+		public override string Name { get { return "Air Spring (Hidden)"; } }
+	}
 }

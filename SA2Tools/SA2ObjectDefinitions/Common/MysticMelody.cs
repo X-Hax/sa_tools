@@ -2,23 +2,20 @@
 using SharpDX.Direct3D9;
 using SAModel;
 using SAModel.Direct3D;
+using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.SETEditing;
-using System;
 using System.Collections.Generic;
 using BoundingSphere = SAModel.BoundingSphere;
 using Mesh = SAModel.Direct3D.Mesh;
 using SplitTools;
-using SAModel.SAEditorCommon;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public abstract class ItemBoxBase : ObjectDefinition
+	public abstract class MysticMelody : ObjectDefinition
 	{
 		protected NJS_OBJECT model;
 		protected Mesh[] meshes;
-		protected int childindex;
-		protected UInt16 ItemBoxLength = 11;
 		protected NJS_TEXLIST texarr;
 		protected Texture[] texs;
 
@@ -26,6 +23,7 @@ namespace SA2ObjectDefinitions.Common
 		{
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			HitResult result = model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes);
 			transform.Pop();
 			return result;
@@ -36,9 +34,9 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (texs == null)
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
-			//((BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), ItemBoxLength)];
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
@@ -49,9 +47,9 @@ namespace SA2ObjectDefinitions.Common
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
-			//((BasicAttach)model.Children[childindex].Attach).Material[0].TextureID = itemTexs[Math.Min(Math.Max((int)item.Scale.X, 0), ItemBoxLength)];
 			transform.Push();
 			transform.NJTranslate(item.Position);
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.Add(new ModelTransform(model, transform.Top));
 			transform.Pop();
 			return result;
@@ -60,105 +58,68 @@ namespace SA2ObjectDefinitions.Common
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
-			transform.NJTranslate(item.Position);
+			transform.NJTranslate(item.Position.ToVector3());
+			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			return ObjectHelper.GetModelBounds(model, transform);
 		}
-
-		internal int[] itemTexs = { 15, 9, 2, 1, 8, 10, 11, 12, 13, 18, 16 };
-
-		internal int[] charTexs = { 2, 5, 3, 6, 4, 7};
-
-		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Item", typeof(Items), "Extended", null, null, (o) => (Items)Math.Min(Math.Max((int)o.Scale.X, 0), 11), (o, v) => o.Scale.X = (int)v)
-		};
-
-		public override PropertySpec[] CustomProperties { get { return customProperties; } }
-
-		public override float DefaultXScale { get { return 0; } }
-
-		public override float DefaultYScale { get { return 0; } }
-
-		public override float DefaultZScale { get { return 0; } }
 
 		public override Matrix GetHandleMatrix(SETItem item)
 		{
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
+			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 
 			return matrix;
-		}
-	}
-
-	public class ItemBox : ItemBoxBase
-	{
-		public override void Init(ObjectData data, string name)
-		{
-			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOX.sa2mdl");
-			meshes = ObjectHelper.GetMeshes(model);
-			childindex = 2;
-			texarr = NJS_TEXLIST.Load("object/tls/itembox.satex");
 		}
 
 		public override void SetOrientation(SETItem item, Vertex direction)
 		{
-			int x;
-			int z;
-			direction.GetRotation(out x, out z);
+			int x; int z; direction.GetRotation(out x, out z);
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
 
-		public override string Name { get { return "Item Box"; } }
-	}
+		public override float DefaultXScale { get { return 0; } }
 
-	public class FloatingItemBox : ItemBoxBase
+		public override float DefaultYScale { get { return 0; } }
+
+		public override float DefaultZScale { get { return 0; } }
+	}
+	
+	public class Shrine : MysticMelody
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOXAIR.sa2mdl");
+			model = ObjectHelper.LoadModel("object/OBJECT_KNUDAI.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			childindex = 1;
-			texarr = NJS_TEXLIST.Load("object/tls/itemboxair.satex");
+			texarr = NJS_TEXLIST.Load("object/tls/KNUDAI.satex");
 		}
-
-		public override string Name { get { return "Floating Item Box"; } }
+		
+		public override string Name { get { return "Mystic Melody Shrine"; } }
 	}
-
-	public class ItemBalloon : ItemBoxBase
+	
+	public class Platform : MysticMelody
 	{
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("object/OBJECT_ITEMBOXBALLOON.sa2mdl");
+			model = ObjectHelper.LoadModel("object/OBJECT_KDASIBA.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/ITEMBOXBALLOON.satex");
+			texarr = NJS_TEXLIST.Load("object/tls/KDASIBA.satex");
 		}
-
-		public override string Name { get { return "Item Balloon"; } }
+		
+		public override string Name { get { return "Mystic Melody Platform"; } }
 	}
 	
-	public class MstItemBox : ItemBox
+	public class Door : MysticMelody
 	{
-		public override string Name { get { return "Item Box (Mystic Melody)"; } }
-	}
-	
-	public class HidItemBox : ItemBox
-	{
-		public override string Name { get { return "Item Box (Hidden)"; } }
-	}
-
-	public enum Items
-	{
-		SpeedUp,
-		FiveRings,
-		ExtraLife,
-		TenRings,
-		TwentyRings,
-		Barrier,
-		Bomb,
-		HealthPack,
-		MagneticBarrier,
-		Empty,
-		Invincibility,
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("object/OBJECT_KDDOOR.sa2mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+			texarr = NJS_TEXLIST.Load("object/tls/KDDOOR.satex");
+		}
+		
+		public override string Name { get { return "Mystic Melody Door"; } }
 	}
 }
