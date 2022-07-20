@@ -1,7 +1,6 @@
 STG04 some textures
 STG05 two items
-STG10 full
-STG12 full
+STG12 some models
 
 ADV00_DLL animations + better descriptions
 ADV0100_DLL full
