@@ -1,8 +1,5 @@
 STG04 some textures
 STG05 two items
-STG06 full
-STG08 full
-STG09 full
 STG10 full
 STG12 full
 
