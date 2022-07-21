@@ -1,11 +1,11 @@
-==Full Updates Needed==
+== Full Updates Needed ==
 ADV0100_DLL
 ADV0130_DLL
-ADV03_DLL
 
-==Animations Needed==
+== Animations Needed ==
 ADV00_DLL
 ADV02_DLL
+ADV03_DLL
 Animals
 B_CHAOS0_DLL
 B_CHAOS2
@@ -28,8 +28,7 @@ Fish
 Mission
 SHOOTING
 
-==Minor Cleanup==
+== Cleanup ==
 STG04 - some textures
 STG05 - two items
 STG12 - some models
-
