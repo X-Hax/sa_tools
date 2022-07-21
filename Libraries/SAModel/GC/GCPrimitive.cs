@@ -297,9 +297,10 @@ namespace SAModel.GC
 					if (is_position_16bit)
 					{
 						bytes = BitConverter.GetBytes(v.PositionIndex);
-						// writing big endian
-						result.Add(bytes[0]);
-					}
+					// writing big endian
+					result.Add(bytes[1]);
+					result.Add(bytes[0]);
+				}
 					else
 						result.Add((byte)v.PositionIndex);
 
@@ -309,8 +310,9 @@ namespace SAModel.GC
 						{
 						bytes = BitConverter.GetBytes(v.NormalIndex);
 						// writing big endian
+						result.Add(bytes[1]);
 						result.Add(bytes[0]);
-						}
+					}
 						else
 							result.Add((byte)v.NormalIndex);
 					}
@@ -321,8 +323,9 @@ namespace SAModel.GC
 						{
 						bytes = BitConverter.GetBytes(v.Color0Index);
 						// writing big endian
+						result.Add(bytes[1]);
 						result.Add(bytes[0]);
-						}
+					}
 						else
 							result.Add((byte)v.Color0Index);
 					}
@@ -333,8 +336,9 @@ namespace SAModel.GC
 						{
 						bytes = BitConverter.GetBytes(v.UV0Index);
 						// writing big endian
+						result.Add(bytes[1]);
 						result.Add(bytes[0]);
-						}
+					}
 						else
 							result.Add((byte)v.UV0Index);
 					}

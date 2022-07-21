@@ -225,7 +225,7 @@ namespace SAModel.GC
 								primAddrs[i] = labels[opaqueMeshes[i].PrimitiveName];
 							else
 							{
-								result.Align(4);
+								result.Align(32);
 								foreach (GCMesh m in opaqueMeshes)
 								{
 									GCIndexAttributeFlags? t = m.IndexFlags;
@@ -238,7 +238,7 @@ namespace SAModel.GC
 							}
 						}
 					}
-					result.Align(4);
+					result.Align(32);
 					opolyAddress = (uint)result.Count + imageBase;
 					labels.Add(OpaqueMeshName, opolyAddress);
 					for (int i = 0; i < opaqueMeshes.Count; i++)
@@ -292,7 +292,7 @@ namespace SAModel.GC
 									GCIndexAttributeFlags? t = m.IndexFlags;
 									if (t.HasValue) indexFlags = t.Value;
 								}
-								result.Align(4);
+								result.Align(32);
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
 								for (int j = 0; j < translucentMeshes[i].primitives.Count; j++)
@@ -300,7 +300,7 @@ namespace SAModel.GC
 							}
 						}
 					}
-					result.Align(4);
+					result.Align(32);
 					tpolyAddress = (uint)result.Count + imageBase;
 					labels.Add(TranslucentMeshName, tpolyAddress);
 					for (int i = 0; i < translucentMeshes.Count; i++)
@@ -336,189 +336,6 @@ namespace SAModel.GC
 				result.AddRange(Bounds.GetBytes());
 				labels.Add(Name, address + imageBase);
 				return result.ToArray();
-
-				// Original method
-				//byte[] output;
-				//using (MemoryStream strm = new MemoryStream())
-				//{
-				//	BinaryWriter writer = new BinaryWriter(strm);
-
-				//	writer.Write(new byte[16]); // address placeholders
-				//	writer.Write((ushort)opaqueMeshes.Count);
-				//	writer.Write((ushort)translucentMeshes.Count);
-				//	writer.Write(Bounds.GetBytes());
-
-				//	// writing vertex data
-				//	foreach (GCVertexSet vtx in vertexData)
-				//	{
-				//		vtx.WriteData(writer);
-				//	}
-
-				//	uint[] vdataAddrs = new uint[vertexData.Count];
-				//	for (int i = 0; i < vertexData.Count; i++)
-				//	{
-				//		if (labels.ContainsKey(vertexData[i].DataName))
-				//			vdataAddrs[i] = labels[vertexData[i].DataName];
-				//		else
-				//		{ 
-				//			vdataAddrs[i] = (uint)writer.BaseStream.Length + (uint)(0x10 * (i + 1));
-				//			labels.Add(vertexData[i].DataName, vdataAddrs[i]);
-				//		}
-				//	}
-
-				//	uint vtxAddr = (uint)writer.BaseStream.Length + imageBase;
-
-				//	// writing vertex attributes
-				//	foreach (GCVertexSet vtx in vertexData)
-				//	{
-				//		vtx.WriteAttribute(writer, imageBase, njOffsets);
-				//		if (labels.ContainsKey(VertexName))
-				//			vtxAddr = labels[VertexName];
-				//		else
-				//		{
-				//			labels.Add(VertexName, vtxAddr);
-				//		}
-				//	}
-
-				//	writer.Write((byte)255);
-				//	writer.Write(new byte[15]); // empty vtx attribute
-
-				//	// writing geometry data
-				//	GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
-				//	if (opaqueMeshes != null)
-				//	{
-				//		foreach (GCMesh m in opaqueMeshes)
-				//		{
-				//			GCIndexAttributeFlags? t = m.IndexFlags;
-				//			if (t.HasValue) indexFlags = t.Value;
-				//			m.WriteData(writer, indexFlags);
-				//		}
-				//	}
-				//	if (translucentMeshes != null)
-				//	{
-				//		foreach (GCMesh m in translucentMeshes)
-				//		{
-				//			GCIndexAttributeFlags? t = m.IndexFlags;
-				//			if (t.HasValue) indexFlags = t.Value;
-				//			m.WriteData(writer, indexFlags);
-				//		}
-				//	}
-
-				//	// writing geometry properties
-				//	uint opaqueAddress = (uint)writer.BaseStream.Length + imageBase;
-
-				//	foreach (GCMesh m in opaqueMeshes)
-				//	{
-				//		m.WriteProperties(writer, imageBase, njOffsets);
-				//		if (opaqueMeshes.Count != 0)
-				//		{
-				//			if (labels.ContainsKey(OpaqueMeshName))
-				//				opaqueAddress = labels[OpaqueMeshName];
-				//			else
-				//			{
-				//				uint[] paramAddrs = new uint[opaqueMeshes.Count];
-				//				uint[] primAddrs = new uint[opaqueMeshes.Count];
-
-				//				// This prints a duplicate label, crashing SAMDL when attempting to view the model
-
-				//				//for (int i = 0; i < opaqueMeshes.Count; i++)
-				//				//{
-				//				//	if (opaqueMeshes[i].parameters != null)
-				//				//	{
-				//				//		if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
-				//				//			paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
-				//				//		else
-				//				//		{
-				//				//			paramAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i);
-				//				//			labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
-				//				//		}
-				//				//	}
-				//				//}
-
-				//				for (int i = 0; i < opaqueMeshes.Count; i++)
-				//				{
-				//					if (opaqueMeshes[i].primitives != null)
-				//					{
-				//						if (labels.ContainsKey(opaqueMeshes[i].PrimitiveName))
-				//							primAddrs[i] = labels[opaqueMeshes[i].PrimitiveName];
-				//						else
-				//						{
-				//							primAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i) + 8;
-				//							labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
-				//						}
-				//					}
-				//				}
-				//				labels.Add(OpaqueMeshName, opaqueAddress);
-				//			}
-				//		}
-				//	}
-				//	uint translucentAddress = (uint)writer.BaseStream.Length + imageBase;
-
-				//		foreach (GCMesh m in translucentMeshes)
-				//			m.WriteProperties(writer, imageBase, njOffsets);
-				//	if (translucentMeshes.Count != 0)
-				//	{
-				//		if (labels.ContainsKey(TranslucentMeshName))
-				//			translucentAddress = labels[TranslucentMeshName];
-				//		else
-				//		{
-				//			uint[] paramAddrs = new uint[translucentMeshes.Count];
-				//			uint[] primAddrs = new uint[translucentMeshes.Count];
-				//			for (int i = 0; i < translucentMeshes.Count; i++)
-				//			{
-				//				// This prints a duplicate label, crashing SAMDL when attempting to view the model
-
-				//				//if (translucentMeshes[i].parameters != null)
-				//				//{
-				//				//	if (labels.ContainsKey(translucentMeshes[i].ParameterName))
-				//				//		paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
-				//				//	else
-				//				//	{
-				//				//		paramAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i);
-				//				//		labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
-				//				//	}
-				//				//}
-				//			}
-
-				//			for (int i = 0; i < translucentMeshes.Count; i++)
-				//			{
-				//				if (translucentMeshes[i].primitives != null)
-				//				{
-				//					if (labels.ContainsKey(translucentMeshes[i].PrimitiveName))
-				//						primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
-				//					else
-				//					{
-				//						primAddrs[i] = (uint)writer.BaseStream.Position + (uint)(0x10 * i) + 8;
-				//						labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
-				//					}
-				//				}
-				//			}
-				//			labels.Add(TranslucentMeshName, translucentAddress);
-				//		}
-				//	}
-
-				//	// write POF0 Offsets
-				//	if (vtxAddr != 0)
-				//		njOffsets.Add(imageBase);
-				//	if (opaqueAddress != 0)
-				//		njOffsets.Add(imageBase + 8);
-				//	if (translucentAddress != 0)
-				//		njOffsets.Add(imageBase + 0xC);
-
-				//	// replacing the placeholders
-				//	writer.Seek(0, SeekOrigin.Begin);
-				//	writer.Write(vtxAddr);
-				//	writer.Write(0);
-				//	writer.Write(opaqueAddress);
-				//	writer.Write(translucentAddress);
-				//	writer.Seek(0, SeekOrigin.End);
-
-				//	output = strm.ToArray();
-				//}
-
-				//address = 0;
-				//labels.Add(Name, imageBase);
-				//return output;
 		}
 
 		/// <summary>
@@ -632,7 +449,7 @@ namespace SAModel.GC
 				List<string> chunks = new List<string>(vertexData.Count);
 				foreach (GCVertexSet item in vertexData)
 					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
+				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()) + ",");
 				writer.WriteLine("\t" + string.Join(Environment.NewLine + "\t", "{ Null, 0, 0, 0, NULL, 0 }"));
 				writer.WriteLine(" };");
 				writer.WriteLine();

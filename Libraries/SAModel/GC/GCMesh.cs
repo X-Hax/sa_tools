@@ -128,11 +128,8 @@ namespace SAModel.GC
 
 			while (primitives_offset < end_pos)
 			{
-				if (file[primitives_offset] == 0)
-				{
-					primitives_offset++;
-					continue;
-				}
+				//If primitive isn't valid
+				if (file[primitives_offset] == 0) break;
 					primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
 
 				}
@@ -190,7 +187,8 @@ namespace SAModel.GC
 			List<byte> result = new List<byte>();
 			foreach (GCPrimitive prim in primitives)
 			{
-				primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
+				int interval = Convert.ToInt32(Math.Ceiling((decimal)((prim.loops.Count + 1) * 3 * primitives.Count / 32)));
+				primitiveSize = (uint)(interval * 32);
 			}
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
 			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
@@ -203,7 +201,8 @@ namespace SAModel.GC
 		{
 			foreach (GCPrimitive prim in primitives)
 			{
-				primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
+				int interval = Convert.ToInt32(Math.Ceiling((decimal)((prim.loops.Count + 1) * 3 * primitives.Count / 32)));
+				primitiveSize = (uint)(interval * 32);
 			}
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
@@ -316,114 +315,6 @@ namespace SAModel.GC
 			return new MeshInfo(new NJS_MATERIAL(material), polys.ToArray(), vertData, hasUVs, hasColors);
 		}
 
-		private void ReadGCPrimitives(byte[] file, int address, int size, GCIndexAttributeFlags indexFlags)
-		{
-			int end_pos = address + size;
-
-			while (address < end_pos)
-			{
-				if (file[address] == 0)
-				{
-					address++;
-					continue;
-				}
-
-				GCPrimitive prim = new GCPrimitive((GCPrimitiveType)file[address]);
-
-				bool wasBigEndian = ByteConverter.BigEndian;
-				ByteConverter.BigEndian = true;
-
-				ushort vtxCount = ByteConverter.ToUInt16(file, address + 1);
-
-				// checking the flags
-				bool hasFlag(GCIndexAttributeFlags flag)
-				{
-					return indexFlags.HasFlag(flag);
-				}
-
-				// position always exists
-				bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
-				bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
-				bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
-
-				//whether any of the indices use 16 bits instead of 8
-				bool pos16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
-				bool col16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
-				bool nrm16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
-				bool uv16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
-
-				int tmpaddr = address + 3;
-
-				List<Loop> loops = new List<Loop>();
-
-				for (ushort i = 0; i < vtxCount; i++)
-				{
-					Loop l = new Loop();
-
-					// reading position, which should always exist
-					if (pos16bit)
-					{
-						l.PositionIndex = ByteConverter.ToUInt16(file, tmpaddr);
-						tmpaddr += 2;
-					}
-					else
-					{
-						l.PositionIndex = file[tmpaddr];
-						tmpaddr++;
-					}
-
-					// reading normals
-					if (has_normal)
-					{
-						if (nrm16bit)
-						{
-							l.NormalIndex = ByteConverter.ToUInt16(file, tmpaddr);
-							tmpaddr += 2;
-						}
-						else
-						{
-							l.NormalIndex = file[tmpaddr];
-							tmpaddr++;
-						}
-					}
-
-					// reading colors
-					if (has_color)
-					{
-						if (col16bit)
-						{
-							l.Color0Index = ByteConverter.ToUInt16(file, tmpaddr);
-							tmpaddr += 2;
-						}
-						else
-						{
-							l.Color0Index = file[tmpaddr];
-							tmpaddr++;
-						}
-					}
-
-					// reading uvs
-					if (has_uv)
-					{
-						if (uv16bit)
-						{
-							l.UV0Index = ByteConverter.ToUInt16(file, tmpaddr);
-							tmpaddr += 2;
-						}
-						else
-						{
-							l.UV0Index = file[tmpaddr];
-							tmpaddr++;
-						}
-					}
-
-					loops.Add(l);
-				}
-				ByteConverter.BigEndian = wasBigEndian;
-				primitives.Add(prim);	
-				}
-
-			}
 		public GCMesh Clone()
 		{
 			//throw new NotImplementedException();
