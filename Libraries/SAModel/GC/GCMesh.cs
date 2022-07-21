@@ -97,7 +97,6 @@ namespace SAModel.GC
 
 			// reading the parameters
 			parameters = new List<GCParameter>();
-<<<<<<< HEAD
 			if (parameters_count != 0)
 			{
 				if (labels.ContainsKey(parameters_offset))
@@ -105,12 +104,6 @@ namespace SAModel.GC
 				else
 					ParameterName = "parameter_" + parameters_offset.ToString("X8");
 			}
-=======
-			if (labels.ContainsKey(parameters_offset))
-				ParameterName = labels[parameters_offset];
-			else
-				ParameterName = "parameter_" + parameters_offset.ToString("X8");
->>>>>>> GC Models: Adjusted generated labels for GC data, added more struct information
 			for (int i = 0; i < parameters_count; i++)
 			{
 				parameters.Add(GCParameter.Read(file, parameters_offset));
@@ -124,7 +117,6 @@ namespace SAModel.GC
 
 			// reading the primitives
 			primitives = new List<GCPrimitive>();
-<<<<<<< HEAD
 			if (primitives_size != 0)
 			{
 				if (labels.ContainsKey(primitives_offset))
@@ -133,12 +125,6 @@ namespace SAModel.GC
 					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
 			}
 
-=======
-			if (labels.ContainsKey(primitives_offset))
-				PrimitiveName = labels[primitives_offset];
-			else
-				PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
->>>>>>> GC Models: Adjusted generated labels for GC data, added more struct information
 			int end_pos = primitives_offset + primitives_size;
 
 			while (primitives_offset < end_pos)
@@ -209,23 +195,6 @@ namespace SAModel.GC
 			return result.ToArray();
 		}
 
-		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress)
-		{
-			List<byte> result = new List<byte>();
-			for (int i = 0; i < primitives.Count; i++)
-			{
-				GCPrimitive prim = primitives[i];
-				uint[] primitiveSingleSizes = new uint[(primitives[i].loops.Count + 1) * 3];
-				primitiveSize = (uint)primitiveSingleSizes.Sum(x => Convert.ToUInt32(x));
-			}
-			//primitiveSize = (uint)((prim.loops.Count + 1) * 3 * primitives.Count);
-			result.AddRange(ByteConverter.GetBytes(parameterAddress));
-			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
-			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
-			result.AddRange(ByteConverter.GetBytes(primitiveSize));
-			return result.ToArray();
-		}
-
 		public string ToStruct()
 		{
 			//int[] primSizeSingle = new int[primitives.Count];
@@ -243,11 +212,7 @@ namespace SAModel.GC
 			result.Append(", ");
 			result.Append(primitiveSize != 0 ? PrimitiveName : "NULL");
 			result.Append(", ");
-<<<<<<< HEAD
 			result.Append(primitives != null ? (uint)primitiveSize : 0);
-=======
-			result.Append(primitives != null ? (ushort)primitives.Count : 0);
->>>>>>> GC Models: Adjusted generated labels for GC data, added more struct information
 			result.Append(" }");
 			return result.ToString();
 		}
