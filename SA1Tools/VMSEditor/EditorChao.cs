@@ -735,11 +735,11 @@ namespace VMSEditor
 			Close();
         }
 
-        private void CreateVMI(string filename, byte[] data)
+        private void CreateVMI(string filename, uint vmslength, ChaoSaveMode mode)
         {
             VMIFile vmi = new VMIFile();
             if (Path.GetFileNameWithoutExtension(filename).Length > 8)
-                System.Windows.Forms.MessageBox.Show("For the VMI file to work correctly, the VMS filename should be 8 characters or less.", "Chao Editor Warning", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                System.Windows.Forms.MessageBox.Show("For the VMI file to work correctly, the VMS filename will be truncated to 8 characters.", "Chao Editor Warning", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             vmi.Description = "Chao Download";
             vmi.Copyright = "VMSEditor";
             vmi.Year = (ushort)DateTime.Now.Year;
@@ -774,126 +774,137 @@ namespace VMSEditor
             }
             vmi.FileID = 1;
             vmi.ResourceName = Path.GetFileNameWithoutExtension(filename);
-            vmi.FileName = "SONICADV_VM";
-            vmi.Size = (uint)data.Length;
+			switch (mode)
+			{
+				case ChaoSaveMode.DownloadData:
+				case ChaoSaveMode.ChaoAdventure:
+					vmi.FileName = "SONICADV__VM";
+					break;
+				case ChaoSaveMode.UploadData:
+					vmi.FileName = japaneseHeaderToolStripMenuItem.Checked? "SONICADV_H00" : "SONICADV_H07";
+					break;
+				case ChaoSaveMode.GardenFile:
+					vmi.FileName = "SONICADV_ALF";
+					break;
+			}
+       
+            vmi.Size = vmslength;
             vmi.Flags |= VMIFile.VMIFlags.Game;
             File.WriteAllBytes(Path.ChangeExtension(filename, ".VMI"), vmi.GetBytes());
         }
 
-        private void CreateVMS(string filename, ChaoSaveMode mode)
-        {
-            RefreshData(listBoxDataSlots.SelectedIndex);
-            MemoryStream output;
-            VMS_Chao chao1;
-            VMS_Chao chao2;
-            bool hasEgg = false;
-            switch (mode)
-            {
-                // Download data and Chao Adventure can only store one Chao and one Egg
-                case ChaoSaveMode.DownloadData:
-                case ChaoSaveMode.ChaoAdventure:
-                    switch (chaoDataList.GardenChao.Count)
-                    {
-                        // Nothing
-                        case 0:
-                            return;
-                        // Just Chao
-                        case 1:
-                            chao1 = chaoDataList.GardenChao[0];
-                            chao2 = new VMS_Chao(new byte[512], 0);
-                            break;
-                        // Chao + Egg
-                        case 2:
-                            chao1 = chaoDataList.GardenChao[0];
-                            chao2 = chaoDataList.GardenChao[1];
-                            hasEgg = true;
-                            break;
-                        // More than 2 slots
-                        default:
-                            using (EditorChaoSelectChao selectChao = new EditorChaoSelectChao(chaoDataList.GardenChao))
-                            {
-                                selectChao.ShowDialog();
-                                if (selectChao.resultChao == -2) return;
-                                chao1 = selectChao.resultChao != -1 ? chaoDataList.GardenChao[selectChao.resultChao] : new VMS_Chao(new byte[512], 0);
-                                if (selectChao.resultEgg != -1)
-                                {
-                                    chao2 = chaoDataList.GardenChao[selectChao.resultEgg];
-                                    hasEgg = true;
-                                }
-                                else
-                                    chao2 = new VMS_Chao(new byte[512], 0);
-                            }
-                            break;
-                    }
-                    break;
-                case ChaoSaveMode.GardenFile:
-					File.WriteAllBytes(filename, chaoDataList.GetBytes(japaneseHeaderToolStripMenuItem.Checked));
-					return;
+		private byte[] GetVMSData(ChaoSaveMode mode)
+		{
+			RefreshData(listBoxDataSlots.SelectedIndex);
+			MemoryStream output;
+			VMS_Chao chao1;
+			VMS_Chao chao2;
+			bool hasEgg = false;
+			switch (mode)
+			{
+				// Download data and Chao Adventure can only store one Chao and one Egg
+				case ChaoSaveMode.DownloadData:
+				case ChaoSaveMode.ChaoAdventure:
+					switch (chaoDataList.GardenChao.Count)
+					{
+						// Nothing
+						case 0:
+							return new byte[0];
+						// Just Chao
+						case 1:
+							chao1 = chaoDataList.GardenChao[0];
+							chao2 = new VMS_Chao(new byte[512], 0);
+							break;
+						// Chao + Egg
+						case 2:
+							chao1 = chaoDataList.GardenChao[0];
+							chao2 = chaoDataList.GardenChao[1];
+							hasEgg = true;
+							break;
+						// More than 2 slots
+						default:
+							using (EditorChaoSelectChao selectChao = new EditorChaoSelectChao(chaoDataList.GardenChao))
+							{
+								selectChao.ShowDialog();
+								if (selectChao.resultChao == -2) 
+									return new byte[0];
+								chao1 = selectChao.resultChao != -1 ? chaoDataList.GardenChao[selectChao.resultChao] : new VMS_Chao(new byte[512], 0);
+								if (selectChao.resultEgg != -1)
+								{
+									chao2 = chaoDataList.GardenChao[selectChao.resultEgg];
+									hasEgg = true;
+								}
+								else
+									chao2 = new VMS_Chao(new byte[512], 0);
+							}
+							break;
+					}
+					break;
+				case ChaoSaveMode.GardenFile:
+					return chaoDataList.GetBytes(japaneseHeaderToolStripMenuItem.Checked);;
 				// TODO maybe
 				case ChaoSaveMode.UploadData:
-                default:
-                    return;
-            }
-            if (hasEgg && chao2.Type != ChaoTypeSA1.ChaoEgg)
-            {
-                DialogResult save = MessageBox.Show(this, "The egg slot contains a " + ToStringEnums(chao2.Type) + "." + " Saving a Chao in this slot will cause glitches in the game.\nWould you still like to enable the second slot?", "Chao Editor Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (save == DialogResult.No)
-                {
-                    hasEgg = false;
-                    chao2 = new VMS_Chao(new byte[512], 0);
-                }
-            }
-            switch (mode)
-            {
-                case ChaoSaveMode.DownloadData:
-                    output = new MemoryStream(4096);
-                    output.Write(japaneseHeaderToolStripMenuItem.Checked ? Properties.Resources.download_jp : Properties.Resources.download_us, 0, 3072);
-                    output.Seek(0xC00, SeekOrigin.Begin);
-                    output.Write(chao1.GetBytes(), 0, 512);
-                    output.Seek(0xE00, SeekOrigin.Begin);
-                    output.Write(chao2.GetBytes(), 0, 512);
-                    output.Seek(0x1EC, SeekOrigin.Begin);
-                    output.Write(BitConverter.GetBytes((ushort)0xC00), 0, 2);
-                    if (hasEgg)
-                    {
-                        output.Seek(0x1EE, SeekOrigin.Begin);
-                        output.Write(BitConverter.GetBytes((ushort)0xE00), 0, 2);
-                    }
-                    break;
-                case ChaoSaveMode.ChaoAdventure:
-                    output = new MemoryStream(65536);
-                    output.Write(japaneseHeaderToolStripMenuItem.Checked ? Properties.Resources.chaoadv_jp : Properties.Resources.chaoadv_us, 0, 65536);
-                    output.Seek(0x3000, SeekOrigin.Begin);
-                    output.Write(chao1.GetBytes(), 0, 512);
-                    output.Seek(0x3200, SeekOrigin.Begin);
-                    output.Write(chao2.GetBytes(), 0, 512);
-                    output.Seek(0x1EC, SeekOrigin.Begin);
-                    output.Write(BitConverter.GetBytes((ushort)0x3000), 0, 2);
-                    if (hasEgg)
-                    {
-                        output.Seek(0x1EE, SeekOrigin.Begin);
-                        output.Write(BitConverter.GetBytes((ushort)0x3200), 0, 2);
-                    }
-                    break;
-                case ChaoSaveMode.GardenFile:
-                case ChaoSaveMode.UploadData:
-                default:
-                    return;
-            }
-            byte[] data = output.ToArray();
-            File.WriteAllBytes(filename, data);
-            currentFilename = filename;
-            toolStripStatusLabelFilename.Text = Path.GetFileName(currentFilename);
-            if (generateAVMIFileToolStripMenuItem.Checked)
-                CreateVMI(filename, data);
-        }
+				default:
+					return new byte[0];
+			}
+			if (hasEgg && chao2.Type != ChaoTypeSA1.ChaoEgg)
+			{
+				DialogResult save = MessageBox.Show(this, "The egg slot contains a " + ToStringEnums(chao2.Type) + "." + " Saving a Chao in this slot will cause glitches in the game.\nWould you still like to enable the second slot?", "Chao Editor Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+				if (save == DialogResult.No)
+				{
+					hasEgg = false;
+					chao2 = new VMS_Chao(new byte[512], 0);
+				}
+			}
+			switch (mode)
+			{
+				case ChaoSaveMode.DownloadData:
+					output = new MemoryStream(4096);
+					output.Write(japaneseHeaderToolStripMenuItem.Checked ? Properties.Resources.download_jp : Properties.Resources.download_us, 0, 3072);
+					output.Seek(0xC00, SeekOrigin.Begin);
+					output.Write(chao1.GetBytes(), 0, 512);
+					output.Seek(0xE00, SeekOrigin.Begin);
+					output.Write(chao2.GetBytes(), 0, 512);
+					output.Seek(0x1EC, SeekOrigin.Begin);
+					output.Write(BitConverter.GetBytes((ushort)0xC00), 0, 2);
+					if (hasEgg)
+					{
+						output.Seek(0x1EE, SeekOrigin.Begin);
+						output.Write(BitConverter.GetBytes((ushort)0xE00), 0, 2);
+					}
+					break;
+				case ChaoSaveMode.ChaoAdventure:
+					output = new MemoryStream(65536);
+					output.Write(japaneseHeaderToolStripMenuItem.Checked ? Properties.Resources.chaoadv_jp : Properties.Resources.chaoadv_us, 0, 65536);
+					output.Seek(0x3000, SeekOrigin.Begin);
+					output.Write(chao1.GetBytes(), 0, 512);
+					output.Seek(0x3200, SeekOrigin.Begin);
+					output.Write(chao2.GetBytes(), 0, 512);
+					output.Seek(0x1EC, SeekOrigin.Begin);
+					output.Write(BitConverter.GetBytes((ushort)0x3000), 0, 2);
+					if (hasEgg)
+					{
+						output.Seek(0x1EE, SeekOrigin.Begin);
+						output.Write(BitConverter.GetBytes((ushort)0x3200), 0, 2);
+					}
+					break;
+				default:
+					return new byte[0];
+			}
+			return output.ToArray();
+		}
 
-        private void chaoDownloadDataToolStripMenuItem_Click(object sender, EventArgs e)
+		private void chaoDownloadDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
             {
-                if (sv.ShowDialog() == DialogResult.OK)
-                    CreateVMS(sv.FileName, ChaoSaveMode.DownloadData);
+				if (sv.ShowDialog() == DialogResult.OK)
+				{
+					byte[] output = GetVMSData(ChaoSaveMode.DownloadData);
+					File.WriteAllBytes(sv.FileName, output);
+					if (generateAVMIFileToolStripMenuItem.Checked)
+						CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.DownloadData);
+				}
             }
         }
 
@@ -901,10 +912,29 @@ namespace VMSEditor
         {
             using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
             {
-                if (sv.ShowDialog() == DialogResult.OK)
-                    CreateVMS(sv.FileName, ChaoSaveMode.ChaoAdventure);
+				if (sv.ShowDialog() == DialogResult.OK)
+				{
+					byte[] output = GetVMSData(ChaoSaveMode.ChaoAdventure);
+					File.WriteAllBytes(sv.FileName, output);
+					if (generateAVMIFileToolStripMenuItem.Checked)
+						CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.ChaoAdventure);
+				}
             }
         }
+
+		private void gardenFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV_ALF.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
+			{
+				if (sv.ShowDialog() == DialogResult.OK)
+				{
+					byte[] output = GetVMSData(ChaoSaveMode.GardenFile);
+					File.WriteAllBytes(sv.FileName, output);
+					if (generateAVMIFileToolStripMenuItem.Checked)
+						CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.GardenFile);
+				}
+			}
+		}
 
 		private void numericUpDownMemoriesMeet_ValueChanged(object sender, EventArgs e)
 		{
@@ -1617,15 +1647,6 @@ namespace VMSEditor
 			{
 				if (raceEditor.ShowDialog() == DialogResult.OK)
 					chaoDataList = raceEditor.SaveFile;
-			}
-		}
-
-		private void gardenFileToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV_ALF.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
-			{
-				if (sv.ShowDialog() == DialogResult.OK)
-					CreateVMS(sv.FileName, ChaoSaveMode.GardenFile);
 			}
 		}
 	}
