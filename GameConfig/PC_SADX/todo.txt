@@ -1,30 +1,35 @@
-STG04 some textures
-STG05 two items
-STG12 some models
+==Full Updates Needed==
+ADV0100_DLL
+ADV0130_DLL
+ADV03_DLL
 
-ADV00_DLL animations + better descriptions
-ADV0100_DLL full
-ADV0130_DLL full
-ADV02_DLL full
-ADV03_DLL full
-Animals animations
-B_CHAOS0_DLL animations
-B_CHAOS2 animations
-B_CHAOS4 animations
-B_CHAOS6 animations
-B_CHAOS7 animations
-B_E101 animations
-B_E101_R_NB animations
-B_EGM1 animations
-B_EGM2 animations
-B_EGM3 animations
-B_ROBO_NB animations
-Chao animations
-Characters animations
-CHRMODELS animations
-CommonObjects animations
-Enemies animations
-Event animations
-Fish animations
-Mission animations
-SHOOTING animations
+==Animations Needed==
+ADV00_DLL
+ADV02_DLL
+Animals
+B_CHAOS0_DLL
+B_CHAOS2
+B_CHAOS4
+B_CHAOS6
+B_CHAOS7
+B_E101
+B_E101_R_NB
+B_EGM1
+B_EGM2
+B_EGM3
+B_ROBO_NB
+Chao
+Characters
+CHRMODELS
+CommonObjects
+Enemies
+Event
+Fish
+Mission
+SHOOTING
+
+==Minor Cleanup==
+STG04 - some textures
+STG05 - two items
+STG12 - some models
+
