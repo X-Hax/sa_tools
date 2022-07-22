@@ -600,6 +600,7 @@ namespace SplitTools.SplitDLL
 						// NJS_MOTION
 						case "motion":
 							{
+								string metadesc = "";
 								int nodeCount = int.Parse(data.CustomProperties["nodecount"]);
 								NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, nodeCount);
 								string nm = item.Key;
@@ -624,6 +625,9 @@ namespace SplitTools.SplitDLL
 								{
 									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
+									if (data.CustomProperties.ContainsKey("meta"))
+										metadesc = data.CustomProperties["meta"];
+									ani.Description = metadesc;
 									ani.Save(fileOutputPath, nometa);
 								}
 							}
@@ -632,6 +636,7 @@ namespace SplitTools.SplitDLL
 						// NJS_MOTION array
 						case "motionarray":
 							{
+								string metadesc = "";
 								int[] nodecounts = data.CustomProperties["nodecounts"].Split(',').Select(a => int.Parse(a)).ToArray();
 								for (int i = 0; i < data.Length; i++)
 								{
@@ -672,6 +677,9 @@ namespace SplitTools.SplitDLL
 												return 0;
 											if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 												Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+											if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
+												metadesc = data.CustomProperties["meta" + i.ToString() + "_a"];
+											ani.Description = metadesc;
 											ani.Save(outputFN, nometa);
 											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
 										}
