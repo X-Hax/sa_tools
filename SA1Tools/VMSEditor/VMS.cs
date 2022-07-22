@@ -102,7 +102,7 @@ namespace VMSEditor
 			StringBuilder result = new StringBuilder();
 			for (int u = 0; u < file.Length - 15; u++)
 			{
-				if (System.Text.Encoding.GetEncoding(932).GetString(file, u, 7+ fieldName.Length) == "NAME=\"" + fieldName + "\"")
+				if (System.Text.Encoding.GetEncoding(932).GetString(file, u, 7 + fieldName.Length) == "NAME=\"" + fieldName + "\"")
 				{
 					for (int k = u + 15 + fieldName.Length; k < file.Length - 2; k++)
 					{
@@ -150,25 +150,68 @@ namespace VMSEditor
 
 		public VMSFile() { }
 
-        public VMSFile(byte[] file)
-        {
-            // In VMU game files, header data starts at 0x200. In regular VMS files such as savegames it starts at 0x0.
-            // The "game" flag is stored in the VMU's filesystem and the VMI file.
-            // There isn't a good way to tell if the VMS file is a game file or not if the only reference is the VMS file itself.
-            // However, the game files I've tried so far all have '(' at certain addresses in the beginning.
-            int gameFileOffset = (file[0x3] == 0x28 && file[0xB] == 0x28) ? 0x200 : 0;
-            byte[] title_b = GetTextItem(ref file, gameFileOffset, 16);
-            byte[] description_b = GetTextItem(ref file, gameFileOffset + 0x10, 32);
-            byte[] appname_b = GetTextItem(ref file, gameFileOffset + 0x30, 16);
-            Description = System.Text.Encoding.GetEncoding(932).GetString(description_b);
-            Title = System.Text.Encoding.GetEncoding(932).GetString(title_b);
-            AppName = System.Text.Encoding.GetEncoding(932).GetString(appname_b);
-            Length = (uint)file.Length;
-        }
+		public VMSFile(byte[] file)
+		{
+			// In VMU game files, header data starts at 0x200. In regular VMS files such as savegames it starts at 0x0.
+			// The "game" flag is stored in the VMU's filesystem and the VMI file.
+			// There isn't a good way to tell if the VMS file is a game file or not if the only reference is the VMS file itself.
+			// However, the game files I've tried so far all have '(' at certain addresses in the beginning.
+			int gameFileOffset = (file[0x3] == 0x28 && file[0xB] == 0x28) ? 0x200 : 0;
+			byte[] title_b = GetTextItem(ref file, gameFileOffset, 16);
+			byte[] description_b = GetTextItem(ref file, gameFileOffset + 0x10, 32);
+			byte[] appname_b = GetTextItem(ref file, gameFileOffset + 0x30, 16);
+			Description = System.Text.Encoding.GetEncoding(932).GetString(description_b);
+			Title = System.Text.Encoding.GetEncoding(932).GetString(title_b);
+			AppName = System.Text.Encoding.GetEncoding(932).GetString(appname_b);
+			Length = (uint)file.Length;
+		}
 
-        public uint GetLength()
-        {
-            return Length;
-        }
-    }
+		public uint GetLength()
+		{
+			return Length;
+		}
+
+		public static byte[] GetVMSFromDCI(byte[] dcifile)
+		{
+			VMIFile vmi = VMIFile.GetVMIFromDCI(dcifile);
+			byte[] data = new byte[vmi.Size];
+			for (int a = 0; a < vmi.Size; a += 4)
+			{
+				data[a] = dcifile[32 + a + 3];
+				data[a + 1] = dcifile[32 + a + 2];
+				data[a + 2] = dcifile[32 + a + 1];
+				data[a + 3] = dcifile[32 + a];
+			}
+			return data;
+		}
+
+		public static byte[] GetDCI(byte[] vmsdata, VMIFile vmi)
+		{
+			List<byte> result = new List<byte>();
+			result.Add((byte)(vmi.Flags.HasFlag(VMIFile.VMIFlags.Game) ? 0xCC : 0x33));
+			result.Add((byte)(vmi.Flags.HasFlag(VMIFile.VMIFlags.Protected) ? 0xFF : 0));
+			result.AddRange(BitConverter.GetBytes((ushort)0));
+			result.AddRange(VMIFile.GetString(vmi.FileName, 12));
+			string year = vmi.Year.ToString();
+			result.Add(byte.Parse(year.Substring(0, 2), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(year.Substring(2, 2), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(vmi.Month.ToString(), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(vmi.Day.ToString(), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(vmi.Hour.ToString(), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(vmi.Minute.ToString(), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(vmi.Second.ToString(), System.Globalization.NumberStyles.HexNumber));
+			result.Add(byte.Parse(vmi.Weekday.ToString(), System.Globalization.NumberStyles.HexNumber));
+			result.AddRange(BitConverter.GetBytes((ushort)(vmsdata.Length / 512)));
+			result.AddRange(BitConverter.GetBytes((ushort)0));
+			result.AddRange(BitConverter.GetBytes((uint)0));
+			for (int z = 0; z < vmsdata.Length; z += 4)
+			{
+				result.Add(vmsdata[z + 3]);
+				result.Add(vmsdata[z + 2]);
+				result.Add(vmsdata[z + 1]);
+				result.Add(vmsdata[z]);
+			}
+			return result.ToArray();
+		}
+	}
 }

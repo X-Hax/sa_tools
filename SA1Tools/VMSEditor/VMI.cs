@@ -27,9 +27,9 @@ namespace VMSEditor
         public VMIFlags Flags; // 2 bytes (irrelevant for SA1)
         public uint Size;
 
-        public VMIFile(VMSFile data, string ResName)
+		public VMIFile(VMSFile data, string ResName, bool ignoreresname = false)
         {
-            if (ResName.Length > 8)
+            if (!ignoreresname && ResName.Length > 8)
                 System.Windows.Forms.MessageBox.Show("For the VMI file to work correctly, VMS filename should be 8 characters or less.", "DLC Tool Warning", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
             Description = data.Description;
             Copyright = data.AppName;
@@ -106,7 +106,7 @@ namespace VMSEditor
             Size = BitConverter.ToUInt32(vmidata, 0x68);
         }
 
-        byte[] GetString(string str, int size)
+        public static byte[] GetString(string str, int size)
         {
             List<byte> result = new List<byte>();
             result.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes(str));
@@ -153,5 +153,24 @@ namespace VMSEditor
             result.AddRange(BitConverter.GetBytes(Size));
             return result.ToArray();
         }
-    }
+
+		public static VMIFile GetVMIFromDCI(byte[] dcifile)
+		{
+			VMIFile result = new();
+			if (dcifile[0] == 0xCC)
+				result.Flags |= VMIFlags.Game;
+			if (dcifile[1] == 0xFF)
+				result.Flags |= VMIFlags.Protected;
+			result.FileName = System.Text.Encoding.GetEncoding(932).GetString(dcifile, 0x04, 12);
+			result.Year = ushort.Parse((dcifile[0x10] << 8 | dcifile[0x11]).ToString());
+			result.Month = byte.Parse(dcifile[0x12].ToString());
+			result.Day = byte.Parse(dcifile[0x13].ToString());
+			result.Hour = byte.Parse(dcifile[0x14].ToString());
+			result.Minute = byte.Parse(dcifile[0x15].ToString());
+			result.Second = byte.Parse(dcifile[0x16].ToString());
+			result.Weekday = byte.Parse(dcifile[0x17].ToString());
+			result.Size = (ushort)(512 * BitConverter.ToUInt16(dcifile, 0x18));
+			return result;
+		}
+	}
 }
