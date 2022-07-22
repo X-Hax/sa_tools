@@ -130,9 +130,13 @@ namespace VMSEditor
 
         public void LoadVMS_DLC(string filename)
         {
-            byte[] file = File.ReadAllBytes(filename);
-            // Get metadata and icon
-            meta = new VMS_DLC(file);
+			byte[] file;
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".dci")
+				file = VMSFile.GetVMSFromDCI(File.ReadAllBytes(filename));
+			else
+				file = File.ReadAllBytes(filename);
+			// Get metadata and icon
+			meta = new VMS_DLC(file);
             metaBackup = new VMS_DLC(meta);
             meta.Icon = GetIconFromFile(file);
             // Get PVM pointer
@@ -233,7 +237,7 @@ namespace VMSEditor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "VMS Files|*.vms|All Files|*.*" })
+            using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "VMS Files|*.vms;*.dci|All Files|*.*" })
                 if (od.ShowDialog(this) == DialogResult.OK)
                     LoadVMS_DLC(od.FileName);
         }
@@ -364,16 +368,23 @@ namespace VMSEditor
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sv = new SaveFileDialog() { FileName = Path.ChangeExtension(Path.GetFileName(currentFilename), "vms"), Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
+            using (SaveFileDialog sv = new SaveFileDialog() { FileName = Path.ChangeExtension(Path.GetFileName(currentFilename), "vms"), Title = "Save VMS File", Filter = "VMS Files|*.vms|DCI Files|*.dci|All Files|*.*", DefaultExt = "vms" })
             {
                 if (sv.ShowDialog() == DialogResult.OK)
                 {
                     byte[] result = meta.GetBytes();
                     if (!encryptDLCFilesToolStripMenuItem.Checked)
                         ProcessVMS(ref result);
-                    File.WriteAllBytes(sv.FileName, result);
-                    if (createVMIFileToolStripMenuItem.Checked)
-                        File.WriteAllBytes(Path.ChangeExtension(sv.FileName, ".VMI"), new VMIFile(meta, Path.GetFileNameWithoutExtension(sv.FileName)).GetBytes());
+					if (Path.GetExtension(sv.FileName).ToLowerInvariant() == ".dci")
+					{
+						File.WriteAllBytes(sv.FileName, VMSFile.GetDCI(result, new VMIFile(meta, Path.GetFileNameWithoutExtension(sv.FileName), true)));
+					}
+					else
+					{
+						File.WriteAllBytes(sv.FileName, result);
+						if (createVMIFileToolStripMenuItem.Checked)
+							File.WriteAllBytes(Path.ChangeExtension(sv.FileName, ".VMI"), new VMIFile(meta, Path.GetFileNameWithoutExtension(sv.FileName)).GetBytes());
+					}
                     currentFullPath = sv.FileName;
                     currentFilename = Path.GetFileName(sv.FileName);
                 }
