@@ -27,7 +27,11 @@ namespace VMSEditor
 
 		private void LoadEventResult(string filename)
 		{
-			byte[] file = File.ReadAllBytes(filename);
+			byte[] file;
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".dci")
+				file = VMSFile.GetVMSFromDCI(File.ReadAllBytes(filename));
+			else
+				file = File.ReadAllBytes(filename);
 			VMSChallengeResult result = new VMSChallengeResult(file);
 			numericUpDownEventID.Value = result.ResultData.EventID;
 			numericUpDownFrames.Value = result.ResultData.EventTime;

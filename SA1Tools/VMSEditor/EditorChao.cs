@@ -413,7 +413,11 @@ namespace VMSEditor
 
 		private void LoadChaoVMSFile(string filename)
 		{
-			byte[] file = File.ReadAllBytes(filename);
+			byte[] file;
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".dci")
+				file = VMSFile.GetVMSFromDCI(File.ReadAllBytes(filename));
+			else
+				file = File.ReadAllBytes(filename);
 			byte[] chaodata_s1 = new byte[512];
 			byte[] chaodata_s2 = new byte[512];
 			bool found = false;
@@ -477,7 +481,7 @@ namespace VMSEditor
 
         private void openAVMSFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "VMS Files|*.vms|All Files|*.*" })
+            using (OpenFileDialog od = new OpenFileDialog() { DefaultExt = "vms", Filter = "VMS Files|*.vms;*.dci|All Files|*.*" })
                 if (od.ShowDialog(this) == DialogResult.OK)
                     LoadChaoVMSFile(od.FileName);
         }
@@ -895,43 +899,70 @@ namespace VMSEditor
 		}
 
 		private void chaoDownloadDataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
-            {
+		{
+			using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|DCI Files|*.dci|All Files|*.*", DefaultExt = "vms" })
+			{
 				if (sv.ShowDialog() == DialogResult.OK)
 				{
 					byte[] output = GetVMSData(ChaoSaveMode.DownloadData);
-					File.WriteAllBytes(sv.FileName, output);
-					if (generateAVMIFileToolStripMenuItem.Checked)
-						CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.DownloadData);
+					if (Path.GetExtension(sv.FileName).ToLowerInvariant() == ".dci")
+					{
+						VMIFile vmi = new VMIFile(new VMSFile(output), Path.GetFileNameWithoutExtension(sv.FileName), true);
+						vmi.FileName= "SONICADV__VM";
+						File.WriteAllBytes(sv.FileName, VMSFile.GetDCI(output, vmi));
+					}
+					else
+					{
+						File.WriteAllBytes(sv.FileName, output);
+						if (generateAVMIFileToolStripMenuItem.Checked)
+							CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.DownloadData);
+					}
 				}
-            }
-        }
+			}
+		}
 
         private void chaoAdventureDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
-            {
+            using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV__VM.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|DCI Files|*.dci|All Files|*.*", DefaultExt = "vms" })
+			{
 				if (sv.ShowDialog() == DialogResult.OK)
 				{
 					byte[] output = GetVMSData(ChaoSaveMode.ChaoAdventure);
-					File.WriteAllBytes(sv.FileName, output);
-					if (generateAVMIFileToolStripMenuItem.Checked)
-						CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.ChaoAdventure);
+					if (Path.GetExtension(sv.FileName).ToLowerInvariant() == ".dci")
+					{
+						VMIFile vmi = new VMIFile(new VMSFile(output), Path.GetFileNameWithoutExtension(sv.FileName), true);
+						vmi.FileName = "SONICADV__VM";
+						File.WriteAllBytes(sv.FileName, VMSFile.GetDCI(output, vmi));
+					}
+					else
+					{
+						File.WriteAllBytes(sv.FileName, output);
+						if (generateAVMIFileToolStripMenuItem.Checked)
+							CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.ChaoAdventure);
+					}
 				}
             }
         }
 
 		private void gardenFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV_ALF.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|All Files|*.*", DefaultExt = "vms" })
+			using (SaveFileDialog sv = new SaveFileDialog() { FileName = "SONICADV_ALF.VMS", Title = "Save VMS File", Filter = "VMS Files|*.vms|DCI Files|*.dci|All Files|*.*", DefaultExt = "vms" })
 			{
 				if (sv.ShowDialog() == DialogResult.OK)
 				{
 					byte[] output = GetVMSData(ChaoSaveMode.GardenFile);
-					File.WriteAllBytes(sv.FileName, output);
-					if (generateAVMIFileToolStripMenuItem.Checked)
-						CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.GardenFile);
+					if (Path.GetExtension(sv.FileName).ToLowerInvariant() == ".dci")
+					{
+						VMIFile vmi = new VMIFile(new VMSFile(output), Path.GetFileNameWithoutExtension(sv.FileName), true);
+						vmi.FileName = "SONICADV_ALF";
+						File.WriteAllBytes(sv.FileName, VMSFile.GetDCI(output, vmi));
+					}
+					else
+					{
+						File.WriteAllBytes(sv.FileName, output);
+						if (generateAVMIFileToolStripMenuItem.Checked)
+							CreateVMI(sv.FileName, (uint)output.Length, ChaoSaveMode.GardenFile);
+					}
 				}
 			}
 		}
