@@ -16,12 +16,12 @@ namespace SAModel.GC
 		/// <summary>
 		/// The parameters that this mesh sets
 		/// </summary>
-		public readonly List<GCParameter> parameters;
+		public List<GCParameter> parameters { get; private set; }
 
 		/// <summary>
 		/// The polygon data
 		/// </summary>
-		public readonly List<GCPrimitive> primitives;
+		public List<GCPrimitive> primitives { get; private set; }
 
 		/// <summary>
 		/// The index attribute flags of this mesh. If it has no IndexAttribParam, it will return null
@@ -124,71 +124,27 @@ namespace SAModel.GC
 				else
 					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
 			}
-			int end_pos = primitives_offset + primitives_size;
+			
+			ReadGCPrimitives(file, primitives_offset, primitives_size, indexFlags);
 
-			while (primitives_offset < end_pos)
-			{
-				//If primitive isn't valid
-				if (file[primitives_offset] == 0) break;
-					primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
-
-				}
-
-			}
+		}
 
 		/// <summary>
 		/// Writes the parameters and primitives to a stream
 		/// </summary>
 		/// <param name="writer">The ouput stream</param>
 		/// <param name="indexFlags">The index flags</param>
-		public void WriteData(BinaryWriter writer, GCIndexAttributeFlags indexFlags)
-		{
-			paramAddress = (uint)writer.BaseStream.Length;
-
-			foreach(GCParameter param in parameters)
-			{
-				param.Write(writer);
-			}
-
-			primitiveAddress = (uint)writer.BaseStream.Length;
-
-			foreach(GCPrimitive prim in primitives)
-			{
-				prim.Write(writer, indexFlags);
-			}
-
-			primitiveSize = (uint)writer.BaseStream.Length - primitiveAddress;
-		}
-
-		/// <summary>
-		/// Writes the location and sizes of
-		/// </summary>
-		/// <param name="writer">The output stream</param>
-		/// <param name="imagebase">The imagebase</param>
-		public void WriteProperties(BinaryWriter writer, uint imagebase, List<uint> njOffsets)
-		{
-			if (primitiveAddress == 0)
-				throw new Exception("Data has not been written yet");
-			if (primitiveSize == 0)
-				throw new Exception("Geometry is empty; No primitives found");
-
-			//POF0 offsets
-			njOffsets.Add((uint)writer.BaseStream.Position);
-			njOffsets.Add((uint)writer.BaseStream.Position + 8);
-
-			writer.Write(paramAddress + imagebase);
-			writer.Write((uint)parameters.Count);
-			writer.Write(primitiveAddress + imagebase);
-			writer.Write(primitiveSize);
-		}
 
 		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress, GCIndexAttributeFlags indexFlags)
 		{
 			List<byte> result = new List<byte>();
-			foreach (GCPrimitive prim in primitives)
+			int[] primSizeSingle = new int[primitives.Count];
+			for (int i = 0; i < primitives.Count; i++)
 			{
-				int interval = Convert.ToInt32(Math.Ceiling((decimal)((prim.loops.Count + 1) * 3 * primitives.Count / 32)));
-				primitiveSize = (uint)(interval * 32);
+				primSizeSingle[i] = (primitives[i].loops.Count + 1) * 3;
+				decimal primSizeRaw = primSizeSingle.Sum();
+				uint interval = Convert.ToUInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
+				primitiveSize = interval * 32;
 			}
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
 			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
@@ -199,10 +155,13 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
-			foreach (GCPrimitive prim in primitives)
+			int[] primSizeSingle = new int[primitives.Count];
+			for (int i = 0; i < primitives.Count; i++)
 			{
-				int interval = Convert.ToInt32(Math.Ceiling((decimal)((prim.loops.Count + 1) * 3 * primitives.Count / 32)));
-				primitiveSize = (uint)(interval * 32);
+				primSizeSingle[i] = (primitives[i].loops.Count + 1) * 3;
+				decimal primSizeRaw = primSizeSingle.Sum();
+				int interval = Convert.ToInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
+				primitiveSize = (uint)interval * 32;
 			}
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
@@ -313,6 +272,121 @@ namespace SAModel.GC
 			}
 
 			return new MeshInfo(new NJS_MATERIAL(material), polys.ToArray(), vertData, hasUVs, hasColors);
+		}
+
+		private void ReadGCPrimitives(byte[] file, int address, int size, GCIndexAttributeFlags indexFlags)
+		{
+			int end_pos = address + size;
+
+			while (address < end_pos)
+			{
+				if (file[address] == 0)
+				{
+					address++;
+					continue;
+				}
+				GCPrimitive prim = new GCPrimitive((GCPrimitiveType)file[address]);
+
+				short raw_index_count = ByteConverter.ToInt16(file, address + 1);
+				byte[] raw_index_bytes = ByteConverter.GetBytes(raw_index_count);
+
+				int real_index_count = ByteConverter.ToInt16(new byte[] { raw_index_bytes[1], raw_index_bytes[0] }, 0);
+
+				address += 3;
+
+				for (int i = 0; i < real_index_count; i++)
+				{
+					Loop l = new Loop();
+
+					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasPosition))
+					{
+						bool is_16bit = indexFlags.HasFlag(
+							GCIndexAttributeFlags.Position16BitIndex);
+
+						ushort raw_pos_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							l.PositionIndex = raw_pos_index;
+							address++;
+						}
+						else
+						{
+							byte[] pos_bytes = BitConverter.GetBytes(raw_pos_index);
+							Array.Reverse(pos_bytes);
+
+							l.PositionIndex = BitConverter.ToUInt16(pos_bytes, 0);
+							address += 2;
+						}
+					}
+					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasNormal))
+					{
+						bool is_16bit = indexFlags.HasFlag(
+							GCIndexAttributeFlags.Normal16BitIndex);
+
+						ushort raw_nrm_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							l.NormalIndex = raw_nrm_index;
+							address++;
+						}
+						else
+						{
+							byte[] nrm_bytes = BitConverter.GetBytes(raw_nrm_index);
+							Array.Reverse(nrm_bytes);
+
+							l.Color0Index = BitConverter.ToUInt16(nrm_bytes, 0);
+							address += 2;
+						}
+					}
+					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasColor))
+					{
+						bool is_16bit = indexFlags.HasFlag(
+							GCIndexAttributeFlags.Color16BitIndex);
+
+						ushort raw_col_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							l.Color0Index = raw_col_index;
+							address++;
+						}
+						else
+						{
+							byte[] col_bytes = BitConverter.GetBytes(raw_col_index);
+							Array.Reverse(col_bytes);
+
+							l.Color0Index = BitConverter.ToUInt16(col_bytes, 0);
+							address += 2;
+						}
+					}
+					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasUV))
+					{
+						bool is_16bit = indexFlags.HasFlag(
+							GCIndexAttributeFlags.UV16BitIndex);
+
+						ushort raw_tex_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
+
+						if (!is_16bit)
+						{
+							l.UV0Index = raw_tex_index;
+							address++;
+						}
+						else
+						{
+							byte[] tex_bytes = BitConverter.GetBytes(raw_tex_index);
+							Array.Reverse(tex_bytes);
+
+							l.UV0Index = BitConverter.ToUInt16(tex_bytes, 0);
+							address += 2;
+						}
+					}
+
+					prim.loops.Add(l);
+				}
+				primitives.Add(prim);
+			}
 		}
 
 		public GCMesh Clone()

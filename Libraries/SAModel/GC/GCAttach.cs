@@ -226,13 +226,13 @@ namespace SAModel.GC
 							else
 							{
 								result.Align(32);
-								foreach (GCMesh m in opaqueMeshes)
-								{
-									GCIndexAttributeFlags? t = m.IndexFlags;
-									if (t.HasValue) indexFlags = t.Value;
-								}
+								//foreach (GCMesh m in opaqueMeshes)
+								//{
+								//}
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
+								GCIndexAttributeFlags? t = opaqueMeshes[i].IndexFlags;
+								if (t.HasValue) indexFlags = t.Value;
 								for (int j = 0; j < opaqueMeshes[i].primitives.Count; j++)
 									result.AddRange(opaqueMeshes[i].primitives[j].GetBytes(indexFlags));
 							}
@@ -287,14 +287,14 @@ namespace SAModel.GC
 								primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
 							else
 							{
-								foreach (GCMesh m in translucentMeshes)
-								{
-									GCIndexAttributeFlags? t = m.IndexFlags;
-									if (t.HasValue) indexFlags = t.Value;
-								}
+								//foreach (GCMesh m in translucentMeshes)
+								//{
+								//}
 								result.Align(32);
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
+								GCIndexAttributeFlags? t = translucentMeshes[i].IndexFlags;
+								if (t.HasValue) indexFlags = t.Value;
 								for (int j = 0; j < translucentMeshes[i].primitives.Count; j++)
 									result.AddRange(translucentMeshes[i].primitives[j].GetBytes(indexFlags));
 							}
@@ -443,7 +443,7 @@ namespace SAModel.GC
 					}
 				}
 				labels.Add(VertexName);
-				writer.Write("Sint32 ");
+				writer.Write("GC_VERTEX ");
 				writer.Write(VertexName);
 				writer.Write("[] = {");
 				List<string> chunks = new List<string>(vertexData.Count);
@@ -461,7 +461,7 @@ namespace SAModel.GC
 					if (!labels.Contains(opaqueMeshes[i].ParameterName))
 					{
 						labels.Add(opaqueMeshes[i].ParameterName);
-						writer.Write("Sint32 ");
+						writer.Write("GC_PARAMETER ");
 						writer.Write(opaqueMeshes[i].ParameterName);
 						writer.WriteLine("[] = {");
 						List<string> param = new List<string>(opaqueMeshes[i].parameters.Count);
@@ -477,7 +477,7 @@ namespace SAModel.GC
 					if (!labels.Contains(opaqueMeshes[i].PrimitiveName))
 					{
 						labels.Add(opaqueMeshes[i].PrimitiveName);
-						writer.Write("Sint16 ");
+						writer.Write("GC_PRIMITIVE ");
 						writer.Write(opaqueMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
 						List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
@@ -489,7 +489,7 @@ namespace SAModel.GC
 					}
 				}
 				labels.Add(OpaqueMeshName);
-				writer.Write("Sint32 ");
+				writer.Write("GC_POLY ");
 				writer.Write(OpaqueMeshName);
 				writer.Write("[] = {");
 				List<string> chunks = new List<string>();
@@ -506,7 +506,7 @@ namespace SAModel.GC
 					if (!labels.Contains(translucentMeshes[i].ParameterName))
 					{
 						labels.Add(translucentMeshes[i].ParameterName);
-						writer.Write("Sint32 ");
+						writer.Write("GC_PARAMETER ");
 						writer.Write(translucentMeshes[i].ParameterName);
 						writer.WriteLine("[] = {");
 						List<string> param = new List<string>(translucentMeshes[i].parameters.Count);
@@ -522,7 +522,7 @@ namespace SAModel.GC
 					if (!labels.Contains(translucentMeshes[i].PrimitiveName))
 					{
 						labels.Add(translucentMeshes[i].PrimitiveName);
-						writer.Write("Sint16 ");
+						writer.Write("GC_PRIMITIVE ");
 						writer.Write(translucentMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
 						List<string> prim = new List<string>(translucentMeshes[i].primitives.Count);
@@ -534,7 +534,7 @@ namespace SAModel.GC
 					}
 				}
 				labels.Add(TranslucentMeshName);
-				writer.Write("Sint32 ");
+				writer.Write("GC_POLY ");
 				writer.Write(TranslucentMeshName);
 				writer.Write("[] = {");
 				List<string> chunks = new List<string>();
