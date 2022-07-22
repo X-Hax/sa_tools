@@ -1,10 +1,7 @@
-== Full Updates Needed ==
-
-ADV0130_DLL
-
 == Animations Needed ==
 ADV00_DLL
 ADV0100_DLL
+ADV0130_DLL
 ADV02_DLL
 ADV03_DLL
 Animals
