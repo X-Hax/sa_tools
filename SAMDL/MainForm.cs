@@ -1999,6 +1999,7 @@ namespace SAModel.SAMDL
 		{
 			RebuildModelCache();
 			NeedRedraw = true;
+			SelectedItemChanged();
 		}
 
 		private void OpenMaterialEditor()
@@ -2838,9 +2839,11 @@ namespace SAModel.SAMDL
                         try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
                         catch { }
             }
+			treeView1.BeginUpdate();
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
+			treeView1.EndUpdate();
 		}
 
 		private void ClearChildren()
@@ -4193,6 +4196,8 @@ namespace SAModel.SAMDL
 					RebuildModelCache();
 					NeedRedraw = true;
 					unsavedChanges = true;
+					selectedObject = model.GetObjects()[idx];
+					SelectedItemChanged();
 				}
 		}
 
