@@ -1995,32 +1995,8 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		private void UpdateMaterials()
+		private void UpdateMaterials(List<NJS_MATERIAL> mats)
 		{
-			RebuildModelCache();
-			NeedRedraw = true;
-			SelectedItemChanged();
-		}
-
-		private void OpenMaterialEditor()
-		{
-			List<NJS_MATERIAL> mats;
-			string matname = null;
-			switch (selectedObject.Attach)
-			{
-				case BasicAttach bscatt:
-					mats = bscatt.Material;
-					matname = bscatt.MaterialName;
-					break;
-				default:
-					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
-					break;
-			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
-			{
-				dlg.FormUpdated += (s, ev) => UpdateMaterials();
-				dlg.ShowDialog(this);
-			}
 			switch (selectedObject.Attach)
 			{
 				case ChunkAttach cnkatt:
@@ -2042,6 +2018,30 @@ namespace SAModel.SAMDL
 						}
 					cnkatt.Poly = chunks;
 					break;
+			}
+			RebuildModelCache();
+			NeedRedraw = true;
+			SelectedItemChanged();
+		}
+
+		private void OpenMaterialEditor()
+		{
+			List<NJS_MATERIAL> mats;
+			string matname = null;
+			switch (selectedObject.Attach)
+			{
+				case BasicAttach bscatt:
+					mats = bscatt.Material;
+					matname = bscatt.MaterialName;
+					break;
+				default:
+					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+					break;
+			}
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
+			{
+				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
+				dlg.ShowDialog(this);
 			}
 			unsavedChanges = true;
 		}
