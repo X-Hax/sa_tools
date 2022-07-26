@@ -1995,31 +1995,8 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		private void UpdateMaterials()
+		private void UpdateMaterials(List<NJS_MATERIAL> mats)
 		{
-			RebuildModelCache();
-			NeedRedraw = true;
-		}
-
-		private void OpenMaterialEditor()
-		{
-			List<NJS_MATERIAL> mats;
-			string matname = null;
-			switch (selectedObject.Attach)
-			{
-				case BasicAttach bscatt:
-					mats = bscatt.Material;
-					matname = bscatt.MaterialName;
-					break;
-				default:
-					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
-					break;
-			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
-			{
-				dlg.FormUpdated += (s, ev) => UpdateMaterials();
-				dlg.ShowDialog(this);
-			}
 			switch (selectedObject.Attach)
 			{
 				case ChunkAttach cnkatt:
@@ -2041,6 +2018,30 @@ namespace SAModel.SAMDL
 						}
 					cnkatt.Poly = chunks;
 					break;
+			}
+			RebuildModelCache();
+			NeedRedraw = true;
+			SelectedItemChanged();
+		}
+
+		private void OpenMaterialEditor()
+		{
+			List<NJS_MATERIAL> mats;
+			string matname = null;
+			switch (selectedObject.Attach)
+			{
+				case BasicAttach bscatt:
+					mats = bscatt.Material;
+					matname = bscatt.MaterialName;
+					break;
+				default:
+					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+					break;
+			}
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
+			{
+				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
+				dlg.ShowDialog(this);
 			}
 			unsavedChanges = true;
 		}
@@ -2838,9 +2839,11 @@ namespace SAModel.SAMDL
                         try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
                         catch { }
             }
+			treeView1.BeginUpdate();
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
 			AddTreeNode(model, treeView1.Nodes);
+			treeView1.EndUpdate();
 		}
 
 		private void ClearChildren()
@@ -4193,6 +4196,8 @@ namespace SAModel.SAMDL
 					RebuildModelCache();
 					NeedRedraw = true;
 					unsavedChanges = true;
+					selectedObject = model.GetObjects()[idx];
+					SelectedItemChanged();
 				}
 		}
 
