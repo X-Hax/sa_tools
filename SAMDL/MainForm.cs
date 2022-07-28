@@ -3448,6 +3448,7 @@ namespace SAModel.SAMDL
 				selectedObject.Attach = opaqueatt;
 			else
 				selectedObject.Attach = null;
+			selectedObject.FixSiblings();
 			RebuildModelCache();
 			NeedRedraw = true;
 			SelectedItemChanged();
@@ -3911,6 +3912,7 @@ namespace SAModel.SAMDL
 					selectedObject.AddChild(newobjs_trans);
 				selectedObject.Attach = null;
 				selectedObject.SkipChildren = false;
+				selectedObject.FixSiblings();
 				RebuildModelCache();
 				NeedRedraw = true;
 				SelectedItemChanged();
