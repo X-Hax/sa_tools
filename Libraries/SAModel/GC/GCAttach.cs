@@ -29,7 +29,6 @@ namespace SAModel.GC
 		public List<GCMesh> translucentMeshes;
 		public string TranslucentMeshName { get; set; }
 
-
 		/// <summary>
 		/// Create a new empty GC attach
 		/// </summary>
@@ -113,7 +112,7 @@ namespace SAModel.GC
 			}
 			for (int i = 0; i < opaqueCount; i++)
 			{
-				GCMesh mesh = new GCMesh(file, opaqueAddress, imageBase, indexFlags, labels);
+				GCMesh mesh = new GCMesh(file, opaqueAddress, imageBase, labels, indexFlags);
 
 				GCIndexAttributeFlags? t = mesh.IndexFlags;
 				if (t.HasValue) indexFlags = t.Value;
@@ -131,7 +130,7 @@ namespace SAModel.GC
 			}
 			for (int i = 0; i < translucentCount; i++)
 			{
-				GCMesh mesh = new GCMesh(file, translucentAddress, imageBase, indexFlags, labels);
+				GCMesh mesh = new GCMesh(file, translucentAddress, imageBase, labels, indexFlags);
 
 				GCIndexAttributeFlags? t = mesh.IndexFlags;
 				if (t.HasValue) indexFlags = t.Value;
@@ -226,9 +225,6 @@ namespace SAModel.GC
 							else
 							{
 								result.Align(32);
-								//foreach (GCMesh m in opaqueMeshes)
-								//{
-								//}
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
 								GCIndexAttributeFlags? t = opaqueMeshes[i].IndexFlags;
@@ -287,9 +283,6 @@ namespace SAModel.GC
 								primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
 							else
 							{
-								//foreach (GCMesh m in translucentMeshes)
-								//{
-								//}
 								result.Align(32);
 								primAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
@@ -377,6 +370,10 @@ namespace SAModel.GC
 			result.Append(", ");
 			result.Append(translucentMeshes.Count != 0 ? TranslucentMeshName : "NULL");
 			result.Append(", ");
+			result.Append(opaqueMeshes.Count != 0 ? "LengthOfArray<Uint16>(" + OpaqueMeshName + ")" : "0");
+			result.Append(", ");
+			result.Append(translucentMeshes.Count != 0 ? "LengthOfArray<Uint16>(" + TranslucentMeshName + ")" : "0");
+			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			result.Append(" }");
 			return result.ToString();
@@ -458,18 +455,21 @@ namespace SAModel.GC
 			{
 				for (int i = 0; i < opaqueMeshes.Count; i++)
 				{
-					if (!labels.Contains(opaqueMeshes[i].ParameterName))
+					for (int j = 0; j < opaqueMeshes[i].parameters.Count; j++)
 					{
-						labels.Add(opaqueMeshes[i].ParameterName);
-						writer.Write("GC_PARAMETER ");
-						writer.Write(opaqueMeshes[i].ParameterName);
-						writer.WriteLine("[] = {");
-						List<string> param = new List<string>(opaqueMeshes[i].parameters.Count);
-						foreach (GCParameter item in opaqueMeshes[i].parameters)
-						param.Add(item.ToStruct());
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
-						writer.WriteLine("};");
-						writer.WriteLine();
+						if (opaqueMeshes[i].parameters[j] != null && !labels.Contains(opaqueMeshes[i].ParameterName))
+						{
+							labels.Add(opaqueMeshes[i].ParameterName);
+							writer.Write("GC_PARAMETER ");
+							writer.Write(opaqueMeshes[i].ParameterName);
+							writer.WriteLine("[] = {");
+							List<string> param = new List<string>(opaqueMeshes[i].parameters.Count);
+							foreach (GCParameter item in opaqueMeshes[i].parameters)
+								param.Add(item.ToStruct());
+							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
+							writer.WriteLine("};");
+							writer.WriteLine();
+						}
 					}
 				}
 				for (int i = 0; i < opaqueMeshes.Count; i++)
@@ -503,18 +503,21 @@ namespace SAModel.GC
 			{
 				for (int i = 0; i < translucentMeshes.Count; i++)
 				{
-					if (!labels.Contains(translucentMeshes[i].ParameterName))
+					for (int j = 0; j < translucentMeshes[i].parameters.Count; j++)
 					{
-						labels.Add(translucentMeshes[i].ParameterName);
-						writer.Write("GC_PARAMETER ");
-						writer.Write(translucentMeshes[i].ParameterName);
-						writer.WriteLine("[] = {");
-						List<string> param = new List<string>(translucentMeshes[i].parameters.Count);
-						foreach (GCParameter item in translucentMeshes[i].parameters)
-						param.Add(item.ToStruct());
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
-						writer.WriteLine("};");
-						writer.WriteLine();
+						if (translucentMeshes[i].parameters[j] != null && !labels.Contains(translucentMeshes[i].ParameterName))
+						{
+							labels.Add(translucentMeshes[i].ParameterName);
+							writer.Write("GC_PARAMETER ");
+							writer.Write(translucentMeshes[i].ParameterName);
+							writer.WriteLine("[] = {");
+							List<string> param = new List<string>(translucentMeshes[i].parameters.Count);
+							foreach (GCParameter item in translucentMeshes[i].parameters)
+								param.Add(item.ToStruct());
+							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
+							writer.WriteLine("};");
+							writer.WriteLine();
+						}
 					}
 				}
 				for (int i = 0; i < translucentMeshes.Count; i++)

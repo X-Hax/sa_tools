@@ -68,6 +68,111 @@ namespace SAModel.GC
 				loops = new List<Loop>();
 			}
 
+				/// <summary>
+		/// Read a primitive object from a file
+		/// </summary>
+		/// <param name="file">The files contents as a byte array</param>
+		/// <param name="address">The starting address of the primitive</param>
+		/// <param name="indexFlags">How the indices of the loops are structured</param>
+		public GCPrimitive(byte[] file, int address, GCIndexAttributeFlags indexFlags, out int end)
+		{
+			primitiveType = (GCPrimitiveType)file[address];
+
+			bool wasBigEndian = ByteConverter.BigEndian;
+			ByteConverter.BigEndian = true;
+
+			ushort vtxCount = ByteConverter.ToUInt16(file, address + 1);
+
+			// checking the flags
+			bool hasFlag(GCIndexAttributeFlags flag)
+			{
+				return indexFlags.HasFlag(flag);
+			}
+
+			// position always exists
+			bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
+			bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
+			bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
+
+			//whether any of the indices use 16 bits instead of 8
+			bool pos16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
+			bool col16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
+			bool nrm16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
+			bool uv16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
+
+			int tmpaddr = address + 3;
+
+			loops = new List<Loop>();
+
+			for (ushort i = 0; i < vtxCount; i++)
+			{
+				Loop l = new Loop();
+
+				// reading position, which should always exist
+				if(pos16bit)
+				{
+					l.PositionIndex = ByteConverter.ToUInt16(file, tmpaddr);
+					tmpaddr += 2;
+				}
+				else
+				{
+					l.PositionIndex = file[tmpaddr];
+					tmpaddr++;
+				}
+
+				// reading normals
+				if(has_normal)
+				{
+					if (nrm16bit)
+					{
+						l.NormalIndex = ByteConverter.ToUInt16(file, tmpaddr);
+						tmpaddr += 2;
+					}
+					else
+					{
+						l.NormalIndex = file[tmpaddr];
+						tmpaddr++;
+					}
+				}
+
+				// reading colors
+				if (has_color)
+				{
+					if (col16bit)
+					{
+						l.Color0Index = ByteConverter.ToUInt16(file, tmpaddr);
+						tmpaddr += 2;
+					}
+					else
+					{
+						l.Color0Index = file[tmpaddr];
+						tmpaddr++;
+					}
+				}
+
+				// reading uvs
+				if (has_uv)
+				{
+					if (uv16bit)
+					{
+						l.UV0Index = ByteConverter.ToUInt16(file, tmpaddr);
+						tmpaddr += 2;
+					}
+					else
+					{
+						l.UV0Index = file[tmpaddr];
+						tmpaddr++;
+					}
+				}
+
+				loops.Add(l);
+			}
+
+			end = tmpaddr;
+
+			ByteConverter.BigEndian = wasBigEndian;
+		}
+
 			/// <summary>
 			/// Write the contents
 			/// </summary>
@@ -80,17 +185,25 @@ namespace SAModel.GC
 			result.Add((byte)primitiveType);
 
 			byte[] big_endian_count = BitConverter.GetBytes((ushort)loops.Count);
-			Array.Reverse(big_endian_count);
-			result.AddRange(big_endian_count);
+			// writing count as big endian
+			result.Add(big_endian_count[1]);
+			result.Add(big_endian_count[0]);
 
-			bool has_color = indexFlags.HasFlag(GCIndexAttributeFlags.HasColor);
-			bool has_normal = indexFlags.HasFlag(GCIndexAttributeFlags.HasNormal);
-			bool has_uv = indexFlags.HasFlag(GCIndexAttributeFlags.HasUV);
+			// checking the flags
+			bool hasFlag(GCIndexAttributeFlags flag)
+			{
+				return indexFlags.HasFlag(flag);
+			}
 
-			bool is_position_16bit = indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex);
-			bool is_color_16bit = indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex);
-			bool is_normal_16bit = indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex);
-			bool is_uv_16bit = indexFlags.HasFlag(GCIndexAttributeFlags.UV16BitIndex);
+			// position always exists
+			bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
+			bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
+			bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
+
+			bool is_position_16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
+			bool is_color_16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
+			bool is_normal_16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
+			bool is_uv_16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
 
 			foreach (Loop v in loops)
 			{
@@ -98,9 +211,10 @@ namespace SAModel.GC
 
 				if (is_position_16bit)
 				{
-					byte[] big_endian_pos = BitConverter.GetBytes((ushort)v.PositionIndex);
-					Array.Reverse(big_endian_pos);
-					result.AddRange(big_endian_pos);
+					byte[] big_endian_pos = BitConverter.GetBytes(v.PositionIndex);
+					// writing count as big endian
+					result.Add(big_endian_pos[1]);
+					result.Add(big_endian_pos[0]);
 				}
 				else
 				{
@@ -111,9 +225,10 @@ namespace SAModel.GC
 				{
 					if (is_normal_16bit)
 					{
-						byte[] big_endian_nrm = BitConverter.GetBytes((ushort)v.NormalIndex);
-						Array.Reverse(big_endian_nrm);
-						result.AddRange(big_endian_nrm);
+						byte[] big_endian_nrm = BitConverter.GetBytes(v.NormalIndex);
+						// writing count as big endian
+						result.Add(big_endian_nrm[1]);
+						result.Add(big_endian_nrm[0]);
 					}
 					else
 					{
@@ -125,9 +240,10 @@ namespace SAModel.GC
 				{
 					if (is_color_16bit)
 					{
-						byte[] big_endian_col = BitConverter.GetBytes((ushort)v.Color0Index);
-						Array.Reverse(big_endian_col);
-						result.AddRange(big_endian_col);
+						byte[] big_endian_col = BitConverter.GetBytes(v.Color0Index);
+						// writing count as big endian
+						result.Add(big_endian_col[1]);
+						result.Add(big_endian_col[0]);
 					}
 					else
 					{
@@ -139,9 +255,10 @@ namespace SAModel.GC
 				{
 					if (is_uv_16bit)
 					{
-						byte[] big_endian_uv = BitConverter.GetBytes((ushort)v.UV0Index);
-						Array.Reverse(big_endian_uv);
-						result.AddRange(big_endian_uv);
+						byte[] big_endian_uv = BitConverter.GetBytes(v.UV0Index);
+						// writing count as big endian
+						result.Add(big_endian_uv[1]);
+						result.Add(big_endian_uv[0]);
 					}
 					else
 					{
@@ -172,52 +289,57 @@ namespace SAModel.GC
 		public List<Loop> ToTriangles()
 		{
 			List<Loop> sorted_vertices = new List<Loop>();
+			int degTriangles = 0;
+
 			switch (primitiveType)
 			{
 				case GCPrimitiveType.Triangles:
-					sorted_vertices = loops;
-					break;
+					return loops;
 				case GCPrimitiveType.TriangleStrip:
-				{
+					bool isEven = false;
 					for (int v = 2; v < loops.Count; v++)
 					{
-						bool isEven = v % 2 != 0;
-						Loop[] newTri = new Loop[3];
-
-						newTri[0] = loops[v - 2];
-						newTri[1] = isEven ? loops[v] : loops[v - 1];
-						newTri[2] = isEven ? loops[v - 1] : loops[v];
+						Loop[] newTri = new Loop[]
+						{
+							loops[v - 2],
+							isEven ? loops[v] : loops[v - 1],
+							isEven ? loops[v - 1] : loops[v]
+						};
+						isEven = !isEven;
 
 						// Check against degenerate triangles (a triangle which shares indexes)
 						if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
 							sorted_vertices.AddRange(newTri);
-						else
-							System.Console.WriteLine("Degenerate triangle detected, skipping TriangleStrip conversion to triangle.");
+						else degTriangles++;
 					}
-				}
 					break;
 				case GCPrimitiveType.TriangleFan:
-				{
 					for (int v = 1; v < loops.Count - 1; v++)
 					{
 						// Triangle is always, v, v+1, and index[0]?
-						Loop[] newTri = new Loop[3];
-						newTri[0] = loops[v];
-						newTri[1] = loops[v + 1];
-						newTri[2] = loops[0];
+						Loop[] newTri = new Loop[]
+						{
+							loops[v],
+							loops[v + 1],
+							loops[0],
+						};
 
 						// Check against degenerate triangles (a triangle which shares indexes)
 						if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
 							sorted_vertices.AddRange(newTri);
-						else
-							System.Console.WriteLine("Degenerate triangle detected, skipping TriangleFan conversion to triangle.");
+						else degTriangles++;
 					}
-				}
 					break;
 				default:
-				System.Console.WriteLine($"Attempted to triangulate primitive type { primitiveType }");
+					Console.WriteLine($"Attempted to triangulate primitive type { primitiveType }");
 					break;
 			}
+
+			if (degTriangles > 0)
+			{
+				Console.WriteLine("Degenerate triangles skipped: " + degTriangles);
+			}
+
 			return sorted_vertices;
 		}
 

@@ -75,7 +75,7 @@ namespace SAModel.GC
 		}
 
 		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
-		: this(file, address, imageBase, indexFlags, new Dictionary<int, string>())
+		: this(file, address, imageBase, new Dictionary<int, string>(), indexFlags)
 		{
 		}
 
@@ -86,7 +86,7 @@ namespace SAModel.GC
 		/// <param name="address">The address at which the mesh is located</param>
 		/// <param name="imageBase">The imagebase (used for when reading from an exe)</param>
 		/// <param name="index">Indexattribute parameter of the previous mesh</param>
-		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags, Dictionary<int, string> labels)
+		public GCMesh(byte[] file, int address, uint imageBase, Dictionary<int, string> labels, GCIndexAttributeFlags indexFlags)
 		{
 			// getting the addresses and sizes
 			int parameters_offset = (int)(ByteConverter.ToInt32(file, address) - imageBase);
@@ -124,9 +124,16 @@ namespace SAModel.GC
 				else
 					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
 			}
-			
-			ReadGCPrimitives(file, primitives_offset, primitives_size, indexFlags);
 
+			int end_pos = primitives_offset + primitives_size;
+
+			while (primitives_offset < end_pos)
+			{
+				// if the primitive isnt valid
+				if (file[primitives_offset] == 0) break;
+				primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
+			}
+			primitiveSize = (uint)primitives_size;
 		}
 
 		/// <summary>
@@ -138,14 +145,49 @@ namespace SAModel.GC
 		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress, GCIndexAttributeFlags indexFlags)
 		{
 			List<byte> result = new List<byte>();
-			int[] primSizeSingle = new int[primitives.Count];
-			for (int i = 0; i < primitives.Count; i++)
-			{
-				primSizeSingle[i] = (primitives[i].loops.Count + 1) * 3;
-				decimal primSizeRaw = primSizeSingle.Sum();
-				uint interval = Convert.ToUInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
-				primitiveSize = interval * 32;
-			}
+			//List<GCIndexAttributeFlags> attributes = new List<GCIndexAttributeFlags>();
+			//int[] primSizeSingle = new int[primitives.Count];
+			//int[] primLoopSize = new int[primitives.Count];
+			////foreach (GCMesh m in meshes)
+			//foreach (GCPrimitive prim in primitives)
+			//{
+			//	//indexFlags = new GCIndexAttributeFlags();
+			//	// getting the index attribute parameter
+			//	GCIndexAttributeFlags? flags = IndexFlags;
+			//	GCIndexAttributeFlags? flags2 = _indexFlags2;
+			//	if (flags.HasValue)
+			//	{
+			//		indexFlags = flags.Value;
+			//		_indexFlags2 = indexFlags;
+			//		attributes.Add(indexFlags);
+			//	}
+			//	else if (!flags.HasValue)
+			//		indexFlags = _indexFlags2.Value;
+			//	if (indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.Color16BitIndex)
+			//	|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
+			//	|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Color16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
+			//	|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.Color16BitIndex | GCIndexAttributeFlags.UV16BitIndex))
+			//		primLoopSize = new int[(prim.loops.Count * 6) + 3];
+			//	else if (indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Color16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Normal16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.Color16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex | GCIndexAttributeFlags.UV16BitIndex))
+			//		primLoopSize = new int[(prim.loops.Count * 5) + 3];
+			//	else if (indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex)
+			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.UV16BitIndex))
+			//		primLoopSize = new int[(prim.loops.Count * 4) + 3];
+			//	else
+			//		primLoopSize = new int[(prim.loops.Count * 3) + 3];
+			//	//primSizeSingle[i] = primLoopSize;
+			//	decimal primSizeRaw = primLoopSize.Sum();
+			//	uint dataSize = Convert.ToUInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
+			//	//primitiveSize = (uint)dataSize * 32;
+			//	primitiveSize = (uint)primSizeRaw;
+			//}
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
 			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
 			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
@@ -155,14 +197,14 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
-			int[] primSizeSingle = new int[primitives.Count];
-			for (int i = 0; i < primitives.Count; i++)
-			{
-				primSizeSingle[i] = (primitives[i].loops.Count + 1) * 3;
-				decimal primSizeRaw = primSizeSingle.Sum();
-				int interval = Convert.ToInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
-				primitiveSize = (uint)interval * 32;
-			}
+			//int[] primSizeSingle = new int[primitives.Count];
+			//for (int i = 0; i < primitives.Count; i++)
+			//{
+			//	primSizeSingle[i] = (primitives[i].loops.Count + 1) * 3;
+			//	decimal primSizeRaw = primSizeSingle.Sum();
+			//	uint interval = Convert.ToUInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
+			//	primitiveSize = interval * 32;
+			//}
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
 			result.Append(", ");
@@ -238,11 +280,11 @@ namespace SAModel.GC
 					else indices[j] = t;
 					j++;
 				}
-				
+
 
 				// creating the polygons
-				if(prim.primitiveType == GCPrimitiveType.Triangles)
-					for(int i = 0; i < indices.Length; i+= 3)
+				if (prim.primitiveType == GCPrimitiveType.Triangles)
+					for (int i = 0; i < indices.Length; i += 3)
 					{
 						Triangle t = new Triangle();
 						t.Indexes[0] = indices[i];
@@ -250,7 +292,7 @@ namespace SAModel.GC
 						t.Indexes[2] = indices[i + 2];
 						polys.Add(t);
 					}
-				else if(prim.primitiveType == GCPrimitiveType.TriangleStrip)
+				else if (prim.primitiveType == GCPrimitiveType.TriangleStrip)
 					polys.Add(new Strip(indices, false));
 			}
 
@@ -260,10 +302,10 @@ namespace SAModel.GC
 			bool hasColors = colors != null;
 			bool hasUVs = uvs != null;
 
-			for(int i = 0; i < corners.Count; i++)
+			for (int i = 0; i < corners.Count; i++)
 			{
 				Loop l = corners[i];
-				vertData[i] = new SAModel.VertexData(
+				vertData[i] = new VertexData(
 						(Vector3)positions[l.PositionIndex],
 						hasNormals ? (Vector3)normals[l.NormalIndex] : new Vector3(0, 1, 0),
 						hasColors ? (Color)colors[l.Color0Index] : new Color(255, 255, 255, 255),
@@ -272,121 +314,6 @@ namespace SAModel.GC
 			}
 
 			return new MeshInfo(new NJS_MATERIAL(material), polys.ToArray(), vertData, hasUVs, hasColors);
-		}
-
-		private void ReadGCPrimitives(byte[] file, int address, int size, GCIndexAttributeFlags indexFlags)
-		{
-			int end_pos = address + size;
-
-			while (address < end_pos)
-			{
-				if (file[address] == 0)
-				{
-					address++;
-					continue;
-				}
-				GCPrimitive prim = new GCPrimitive((GCPrimitiveType)file[address]);
-
-				short raw_index_count = ByteConverter.ToInt16(file, address + 1);
-				byte[] raw_index_bytes = ByteConverter.GetBytes(raw_index_count);
-
-				int real_index_count = ByteConverter.ToInt16(new byte[] { raw_index_bytes[1], raw_index_bytes[0] }, 0);
-
-				address += 3;
-
-				for (int i = 0; i < real_index_count; i++)
-				{
-					Loop l = new Loop();
-
-					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasPosition))
-					{
-						bool is_16bit = indexFlags.HasFlag(
-							GCIndexAttributeFlags.Position16BitIndex);
-
-						ushort raw_pos_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
-
-						if (!is_16bit)
-						{
-							l.PositionIndex = raw_pos_index;
-							address++;
-						}
-						else
-						{
-							byte[] pos_bytes = BitConverter.GetBytes(raw_pos_index);
-							Array.Reverse(pos_bytes);
-
-							l.PositionIndex = BitConverter.ToUInt16(pos_bytes, 0);
-							address += 2;
-						}
-					}
-					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasNormal))
-					{
-						bool is_16bit = indexFlags.HasFlag(
-							GCIndexAttributeFlags.Normal16BitIndex);
-
-						ushort raw_nrm_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
-
-						if (!is_16bit)
-						{
-							l.NormalIndex = raw_nrm_index;
-							address++;
-						}
-						else
-						{
-							byte[] nrm_bytes = BitConverter.GetBytes(raw_nrm_index);
-							Array.Reverse(nrm_bytes);
-
-							l.Color0Index = BitConverter.ToUInt16(nrm_bytes, 0);
-							address += 2;
-						}
-					}
-					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasColor))
-					{
-						bool is_16bit = indexFlags.HasFlag(
-							GCIndexAttributeFlags.Color16BitIndex);
-
-						ushort raw_col_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
-
-						if (!is_16bit)
-						{
-							l.Color0Index = raw_col_index;
-							address++;
-						}
-						else
-						{
-							byte[] col_bytes = BitConverter.GetBytes(raw_col_index);
-							Array.Reverse(col_bytes);
-
-							l.Color0Index = BitConverter.ToUInt16(col_bytes, 0);
-							address += 2;
-						}
-					}
-					if (indexFlags.HasFlag(GCIndexAttributeFlags.HasUV))
-					{
-						bool is_16bit = indexFlags.HasFlag(
-							GCIndexAttributeFlags.UV16BitIndex);
-
-						ushort raw_tex_index = is_16bit ? ByteConverter.ToUInt16(file, address) : file[address];
-
-						if (!is_16bit)
-						{
-							l.UV0Index = raw_tex_index;
-							address++;
-						}
-						else
-						{
-							byte[] tex_bytes = BitConverter.GetBytes(raw_tex_index);
-							Array.Reverse(tex_bytes);
-
-							l.UV0Index = BitConverter.ToUInt16(tex_bytes, 0);
-							address += 2;
-						}
-					}
-
-					prim.loops.Add(l);
-				}
-				primitives.Add(prim);
-			}
 		}
 
 		public GCMesh Clone()
