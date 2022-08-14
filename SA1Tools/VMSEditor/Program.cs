@@ -10,34 +10,43 @@ namespace VMSEditor
 		internal static string[] args;
 		public static Form primaryForm;
 
+		public static Form CheckData(byte[] file)
+		{
+			// Garden save or Chao upload
+			if (Encoding.GetEncoding(932).GetString(file, 0, 4) == "CHAO" || Encoding.GetEncoding(932).GetString(file, 0, 6) == "A-LIFE" || BitConverter.ToUInt32(file, 0) == 0x5FB5ACC1)
+				return new EditorChao();
+			// Event result
+			else if (Encoding.GetEncoding(932).GetString(file, 0, 12) == "EVENT_RESULT" || BitConverter.ToUInt32(file, 0) == 0xDDDECDB2)
+				return new EditorChallengeResult();
+			// Cart result
+			else if (Encoding.GetEncoding(932).GetString(file, 0, 9) == "CART_TIME" || BitConverter.ToUInt32(file, 0) == 0xC0C4B0B6)
+				return new EditorChallengeResult();
+			// World Ranking
+			else if (Encoding.GetEncoding(932).GetString(file, 0, 11) == "DATA_UPLOAD" || BitConverter.ToUInt32(file, 0) == 0xC0B0DEC3)
+				return new EditorWorldRank();
+			// Download Data / Chao Adventure
+			else
+				for (int u = 0; u < file.Length - 11; u++)
+					if (System.Text.Encoding.GetEncoding(932).GetString(file, u, 11) == "CHAO ACCEPT")
+						return new EditorChao();
+			// If none of the above is found, run the DLC editor
+			return new EditorDLC();
+		}
+
 		public static Form CheckFile(string filepath)
 		{
 			switch (Path.GetExtension(filepath).ToLowerInvariant())
 			{
+				case ".dci":
+					byte[] original = File.ReadAllBytes(filepath);
+					byte[] vms = VMSFile.GetVMSFromDCI(original);
+					return CheckData(vms);
 				case ".vmi":
 					return new EditorVMI();
 				case ".vms":
 				default:
 					byte[] file = File.ReadAllBytes(filepath);
-					// Garden save or Chao upload
-					if (Encoding.GetEncoding(932).GetString(file, 0, 4) == "CHAO" || Encoding.GetEncoding(932).GetString(file, 0, 6) == "A-LIFE" || BitConverter.ToUInt32(file,0) == 0x5FB5ACC1)
-						return new EditorChao();
-					// Event result
-					else if (Encoding.GetEncoding(932).GetString(file, 0, 12) == "EVENT_RESULT" || BitConverter.ToUInt32(file, 0) == 0xDDDECDB2)
-						return new EditorChallengeResult();
-					// Cart result
-					else if (Encoding.GetEncoding(932).GetString(file, 0, 9) == "CART_TIME" || BitConverter.ToUInt32(file, 0) == 0xC0C4B0B6)
-						return new EditorChallengeResult();
-					// World Ranking
-					else if (Encoding.GetEncoding(932).GetString(file, 0, 11) == "DATA_UPLOAD" || BitConverter.ToUInt32(file, 0) == 0xC0B0DEC3)
-						return new EditorWorldRank();
-					// Download Data / Chao Adventure
-					else
-						for (int u = 0; u < file.Length - 11; u++)
-							if (System.Text.Encoding.GetEncoding(932).GetString(file, u, 11) == "CHAO ACCEPT")
-								return new EditorChao();
-					// If none of the above is found, run the DLC editor
-					return new EditorDLC();
+					return CheckData(file);
 			}
 		}
 

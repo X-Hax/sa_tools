@@ -367,6 +367,7 @@ namespace VMSEditor
 			Name = "";
 			Position = new Vertex();
 			Memories = new ChaoMemoriesSA1();
+			Type = ChaoTypeSA1.EmptySlot;
 		}
 
         public VMS_Chao(byte[] file, int index)
