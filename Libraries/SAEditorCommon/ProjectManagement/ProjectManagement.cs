@@ -33,6 +33,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlElement("SplitEntryMDL", typeof(SplitEntryMDL))]
 			public List<SplitEntryMDL> SplitMDLEntries { get; set; }
+			/// <summary>
+			/// Cutscene archive entries, only in SA2 formatted templates.
+			/// </summary>
+			[XmlElement("SplitEntryEvent", typeof(SplitEntryEvent))]
+			public List<SplitEntryEvent> SplitEventEntries { get; set; }
+			[XmlElement("SplitEntryMiniEvent", typeof(SplitEntryMiniEvent))]
+			public List<SplitEntryMiniEvent> SplitMiniEventEntries { get; set; }
 		}
 
 		/// <summary>
@@ -55,6 +62,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlElement("SplitEntryMDL", typeof(SplitEntryMDL))]
 			public List<SplitEntryMDL> SplitMDLEntries { get; set; }
+			/// <summary>
+			/// Cutscene archive entries, only in SA2 formatted templates.
+			/// </summary>
+			[XmlElement("SplitEntryEvent", typeof(SplitEntryEvent))]
+			public List<SplitEntryEvent> SplitEventEntries { get; set; }
+			[XmlElement("SplitEntryMiniEvent", typeof(SplitEntryMiniEvent))]
+			public List<SplitEntryMiniEvent> SplitMiniEventEntries { get; set; }
 		}
 
 		/// <summary>
@@ -196,6 +210,26 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlElement("MotionFile")]
 			public List<string> MotionFiles { get; set; }
+		}
+
+		/// <summary>
+		/// Stores information on SA2 cutscene archives for splitting.
+		/// </summary>
+		public class SplitEntryEvent
+		{
+			/// <summary>
+			/// Cutscene Archive filename.
+			/// </summary>
+			[XmlAttribute("EventFile")]
+			public string EventFile { get; set; }
+		}
+		public class SplitEntryMiniEvent
+		{
+			/// <summary>
+			/// Cutscene Archive filename.
+			/// </summary>
+			[XmlAttribute("EventFile")]
+			public string EventFile { get; set; }
 		}
 	}
 
@@ -612,6 +646,62 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 
 			if (overwrite)
 				sa2MDL.Split(splitMDL.BigEndian, filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
+		}
+
+		/// <summary>
+		/// Splits data from a SplitEntryEvent.
+		/// </summary>
+		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		{
+			string filePath = Path.Combine(gameFolder, splitEvent.EventFile);
+			string fileOutputFolder = Path.Combine(outputFolder, "Event\\bin");
+
+			if (progress != null)
+			{
+				progress.StepProgress();
+				progress.SetStep("Splitting models from " + splitEvent.EventFile);
+			}
+
+			#region Validating Inputs
+			if (!File.Exists(filePath))
+			{
+				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+				throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
+				//return (int)ERRORVALUE.NoSourceFile;
+			}
+			#endregion
+
+			if (overwrite)
+				sa2Event.Split(filePath, fileOutputFolder);
+		}
+
+		/// <summary>
+		/// Splits data from a SplitMiniEntryEvent.
+		/// </summary>
+		public static void SplitTemplateMiniEventEntry(Templates.SplitEntryMiniEvent splitMiniEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		{
+			string filePath = Path.Combine(gameFolder, splitMiniEvent.EventFile);
+			string fileOutputFolder = Path.Combine(outputFolder, "Event\\bin");
+
+			if (progress != null)
+			{
+				progress.StepProgress();
+				progress.SetStep("Splitting models from " + splitMiniEvent.EventFile);
+			}
+
+			#region Validating Inputs
+			if (!File.Exists(filePath))
+			{
+				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+				throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
+				//return (int)ERRORVALUE.NoSourceFile;
+			}
+			#endregion
+
+			if (overwrite)
+				SA2MiniEvent.Split(filePath, fileOutputFolder);
 		}
 
 		/// <summary>

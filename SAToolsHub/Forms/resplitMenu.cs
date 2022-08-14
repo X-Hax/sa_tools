@@ -18,6 +18,8 @@ namespace SAToolsHub
 		Templates.SplitTemplate template;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMDLEntries = new List<Templates.SplitEntryMDL>();
+		List<Templates.SplitEntryEvent> splitEventEntries = new List<Templates.SplitEntryEvent>();
+		List<Templates.SplitEntryMiniEvent> splitMiniEventEntries = new List<Templates.SplitEntryMiniEvent>();
 		List<chkBoxData> chkBoxEntries = new List<chkBoxData>();
 
 		public class chkBoxData
@@ -26,8 +28,10 @@ namespace SAToolsHub
 			public string dispName { get; set; }
 			public Templates.SplitEntry splitEntry { get; set; }
 			public Templates.SplitEntryMDL mdlEntry { get; set; }
+			public Templates.SplitEntryEvent eventEntry { get; set; }
+			public Templates.SplitEntryMiniEvent miniEventEntry { get; set; }
 
-			public chkBoxData(string t, string n, Templates.SplitEntry split = null, Templates.SplitEntryMDL mdl = null)
+			public chkBoxData(string t, string n, Templates.SplitEntry split = null, Templates.SplitEntryMDL mdl = null, Templates.SplitEntryEvent ev = null, Templates.SplitEntryMiniEvent miniev = null)
 			{
 				type = t;
 				dispName = n;
@@ -41,6 +45,18 @@ namespace SAToolsHub
                     mdlEntry = mdl;
                     dispName += " (" + mdl.ModelFile + ")";
                 }
+
+				if (ev != null)
+				{
+					eventEntry = ev;
+					dispName += " (" + ev.EventFile + ")";
+				}
+
+				if (miniev != null)
+				{
+					miniEventEntry = miniev;
+					dispName += " (" + miniev.EventFile + ")";
+				}
 			}
 		}
 
@@ -81,6 +97,20 @@ namespace SAToolsHub
 				chkBoxEntries.Add(item);
 			}
 
+			foreach (Templates.SplitEntryEvent eventEntry in template.SplitEventEntries)
+			{
+				string eventFile = Path.GetFileNameWithoutExtension(eventEntry.EventFile);
+				chkBoxData item = new chkBoxData("ev", eventFile, null, null, eventEntry);
+				chkBoxEntries.Add(item);
+			}
+
+			foreach (Templates.SplitEntryMiniEvent miniEventEntry in template.SplitMiniEventEntries)
+			{
+				string miniEventFile = Path.GetFileNameWithoutExtension(miniEventEntry.EventFile);
+				chkBoxData item = new chkBoxData("miniev", miniEventFile, null, null, null, miniEventEntry);
+				chkBoxEntries.Add(item);
+			}
+
 			foreach (chkBoxData data in chkBoxEntries)
 			{
 				checkedListBox1.Items.Add(data);
@@ -108,11 +138,23 @@ namespace SAToolsHub
 		{
 			foreach (chkBoxData item in checkedListBox1.CheckedItems)
 			{
-				if (item.type == "exe")
-					splitEntries.Add(item.splitEntry);
-				else
-					splitMDLEntries.Add(item.mdlEntry);
+				switch (item.type)
+				{
+					case "exe":
+						splitEntries.Add(item.splitEntry);
+						break;
+					case "mdl":
+						splitMDLEntries.Add(item.mdlEntry);
+						break;
+					case "ev":
+						splitEventEntries.Add(item.eventEntry);
+						break;
+					case "miniev":
+						splitMiniEventEntries.Add(item.miniEventEntry);
+						break;
+				}
 			}
+
 
 #if !DEBUG
 			backgroundWorker1.RunWorkerAsync();
@@ -157,6 +199,20 @@ namespace SAToolsHub
 				foreach (Templates.SplitEntryMDL splitMDL in splitMDLEntries)
 					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder, overwrite);
 			}
+			// Split Event files for SA2
+			if (splitEventEntries.Count > 0)
+			{
+				progress.SetTask("Splitting Event Data");
+				foreach (Templates.SplitEntryEvent splitEvent in splitEventEntries)
+					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, overwrite);
+			}
+			// Split Mini-Event files for SA2
+			if (splitMiniEventEntries.Count > 0)
+			{
+				progress.SetTask("Splitting Mini-Event Data");
+				foreach (Templates.SplitEntryMiniEvent splitMiniEvent in splitMiniEventEntries)
+					ProjectFunctions.SplitTemplateMiniEventEntry(splitMiniEvent, progress, gamePath, projFolder, overwrite);
+			}
 			// Project folders for buildable PC games
 			progress.SetTask("Updating Project File");
 			UpdateProjectFile(progress);
@@ -173,6 +229,8 @@ namespace SAToolsHub
 				Templates.ProjectInfo projInfo = projFile.GameInfo;
 				List<Templates.SplitEntry> projEntries = projFile.SplitEntries;
 				List<Templates.SplitEntryMDL> projMdlEntries = projFile.SplitMDLEntries;
+				List<Templates.SplitEntryEvent> projEventEntries = projFile.SplitEventEntries;
+				List<Templates.SplitEntryMiniEvent> projMiniEventEntries = projFile.SplitMiniEventEntries;
 
 
 				foreach (Templates.SplitEntry entry in splitEntries)
@@ -195,7 +253,28 @@ namespace SAToolsHub
 						}
 					}
 				}
-
+				if (projEventEntries.Count > 0)
+				{
+					foreach (Templates.SplitEntryEvent entry in splitEventEntries)
+					{
+						if (!projEventEntries.Exists(x => x.EventFile == entry.EventFile))
+						{
+							projEventEntries.Add(entry);
+							needsUpdate = true;
+						}
+					}
+				}
+				if (projMiniEventEntries.Count > 0)
+				{
+					foreach (Templates.SplitEntryMiniEvent entry in splitMiniEventEntries)
+					{
+						if (!projMiniEventEntries.Exists(x => x.EventFile == entry.EventFile))
+						{
+							projMiniEventEntries.Add(entry);
+							needsUpdate = true;
+						}
+					}
+				}
 				if (needsUpdate)
 				{
 					XmlSerializer serializer = new XmlSerializer(typeof(Templates.ProjectTemplate));
@@ -207,6 +286,10 @@ namespace SAToolsHub
 					updProjFile.SplitEntries = projEntries;
 					if (splitMDLEntries.Count > 0)
 						updProjFile.SplitMDLEntries = projMdlEntries;
+					if (splitEventEntries.Count > 0)
+						updProjFile.SplitEventEntries = projEventEntries;
+					if (splitMiniEventEntries.Count > 0)
+						updProjFile.SplitMiniEventEntries = projMiniEventEntries;
 
 					serializer.Serialize(writer, updProjFile);
 					writer.Close();
