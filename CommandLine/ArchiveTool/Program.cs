@@ -18,7 +18,7 @@ namespace ArchiveTool
                 Console.WriteLine("Usage:\n");
                 Console.WriteLine("Extracting a PVM/GVM/XVM/PRS/PB/PVMX/DAT/PAK/REL/ARCX file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create index file(s).\n");
                 Console.WriteLine("Extracting an NjUtil archive: ArchiveTool -nju <archivefile>\n");
-				Console.WriteLine("Creating an ARCX archive: ArchiveTool -arcx <path>\n");
+				Console.WriteLine("Creating an ARCX archive: ArchiveTool <path> -arcx\n");
 				Console.WriteLine("Converting a PVM/GVM to a folder texture pack (PVM2TexPack mode): ArchiveTool -png <archivefile>\n");
                 Console.WriteLine("Converting GVM to PVM (lossy): ArchiveTool -gvm2pvm <file.gvm> [-prs]\n");
                 Console.WriteLine("Creating a PVM from a folder texture pack (CompilePVM mode): ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
