@@ -4191,16 +4191,18 @@ namespace SAModel.SAMDL
 						break;
 					}
 			}
-				ModelDataEditor me = new ModelDataEditor(model, idx);
-				if (me.ShowDialog(this) == DialogResult.OK)
-				{
-					model = me.editedHierarchy.Clone();
-					RebuildModelCache();
-					NeedRedraw = true;
-					unsavedChanges = true;
-					selectedObject = model.GetObjects()[idx];
-					SelectedItemChanged();
-				}
+			ModelDataEditor me = new ModelDataEditor(model, idx);
+			if (me.ShowDialog(this) == DialogResult.OK)
+			{
+				model = me.editedHierarchy.Clone();
+				model.FixParents();
+				model.FixSiblings();
+				RebuildModelCache();
+				NeedRedraw = true;
+				unsavedChanges = true;
+				selectedObject = model.GetObjects()[idx];
+				SelectedItemChanged();
+			}
 		}
 
 		private void modelInfoEditorToolStripMenuItem_Click(object sender, EventArgs e)
