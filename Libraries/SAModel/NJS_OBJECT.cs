@@ -341,6 +341,15 @@ namespace SAModel
 				Children[i - 1].Sibling = Children[i];
 		}
 
+		public void FixParents()
+		{
+			foreach (NJS_OBJECT child in Children)
+			{
+				child.Parent = this;
+				child.FixParents();
+			}
+		}
+
 		public ModelFormat GetModelFormat()
 		{
 			// BasicAttach has no internal distinction between Basic and BasicDX

@@ -22,6 +22,8 @@ namespace SAModel.SAEditorCommon.UI
 			freeze = true;
 			comboBoxNode.Items.Clear();
 			editedHierarchy = objectOriginal.Clone();
+			editedHierarchy.FixParents();
+			editedHierarchy.FixSiblings();
 			BuildNodeList();
 			comboBoxNode.SelectedIndex = index;
 			BuildMeshsetList();
