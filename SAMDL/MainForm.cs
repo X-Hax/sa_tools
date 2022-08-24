@@ -497,6 +497,7 @@ namespace SAModel.SAMDL
 					{
 						model = new NJS_OBJECT { Name = "Root" };
 						model.AddChild(modelFile.Model);
+						model.FixParents();
 						rootSiblingMode = true;
 					}
 					else
@@ -743,6 +744,7 @@ namespace SAModel.SAMDL
 				{
 					model = new NJS_OBJECT { Name = "Root" };
 					model.AddChild(tempmodel);
+					model.FixParents();
 					rootSiblingMode = true;
 				}
 				else
@@ -1953,6 +1955,8 @@ namespace SAModel.SAMDL
 			Attach attach = (Attach)Clipboard.GetData(GetAttachType().AssemblyQualifiedName);
 			if (selectedObject.Attach != null)
 				attach.Name = selectedObject.Attach.Name;
+			else
+				attach.Name = "attach_" + Extensions.GenerateIdentifier();
 			switch (attach)
 			{
 				case BasicAttach batt:
@@ -2320,7 +2324,10 @@ namespace SAModel.SAMDL
 				if (importAsSingle)
 					selectedObject.Attach = newmodel.Attach;
 				else
+				{
 					selectedObject.AddChild(newmodel);
+					model.FixParents();
+				}
 			}
 
 			editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = true;
@@ -2869,6 +2876,8 @@ namespace SAModel.SAMDL
 			if (selectedObject != null)
 			{
 				selectedObject.AddChild(new NJS_OBJECT());
+				selectedObject.FixSiblings();
+				selectedObject.FixParents();
 				RebuildModelCache();
 				NeedRedraw = true;
 				SelectedItemChanged();
@@ -3449,6 +3458,7 @@ namespace SAModel.SAMDL
 			else
 				selectedObject.Attach = null;
 			selectedObject.FixSiblings();
+			selectedObject.FixParents();
 			RebuildModelCache();
 			NeedRedraw = true;
 			SelectedItemChanged();
@@ -3913,6 +3923,7 @@ namespace SAModel.SAMDL
 				selectedObject.Attach = null;
 				selectedObject.SkipChildren = false;
 				selectedObject.FixSiblings();
+				selectedObject.FixParents();
 				RebuildModelCache();
 				NeedRedraw = true;
 				SelectedItemChanged();
@@ -4135,6 +4146,7 @@ namespace SAModel.SAMDL
 				parent.AddChild(obj);
 			}
 			selectedObject.Parent.FixSiblings();
+			selectedObject.FixParents();
 			RebuildModelCache();
 			NeedRedraw = true;
 		}
