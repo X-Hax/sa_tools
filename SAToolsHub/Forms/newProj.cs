@@ -28,6 +28,8 @@ namespace SAToolsHub
 		Templates.ProjectTemplate projectFile;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMdlEntries = new List<Templates.SplitEntryMDL>();
+		List<Templates.SplitEntryEvent> splitEventEntries = new List<Templates.SplitEntryEvent>();
+		List<Templates.SplitEntryMiniEvent> splitMiniEventEntries = new List<Templates.SplitEntryMiniEvent>();
 		ProjectSplitResult splitCheck;
 
 		// UI
@@ -145,6 +147,10 @@ namespace SAToolsHub
 					projectFile.SplitEntries = splitEntries;
 					if (splitMdlEntries != null)
 						projectFile.SplitMDLEntries = splitMdlEntries;
+					if (splitEventEntries != null)
+						projectFile.SplitEventEntries = splitEventEntries;
+					if (splitMiniEventEntries != null)
+						projectFile.SplitMiniEventEntries = splitMiniEventEntries;
 
 					serializer.Serialize(xmlWriter, projectFile);
 					projFileStream.Close();
@@ -228,6 +234,10 @@ namespace SAToolsHub
 			int result = splitEntries.Count;
 			if (splitMdlEntries != null)
 				result += splitMdlEntries.Count;
+			if (splitEventEntries != null)
+				result += splitEventEntries.Count;
+			if (splitMiniEventEntries != null)
+				result += splitMiniEventEntries.Count;
 			switch (gameName)
 			{
 				case "SADXPC":
@@ -292,6 +302,8 @@ namespace SAToolsHub
 				checkFile = template.GameInfo.CheckFile;
 				splitEntries = template.SplitEntries;
 				splitMdlEntries = template.SplitMDLEntries;
+				splitEventEntries = template.SplitEventEntries;
+				splitMiniEventEntries = template.SplitMiniEventEntries;
 			}
 			else
 				comboBoxTemplate.SelectedIndex = -1;
@@ -490,6 +502,34 @@ namespace SAToolsHub
 						return ProjectSplitResult.Cancelled;
 					}
 					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder);
+				}
+			}
+			// Split Event files for SA2
+			if (splitEventEntries.Count > 0)
+			{
+				progress.SetTask("Splitting Event Data");
+				foreach (Templates.SplitEntryEvent splitEvent in splitEventEntries)
+				{
+					if (backgroundWorker1.CancellationPending == true)
+					{
+						e.Cancel = true;
+						return ProjectSplitResult.Cancelled;
+					}
+					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder);
+				}
+			}
+			// Split Mini Event files for SA2
+			if (splitMiniEventEntries.Count > 0)
+			{
+				progress.SetTask("Splitting Mini-Event Data");
+				foreach (Templates.SplitEntryMiniEvent splitMiniEvent in splitMiniEventEntries)
+				{
+					if (backgroundWorker1.CancellationPending == true)
+					{
+						e.Cancel = true;
+						return ProjectSplitResult.Cancelled;
+					}
+					ProjectFunctions.SplitTemplateMiniEventEntry(splitMiniEvent, progress, gamePath, projFolder);
 				}
 			}
 			// Project folders for buildable PC games

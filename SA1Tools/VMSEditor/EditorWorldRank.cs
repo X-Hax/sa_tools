@@ -33,7 +33,11 @@ namespace VMSEditor
 
 		public void LoadWorldRankFile(string filename)
 		{
-			byte[] file = File.ReadAllBytes(filename);
+			byte[] file;
+			if (Path.GetExtension(filename).ToLowerInvariant() == ".dci")
+				file = VMSFile.GetVMSFromDCI(File.ReadAllBytes(filename));
+			else
+				file = File.ReadAllBytes(filename);
 			// Get region
 			radioButtonJapan.Checked = BitConverter.ToUInt32(file, 0) == 0xC0B0DEC3;
 			radioButtonInternational.Checked = Encoding.GetEncoding(932).GetString(file, 0, 11) == "DATA_UPLOAD";
@@ -57,7 +61,16 @@ namespace VMSEditor
 			// Duplicate slot 1 data as slots 2 and 3
 			Array.Copy(DecryptedData, 68, output, 0x480 + DecryptedData.Length - 68, DecryptedData.Length - 68);
 			Array.Copy(DecryptedData, 68, output, 0x480 + (DecryptedData.Length - 68) * 2, DecryptedData.Length - 68);
-			File.WriteAllBytes(destFilename, output);
+			if (Path.GetExtension(destFilename).ToLowerInvariant() == ".dci")
+			{
+				VMIFile vmi = new VMIFile(new VMSFile(output), Path.GetFileNameWithoutExtension(destFilename), true);
+				vmi.FileName = radioButtonJapan.Checked ? "SONICADV_SYS" : "SONICADV_INT";
+				File.WriteAllBytes(destFilename, VMSFile.GetDCI(output, vmi));
+			}
+			else
+			{
+				File.WriteAllBytes(destFilename, output);
+			}
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -75,7 +88,7 @@ namespace VMSEditor
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog { Filter = "World Rankings Data US|SONICADV_H04*.VMS|World Rankings Data JP|SONICADV_H01*.VMS|VMS Files|*.VMS|All Files|*.*" })
+			using (OpenFileDialog dlg = new OpenFileDialog { Filter = "World Rankings Data US|SONICADV_H04*.*|World Rankings Data JP|SONICADV_H01*.*|VMS Files|*.VMS:*.DCI|All Files|*.*" })
 			{
 				if (dlg.ShowDialog() == DialogResult.OK)
 					LoadWorldRankFile(dlg.FileName);
@@ -85,7 +98,7 @@ namespace VMSEditor
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string defname = radioButtonJapan.Checked ? "SONICADV_SYS.VMS" : "SONICADV_INT.VMS";
-			using (SaveFileDialog dlg = new SaveFileDialog { FileName = defname, Filter = "Save File JP|SONICADV_SYS*.VMS|Save File US JP|SONICADV_INT*.VMS|VMS Files|*.VMS|All Files|*.*", FilterIndex = radioButtonJapan.Checked ? 1 : 2 })
+			using (SaveFileDialog dlg = new SaveFileDialog { FileName = defname, Filter = "Save File JP|SONICADV_SYS*.*|Save File US|SONICADV_INT*.*|VMS Files|*.VMS;*.DCI|All Files|*.*", FilterIndex = radioButtonJapan.Checked ? 1 : 2 })
 			{
 				if (dlg.ShowDialog() == DialogResult.OK)
 					SaveAsSavefile(dlg.FileName);

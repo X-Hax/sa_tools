@@ -170,7 +170,7 @@ namespace VMSEditor
 
 		private void textBoxFileName_Click(object sender, EventArgs e)
 		{
-            toolStripStatusHint.Text = "Filename on the VMU without extension, must begin with 'SONICADV_'.";
+            toolStripStatusHint.Text = "Filename on the VMU without extension, see 'Supported Files' in help.";
         }
 
 		private void numericUpDownYear_Click(object sender, EventArgs e)

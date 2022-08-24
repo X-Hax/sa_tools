@@ -146,7 +146,29 @@ namespace Split
                             Console.Write("\nSplitting MDL file: {0}", splitEntryMDL.ModelFile);
                             ProjectFunctions.SplitTemplateMDLEntry(splitEntryMDL, null, dataFolder, fullpath_out);
                         }
-                    break;
+					if (template.SplitEventEntries != null)
+						foreach (Templates.SplitEntryEvent splitEntryEvent in template.SplitEventEntries)
+						{
+							if (!File.Exists(Path.Combine(dataFolder, splitEntryEvent.EventFile)))
+							{
+								Console.WriteLine("Split Event source file {0} doesn't exist", Path.Combine(dataFolder, splitEntryEvent.EventFile));
+								continue;
+							}
+							Console.Write("\nSplitting Event file: {0}", splitEntryEvent.EventFile);
+							ProjectFunctions.SplitTemplateEventEntry(splitEntryEvent, null, dataFolder, fullpath_out);
+						}
+					if (template.SplitMiniEventEntries != null)
+						foreach (Templates.SplitEntryMiniEvent splitEntryMiniEvent in template.SplitMiniEventEntries)
+						{
+							if (!File.Exists(Path.Combine(dataFolder, splitEntryMiniEvent.EventFile)))
+							{
+								Console.WriteLine("Split Event source file {0} doesn't exist", Path.Combine(dataFolder, splitEntryMiniEvent.EventFile));
+								continue;
+							}
+							Console.Write("\nSplitting Mini-Event file: {0}", splitEntryMiniEvent.EventFile);
+							ProjectFunctions.SplitTemplateMiniEventEntry(splitEntryMiniEvent, null, dataFolder, fullpath_out);
+						}
+					break;
                 case "single":
 					int startoffset = 0;
                     string game = args[1];
@@ -414,7 +436,7 @@ namespace Split
                                     numparts = int.Parse(args[a + 1], System.Globalization.NumberStyles.Integer);
                             }
                             NJS_MOTION ani = new NJS_MOTION(datafile, address, imageBase, numparts, labels);
-                            fileOutputPath = MakePathThatExists(fileOutputPath, ani.Name + "saanim");
+                            fileOutputPath = MakePathThatExists(fileOutputPath, ani.Name + ".saanim");
                             string outpath = Path.GetDirectoryName(Path.GetFullPath(fileOutputPath));
                             Console.WriteLine("Output file: {0}", Path.GetFullPath(fileOutputPath));
                             if (!Directory.Exists(outpath))

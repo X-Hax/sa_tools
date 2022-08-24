@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace VMSEditor
 {
@@ -114,7 +112,7 @@ namespace VMSEditor
 			// Chao
 			for (int c = 0; c < 24; c++)
 			{
-				if (GardenChao.Count - 1 > c)
+				if (c < GardenChao.Count)
 					result.AddRange(GardenChao[c].GetBytes());
 				else
 					result.AddRange(new VMS_Chao().GetBytes());
