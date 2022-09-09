@@ -468,6 +468,9 @@ namespace SAModel
 
 		public void RemoveChild(NJS_OBJECT child)
 		{
+			int index = children.IndexOf(child);
+			if (index > 0 && children[index - 1] != null && children[index - 1].Sibling == child)
+				children[index - 1].Sibling = null;
 			children.Remove(child);
 			child.Parent = null;
 		}
