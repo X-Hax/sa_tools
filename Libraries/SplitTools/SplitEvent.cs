@@ -15,11 +15,13 @@ namespace SplitTools.SAArc
 		static List<string> nodenames = new List<string>();
 		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
+		static Dictionary<string, NinjaCamInfo> ninjacameras = new Dictionary<string, NinjaCamInfo>();
 
 		public static void Split(string filename, string outputPath)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
+			ninjacameras.Clear();
 			motionfiles.Clear();
 			string dir = Environment.CurrentDirectory;
 			try
@@ -50,6 +52,7 @@ namespace SplitTools.SAArc
 				//string path = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(evfilename)), Path.GetFileNameWithoutExtension(evfilename))).FullName;
 				uint key;
 				List<NJS_MOTION> motions = null;
+				List<NinjaCamera> ncam = null;
 				bool battle;
 				bool dcbeta;
 				if (fc[0] == 0x81)
@@ -102,7 +105,6 @@ namespace SplitTools.SAArc
 				int ptr = fc.GetPointer(0x20, key);
 				if (ptr != 0)
 				{
-					UpgradeInfo info = new UpgradeInfo();
 					int upcount = 0;
 					if (!dcbeta)
 					{
@@ -131,6 +133,7 @@ namespace SplitTools.SAArc
 									chnam = "Mech Eggman";
 									break;
 							}
+							UpgradeInfo info = new UpgradeInfo();
 							info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl");
 							if (info.RootNode != null)
 							{
@@ -178,6 +181,7 @@ namespace SplitTools.SAArc
 									chnam = "Rouge";
 									break;
 							}
+							UpgradeInfo info = new UpgradeInfo();
 							info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl");
 							if (info.RootNode != null)
 							{
@@ -214,10 +218,13 @@ namespace SplitTools.SAArc
 					{
 						int ptr2 = fc.GetPointer(ptr, key);
 						if (ptr2 != 0)
-							namecount++;
-						name = $"object_{ptr:X8}";
-						if (name != null)
+						{
+							name = $"object_{ptr2:X8}";
 							ini.MechParts.Add(i, name);
+							namecount++;
+						}
+						else
+							ini.MechParts.Add(i, null);
 						ptr += 4;
 					}
 					Console.WriteLine("Event contains {0} mech par{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "t" : "ts");
@@ -275,6 +282,18 @@ namespace SplitTools.SAArc
 							for (int i = 0; i < cnt; i++)
 							{
 								scn.CameraMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1}.saanim", motions, 1));
+								if (!battle)
+									scn.NinjaCameras.Add(GetNinjaCam(fc, fc.GetPointer(ptr2, key) + 0xC, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini"));
+								ptr2 += sizeof(int);
+							}
+						}
+						ptr2 = fc.GetPointer(ptr + 0x10, key);
+						if (ptr2 != 0)
+						{
+							int cnt = ByteConverter.ToInt32(fc, ptr + 0x14);
+							for (int i = 0; i < cnt; i++)
+							{
+								scn.StaticMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Static Motion {i + 1}.saanim", motions, 1));
 								ptr2 += sizeof(int);
 							}
 						}
@@ -324,24 +343,43 @@ namespace SplitTools.SAArc
 				if (ptr != 0)
 				{
 					int ptr2 = fc.GetPointer(ptr, key);
-					if (ptr2 == 0)
-						Console.WriteLine("Event does not contain an internal texture list.");
-					else
+					if (ptr2 != 0)
+					{
 						Console.WriteLine("Event contains an internal texture list.");
+						NJS_TEXLIST tls = new NJS_TEXLIST(fc, ptr, key);
+						ini.Texlist = GetTexlist(fc, ptr, key, "InternalTexlist.satex");
+						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "InternalTexlist.satex");
+						tls.Save(fp);
+						ini.Files.Add("InternalTexlist.satex", HelperFunctions.FileHash(fp));
+					}
+					else
+						Console.WriteLine("Event does not contain an internal texture list.");
 				}
 				ptr = fc.GetPointer(0xC, key);
 				if (ptr != 0)
 				{
-					ushort start = (ushort)fc.GetPointer(ptr, 0);
+					ushort start = ByteConverter.ToUInt16(fc, ptr);
 					if (start > 0)
+					{
+						int tls = fc.GetPointer(4, key);
+						int texnum = ByteConverter.ToInt32(fc, tls + 4);
 						Console.WriteLine("Event contains internal texture sizes.");
+						for (int i = 0; i < texnum; i++)
+						{
+							TexSizes sizes = new TexSizes();
+							sizes.H = ByteConverter.ToUInt16(fc, ptr);
+							sizes.V = ByteConverter.ToUInt16(fc, ptr + 2);
+							ini.TexSizes.Add(sizes);
+							ptr += 4;
+						}
+					}
 					else
 						Console.WriteLine("Event does not contain internal texture sizes.");
 				}
 				ptr = fc.GetPointer(0x10, key);
 				if (ptr != 0)
 				{
-					int start = fc.GetPointer(ptr, 0);
+					uint start = ByteConverter.ToUInt32(fc, ptr);
 					if (start > 0)
 						Console.WriteLine("Event contains character reflection info.");
 					else
@@ -356,10 +394,13 @@ namespace SplitTools.SAArc
 					{
 						int ptr2 = fc.GetPointer(ptr, key);
 						if (ptr2 != 0)
-							namecount++;
-						name = $"object_{ptr:X8}";
-						if (name != null)
+						{
+							name = $"object_{ptr2:X8}";
 							ini.UnknownModelData.Add(i, name);
+							namecount++;
+						}
+						else
+							ini.UnknownModelData.Add(i, null);
 						ptr += 4;
 					}
 					Console.WriteLine("Event contains {0} unknown model pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
@@ -369,15 +410,23 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Event does not contain texture animation data.");
 				else
 					Console.WriteLine("Event contains texture animation data.");
-				if (battle && fc[0x2B] == 0)
+				int shmap = ByteConverter.ToInt32(fc, 0x28);
+				if (battle && shmap == 0)
 					Console.WriteLine("Event does not use GC shadow maps.");
-				if (battle && fc[0x2B] == 1)
+				if (battle && shmap == 1)
 					Console.WriteLine("Event uses GC shadow maps.");
 				foreach (var item in motionfiles.Values)
 				{
 					string fn = item.Filename ?? $"Unknown Motion {motions.IndexOf(item.Motion)}.saanim";
 					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
 					item.Motion.Save(fp);
+					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
+				}
+				foreach (var item in ninjacameras.Values)
+				{
+					string fn = item.Filename;
+					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					item.NinjaCam.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in modelfiles.Values)
@@ -571,6 +620,17 @@ namespace SplitTools.SAArc
 									ptr2 += sizeof(int);
 								}
 							}
+							ptr2 = fc.GetPointer(ptr + 0x10, key);
+							if (ptr2 != 0)
+							{
+								int cnt = ByteConverter.ToInt32(fc, ptr + 0x14);
+								for (int i = 0; i < cnt; i++)
+								{
+									if (labels.ContainsKeySafe(info.StaticMotions[i]))
+										ByteConverter.GetBytes(labels[info.StaticMotions[i]]).CopyTo(fc, ptr2);
+									ptr2 += sizeof(int);
+								}
+							}
 						}
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
 						if (ptr2 != 0 && info.Big != null)
@@ -627,7 +687,6 @@ namespace SplitTools.SAArc
 			}
 		}
 
-
 			//Get Functions
 			private static string GetModel(byte[] fc, int address, uint key, string fn)
 			{
@@ -673,7 +732,7 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
-		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt)
+		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt, bool cam = false)
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
@@ -688,6 +747,33 @@ namespace SplitTools.SAArc
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
 				motionfiles[mtn.Name] = new MotionInfo(fn, mtn);
 			return mtn.Name;
+		}
+
+		private static string GetTexlist(byte[] fc, int address, uint key, string fn)
+		{
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"texlist_{ptr3:X8}";
+			}
+			return name;
+		}
+
+		private static string GetNinjaCam(byte[] fc, int address, uint key, string fn)
+		{
+			NinjaCamera ncam = null;
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"ninjacam_{ptr3:X8}";
+				ncam = new NinjaCamera(fc, ptr3);
+			}
+			if (ncam == null) return null;
+			if (!ninjacameras.ContainsKey(name) || ninjacameras[name].Filename == null)
+				ninjacameras[name] = new NinjaCamInfo(fn, ncam);
+			return name;
 		}
 
 		//Read Functions
@@ -706,6 +792,29 @@ namespace SplitTools.SAArc
 				addr += 8;
 			}
 			return motions;
+		}
+
+		private static List<NinjaCamera> ReadMotionFileNCam(string filename)
+		{
+			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			List<NinjaCamera> ncam = new List<NinjaCamera>();
+			byte[] fc = File.ReadAllBytes(filename);
+			int addr = 0;
+			while (ByteConverter.ToInt64(fc, addr) != 0)
+			{
+				int ptr = ByteConverter.ToInt32(fc, addr);
+				int attr = ByteConverter.ToInt32(fc, ptr + 8);
+				if (ptr == -1)
+					motions.Add(null);
+				else
+				{
+					motions.Add(new NJS_MOTION(fc, ptr, 0, ByteConverter.ToInt32(fc, addr + 4)));
+					if (attr == 0x1C10004)
+						ncam.Add(new NinjaCamera(fc, fc.GetPointer(ptr + 0xC, 0)));
+				}
+				addr += 8;
+			}
+			return ncam;
 		}
 
 		public static bool ContainsKeySafe<TValue>(this IDictionary<string, TValue> dict, string key)
@@ -741,6 +850,18 @@ namespace SplitTools.SAArc
 		}
 	}
 
+	public class NinjaCamInfo
+	{
+		public string Filename { get; set; }
+		public NinjaCamera NinjaCam { get; set; }
+
+		public NinjaCamInfo(string fn, NinjaCamera ncam)
+		{
+			Filename = fn;
+			NinjaCam = ncam;
+		}
+	}
+
 	public class EventIniData
 	{
 		public string Name { get; set; }
@@ -757,8 +878,11 @@ namespace SplitTools.SAArc
 		public Dictionary<int, string> UnknownModelData { get; set; } = new Dictionary<int, string>();
 		public Dictionary<int, string> MechParts { get; set; } = new Dictionary<int, string>();
 		public string TailsTails { get; set; }
+		public string Texlist { get; set; }
+		public List<TexSizes> TexSizes { get; set; } = new List<TexSizes>();
 		public List<SceneInfo> Scenes { get; set; } = new List<SceneInfo>();
 		public List<string> Motions { get; set; }
+		public List<string> NinjaCameras { get; set; }
 	}
 
 	public class UpgradeInfo
@@ -774,6 +898,8 @@ namespace SplitTools.SAArc
 	{
 		public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
 		public List<string> CameraMotions { get; set; } = new List<string>();
+		public List<string> NinjaCameras { get; set; } = new List<string>();
+		public List<string> StaticMotions { get; set; } = new List<string>();
 		public BigInfo Big { get; set; }
 		public int FrameCount { get; set; }
 	}
@@ -795,5 +921,10 @@ namespace SplitTools.SAArc
 		public string Model { get; set; }
 		public List<string[]> Motions { get; set; } = new List<string[]>();
 		public int Unknown { get; set; }
+	}
+	public class TexSizes
+	{
+		public ushort H { get; set; }
+		public ushort V { get; set; }
 	}
 }
