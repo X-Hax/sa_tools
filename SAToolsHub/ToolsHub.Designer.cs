@@ -74,6 +74,7 @@
             this.splitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.projectConverterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.configSchemaBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -141,7 +142,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelFileTip = new System.Windows.Forms.ToolStripStatusLabel();
-            this.configSchemaBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.rightToolStrip.SuspendLayout();
             this.topToolStrip.SuspendLayout();
@@ -232,7 +232,7 @@
             // updateMetadataToolStripMenuItem
             // 
             this.updateMetadataToolStripMenuItem.Name = "updateMetadataToolStripMenuItem";
-            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.updateMetadataToolStripMenuItem.Text = "Update Metadata";
             this.updateMetadataToolStripMenuItem.ToolTipText = "Updates metadata in split _data.ini files.";
             this.updateMetadataToolStripMenuItem.Click += new System.EventHandler(this.updateMetadataToolStripMenuItem_Click);
@@ -240,7 +240,7 @@
             // replitItemsToolStripMenuItem
             // 
             this.replitItemsToolStripMenuItem.Name = "replitItemsToolStripMenuItem";
-            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.replitItemsToolStripMenuItem.Text = "Resplit Item(s)";
             this.replitItemsToolStripMenuItem.ToolTipText = "Option to resplit specific ini files for the project.";
             this.replitItemsToolStripMenuItem.Click += new System.EventHandler(this.resplitItemsToolStripMenuItem_Click);
@@ -585,6 +585,14 @@
             this.projectConverterToolStripMenuItem.Text = "Project Converter";
             this.projectConverterToolStripMenuItem.ToolTipText = "Converts old style projects to a format useable by the SA Tools Hub.";
             this.projectConverterToolStripMenuItem.Click += new System.EventHandler(this.projectConverterToolStripMenuItem_Click);
+            // 
+            // configSchemaBuilderToolStripMenuItem
+            // 
+            this.configSchemaBuilderToolStripMenuItem.Enabled = false;
+            this.configSchemaBuilderToolStripMenuItem.Name = "configSchemaBuilderToolStripMenuItem";
+            this.configSchemaBuilderToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.configSchemaBuilderToolStripMenuItem.Text = "Config Schema Builder";
+            this.configSchemaBuilderToolStripMenuItem.Click += new System.EventHandler(this.configSchemaBuilderToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -1272,13 +1280,6 @@
             this.toolStripStatusLabelFileTip.Name = "toolStripStatusLabelFileTip";
             this.toolStripStatusLabelFileTip.Size = new System.Drawing.Size(14, 19);
             this.toolStripStatusLabelFileTip.Text = " ";
-            // 
-            // configSchemaBuilderToolStripMenuItem
-            // 
-            this.configSchemaBuilderToolStripMenuItem.Name = "configSchemaBuilderToolStripMenuItem";
-            this.configSchemaBuilderToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.configSchemaBuilderToolStripMenuItem.Text = "Config Schema Builder";
-            this.configSchemaBuilderToolStripMenuItem.Click += new System.EventHandler(this.configSchemaBuilderToolStripMenuItem_Click);
             // 
             // SAToolsHub
             // 
