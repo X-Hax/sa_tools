@@ -1699,13 +1699,15 @@ namespace SAModel.SAMDL
             {
                 List<Texture> textures = new List<Texture>();
                 List<BMPInfo> texinfo = new List<BMPInfo>();
+				List<string> dupnames = new List<string>();
                 for (int i = 0; i < TexList.TextureNames.Length; i++)
                     for (int j = 0; j < TextureInfo.Length; j++)
-                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant())
+                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() && !dupnames.Contains(TexList.TextureNames[i].ToLowerInvariant())))
                         {
                             texinfo.Add(TextureInfo[j]);
                             textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
-                            continue;
+							dupnames.Add(TextureInfo[j].Name.ToLowerInvariant());
+							continue;
                         }
                 Textures = textures.ToArray();
                 TextureInfoCurrent = texinfo.ToArray();
