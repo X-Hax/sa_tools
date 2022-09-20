@@ -719,9 +719,9 @@ namespace SAModel.Direct3D
 						{
 							mat = new NJS_MATERIAL
 							{
-								DiffuseColor = Color.White,
+								DiffuseColor = Color.FromArgb(128, 128, 128, 255),
 								IgnoreLighting = true,
-								UseAlpha = false
+								UseAlpha = true,
 							};
 
 							if (obj.Attach.MeshInfo[j].Material == null)
