@@ -343,6 +343,8 @@ namespace SAModel.SALVL
 			levelPieceToolStripMenuItem.Enabled = isGeometryPresent;
 			objectToolStripMenuItem.Enabled = isSETPreset;
 			missionObjectToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
+			// Render
+			renderToolStripMenuItem.Enabled = true;
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
@@ -421,6 +423,8 @@ namespace SAModel.SALVL
 			// File menu
 			// Save
 			saveToolStripMenuItem.Enabled = true;
+			// Render
+			renderToolStripMenuItem.Enabled = true;
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
