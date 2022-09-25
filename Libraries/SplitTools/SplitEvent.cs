@@ -16,6 +16,7 @@ namespace SplitTools.SAArc
 		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
 		static Dictionary<string, NinjaCamInfo> ninjacameras = new Dictionary<string, NinjaCamInfo>();
+		static Dictionary<string, TexAnimFileInfo> texanimfiles = new Dictionary<string, TexAnimFileInfo>();
 
 		public static void Split(string filename, string outputPath)
 		{
@@ -23,6 +24,7 @@ namespace SplitTools.SAArc
 			modelfiles.Clear();
 			ninjacameras.Clear();
 			motionfiles.Clear();
+			texanimfiles.Clear();
 			string dir = Environment.CurrentDirectory;
 			try
 			{
@@ -38,7 +40,6 @@ namespace SplitTools.SAArc
 					fc = Prs.Decompress(evfilename);
 				else
 					fc = File.ReadAllBytes(evfilename);
-				//Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 				EventIniData ini = new EventIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
@@ -49,10 +50,8 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 					Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
-				//string path = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(evfilename)), Path.GetFileNameWithoutExtension(evfilename))).FullName;
 				uint key;
 				List<NJS_MOTION> motions = null;
-				List<NinjaCamera> ncam = null;
 				bool battle;
 				bool dcbeta;
 				if (fc[0] == 0x81)
@@ -347,7 +346,7 @@ namespace SplitTools.SAArc
 					{
 						Console.WriteLine("Event contains an internal texture list.");
 						NJS_TEXLIST tls = new NJS_TEXLIST(fc, ptr, key);
-						ini.Texlist = GetTexlist(fc, ptr, key, "InternalTexlist.satex");
+						ini.Texlist = GetTexlist(fc, 4, key, "InternalTexlist.satex");
 						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "InternalTexlist.satex");
 						tls.Save(fp);
 						ini.Files.Add("InternalTexlist.satex", HelperFunctions.FileHash(fp));
@@ -361,17 +360,12 @@ namespace SplitTools.SAArc
 					ushort start = ByteConverter.ToUInt16(fc, ptr);
 					if (start > 0)
 					{
-						int tls = fc.GetPointer(4, key);
-						int texnum = ByteConverter.ToInt32(fc, tls + 4);
 						Console.WriteLine("Event contains internal texture sizes.");
-						for (int i = 0; i < texnum; i++)
-						{
-							TexSizes sizes = new TexSizes();
-							sizes.H = ByteConverter.ToUInt16(fc, ptr);
-							sizes.V = ByteConverter.ToUInt16(fc, ptr + 2);
-							ini.TexSizes.Add(sizes);
-							ptr += 4;
-						}
+						TexSizes tsz = new TexSizes(fc, ptr);
+						ini.TexSizes = GetTexSizes(fc, 0xC, key, "TextureSizes.ini");
+						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "TextureSizes.ini");
+						tsz.Save(fp);
+						ini.Files.Add("TextureSizes.ini", HelperFunctions.FileHash(fp));
 					}
 					else
 						Console.WriteLine("Event does not contain internal texture sizes.");
@@ -381,7 +375,20 @@ namespace SplitTools.SAArc
 				{
 					uint start = ByteConverter.ToUInt32(fc, ptr);
 					if (start > 0)
+					{
+						int rptr = fc.GetPointer(ptr + 0x84, key);
+						ReflectionInfo refl = new ReflectionInfo();
+						refl.Unk1 = ByteConverter.ToInt32(fc, ptr);
+						refl.Unk2 = ByteConverter.ToInt32(fc, ptr + 4);
+						//There's a huge gap here of 0x84. Investigate further.
+						ReflectionMatrixData rmx = new ReflectionMatrixData(fc, rptr);
+						refl.ReflectData = GetReflectData(fc, ptr + 0x84, key, "ReflectionData.ini");
+						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "ReflectionData.ini");
+						rmx.Save(fp);
+						ini.Files.Add("ReflectionData.ini", HelperFunctions.FileHash(fp));
+						ini.ReflectionInfo.Add(refl);
 						Console.WriteLine("Event contains character reflection info.");
+					}
 					else
 						Console.WriteLine("Event does not contain character reflection info.");
 				}
@@ -409,12 +416,98 @@ namespace SplitTools.SAArc
 				if (ptr == 0 || dcbeta && ((fc[37] == 0x25) || (fc[38] == 0x22)))
 					Console.WriteLine("Event does not contain texture animation data.");
 				else
-					Console.WriteLine("Event contains texture animation data.");
+				{
+					Directory.CreateDirectory(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "Texture Animations"));
+					TexAnimInfo tanim = new TexAnimInfo();
+					int ptr2 = fc.GetPointer(ptr, key);
+					if (battle)
+					{
+						int tn = ByteConverter.ToInt32(fc, ptr + 8);
+						int tanimcount = 0;
+						for (int d = 0; d < 3; d++)
+						{
+							TexAnimMain main = new TexAnimMain();
+							int mptr = fc.GetPointer(ptr2, key);
+							int taptr = fc.GetPointer(ptr2 + 8, key);
+							int tanims = ByteConverter.ToInt32(fc, ptr2 + 4);
+							if (mptr != 0)
+							{
+								tanimcount++;
+								main.Model = $"object_{mptr:X8}";
+								main.TexAnimDataEntries = ByteConverter.ToInt32(fc, ptr2 + 4);
+								for (int t = 0; t < tanims; t++)
+								{
+									main.TexAnimPointers.Add(GetTexanim(fc, taptr, key, $"Texture Animations\\TexanimInfo {d + 1} Part {t + 1}.ini"));
+									taptr += 0x4;
+								}
+							}
+							else
+								break;
+							tanim.MainData.Add(main);
+							ptr2 += 0xC;
+						}
+						int ptr3 = fc.GetPointer(ptr + 4, key);
+						for (int i = 0; i < tn; i++)
+						{
+							TexAnimGCIDs tgcids = new TexAnimGCIDs();
+							tgcids.TexID = ByteConverter.ToInt32(fc, ptr3);
+							tgcids.TexLoopNumber = ByteConverter.ToInt32(fc, ptr3 + 4);
+							tanim.TexAnimGCIDs.Add(tgcids);
+							ptr3 += 0x8;
+						}
+						tanim.TexAnimMainDataEntries = ByteConverter.ToInt32(fc, ptr + 8);
+						ini.TextureAnimations.Add(tanim);
+						if (tn != tanimcount)
+							Console.WriteLine("Event contains {0} mode{1} with texture animation data. {2} data se{3} {4} used.", $"{tanimcount}", tanimcount == 1 ? "l" : "ls", tn == 1 ? "Only the first" : $"The first {tn}", tn == 1 ? "t" : "ts", tn == 1 ? "is" : "are");
+						else
+							Console.WriteLine("Event contains {0} mode{1} with texture animation data.", $"{tanimcount}", tanimcount == 1 ? "l" : "ls");
+					}
+					else
+					{
+						int tanimcount = 0;
+						for (int d = 0; d < 3; d++)
+						{
+							TexAnimMain main = new TexAnimMain();
+							int mptr = fc.GetPointer(ptr2, key);
+							int taptr = fc.GetPointer(ptr2 + 8, key);
+							int tanims = ByteConverter.ToInt32(fc, ptr2 + 4);
+							if (mptr != 0)
+							{
+								tanimcount++;
+								main.Model = $"object_{mptr:X8}";
+								main.TexAnimDataEntries = ByteConverter.ToInt32(fc, ptr2 + 4);
+								for (int t = 0; t < tanims; t++)
+								{
+									main.TexAnimPointers.Add(GetTexanim(fc, taptr, key, $"Texture Animations\\TexanimInfo {d + 1} Part {t + 1}.ini"));
+									taptr += 0x4;
+								}
+							}
+							else
+								break;
+							tanim.MainData.Add(main);
+							ptr2 += 0xC;
+						}
+						tanim.TexID = ByteConverter.ToInt32(fc, ptr + 4);
+						tanim.TexLoopNumber = ByteConverter.ToInt32(fc, ptr + 8);
+						ini.TextureAnimations.Add(tanim);
+						if (tanimcount != 1)
+							Console.WriteLine("Event contains {0} models with texture animation data. Only the first data set is used.", $"{tanimcount}");
+						else
+							Console.WriteLine("Event contains 1 model with texture animation data.");
+					}
+
+				}	
 				int shmap = ByteConverter.ToInt32(fc, 0x28);
 				if (battle && shmap == 0)
+				{
 					Console.WriteLine("Event does not use GC shadow maps.");
+					ini.GCShadowMaps = false;
+				}
 				if (battle && shmap == 1)
+				{
 					Console.WriteLine("Event uses GC shadow maps.");
+					ini.GCShadowMaps = true;
+				}
 				foreach (var item in motionfiles.Values)
 				{
 					string fn = item.Filename ?? $"Unknown Motion {motions.IndexOf(item.Motion)}.saanim";
@@ -427,6 +520,13 @@ namespace SplitTools.SAArc
 					string fn = item.Filename;
 					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
 					item.NinjaCam.Save(fp);
+					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
+				}
+				foreach (var item in texanimfiles.Values)
+				{
+					string fn = item.Filename;
+					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					item.TextureAnimation.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in modelfiles.Values)
@@ -760,6 +860,28 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
+		private static string GetTexSizes(byte[] fc, int address, uint key, string fn)
+		{
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"texsizes_{ptr3:X8}";
+			}
+			return name;
+		}
+
+		private static string GetReflectData(byte[] fc, int address, uint key, string fn)
+		{
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"matrix_{ptr3:X8}";
+			}
+			return name;
+		}
+
 		private static string GetNinjaCam(byte[] fc, int address, uint key, string fn)
 		{
 			NinjaCamera ncam = null;
@@ -776,19 +898,45 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
+		private static string GetTexanim(byte[] fc, int address, uint key, string fn)
+		{
+			EV_TEXANIM texanim = null;
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"texanim_{ptr3:X8}";
+				texanim = new EV_TEXANIM(fc, ptr3, key);
+			}
+			if (texanim == null) return null;
+			if (!texanimfiles.ContainsKey(name) || texanimfiles[name].Filename == null)
+				texanimfiles[name] = new TexAnimFileInfo(fn, texanim);
+			return name;
+		}
+
 		//Read Functions
 		private static List<NJS_MOTION> ReadMotionFile(string filename)
 		{
 			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			//List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
 			byte[] fc = File.ReadAllBytes(filename);
 			int addr = 0;
 			while (ByteConverter.ToInt64(fc, addr) != 0)
 			{
 				int ptr = ByteConverter.ToInt32(fc, addr);
+				int nummdl = ByteConverter.ToInt32(fc, addr + 4);
+				//int camcheck1 = fc.GetPointer(addr, 0);
+				//uint camcheck2 = ByteConverter.ToUInt32(fc, camcheck1 + 8);
 				if (ptr == -1)
 					motions.Add(null);
 				else
-					motions.Add(new NJS_MOTION(fc, ptr, 0, ByteConverter.ToInt32(fc, addr + 4)));
+				{
+					motions.Add(new NJS_MOTION(fc, ptr, 0, nummdl));
+					//if (nummdl == 1 && camcheck2 == 0x1C10004)
+					//{
+						//cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));
+					//}
+				}
 				addr += 8;
 			}
 			return motions;
@@ -862,6 +1010,18 @@ namespace SplitTools.SAArc
 		}
 	}
 
+	public class TexAnimFileInfo
+	{
+		public string Filename { get; set; }
+		public EV_TEXANIM TextureAnimation { get; set; }
+
+		public TexAnimFileInfo(string fn, EV_TEXANIM texanim)
+		{
+			Filename = fn;
+			TextureAnimation = texanim;
+		}
+	}
+
 	public class EventIniData
 	{
 		public string Name { get; set; }
@@ -879,8 +1039,11 @@ namespace SplitTools.SAArc
 		public Dictionary<int, string> MechParts { get; set; } = new Dictionary<int, string>();
 		public string TailsTails { get; set; }
 		public string Texlist { get; set; }
-		public List<TexSizes> TexSizes { get; set; } = new List<TexSizes>();
+		public string TexSizes { get; set; }
+		public bool GCShadowMaps { get; set; }
 		public List<SceneInfo> Scenes { get; set; } = new List<SceneInfo>();
+		public List<TexAnimInfo> TextureAnimations { get; set; } = new List<TexAnimInfo>();
+		public List<ReflectionInfo> ReflectionInfo { get; set; } = new List<ReflectionInfo>();
 		public List<string> Motions { get; set; }
 		public List<string> NinjaCameras { get; set; }
 	}
@@ -922,9 +1085,170 @@ namespace SplitTools.SAArc
 		public List<string[]> Motions { get; set; } = new List<string[]>();
 		public int Unknown { get; set; }
 	}
+
+	[Serializable]
 	public class TexSizes
 	{
-		public ushort H { get; set; }
-		public ushort V { get; set; }
+		public string Name { get; set; }
+		public List<TexSizeArray> TextureSize { get; set; } = new List<TexSizeArray>();
+
+		public TexSizes(byte[] file, int address, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "texsizes_" + address.ToString("X8");
+			TextureSize = new List<TexSizeArray>();
+			int numtex = ByteConverter.ToInt32(file, address - 4);
+			for (int i = 0; i < numtex; i++)
+			{
+				TextureSize.Add(new TexSizeArray(file, address));
+				address += 0x4;
+			}
+
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+	}
+
+	[Serializable]
+	public class TexSizeArray
+	{
+		[IniAlwaysInclude]
+		public short H { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
+
+		public TexSizeArray(byte[] file, int address)
+		{
+			H = ByteConverter.ToInt16(file, address);
+			V = ByteConverter.ToInt16(file, address + 2);
+
+		}
+	}
+		public class TexAnimInfo
+	{
+		public List<TexAnimMain> MainData { get; set; } = new List<TexAnimMain>();
+		public List<TexAnimGCIDs> TexAnimGCIDs { get; set; } = new List<TexAnimGCIDs>();
+		public int TexID { get; set; }
+		public int TexLoopNumber { get; set; }
+		public int TexAnimMainDataEntries { get; set; }
+
+	}
+	public class TexAnimGCIDs
+	{
+		public int TexID { get; set; }
+		public int TexLoopNumber { get; set; }
+	}
+
+	public class TexAnimMain
+	{
+		public string Model { get; set; }
+		public int TexAnimDataEntries { get; set; }
+		public List<string> TexAnimPointers { get; set; } = new List<string>();
+	}
+
+	public class ReflectionInfo
+	{
+		public int Unk1 { get; set; }
+		public int Unk2 { get; set; }
+		public string ReflectData { get; set; }
+	}
+
+	[Serializable]
+	public class ReflectionMatrixData
+	{
+		public string Name { get; set; }
+		public Vertex Data1 { get; set; }
+		public Vertex Data2 { get; set; }
+		public Vertex Data3 { get; set; }
+		public Vertex Data4 { get; set; }
+
+		public ReflectionMatrixData(byte[] file, int address, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "matrix_" + address.ToString("X8");
+			Data1 = new Vertex(file, address);
+			Data2 = new Vertex(file, address + 0xC);
+			Data3 = new Vertex(file, address + 0x18);
+			Data4 = new Vertex(file, address + 0x24);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+	}
+
+	[Serializable]
+	public class EV_TEXANIM
+	{
+		public string Name { get; set; }
+		[IniAlwaysInclude]
+		public int TextureID { get; set; }
+		public string MaterialTexAddress { get; set; }
+		[IniAlwaysInclude]
+		public int UVEditEntries { get; set; }
+		public string TexanimArrayName { get; set; }
+		public List<UVData> UVEditData { get; set; }
+
+		public EV_TEXANIM(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "texanim_" + address.ToString("X8");
+			TextureID = ByteConverter.ToInt32(file, address);
+			uint MaterialOffset = ByteConverter.ToUInt32(file, address + 4);
+			int MaterialAddr = (int)(MaterialOffset - imageBase);
+			if (labels != null && labels.ContainsKey(MaterialAddr))
+				MaterialTexAddress = labels[MaterialAddr];
+			else
+				MaterialTexAddress = "mattex_" + MaterialAddr.ToString("X8");
+			UVEditEntries = ByteConverter.ToInt32(file, address + 8);
+			uint TexanimArrayOffset = ByteConverter.ToUInt32(file, address + 0xC);
+			int TexanimArrayAddr = (int)(TexanimArrayOffset - imageBase);
+			if (labels != null && labels.ContainsKey(TexanimArrayAddr))
+				TexanimArrayName = labels[TexanimArrayAddr];
+			else
+				TexanimArrayName = "uvanim_" + TexanimArrayAddr.ToString("X8");
+			UVEditData = new List<UVData>();
+			if (TexanimArrayOffset != 0)
+			{
+				for (int i = 0; i < UVEditEntries; i++)
+				{
+					UVEditData.Add(new UVData(file, TexanimArrayAddr, imageBase));
+					TexanimArrayAddr += 0x8;
+				}
+			}
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+	}
+	[Serializable]
+	public class UVData
+	{
+		public string UVAddress { get; set; }
+		[IniAlwaysInclude]
+		public short U { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
+
+		public UVData(byte[] file, int address, uint imageBase)
+		{
+			uint uvaddr = ByteConverter.ToUInt32(file, address);
+			int ptr = (int)(uvaddr - imageBase);
+			UVAddress = "uv_" + ptr.ToString("X8");
+			U = ByteConverter.ToInt16(file, address + 4);
+			V = ByteConverter.ToInt16(file, address + 6);
+
+		}
 	}
 }
