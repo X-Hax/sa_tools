@@ -41,12 +41,14 @@ namespace SplitTools.SAArc
 					Console.WriteLine("File is in DC format.");
 					ByteConverter.BigEndian = false;
 					ini.Game = Game.SA2;
+					ini.BigEndian = false;
 				}
 				else
 				{
 					Console.WriteLine("File is in GC/PC format.");
 					ByteConverter.BigEndian = true;
 					ini.Game = Game.SA2B;
+					ini.BigEndian = true;
 				}
 				int addr = 0;
 				int subcount = 0;
@@ -58,7 +60,6 @@ namespace SplitTools.SAArc
 					if (subs.FrameStart != 0)
 						subcount++;
 					subs.VisibleTime = ByteConverter.ToUInt32(fc, addr + 4);
-					if (subs.FrameStart != 0 && subs.VisibleTime != 0)
 					ini.Subtitles.Add(subs);
 				}
 				if (subcount != 0)
@@ -72,20 +73,14 @@ namespace SplitTools.SAArc
 					addr = 0x100 + (0x4C * i);
 					EffectInfo fx = new EffectInfo();
 					int frame = fc.GetPointer(addr, 0);
+					fx.FrameStart = ByteConverter.ToUInt32(fc, addr);
 					if (frame != 0)
-					{
-						fx.FrameStart = ByteConverter.ToUInt32(fc, addr);
 						effectcount++;
-					}
 					fx.FadeType = fc[addr + 4];
-					ushort sound = (ushort)fc.GetPointer(addr + 5, 0);
-					if (sound != 0xFFFF)
-					fx.SFXEntry = ByteConverter.ToUInt16(fc, addr + 5).ToCHex();
-					ushort voice = (ushort)fc.GetPointer(addr + 8, 0);
-					if (voice != 0xFFFF)
-						fx.VoiceEntry = ByteConverter.ToUInt16(fc, addr + 8).ToCHex();
+					fx.SFXEntry1 = fc[addr + 5];
+					fx.SFXEntry2 = fc[addr + 6];
+					fx.VoiceEntry = ByteConverter.ToUInt16(fc, addr + 8).ToCHex();
 					fx.MusicControl = fc[addr + 0xA];
-					if (fx.FrameStart != 0 && sound != 0xFFFF && voice != 0xFFFF && fx.FadeType != 0 && fx.MusicControl != 0)
 					ini.Effects.Add(fx);
 				}
 				if (effectcount != 0)
@@ -331,6 +326,7 @@ namespace SplitTools.SAArc
 			get { return Game.ToString(); }
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
+		public bool BigEndian { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<EffectInfo> Effects { get; set; } = new List<EffectInfo>();
 	}
@@ -339,7 +335,8 @@ namespace SplitTools.SAArc
 	{
 		public uint FrameStart { get; set; }
 		public byte FadeType { get; set; }
-		public string SFXEntry { get; set; }
+		public byte SFXEntry1 { get; set; }
+		public byte SFXEntry2 { get; set; }
 		public string VoiceEntry { get; set; }
 		public byte MusicControl { get; set; }
 	}
