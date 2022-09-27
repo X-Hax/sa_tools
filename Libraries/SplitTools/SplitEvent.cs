@@ -15,14 +15,14 @@ namespace SplitTools.SAArc
 		static List<string> nodenames = new List<string>();
 		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
-		static Dictionary<string, NinjaCamInfo> ninjacameras = new Dictionary<string, NinjaCamInfo>();
+		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
 		static Dictionary<string, TexAnimFileInfo> texanimfiles = new Dictionary<string, TexAnimFileInfo>();
 
 		public static void Split(string filename, string outputPath)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
-			ninjacameras.Clear();
+			camarrayfiles.Clear();
 			motionfiles.Clear();
 			texanimfiles.Clear();
 			string dir = Environment.CurrentDirectory;
@@ -52,6 +52,7 @@ namespace SplitTools.SAArc
 					Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
 				uint key;
 				List<NJS_MOTION> motions = null;
+				List<NJS_CAMERA> ncams = null;
 				bool battle;
 				bool dcbeta;
 				if (fc[0] == 0x81)
@@ -65,9 +66,13 @@ namespace SplitTools.SAArc
 						battle = true;
 						dcbeta = false;
 						motions = ReadMotionFile(Path.ChangeExtension(evfilename, null) + "motion.bin");
+						ncams = ReadMotionFileCams(Path.ChangeExtension(evfilename, null) + "motion.bin");
 						ini.Motions = motions.Select(a => a?.Name).ToList();
 						foreach (var mtn in motions.Where(a => a != null))
 							motionfiles[mtn.Name] = new MotionInfo(null, mtn);
+						ini.NinjaCameras = ncams.Select(a => a?.Name).ToList();
+						foreach (var camdata in ncams.Where(a => a != null))
+							camarrayfiles[camdata.Name] = new CameraInfo(null, camdata);
 					}
 					else
 					{
@@ -277,12 +282,15 @@ namespace SplitTools.SAArc
 						ptr2 = fc.GetPointer(ptr + 8, key);
 						if (ptr2 != 0)
 						{
+							int camaddr = ByteConverter.ToInt32(fc, ptr2 + 0xC);
 							int cnt = ByteConverter.ToInt32(fc, ptr + 12);
 							for (int i = 0; i < cnt; i++)
 							{
 								scn.CameraMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1}.saanim", motions, 1));
-								if (!battle)
-									scn.NinjaCameras.Add(GetNinjaCam(fc, fc.GetPointer(ptr2, key) + 0xC, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini"));
+								if (battle)
+									scn.NinjaCameras.Add(GetGCCamData(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini", ncams));
+								else
+									scn.NinjaCameras.Add(GetCamData(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini", ncams));
 								ptr2 += sizeof(int);
 							}
 						}
@@ -515,11 +523,11 @@ namespace SplitTools.SAArc
 					item.Motion.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
-				foreach (var item in ninjacameras.Values)
+				foreach (var item in camarrayfiles.Values)
 				{
 					string fn = item.Filename;
 					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
-					item.NinjaCam.Save(fp);
+					item.CamData.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in texanimfiles.Values)
@@ -832,7 +840,7 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
-		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt, bool cam = false)
+		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt)
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
@@ -882,20 +890,42 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
-		private static string GetNinjaCam(byte[] fc, int address, uint key, string fn)
+		private static string GetCamData(byte[] fc, int address, uint key, string fn, List<NJS_CAMERA> ncams)
 		{
-			NinjaCamera ncam = null;
-			string name = null;
-			int ptr3 = fc.GetPointer(address, key);
-			if (ptr3 != 0)
+			NJS_CAMERA ncam = null;
+			if (ncams != null)
+				ncam = ncams[ByteConverter.ToInt32(fc, address + 0xC)];
+			else
 			{
-				name = $"ninjacam_{ptr3:X8}";
-				ncam = new NinjaCamera(fc, ptr3);
+				int ptr3 = fc.GetPointer(address, key);
+				if (ptr3 != 0)
+				{
+					ncam = new NJS_CAMERA(fc, ptr3 + 0xC, key);
+				}
 			}
 			if (ncam == null) return null;
-			if (!ninjacameras.ContainsKey(name) || ninjacameras[name].Filename == null)
-				ninjacameras[name] = new NinjaCamInfo(fn, ncam);
-			return name;
+			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			return ncam.Name;
+		}
+
+		private static string GetGCCamData(byte[] fc, int address, uint key, string fn, List<NJS_CAMERA> ncams)
+		{
+			NJS_CAMERA ncam = null;
+			if (ncams != null)
+				ncam = ncams[ByteConverter.ToInt32(fc, address)];
+			else
+			{
+				int ptr3 = fc.GetPointer(address, key);
+				if (ptr3 != 0)
+				{
+					ncam = new NJS_CAMERA(fc, ptr3, key);
+				}
+			}
+			if (ncam == null) return null;
+			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			return ncam.Name;
 		}
 
 		private static string GetTexanim(byte[] fc, int address, uint key, string fn)
@@ -918,51 +948,55 @@ namespace SplitTools.SAArc
 		private static List<NJS_MOTION> ReadMotionFile(string filename)
 		{
 			List<NJS_MOTION> motions = new List<NJS_MOTION>();
-			//List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
+			List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
 			byte[] fc = File.ReadAllBytes(filename);
 			int addr = 0;
 			while (ByteConverter.ToInt64(fc, addr) != 0)
 			{
 				int ptr = ByteConverter.ToInt32(fc, addr);
 				int nummdl = ByteConverter.ToInt32(fc, addr + 4);
-				//int camcheck1 = fc.GetPointer(addr, 0);
-				//uint camcheck2 = ByteConverter.ToUInt32(fc, camcheck1 + 8);
+				int camcheck1 = fc.GetPointer(addr, 0);
+				uint camcheck2 = ByteConverter.ToUInt32(fc, camcheck1 + 8);
 				if (ptr == -1)
 					motions.Add(null);
 				else
 				{
 					motions.Add(new NJS_MOTION(fc, ptr, 0, nummdl));
-					//if (nummdl == 1 && camcheck2 == 0x1C10004)
-					//{
-						//cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));
-					//}
+					if (nummdl == 1 && camcheck2 == 0x1C10004)
+					{
+						cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));
+					}
 				}
 				addr += 8;
 			}
 			return motions;
 		}
 
-		private static List<NinjaCamera> ReadMotionFileNCam(string filename)
+		private static List<NJS_CAMERA> ReadMotionFileCams(string filename)
 		{
-			List<NJS_MOTION> motions = new List<NJS_MOTION>();
-			List<NinjaCamera> ncam = new List<NinjaCamera>();
+			List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
 			byte[] fc = File.ReadAllBytes(filename);
 			int addr = 0;
 			while (ByteConverter.ToInt64(fc, addr) != 0)
 			{
 				int ptr = ByteConverter.ToInt32(fc, addr);
-				int attr = ByteConverter.ToInt32(fc, ptr + 8);
+				int nummdl = ByteConverter.ToInt32(fc, addr + 4);
+				int camcheck1 = fc.GetPointer(addr, 0);
+				uint camcheck2 = ByteConverter.ToUInt32(fc, camcheck1 + 8);
 				if (ptr == -1)
-					motions.Add(null);
+					cam.Add(null);
 				else
 				{
-					motions.Add(new NJS_MOTION(fc, ptr, 0, ByteConverter.ToInt32(fc, addr + 4)));
-					if (attr == 0x1C10004)
-						ncam.Add(new NinjaCamera(fc, fc.GetPointer(ptr + 0xC, 0)));
-				}
-				addr += 8;
+					if (nummdl == 1 && camcheck2 == 0x1C10004)
+					{
+						cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));
+					}
+					else
+						cam.Add(null);
 			}
-			return ncam;
+			addr += 8;
+			}
+			return cam;
 		}
 
 		public static bool ContainsKeySafe<TValue>(this IDictionary<string, TValue> dict, string key)
@@ -998,15 +1032,15 @@ namespace SplitTools.SAArc
 		}
 	}
 
-	public class NinjaCamInfo
+	public class CameraInfo
 	{
 		public string Filename { get; set; }
-		public NinjaCamera NinjaCam { get; set; }
+		public NJS_CAMERA CamData { get; set; }
 
-		public NinjaCamInfo(string fn, NinjaCamera ncam)
+		public CameraInfo(string fn, NJS_CAMERA ncam)
 		{
 			Filename = fn;
-			NinjaCam = ncam;
+			CamData = ncam;
 		}
 	}
 
@@ -1249,6 +1283,40 @@ namespace SplitTools.SAArc
 			U = ByteConverter.ToInt16(file, address + 4);
 			V = ByteConverter.ToInt16(file, address + 6);
 
+		}
+	}
+
+	[Serializable]
+	public class NJS_CAMERA
+	{
+		public string Name { get; set; }
+		public string NinjaCameraName { get; set; }
+		public NinjaCamera NinjaCameraData { get; set; }
+		public string CameraAnimation { get; set; }
+
+		public NJS_CAMERA(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "camdata_" + address.ToString("X8");
+			uint ncamaddr = ByteConverter.ToUInt32(file, address);
+			uint animaddr = ByteConverter.ToUInt32(file, address + 4);
+			int ncamptr = (int)(ncamaddr - imageBase);
+			int animptr = (int)(animaddr - imageBase);
+			if (labels != null && labels.ContainsKey(ncamptr))
+				NinjaCameraName = labels[ncamptr];
+			else
+				NinjaCameraName = "ninjacam_" + ncamptr.ToString("X8");
+			NinjaCameraData = new NinjaCamera(file, ncamptr);
+			if (labels != null && labels.ContainsKey(animptr))
+				CameraAnimation = labels[animptr];
+			else
+				CameraAnimation = "animation_" + animptr.ToString("X8");
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
 		}
 	}
 }
