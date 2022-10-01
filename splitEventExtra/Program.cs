@@ -30,9 +30,9 @@ namespace splitEventExtra
 				fullpath_out = Path.GetFullPath(fullpath_out);
 			}
 			Console.WriteLine("Output folder: {0}", fullpath_out);
-			if (name.StartsWith("me") && name.EndsWith (".scr"))
+			if ((name.StartsWith("me") || name.StartsWith("ME")) && Path.GetExtension(name).Equals(".scr", StringComparison.OrdinalIgnoreCase))
 				sa2MiniEventExtra.Split(fullpath_bin, fullpath_out);
-			else if (name.StartsWith("e") && name.EndsWith("_0.prs"))
+			else if ((name.StartsWith("e") || name.StartsWith("E")) && (name.EndsWith("_0.prs") || name.EndsWith("_0.PRS") || name.EndsWith("_0.scr") || name.EndsWith("_0.SCR")))
 				sa2EventExtra.Split(fullpath_bin, fullpath_out);
 			else
 				sa2EventExtra.SplitLanguage(fullpath_bin, fullpath_out);
