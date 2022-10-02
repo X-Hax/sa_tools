@@ -508,6 +508,9 @@ namespace SAModel.SAMDL
 					animationList = new List<NJS_MOTION>(modelFile.Animations);
 					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
+					string labelname = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".salabel");
+					if (File.Exists(labelname))
+						ImportLabels(model, IniSerializer.Deserialize<List<LabelOBJECT>>(labelname));
 				}
 				catch (Exception ex)
 				{
