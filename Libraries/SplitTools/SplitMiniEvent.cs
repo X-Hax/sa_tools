@@ -11,14 +11,16 @@ namespace SplitTools.SAArc
 	public static class SA2MiniEvent
 	{
 		static List<string> nodenames = new List<string>();
-		static Dictionary<string, MEModelInfo> modelfiles = new Dictionary<string, MEModelInfo>();
-		static Dictionary<string, MEMotionInfo> motionfiles = new Dictionary<string, MEMotionInfo>();
+		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
+		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
+		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
 
 		public static void Split(string filename, string outputPath)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
 			motionfiles.Clear();
+			camarrayfiles.Clear();
 			string dir = Environment.CurrentDirectory;
 			try
 			{
@@ -45,12 +47,14 @@ namespace SplitTools.SAArc
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
 				uint key;
 				List<NJS_MOTION> motions = null;
+				List<NJS_CAMERA> ncams = null;
 				if (fc[4] == 0x81)
 				{
 					Console.WriteLine("File is in GC/PC format.");
 					ByteConverter.BigEndian = true;
 					key = 0x816DFE60;
 					ini.Game = Game.SA2B;
+					ini.BigEndian = true;
 				}
 				else
 				{
@@ -58,6 +62,7 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = false;
 					key = 0xCB00000;
 					ini.Game = Game.SA2;
+					ini.BigEndian = false;
 				}
 				int address;
 				for (int i = 0; i < 8; i++)
@@ -155,15 +160,11 @@ namespace SplitTools.SAArc
 					}
 				}
 				int cam = fc.GetPointer(4, key);
+				int camaddr = ByteConverter.ToInt32(fc, 4);
 				if (cam != 0)
 				{
-					int ncam = fc.GetPointer(cam + 0xC, key);
 					ini.Camera = GetMotion(fc, 4, key, $"Camera.saanim", motions, 1);
-					NinjaCamera nincam = new NinjaCamera(fc, ncam);
-					ini.NinjaCam = GetNinjaCam(fc, cam + 0xC, key, "CameraAttributes.ini");
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "CameraAttributes.ini");
-					nincam.Save(fp);
-					ini.Files.Add("CameraAttributes.ini", HelperFunctions.FileHash(fp));
+					ini.NinjaCamera = GetCamData(fc, 4, key, "CameraAttributes.ini", ncams);
 				}
 				else
 					Console.WriteLine("Mini-Event does not contain a camera.");
@@ -181,6 +182,13 @@ namespace SplitTools.SAArc
 					ModelFile.CreateFile(fp, item.Model, item.Motions.ToArray(), null, null, null, item.Format);
 					ini.Files.Add(item.Filename, HelperFunctions.FileHash(fp));
 				}
+				foreach (var item in camarrayfiles.Values)
+				{
+					string fn = item.Filename;
+					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					item.CamData.Save(fp);
+					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
+				}
 				JsonSerializer js = new JsonSerializer
 				{
 					Formatting = Formatting.Indented,
@@ -195,11 +203,122 @@ namespace SplitTools.SAArc
 			}
 		}
 
-			public static void Build(string filename)
+		public static void SplitExtra(string filename, string outputPath)
+		{
+			string dir = Environment.CurrentDirectory;
+			try
+			{
+				if (outputPath[outputPath.Length - 1] != '/') outputPath = string.Concat(outputPath, "/");
+				// get file name, read it from the console if nothing
+				string evfilename = filename;
+
+				evfilename = Path.GetFullPath(evfilename);
+				Console.WriteLine("Splitting file {0}...", filename);
+				byte[] fc;
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					fc = Prs.Decompress(filename);
+				else
+					fc = File.ReadAllBytes(filename);
+				MiniEventExtraIniData ini = new MiniEventExtraIniData() { Name = Path.GetFileNameWithoutExtension(filename) };
+				if (outputPath.Length != 0)
+				{
+					if (!Directory.Exists(outputPath))
+						Directory.CreateDirectory(outputPath);
+					Environment.CurrentDirectory = outputPath;
+				}
+				else
+					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
+				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
+				if (fc[4] > 0 || fc[8] > 0 || fc[0x100] > 0)
+				{
+					Console.WriteLine("File is in DC format.");
+					ByteConverter.BigEndian = false;
+					ini.Game = Game.SA2;
+					ini.BigEndian = false;
+				}
+				else
+				{
+					Console.WriteLine("File is in GC/PC format.");
+					ByteConverter.BigEndian = true;
+					ini.Game = Game.SA2B;
+					ini.BigEndian = true;
+				}
+				int addr = 0;
+				int subcount = 0;
+				for (int i = 0; i < 32; i++)
+				{
+					addr = 0x8 * i;
+					SubtitleInfo subs = new SubtitleInfo();
+					subs.FrameStart = ByteConverter.ToUInt32(fc, addr);
+					if (subs.FrameStart != 0)
+						subcount++;
+					subs.VisibleTime = ByteConverter.ToUInt32(fc, addr + 4);
+					ini.Subtitles.Add(subs);
+				}
+				if (subcount != 0)
+					Console.WriteLine("Mini-Event contains {0} active subtitle entr{1}.", subcount, subcount == 1 ? "y" : "ies");
+				else
+					Console.WriteLine("Mini-Event does not use subtitles.");
+
+				int effectcount = 0;
+				for (int i = 0; i < 64; i++)
+				{
+					addr = 0x100 + (0x4C * i);
+					EffectInfo fx = new EffectInfo();
+					int frame = fc.GetPointer(addr, 0);
+					fx.FrameStart = ByteConverter.ToUInt32(fc, addr);
+					if (frame != 0)
+						effectcount++;
+					fx.FadeType = fc[addr + 4];
+					fx.SFXEntry1 = fc[addr + 5];
+					fx.SFXEntry2 = fc[addr + 6];
+					fx.VoiceEntry = ByteConverter.ToUInt16(fc, addr + 8).ToCHex();
+					fx.MusicControl = fc[addr + 0xA];
+					ini.Effects.Add(fx);
+				}
+				if (effectcount != 0)
+					Console.WriteLine("Mini-Event contains {0} active effect entr{1}.", effectcount, effectcount == 1 ? "y" : "ies");
+				else
+					Console.WriteLine("Mini-Event does not use additional effects.");
+				int misccount = 0;
+				for (int i = 0; i < 1; i++)
+				{
+					addr = 0x1400;
+					MiscMiniEffect misc = new MiscMiniEffect();
+					int unkdata1 = fc.GetPointer(addr, 0);
+					misc.Unk1 = new Vertex(fc, addr);
+					misc.Unk2 = ByteConverter.ToSingle(fc, addr + 0xC);
+					int unkdata2 = fc.GetPointer(addr + 0x10, 0);
+					misc.Unk3 = new Vertex(fc, addr + 0x10);
+					if (unkdata1 != 0 || unkdata2 != 0)
+						misccount++;
+					ini.Unknown.Add(misc);
+				}
+				if (misccount != 0)
+					Console.WriteLine("Mini-Event contains an unknown effect entry.");
+				else
+					Console.WriteLine("Mini-Event does not use unknown effects.");
+
+				JsonSerializer js = new JsonSerializer
+				{
+					Formatting = Formatting.Indented,
+					NullValueHandling = NullValueHandling.Ignore
+				};
+				using (var tw = File.CreateText(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+					js.Serialize(tw, ini);
+			}
+			finally
+			{
+				Environment.CurrentDirectory = dir;
+			}
+		}
+
+		public static void Build(string filename)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
 			motionfiles.Clear();
+			camarrayfiles.Clear();
 
 			byte[] fc;
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
@@ -240,7 +359,7 @@ namespace SplitTools.SAArc
 					MiniEventMaster info = ini.MainData[i];
 					if (info.BodyAnims != null)
 					{
-						if (labels.ContainsKeySafer(info.BodyAnims))
+						if (labels.ContainsKeySafe(info.BodyAnims))
 							ByteConverter.GetBytes(labels[info.BodyAnims]).CopyTo(fc, ptr);
 						int address2;
 						for (int j = 0; j < 4; j++)
@@ -252,11 +371,11 @@ namespace SplitTools.SAArc
 								MiniEventParts parts = ini.MainData[i].Parts[j];
 								if (info.Parts != null)
 								{
-									if (labels.ContainsKeySafer(info.Parts[j].Model))
+									if (labels.ContainsKeySafe(info.Parts[j].Model))
 										ByteConverter.GetBytes(labels[info.Parts[j].Model]).CopyTo(fc, address2);
-									if (labels.ContainsKeySafer(info.Parts[j].Anims))
+									if (labels.ContainsKeySafe(info.Parts[j].Anims))
 										ByteConverter.GetBytes(labels[info.Parts[j].Anims]).CopyTo(fc, address2 + 4);
-									if (labels.ContainsKeySafer(info.Parts[j].ShapeMotions))
+									if (labels.ContainsKeySafe(info.Parts[j].ShapeMotions))
 										ByteConverter.GetBytes(labels[info.Parts[j].ShapeMotions]).CopyTo(fc, address2 + 8);
 								}
 							}
@@ -265,7 +384,7 @@ namespace SplitTools.SAArc
 				}
 			}
 			int cam = fc.GetPointer(4, key);
-			if (cam != 0 && labels.ContainsKeySafer(ini.Camera))
+			if (cam != 0 && labels.ContainsKeySafe(ini.Camera))
 			{
 				ByteConverter.GetBytes(labels[ini.Camera]).CopyTo(fc, 4);
 				ByteConverter.GetBytes(labels[ini.Camera]).CopyTo(fc, cam + 0x10);
@@ -293,7 +412,7 @@ namespace SplitTools.SAArc
 						if (modelfiles.ContainsKey(s))
 							modelfiles.Remove(s);
 					nodenames.AddRange(names);
-					modelfiles.Add(obj.Name, new MEModelInfo(fn, obj, ModelFormat.Chunk));
+					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk));
 				}
 			}
 			return name;
@@ -312,51 +431,27 @@ namespace SplitTools.SAArc
 			}
 			if (mtn == null) return null;
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
-				motionfiles[mtn.Name] = new MEMotionInfo(fn, mtn);
+				motionfiles[mtn.Name] = new MotionInfo(fn, mtn);
 			return mtn.Name;
 		}
 
-		private static string GetNinjaCam(byte[] fc, int address, uint key, string fn)
+		private static string GetCamData(byte[] fc, int address, uint key, string fn, List<NJS_CAMERA> ncams)
 		{
-			string name = null;
-			int ptr3 = fc.GetPointer(address, key);
-			if (ptr3 != 0)
+			NJS_CAMERA ncam = null;
+			if (ncams != null)
+				ncam = ncams[ByteConverter.ToInt32(fc, address)];
+			else
 			{
-				name = $"ninjacam_{ptr3:X8}";
+				int ptr3 = fc.GetPointer(address, key);
+				if (ptr3 != 0)
+				{
+					ncam = new NJS_CAMERA(fc, ptr3 + 0xC, key);
+				}
 			}
-			return name;
-		}
-
-		public static bool ContainsKeySafer<TValue>(this IDictionary<string, TValue> dict, string key)
-		{
-			return key != null && dict.ContainsKey(key);
-		}
-	}
-
-	public class MEModelInfo
-	{
-		public string Filename { get; set; }
-		public NJS_OBJECT Model { get; set; }
-		public ModelFormat Format { get; set; }
-		public List<string> Motions { get; set; } = new List<string>();
-
-		public MEModelInfo(string fn, NJS_OBJECT obj, ModelFormat format)
-		{
-			Filename = fn;
-			Model = obj;
-			Format = format;
-		}
-	}
-
-	public class MEMotionInfo
-	{
-		public string Filename { get; set; }
-		public NJS_MOTION Motion { get; set; }
-
-		public MEMotionInfo(string fn, NJS_MOTION mtn)
-		{
-			Filename = fn;
-			Motion = mtn;
+			if (ncam == null) return null;
+			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			return ncam.Name;
 		}
 	}
 
@@ -371,11 +466,12 @@ namespace SplitTools.SAArc
 			get { return Game.ToString(); }
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
+		public bool BigEndian { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
 
 		public SA2CharacterFlags CharacterFlags { get; set; }
 		public string Camera { get; set; }
-		public string NinjaCam { get; set; }
+		public string NinjaCamera { get; set; }
 		public List<MiniEventMaster> MainData { get; set; } = new List<MiniEventMaster>();
 		public List<string> Motions { get; set; }
 	}
@@ -391,5 +487,38 @@ namespace SplitTools.SAArc
 		public string Model { get; set; }
 		public string Anims { get; set; }
 		public string ShapeMotions { get; set; }
+	}
+
+	public class MiniEventExtraIniData
+	{
+		public string Name { get; set; }
+		[JsonIgnore]
+		public Game Game { get; set; }
+		[JsonProperty(PropertyName = "Game")]
+		public string GameString
+		{
+			get { return Game.ToString(); }
+			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+		}
+		public bool BigEndian { get; set; }
+		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
+		public List<EffectInfo> Effects { get; set; } = new List<EffectInfo>();
+		public List<MiscMiniEffect> Unknown { get; set; } = new List<MiscMiniEffect>();
+	}
+
+	public class EffectInfo
+	{
+		public uint FrameStart { get; set; }
+		public byte FadeType { get; set; }
+		public byte SFXEntry1 { get; set; }
+		public byte SFXEntry2 { get; set; }
+		public string VoiceEntry { get; set; }
+		public byte MusicControl { get; set; }
+	}
+	public class MiscMiniEffect
+	{
+		public Vertex Unk1 { get; set; }
+		public float Unk2 { get; set; }
+		public Vertex Unk3 { get; set; }
 	}
 }
