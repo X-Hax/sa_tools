@@ -148,6 +148,7 @@ namespace SAModel.SALVL
 		string systemFallback; // The system/SONICADV folder for cases when the mod doesn't have replacement files
 		string modFolder; // The mod's main folder
 		string modSystemFolder; // The mod's "system" folder, such as SONICADV in SA1 or SYSTEM in SADX
+		string currentLandtableFilename; // Path to the currently loaded .sa?lvl file
 		Dictionary<string, ObjectData> objdefini;
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -2412,8 +2413,8 @@ namespace SAModel.SALVL
 
 		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string fn = "level.salabel";
-			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			string fn = !string.IsNullOrEmpty(currentLandtableFilename) ? Path.ChangeExtension(currentLandtableFilename, ".salabel") : "level.salabel";
+			using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Import Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 			{
 				if (ofd.ShowDialog() == DialogResult.OK)
 				{
@@ -2427,8 +2428,8 @@ namespace SAModel.SALVL
 
 		private void exportLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string fn = "level.salabel";
-			using (SaveFileDialog sfd = new SaveFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			string fn = !string.IsNullOrEmpty(currentLandtableFilename) ? Path.ChangeExtension(currentLandtableFilename, ".salabel") : "level.salabel";
+			using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 				if (sfd.ShowDialog() == DialogResult.OK)
 					new LabelLANDTABLE(LevelData.geo).Save(sfd.FileName);
 		}

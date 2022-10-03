@@ -4244,7 +4244,7 @@ namespace SAModel.SAMDL
 		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
-			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Import Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 			{
 				if (ofd.ShowDialog() == DialogResult.OK)
 				{
@@ -4258,7 +4258,7 @@ namespace SAModel.SAMDL
 		private void exportLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
-			using (SaveFileDialog sfd = new SaveFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 				if (sfd.ShowDialog() == DialogResult.OK)
 					LabelOBJECT.Save(LabelOBJECT.ExportLabels(model), sfd.FileName);
 		}
