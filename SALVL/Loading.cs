@@ -396,6 +396,7 @@ namespace SAModel.SALVL
 			saveAdvancedToolStripMenuItem.Enabled = true;
 			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
 			upgradeObjDefsToolStripMenuItem.Enabled = salvlini != null;
+			currentLandtableFilename = filename;
 		}
 
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -901,6 +902,7 @@ namespace SAModel.SALVL
 				else
 				{
 					LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
+					currentLandtableFilename = Path.GetFullPath(level.LevelGeometry);
 					LevelData.ClearLevelItems();
 					LevelData.ClearLevelAnims();
 
