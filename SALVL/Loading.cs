@@ -323,6 +323,9 @@ namespace SAModel.SALVL
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Black.ToRawColorBGRA(), 1, 0);
 			LevelData.geo = land;
+			string labelname = Path.ChangeExtension(filename, ".salabel");
+			if (File.Exists(labelname))
+				LabelLANDTABLE.Load(labelname).Apply(LevelData.geo);
 			LevelData.ClearLevelItems();
 			LevelData.ClearLevelAnims();
 			LevelData.LevelSplines = new List<SplineData>();
@@ -347,8 +350,10 @@ namespace SAModel.SALVL
 			renderToolStripMenuItem.Enabled = true;
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
+			importLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
 			exportToolStripMenuItem.Enabled = isGeometryPresent;
+			exportLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 			// Edit menu
 			// Clear Level
 			clearLevelToolStripMenuItem.Enabled = isGeometryPresent;
@@ -427,8 +432,10 @@ namespace SAModel.SALVL
 			renderToolStripMenuItem.Enabled = true;
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
+			importLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
 			exportToolStripMenuItem.Enabled = isGeometryPresent;
+			exportLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 
 			// Edit menu
 			// Clear Level

@@ -286,6 +286,10 @@ namespace SAModel.SALVL
 			editLevelInfoToolStripMenuItem.Enabled = false;
 			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
+
+			// Labels import/export
+			importLabelsToolStripMenuItem.Enabled = false;
+			exportLabelsToolStripMenuItem.Enabled = false;
 		}
 
 		void ShowWelcomeScreen()
@@ -2404,6 +2408,29 @@ namespace SAModel.SALVL
 					}
 				}
 			}
+		}
+
+		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string fn = "level.salabel";
+			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					LabelLANDTABLE labels = LabelLANDTABLE.Load(ofd.FileName);
+					labels.Apply(LevelData.geo);
+					LevelData.InvalidateRenderState();
+					NeedRedraw = true;
+				}
+			}
+		}
+
+		private void exportLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string fn = "level.salabel";
+			using (SaveFileDialog sfd = new SaveFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+				if (sfd.ShowDialog() == DialogResult.OK)
+					new LabelLANDTABLE(LevelData.geo).Save(sfd.FileName);
 		}
 	}
 }

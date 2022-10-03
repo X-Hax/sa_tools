@@ -508,9 +508,9 @@ namespace SAModel.SAMDL
 					animationList = new List<NJS_MOTION>(modelFile.Animations);
 					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
-					string labelname = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".salabel");
+					string labelname = Path.ChangeExtension(filename, ".salabel");
 					if (File.Exists(labelname))
-						ImportLabels(model, IniSerializer.Deserialize<List<LabelOBJECT>>(labelname));
+						LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(labelname));
 				}
 				catch (Exception ex)
 				{
@@ -4232,22 +4232,6 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		public List<LabelOBJECT> ExportLabels(NJS_OBJECT obj)
-		{
-			List<LabelOBJECT> result = new List<LabelOBJECT>();
-			NJS_OBJECT[] objs = obj.GetObjects();
-			for (int i = 0; i < objs.Length; i++)
-				result.Add(new LabelOBJECT(objs[i]));
-			return result;
-		}
-
-		public void ImportLabels(NJS_OBJECT obj, List<LabelOBJECT> labels)
-		{
-			NJS_OBJECT[] objs = obj.GetObjects();
-			for (int i = 0; i < objs.Length; i++)
-				labels[i].Apply(objs[i]);
-		}
-
 		private void setDefaultAnimationOrientationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (AnimOrientation dlg = new AnimOrientation())
@@ -4264,7 +4248,7 @@ namespace SAModel.SAMDL
 			{
 				if (ofd.ShowDialog() == DialogResult.OK)
 				{
-					ImportLabels(model, IniSerializer.Deserialize<List<LabelOBJECT>>(ofd.FileName));
+					LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(ofd.FileName));
 					RebuildModelCache();
 					unsavedChanges = true;
 				}
@@ -4275,10 +4259,8 @@ namespace SAModel.SAMDL
 		{
 			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
 			using (SaveFileDialog sfd = new SaveFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
-			{
 				if (sfd.ShowDialog() == DialogResult.OK)
-					IniSerializer.Serialize(ExportLabels(model), sfd.FileName);
-			}
+					LabelOBJECT.Save(LabelOBJECT.ExportLabels(model), sfd.FileName);
 		}
 
 		private int ReadNJTL(byte[] file, ref bool basicModel, ref NJS_TEXLIST texList)
