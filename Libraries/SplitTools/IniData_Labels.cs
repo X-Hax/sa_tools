@@ -1,30 +1,20 @@
 ﻿using SAModel;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace SplitTools
 {
 	// NJS_MESHSET labels
 	public class LabelMESHSET
 	{
-		[IniName("pl")]
 		public string PolyName;
-		[IniName("uv")]
 		public string UVName;
-		[IniName("pn")]
 		public string PolyNormalName;
-		[IniName("vc")]
 		public string VColorName;
 
 		public LabelMESHSET() { }
-
-		public LabelMESHSET(string polyName, string uvName, string polyNormalName, string vColorName)
-		{
-			PolyName = polyName;
-			UVName = uvName;
-			PolyNormalName = polyNormalName;
-			VColorName = vColorName;
-		}
 
 		public LabelMESHSET(NJS_MESHSET mesh)
 		{
@@ -54,20 +44,12 @@ namespace SplitTools
 	// NJS_OBJECT labels
 	public class LabelOBJECT
 	{
-		[IniName("obj")]
 		public string ObjectName;
-		[IniName("att")]
 		public string AttachName;
-		[IniName("msh")]
-		public string MeshsetOrPolyName; // Also polys for chunk
-		[IniName("m")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets)]
-		public List<LabelMESHSET> MeshsetItemNames;
-		[IniName("vtx")]
+		public string MeshsetName; // Also polys for chunk
+		public List<LabelMESHSET> MeshsetItems;
 		public string VertexName;
-		[IniName("nml")]
 		public string NormalName;
-		[IniName("mat")]
 		public string MaterialName;
 
 		public LabelOBJECT() { }
@@ -88,10 +70,10 @@ namespace SplitTools
 						MaterialName = batt.MaterialName;
 					if (batt.Mesh != null)
 					{
-						MeshsetOrPolyName = batt.MeshName;
-						MeshsetItemNames = new List<LabelMESHSET>();
+						MeshsetName = batt.MeshName;
+						MeshsetItems = new List<LabelMESHSET>();
 						foreach (NJS_MESHSET mesh in batt.Mesh)
-							MeshsetItemNames.Add(new LabelMESHSET(mesh));
+							MeshsetItems.Add(new LabelMESHSET(mesh));
 					}
 				}
 				else if (obj.Attach is ChunkAttach catt)
@@ -102,6 +84,38 @@ namespace SplitTools
 						NormalName = catt.PolyName;
 				}
 			}
+		}
+
+		public static List<LabelOBJECT> Load(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using TextReader tr = File.OpenText(filename);
+			using JsonTextReader jtr = new JsonTextReader(tr);
+			return js.Deserialize<List<LabelOBJECT>>(jtr);
+		}
+
+		public static void ImportLabels(NJS_OBJECT obj, List<LabelOBJECT> labels)
+		{
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				labels[i].Apply(objs[i]);
+		}
+
+		public static List<LabelOBJECT> ExportLabels(NJS_OBJECT obj)
+		{
+			List<LabelOBJECT> result = new List<LabelOBJECT>();
+			NJS_OBJECT[] objs = obj.GetObjects();
+			for (int i = 0; i < objs.Length; i++)
+				result.Add(new LabelOBJECT(objs[i]));
+			return result;
+		}
+
+		public static void Save(List<LabelOBJECT> list, string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using (TextWriter tw = File.CreateText(filename))
+			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+				js.Serialize(jtw, list);
 		}
 
 		public void Apply(NJS_OBJECT obj)
@@ -120,11 +134,11 @@ namespace SplitTools
 						batt.MaterialName = MaterialName;
 					if (batt.Mesh != null)
 					{
-						batt.MeshName = MeshsetOrPolyName;
+						batt.MeshName = MeshsetName;
 						int i = 0;
 						foreach (NJS_MESHSET mesh in batt.Mesh)
 						{
-							MeshsetItemNames[i].Apply(mesh);
+							MeshsetItems[i].Apply(mesh);
 							i++;
 						}
 
@@ -144,60 +158,24 @@ namespace SplitTools
 	// NJS_MOTION labels
 	public class LabelMKEY
 	{
-		[IniName("pos")]
 		public string PositionName;
-		[IniName("rot")]
 		public string RotationName;
-		[IniName("scl")]
 		public string ScaleName;
-		[IniName("vrt")]
 		public string VertexName;
-		[IniName("vct")]
 		public string VectorName;
-		[IniName("nrm")]
 		public string NormalName;
-		[IniName("tgt")]
 		public string TargetName;
-		[IniName("rll")]
 		public string RollName;
-		[IniName("ang")]
 		public string AngleName;
-		[IniName("col")]
 		public string ColorName;
-		[IniName("int")]
 		public string IntensityName;
-		[IniName("spt")]
 		public string SpotName;
-		[IniName("pnt")]
 		public string PointName;
-		[IniName("qut")]
 		public string QuaternionName;
-		[IniName("vtx")]
-		public List<string> VertexItemNames;
-		[IniName("nml")]
-		public List<string> NormalItemNames;
+		public List<string> VertexItems;
+		public List<string> NormalItems;
 
 		public LabelMKEY() { }
-
-		public LabelMKEY(string positionName, string rotationName, string scaleName, string vertexName, string vectorName, string normalName, string targetName, string rollName, string angleName, string colorName, string intensityName, string spotName, string pointName, string quaternionName, List<string> vertexItemNames, List<string> normalItemNames)
-		{
-			PositionName = positionName;
-			RotationName = rotationName;
-			ScaleName = scaleName;
-			VertexName = vertexName;
-			VectorName = vectorName;
-			NormalName = normalName;
-			TargetName = targetName;
-			RollName = rollName;
-			AngleName = angleName;
-			ColorName = colorName;
-			IntensityName = intensityName;
-			SpotName = spotName;
-			PointName = pointName;
-			QuaternionName = quaternionName;
-			VertexItemNames = vertexItemNames;
-			NormalItemNames = normalItemNames;
-		}
 
 		public LabelMKEY(AnimModelData data)
 		{
@@ -230,9 +208,9 @@ namespace SplitTools
 			if (!string.IsNullOrEmpty(data.QuaternionName))
 				QuaternionName = data.QuaternionName;
 			if (data.VertexItemName != null)
-				VertexItemNames = data.VertexItemName.ToList();
+				VertexItems = data.VertexItemName.ToList();
 			if (data.NormalItemName != null)
-				NormalItemNames = data.NormalItemName.ToList();
+				NormalItems = data.NormalItemName.ToList();
 		}
 
 		public void Apply(AnimModelData data)
@@ -266,20 +244,17 @@ namespace SplitTools
 			if (!string.IsNullOrEmpty(data.QuaternionName))
 				data.QuaternionName = QuaternionName;
 			if (data.VertexItemName != null)
-				data.VertexItemName = VertexItemNames.ToArray();
+				data.VertexItemName = VertexItems.ToArray();
 			if (data.NormalItemName != null)
-				data.NormalItemName = NormalItemNames.ToArray();
+				data.NormalItemName = NormalItems.ToArray();
 		}
 	}
 
+	// NJS_MOTION labels
 	public class LabelMOTION
 	{
-		[IniName("mot")]
 		public string MotionName;
-		[IniName("mdt")]
 		public string MdataName;
-		[IniName("m")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets)]
 		public Dictionary<int, LabelMKEY> MkeyNames;
 
 		public LabelMOTION() { }
@@ -293,6 +268,22 @@ namespace SplitTools
 				MkeyNames.Add(anm.Key, new LabelMKEY(anm.Value));
 		}
 
+		public static LabelMOTION Load(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using TextReader tr = File.OpenText(filename);
+			using JsonTextReader jtr = new JsonTextReader(tr);
+			return js.Deserialize<LabelMOTION>(jtr);
+		}
+
+		public void Save(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using (TextWriter tw = File.CreateText(filename))
+			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+				js.Serialize(jtw, this);
+		}
+
 		public void Apply(NJS_MOTION mot)
 		{
 			mot.Name = MotionName;
@@ -304,11 +295,8 @@ namespace SplitTools
 
 	public class LabelACTION
 	{
-		[IniName("act")]
 		public string ActionName;
-		[IniName("mtn")]
 		public LabelMOTION MotionNames;
-		[IniName("obj")]
 		public LabelOBJECT ObjectNames;
 
 		public LabelACTION() { }
@@ -327,6 +315,22 @@ namespace SplitTools
 			ObjectNames = new LabelOBJECT(act.Model);
 		}
 
+		public static LabelACTION Load(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using TextReader tr = File.OpenText(filename);
+			using JsonTextReader jtr = new JsonTextReader(tr);
+			return js.Deserialize<LabelACTION>(jtr);
+		}
+
+		public void Save(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using (TextWriter tw = File.CreateText(filename))
+			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+				js.Serialize(jtw, this);
+		}
+
 		public void Apply(NJS_ACTION act)
 		{
 			act.Name = ActionName;
@@ -339,13 +343,9 @@ namespace SplitTools
 	// Landtable labels
 	public class LabelLANDTABLE
 	{
-		[IniName("lnd")]
 		public string LandtableName;
-		[IniName("col")]
 		public string COLListName;
-		[IniName("anm")]
 		public string GeoAnimListName;
-		[IniName("col")]
 		public List<LabelOBJECT> ColObjectNames;
 		public List<LabelACTION> GeoAnimActionNames;
 
@@ -359,8 +359,28 @@ namespace SplitTools
 			ColObjectNames = new List<LabelOBJECT>();
 			foreach (COL o in land.COL)
 				ColObjectNames.Add(new LabelOBJECT(o.Model));
-			foreach (GeoAnimData g in land.Anim)
-				GeoAnimActionNames.Add(new LabelACTION(g));
+			if (land.Anim != null)
+			{
+				GeoAnimActionNames = new List<LabelACTION>();
+				foreach (GeoAnimData g in land.Anim)
+					GeoAnimActionNames.Add(new LabelACTION(g));
+			}
+		}
+
+		public static LabelLANDTABLE Load(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using TextReader tr = File.OpenText(filename);
+			using JsonTextReader jtr = new JsonTextReader(tr);
+			return js.Deserialize<LabelLANDTABLE>(jtr);
+		}
+
+		public void Save(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using (TextWriter tw = File.CreateText(filename))
+			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+				js.Serialize(jtw, this);
 		}
 
 		public void Apply(LandTable land)
@@ -379,5 +399,4 @@ namespace SplitTools
 				}
 		}
 	}
-
 }
