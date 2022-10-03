@@ -111,8 +111,6 @@ namespace SAModel
 							tmpaddr += GeoAnimData.Size;
 						}
 					}
-					else
-						AnimName = "animlist_" + Extensions.GenerateIdentifier();
 					tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
 					if (tmpaddr != 0)
 					{
