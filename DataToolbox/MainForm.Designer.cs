@@ -131,6 +131,16 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
+            this.tabPageLabelTool = new System.Windows.Forms.TabPage();
+            this.checkBoxLabelDeleteFiles = new System.Windows.Forms.CheckBox();
+            this.buttonLabelStart = new System.Windows.Forms.Button();
+            this.checkBoxLabelClearInternal = new System.Windows.Forms.CheckBox();
+            this.radioButtonLabelImport = new System.Windows.Forms.RadioButton();
+            this.radioButtonLabelExport = new System.Windows.Forms.RadioButton();
+            this.buttonLabelClear = new System.Windows.Forms.Button();
+            this.buttonLabelRemove = new System.Windows.Forms.Button();
+            this.buttonLabelAdd = new System.Windows.Forms.Button();
+            this.listBoxLabelTool = new System.Windows.Forms.ListBox();
             this.statusStripTabDescription = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelTabDesc = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBoxBinary.SuspendLayout();
@@ -151,6 +161,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartAddr)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEndAddr)).BeginInit();
+            this.tabPageLabelTool.SuspendLayout();
             this.statusStripTabDescription.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -452,6 +463,7 @@
             this.tabControl1.Controls.Add(this.tabPageSplit);
             this.tabControl1.Controls.Add(this.tabPageSplitMDL);
             this.tabControl1.Controls.Add(this.tabPageScanner);
+            this.tabControl1.Controls.Add(this.tabPageLabelTool);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
@@ -632,7 +644,7 @@
             this.buttonStructConvRemoveAllBatch.Name = "buttonStructConvRemoveAllBatch";
             this.buttonStructConvRemoveAllBatch.Size = new System.Drawing.Size(88, 25);
             this.buttonStructConvRemoveAllBatch.TabIndex = 3;
-            this.buttonStructConvRemoveAllBatch.Text = "Clear all";
+            this.buttonStructConvRemoveAllBatch.Text = "Clear All";
             this.buttonStructConvRemoveAllBatch.UseVisualStyleBackColor = true;
             this.buttonStructConvRemoveAllBatch.Click += new System.EventHandler(this.buttonRemoveAllBatch_Click);
             // 
@@ -695,11 +707,11 @@
             this.listBoxStructConverter.FormattingEnabled = true;
             this.listBoxStructConverter.HorizontalScrollbar = true;
             this.listBoxStructConverter.ItemHeight = 15;
-            this.listBoxStructConverter.Location = new System.Drawing.Point(7, 4);
+            this.listBoxStructConverter.Location = new System.Drawing.Point(2, 4);
             this.listBoxStructConverter.Margin = new System.Windows.Forms.Padding(2);
             this.listBoxStructConverter.Name = "listBoxStructConverter";
             this.listBoxStructConverter.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxStructConverter.Size = new System.Drawing.Size(404, 394);
+            this.listBoxStructConverter.Size = new System.Drawing.Size(407, 394);
             this.listBoxStructConverter.TabIndex = 0;
             this.listBoxStructConverter.SelectedIndexChanged += new System.EventHandler(this.listBoxStructConverter_SelectedIndexChanged);
             this.listBoxStructConverter.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxStructConverter_DragDrop);
@@ -1514,6 +1526,134 @@
             this.label14.TabIndex = 29;
             this.label14.Text = "Base Game:";
             // 
+            // tabPageLabelTool
+            // 
+            this.tabPageLabelTool.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPageLabelTool.Controls.Add(this.checkBoxLabelDeleteFiles);
+            this.tabPageLabelTool.Controls.Add(this.buttonLabelStart);
+            this.tabPageLabelTool.Controls.Add(this.checkBoxLabelClearInternal);
+            this.tabPageLabelTool.Controls.Add(this.radioButtonLabelImport);
+            this.tabPageLabelTool.Controls.Add(this.radioButtonLabelExport);
+            this.tabPageLabelTool.Controls.Add(this.buttonLabelClear);
+            this.tabPageLabelTool.Controls.Add(this.buttonLabelRemove);
+            this.tabPageLabelTool.Controls.Add(this.buttonLabelAdd);
+            this.tabPageLabelTool.Controls.Add(this.listBoxLabelTool);
+            this.tabPageLabelTool.Location = new System.Drawing.Point(4, 24);
+            this.tabPageLabelTool.Name = "tabPageLabelTool";
+            this.tabPageLabelTool.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageLabelTool.Size = new System.Drawing.Size(507, 492);
+            this.tabPageLabelTool.TabIndex = 5;
+            this.tabPageLabelTool.Text = "Label Tool";
+            // 
+            // checkBoxLabelDeleteFiles
+            // 
+            this.checkBoxLabelDeleteFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxLabelDeleteFiles.AutoSize = true;
+            this.checkBoxLabelDeleteFiles.Enabled = false;
+            this.checkBoxLabelDeleteFiles.Location = new System.Drawing.Point(156, 440);
+            this.checkBoxLabelDeleteFiles.Name = "checkBoxLabelDeleteFiles";
+            this.checkBoxLabelDeleteFiles.Size = new System.Drawing.Size(116, 19);
+            this.checkBoxLabelDeleteFiles.TabIndex = 9;
+            this.checkBoxLabelDeleteFiles.Text = "Delete Label Files";
+            this.checkBoxLabelDeleteFiles.UseVisualStyleBackColor = true;
+            // 
+            // buttonLabelStart
+            // 
+            this.buttonLabelStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonLabelStart.Location = new System.Drawing.Point(420, 435);
+            this.buttonLabelStart.Name = "buttonLabelStart";
+            this.buttonLabelStart.Size = new System.Drawing.Size(78, 26);
+            this.buttonLabelStart.TabIndex = 8;
+            this.buttonLabelStart.Text = "&Start";
+            this.buttonLabelStart.UseVisualStyleBackColor = true;
+            this.buttonLabelStart.Click += new System.EventHandler(this.buttonLabelStart_Click);
+            // 
+            // checkBoxLabelClearInternal
+            // 
+            this.checkBoxLabelClearInternal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxLabelClearInternal.AutoSize = true;
+            this.checkBoxLabelClearInternal.Location = new System.Drawing.Point(6, 440);
+            this.checkBoxLabelClearInternal.Name = "checkBoxLabelClearInternal";
+            this.checkBoxLabelClearInternal.Size = new System.Drawing.Size(132, 19);
+            this.checkBoxLabelClearInternal.TabIndex = 6;
+            this.checkBoxLabelClearInternal.Text = "Erase Internal Labels";
+            this.checkBoxLabelClearInternal.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonLabelImport
+            // 
+            this.radioButtonLabelImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.radioButtonLabelImport.AutoSize = true;
+            this.radioButtonLabelImport.Location = new System.Drawing.Point(156, 412);
+            this.radioButtonLabelImport.Name = "radioButtonLabelImport";
+            this.radioButtonLabelImport.Size = new System.Drawing.Size(97, 19);
+            this.radioButtonLabelImport.TabIndex = 4;
+            this.radioButtonLabelImport.Text = "Import Labels";
+            this.radioButtonLabelImport.UseVisualStyleBackColor = true;
+            this.radioButtonLabelImport.CheckedChanged += new System.EventHandler(this.radioButtonLabelImport_CheckedChanged);
+            // 
+            // radioButtonLabelExport
+            // 
+            this.radioButtonLabelExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.radioButtonLabelExport.AutoSize = true;
+            this.radioButtonLabelExport.Checked = true;
+            this.radioButtonLabelExport.Location = new System.Drawing.Point(6, 412);
+            this.radioButtonLabelExport.Name = "radioButtonLabelExport";
+            this.radioButtonLabelExport.Size = new System.Drawing.Size(95, 19);
+            this.radioButtonLabelExport.TabIndex = 5;
+            this.radioButtonLabelExport.TabStop = true;
+            this.radioButtonLabelExport.Text = "Export Labels";
+            this.radioButtonLabelExport.UseVisualStyleBackColor = true;
+            this.radioButtonLabelExport.CheckedChanged += new System.EventHandler(this.radioButtonLabelExport_CheckedChanged);
+            // 
+            // buttonLabelClear
+            // 
+            this.buttonLabelClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonLabelClear.Location = new System.Drawing.Point(415, 69);
+            this.buttonLabelClear.Name = "buttonLabelClear";
+            this.buttonLabelClear.Size = new System.Drawing.Size(88, 25);
+            this.buttonLabelClear.TabIndex = 3;
+            this.buttonLabelClear.Text = "Clear All";
+            this.buttonLabelClear.UseVisualStyleBackColor = true;
+            this.buttonLabelClear.Click += new System.EventHandler(this.buttonLabelClear_Click);
+            // 
+            // buttonLabelRemove
+            // 
+            this.buttonLabelRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonLabelRemove.Location = new System.Drawing.Point(415, 36);
+            this.buttonLabelRemove.Name = "buttonLabelRemove";
+            this.buttonLabelRemove.Size = new System.Drawing.Size(88, 25);
+            this.buttonLabelRemove.TabIndex = 2;
+            this.buttonLabelRemove.Text = "&Remove";
+            this.buttonLabelRemove.UseVisualStyleBackColor = true;
+            this.buttonLabelRemove.Click += new System.EventHandler(this.buttonLabelRemove_Click);
+            // 
+            // buttonLabelAdd
+            // 
+            this.buttonLabelAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonLabelAdd.Location = new System.Drawing.Point(415, 5);
+            this.buttonLabelAdd.Name = "buttonLabelAdd";
+            this.buttonLabelAdd.Size = new System.Drawing.Size(88, 25);
+            this.buttonLabelAdd.TabIndex = 1;
+            this.buttonLabelAdd.Text = "&Add...";
+            this.buttonLabelAdd.UseVisualStyleBackColor = true;
+            this.buttonLabelAdd.Click += new System.EventHandler(this.buttonLabelAdd_Click);
+            // 
+            // listBoxLabelTool
+            // 
+            this.listBoxLabelTool.AllowDrop = true;
+            this.listBoxLabelTool.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBoxLabelTool.FormattingEnabled = true;
+            this.listBoxLabelTool.ItemHeight = 15;
+            this.listBoxLabelTool.Location = new System.Drawing.Point(2, 4);
+            this.listBoxLabelTool.Name = "listBoxLabelTool";
+            this.listBoxLabelTool.Size = new System.Drawing.Size(407, 394);
+            this.listBoxLabelTool.TabIndex = 0;
+            this.listBoxLabelTool.SelectedIndexChanged += new System.EventHandler(this.listBoxLabelTool_SelectedIndexChanged);
+            this.listBoxLabelTool.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBoxLabelTool_DragDrop);
+            this.listBoxLabelTool.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBoxLabelTool_DragEnter);
+            // 
             // statusStripTabDescription
             // 
             this.statusStripTabDescription.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1571,6 +1711,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEndAddr)).EndInit();
+            this.tabPageLabelTool.ResumeLayout(false);
+            this.tabPageLabelTool.PerformLayout();
             this.statusStripTabDescription.ResumeLayout(false);
             this.statusStripTabDescription.PerformLayout();
             this.ResumeLayout(false);
@@ -1684,6 +1826,16 @@
 		private System.Windows.Forms.CheckBox checkBoxBigEndian;
 		private System.Windows.Forms.StatusStrip statusStripTabDescription;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelTabDesc;
-	}
+        private System.Windows.Forms.TabPage tabPageLabelTool;
+        private System.Windows.Forms.CheckBox checkBoxLabelClearInternal;
+        private System.Windows.Forms.RadioButton radioButtonLabelImport;
+        private System.Windows.Forms.RadioButton radioButtonLabelExport;
+        private System.Windows.Forms.Button buttonLabelClear;
+        private System.Windows.Forms.Button buttonLabelRemove;
+        private System.Windows.Forms.Button buttonLabelAdd;
+        private System.Windows.Forms.ListBox listBoxLabelTool;
+        private System.Windows.Forms.Button buttonLabelStart;
+        private System.Windows.Forms.CheckBox checkBoxLabelDeleteFiles;
+    }
 }
 
