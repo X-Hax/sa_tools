@@ -662,7 +662,7 @@ namespace SplitTools.SAArc
 				bool battle;
 				bool beta;
 				bool lang;
-				if (fc[4] > 0 || fc[8] > 0 || fc[0x26800] > 0)
+				if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0)
 				{
 					if (fc.Length == 0x2DC00)
 					{
@@ -693,9 +693,15 @@ namespace SplitTools.SAArc
 					ini.BigEndian = true;
 				}
 				if (fc.Length < 0x9900)
+				{
 					lang = true;
+					ini.LanguageOnly = true;
+				}
 				else
+				{
 					lang = false;
+					ini.LanguageOnly = false;
+				}
 				if (lang)
 					Console.WriteLine("File only contains audio/subtitle timings.");
 				int address = 0;
@@ -1678,6 +1684,7 @@ namespace SplitTools.SAArc
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
 		public bool BigEndian { get; set; }
+		public bool LanguageOnly { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<AudioInfo> AudioInfo { get; set; } = new List<AudioInfo>();
 		public List<ScreenEffects> ScreenEffects { get; set; } = new List<ScreenEffects>();
