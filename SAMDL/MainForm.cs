@@ -2568,6 +2568,9 @@ namespace SAModel.SAMDL
 							return;
 						}
 						NJS_MOTION anim = NJS_MOTION.Load(fn);
+						string labelm = Path.ChangeExtension(fn, ".salabel");
+						if (File.Exists(labelm))
+							LabelMOTION.Load(labelm).Apply(anim);
 						if (first)
 						{
 							first = false;
@@ -2712,6 +2715,9 @@ namespace SAModel.SAMDL
 										case ".saanim":
 										default:
 											mot = NJS_MOTION.Load(filePath);
+											string labelmo = Path.ChangeExtension(filePath, ".salabel");
+											if (File.Exists(labelmo))
+												LabelMOTION.Load(labelmo).Apply(mot);
 											if (first)
 											{
 												first = false;
