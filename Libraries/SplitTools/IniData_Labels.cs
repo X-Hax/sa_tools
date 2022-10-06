@@ -91,7 +91,9 @@ namespace SplitTools
 			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
 			using JsonTextReader jtr = new JsonTextReader(tr);
-			return js.Deserialize<List<LabelOBJECT>>(jtr);
+			List <LabelOBJECT> result = js.Deserialize<List<LabelOBJECT>>(jtr);
+			jtr.Close();
+			return result;
 		}
 
 		public static void ImportLabels(NJS_OBJECT obj, List<LabelOBJECT> labels)
@@ -273,7 +275,9 @@ namespace SplitTools
 			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
 			using JsonTextReader jtr = new JsonTextReader(tr);
-			return js.Deserialize<LabelMOTION>(jtr);
+			LabelMOTION result = js.Deserialize<LabelMOTION>(jtr);
+			jtr.Close();
+			return result;
 		}
 
 		public void Save(string filename)
@@ -304,15 +308,19 @@ namespace SplitTools
 		public LabelACTION(GeoAnimData anim)
 		{
 			ActionName = anim.Animation.ActionName;
+			if (anim.Animation != null)
 			MotionNames = new LabelMOTION(anim.Animation);
-			ObjectNames = new LabelOBJECT(anim.Model);
+			if (anim.Model != null)
+				ObjectNames = new LabelOBJECT(anim.Model);
 		}
 
 		public LabelACTION(NJS_ACTION act)
 		{
 			ActionName = act.Name;
-			MotionNames = new LabelMOTION(act.Animation);
-			ObjectNames = new LabelOBJECT(act.Model);
+			if (act.Animation != null)
+				MotionNames = new LabelMOTION(act.Animation);
+			if (act.Model != null)
+				ObjectNames = new LabelOBJECT(act.Model);
 		}
 
 		public static LabelACTION Load(string filename)
@@ -320,7 +328,9 @@ namespace SplitTools
 			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
 			using JsonTextReader jtr = new JsonTextReader(tr);
-			return js.Deserialize<LabelACTION>(jtr);
+			LabelACTION result = js.Deserialize<LabelACTION>(jtr);
+			jtr.Close();
+			return result;
 		}
 
 		public void Save(string filename)
@@ -372,7 +382,9 @@ namespace SplitTools
 			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
 			using JsonTextReader jtr = new JsonTextReader(tr);
-			return js.Deserialize<LabelLANDTABLE>(jtr);
+			LabelLANDTABLE result = js.Deserialize<LabelLANDTABLE>(jtr);
+			jtr.Close();
+			return result;
 		}
 
 		public void Save(string filename)
