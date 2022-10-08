@@ -52,7 +52,7 @@
             this.radGamebanana = new System.Windows.Forms.RadioButton();
             this.radGitHub = new System.Windows.Forms.RadioButton();
             this.radManual = new System.Windows.Forms.RadioButton();
-            this.lstGBItems = new System.Windows.Forms.ComboBox();
+            this.lstGBItems = new System.Windows.Forms.TextBox();
             this.txtAsset = new System.Windows.Forms.TextBox();
             this.chkUpdates = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -213,10 +213,9 @@
             // 
             // lstGBItems
             // 
-            this.lstGBItems.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.lstGBItems.FormattingEnabled = true;
             resources.ApplyResources(this.lstGBItems, "lstGBItems");
             this.lstGBItems.Name = "lstGBItems";
+			this.lstGBItems.Text = "Mod";
             // 
             // txtAsset
             // 
@@ -297,7 +296,7 @@
 		private System.Windows.Forms.Label lblLower;
 		private System.Windows.Forms.TextBox txtUpdateURL;
 		private System.Windows.Forms.Label lblUpperBox;
-		private System.Windows.Forms.ComboBox lstGBItems;
+		private System.Windows.Forms.TextBox lstGBItems;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.ComboBox comboModCategory;
