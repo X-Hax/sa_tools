@@ -23,6 +23,23 @@ namespace SAToolsHub
 			"Script"
 		};
 
+		string[] CatItems = new string[]
+		{
+			"Animations",
+			"Chao",
+			"Custom Level",
+			"Cutscene",
+			"Game Overhaul",
+			"Gameplay",
+			"Misc",
+			"Music",
+			"Patch",
+			"Skin",
+			"Sound",
+			"Textures",
+			"UI"
+		};
+
 		public editProj()
 		{
 			InitializeComponent();
@@ -30,6 +47,10 @@ namespace SAToolsHub
 			foreach (string item in GBItems)
 			{
 				lstGBItems.Items.Add(item);
+			}
+			foreach (string item2 in CatItems)
+			{
+				comboModCategory.Items.Add(item2);
 			}
 		}
 
@@ -71,6 +92,7 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSADX.Author;
 					txtDesc.Text = modInfoSADX.Description;
 					txtVerNum.Text = modInfoSADX.Version;
+					comboModCategory.Text = modInfoSADX.Category;
 
 					if (modInfoSADX.DLLFile != null)
 					{
@@ -111,6 +133,8 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSA2PC.Author;
 					txtDesc.Text = modInfoSA2PC.Description;
 					txtVerNum.Text = modInfoSA2PC.Version;
+					comboModCategory.Text = modInfoSA2PC.Category;
+
 					if (modInfoSA2PC.DLLFile != null)
 					{
 						chkDLLFile.Checked = true;
@@ -159,6 +183,7 @@ namespace SAToolsHub
 					SADXModInfo modInfoSADX = new SADXModInfo();
 					modInfoSADX.Name = txtName.Text;
 					modInfoSADX.Author = txtAuth.Text;
+					modInfoSADX.Category = comboModCategory.Text;
 					modInfoSADX.Description = txtDesc.Text;
 					modInfoSADX.Version = txtVerNum.Text;
 					if (chkDLLFile.Checked)
@@ -192,6 +217,7 @@ namespace SAToolsHub
 					modInfoSA2PC.Author = txtAuth.Text;
 					modInfoSA2PC.Description = txtDesc.Text;
 					modInfoSA2PC.Version = txtVerNum.Text;
+					modInfoSA2PC.Category = comboModCategory.Text;
 					if (chkDLLFile.Checked)
 						modInfoSA2PC.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)
@@ -264,5 +290,10 @@ namespace SAToolsHub
 				txtDLLName.Enabled = false;
 		}
 		#endregion
+
+		private void editProj_Load(object sender, EventArgs e)
+		{
+
+		}
 	}
 }
