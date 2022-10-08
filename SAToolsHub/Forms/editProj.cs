@@ -11,18 +11,6 @@ namespace SAToolsHub
 		string projDir;
 		string projModFile;
 
-		string[] GBItems = new string[]
-		{
-			"Map",
-			"Skin",
-			"Sound",
-			"GUI",
-			"Gamefile",
-			"Effect",
-			"Texture",
-			"Script"
-		};
-
 		string[] CatItems = new string[]
 		{
 			"Animations",
@@ -44,10 +32,7 @@ namespace SAToolsHub
 		{
 			InitializeComponent();
 			txtDLLName.Enabled = false;
-			foreach (string item in GBItems)
-			{
-				lstGBItems.Items.Add(item);
-			}
+
 			foreach (string item2 in CatItems)
 			{
 				comboModCategory.Items.Add(item2);
@@ -277,8 +262,7 @@ namespace SAToolsHub
 		private void radGamebanana_CheckedChanged(object sender, EventArgs e)
 		{
 			lblUpperBox.Text = "Gamebanana ID";
-			lblLower.Text = "Gamebanana Mod Type";
-			lstGBItems.Visible = true;
+			lblLower.Text = "";
 			txtAsset.Visible = false;
 		}
 
