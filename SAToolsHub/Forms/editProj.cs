@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Text;
 using SAModel.SAEditorCommon.ModManagement;
 
 namespace SAToolsHub
@@ -77,6 +78,7 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSADX.Author;
 					txtDesc.Text = modInfoSADX.Description;
 					txtVerNum.Text = modInfoSADX.Version;
+					textModID.Text = modInfoSADX.ModID;
 					comboModCategory.Text = modInfoSADX.Category;
 
 					if (modInfoSADX.DLLFile != null)
@@ -118,6 +120,7 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSA2PC.Author;
 					txtDesc.Text = modInfoSA2PC.Description;
 					txtVerNum.Text = modInfoSA2PC.Version;
+					textModID.Text = modInfoSA2PC.ModID;
 					comboModCategory.Text = modInfoSA2PC.Category;
 
 					if (modInfoSA2PC.DLLFile != null)
@@ -171,6 +174,7 @@ namespace SAToolsHub
 					modInfoSADX.Category = comboModCategory.Text;
 					modInfoSADX.Description = txtDesc.Text;
 					modInfoSADX.Version = txtVerNum.Text;
+					modInfoSADX.ModID = textModID.Text;
 					if (chkDLLFile.Checked)
 						modInfoSADX.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)
@@ -203,6 +207,7 @@ namespace SAToolsHub
 					modInfoSA2PC.Description = txtDesc.Text;
 					modInfoSA2PC.Version = txtVerNum.Text;
 					modInfoSA2PC.Category = comboModCategory.Text;
+					modInfoSA2PC.ModID = textModID.Text;
 					if (chkDLLFile.Checked)
 						modInfoSA2PC.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)
@@ -279,5 +284,62 @@ namespace SAToolsHub
 		{
 
 		}
+
+		#region ModID Generation
+		static string GetGamePrefix()
+		{
+			string prefix = "";
+			switch (SAToolsHub.setGame)
+			{
+				case ("SADXPC"):
+					prefix = "sadx.";
+					break;
+
+				case ("SA2PC"):
+					prefix = "sa2.";
+					break;
+			}
+			return prefix;
+		}
+
+		static string GenerateModID()
+		{
+			return GetGamePrefix() + ((uint)DateTime.Now.GetHashCode()).ToString();
+		}
+
+		static string RemoveSpecialCharacters(string str)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (char c in str)
+			{
+				if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_' || c == '-')
+				{
+					sb.Append(c);
+				}
+			}
+			return sb.ToString().ToLowerInvariant();
+		}
+
+		static bool isStringNotEmpty(string txt)
+		{
+			return txt.Length > 0;
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			textModID.Clear();
+			string name = isStringNotEmpty(txtName.Text) ? txtName.Text : null;
+			string author = isStringNotEmpty(txtAuth.Text) ? txtAuth.Text : null;
+
+			if (name != null && author != null)
+			{
+				string idName = RemoveSpecialCharacters(name);
+				string idAuthor = RemoveSpecialCharacters(author);
+				textModID.Text = String.Format(GetGamePrefix() + "{0}.{1}", idAuthor, idName);
+			}
+			else
+				textModID.Text = GenerateModID();
+		}
+		#endregion
 	}
 }

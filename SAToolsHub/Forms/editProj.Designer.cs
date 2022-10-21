@@ -56,8 +56,11 @@
             this.txtAsset = new System.Windows.Forms.TextBox();
             this.chkUpdates = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.button1 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.comboModCategory = new System.Windows.Forms.ComboBox();
+            this.textModID = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -215,7 +218,6 @@
             // 
             resources.ApplyResources(this.lstGBItems, "lstGBItems");
             this.lstGBItems.Name = "lstGBItems";
-			this.lstGBItems.Text = "Mod";
             // 
             // txtAsset
             // 
@@ -230,22 +232,42 @@
             this.chkUpdates.UseVisualStyleBackColor = true;
             this.chkUpdates.CheckedChanged += new System.EventHandler(this.chkUpdates_CheckedChanged);
             // 
+            // button1
+            // 
+            resources.ApplyResources(this.button1, "button1");
+            this.button1.Name = "button1";
+            this.toolTip1.SetToolTip(this.button1, resources.GetString("button1.ToolTip"));
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // label6
             // 
             resources.ApplyResources(this.label6, "label6");
             this.label6.Name = "label6";
             // 
-            // comboBox1
+            // comboModCategory
             // 
             this.comboModCategory.FormattingEnabled = true;
-            resources.ApplyResources(this.comboModCategory, "comboBox1");
-            this.comboModCategory.Name = "comboBox1";
-			this.comboModCategory.Text = "--Select a category--";
-			// 
-			// editProj
-			// 
-			resources.ApplyResources(this, "$this");
+            resources.ApplyResources(this.comboModCategory, "comboModCategory");
+            this.comboModCategory.Name = "comboModCategory";
+            // 
+            // textModID
+            // 
+            resources.ApplyResources(this.textModID, "textModID");
+            this.textModID.Name = "textModID";
+            // 
+            // label7
+            // 
+            resources.ApplyResources(this.label7, "label7");
+            this.label7.Name = "label7";
+            // 
+            // editProj
+            // 
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.textModID);
             this.Controls.Add(this.comboModCategory);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.chkUpdates);
@@ -300,5 +322,8 @@
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.ComboBox comboModCategory;
+		private System.Windows.Forms.TextBox textModID;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Button button1;
 	}
 }
