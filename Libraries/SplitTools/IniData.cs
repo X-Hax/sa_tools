@@ -4743,6 +4743,23 @@ namespace SplitTools
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
+
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(Position.GetBytes());
+			result.AddRange(Vector.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Roll));
+			result.AddRange(ByteConverter.GetBytes(Angle));
+			result.AddRange(ByteConverter.GetBytes(NearClip));
+			result.AddRange(ByteConverter.GetBytes(FarClip));
+			result.AddRange(LocalX.GetBytes());
+			result.AddRange(LocalY.GetBytes());
+			result.Align(0x40);
+			return result.ToArray();
+		}
 	}
 
 	public class FogData

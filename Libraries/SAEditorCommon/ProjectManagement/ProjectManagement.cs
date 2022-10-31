@@ -698,7 +698,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			{ 
 				sa2Event.Split(filePath, fileOutputFolder);
 				foreach (string ex in filePathEXArr)
-					sa2Event.SplitExtra(ex, fileOutputFolder);
+					sa2EventExtra.Split(ex, fileOutputFolder);
 				sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
 			}
 		}
@@ -737,7 +737,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 				SA2MiniEvent.Split(filePath, fileOutputFolder);
 				foreach (string ex in filePathEXArr)
 				{
-					SA2MiniEvent.SplitExtra(ex, fileOutputFolder);
+					sa2EventExtra.SplitMini(ex, fileOutputFolder);
 				}
 			}
 		}
