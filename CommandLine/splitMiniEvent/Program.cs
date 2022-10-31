@@ -67,7 +67,7 @@ namespace splitMiniEvent
 			Console.WriteLine("Output folder: {0}", fullpath_out);
 			Wildcard mexwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
 			if (mexwcard.IsMatch(name))
-				SA2MiniEvent.SplitExtra(fullpath_bin, fullpath_out);
+				sa2EventExtra.SplitMini(fullpath_bin, fullpath_out);
 			else
 				SA2MiniEvent.Split(fullpath_bin, fullpath_out);
 		}
