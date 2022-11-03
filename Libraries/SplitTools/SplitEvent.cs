@@ -982,7 +982,10 @@ namespace SplitTools.SAArc
 			{
 				int ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
+				{
 					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
+					mtn.OptimizeShape();
+				}
 			}
 			if (mtn == null) return null;
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
@@ -1082,6 +1085,7 @@ namespace SplitTools.SAArc
 		{
 			List<NJS_MOTION> motions = new List<NJS_MOTION>();
 			List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
+			NJS_MOTION mtn;
 			byte[] fc = File.ReadAllBytes(filename);
 			int addr = 0;
 			while (ByteConverter.ToInt64(fc, addr) != 0)
@@ -1094,7 +1098,9 @@ namespace SplitTools.SAArc
 					motions.Add(null);
 				else
 				{
-					motions.Add(new NJS_MOTION(fc, ptr, 0, nummdl));
+					mtn = new NJS_MOTION(fc, ptr, 0, nummdl);
+					mtn.OptimizeShape();
+					motions.Add(mtn);
 					if (nummdl == 1 && camcheck2 == 0x1C10004)
 					{
 						cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));

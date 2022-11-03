@@ -326,7 +326,10 @@ namespace SplitTools.SAArc
 			{
 				int ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
+				{
 					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
+					mtn.OptimizeShape();
+				}
 			}
 			if (mtn == null) return null;
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
