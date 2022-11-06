@@ -70,10 +70,10 @@ namespace splitEvent
 			if (name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
 				sa2Event.SplitExternalTexlist(fullpath_bin, fullpath_out);
 			else if (mexwcard.IsMatch(name))
-				SA2MiniEvent.SplitExtra(fullpath_bin, fullpath_out);
+				sa2EventExtra.SplitMini(fullpath_bin, fullpath_out);
 			else if (exwcard.IsMatch(name))
-				sa2Event.SplitExtra(fullpath_bin, fullpath_out);
-			else if (name.StartsWith("me" , StringComparison.OrdinalIgnoreCase))
+				sa2EventExtra.Split(fullpath_bin, fullpath_out);
+			else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
 				SA2MiniEvent.Split(fullpath_bin, fullpath_out);
 			else
 				sa2Event.Split(fullpath_bin, fullpath_out);

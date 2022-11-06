@@ -98,7 +98,7 @@ namespace SAModel
 
 		public Dictionary<int, AnimModelData> Models = new Dictionary<int, AnimModelData>();
 
-		const bool optimizeMotions = false; // Set to false to preserve duplicate data
+		static bool optimizeMotions = false; // Set to false to preserve duplicate data
 
 		public NJS_MOTION()
 		{
@@ -178,6 +178,11 @@ namespace SAModel
 					return true;
 			}
 			return false;
+		}
+
+		public bool OptimizeShape()
+		{
+			return optimizeMotions = true;
 		}
 
 		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null, string actionName = null, string objectName = null)
