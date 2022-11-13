@@ -626,12 +626,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
 			if (progress != null)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting models from " + splitMDL.ModelFile);
+				progress.SetStep("Splitting data from " + splitMDL.ModelFile);
 			}
 
 			#region Validating Inputs
@@ -653,13 +654,35 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// </summary>
 		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
 		{
-			string filePath = Path.Combine(gameFolder, splitEvent.EventFile);
+			string filePath = Path.Combine(gameFolder, splitEvent.EventFile + ".prs");
+			List<string> filePathEXArr = new List<string>();
+			string filePathTex = Path.Combine(gameFolder, splitEvent.EventFile + "texlist.prs");
+			string ext = null;
+			for (int i = 0; i < 7; i++)
+			{
+				switch (i)
+				{
+					case 0:
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+					case 5:
+						ext = i.ToString();
+						break;
+					case 6:
+						ext = "j";
+						break;
+				}
+				string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.prs");
+				filePathEXArr.Add(filePathEX);
+			}
 			string fileOutputFolder = Path.Combine(outputFolder, "Event\\bin");
 
 			if (progress != null)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting models from " + splitEvent.EventFile);
+				progress.SetStep("Splitting data from " + splitEvent.EventFile);
 			}
 
 			#region Validating Inputs
@@ -671,9 +694,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 			#endregion
-
 			if (overwrite)
+			{ 
 				sa2Event.Split(filePath, fileOutputFolder);
+				foreach (string ex in filePathEXArr)
+					sa2EventExtra.Split(ex, fileOutputFolder);
+				sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
+			}
 		}
 
 		/// <summary>
@@ -681,13 +708,19 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// </summary>
 		public static void SplitTemplateMiniEventEntry(Templates.SplitEntryMiniEvent splitMiniEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
 		{
-			string filePath = Path.Combine(gameFolder, splitMiniEvent.EventFile);
+			string filePath = Path.Combine(gameFolder, splitMiniEvent.EventFile + ".prs");
+			List<string> filePathEXArr = new List<string>();
+			for (int i = 0; i < 6; i++)
+			{
+				string filePathEX = Path.Combine(gameFolder, splitMiniEvent.EventFile + $"_{i}.scr");
+				filePathEXArr.Add(filePathEX);
+			}
 			string fileOutputFolder = Path.Combine(outputFolder, "Event\\bin");
 
 			if (progress != null)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting models from " + splitMiniEvent.EventFile);
+				progress.SetStep("Splitting data from " + splitMiniEvent.EventFile);
 			}
 
 			#region Validating Inputs
@@ -699,9 +732,14 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 				//return (int)ERRORVALUE.NoSourceFile;
 			}
 			#endregion
-
 			if (overwrite)
+			{
 				SA2MiniEvent.Split(filePath, fileOutputFolder);
+				foreach (string ex in filePathEXArr)
+				{
+					sa2EventExtra.SplitMini(ex, fileOutputFolder);
+				}
+			}
 		}
 
 		/// <summary>

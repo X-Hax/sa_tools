@@ -508,6 +508,9 @@ namespace SAModel.SAMDL
 					animationList = new List<NJS_MOTION>(modelFile.Animations);
 					setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = 
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
+					string labelname = Path.ChangeExtension(filename, ".salabel");
+					if (File.Exists(labelname))
+						LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(labelname));
 				}
 				catch (Exception ex)
 				{
@@ -1699,13 +1702,15 @@ namespace SAModel.SAMDL
             {
                 List<Texture> textures = new List<Texture>();
                 List<BMPInfo> texinfo = new List<BMPInfo>();
+				List<string> dupnames = new List<string>();
                 for (int i = 0; i < TexList.TextureNames.Length; i++)
                     for (int j = 0; j < TextureInfo.Length; j++)
-                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant())
+                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() && !dupnames.Contains(TexList.TextureNames[i].ToLowerInvariant())))
                         {
                             texinfo.Add(TextureInfo[j]);
                             textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
-                            continue;
+							dupnames.Add(TextureInfo[j].Name.ToLowerInvariant());
+							continue;
                         }
                 Textures = textures.ToArray();
                 TextureInfoCurrent = texinfo.ToArray();
@@ -2563,6 +2568,9 @@ namespace SAModel.SAMDL
 							return;
 						}
 						NJS_MOTION anim = NJS_MOTION.Load(fn);
+						string labelm = Path.ChangeExtension(fn, ".salabel");
+						if (File.Exists(labelm))
+							LabelMOTION.Load(labelm).Apply(anim);
 						if (first)
 						{
 							first = false;
@@ -2707,6 +2715,9 @@ namespace SAModel.SAMDL
 										case ".saanim":
 										default:
 											mot = NJS_MOTION.Load(filePath);
+											string labelmo = Path.ChangeExtension(filePath, ".salabel");
+											if (File.Exists(labelmo))
+												LabelMOTION.Load(labelmo).Apply(mot);
 											if (first)
 											{
 												first = false;
@@ -4227,22 +4238,6 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		public List<LabelOBJECT> ExportLabels(NJS_OBJECT obj)
-		{
-			List<LabelOBJECT> result = new List<LabelOBJECT>();
-			NJS_OBJECT[] objs = obj.GetObjects();
-			for (int i = 0; i < objs.Length; i++)
-				result.Add(new LabelOBJECT(objs[i]));
-			return result;
-		}
-
-		public void ImportLabels(NJS_OBJECT obj, List<LabelOBJECT> labels)
-		{
-			NJS_OBJECT[] objs = obj.GetObjects();
-			for (int i = 0; i < objs.Length; i++)
-				labels[i].Apply(objs[i]);
-		}
-
 		private void setDefaultAnimationOrientationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (AnimOrientation dlg = new AnimOrientation())
@@ -4255,11 +4250,11 @@ namespace SAModel.SAMDL
 		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
-			using (OpenFileDialog ofd = new OpenFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
+			using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Import Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 			{
 				if (ofd.ShowDialog() == DialogResult.OK)
 				{
-					ImportLabels(model, IniSerializer.Deserialize<List<LabelOBJECT>>(ofd.FileName));
+					LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(ofd.FileName));
 					RebuildModelCache();
 					unsavedChanges = true;
 				}
@@ -4269,11 +4264,9 @@ namespace SAModel.SAMDL
 		private void exportLabelsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string fn = !string.IsNullOrEmpty(currentFileName) ? Path.ChangeExtension(currentFileName, ".salabel") : "model.salabel";
-			using (SaveFileDialog sfd = new SaveFileDialog() { DefaultExt = ".salabel", FileName = Path.GetFileName(fn) })
-			{
+			using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 				if (sfd.ShowDialog() == DialogResult.OK)
-					IniSerializer.Serialize(ExportLabels(model), sfd.FileName);
-			}
+					LabelOBJECT.Save(LabelOBJECT.ExportLabels(model), sfd.FileName);
 		}
 
 		private int ReadNJTL(byte[] file, ref bool basicModel, ref NJS_TEXLIST texList)

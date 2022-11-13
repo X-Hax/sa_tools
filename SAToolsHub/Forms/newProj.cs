@@ -354,6 +354,9 @@ namespace SAToolsHub
 					systemPath = Path.Combine(projFolder, "gd_PC");
 					if (!Directory.Exists(systemPath))
 						Directory.CreateDirectory(systemPath);
+					string prsysPath = Path.Combine(projFolder, "gd_PC", "PRS");
+					if (!Directory.Exists(prsysPath))
+						Directory.CreateDirectory(prsysPath);
 					File.WriteAllLines(projReadMePath, readMeSA2PC);
 					break;
 				default:
@@ -371,7 +374,8 @@ namespace SAToolsHub
 				case ("SADXPC"):
 					SADXModInfo modInfoSADX = new SADXModInfo
 					{
-						Name = name
+						Name = name,
+						ModID = "sadx." + name
 					};
 					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
 
@@ -381,8 +385,9 @@ namespace SAToolsHub
 				case ("SA2PC"):
 					SA2ModInfo modInfoSA2PC = new SA2ModInfo
 					{
-						Name = name
-					};
+						Name = name,
+						ModID = "sa2." + name
+			};
 					outputPath = Path.Combine(projectFolder, string.Format("mod.ini"));
 
 					SplitTools.IniSerializer.Serialize(modInfoSA2PC, outputPath);

@@ -323,6 +323,9 @@ namespace SAModel.SALVL
 			LevelData.leveltexs = null;
 			d3ddevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, System.Drawing.Color.Black.ToRawColorBGRA(), 1, 0);
 			LevelData.geo = land;
+			string labelname = Path.ChangeExtension(filename, ".salabel");
+			if (File.Exists(labelname))
+				LabelLANDTABLE.Load(labelname).Apply(LevelData.geo);
 			LevelData.ClearLevelItems();
 			LevelData.ClearLevelAnims();
 			LevelData.LevelSplines = new List<SplineData>();
@@ -343,10 +346,14 @@ namespace SAModel.SALVL
 			levelPieceToolStripMenuItem.Enabled = isGeometryPresent;
 			objectToolStripMenuItem.Enabled = isSETPreset;
 			missionObjectToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
+			// Render
+			renderToolStripMenuItem.Enabled = true;
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
+			importLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
 			exportToolStripMenuItem.Enabled = isGeometryPresent;
+			exportLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 			// Edit menu
 			// Clear Level
 			clearLevelToolStripMenuItem.Enabled = isGeometryPresent;
@@ -389,6 +396,7 @@ namespace SAModel.SALVL
 			saveAdvancedToolStripMenuItem.Enabled = true;
 			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
 			upgradeObjDefsToolStripMenuItem.Enabled = salvlini != null;
+			currentLandtableFilename = filename;
 		}
 
 		private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -421,10 +429,14 @@ namespace SAModel.SALVL
 			// File menu
 			// Save
 			saveToolStripMenuItem.Enabled = true;
+			// Render
+			renderToolStripMenuItem.Enabled = true;
 			// Import
 			importToolStripMenuItem.Enabled = isGeometryPresent;
+			importLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 			// Export
 			exportToolStripMenuItem.Enabled = isGeometryPresent;
+			exportLabelsToolStripMenuItem.Enabled = isGeometryPresent;
 
 			// Edit menu
 			// Clear Level
@@ -890,6 +902,7 @@ namespace SAModel.SALVL
 				else
 				{
 					LevelData.geo = LandTable.LoadFromFile(level.LevelGeometry);
+					currentLandtableFilename = Path.GetFullPath(level.LevelGeometry);
 					LevelData.ClearLevelItems();
 					LevelData.ClearLevelAnims();
 

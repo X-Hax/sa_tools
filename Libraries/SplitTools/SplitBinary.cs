@@ -206,7 +206,13 @@ namespace SplitTools.Split
                 case "landtable":
                     if (data.CustomProperties.ContainsKey("format"))
                         landfmt_def = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
-                    new LandTable(datafile, address, imageBase, landfmt_def, labels) { Description = itemName }.SaveToFile(fileOutputPath, landfmt_def, nometa);
+					LandTable lt = new LandTable(datafile, address, imageBase, landfmt_def, labels) { Description = itemName };
+					if (nometa)
+					{
+						lt.TextureList = 0;
+						lt.TextureFileName = "";
+					}
+					lt.SaveToFile(fileOutputPath, landfmt_def, nometa);
                     break;
                 case "model":
                 case "basicmodel":

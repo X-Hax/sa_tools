@@ -148,6 +148,7 @@ namespace SAModel.SALVL
 		string systemFallback; // The system/SONICADV folder for cases when the mod doesn't have replacement files
 		string modFolder; // The mod's main folder
 		string modSystemFolder; // The mod's "system" folder, such as SONICADV in SA1 or SYSTEM in SADX
+		string currentLandtableFilename; // Path to the currently loaded .sa?lvl file
 		Dictionary<string, ObjectData> objdefini;
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -251,6 +252,8 @@ namespace SAModel.SALVL
 			// File menu
 			// Save
 			saveToolStripMenuItem.Enabled = false;
+			// Render
+			renderToolStripMenuItem.Enabled = false;
 			// Import
 			importToolStripMenuItem.Enabled = false;
 			// Export
@@ -284,6 +287,10 @@ namespace SAModel.SALVL
 			editLevelInfoToolStripMenuItem.Enabled = false;
 			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
+
+			// Labels import/export
+			importLabelsToolStripMenuItem.Enabled = false;
+			exportLabelsToolStripMenuItem.Enabled = false;
 		}
 
 		void ShowWelcomeScreen()
@@ -2370,6 +2377,61 @@ namespace SAModel.SALVL
 		public void ObjectEditorClosed(object sender, FormClosedEventArgs e)
 		{
 			objectListEditorToolStripMenuItem.Enabled = true;
+		}
+
+		private void renderToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog sfd = new SaveFileDialog
+			{
+				DefaultExt = "png",
+				Title = "Render",
+				Filter = "PNG Files|*.png|All Files|*.*"
+			})
+			{
+				if (sfd.ShowDialog() == DialogResult.OK)
+				{
+					var bgcol = EditorOptions.FillColor;
+					EditorOptions.FillColor = Color.Transparent;
+					using (var backbuf = d3ddevice.GetRenderTarget(0))
+					using (var rt = Surface.CreateRenderTarget(d3ddevice, backbuf.Description.Width, backbuf.Description.Height, Format.A8R8G8B8, backbuf.Description.MultiSampleType, backbuf.Description.MultiSampleQuality, false))
+					{
+						d3ddevice.SetRenderTarget(0, rt);
+						DrawLevel();
+						using (var surf = Surface.CreateOffscreenPlain(d3ddevice, backbuf.Description.Width, backbuf.Description.Height, Format.A8R8G8B8, Pool.SystemMemory))
+						{
+							d3ddevice.GetRenderTargetData(rt, surf);
+							var rect = surf.LockRectangle(LockFlags.ReadOnly);
+							using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(backbuf.Description.Width, backbuf.Description.Height, rect.Pitch, System.Drawing.Imaging.PixelFormat.Format32bppArgb, rect.DataPointer))
+								bmp.Save(sfd.FileName);
+						}
+						d3ddevice.SetRenderTarget(0, backbuf);
+						EditorOptions.FillColor = bgcol;
+					}
+				}
+			}
+		}
+
+		private void importLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string fn = !string.IsNullOrEmpty(currentLandtableFilename) ? Path.ChangeExtension(currentLandtableFilename, ".salabel") : "level.salabel";
+			using (OpenFileDialog ofd = new OpenFileDialog() { Title = "Import Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
+			{
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					LabelLANDTABLE labels = LabelLANDTABLE.Load(ofd.FileName);
+					labels.Apply(LevelData.geo);
+					LevelData.InvalidateRenderState();
+					NeedRedraw = true;
+				}
+			}
+		}
+
+		private void exportLabelsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string fn = !string.IsNullOrEmpty(currentLandtableFilename) ? Path.ChangeExtension(currentLandtableFilename, ".salabel") : "level.salabel";
+			using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
+				if (sfd.ShowDialog() == DialogResult.OK)
+					new LabelLANDTABLE(LevelData.geo).Save(sfd.FileName);
 		}
 	}
 }

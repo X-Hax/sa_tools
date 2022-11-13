@@ -15,14 +15,16 @@ namespace SplitTools.SAArc
 		static List<string> nodenames = new List<string>();
 		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
-		static Dictionary<string, NinjaCamInfo> ninjacameras = new Dictionary<string, NinjaCamInfo>();
+		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
+		static Dictionary<string, TexAnimFileInfo> texanimfiles = new Dictionary<string, TexAnimFileInfo>();
 
 		public static void Split(string filename, string outputPath)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
-			ninjacameras.Clear();
+			camarrayfiles.Clear();
 			motionfiles.Clear();
+			texanimfiles.Clear();
 			string dir = Environment.CurrentDirectory;
 			try
 			{
@@ -38,7 +40,6 @@ namespace SplitTools.SAArc
 					fc = Prs.Decompress(evfilename);
 				else
 					fc = File.ReadAllBytes(evfilename);
-				//Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 				EventIniData ini = new EventIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
@@ -49,10 +50,9 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 					Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
-				//string path = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(evfilename)), Path.GetFileNameWithoutExtension(evfilename))).FullName;
 				uint key;
 				List<NJS_MOTION> motions = null;
-				List<NinjaCamera> ncam = null;
+				List<NJS_CAMERA> ncams = null;
 				bool battle;
 				bool dcbeta;
 				if (fc[0] == 0x81)
@@ -66,9 +66,13 @@ namespace SplitTools.SAArc
 						battle = true;
 						dcbeta = false;
 						motions = ReadMotionFile(Path.ChangeExtension(evfilename, null) + "motion.bin");
+						ncams = ReadMotionFileCams(Path.ChangeExtension(evfilename, null) + "motion.bin");
 						ini.Motions = motions.Select(a => a?.Name).ToList();
 						foreach (var mtn in motions.Where(a => a != null))
 							motionfiles[mtn.Name] = new MotionInfo(null, mtn);
+						ini.NinjaCameras = ncams.Select(a => a?.Name).ToList();
+						foreach (var camdata in ncams.Where(a => a != null))
+							camarrayfiles[camdata.Name] = new CameraInfo(null, camdata);
 					}
 					else
 					{
@@ -140,6 +144,8 @@ namespace SplitTools.SAArc
 								int ptr2 = fc.GetPointer(ptr + 4, key);
 								if (ptr2 != 0)
 									info.AttachNode1 = $"object_{ptr2:X8}";
+								else
+									info.AttachNode1 = null;
 								int ptr3 = fc.GetPointer(ptr + 8, key);
 								if (ptr3 != 0)
 								{
@@ -147,12 +153,18 @@ namespace SplitTools.SAArc
 									Console.WriteLine($"Event contains {upnam}.");
 									upcount++;
 								}
+								else
+									info.Model1 = null;
 								ptr2 = fc.GetPointer(ptr + 0xC, key);
 								if (ptr2 != 0)
 									info.AttachNode2 = $"object_{ptr2:X8}";
+								else
+									info.AttachNode2 = null;
 								ptr3 = fc.GetPointer(ptr + 0x10, key);
 								if (ptr3 != 0)
 									info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
+								else
+									info.Model2 = null;
 							}
 							ini.Upgrades.Add(info);
 							ptr += 0x14;
@@ -188,6 +200,8 @@ namespace SplitTools.SAArc
 								int ptr2 = fc.GetPointer(ptr + 4, key);
 								if (ptr2 != 0)
 									info.AttachNode1 = $"object_{ptr2:X8}";
+								else
+									info.AttachNode1 = null;
 								int ptr3 = fc.GetPointer(ptr + 8, key);
 								if (ptr3 != 0)
 								{
@@ -195,12 +209,18 @@ namespace SplitTools.SAArc
 									Console.WriteLine($"Event contains {upnam}.");
 									upcount++;
 								}
+								else
+									info.Model1 = null;
 								ptr2 = fc.GetPointer(ptr + 0xC, key);
 								if (ptr2 != 0)
 									info.AttachNode2 = $"object_{ptr2:X8}";
+								else
+									info.AttachNode2 = null;
 								ptr3 = fc.GetPointer(ptr + 0x10, key);
 								if (ptr3 != 0)
 									info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
+								else
+									info.Model2 = null;
 							}
 							ini.Upgrades.Add(info);
 							ptr += 0x14;
@@ -278,12 +298,15 @@ namespace SplitTools.SAArc
 						ptr2 = fc.GetPointer(ptr + 8, key);
 						if (ptr2 != 0)
 						{
+							int camaddr = ByteConverter.ToInt32(fc, ptr2 + 0xC);
 							int cnt = ByteConverter.ToInt32(fc, ptr + 12);
 							for (int i = 0; i < cnt; i++)
 							{
 								scn.CameraMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1}.saanim", motions, 1));
-								if (!battle)
-									scn.NinjaCameras.Add(GetNinjaCam(fc, fc.GetPointer(ptr2, key) + 0xC, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini"));
+								if (battle)
+									scn.NinjaCameras.Add(GetGCCamData(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini", ncams));
+								else
+									scn.NinjaCameras.Add(GetCamData(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini", ncams));
 								ptr2 += sizeof(int);
 							}
 						}
@@ -347,7 +370,7 @@ namespace SplitTools.SAArc
 					{
 						Console.WriteLine("Event contains an internal texture list.");
 						NJS_TEXLIST tls = new NJS_TEXLIST(fc, ptr, key);
-						ini.Texlist = GetTexlist(fc, ptr, key, "InternalTexlist.satex");
+						ini.Texlist = GetTexlist(fc, 4, key, "InternalTexlist.satex");
 						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "InternalTexlist.satex");
 						tls.Save(fp);
 						ini.Files.Add("InternalTexlist.satex", HelperFunctions.FileHash(fp));
@@ -361,17 +384,12 @@ namespace SplitTools.SAArc
 					ushort start = ByteConverter.ToUInt16(fc, ptr);
 					if (start > 0)
 					{
-						int tls = fc.GetPointer(4, key);
-						int texnum = ByteConverter.ToInt32(fc, tls + 4);
 						Console.WriteLine("Event contains internal texture sizes.");
-						for (int i = 0; i < texnum; i++)
-						{
-							TexSizes sizes = new TexSizes();
-							sizes.H = ByteConverter.ToUInt16(fc, ptr);
-							sizes.V = ByteConverter.ToUInt16(fc, ptr + 2);
-							ini.TexSizes.Add(sizes);
-							ptr += 4;
-						}
+						TexSizes tsz = new TexSizes(fc, ptr);
+						ini.TexSizes = GetTexSizes(fc, 0xC, key, "TextureSizes.ini");
+						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "TextureSizes.ini");
+						tsz.Save(fp);
+						ini.Files.Add("TextureSizes.ini", HelperFunctions.FileHash(fp));
 					}
 					else
 						Console.WriteLine("Event does not contain internal texture sizes.");
@@ -381,7 +399,20 @@ namespace SplitTools.SAArc
 				{
 					uint start = ByteConverter.ToUInt32(fc, ptr);
 					if (start > 0)
+					{
+						int rptr = fc.GetPointer(ptr + 0x84, key);
+						ReflectionInfo refl = new ReflectionInfo();
+						refl.Unk1 = ByteConverter.ToInt32(fc, ptr);
+						refl.Unk2 = ByteConverter.ToInt32(fc, ptr + 4);
+						//There's a huge gap here of 0x7C. Investigate further.
+						ReflectionMatrixData rmx = new ReflectionMatrixData(fc, rptr);
+						refl.ReflectData = GetReflectData(fc, ptr + 0x84, key, "ReflectionData.ini");
+						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "ReflectionData.ini");
+						rmx.Save(fp);
+						ini.Files.Add("ReflectionData.ini", HelperFunctions.FileHash(fp));
+						ini.ReflectionInfo.Add(refl);
 						Console.WriteLine("Event contains character reflection info.");
+					}
 					else
 						Console.WriteLine("Event does not contain character reflection info.");
 				}
@@ -409,12 +440,98 @@ namespace SplitTools.SAArc
 				if (ptr == 0 || dcbeta && ((fc[37] == 0x25) || (fc[38] == 0x22)))
 					Console.WriteLine("Event does not contain texture animation data.");
 				else
-					Console.WriteLine("Event contains texture animation data.");
+				{
+					Directory.CreateDirectory(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "Texture Animations"));
+					TexAnimInfo tanim = new TexAnimInfo();
+					int ptr2 = fc.GetPointer(ptr, key);
+					if (battle)
+					{
+						int tn = ByteConverter.ToInt32(fc, ptr + 8);
+						int tanimcount = 0;
+						for (int d = 0; d < 3; d++)
+						{
+							TexAnimMain main = new TexAnimMain();
+							int mptr = fc.GetPointer(ptr2, key);
+							int taptr = fc.GetPointer(ptr2 + 8, key);
+							int tanims = ByteConverter.ToInt32(fc, ptr2 + 4);
+							if (mptr != 0)
+							{
+								tanimcount++;
+								main.Model = $"object_{mptr:X8}";
+								main.TexAnimDataEntries = ByteConverter.ToInt32(fc, ptr2 + 4);
+								for (int t = 0; t < tanims; t++)
+								{
+									main.TexAnimPointers.Add(GetTexanim(fc, taptr, key, $"Texture Animations\\TexanimInfo {d + 1} Part {t + 1}.ini"));
+									taptr += 0x4;
+								}
+							}
+							else
+								break;
+							tanim.MainData.Add(main);
+							ptr2 += 0xC;
+						}
+						int ptr3 = fc.GetPointer(ptr + 4, key);
+						for (int i = 0; i < tn; i++)
+						{
+							TexAnimGCIDs tgcids = new TexAnimGCIDs();
+							tgcids.TexID = ByteConverter.ToInt32(fc, ptr3);
+							tgcids.TexLoopNumber = ByteConverter.ToInt32(fc, ptr3 + 4);
+							tanim.TexAnimGCIDs.Add(tgcids);
+							ptr3 += 0x8;
+						}
+						tanim.TexAnimMainDataEntries = ByteConverter.ToInt32(fc, ptr + 8);
+						ini.TextureAnimations.Add(tanim);
+						if (tn != tanimcount)
+							Console.WriteLine("Event contains {0} mode{1} with texture animation data. {2} data se{3} {4} used.", $"{tanimcount}", tanimcount == 1 ? "l" : "ls", tn == 1 ? "Only the first" : $"The first {tn}", tn == 1 ? "t" : "ts", tn == 1 ? "is" : "are");
+						else
+							Console.WriteLine("Event contains {0} mode{1} with texture animation data.", $"{tanimcount}", tanimcount == 1 ? "l" : "ls");
+					}
+					else
+					{
+						int tanimcount = 0;
+						for (int d = 0; d < 3; d++)
+						{
+							TexAnimMain main = new TexAnimMain();
+							int mptr = fc.GetPointer(ptr2, key);
+							int taptr = fc.GetPointer(ptr2 + 8, key);
+							int tanims = ByteConverter.ToInt32(fc, ptr2 + 4);
+							if (mptr != 0)
+							{
+								tanimcount++;
+								main.Model = $"object_{mptr:X8}";
+								main.TexAnimDataEntries = ByteConverter.ToInt32(fc, ptr2 + 4);
+								for (int t = 0; t < tanims; t++)
+								{
+									main.TexAnimPointers.Add(GetTexanim(fc, taptr, key, $"Texture Animations\\TexanimInfo {d + 1} Part {t + 1}.ini"));
+									taptr += 0x4;
+								}
+							}
+							else
+								break;
+							tanim.MainData.Add(main);
+							ptr2 += 0xC;
+						}
+						tanim.TexID = ByteConverter.ToInt32(fc, ptr + 4);
+						tanim.TexLoopNumber = ByteConverter.ToInt32(fc, ptr + 8);
+						ini.TextureAnimations.Add(tanim);
+						if (tanimcount != 1)
+							Console.WriteLine("Event contains {0} models with texture animation data. Only the first data set is used.", $"{tanimcount}");
+						else
+							Console.WriteLine("Event contains 1 model with texture animation data.");
+					}
+
+				}	
 				int shmap = ByteConverter.ToInt32(fc, 0x28);
 				if (battle && shmap == 0)
+				{
 					Console.WriteLine("Event does not use GC shadow maps.");
+					ini.GCShadowMaps = false;
+				}
 				if (battle && shmap == 1)
+				{
 					Console.WriteLine("Event uses GC shadow maps.");
+					ini.GCShadowMaps = true;
+				}
 				foreach (var item in motionfiles.Values)
 				{
 					string fn = item.Filename ?? $"Unknown Motion {motions.IndexOf(item.Motion)}.saanim";
@@ -422,11 +539,18 @@ namespace SplitTools.SAArc
 					item.Motion.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
-				foreach (var item in ninjacameras.Values)
+				foreach (var item in camarrayfiles.Values)
 				{
 					string fn = item.Filename;
 					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
-					item.NinjaCam.Save(fp);
+					item.CamData.Save(fp);
+					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
+				}
+				foreach (var item in texanimfiles.Values)
+				{
+					string fn = item.Filename;
+					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					item.TextureAnimation.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in modelfiles.Values)
@@ -449,6 +573,81 @@ namespace SplitTools.SAArc
 			}
 		}
 
+		public static void SplitExternalTexlist(string filename, string outputPath)
+		{
+			string dir = Environment.CurrentDirectory;
+			try
+			{
+				if (outputPath[outputPath.Length - 1] != '/') outputPath = string.Concat(outputPath, "/");
+				// get file name, read it from the console if nothing
+				string evfilename = filename;
+
+				evfilename = Path.GetFullPath(evfilename);
+
+				Console.WriteLine("Splitting file {0}...", evfilename);
+				byte[] fc;
+				if (Path.GetExtension(evfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					fc = Prs.Decompress(evfilename);
+				else
+					fc = File.ReadAllBytes(evfilename);
+				EventTexlistData satx = new EventTexlistData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
+				if (outputPath.Length != 0)
+				{
+					if (!Directory.Exists(outputPath))
+						Directory.CreateDirectory(outputPath);
+					Environment.CurrentDirectory = outputPath;
+				}
+				else
+					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
+				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
+				uint key;
+				if (fc[4] == 0xC && fc[3] == 0xBC)
+				{
+					Console.WriteLine("File is in DC format.");
+					ByteConverter.BigEndian = false;
+					key = 0xCBC0000;
+					satx.Game = Game.SA2;
+				}
+				else
+				{
+					if (fc[0] == 0)
+					{
+						Console.WriteLine("File is in GC/PC format.");
+						ByteConverter.BigEndian = true;
+						key = 0;
+						satx.Game = Game.SA2B;
+					}
+					else
+					{
+						Console.WriteLine("File is in GC/PC Beta format.");
+						ByteConverter.BigEndian = true;
+						key = 0x818BFE60;
+						satx.Game = Game.SA2B;
+					}
+				}
+
+				int ptr = fc.GetPointer(0, key);
+				if (ptr != 0)
+				{
+					NJS_TEXLIST tls = new NJS_TEXLIST(fc, ptr, key);
+					satx.Texlist = GetTexlist(fc, 0, key, "ExternalTexlist.satex");
+					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "ExternalTexlist.satex");
+					tls.Save(fp);
+					satx.Files.Add("ExternalTexlist.satex", HelperFunctions.FileHash(fp));
+				}
+				JsonSerializer js = new JsonSerializer
+				{
+					Formatting = Formatting.Indented,
+					NullValueHandling = NullValueHandling.Ignore
+				};
+				using (var tw = File.CreateText(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), Path.ChangeExtension(Path.GetFileName(evfilename), ".json"))))
+					js.Serialize(tw, satx);
+			}
+			finally
+			{
+				Environment.CurrentDirectory = dir;
+			}
+		}
 		public static void Build(string filename)
 		{
 			nodenames.Clear();
@@ -686,9 +885,51 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = dir;
 			}
 		}
+		//public static void BuildTexlist(bool? isBigEndian, string filename)
+		//{
+		//	string dir = Environment.CurrentDirectory;
+		//	try
+		//	{
+		//		byte[] fc;
+		//		if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+		//			fc = Prs.Decompress(filename);
+		//		else
+		//			fc = File.ReadAllBytes(filename);
+		//		string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+		//		JsonSerializer js = new JsonSerializer();
+		//		EventExtraIniData ini;
+		//		using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+		//		using (JsonTextReader jtr = new JsonTextReader(tr))
+		//			ini = js.Deserialize<EventExtraIniData>(jtr);
+		//		bool battle = ini.Game == Game.SA2B;
+		//		bool dcbeta = ini.Game == Game.SA2;
+		//		if (!isBigEndian.HasValue)
+		//			ByteConverter.BigEndian = ini.BigEndian;
+		//		else
+		//			ByteConverter.BigEndian = isBigEndian.Value;
+		//		List<byte> texdata = new List<byte>();
+		//		foreach (SubtitleInfo subs in ini.Subtitles)
+		//		{
+		//			texdata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
+		//			texdata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
+		//		}
+		//		foreach (AudioInfo audio in ini.AudioInfo)
+		//		{
+		//			texdata.AddRange(audio.GetBytes());
+		//		}
+		//		if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+		//			FraGag.Compression.Prs.Compress(texdata.ToArray(), filename);
+		//		else
+		//			File.WriteAllBytes(filename, texdata.ToArray());
+		//	}
+		//	finally
+		//	{
+		//		Environment.CurrentDirectory = dir;
+		//	}
+		//}
 
-			//Get Functions
-			private static string GetModel(byte[] fc, int address, uint key, string fn)
+		//Get Functions
+		private static string GetModel(byte[] fc, int address, uint key, string fn)
 			{
 				string name = null;
 				int ptr3 = fc.GetPointer(address, key);
@@ -732,7 +973,7 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
-		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt, bool cam = false)
+		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt)
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
@@ -741,7 +982,10 @@ namespace SplitTools.SAArc
 			{
 				int ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
+				{
 					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
+					mtn.OptimizeShape();
+				}
 			}
 			if (mtn == null) return null;
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
@@ -760,19 +1004,79 @@ namespace SplitTools.SAArc
 			return name;
 		}
 
-		private static string GetNinjaCam(byte[] fc, int address, uint key, string fn)
+		private static string GetTexSizes(byte[] fc, int address, uint key, string fn)
 		{
-			NinjaCamera ncam = null;
 			string name = null;
 			int ptr3 = fc.GetPointer(address, key);
 			if (ptr3 != 0)
 			{
-				name = $"ninjacam_{ptr3:X8}";
-				ncam = new NinjaCamera(fc, ptr3);
+				name = $"texsizes_{ptr3:X8}";
+			}
+			return name;
+		}
+
+		private static string GetReflectData(byte[] fc, int address, uint key, string fn)
+		{
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"matrix_{ptr3:X8}";
+			}
+			return name;
+		}
+
+		private static string GetCamData(byte[] fc, int address, uint key, string fn, List<NJS_CAMERA> ncams)
+		{
+			NJS_CAMERA ncam = null;
+			if (ncams != null)
+				ncam = ncams[ByteConverter.ToInt32(fc, address + 0xC)];
+			else
+			{
+				int ptr3 = fc.GetPointer(address, key);
+				if (ptr3 != 0)
+				{
+					ncam = new NJS_CAMERA(fc, ptr3 + 0xC, key);
+				}
 			}
 			if (ncam == null) return null;
-			if (!ninjacameras.ContainsKey(name) || ninjacameras[name].Filename == null)
-				ninjacameras[name] = new NinjaCamInfo(fn, ncam);
+			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			return ncam.Name;
+		}
+
+		private static string GetGCCamData(byte[] fc, int address, uint key, string fn, List<NJS_CAMERA> ncams)
+		{
+			NJS_CAMERA ncam = null;
+			if (ncams != null)
+				ncam = ncams[ByteConverter.ToInt32(fc, address)];
+			else
+			{
+				int ptr3 = fc.GetPointer(address, key);
+				if (ptr3 != 0)
+				{
+					ncam = new NJS_CAMERA(fc, ptr3, key);
+				}
+			}
+			if (ncam == null) return null;
+			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			return ncam.Name;
+		}
+
+		private static string GetTexanim(byte[] fc, int address, uint key, string fn)
+		{
+			EV_TEXANIM texanim = null;
+			string name = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				name = $"texanim_{ptr3:X8}";
+				texanim = new EV_TEXANIM(fc, ptr3, key);
+			}
+			if (texanim == null) return null;
+			if (!texanimfiles.ContainsKey(name) || texanimfiles[name].Filename == null)
+				texanimfiles[name] = new TexAnimFileInfo(fn, texanim);
 			return name;
 		}
 
@@ -780,41 +1084,58 @@ namespace SplitTools.SAArc
 		private static List<NJS_MOTION> ReadMotionFile(string filename)
 		{
 			List<NJS_MOTION> motions = new List<NJS_MOTION>();
+			List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
+			NJS_MOTION mtn;
 			byte[] fc = File.ReadAllBytes(filename);
 			int addr = 0;
 			while (ByteConverter.ToInt64(fc, addr) != 0)
 			{
 				int ptr = ByteConverter.ToInt32(fc, addr);
+				int nummdl = ByteConverter.ToInt32(fc, addr + 4);
+				int camcheck1 = fc.GetPointer(addr, 0);
+				uint camcheck2 = ByteConverter.ToUInt32(fc, camcheck1 + 8);
 				if (ptr == -1)
 					motions.Add(null);
 				else
-					motions.Add(new NJS_MOTION(fc, ptr, 0, ByteConverter.ToInt32(fc, addr + 4)));
+				{
+					mtn = new NJS_MOTION(fc, ptr, 0, nummdl);
+					mtn.OptimizeShape();
+					motions.Add(mtn);
+					if (nummdl == 1 && camcheck2 == 0x1C10004)
+					{
+						cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));
+					}
+				}
 				addr += 8;
 			}
 			return motions;
 		}
 
-		private static List<NinjaCamera> ReadMotionFileNCam(string filename)
+		private static List<NJS_CAMERA> ReadMotionFileCams(string filename)
 		{
-			List<NJS_MOTION> motions = new List<NJS_MOTION>();
-			List<NinjaCamera> ncam = new List<NinjaCamera>();
+			List<NJS_CAMERA> cam = new List<NJS_CAMERA>();
 			byte[] fc = File.ReadAllBytes(filename);
 			int addr = 0;
 			while (ByteConverter.ToInt64(fc, addr) != 0)
 			{
 				int ptr = ByteConverter.ToInt32(fc, addr);
-				int attr = ByteConverter.ToInt32(fc, ptr + 8);
+				int nummdl = ByteConverter.ToInt32(fc, addr + 4);
+				int camcheck1 = fc.GetPointer(addr, 0);
+				uint camcheck2 = ByteConverter.ToUInt32(fc, camcheck1 + 8);
 				if (ptr == -1)
-					motions.Add(null);
+					cam.Add(null);
 				else
 				{
-					motions.Add(new NJS_MOTION(fc, ptr, 0, ByteConverter.ToInt32(fc, addr + 4)));
-					if (attr == 0x1C10004)
-						ncam.Add(new NinjaCamera(fc, fc.GetPointer(ptr + 0xC, 0)));
-				}
-				addr += 8;
+					if (nummdl == 1 && camcheck2 == 0x1C10004)
+					{
+						cam.Add(new NJS_CAMERA(fc, ptr + 0xC, 0));
+					}
+					else
+						cam.Add(null);
 			}
-			return ncam;
+			addr += 8;
+			}
+			return cam;
 		}
 
 		public static bool ContainsKeySafe<TValue>(this IDictionary<string, TValue> dict, string key)
@@ -850,15 +1171,27 @@ namespace SplitTools.SAArc
 		}
 	}
 
-	public class NinjaCamInfo
+	public class CameraInfo
 	{
 		public string Filename { get; set; }
-		public NinjaCamera NinjaCam { get; set; }
+		public NJS_CAMERA CamData { get; set; }
 
-		public NinjaCamInfo(string fn, NinjaCamera ncam)
+		public CameraInfo(string fn, NJS_CAMERA ncam)
 		{
 			Filename = fn;
-			NinjaCam = ncam;
+			CamData = ncam;
+		}
+	}
+
+	public class TexAnimFileInfo
+	{
+		public string Filename { get; set; }
+		public EV_TEXANIM TextureAnimation { get; set; }
+
+		public TexAnimFileInfo(string fn, EV_TEXANIM texanim)
+		{
+			Filename = fn;
+			TextureAnimation = texanim;
 		}
 	}
 
@@ -879,8 +1212,11 @@ namespace SplitTools.SAArc
 		public Dictionary<int, string> MechParts { get; set; } = new Dictionary<int, string>();
 		public string TailsTails { get; set; }
 		public string Texlist { get; set; }
-		public List<TexSizes> TexSizes { get; set; } = new List<TexSizes>();
+		public string TexSizes { get; set; }
+		public bool GCShadowMaps { get; set; }
 		public List<SceneInfo> Scenes { get; set; } = new List<SceneInfo>();
+		public List<TexAnimInfo> TextureAnimations { get; set; } = new List<TexAnimInfo>();
+		public List<ReflectionInfo> ReflectionInfo { get; set; } = new List<ReflectionInfo>();
 		public List<string> Motions { get; set; }
 		public List<string> NinjaCameras { get; set; }
 	}
@@ -922,9 +1258,272 @@ namespace SplitTools.SAArc
 		public List<string[]> Motions { get; set; } = new List<string[]>();
 		public int Unknown { get; set; }
 	}
+
+	[Serializable]
 	public class TexSizes
 	{
-		public ushort H { get; set; }
-		public ushort V { get; set; }
+		public string Name { get; set; }
+		public List<TexSizeArray> TextureSize { get; set; } = new List<TexSizeArray>();
+
+		public TexSizes(byte[] file, int address, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "texsizes_" + address.ToString("X8");
+			TextureSize = new List<TexSizeArray>();
+			int numtex = ByteConverter.ToInt32(file, address - 4);
+			for (int i = 0; i < numtex; i++)
+			{
+				TextureSize.Add(new TexSizeArray(file, address));
+				address += 0x4;
+			}
+
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+	}
+
+	[Serializable]
+	public class TexSizeArray
+	{
+		[IniAlwaysInclude]
+		public short H { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
+
+		public TexSizeArray(byte[] file, int address)
+		{
+			H = ByteConverter.ToInt16(file, address);
+			V = ByteConverter.ToInt16(file, address + 2);
+		}
+
+		public static int Size { get { return 0x4; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(H));
+			result.AddRange(ByteConverter.GetBytes(V));
+			result.Align(4);
+			return result.ToArray();
+		}
+	}
+	public class TexAnimInfo
+	{
+		public List<TexAnimMain> MainData { get; set; } = new List<TexAnimMain>();
+		public List<TexAnimGCIDs> TexAnimGCIDs { get; set; } = new List<TexAnimGCIDs>();
+		public int TexID { get; set; }
+		public int TexLoopNumber { get; set; }
+		public int TexAnimMainDataEntries { get; set; }
+
+	}
+	public class TexAnimGCIDs
+	{
+		public int TexID { get; set; }
+		public int TexLoopNumber { get; set; }
+
+		public static int Size { get { return 0x8; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(TexID));
+			result.AddRange(ByteConverter.GetBytes(TexLoopNumber));
+			result.Align(8);
+			return result.ToArray();
+		}
+	}
+
+	public class TexAnimMain
+	{
+		public string Model { get; set; }
+		public int TexAnimDataEntries { get; set; }
+		public List<string> TexAnimPointers { get; set; } = new List<string>();
+	}
+
+	public class ReflectionInfo
+	{
+		public int Unk1 { get; set; }
+		public int Unk2 { get; set; }
+		public string ReflectData { get; set; }
+	}
+
+	[Serializable]
+	public class ReflectionMatrixData
+	{
+		public string Name { get; set; }
+		public Vertex Data1 { get; set; }
+		public Vertex Data2 { get; set; }
+		public Vertex Data3 { get; set; }
+		public Vertex Data4 { get; set; }
+
+		public ReflectionMatrixData(byte[] file, int address, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "matrix_" + address.ToString("X8");
+			Data1 = new Vertex(file, address);
+			Data2 = new Vertex(file, address + 0xC);
+			Data3 = new Vertex(file, address + 0x18);
+			Data4 = new Vertex(file, address + 0x24);
+		}
+
+		public static int Size { get { return 0x30; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(Data1.GetBytes());
+			result.AddRange(Data2.GetBytes());
+			result.AddRange(Data3.GetBytes());
+			result.AddRange(Data4.GetBytes());
+			result.Align(0x30);
+			return result.ToArray();
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+	}
+
+	[Serializable]
+	public class EV_TEXANIM
+	{
+		public string Name { get; set; }
+		[IniAlwaysInclude]
+		public int TextureID { get; set; }
+		public string MaterialTexAddress { get; set; }
+		[IniAlwaysInclude]
+		public int UVEditEntries { get; set; }
+		public string TexanimArrayName { get; set; }
+		public List<UVData> UVEditData { get; set; }
+
+		public EV_TEXANIM(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "texanim_" + address.ToString("X8");
+			TextureID = ByteConverter.ToInt32(file, address);
+			uint MaterialOffset = ByteConverter.ToUInt32(file, address + 4);
+			int MaterialAddr = (int)(MaterialOffset - imageBase);
+			if (labels != null && labels.ContainsKey(MaterialAddr))
+				MaterialTexAddress = labels[MaterialAddr];
+			else
+				MaterialTexAddress = "mattex_" + MaterialAddr.ToString("X8");
+			UVEditEntries = ByteConverter.ToInt32(file, address + 8);
+			uint TexanimArrayOffset = ByteConverter.ToUInt32(file, address + 0xC);
+			int TexanimArrayAddr = (int)(TexanimArrayOffset - imageBase);
+			if (labels != null && labels.ContainsKey(TexanimArrayAddr))
+				TexanimArrayName = labels[TexanimArrayAddr];
+			else
+				TexanimArrayName = "uvanim_" + TexanimArrayAddr.ToString("X8");
+			UVEditData = new List<UVData>();
+			if (TexanimArrayOffset != 0)
+			{
+				for (int i = 0; i < UVEditEntries; i++)
+				{
+					UVEditData.Add(new UVData(file, TexanimArrayAddr, imageBase));
+					TexanimArrayAddr += 0x8;
+				}
+			}
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+	}
+	[Serializable]
+	public class UVData
+	{
+		public string UVAddress { get; set; }
+		[IniAlwaysInclude]
+		public short U { get; set; }
+		[IniAlwaysInclude]
+		public short V { get; set; }
+
+		public UVData(byte[] file, int address, uint imageBase)
+		{
+			uint uvaddr = ByteConverter.ToUInt32(file, address);
+			int ptr = (int)(uvaddr - imageBase);
+			UVAddress = "uv_" + ptr.ToString("X8");
+			U = ByteConverter.ToInt16(file, address + 4);
+			V = ByteConverter.ToInt16(file, address + 6);
+
+		}
+	}
+
+	[Serializable]
+	public class NJS_CAMERA
+	{
+		public string Name { get; set; }
+		public string NinjaCameraName { get; set; }
+		public NinjaCamera NinjaCameraData { get; set; }
+		public string CameraAnimation { get; set; }
+
+		public NJS_CAMERA(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
+		{
+			if (labels != null && labels.ContainsKey(address))
+				Name = labels[address];
+			else
+				Name = "camdata_" + address.ToString("X8");
+			uint ncamaddr = ByteConverter.ToUInt32(file, address);
+			uint animaddr = ByteConverter.ToUInt32(file, address + 4);
+			int ncamptr = (int)(ncamaddr - imageBase);
+			int animptr = (int)(animaddr - imageBase);
+			if (labels != null && labels.ContainsKey(ncamptr))
+				NinjaCameraName = labels[ncamptr];
+			else
+				NinjaCameraName = "ninjacam_" + ncamptr.ToString("X8");
+			NinjaCameraData = new NinjaCamera(file, ncamptr);
+			if (labels != null && labels.ContainsKey(animptr))
+				CameraAnimation = labels[animptr];
+			else
+				CameraAnimation = "animation_" + animptr.ToString("X8");
+		}
+
+		public static NJS_CAMERA[] Load(string filename)
+		{
+			return IniSerializer.Deserialize<NJS_CAMERA[]>(filename);
+		}
+
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels)
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(NinjaCameraData.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(labels[NinjaCameraName]));
+			result.AddRange(ByteConverter.GetBytes(labels[CameraAnimation]));
+			result.Align(0x40);
+			return result.ToArray();
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+	}
+
+	public class EventTexlistData
+	{
+		public string Name { get; set; }
+		[JsonIgnore]
+		public Game Game { get; set; }
+		[JsonProperty(PropertyName = "Game")]
+		public string GameString
+		{
+			get { return Game.ToString(); }
+			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+		}
+		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
+		public string Texlist { get; set; }
 	}
 }

@@ -4,6 +4,9 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using SAModel.SAEditorCommon.ProjectManagement;
+using SplitTools;
+using Newtonsoft.Json;
+using System.ServiceModel.Channels;
 
 namespace SAModel.DataToolbox
 {
@@ -120,9 +123,33 @@ namespace SAModel.DataToolbox
             comboBoxLabels.SelectedIndex = 0;
         }
 
+		private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			switch (tabControl1.SelectedTab.Text)
+			{
+				case "Binary Data Extractor":
+					toolStripStatusLabelTabDesc.Text = "Extract data from binary files and export it as C structs, Ninja ASCII or JSON.";
+					break;
+				case "Struct Converter":
+					toolStripStatusLabelTabDesc.Text = "Batch export level, model and animation files to C structs, Ninja ASCII or JSON.";
+					break;
+				case "Split":
+					toolStripStatusLabelTabDesc.Text = "Split binary files using a template for a supported game with or without labels.";
+					break;
+				case "SplitMDL":
+					toolStripStatusLabelTabDesc.Text = "Split SA2/SA2B MDL files.";
+					break;
+				case "Scanner":
+					toolStripStatusLabelTabDesc.Text = "Scan binary files for different types of data.";
+					break;
+				case "Label Tool":
+					toolStripStatusLabelTabDesc.Text = "Batch import and export .salabel files for levels, models and animations.";
+					break;
+			}
+		}
 
-        #region Binary Data Extractor Tab
-        public struct BinaryModelType
+		#region Binary Data Extractor Tab
+		public struct BinaryModelType
 		{
 			public string name_or_type;
 			public UInt32 key;
@@ -948,7 +975,7 @@ namespace SAModel.DataToolbox
 				buttonScanStart.Enabled = false;
 			else
 			{
-				FileInfo fi = new FileInfo(textBoxInputFile.Text);
+				System.IO.FileInfo fi = new System.IO.FileInfo(textBoxInputFile.Text);
 				numericUpDownEndAddr.Value = fi.Length - numericUpDownOffset.Value;
 				if (Path.GetExtension(textBoxInputFile.Text).ToLowerInvariant() == ".prs")
 				{
@@ -1134,26 +1161,181 @@ namespace SAModel.DataToolbox
 		}
 		#endregion
 
-		private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+		#region Label Tool Tab
+
+		private void AddDirectoryForLabels(string dirname)
 		{
-			switch (tabControl1.SelectedTab.Text)
+			string[] files = Directory.GetFiles(dirname, "*.*", SearchOption.AllDirectories);
+			for (int i = 0; i < files.Length; i++)
+				if (!listBoxStructConverter.Items.Contains(files[i]))
+				{
+					switch (Path.GetExtension(files[i]).ToLowerInvariant())
+					{
+						case ".sa1mdl":
+						case ".sa2mdl":
+						case ".sa1lvl":
+						case ".sa2lvl":
+						case ".saanim":
+							if (!listBoxLabelTool.Items.Contains(files[i]))
+								listBoxLabelTool.Items.Add(files[i]);
+							break;
+						default:
+							break;
+					}
+				}
+		}
+
+		private void ImportLabels(string filename, bool eraseExternal)
+		{
+			string labelfile = Path.ChangeExtension(filename, ".salabel");
+			if (!File.Exists(labelfile))
+				return;
+			JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+			TextReader tr = File.OpenText(labelfile);
+			JsonTextReader jtr = new JsonTextReader(tr);
+			switch (Path.GetExtension(filename).ToLowerInvariant())
 			{
-				case "Binary Data Extractor":
-					toolStripStatusLabelTabDesc.Text = "Extract data from binary files and export it as C structs, Ninja ASCII or JSON.";
+				case ".sa1mdl":
+				case ".sa2mdl":
+				case ".sa2bmdl":
+					ModelFile mf = new ModelFile(filename);
+					NJS_OBJECT ob = mf.Model;
+					List<LabelOBJECT> labels_m = js.Deserialize<List<LabelOBJECT>>(jtr);
+					NJS_OBJECT[] objs = ob.GetObjects();
+					for (int i = 0; i < objs.Length; i++)
+						labels_m[i].Apply(objs[i]);
+					ModelFile.CreateFile(filename, ob, null, mf.Author, mf.Description, mf.Metadata, mf.Format);
 					break;
-				case "Struct Converter":
-					toolStripStatusLabelTabDesc.Text = "Batch export level, model and animation files to C structs, Ninja ASCII or JSON.";
-					break;				
-				case "Split":
-					toolStripStatusLabelTabDesc.Text = "Split binary files using a template for a supported game with or without labels.";
+				case ".saanim":
+					NJS_MOTION mot = NJS_MOTION.Load(filename);
+					LabelMOTION resultm = js.Deserialize<LabelMOTION>(jtr);
+					resultm.Apply(mot);
+					mot.Save(filename);
 					break;
-				case "SplitMDL":
-					toolStripStatusLabelTabDesc.Text = "Split SA2/SA2B MDL files.";
+				case ".sa1lvl":
+				case ".sa2lvl":
+					LandTable lnd = LandTable.LoadFromFile(filename);
+					LabelLANDTABLE resultlt = js.Deserialize<LabelLANDTABLE>(jtr);
+					resultlt.Apply(lnd);
+					lnd.SaveToFile(filename, lnd.Format);
 					break;
-				case "Scanner":
-					toolStripStatusLabelTabDesc.Text = "Scan binary files for different types of data.";
+			}
+			tr.Close();
+			if (eraseExternal)
+				File.Delete(labelfile);
+		}
+
+		private void ExportLabels(string filename, bool eraseInternal)
+		{
+			string labelfile = Path.ChangeExtension(filename, ".salabel");
+			switch (Path.GetExtension(filename).ToLowerInvariant())
+			{
+				case ".sa1mdl":
+				case ".sa2mdl":
+					ModelFile mf = new ModelFile(filename);
+					LabelOBJECT.Save(LabelOBJECT.ExportLabels(mf.Model), labelfile);
+					if (eraseInternal)
+					{
+						ModelFile.CreateFile(filename, mf.Model, null, null, null, new Dictionary<uint, byte[]>(), mf.Model.GetModelFormat(), true);
+					}
+					break;
+				case ".sa1lvl":
+				case ".sa2lvl":
+					LandTable lt = LandTable.LoadFromFile(filename);
+					LabelLANDTABLE ltl = new LabelLANDTABLE(lt);
+					ltl.Save(labelfile);
+					if (eraseInternal)
+						lt.SaveToFile(filename, lt.Format, true);
+					break;
+				case ".saanim":
+					NJS_MOTION mot = NJS_MOTION.Load(filename);
+					bool action = !string.IsNullOrEmpty(mot.ActionName);
+					LabelMOTION lm = new LabelMOTION(mot);
+					if (action)
+					{
+						NJS_ACTION act = new NJS_ACTION(null, mot);
+						LabelACTION la = new LabelACTION(act);
+						la.Save(labelfile);
+					}
+					else
+						lm.Save(labelfile);
+					if (eraseInternal)
+						mot.Save(filename, true);
 					break;
 			}
 		}
+
+		private void buttonLabelAdd_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog op = new OpenFileDialog() { Filter = "Levels, models and animations|*.sa?lvl;*.sa?mdl;*.saanim|All files|*.*", Multiselect = true };
+			if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				listBoxLabelTool.Items.AddRange(op.FileNames);
+				buttonLabelStart.Enabled = listBoxLabelTool.Items.Count > 0;
+			}
+		}
+
+		private void buttonLabelRemove_Click(object sender, EventArgs e)
+		{
+			var selectedItems = listBoxLabelTool.SelectedItems.Cast<String>().ToList();
+			foreach (var item in selectedItems)
+				listBoxLabelTool.Items.Remove(item);
+			buttonLabelStart.Enabled = listBoxLabelTool.Items.Count > 0;
+		}
+
+		private void buttonLabelClear_Click(object sender, EventArgs e)
+		{
+			listBoxLabelTool.Items.Clear();
+			buttonLabelStart.Enabled = false;
+		}
+
+		private void buttonLabelStart_Click(object sender, EventArgs e)
+		{
+			foreach (string item in listBoxLabelTool.Items)
+			{
+				if (radioButtonLabelExport.Checked)
+					ExportLabels(item, checkBoxLabelClearInternal.Checked);
+				else if (radioButtonLabelImport.Checked)
+					ImportLabels(item, checkBoxLabelDeleteFiles.Checked);				
+			}
+			MessageBox.Show("Finished!", "Label Tool", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
+		private void listBoxLabelTool_DragEnter(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+				e.Effect = DragDropEffects.Copy;
+			else
+				e.Effect = DragDropEffects.None;
+		}
+
+		private void listBoxLabelTool_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			for (int u = 0; u < fileList.Length; u++)
+			{
+				if (Directory.Exists(fileList[u]))
+					AddDirectoryForLabels(fileList[u]);
+				else if (!listBoxLabelTool.Items.Contains(fileList[u]))
+					listBoxLabelTool.Items.Add(fileList[u]);
+			}
+			buttonLabelStart.Enabled = listBoxLabelTool.Items.Count > 0;
+		}
+
+		private void radioButtonLabelImport_CheckedChanged(object sender, EventArgs e)
+		{
+			checkBoxLabelDeleteFiles.Enabled = radioButtonLabelImport.Checked;
+		}
+
+		private void radioButtonLabelExport_CheckedChanged(object sender, EventArgs e)
+		{
+			checkBoxLabelClearInternal.Enabled = radioButtonLabelExport.Checked;
+		}
+		private void listBoxLabelTool_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listBoxLabelTool.SelectedIndices.Count > 0) buttonLabelRemove.Enabled = true;
+			else buttonLabelRemove.Enabled = false;
+		}
+		#endregion
 	}
 }

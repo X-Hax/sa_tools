@@ -4360,222 +4360,7 @@ namespace SplitTools
 			return sb.ToString();
 		}
 	}
-	public class LabelMESHSET
-	{
-		[IniName("pl")]
-		public string PolyName;
-		[IniName("uv")]
-		public string UVName;
-		[IniName("pn")]
-		public string PolyNormalName;
-		[IniName("vc")]
-		public string VColorName;
-
-		public LabelMESHSET() { }
-
-		public LabelMESHSET(string polyName, string uvName, string polyNormalName, string vColorName)
-		{
-			PolyName = polyName;
-			UVName = uvName;
-			PolyNormalName = polyNormalName;
-			VColorName = vColorName;
-		}
-
-		public LabelMESHSET(NJS_MESHSET mesh)
-		{
-			if (mesh.Poly != null)
-				PolyName = mesh.PolyName;
-			if (mesh.UV != null)
-				UVName = mesh.UVName;
-			if (mesh.PolyNormal != null)
-				PolyNormalName = mesh.PolyNormalName;
-			if (mesh.VColor != null)
-				VColorName = mesh.VColorName;
-		}
-
-		public void Apply(NJS_MESHSET mesh)
-		{
-			if (mesh.Poly != null)
-				mesh.PolyName = PolyName;
-			if (mesh.UV != null)
-				mesh.UVName = UVName;
-			if (mesh.Poly != null)
-				mesh.PolyNormalName = PolyNormalName;
-			if (mesh.VColor != null)
-				mesh.VColorName = VColorName;
-		}
-	}
-
-	public class LabelOBJECT
-	{
-		[IniName("obj")]
-		public string ObjectName;
-		[IniName("att")]
-		public string AttachName;
-		[IniName("msh")]
-		public string MeshsetOrPolyName; // Also polys for chunk
-		[IniName("m")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets)]
-		public List<LabelMESHSET> MeshsetItemNames;
-		[IniName("vtx")]
-		public string VertexName;
-		[IniName("nml")]
-		public string NormalName;
-		[IniName("mat")]
-		public string MaterialName;
-
-		public LabelOBJECT() { }
-
-		public LabelOBJECT(NJS_OBJECT obj)
-		{
-			ObjectName = obj.Name;
-			if (obj.Attach != null)
-			{
-				AttachName = obj.Attach.Name;
-				if (obj.Attach is BasicAttach batt)
-				{
-					if (batt.Vertex != null)
-						VertexName = batt.VertexName;
-					if (batt.Normal != null)
-						NormalName = batt.NormalName;
-					if (batt.Material != null)
-						MaterialName = batt.MaterialName;
-					if (batt.Mesh != null)
-					{
-						MeshsetOrPolyName = batt.MeshName;
-						MeshsetItemNames = new List<LabelMESHSET>();
-						foreach (NJS_MESHSET mesh in batt.Mesh)
-							MeshsetItemNames.Add(new LabelMESHSET(mesh));
-					}
-				}
-				else if (obj.Attach is ChunkAttach catt)
-				{
-					if (catt.Vertex != null)
-						VertexName = catt.VertexName;
-					if (catt.Poly != null)
-						NormalName = catt.PolyName;
-				}
-			}
-		}
-
-		public void Apply(NJS_OBJECT obj)
-		{
-			obj.Name = ObjectName;
-			if (obj.Attach != null)
-			{
-				obj.Attach.Name = AttachName;
-				if (obj.Attach is BasicAttach batt)
-				{
-					if (batt.Vertex != null)
-						batt.VertexName = VertexName;
-					if (batt.Normal != null)
-						batt.NormalName = NormalName;
-					if (batt.Material != null)
-						batt.MaterialName = MaterialName;
-					if (batt.Mesh != null)
-					{
-						batt.MeshName = MeshsetOrPolyName;
-						int i = 0;
-						foreach (NJS_MESHSET mesh in batt.Mesh)
-						{
-							MeshsetItemNames[i].Apply(mesh);
-							i++;
-						}
-							
-					}
-				}
-				else if (obj.Attach is ChunkAttach catt)
-				{
-					if (catt.Vertex != null)
-						catt.VertexName = VertexName;
-					if (catt.Poly != null)
-						catt.PolyName = NormalName;
-				}
-			}
-		}
-	}
-
-	public class LabelMKEY
-	{
-		[IniName("pos")]
-		public string PositionName;
-		[IniName("rot")]
-		public string RotationName;
-		[IniName("scl")]
-		public string ScaleName;
-		[IniName("vrt")]
-		public string VertexName;
-		[IniName("vct")]
-		public string VectorName;
-		[IniName("nrm")]
-		public string NormalName;
-		[IniName("tgt")]
-		public string TargetName;
-		[IniName("rll")]
-		public string RollName;
-		[IniName("ang")]
-		public string AngleName;
-		[IniName("col")]
-		public string ColorName;
-		[IniName("int")]
-		public string IntensityName;
-		[IniName("spt")]
-		public string SpotName;
-		[IniName("pnt")]
-		public string PointName;
-		[IniName("qut")]
-		public string QuaternionName;
-		[IniName("vtx")]
-		public string[] VertexItemNames;
-		[IniName("nml")]
-		public string[] NormalItemNames;
-
-		public LabelMKEY() { }
-	}
-
-	public class LabelMOTION
-	{
-		[IniName("mot")]
-		public string MotionName;
-		[IniName("mdt")]
-		public string MdataName;
-		[IniName("m")]
-		[IniCollection(IniCollectionMode.NoSquareBrackets)]
-		public Dictionary<int, LabelMKEY> MkeyNames;
-
-		public LabelMOTION() { }
-	}
-
-	public class LabelACTION
-	{
-		[IniName("act")]
-		public string ActionName;
-		[IniName("mot")]
-		public string MotionName;
-		[IniName("obj")]
-		public string ObjectName;
-
-		public LabelACTION() { }
-	}
-
-	public class LabelLANDTABLE
-	{
-		[IniName("lnd")]
-		public string LandtableName;
-		[IniName("col")]
-		public string COLListName;
-		[IniName("anm")]
-		public string GeoAnimListName;
-		[IniName("cols")]
-		public string[] ColItemNames;
-		[IniName("ga")]
-		public string[] GeoAnimActionNames;
-		[IniName("go")]
-		public string[] GeoAnimObjectNames;
-
-		public LabelLANDTABLE() { }
-	}
-
+	
 	public class CharaObjectData
 	{
 		public string MainModel { get; set; }
@@ -4957,6 +4742,23 @@ namespace SplitTools
 		public void Save(string fileOutputPath)
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
+		}
+
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(Position.GetBytes());
+			result.AddRange(Vector.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Roll));
+			result.AddRange(ByteConverter.GetBytes(Angle));
+			result.AddRange(ByteConverter.GetBytes(NearClip));
+			result.AddRange(ByteConverter.GetBytes(FarClip));
+			result.AddRange(LocalX.GetBytes());
+			result.AddRange(LocalY.GetBytes());
+			result.Align(0x40);
+			return result.ToArray();
 		}
 	}
 

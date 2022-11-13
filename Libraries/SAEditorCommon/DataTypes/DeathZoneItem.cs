@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.SAEditorCommon.Properties;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -159,6 +160,23 @@ namespace SAModel.SAEditorCommon.DataTypes
 						Mesh = Model.Attach.CreateD3DMesh();
 						break;
 				}
+			}
+			else
+			{
+				Model = new ModelFile(Resources.questionmark).Model;
+				BasicAttach attach = (BasicAttach)Model.Attach;
+				attach.Material[0].DiffuseColor = System.Drawing.Color.FromArgb(96, 255, 0, 0);
+				attach.Material[0].Flags = 0x96102400;
+				attach.MaterialName = "material_" + Extensions.GenerateIdentifier();
+				attach.Mesh[0].PolyName = "poly_" + Extensions.GenerateIdentifier();
+				attach.Mesh[0].UVName = "uv_" + Extensions.GenerateIdentifier();
+				attach.MeshName = "meshset_" + Extensions.GenerateIdentifier();
+				attach.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+				attach.NormalName = "normal_" + Extensions.GenerateIdentifier();
+				Model.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
+				Model.Name = "object_" + Extensions.GenerateIdentifier();
+				Model.ProcessVertexData();
+				Mesh = Model.Attach.CreateD3DMesh();
 			}
 		}
 

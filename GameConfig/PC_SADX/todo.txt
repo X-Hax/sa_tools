@@ -1,36 +1,22 @@
-STG02 full
-STG03 full
-STG04 full
-STG05 full
-STG06 full
-STG08 full
-STG09 full
-STG10 full
-STG12 full
+== Animations Needed ==
+ADV00_DLL
+ADV0100_DLL
+ADV0130_DLL
+ADV02_DLL
+ADV03_DLL
+B_EGM1
+B_EGM2
+B_EGM3
+B_ROBO_NB
+Chao
+Characters
+CHRMODELS
+CommonObjects
+Enemies
+Event
+Fish
+Mission
+SHOOTING
 
-ADV00_DLL animations + better descriptions
-ADV0100_DLL full
-ADV0130_DLL full
-ADV02_DLL full
-ADV03_DLL full
-Animals animations
-B_CHAOS0_DLL animations
-B_CHAOS2 animations
-B_CHAOS4 animations
-B_CHAOS6 animations
-B_CHAOS7 animations
-B_E101 animations
-B_E101_R_NB animations
-B_EGM1 animations
-B_EGM2 animations
-B_EGM3 animations
-B_ROBO_NB animations
-Chao animations
-Characters animations
-CHRMODELS animations
-CommonObjects animations
-Enemies animations
-Event animations
-Fish animations
-Mission animations
-SHOOTING animations
+== Cleanup ==
+STG12 - some models?

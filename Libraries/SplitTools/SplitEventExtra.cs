@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SplitTools.SAArc
 {
@@ -36,21 +37,54 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
-				if (fc[4] > 0 || fc[8] > 0 || fc[0x26800] > 0)
+				bool battle;
+				bool beta;
+				bool lang;
+				if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0)
 				{
-					Console.WriteLine("File is in DC format.");
-					ByteConverter.BigEndian = false;
-					ini.Game = Game.SA2;
+					if (fc.Length == 0x2DC00)
+					{
+						Console.WriteLine("File is in DC Beta format.");
+						ByteConverter.BigEndian = false;
+						ini.Game = Game.SA2;
+						battle = false;
+						beta = true;
+						ini.BigEndian = false;
+					}
+					else
+					{
+						Console.WriteLine("File is in DC format.");
+						ByteConverter.BigEndian = false;
+						ini.Game = Game.SA2;
+						battle = false;
+						beta = false;
+						ini.BigEndian = false;
+					}
 				}
 				else
 				{
 					Console.WriteLine("File is in GC/PC format.");
 					ByteConverter.BigEndian = true;
 					ini.Game = Game.SA2B;
+					battle = true;
+					beta = false;
+					ini.BigEndian = true;
 				}
+				if (fc.Length < 0x9900)
+				{
+					lang = true;
+					ini.LanguageOnly = true;
+				}
+				else
+				{
+					lang = false;
+					ini.LanguageOnly = false;
+				}
+				if (lang)
+					Console.WriteLine("File only contains audio/subtitle timings.");
 				int address = 0;
 				int subcount = 0;
-				for (int i = 0; i < 100; i++)
+				for (int i = 0; i < 256; i++)
 				{
 					address = 0x8 * i;
 					SubtitleInfo subs = new SubtitleInfo();
@@ -73,7 +107,8 @@ namespace SplitTools.SAArc
 					audio.FrameStart = ByteConverter.ToUInt32(fc, address);
 					if (audio.FrameStart != 0)
 						audiocount++;
-					audio.VoiceEntry = ByteConverter.ToUInt32(fc, address + 4).ToCHex();
+					audio.VoiceEntry1 = ByteConverter.ToInt16(fc, address + 4).ToCHex();
+					audio.VoiceEntry2 = ByteConverter.ToInt16(fc, address + 6).ToCHex();
 					audio.MusicEntry = fc.GetCString(address + 8);
 					ini.AudioInfo.Add(audio);
 				}
@@ -82,86 +117,147 @@ namespace SplitTools.SAArc
 				else
 					Console.WriteLine("Event does not contain active audio entries.");
 
-				int screencount = 0;
-				for (int i = 0; i < 64; i++)
+				if (fc.Length > 0x9900)
 				{
-					address = 0x9800 + (0x40 * i);
-					ScreenEffects screen = new ScreenEffects();
-					screen.FrameStart = ByteConverter.ToUInt32(fc, address);
-					if (screen.FrameStart != 0)
-						screencount++;
-					screen.Type = ByteConverter.ToInt32(fc, address + 4);
-					screen.R = fc[address + 8];
-					screen.G = fc[address + 9];
-					screen.B = fc[address + 0xA];
-					screen.A = fc[address + 0xB];
-					ini.ScreenEffects.Add(screen);
-				}
-				if (screencount != 0)
-					Console.WriteLine("Event contains {0} active screen effect entr{1}.", screencount, screencount == 1 ? "y" : "ies");
-				else
-					Console.WriteLine("Event does not use screen effects.");
+					int screencount = 0;
+					for (int i = 0; i < 64; i++)
+					{
+						address = 0x9800 + (0x40 * i);
+						ScreenEffects screen = new ScreenEffects();
+						screen.FrameStart = ByteConverter.ToUInt32(fc, address);
+						if (screen.FrameStart != 0)
+							screencount++;
+						screen.Type = fc[address + 4];
+						if (battle)
+						{
+							screen.A = fc[address + 8];
+							screen.R = fc[address + 9];
+							screen.G = fc[address + 0xA];
+							screen.B = fc[address + 0xB];
+						}
+						else
+						{
+							screen.B = fc[address + 8];
+							screen.G = fc[address + 9];
+							screen.R = fc[address + 0xA];
+							screen.A = fc[address + 0xB];
+						}
+						ini.ScreenEffects.Add(screen);
+					}
+					if (screencount != 0)
+						Console.WriteLine("Event contains {0} active screen effect entr{1}.", screencount, screencount == 1 ? "y" : "ies");
+					else
+						Console.WriteLine("Event does not use screen effects.");
 
-				int misccount = 0;
-				for (int i = 0; i < 2048; i++)
-				{
-					address = 0xA800 + (0x38 * i);
-					MiscEffects1 misc1 = new MiscEffects1();
-					misc1.FrameStart = ByteConverter.ToUInt32(fc, address);
-					if (misc1.FrameStart != 0)
-						misccount++;
-					misc1.Type = ByteConverter.ToInt32(fc, address + 4);
-					misc1.Color = new Vertex(fc, address + 8);
-					misc1.Intensity = ByteConverter.ToSingle(fc, address + 0x14);
-					ini.MiscEffects.Add(misc1);
-				}
-				if (misccount != 0)
-					Console.WriteLine("Event contains {0} active unknown effect entr{1}.", misccount, misccount == 1 ? "y" : "ies");
-				else
-					Console.WriteLine("Event does not use unknown effects.");
+					int misc1count = 0;
+					for (int i = 0; i < 2048; i++)
+					{
+						address = 0xA800 + (0x38 * i);
+						MiscEffects1 misc1 = new MiscEffects1();
+						misc1.FrameStart = ByteConverter.ToUInt32(fc, address);
+						if (misc1.FrameStart != 0)
+							misc1count++;
+						misc1.Type1 = fc[address + 4];
+						misc1.Type2 = fc[address + 5];
+						misc1.Color = new Vertex(fc, address + 8);
+						misc1.Intensity = ByteConverter.ToSingle(fc, address + 0x14);
+						ini.MiscEffects1.Add(misc1);
+					}
+					if (misc1count != 0)
+						Console.WriteLine("Event contains {0} active unknown effect entr{1}.", misc1count, misc1count == 1 ? "y" : "ies");
+					else
+						Console.WriteLine("Event does not use unknown effects.");
 
-				int lightcount = 0;
-				for (int i = 0; i < 1144; i++)
-				{
-					address = 0x26800 + (0x44 * i);
-					LightingInfo light = new LightingInfo();
-					light.FrameStart = ByteConverter.ToUInt32(fc, address);
-					if (light.FrameStart != 0)
-						lightcount++;
-					light.FadeType = ByteConverter.ToInt32(fc, address + 4);
-					light.LightDirection = new Vertex(fc, address + 8);
-					light.Color = new Vertex(fc, address + 0x14);
-					light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
-					light.AmbientColor = new Vertex(fc, address + 0x24);
-					ini.Lighting.Add(light);
-				}
-				if (lightcount != 0)
-					Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
-				else
-					Console.WriteLine("Event does not use lighting.");
+					int lightcount = 0;
+					if (beta)
+					{
+						for (int i = 0; i < 436; i++)
+						{
+							address = 0x26800 + (0x44 * i);
+							LightingInfo light = new LightingInfo();
+							light.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (light.FrameStart != 0)
+								lightcount++;
+							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
+							light.LightDirection = new Vertex(fc, address + 8);
+							light.Color = new Vertex(fc, address + 0x14);
+							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
+							light.AmbientColor = new Vertex(fc, address + 0x24);
+							ini.Lighting.Add(light);
+						}
+						if (lightcount != 0)
+							Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use lighting.");
+						// Space of 0x30 following the data chunk. Investigate further.
+					}
+					else
+					{
+						for (int i = 0; i < 1084; i++)
+						{
+							address = 0x26800 + (0x44 * i);
+							LightingInfo light = new LightingInfo();
+							light.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (light.FrameStart != 0)
+								lightcount++;
+							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
+							light.LightDirection = new Vertex(fc, address + 8);
+							light.Color = new Vertex(fc, address + 0x14);
+							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
+							light.AmbientColor = new Vertex(fc, address + 0x24);
+							ini.Lighting.Add(light);
+						}
+						if (lightcount != 0)
+							Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use lighting.");
 
-				int videocount = 0;
-				for (int i = 0; i < 40; i++)
-				{
-					address = 0x39800 + (0x40 * i);
-					VideoInfo video = new VideoInfo();
-					video.FrameStart = ByteConverter.ToUInt32(fc, address);
-					if (video.FrameStart != 0)
-						videocount++;
-					video.A = fc[address + 4];
-					video.R = fc[address + 5];
-					video.G = fc[address + 6];
-					video.B = fc[address + 7];
-					video.Depth = ByteConverter.ToSingle(fc, address + 0x8);
-					video.OverlayType = ByteConverter.ToUInt32(fc, address + 0xC).ToCHex();
-					video.VideoName = fc.GetCString(address + 0x10);
-					ini.VideoInfo.Add(video);
-				}
-				if (videocount != 0)
-					Console.WriteLine("Event contains {0} active video entr{1}.", videocount, videocount == 1 ? "y" : "ies");
-				else
-					Console.WriteLine("Event does not use video effects.");
+						//add a buffer of 0x10 between these two chunks for build operations
 
+						int misc2count = 0;
+						for (int i = 0; i < 64; i++)
+						{
+							address = 0x38800 + (0x40 * i);
+							MiscEffects2 misc2 = new MiscEffects2();
+							misc2.Unk1 = new Vertex(fc, address);
+							misc2.Unk2 = new Vertex(fc, address + 0xC);
+							misc2.Unk3 = new Vertex(fc, address + 0x18);
+							misc2.Unk4 = new Vertex(fc, address + 0x24);
+							misc2.Unk5 = ByteConverter.ToInt32(fc, address + 0x30);
+							misc2.Unk6 = ByteConverter.ToInt32(fc, address + 0x34);
+							misc2.Unk7 = ByteConverter.ToInt32(fc, address + 0x38);
+							misc2.Unk8 = ByteConverter.ToInt32(fc, address + 0x3C);
+							if (misc2.Unk5 > 0 || misc2.Unk6 > 0 || misc2.Unk7 > 0 || misc2.Unk8 > 0)
+								misc2count++;
+							ini.MiscEffects2.Add(misc2);
+						}
+						if (misc2count != 0)
+							Console.WriteLine("Event contains {0} active unknown float-based effect entr{1}.", misc2count, misc2count == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use unknown float-based effects.");
+
+						int videocount = 0;
+						for (int i = 0; i < 64; i++)
+						{
+							address = 0x39800 + (0x40 * i);
+							VideoInfo video = new VideoInfo();
+							video.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (video.FrameStart != 0)
+								videocount++;
+							video.VideoType = ByteConverter.ToUInt16(fc, address + 0x4);
+							video.Unknown = ByteConverter.ToUInt16(fc, address + 0x6);
+							video.Depth = ByteConverter.ToSingle(fc, address + 0x8);
+							video.OverlayType = fc[address + 0xC];
+							video.OverlayType2 = fc[address + 0xD];
+							video.VideoName = fc.GetCString(address + 0x10);
+							ini.VideoInfo.Add(video);
+						}
+						if (videocount != 0)
+							Console.WriteLine("Event contains {0} active video entr{1}.", videocount, videocount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use video effects.");
+					}
+				}
 				JsonSerializer js = new JsonSerializer
 				{
 					Formatting = Formatting.Indented,
@@ -176,7 +272,7 @@ namespace SplitTools.SAArc
 			}
 		}
 
-		public static void SplitLanguage(string filename, string outputPath)
+		public static void SplitMini(string filename, string outputPath)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -192,7 +288,7 @@ namespace SplitTools.SAArc
 					fc = Prs.Decompress(filename);
 				else
 					fc = File.ReadAllBytes(filename);
-				EventExtraIniData ini = new EventExtraIniData() { Name = Path.GetFileNameWithoutExtension(filename) };
+				MiniEventExtraIniData ini = new MiniEventExtraIniData() { Name = Path.GetFileNameWithoutExtension(filename) };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
@@ -202,51 +298,75 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
-				if (fc[4] > 0 || fc[8] > 0 || fc[0x26800] > 0)
+				if (fc[4] > 0 || fc[8] > 0 || fc[0x100] > 0)
 				{
 					Console.WriteLine("File is in DC format.");
 					ByteConverter.BigEndian = false;
 					ini.Game = Game.SA2;
+					ini.BigEndian = false;
 				}
 				else
 				{
 					Console.WriteLine("File is in GC/PC format.");
 					ByteConverter.BigEndian = true;
 					ini.Game = Game.SA2B;
+					ini.BigEndian = true;
 				}
-				int address = 0;
+				int addr = 0;
 				int subcount = 0;
-				for (int i = 0; i < 100; i++)
+				for (int i = 0; i < 32; i++)
 				{
-					address = 0x8 * i;
+					addr = 0x8 * i;
 					SubtitleInfo subs = new SubtitleInfo();
-					subs.FrameStart = ByteConverter.ToUInt32(fc, address);
+					subs.FrameStart = ByteConverter.ToUInt32(fc, addr);
 					if (subs.FrameStart != 0)
 						subcount++;
-					subs.VisibleTime = ByteConverter.ToUInt32(fc, address + 4);
+					subs.VisibleTime = ByteConverter.ToUInt32(fc, addr + 4);
 					ini.Subtitles.Add(subs);
 				}
 				if (subcount != 0)
-					Console.WriteLine("Event contains {0} active subtitle entr{1}.", subcount, subcount == 1 ? "y" : "ies");
+					Console.WriteLine("Mini-Event contains {0} active subtitle entr{1}.", subcount, subcount == 1 ? "y" : "ies");
 				else
-					Console.WriteLine("Event does not use subtitles.");
+					Console.WriteLine("Mini-Event does not use subtitles.");
 
-				int audiocount = 0;
-				for (int i = 0; i < 512; i++)
+				int effectcount = 0;
+				for (int i = 0; i < 64; i++)
 				{
-					address = 0x800 + (0x48 * i);
-					AudioInfo audio = new AudioInfo();
-					audio.FrameStart = ByteConverter.ToUInt32(fc, address);
-					if (audio.FrameStart != 0)
-						audiocount++;
-					audio.VoiceEntry = ByteConverter.ToUInt32(fc, address + 4).ToCHex();
-					audio.MusicEntry = fc.GetCString(address + 8);
-					ini.AudioInfo.Add(audio);
+					addr = 0x100 + (0x4C * i);
+					EffectInfo fx = new EffectInfo();
+					int frame = fc.GetPointer(addr, 0);
+					fx.FrameStart = ByteConverter.ToUInt32(fc, addr);
+					if (frame != 0)
+						effectcount++;
+					fx.FadeType = fc[addr + 4];
+					fx.SFXEntry1 = fc[addr + 5];
+					fx.SFXEntry2 = fc[addr + 6];
+					fx.VoiceEntry = ByteConverter.ToUInt16(fc, addr + 8).ToCHex();
+					fx.MusicEntry = fc.GetCString(addr + 0xA);
+					ini.Effects.Add(fx);
 				}
-				if (audiocount != 0)
-					Console.WriteLine("Event contains {0} active audio entr{1}.", audiocount, audiocount == 1 ? "y" : "ies");
+				if (effectcount != 0)
+					Console.WriteLine("Mini-Event contains {0} active effect entr{1}.", effectcount, effectcount == 1 ? "y" : "ies");
 				else
-					Console.WriteLine("Event does not contain active audio entries.");
+					Console.WriteLine("Mini-Event does not use additional effects.");
+				int misccount = 0;
+				for (int i = 0; i < 1; i++)
+				{
+					addr = 0x1400;
+					MiscMiniEffect misc = new MiscMiniEffect();
+					int unkdata1 = fc.GetPointer(addr, 0);
+					misc.Unk1 = new Vertex(fc, addr);
+					misc.Unk2 = ByteConverter.ToSingle(fc, addr + 0xC);
+					int unkdata2 = fc.GetPointer(addr + 0x10, 0);
+					misc.Unk3 = new Vertex(fc, addr + 0x10);
+					if (unkdata1 != 0 || unkdata2 != 0)
+						misccount++;
+					ini.Unknown.Add(misc);
+				}
+				if (misccount != 0)
+					Console.WriteLine("Mini-Event contains an unknown effect entry.");
+				else
+					Console.WriteLine("Mini-Event does not use unknown effects.");
 
 				JsonSerializer js = new JsonSerializer
 				{
@@ -261,217 +381,127 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = dir;
 			}
 		}
-
-		public static void Build(string filename)
+		public static void Build(bool? isBigEndian, bool? isLanguageFile, string filename)
 		{
-			byte[] fc;
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				fc = Prs.Decompress(filename);
-			else
-				fc = File.ReadAllBytes(filename);
-			string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-			JsonSerializer js = new JsonSerializer();
-			EventExtraIniData ini;
-			using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
-			using (JsonTextReader jtr = new JsonTextReader(tr))
-				ini = js.Deserialize<EventExtraIniData>(jtr);
-			//		if (fc[0] == 0x81)
-			//		{
-			//			if (fc[0x2B] <= 1 && fc[0x2A] == 0)
-			//			{
-			//				ByteConverter.BigEndian = true;
-			//				key = 0x8125FE60;
-			//				battle = true;
-			//			}
-			//			else
-			//			{
-			//				ByteConverter.BigEndian = true;
-			//				key = 0x812FFE60;
-			//				battlebeta = true;
-			//			}
-			//		}
-			//		else
-			//		{
-			//			if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
-			//			{
-			//				ByteConverter.BigEndian = false;
-			//				key = 0xC600000;
-			//				dcbeta = true;
-			//			}
-			//			else
-			//			{
-			//				ByteConverter.BigEndian = false;
-			//				key = 0xC600000;
-			//			}
-			//		}
-			//		List<byte> modelbytes = new List<byte>(fc);
-			//		Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			//		foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".sa2mdl", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
-			//			modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, new List<uint>(), out uint _));
-			//		if (battle)
-			//		{
-			//			foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".sa2bmdl", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
-			//				modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, new List<uint>(), out uint _));
-			//			List<byte> motionbytes = new List<byte>(new byte[(ini.Motions.Count + 1) * 8]);
-			//			Dictionary<string, int> partcounts = new Dictionary<string, int>(ini.Motions.Count);
-			//			foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase)).Select(a => a.Key))
-			//			{
-			//				NJS_MOTION motion = NJS_MOTION.Load(Path.Combine(path, file));
-			//				motionbytes.AddRange(motion.GetBytes((uint)motionbytes.Count, labels, out uint _));
-			//				partcounts.Add(motion.Name, motion.ModelParts);
-			//			}
-			//			byte[] mfc = motionbytes.ToArray();
-			//			for (int i = 0; i < ini.Motions.Count; i++)
-			//			{
-			//				if (ini.Motions[i] == null)
-			//					new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }.CopyTo(mfc, i * 8);
-			//				else
-			//				{
-			//					ByteConverter.GetBytes(labels[ini.Motions[i]]).CopyTo(mfc, i * 8);
-			//					ByteConverter.GetBytes(partcounts[ini.Motions[i]]).CopyTo(mfc, i * 8 + 4);
-			//				}
-			//			}
-			//			File.WriteAllBytes(Path.ChangeExtension(Path.ChangeExtension(filename, null) + "motion", ".bin"), mfc);
-			//		}
-			//		else
-			//			foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
-			//				modelbytes.AddRange(NJS_MOTION.Load(Path.Combine(path, file)).GetBytes((uint)(key + modelbytes.Count), labels, out uint _));
-			//		fc = modelbytes.ToArray();
-			//		int ptr = fc.GetPointer(0x20, key);
-			//		if (ptr != 0)
-			//			if (!dcbeta)
-			//			{
-			//				for (int i = 0; i < (battle ? 18 : 16); i++)
-			//				{
-			//					UpgradeInfo info = ini.Upgrades[i];
-			//					if (info.RootNode != null)
-			//					{
-			//						if (labels.ContainsKeySafe(info.RootNode))
-			//							ByteConverter.GetBytes(labels[info.RootNode]).CopyTo(fc, ptr);
-			//						if (labels.ContainsKeySafe(info.AttachNode1))
-			//							ByteConverter.GetBytes(labels[info.AttachNode1]).CopyTo(fc, ptr + 4);
-			//						if (labels.ContainsKeySafe(info.Model1))
-			//							ByteConverter.GetBytes(labels[info.Model1]).CopyTo(fc, ptr + 8);
-			//						if (labels.ContainsKeySafe(info.AttachNode2))
-			//							ByteConverter.GetBytes(labels[info.AttachNode2]).CopyTo(fc, ptr + 12);
-			//						if (labels.ContainsKeySafe(info.Model2))
-			//							ByteConverter.GetBytes(labels[info.Model2]).CopyTo(fc, ptr + 16);
-			//					}
-			//					ptr += 0x14;
-			//				}
-			//			}
-			//		else
-			//		{
-			//			for (int i = 0; i < 14; i++)
-			//			{
-			//				UpgradeInfo info = ini.Upgrades[i];
-			//				if (info.RootNode != null)
-			//				{
-			//					if (labels.ContainsKeySafe(info.RootNode))
-			//						ByteConverter.GetBytes(labels[info.RootNode]).CopyTo(fc, ptr);
-			//					if (labels.ContainsKeySafe(info.AttachNode1))
-			//						ByteConverter.GetBytes(labels[info.AttachNode1]).CopyTo(fc, ptr + 4);
-			//					if (labels.ContainsKeySafe(info.Model1))
-			//						ByteConverter.GetBytes(labels[info.Model1]).CopyTo(fc, ptr + 8);
-			//					if (labels.ContainsKeySafe(info.AttachNode2))
-			//						ByteConverter.GetBytes(labels[info.AttachNode2]).CopyTo(fc, ptr + 12);
-			//					if (labels.ContainsKeySafe(info.Model2))
-			//						ByteConverter.GetBytes(labels[info.Model2]).CopyTo(fc, ptr + 16);
-			//				}
-			//				ptr += 0x14;
-			//			}
-			//		}
-			//		int gcnt = ByteConverter.ToInt32(fc, 8);
-			//		ptr = fc.GetPointer(0, key);
-			//		if (ptr != 0)
-			//			for (int gn = 0; gn <= gcnt; gn++)
-			//			{
-			//				SceneInfo info = ini.Scenes[gn];
-			//				int ptr2 = fc.GetPointer(ptr, key);
-			//				int ecnt = Math.Min(ByteConverter.ToInt32(fc, ptr + 4), info.Entities?.Count ?? 0);
-			//				if (ptr2 != 0)
-			//					for (int en = 0; en < ecnt; en++)
-			//					{
-			//						if (labels.ContainsKeySafe(info.Entities[en].Model))
-			//							ByteConverter.GetBytes(labels[info.Entities[en].Model]).CopyTo(fc, ptr2);
-			//						if (!battle)
-			//						{
-			//							if (labels.ContainsKeySafe(info.Entities[en].Motion))
-			//								ByteConverter.GetBytes(labels[info.Entities[en].Motion]).CopyTo(fc, ptr2 + 4);
-			//							if (labels.ContainsKeySafe(info.Entities[en].ShapeMotion))
-			//								ByteConverter.GetBytes(labels[info.Entities[en].ShapeMotion]).CopyTo(fc, ptr2 + 8);
-			//						}
-			//						else
-			//						{
-			//							if (labels.ContainsKeySafe(info.Entities[en].GCModel))
-			//								ByteConverter.GetBytes(labels[info.Entities[en].GCModel]).CopyTo(fc, ptr2 + 12);
-			//							if (labels.ContainsKeySafe(info.Entities[en].ShadowModel))
-			//								ByteConverter.GetBytes(labels[info.Entities[en].ShadowModel]).CopyTo(fc, ptr2 + 16);
-			//						}
-			//						ptr2 += battle ? 0x2C : 0x20;
-			//					}
-			//				if (!battle)
-			//				{
-			//					ptr2 = fc.GetPointer(ptr + 8, key);
-			//					if (ptr2 != 0)
-			//					{
-			//						int cnt = ByteConverter.ToInt32(fc, ptr + 12);
-			//						for (int i = 0; i < cnt; i++)
-			//						{
-			//							if (labels.ContainsKeySafe(info.CameraMotions[i]))
-			//								ByteConverter.GetBytes(labels[info.CameraMotions[i]]).CopyTo(fc, ptr2);
-			//							ptr2 += sizeof(int);
-			//						}
-			//					}
-			//				}
-			//				ptr2 = fc.GetPointer(ptr + 0x18, key);
-			//				if (ptr2 != 0 && info.Big != null)
-			//				{
-			//					if (labels.ContainsKeySafe(info.Big.Model))
-			//						ByteConverter.GetBytes(labels[info.Big.Model]).CopyTo(fc, ptr2);
-			//					if (!battle)
-			//					{
-			//						int ptr3 = fc.GetPointer(ptr2 + 4, key);
-			//						if (ptr3 != 0)
-			//						{
-			//							int cnt = ByteConverter.ToInt32(fc, ptr2 + 8);
-			//							for (int i = 0; i < cnt; i++)
-			//							{
-			//								if (labels.ContainsKeySafe(info.Big.Motions[i][0]))
-			//									ByteConverter.GetBytes(labels[info.Big.Motions[i][0]]).CopyTo(fc, ptr3);
-			//								if (labels.ContainsKeySafe(info.Big.Motions[i][1]))
-			//									ByteConverter.GetBytes(labels[info.Big.Motions[i][1]]).CopyTo(fc, ptr3 + 4);
-			//								ptr3 += 8;
-			//							}
-			//						}
-			//					}
-			//				}
-			//				ptr += 0x20;
-			//			}
-			//		ptr = fc.GetPointer(0x18, key);
-			//		if (ptr != 0)
-			//			for (int i = 0; i < 93; i++)
-			//			{
-			//				if (ini.MechParts.ContainsKey(i) && labels.ContainsKeySafe(ini.MechParts[i]))
-			//					ByteConverter.GetBytes(labels[ini.MechParts[i]]).CopyTo(fc, ptr);
-			//				ptr += 4;
-			//			}
-			//		ptr = fc.GetPointer(0x1C, key);
-			//		if (ptr != 0 && labels.ContainsKeySafe(ini.TailsTails))
-			//			ByteConverter.GetBytes(labels[ini.TailsTails]).CopyTo(fc, ptr);
-			//		if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-			//			Prs.Compress(fc, filename);
-			//		else
-			//			File.WriteAllBytes(filename, fc);
-			//	}
+			string dir = Environment.CurrentDirectory;
+			try
+			{
+				byte[] fc;
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					fc = Prs.Decompress(filename);
+				else
+					fc = File.ReadAllBytes(filename);
+				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				JsonSerializer js = new JsonSerializer();
+				EventExtraIniData ini;
+				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+				using (JsonTextReader jtr = new JsonTextReader(tr))
+					ini = js.Deserialize<EventExtraIniData>(jtr);
+				bool battle = ini.Game == Game.SA2B;
+				bool dcbeta = ini.Game == Game.SA2;
+				bool language = ini.LanguageOnly;
+				if (!isBigEndian.HasValue)
+					ByteConverter.BigEndian = ini.BigEndian;
+				else
+					ByteConverter.BigEndian = isBigEndian.Value;
+				if (!isLanguageFile.HasValue)
+					language = ini.LanguageOnly;
+				else
+					language = isLanguageFile.Value;
+				List<byte> extradata = new List<byte>();
+				foreach (SubtitleInfo subs in ini.Subtitles)
+				{
+					extradata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
+					extradata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
+				}
+				foreach (AudioInfo audio in ini.AudioInfo)
+				{
+					extradata.AddRange(audio.GetBytes());
+				}
+				if (!language)
+				{
+					foreach (ScreenEffects screen in ini.ScreenEffects)
+					{
+						if (battle)
+							extradata.AddRange(screen.GetBytesGC());
+						else
+							extradata.AddRange(screen.GetBytesDC());
+					}
 
-			//	public static bool ContainsKeySafe<TValue>(this IDictionary<string, TValue> dict, string key)
-			//	{
-			//		return key != null && dict.ContainsKey(key);
-			//	}
+					foreach (MiscEffects1 misc1 in ini.MiscEffects1)
+					{
+						extradata.AddRange(misc1.GetBytes());
+					}
+
+					foreach (LightingInfo light in ini.Lighting)
+					{
+						extradata.AddRange(light.GetBytes());
+					}
+					extradata.AddRange(new byte[16]);
+					foreach (MiscEffects2 misc2 in ini.MiscEffects2)
+					{
+						extradata.AddRange(misc2.GetBytes());
+					}
+					foreach (VideoInfo video in ini.VideoInfo)
+					{
+						extradata.AddRange(video.GetBytes());
+					}
+				}
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					FraGag.Compression.Prs.Compress(extradata.ToArray(), filename);
+				else
+					File.WriteAllBytes(filename, extradata.ToArray());
+			}
+			finally
+			{
+				Environment.CurrentDirectory = dir;
+			}
+		}
+		public static void BuildMini(bool? isBigEndian, string filename)
+		{
+			string dir = Environment.CurrentDirectory;
+			try
+			{
+				byte[] fc;
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					fc = Prs.Decompress(filename);
+				else
+					fc = File.ReadAllBytes(filename);
+				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				JsonSerializer js = new JsonSerializer();
+				MiniEventExtraIniData ini;
+				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+				using (JsonTextReader jtr = new JsonTextReader(tr))
+					ini = js.Deserialize<MiniEventExtraIniData>(jtr);
+				if (!isBigEndian.HasValue)
+					ByteConverter.BigEndian = ini.BigEndian;
+				else
+					ByteConverter.BigEndian = isBigEndian.Value;
+				List<byte> extradata = new List<byte>();
+				foreach (SubtitleInfo subs in ini.Subtitles)
+				{
+					extradata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
+					extradata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
+				}
+				foreach (EffectInfo effect in ini.Effects)
+				{
+					extradata.AddRange(effect.GetBytes());
+				}
+				foreach (MiscMiniEffect misc in ini.Unknown)
+				{
+					extradata.AddRange(misc.GetBytes());
+				}
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					FraGag.Compression.Prs.Compress(extradata.ToArray(), filename);
+				else
+					File.WriteAllBytes(filename, extradata.ToArray());
+			}
+			finally
+			{
+				Environment.CurrentDirectory = dir;
+			}
 		}
 	}
-
 	public class EventExtraIniData
 	{
 		public string Name { get; set; }
@@ -483,11 +513,14 @@ namespace SplitTools.SAArc
 			get { return Game.ToString(); }
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
+		public bool BigEndian { get; set; }
+		public bool LanguageOnly { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<AudioInfo> AudioInfo { get; set; } = new List<AudioInfo>();
 		public List<ScreenEffects> ScreenEffects { get; set; } = new List<ScreenEffects>();
-		public List<MiscEffects1> MiscEffects { get; set; } = new List<MiscEffects1>();
+		public List<MiscEffects1> MiscEffects1 { get; set; } = new List<MiscEffects1>();
 		public List<LightingInfo> Lighting { get; set; } = new List<LightingInfo>();
+		public List<MiscEffects2> MiscEffects2 { get; set; } = new List<MiscEffects2>();
 		public List<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 	}
 
@@ -497,31 +530,91 @@ namespace SplitTools.SAArc
 		public uint VisibleTime { get; set; }
 	}
 
+	[Serializable]
 	public class AudioInfo
 	{
 		public uint FrameStart { get; set; }
-		public string VoiceEntry { get; set; }
+		public string VoiceEntry1 { get; set; }
+		public string VoiceEntry2 { get; set; }
 		public string MusicEntry { get; set; }
+
+		public static int Size { get { return 0x48; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry1, 16)));
+			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry2, 16)));
+			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
+			result.Align(0x48);
+			return result.ToArray();
+		}
 	}
 
+	[Serializable]
 	public class ScreenEffects
 	{
 		public uint FrameStart { get; set; }
 		public int Type { get; set; }
+		public byte A { get; set; }
 		public byte R { get; set; }
 		public byte G { get; set; }
 		public byte B { get; set; }
-		public byte A { get; set; }
+
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytesGC()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.AddRange(ByteConverter.GetBytes(Type));
+			result.Add(A);
+			result.Add(R);
+			result.Add(G);
+			result.Add(B);
+			result.Align(0x40);
+			return result.ToArray();
+		}
+
+		public byte[] GetBytesDC()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.AddRange(ByteConverter.GetBytes(Type));
+			result.Add(B);
+			result.Add(G);
+			result.Add(R);
+			result.Add(A);
+			result.Align(0x40);
+			return result.ToArray();
+		}
 	}
 
+	[Serializable]
 	public class MiscEffects1
 	{
 		public uint FrameStart { get; set; }
-		public int Type { get; set; }
+		public byte Type1 { get; set; }
+		public byte Type2 { get; set; }
 		public Vertex Color { get; set; }
 		public float Intensity { get; set; }
-	}
+		public static int Size { get { return 0x38; } }
 
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.Add(Type1);
+			result.Add(Type2);
+			result.AddRange(new byte[2]);
+			result.AddRange(Color.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Intensity));
+			result.Align(0x38);
+			return result.ToArray();
+		}
+	}
+	[Serializable]
 	public class LightingInfo
 	{
 		public uint FrameStart { get; set; }
@@ -530,17 +623,137 @@ namespace SplitTools.SAArc
 		public Vertex Color { get; set; }
 		public float Intensity { get; set; }
 		public Vertex AmbientColor { get; set; }
-	}
+		public static int Size { get { return 0x44; } }
 
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.AddRange(ByteConverter.GetBytes(FadeType));
+			result.AddRange(LightDirection.GetBytes());
+			result.AddRange(Color.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Intensity));
+			result.AddRange(AmbientColor.GetBytes());
+			result.Align(0x44);
+			return result.ToArray();
+		}
+	}
+	[Serializable]
+	public class MiscEffects2
+	{
+		public Vertex Unk1 { get; set; }
+		public Vertex Unk2 { get; set; }
+		public Vertex Unk3 { get; set; }
+		public Vertex Unk4 { get; set; }
+		public int Unk5 { get; set; }
+		public int Unk6 { get; set; }
+		public int Unk7 { get; set; }
+		public int Unk8 { get; set; }
+
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(Unk1.GetBytes());
+			result.AddRange(Unk2.GetBytes());
+			result.AddRange(Unk3.GetBytes());
+			result.AddRange(Unk4.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Unk5));
+			result.AddRange(ByteConverter.GetBytes(Unk6));
+			result.AddRange(ByteConverter.GetBytes(Unk7));
+			result.AddRange(ByteConverter.GetBytes(Unk8));
+			result.Align(0x40);
+			return result.ToArray();
+		}
+	}
+	[Serializable]
 	public class VideoInfo
 	{
 		public uint FrameStart { get; set; }
-		public byte A { get; set; }
-		public byte R { get; set; }
-		public byte G { get; set; }
-		public byte B { get; set; }
+		public ushort VideoType { get; set; }
+		public ushort Unknown { get; set; }
 		public float Depth { get; set; }
-		public string OverlayType { get; set; }
+		public byte OverlayType { get; set; }
+		public byte OverlayType2 { get; set; }
 		public string VideoName { get; set; }
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.AddRange(ByteConverter.GetBytes(VideoType));
+			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(ByteConverter.GetBytes(Depth));
+			result.Add(OverlayType);
+			result.Add(OverlayType2);
+			result.AddRange(new byte[2]);
+			result.AddRange(Encoding.ASCII.GetBytes(VideoName));
+			result.Align(0x40);
+			return result.ToArray();
+		}
+	}
+	public class MiniEventExtraIniData
+	{
+		public string Name { get; set; }
+		[JsonIgnore]
+		public Game Game { get; set; }
+		[JsonProperty(PropertyName = "Game")]
+		public string GameString
+		{
+			get { return Game.ToString(); }
+			set { Game = (Game)Enum.Parse(typeof(Game), value); }
+		}
+		public bool BigEndian { get; set; }
+		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
+		public List<EffectInfo> Effects { get; set; } = new List<EffectInfo>();
+		public List<MiscMiniEffect> Unknown { get; set; } = new List<MiscMiniEffect>();
+	}
+
+	[Serializable]
+	public class EffectInfo
+	{
+		public uint FrameStart { get; set; }
+		public byte FadeType { get; set; }
+		public byte SFXEntry1 { get; set; }
+		public byte SFXEntry2 { get; set; }
+		public string VoiceEntry { get; set; }
+		public string MusicEntry { get; set; }
+
+		public static int Size { get { return 0x4C; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.Add(FadeType);
+			result.Add(SFXEntry1);
+			result.Add(SFXEntry2);
+			result.AddRange(new byte[1]);
+			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry, 16)));
+			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
+			result.Align(0x4C);
+			return result.ToArray();
+		}
+	}
+	[Serializable]
+	public class MiscMiniEffect
+	{
+		public Vertex Unk1 { get; set; }
+		public float Unk2 { get; set; }
+		public Vertex Unk3 { get; set; }
+
+		public static int Size { get { return 0x1C; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(Unk1.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Unk2));
+			result.AddRange(Unk3.GetBytes());
+			result.Align(0x1C);
+			return result.ToArray();
+		}
 	}
 }

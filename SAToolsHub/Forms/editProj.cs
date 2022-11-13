@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Text;
 using SAModel.SAEditorCommon.ModManagement;
 
 namespace SAToolsHub
@@ -11,25 +12,31 @@ namespace SAToolsHub
 		string projDir;
 		string projModFile;
 
-		string[] GBItems = new string[]
+		string[] CatItems = new string[]
 		{
-			"Map",
+			"Animations",
+			"Chao",
+			"Custom Level",
+			"Cutscene",
+			"Game Overhaul",
+			"Gameplay",
+			"Misc",
+			"Music",
+			"Patch",
 			"Skin",
 			"Sound",
-			"GUI",
-			"Gamefile",
-			"Effect",
-			"Texture",
-			"Script"
+			"Textures",
+			"UI"
 		};
 
 		public editProj()
 		{
 			InitializeComponent();
 			txtDLLName.Enabled = false;
-			foreach (string item in GBItems)
+
+			foreach (string item2 in CatItems)
 			{
-				lstGBItems.Items.Add(item);
+				comboModCategory.Items.Add(item2);
 			}
 		}
 
@@ -71,6 +78,8 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSADX.Author;
 					txtDesc.Text = modInfoSADX.Description;
 					txtVerNum.Text = modInfoSADX.Version;
+					textModID.Text = modInfoSADX.ModID;
+					comboModCategory.Text = modInfoSADX.Category;
 
 					if (modInfoSADX.DLLFile != null)
 					{
@@ -111,6 +120,9 @@ namespace SAToolsHub
 					txtAuth.Text = modInfoSA2PC.Author;
 					txtDesc.Text = modInfoSA2PC.Description;
 					txtVerNum.Text = modInfoSA2PC.Version;
+					textModID.Text = modInfoSA2PC.ModID;
+					comboModCategory.Text = modInfoSA2PC.Category;
+
 					if (modInfoSA2PC.DLLFile != null)
 					{
 						chkDLLFile.Checked = true;
@@ -159,8 +171,10 @@ namespace SAToolsHub
 					SADXModInfo modInfoSADX = new SADXModInfo();
 					modInfoSADX.Name = txtName.Text;
 					modInfoSADX.Author = txtAuth.Text;
+					modInfoSADX.Category = comboModCategory.Text;
 					modInfoSADX.Description = txtDesc.Text;
 					modInfoSADX.Version = txtVerNum.Text;
+					modInfoSADX.ModID = textModID.Text;
 					if (chkDLLFile.Checked)
 						modInfoSADX.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)
@@ -192,6 +206,8 @@ namespace SAToolsHub
 					modInfoSA2PC.Author = txtAuth.Text;
 					modInfoSA2PC.Description = txtDesc.Text;
 					modInfoSA2PC.Version = txtVerNum.Text;
+					modInfoSA2PC.Category = comboModCategory.Text;
+					modInfoSA2PC.ModID = textModID.Text;
 					if (chkDLLFile.Checked)
 						modInfoSA2PC.DLLFile = txtDLLName.Text;
 					if (chkMainRedir.Checked)
@@ -251,8 +267,7 @@ namespace SAToolsHub
 		private void radGamebanana_CheckedChanged(object sender, EventArgs e)
 		{
 			lblUpperBox.Text = "Gamebanana ID";
-			lblLower.Text = "Gamebanana Mod Type";
-			lstGBItems.Visible = true;
+			lblLower.Text = "";
 			txtAsset.Visible = false;
 		}
 
@@ -262,6 +277,68 @@ namespace SAToolsHub
 				txtDLLName.Enabled = true;
 			else
 				txtDLLName.Enabled = false;
+		}
+		#endregion
+
+		private void editProj_Load(object sender, EventArgs e)
+		{
+
+		}
+
+		#region ModID Generation
+		static string GetGamePrefix()
+		{
+			string prefix = "";
+			switch (SAToolsHub.setGame)
+			{
+				case ("SADXPC"):
+					prefix = "sadx.";
+					break;
+
+				case ("SA2PC"):
+					prefix = "sa2.";
+					break;
+			}
+			return prefix;
+		}
+
+		static string GenerateModID()
+		{
+			return GetGamePrefix() + ((uint)DateTime.Now.GetHashCode()).ToString();
+		}
+
+		static string RemoveSpecialCharacters(string str)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (char c in str)
+			{
+				if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_' || c == '-')
+				{
+					sb.Append(c);
+				}
+			}
+			return sb.ToString().ToLowerInvariant();
+		}
+
+		static bool isStringNotEmpty(string txt)
+		{
+			return txt.Length > 0;
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			textModID.Clear();
+			string name = isStringNotEmpty(txtName.Text) ? txtName.Text : null;
+			string author = isStringNotEmpty(txtAuth.Text) ? txtAuth.Text : null;
+
+			if (name != null && author != null)
+			{
+				string idName = RemoveSpecialCharacters(name);
+				string idAuthor = RemoveSpecialCharacters(author);
+				textModID.Text = String.Format(GetGamePrefix() + "{0}.{1}", idAuthor, idName);
+			}
+			else
+				textModID.Text = GenerateModID();
 		}
 		#endregion
 	}
