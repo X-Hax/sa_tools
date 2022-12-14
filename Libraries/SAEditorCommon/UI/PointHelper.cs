@@ -79,11 +79,11 @@ namespace SAModel.SAEditorCommon.UI
 
 			float dist = cam.Position.Distance(affectedPoint.ToVector3()) * 0.0825f;
 
-			transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
+			transform.NJTranslate(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
 			if (scaleHandlesToCam)
-				transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+				transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
 			else
-				transform.ScaleLocal(handleSize, handleSize, handleSize);
+				transform.NJScale(handleSize, handleSize, handleSize);
 
 			if (Gizmo.XMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.X_AXIS;
 			if (Gizmo.YMoveMesh.CheckHit(Near, Far, Viewport, Projection, View, transform).IsHit) return GizmoSelectedAxes.Y_AXIS;
@@ -123,8 +123,8 @@ namespace SAModel.SAEditorCommon.UI
 			MatrixStack transform = new MatrixStack();
 
 			transform.Push();
-			transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
-			transform.ScaleLocal(handleSize, handleSize, handleSize);
+			transform.NJTranslate(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
+			transform.NJScale(handleSize, handleSize, handleSize);
 			RenderInfo boxRenderInfo = new RenderInfo(Gizmo.BoxMesh, 0, transform.Top, Gizmo.StandardMaterial, BoxTexture, FillMode.Solid, gizmoSphere);
 
 			RenderInfo.Draw(new List<RenderInfo>() { boxRenderInfo }, d3ddevice, cam);
@@ -154,9 +154,9 @@ namespace SAModel.SAEditorCommon.UI
 			#endregion
 
 			transform.Push();
-			transform.TranslateLocal(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
-			if (scaleHandlesToCam) transform.ScaleLocal(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
-			else transform.ScaleLocal(handleSize, handleSize, handleSize);
+			transform.NJTranslate(affectedPoint.X, affectedPoint.Y, affectedPoint.Z);
+			if (scaleHandlesToCam) transform.NJScale(Math.Abs(dist), Math.Abs(dist), Math.Abs(dist));
+			else transform.NJScale(handleSize, handleSize, handleSize);
 
 			#region Creating Render Info
 			RenderInfo xRenderInfo = new RenderInfo(Gizmo.XMoveMesh, 0, transform.Top, (selectedAxes == GizmoSelectedAxes.X_AXIS) ? Gizmo.HighlightMaterial : Gizmo.XMaterial, null, FillMode.Solid, gizmoSphere);

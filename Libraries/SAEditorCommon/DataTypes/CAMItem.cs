@@ -13,6 +13,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 	[Serializable]
 	public class CAMItem : Item, IScaleable
 	{
+		#region Enums
 		public enum SADXCamType : byte
 		{
 			FOLLOW        = 0x00,
@@ -90,7 +91,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 			COL_AVOID     = 0x48,
 			EDITOR        = 0x49,
 			GURIGURI      = 0x4a,
-			PATHCAM       = 0x4b
+			PATHCAM       = 0x4b,
+			KOSCAM		  = 0x4c
 		}
 
 		public enum SADXCamColType : byte
@@ -131,33 +133,24 @@ namespace SAModel.SAEditorCommon.DataTypes
 			CamAdjust_RELATIVE6C = 0x1A,
 			CamAdjust_FORFREECAMERA = 0x1B,
 		}
+		#endregion
 
-		#region Camera Data Vars
-		[Category("Data")]
+		#region Camera Variables
+		[Category("Info"), DisplayName("Camera Mode"), Description("The Camera Mode to be used.")]
 		public SADXCamType CamType { get; set; }
-		[Category("Data")]
+		[Category("Info"), DisplayName("Collision Mode"), Description("The Collision type used by the camera entry.")]
 		public SADXCamColType CollisionType { get; set; }
-		[Category("Data")]
+		[Category("Info"), DisplayName("Adjustment Mode"), Description("The method used by the camera to transition into another camera.")]
 		public SADXCamAdjustType AdjustType { get; set; }
-		[Category("Data")]
+		[Category("Info"), Description("Priority of the camera compared to other cameras.")]
 		public byte Priority { get; set; }
-		[Category("Common")]
-		public Vertex Scale { get; set; }
-		//public Int32 NotUsed { get; set; }
-		[Category("Data")]
-		public short CameraAngleX { get; set; }
-		[Category("Data")]
-		public short CameraAngleY { get; set; }
-		[Category("Data")]
-		public Vertex PointA { get; set; }
-		[Category("Data")]
-		public Vertex PointB { get; set; }
-		[Category("Data")]
-		public float Variable { get; set; }
-
-		[Category("Common")]
+		[Category("Info"), DisplayName("Collision Position"), Description("Position of the Camera Collision.")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
-		[Category("Common")]
+		[Category("Info"), DisplayName("Collision Angle X"), Description("The X Angle of the Collision Mesh")]
+		public int AngleX { get { return Rotation.X; } set { Rotation.X = value; } }
+		[Category("Info"), DisplayName("Collision Angle Y"), Description("The Y Angle of the Collision Mesh")]
+		public int AngleY { get { return Rotation.Y; } set { Rotation.Y = value; } }
+		[Browsable(false)]
 		public override Rotation Rotation
 		{
 			get { return rotation; }
@@ -171,7 +164,6 @@ namespace SAModel.SAEditorCommon.DataTypes
 				rotation.X = value.X; rotation.Y = value.Y; rotation.Z = 0; GetHandleMatrix();
 			}
 		}
-		[Category("Common")]
 		public override BoundingSphere Bounds
 		{
 			get
@@ -181,26 +173,48 @@ namespace SAModel.SAEditorCommon.DataTypes
 				switch (CollisionType)
 				{
 					case (SADXCamColType.CamCol_Sphere):
-						BoundsScale = Scale.X;
+					default:
+						BoundsScale = MathF.Sqrt(Scale.Z);
 						break;
 					case (SADXCamColType.CamCol_Plane):
 						largestScale = Scale.X;
 						if (Scale.Y > largestScale) largestScale = Scale.Y;
-						BoundsScale = largestScale;
+						BoundsScale = largestScale*2.0f;
 						break;
 					case (SADXCamColType.CamCol_Block):
 						largestScale = Scale.X;
 						if (Scale.Y > largestScale) largestScale = Scale.Y;
 						if (Scale.Z > largestScale) largestScale = Scale.Z;
-						BoundsScale = largestScale;
-						break;
-					default:
-						BoundsScale = Scale.X;
+						BoundsScale = largestScale*2.0f;
 						break;
 				}
-				return new BoundingSphere() { Center = new Vertex(Position.X, Position.Y, Position.Z), Radius = (1.5f * BoundsScale) };
+				return new BoundingSphere() { Center = new Vertex(Position.X, Position.Y, Position.Z), Radius = BoundsScale };
 			}
 		}
+		[Category("Info"), DisplayName("Colliion Scale"), Description("Scale of the Collision.\nSpheres - Z\nPlane - X Y\nCube - X Y Z")]
+		public Vertex Scale { get; set; }
+
+		[Category("Parameters"), DisplayName("Camera Angle X"), Description("Camera Angle X Property, not always used.")]
+		public short CameraAngleX { get; set; }
+		[Category("Parameters"), DisplayName("Camera Angle Y"), Description("Camera Angle Y Property, not always used.")]
+		public short CameraAngleY { get; set; }
+		[Category("Parameters"), DisplayName("Target Position X"), Description("Target Position X, not always used.")]
+		public float DirectPositionX { get { return DirectPosition.X; } set { DirectPosition.X = value; } }
+		[Category("Parameters"), DisplayName("Target Position Y"), Description("Target Position X, not always used.")]
+		public float DirectPositionY { get { return DirectPosition.Y; } set { DirectPosition.Y = value; } }
+		[Category("Parameters"), DisplayName("Target Position Z"), Description("Target Position X, not always used.")]
+		public float DirectPositionZ { get { return DirectPosition.Z; } set { DirectPosition.Z = value; } }
+		[Category("Parameters"), DisplayName("Camera Position X"), Description("Camera Position X, not always used.")]
+		public float CameraPositionX { get { return CameraPosition.X; } set { CameraPosition.X = value; } }
+		[Category("Parameters"), DisplayName("Camera Position Y"), Description("Camera Position Y, not always used.")]
+		public float CameraPositionY { get { return CameraPosition.Y; } set { CameraPosition.Y = value; } }
+		[Category("Parameters"), DisplayName("Camera Position Z"), Description("Camera Position Z, not always used.")]
+		public float CameraPositionZ { get { return CameraPosition.Z; } set { CameraPosition.Z = value; } }
+		[Category("Parameters"), Description("Distance maintained between Camera Position and Target, not always used.")]
+		public float Distance { get; set; }
+
+		Vertex DirectPosition = new Vertex();
+		Vertex CameraPosition = new Vertex();
 
 		public Vertex GetScale()
 		{
@@ -213,7 +227,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 		#endregion
 
-		#region Render / Volume Vars
+		#region Render Variables
 		public static Mesh VolumeMesh { get; set; }
 		public static NJS_MATERIAL Material { get; set; }
 
@@ -229,7 +243,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public CAMItem(Vertex position, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
-			CamType = (SADXCamType.NEWFOLLOW);
+			CamType = (SADXCamType.FOLLOW);
 
 			Position = position;
 			Rotation = new Rotation();
@@ -238,10 +252,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 			AdjustType = (SADXCamAdjustType.CamAdjust_RELATIVE3);
 			CollisionType = (SADXCamColType.CamCol_Block);
 
-			PointA = new Vertex(position.X + 25, position.Y - 38, position.Z);
-			PointB = new Vertex(position.X - 40, position.Y - 38, position.Z);
+			DirectPosition = new Vertex(position.X + 25.0f, position.Y + 25.0f, position.Z + 25.0f);
+			CameraPosition = new Vertex(position.X, position.Y, position.Z);
 
-			Variable = 45f;
+			Distance = 45f;
 
 			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
 
@@ -265,9 +279,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Scale = new Vertex(file, address + 20);
 			CameraAngleX = BitConverter.ToInt16(file, address + 32);
 			CameraAngleY = BitConverter.ToInt16(file, address + 34);
-			PointA = new Vertex(file, address + 36);
-			PointB = new Vertex(file, address + 48);
-			Variable = BitConverter.ToSingle(file, address + 60);
+
+			DirectPosition = new Vertex(file, address + 36);
+			CameraPosition = new Vertex(file, address + 48);
+
+			Distance = BitConverter.ToSingle(file, address + 60);
 
 			selectionManager.SelectionChanged += selectionManager_SelectionChanged;
 
@@ -281,7 +297,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 		#endregion
 
-		#region Saving
+		#region File Saving
 		public byte[] GetBytes()
 		{
 			List<byte> bytes = new List<byte>(0x40) { (byte)CamType, Priority, (byte)AdjustType, (byte)CollisionType };
@@ -298,14 +314,15 @@ namespace SAModel.SAEditorCommon.DataTypes
 			bytes.AddRange(BitConverter.GetBytes(CameraAngleX));
 			bytes.AddRange(BitConverter.GetBytes(CameraAngleY));
 
-			bytes.AddRange(PointA.GetBytes());
-			bytes.AddRange(PointB.GetBytes());
-			bytes.AddRange(BitConverter.GetBytes(Variable));
+			bytes.AddRange(DirectPosition.GetBytes());
+			bytes.AddRange(CameraPosition.GetBytes());
+			bytes.AddRange(BitConverter.GetBytes(Distance));
 
 			return bytes.ToArray();
 		}
 		#endregion
 
+		#region Inheretance
 		#region Add / Delete
 		public override void Paste()
 		{
@@ -319,7 +336,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 		#endregion
 
-		#region Rendering / Picking
+		#region Render
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(Bounds))
@@ -328,12 +345,14 @@ namespace SAModel.SAEditorCommon.DataTypes
 			List<RenderInfo> result = new List<RenderInfo>();
 			transform.Push();
 			transform.NJTranslate(Position);
+			transform.NJRotateX(Rotation.X);
 			transform.NJRotateY(Rotation.Y);
 
 			switch (CollisionType)
 			{
 				case (SADXCamColType.CamCol_Sphere):
-					VolumeMesh = Mesh.Sphere(2f, 6, 8);
+				default:
+					VolumeMesh = Mesh.Sphere(1.0f, 12, 6);
 					Material = new NJS_MATERIAL
 					{
 						DiffuseColor = Color.FromArgb(200, Color.Blue),
@@ -344,10 +363,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 						IgnoreSpecular = false,
 						UseTexture = false
 					};
-					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					float scale = MathF.Sqrt(Scale.Z);
+					transform.NJScale(scale, scale, scale);
 					break;
 				case (SADXCamColType.CamCol_Plane):
-					VolumeMesh = Mesh.Box(2f, 2f, 0f);
+					VolumeMesh = Mesh.Box(1.0f, 1.0f, 0.0f);
 					Material = new NJS_MATERIAL
 					{
 						DiffuseColor = Color.FromArgb(200, Color.Green),
@@ -358,10 +378,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 						IgnoreSpecular = false,
 						UseTexture = false
 					};
-					transform.NJScale((Scale.X), (Scale.Y), (1f));
+					transform.NJScale((Scale.X*2.0f), (Scale.Y*2.0f), (1f));
 					break;
 				case (SADXCamColType.CamCol_Block):
-					VolumeMesh = Mesh.Box(2f, 2f, 2f);
+					VolumeMesh = Mesh.Box(1.0f, 1.0f, 1.0f);
 					Material = new NJS_MATERIAL
 					{
 						DiffuseColor = Color.FromArgb(200, Color.Purple),
@@ -372,24 +392,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 						IgnoreSpecular = false,
 						UseTexture = false
 					};
-					transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
-					break;
-				default:
-					VolumeMesh = Mesh.Sphere(2f, 6, 8);
-					Material = new NJS_MATERIAL
-					{
-						DiffuseColor = Color.FromArgb(200, Color.Blue),
-						SpecularColor = Color.Black,
-						UseAlpha = true,
-						DoubleSided = false,
-						Exponent = 10,
-						IgnoreSpecular = false,
-						UseTexture = false
-					};
-					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					transform.NJScale((Scale.X*2.0f), (Scale.Y*2.0f), (Scale.Z*2.0f));
 					break;
 			}
-			
+
 			RenderInfo outputInfo = new RenderInfo(VolumeMesh, 0, transform.Top, Material, null, FillMode.Solid, Bounds);
 
 			if (Selected)
@@ -408,7 +414,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 			transform.Pop();
 			return result;
 		}
+		#endregion
 
+		#region Bounds
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
 		{
 			if (Scale.X == 0 || Scale.Y == 0 || Scale.Z == 0)
@@ -420,21 +428,21 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 			transform.Push();
 			transform.NJTranslate(Position);
+			transform.NJRotateX(Rotation.X);
 			transform.NJRotateY(Rotation.Y);
 
 			switch (CollisionType)
 			{
 				case (SADXCamColType.CamCol_Sphere):
-					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+				default:
+					float scale = MathF.Sqrt(Scale.Z);
+					transform.NJScale(scale, scale, scale);
 					break;
 				case (SADXCamColType.CamCol_Plane):
-					transform.NJScale((Scale.X), (Scale.Y), (1f));
+					transform.NJScale((Scale.X*2.0f), (Scale.Y*2.0f), (1f));
 					break;
 				case (SADXCamColType.CamCol_Block):
-					transform.NJScale((Scale.X), (Scale.Y), (Scale.Z));
-					break;
-				default:
-					transform.NJScale((Scale.X), (Scale.X), (Scale.X));
+					transform.NJScale((Scale.X*2.0f), (Scale.Y*2.0f), (Scale.Z*2.0f));
 					break;
 			}
 
@@ -444,8 +452,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 			return result;
 		}
 		#endregion
+		#endregion
 
-		#region Selection Changed Methods
+		#region Selection Manager
 		void selectionManager_SelectionChanged(EditorItemSelection sender)
 		{
 			if (sender.ItemCount != 1)
@@ -457,11 +466,37 @@ namespace SAModel.SAEditorCommon.DataTypes
 			{
 				if (Selected)
 				{
-					pointHelperA.SetPoint(PointA);
-					pointHelperB.SetPoint(PointB);
-
-					pointHelperA.Enabled = true;
-					pointHelperB.Enabled = true;
+					switch (CamType)
+					{
+						case SADXCamType.ASHLAND:
+						case SADXCamType.A_ASHLAND:
+						case SADXCamType.C_ASHLAND:
+						case SADXCamType.ASHLAND_I:
+						case SADXCamType.A_ASHLAND_I:
+						case SADXCamType.C_ASHLAND_I:
+							pointHelperB.SetPoint(CameraPosition);
+							pointHelperB.Enabled = true;
+							break;
+						case SADXCamType.FIXED:
+						case SADXCamType.C_FIXED:
+						case SADXCamType.A_FIXED:
+							pointHelperB.SetPoint(CameraPosition);
+							pointHelperB.Enabled = true;
+							pointHelperA.SetPoint(DirectPosition);
+							pointHelperA.Enabled = true;
+							break;
+						case SADXCamType.POINT:
+						case SADXCamType.A_POINT:
+						case SADXCamType.C_POINT:
+						case SADXCamType.TORNADE:
+							pointHelperA.SetPoint(DirectPosition);
+							pointHelperA.Enabled = true;
+							break;
+						default:
+							pointHelperA.Enabled = false;
+							pointHelperB.Enabled = false;
+							break;
+					}
 				}
 			}
 		}
