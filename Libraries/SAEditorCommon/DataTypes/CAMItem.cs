@@ -488,6 +488,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 						case SADXCamType.POINT:
 						case SADXCamType.A_POINT:
 						case SADXCamType.C_POINT:
+						case SADXCamType.KLAMATH:
+						case SADXCamType.A_KLAMATH:
+						case SADXCamType.C_KLAMATH:
 						case SADXCamType.TORNADE:
 							pointHelperA.SetPoint(DirectPosition);
 							pointHelperA.Enabled = true;
