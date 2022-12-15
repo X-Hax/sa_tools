@@ -4,7 +4,6 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using SAModel.Direct3D;
 using Color = System.Drawing.Color;
-
 using SAModel.SAEditorCommon.DataTypes;
 
 namespace SAModel.SAEditorCommon.UI
@@ -299,9 +298,9 @@ namespace SAModel.SAEditorCommon.UI
 		/// <param name="Look"></param>
 		/// <param name="Right"></param>
 		/// <returns></returns>
-		public Vector3 MoveDirection(Vector2 input, EditorCamera cam/*, Vector3 Up, Vector3 Look, Vector3 Right*/)
+		public Vector3 MoveDirection(Vector2 input, EditorCamera cam, Item item/*, Vector3 Up, Vector3 Look, Vector3 Right*/)
 		{
-			float yFlip = -1; // I don't think we'll ever need to mess with this
+			float yFlip = 1; // I don't think we'll ever need to mess with this
 			float xFlip = 1;
 			float axisDot = 0;
 
@@ -318,7 +317,7 @@ namespace SAModel.SAEditorCommon.UI
 			switch (selectedAxes)
 			{
 				case GizmoSelectedAxes.X_AXIS:
-					axisDot = Vector3.Dot(cam.Look, Right);
+					axisDot = Vector3.Dot(cam.Right, Right);
 					xFlip = (axisDot > 0) ? 1 : -1;
 					offset = (Right * ((Math.Abs(input.X) > Math.Abs(input.Y)) ? input.X * xFlip : input.Y));
 					break;
@@ -326,8 +325,8 @@ namespace SAModel.SAEditorCommon.UI
 					offset = (Up * ((Math.Abs(input.X) > Math.Abs(input.Y)) ? input.X : input.Y * yFlip));
 					break;
 				case GizmoSelectedAxes.Z_AXIS:
-					axisDot = Vector3.Dot(cam.Look, Right);
-					xFlip = (axisDot > 0) ? -1 : 1;
+					axisDot = Vector3.Dot(cam.Right, Look);
+					xFlip = (axisDot > 0) ? 1 : -1;
 					offset = (Look * ((Math.Abs(input.X) > Math.Abs(input.Y)) ? input.X * xFlip : input.Y));
 					break;
 				case GizmoSelectedAxes.XY_AXIS:
@@ -359,9 +358,9 @@ namespace SAModel.SAEditorCommon.UI
 		/// <param name="Look"></param>
 		/// <param name="Right"></param>
 		/// <returns></returns>
-		public Vector3 Move(Vector2 input, Vector3 sourcePosition, EditorCamera cam)
+		public Vector3 Move(Vector2 input, Vector3 sourcePosition, EditorCamera cam, Item item)
 		{
-			return position = (sourcePosition + MoveDirection(input, cam));
+			return position = (sourcePosition + MoveDirection(input, cam, item));
 		}
 
 		public bool TransformGizmoMove(System.Drawing.Point mouseDelta, EditorCamera cam, EditorItemSelection selectedItems)
@@ -372,8 +371,8 @@ namespace SAModel.SAEditorCommon.UI
 			if (!Enabled) 
 				return false;
 
-				float xChange = mouseDelta.X / 2 * cam.MoveSpeed;
-				float yChange = mouseDelta.Y / 2 * cam.MoveSpeed;
+				float xChange = (mouseDelta.X / 2) * 0.5f;
+				float yChange = (mouseDelta.Y / 2) * 0.5f * -1.0f;
 				if (xChange == 0 && yChange == 0) return false;
 
 				Item firstItem = selectedItems.Get(0);
@@ -387,7 +386,7 @@ namespace SAModel.SAEditorCommon.UI
 					{
 						Vertex backuppos = item.Position.Clone();
 						item.Position = Move(gizmoMouseInput,
-							item.Position.ToVector3(), cam).ToVertex();
+							item.Position.ToVector3(), cam, item).ToVertex();
 						// Update item bounds
 						if (item is LevelItem)
 						{
@@ -446,6 +445,7 @@ namespace SAModel.SAEditorCommon.UI
 		#region Rotation Methods
 		public Rotation Rotate(Vector2 input, EditorCamera cam, Rotation rotation)
 		{
+			MatrixStack transform = new MatrixStack();
 			if (isTransformLocal)
 			{
 				try
@@ -519,10 +519,22 @@ namespace SAModel.SAEditorCommon.UI
 		/// <returns></returns>
 		public Vertex Scale(Vector2 input, Vertex sourceScale, EditorCamera cam, bool clamp, float minScale, float multiplier)
 		{
+			Vector3 Right = new Vector3(1, 0, 0), Up = new Vector3(0, 1, 0), Look = new Vector3(0, 0, 1);
+
+			Matrix transformMatrix = (isTransformLocal) ? localTransformMatrix : globalTransformMatrix;
+
+			Right = Vector3.TransformNormal(Right, transformMatrix);
+			Look = Vector3.TransformNormal(Look, transformMatrix);
+
+			float flip = 1;
+			float axisDot = 0;
+
 			switch (selectedAxes)
 			{
 				case GizmoSelectedAxes.X_AXIS:
-					return new Vertex(MathHelper.Clamp(sourceScale.X + input.X * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
+					axisDot = Vector3.Dot(cam.Right, Right);
+					flip = (axisDot > 0) ? 1 : -1;
+					return new Vertex(MathHelper.Clamp(sourceScale.X + (input.X * flip) * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Z, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
 
@@ -532,9 +544,11 @@ namespace SAModel.SAEditorCommon.UI
 						MathHelper.Clamp(sourceScale.Z, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
 
 				case GizmoSelectedAxes.Z_AXIS:
+					axisDot = Vector3.Dot(cam.Right, Look);
+					flip = (axisDot > 0) ? 1 : -1;
 					return new Vertex(MathHelper.Clamp(sourceScale.X, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
 						MathHelper.Clamp(sourceScale.Y, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity),
-						MathHelper.Clamp(sourceScale.Z + input.X * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
+						MathHelper.Clamp(sourceScale.Z + (input.X * flip) * multiplier, (clamp) ? minScale : float.NegativeInfinity, float.PositiveInfinity));
 			}
 
 			return sourceScale;
