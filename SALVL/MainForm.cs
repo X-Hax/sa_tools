@@ -51,13 +51,6 @@ namespace SAModel.SALVL
 			AddMouseMoveHandler(this);
 		}
 
-		protected override void WndProc(ref Message m)
-		{
-			// Suppress the WM_UPDATEUISTATE message to remove rendering flicker
-			if (m.Msg == 0x128) return;
-			base.WndProc(ref m);
-		}
-
 		private void AddMouseMoveHandler(Control c)
 		{
 			c.MouseMove += Panel1_MouseMove;

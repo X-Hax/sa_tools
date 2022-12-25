@@ -107,13 +107,6 @@ namespace SAModel.SAMDL
 			}
 		}
 
-		protected override void WndProc(ref Message m)
-		{
-			// Suppress the WM_UPDATEUISTATE message to remove rendering flicker
-			if (m.Msg == 0x128) return;
-			base.WndProc(ref m);
-		}
-
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
 			NeedRedraw = true;

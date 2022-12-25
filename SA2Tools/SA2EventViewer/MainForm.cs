@@ -162,13 +162,6 @@ namespace SA2EventViewer
 				LoadFile(Program.Arguments[0]);
 		}
 
-		protected override void WndProc(ref Message m)
-		{
-			// Suppress the WM_UPDATEUISTATE message to remove rendering flicker
-			if (m.Msg == 0x128) return;
-			base.WndProc(ref m);
-		}
-
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (OpenFileDialog a = new OpenFileDialog()
