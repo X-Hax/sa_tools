@@ -107,27 +107,52 @@ namespace buildEvent
 			{
 				evfilename = argq.Dequeue();
 				Console.WriteLine("File: {0}", evfilename);
-				if (mexwcard.IsMatch(evfilename))
+				if (mexwcard.IsMatch(name))
+				{
+					Console.WriteLine($"Building Mini-Event Extra file {name}");
 					sa2EventExtra.BuildMini(be, evfilename);
-				else if (exwcard.IsMatch(evfilename))
+				}
+				else if (exwcard.IsMatch(name))
+				{
+					Console.WriteLine($"Building Event Extra file {name}");
 					sa2EventExtra.Build(be, lang, evfilename);
+				}
 				else if (evfilename.StartsWith("me", StringComparison.OrdinalIgnoreCase))
+				{
+					Console.WriteLine($"Building Mini-Event {name}");
 					SA2MiniEvent.Build(evfilename);
+				}
 				else
+				{
+					Console.WriteLine($"Building Event {name}");
 					sa2Event.Build(evfilename);
+				}
+
 			}
 			else
 			{
 				Console.WriteLine("File: ");
 				evfilename = Console.ReadLine().Trim('"');
-				if (mexwcard.IsMatch(evfilename))
+				if (mexwcard.IsMatch(name))
+				{
+					Console.WriteLine($"Building Mini-Event Extra file {name}");
 					sa2EventExtra.BuildMini(be, evfilename);
-				else if (exwcard.IsMatch(evfilename))
+				}
+				else if (exwcard.IsMatch(name))
+				{
+					Console.WriteLine($"Building Event Extra file {name}");
 					sa2EventExtra.Build(be, lang, evfilename);
+				}
 				else if (evfilename.StartsWith("me", StringComparison.OrdinalIgnoreCase))
+				{
+					Console.WriteLine($"Building Mini-Event {name}");
 					SA2MiniEvent.Build(evfilename);
+				}
 				else
+				{
+					Console.WriteLine($"Building Event {name}");
 					sa2Event.Build(evfilename);
+				}
 			}
 		}
 	}
