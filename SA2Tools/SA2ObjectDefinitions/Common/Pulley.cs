@@ -12,7 +12,7 @@ using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class ContWood : ObjectDefinition
+	public class Pulley : ObjectDefinition
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
@@ -21,9 +21,9 @@ namespace SA2ObjectDefinitions.Common
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("object/OBJECT_CONTWOOD.sa2mdl");
+			model = ObjectHelper.LoadModel("object/GC/OBJECT_UDREEL.sa2bmdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/CONTWOOD.satex");
+			texarr = NJS_TEXLIST.Load("object/tls/UDREEL.satex");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -87,7 +87,7 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.Z = -z;
 		}
 
-		public override string Name { get { return "Wooden Box"; } }
+		public override string Name { get { return "Pulley"; } }
 
 		public override float DefaultXScale { get { return 0; } }
 

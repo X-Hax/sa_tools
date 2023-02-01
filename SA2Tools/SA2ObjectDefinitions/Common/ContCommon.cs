@@ -1,4 +1,4 @@
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct3D9;
 using SAModel;
 using SAModel.Direct3D;
@@ -12,20 +12,13 @@ using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class ContChao : ObjectDefinition
+	public abstract class ContCommon : ObjectDefinition
 	{
-		private NJS_OBJECT model;
-		private Mesh[] meshes;
-		private NJS_TEXLIST texarr;
-		private Texture[] texs;
-		
-		public override void Init(ObjectData data, string name)
-		{
-			model = ObjectHelper.LoadModel("object/OBJECT_CONTCHAO.sa2mdl");
-			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/CONTCHAO.satex");
-		}
-		
+		protected NJS_OBJECT model;
+		protected Mesh[] meshes;
+		protected NJS_TEXLIST texarr;
+		protected Texture[] texs;
+
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			transform.Push();
@@ -35,7 +28,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Pop();
 			return result;
 		}
-		
+
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
@@ -50,7 +43,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Pop();
 			return result;
 		}
-		
+
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
@@ -61,7 +54,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Pop();
 			return result;
 		}
-		
+
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
@@ -86,13 +79,59 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
-		
-		public override string Name { get { return "Chao Box"; } }
 
 		public override float DefaultXScale { get { return 0; } }
 
 		public override float DefaultYScale { get { return 0; } }
 
 		public override float DefaultZScale { get { return 0; } }
+	}
+	
+	public class ContWood : ContCommon
+	{
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("object/OBJECT_CONTWOOD.sa2mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+			texarr = NJS_TEXLIST.Load("object/tls/CONTWOOD.satex");
+		}
+		
+		public override string Name { get { return "Wooden Container"; } }
+	}
+	
+	public class ContIron : ContCommon
+	{
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("object/OBJECT_CONTIRON.sa2mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+			texarr = NJS_TEXLIST.Load("object/tls/CONTIRON.satex");
+		}
+		
+		public override string Name { get { return "Iron Container"; } }
+	}
+	
+	public class ContChao : ContCommon
+	{
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("object/OBJECT_CONTCHAO.sa2mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+			texarr = NJS_TEXLIST.Load("object/tls/CONTCHAO.satex");
+		}
+		
+		public override string Name { get { return "Chao Container"; } }
+	}
+	
+	public class SolidBox : ContCommon
+	{
+		public override void Init(ObjectData data, string name)
+		{
+			model = ObjectHelper.LoadModel("object/OBJECT_SOLIDBOX.sa2mdl");
+			meshes = ObjectHelper.GetMeshes(model);
+			texarr = NJS_TEXLIST.Load("object/tls/SOLIDBOX.satex");
+		}
+		
+		public override string Name { get { return "Unbreakable Container"; } }
 	}
 }

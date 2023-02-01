@@ -1,4 +1,4 @@
-﻿using SharpDX;
+using SharpDX;
 using SharpDX.Direct3D9;
 using SAModel;
 using SAModel.Direct3D;
@@ -12,28 +12,18 @@ using SplitTools;
 
 namespace SA2ObjectDefinitions.Common
 {
-	public class DashPanel : ObjectDefinition
+	public class Cage : ObjectDefinition
 	{
 		private NJS_OBJECT model;
 		private Mesh[] meshes;
-
-		private NJS_OBJECT child;
-		private Mesh[] meshesChild;
-
 		private NJS_TEXLIST texarr;
-		private NJS_TEXLIST texarrChild;
 		private Texture[] texs;
-		private Texture[] texsChild;
 
 		public override void Init(ObjectData data, string name)
 		{
-			model = ObjectHelper.LoadModel("object/OBJECT_KASOKU_PANEL.sa2mdl");
+			model = ObjectHelper.LoadModel("object/OBJECT_ORI.sa2mdl");
 			meshes = ObjectHelper.GetMeshes(model);
-			texarr = NJS_TEXLIST.Load("object/tls/KASOKU_PANEL.satex");
-
-			child = ObjectHelper.LoadModel("object/OBJECT_KASOKU.sa2mdl");
-			meshesChild = ObjectHelper.GetMeshes(child);
-			texarrChild = NJS_TEXLIST.Load("object/tls/KASOKU.satex");
+			texarr = NJS_TEXLIST.Load("object/tls/ORI.satex");
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
@@ -45,26 +35,18 @@ namespace SA2ObjectDefinitions.Common
 			transform.Pop();
 			return result;
 		}
-
+		
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (texs == null)
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
-
-			if (texsChild == null)
-				texsChild = ObjectHelper.GetTextures("objtex_common", texarrChild, dev);
-
 			transform.Push();
 			transform.NJTranslate(item.Position);
 			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			result.AddRange(child.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsChild, meshesChild, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
-			{
 				result.AddRange(model.DrawModelTreeInvert(transform, meshes));
-				result.AddRange(child.DrawModelTreeInvert(transform, meshesChild));
-			}
 			transform.Pop();
 			return result;
 		}
@@ -79,7 +61,7 @@ namespace SA2ObjectDefinitions.Common
 			transform.Pop();
 			return result;
 		}
-
+		
 		public override BoundingSphere GetBounds(SETItem item)
 		{
 			MatrixStack transform = new MatrixStack();
@@ -105,14 +87,7 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.Z = -z;
 		}
 
-		public override string Name { get { return "Dash Panel"; } }
-
-		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Speed", typeof(float), "Extended", null, 14.0f, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v > 0 ? (float)v : 14.0f),
-			new PropertySpec("Disable Timer", typeof(float), "Extended", null, 60.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 60.0f)
-		};
-
-		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+		public override string Name { get { return "Steel Cage"; } }
 
 		public override float DefaultXScale { get { return 0; } }
 
