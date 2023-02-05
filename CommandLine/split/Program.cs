@@ -157,17 +157,6 @@ namespace Split
 							Console.Write("\nSplitting Event file: {0}", splitEntryEvent.EventFile);
 							ProjectFunctions.SplitTemplateEventEntry(splitEntryEvent, null, dataFolder, fullpath_out);
 						}
-					if (template.SplitMiniEventEntries != null)
-						foreach (Templates.SplitEntryMiniEvent splitEntryMiniEvent in template.SplitMiniEventEntries)
-						{
-							if (!File.Exists(Path.Combine(dataFolder, splitEntryMiniEvent.EventFile)))
-							{
-								Console.WriteLine("Split Event source file {0} doesn't exist", Path.Combine(dataFolder, splitEntryMiniEvent.EventFile));
-								continue;
-							}
-							Console.Write("\nSplitting Mini-Event file: {0}", splitEntryMiniEvent.EventFile);
-							ProjectFunctions.SplitTemplateMiniEventEntry(splitEntryMiniEvent, null, dataFolder, fullpath_out);
-						}
 					break;
                 case "single":
 					int startoffset = 0;
