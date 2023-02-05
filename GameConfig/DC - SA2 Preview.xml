@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SA2PRE" dataFolder="DC_SA2Preview" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="32e3542d1623d8cecbba80de688770e7" />
-  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
-  <SplitEntry SourceFile="ADVERTISE.PRS" IniFile="ADVERTISE" />
-  <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" />
-  <SplitEntry SourceFile="STG09.PRS" IniFile="STG09" />
-  <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" />
-  <SplitEntry SourceFile="STG14.PRS" IniFile="STG14" />
-  <SplitEntry SourceFile="STG15.PRS" IniFile="STG15" />
-  <SplitEntry SourceFile="STG16.PRS" IniFile="STG16" />
-  <SplitEntry SourceFile="STG18.PRS" IniFile="STG18" />
-  <SplitEntry SourceFile="STG21.PRS" IniFile="STG21" />
-  <SplitEntry SourceFile="STG41.PRS" IniFile="STG41" />
-  <SplitEntryMDL BigEndian="false" ModelFile="EWALKMDL.PRS">
+  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" CmnName="Common Objects and Character Data (1ST_READ)" />
+  <SplitEntry SourceFile="ADVERTISE.PRS" IniFile="ADVERTISE" CmnName="Menus, Splash Screens, and GUI Elements" />
+  <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" CmnName="Green Forest" />
+  <SplitEntry SourceFile="STG09.PRS" IniFile="STG09" CmnName="Prison Lane" />
+  <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" CmnName="City Escape" />
+  <SplitEntry SourceFile="STG14.PRS" IniFile="STG14" CmnName="Radical Highway" />
+  <SplitEntry SourceFile="STG15.PRS" IniFile="STG15" CmnName="Weapons Bed 2P" />
+  <SplitEntry SourceFile="STG16.PRS" IniFile="STG16" CmnName="Wild Canyon" />
+  <SplitEntry SourceFile="STG18.PRS" IniFile="STG18" CmnName="Dry Lagoon" />
+  <SplitEntry SourceFile="STG21.PRS" IniFile="STG21" CmnName="Sand Ocean" />
+  <SplitEntry SourceFile="STG41.PRS" IniFile="STG41" CmnName="Wild Canyon 2P" />
+  <SplitEntryEvent EventFile="EVENT\E0000" EventType="Preview" />
+  <SplitEntryEvent EventFile="EVENT\E0003" EventType="Preview" />
+  <SplitEntryEvent EventFile="EVENT\E0103" EventType="Preview" />
+  <SplitEntryEvent EventFile="EVENT\ME0104" EventType="MiniEvent" />
+  <SplitEntryEvent EventFile="EVENT\E0106" EventType="Preview" />
+  <SplitEntryMDL BigEndian="false" ModelFile="EWALKMDL.PRS" CmnName="Mech Eggman Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="KNUCKMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="KNUCKMDL.PRS" CmnName="Knuckles Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>KNUCKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="ROUGEMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="ROUGEMDL.PRS" CmnName="Rouge Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONICMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="SONICMDL.PRS" CmnName="Sonic Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="TERIOSMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="TERIOSMDL.PRS" CmnName="Shadow Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="TWALKMDL.PRS">
+  <SplitEntryMDL BigEndian="false" ModelFile="TWALKMDL.PRS" CmnName="Mech Tails Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>

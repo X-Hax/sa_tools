@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SADXGC" dataFolder="GC_SADX" checkFile="_Main.rel" gameDataFolderName="" checkHashes="036e39da11f19e6e3598ae6384dcae14" />
-  <SplitEntry SourceFile="_Main.rel" IniFile="_Main" />
-  <SplitEntry SourceFile="ModelsMiles.rel" IniFile="ModelsMiles" />
-  <SplitEntry SourceFile="ModelsKnuckles.rel" IniFile="ModelsKnuckles" />
-  <SplitEntry SourceFile="advertise.rel" IniFile="advertise" />
-  <SplitEntry SourceFile="s_mot.rel" IniFile="s_mot" />
-  <SplitEntry SourceFile="s_sbmot.rel" IniFile="s_sbmot" />
-  <SplitEntry SourceFile="m_sbmot.rel" IniFile="m_sbmot" />
-  <SplitEntry SourceFile="k_mot.rel" IniFile="k_mot" />
-  <SplitEntry SourceFile="a_mot.rel" IniFile="a_mot" />
-  <SplitEntry SourceFile="b_mot.rel" IniFile="b_mot" />
-  <SplitEntry SourceFile="e_mot.rel" IniFile="e_mot" />
-  <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" />
-  <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" />
-  <SplitEntry SourceFile="_Stg02.rel" IniFile="_Stg02" />
-  <SplitEntry SourceFile="_Stg03.rel" IniFile="_Stg03" />
-  <SplitEntry SourceFile="_Stg04.rel" IniFile="_Stg04" />
-  <SplitEntry SourceFile="_Stg05.rel" IniFile="_Stg05" />
-  <SplitEntry SourceFile="_Stg06.rel" IniFile="_Stg06" />
-  <SplitEntry SourceFile="_Stg07.rel" IniFile="_Stg07" />
-  <SplitEntry SourceFile="_Stg08.rel" IniFile="_Stg08" />
-  <SplitEntry SourceFile="_Stg09.rel" IniFile="_Stg09" />
-  <SplitEntry SourceFile="_Stg10.rel" IniFile="_Stg10" />
-  <SplitEntry SourceFile="_Stg12.rel" IniFile="_Stg12" />
-  <SplitEntry SourceFile="_Adv00.rel" IniFile="_Adv00" />
-  <SplitEntry SourceFile="_Adv0100.rel" IniFile="_Adv0100" />
-  <SplitEntry SourceFile="_Adv0130.rel" IniFile="_Adv0130" />
-  <SplitEntry SourceFile="_Adv02.rel" IniFile="_Adv02" />
-  <SplitEntry SourceFile="_Adv03.rel" IniFile="_Adv03" />
-  <SplitEntry SourceFile="B_CHAOS0.rel" IniFile="B_CHAOS0" />
-  <SplitEntry SourceFile="B_CHAOS2.rel" IniFile="B_CHAOS2" />
-  <SplitEntry SourceFile="B_CHAOS4.rel" IniFile="B_CHAOS4" />
-  <SplitEntry SourceFile="_B_CHAOS6.rel" IniFile="_B_CHAOS6" />
-  <SplitEntry SourceFile="_B_CHAOS7.rel" IniFile="_B_CHAOS7" />
-  <SplitEntry SourceFile="b_e101.rel" IniFile="b_e101" />
-  <SplitEntry SourceFile="b_e101_r.rel" IniFile="b_e101_r" />
-  <SplitEntry SourceFile="B_EGM1.rel" IniFile="B_EGM1" />
-  <SplitEntry SourceFile="B_EGM2.rel" IniFile="B_EGM2" />
-  <SplitEntry SourceFile="B_EGM3.rel" IniFile="B_EGM3" />
-  <SplitEntry SourceFile="B_ROBO.rel" IniFile="B_ROBO" />
-  <SplitEntry SourceFile="ChaoStgBlackmarket.rel" IniFile="ChaoStgBlackmarket" />
-  <SplitEntry SourceFile="ChaoStgEntrance.rel" IniFile="ChaoStgEntrance" />
-  <SplitEntry SourceFile="ChaoStgGarden00SS.rel" IniFile="ChaoStgGarden00SS" />
-  <SplitEntry SourceFile="ChaoStgGarden01EC.rel" IniFile="ChaoStgGarden01EC" />
-  <SplitEntry SourceFile="ChaoStgGarden02MR_Daytime.rel" IniFile="ChaoStgGarden02MR_Daytime" />
-  <SplitEntry SourceFile="ChaoStgGarden02MR_Evening.rel" IniFile="ChaoStgGarden02MR_Evening" />
-  <SplitEntry SourceFile="ChaoStgGarden02MR_Night.rel" IniFile="ChaoStgGarden02MR_Night" />
-  <SplitEntry SourceFile="ChaoStgRace.rel" IniFile="ChaoStgRace" />
-  <SplitEntry SourceFile="sboard.rel" IniFile="sboard" />
-  <SplitEntry SourceFile="Mission.rel" IniFile="Mission" />
-  <SplitEntry SourceFile="_Minicart.rel" IniFile="_Minicart" />
-  <SplitEntry SourceFile="_Shooting.rel" IniFile="_Shooting" />
+  <SplitEntry SourceFile="_Main.rel" IniFile="_Main" CmnName="Enemies and Objects (_Main.rel)" />
+  <SplitEntry SourceFile="ModelsMiles.rel" IniFile="ModelsMiles" CmnName="Character Data (Sonic, Tails, Big)" />
+  <SplitEntry SourceFile="ModelsKnuckles.rel" IniFile="ModelsKnuckles" CmnName="Character Data (Knuckles, Amy, Gamma, Eggman)" />
+  <SplitEntry SourceFile="advertise.rel" IniFile="advertise" CmnName="Menus" />
+  <SplitEntry SourceFile="s_mot.rel" IniFile="s_mot" CmnName="Sonic Motions" />
+  <SplitEntry SourceFile="s_sbmot.rel" IniFile="s_sbmot" CmnName="Sonic Snowboard Motions" />
+  <SplitEntry SourceFile="m_sbmot.rel" IniFile="m_sbmot" CmnName="Tails Snowboard Motions" />
+  <SplitEntry SourceFile="k_mot.rel" IniFile="k_mot" CmnName="Knuckles Motions" />
+  <SplitEntry SourceFile="a_mot.rel" IniFile="a_mot" CmnName="Amy Motions" />
+  <SplitEntry SourceFile="b_mot.rel" IniFile="b_mot" CmnName="Big Motions" />
+  <SplitEntry SourceFile="e_mot.rel" IniFile="e_mot" CmnName="Gamma Motions" />
+  <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" CmnName="Hedgehog Hammer" />
+  <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" CmnName="Emerald Coast" />
+  <SplitEntry SourceFile="_Stg02.rel" IniFile="_Stg02" CmnName="Windy Valley" />
+  <SplitEntry SourceFile="_Stg03.rel" IniFile="_Stg03" CmnName="Twinkle Park" />
+  <SplitEntry SourceFile="_Stg04.rel" IniFile="_Stg04" CmnName="Speed Highway" />
+  <SplitEntry SourceFile="_Stg05.rel" IniFile="_Stg05" CmnName="Red Mountain" />
+  <SplitEntry SourceFile="_Stg06.rel" IniFile="_Stg06" CmnName="Sky Deck" />
+  <SplitEntry SourceFile="_Stg07.rel" IniFile="_Stg07" CmnName="Lost World" />
+  <SplitEntry SourceFile="_Stg08.rel" IniFile="_Stg08" CmnName="Ice Cap" />
+  <SplitEntry SourceFile="_Stg09.rel" IniFile="_Stg09" CmnName="Casinopolis" />
+  <SplitEntry SourceFile="_Stg10.rel" IniFile="_Stg10" CmnName="Final Egg" />
+  <SplitEntry SourceFile="_Stg12.rel" IniFile="_Stg12" CmnName="Hot Shelter" />
+  <SplitEntry SourceFile="_Adv00.rel" IniFile="_Adv00" CmnName="Station Square" />
+  <SplitEntry SourceFile="_Adv0100.rel" IniFile="_Adv0100" CmnName="Egg Carrier Exterior" />
+  <SplitEntry SourceFile="_Adv0130.rel" IniFile="_Adv0130" CmnName="Egg Carrier Interior" />
+  <SplitEntry SourceFile="_Adv02.rel" IniFile="_Adv02" CmnName="Mystic Ruins" />
+  <SplitEntry SourceFile="_Adv03.rel" IniFile="_Adv03" CmnName="The Past" />
+  <SplitEntry SourceFile="B_CHAOS0.rel" IniFile="B_CHAOS0" CmnName="Chaos 0" />
+  <SplitEntry SourceFile="B_CHAOS2.rel" IniFile="B_CHAOS2" CmnName="Chaos 2" />
+  <SplitEntry SourceFile="B_CHAOS4.rel" IniFile="B_CHAOS4" CmnName="Chaos 4" />
+  <SplitEntry SourceFile="_B_CHAOS6.rel" IniFile="_B_CHAOS6" CmnName="Chaos 6" />
+  <SplitEntry SourceFile="_B_CHAOS7.rel" IniFile="_B_CHAOS7" CmnName="Perfect Chaos" />
+  <SplitEntry SourceFile="b_e101.rel" IniFile="b_e101" CmnName="E101" />
+  <SplitEntry SourceFile="b_e101_r.rel" IniFile="b_e101_r" CmnName="E101 mk.II" />
+  <SplitEntry SourceFile="B_EGM1.rel" IniFile="B_EGM1" CmnName="Egg Hornet" />
+  <SplitEntry SourceFile="B_EGM2.rel" IniFile="B_EGM2" CmnName="Egg Walker" />
+  <SplitEntry SourceFile="B_EGM3.rel" IniFile="B_EGM3" CmnName="Egg Viper" />
+  <SplitEntry SourceFile="B_ROBO.rel" IniFile="B_ROBO" CmnName="Zero" />
+  <SplitEntry SourceFile="ChaoStgBlackmarket.rel" IniFile="ChaoStgBlackmarket" CmnName="Black Market" />
+  <SplitEntry SourceFile="ChaoStgEntrance.rel" IniFile="ChaoStgEntrance" CmnName="Chao Race Lobby" />
+  <SplitEntry SourceFile="ChaoStgGarden00SS.rel" IniFile="ChaoStgGarden00SS" CmnName="Station Square Garden" />
+  <SplitEntry SourceFile="ChaoStgGarden01EC.rel" IniFile="ChaoStgGarden01EC" CmnName="Egg Carrier Garden" />
+  <SplitEntry SourceFile="ChaoStgGarden02MR_Daytime.rel" IniFile="ChaoStgGarden02MR_Daytime" CmnName="Mystic Ruins Garden (Daytime)" />
+  <SplitEntry SourceFile="ChaoStgGarden02MR_Evening.rel" IniFile="ChaoStgGarden02MR_Evening" CmnName="Mystic Ruins Garden (Evening)" />
+  <SplitEntry SourceFile="ChaoStgGarden02MR_Night.rel" IniFile="ChaoStgGarden02MR_Night" CmnName="Mystic Ruins Garden (Night)" />
+  <SplitEntry SourceFile="ChaoStgRace.rel" IniFile="ChaoStgRace" CmnName="Chao Race" />
+  <SplitEntry SourceFile="sboard.rel" IniFile="sboard" CmnName="Sand Hill" />
+  <SplitEntry SourceFile="Mission.rel" IniFile="Mission" CmnName="Mission Mode" />
+  <SplitEntry SourceFile="_Minicart.rel" IniFile="_Minicart" CmnName="Twinkle Circuit" />
+  <SplitEntry SourceFile="_Shooting.rel" IniFile="_Shooting" CmnName="Sky Chase" />
 </SplitTemplate>
