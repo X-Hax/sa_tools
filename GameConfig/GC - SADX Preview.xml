@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SADXGCP" dataFolder="GC_SADXPreview" gameDataFolderName="" checkFile="_Main.rel" checkHashes="8c66b7889400adde9903c7a53b5cc94d" />
-  <SplitEntry SourceFile="_Main.rel" IniFile="_Main" />
-  <SplitEntry SourceFile="AdvMain.rel" IniFile="AdvMain" />
-  <SplitEntry SourceFile="AdvMainD.rel" IniFile="AdvMainD" />
-  <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" />
-  <SplitEntry SourceFile="Stg00d.rel" IniFile="Stg00d" />
-  <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" />
-  <SplitEntry SourceFile="Stg01d.rel" IniFile="Stg01d" />
-  <SplitEntry SourceFile="_Stg02.rel" IniFile="_Stg02" />
-  <SplitEntry SourceFile="_Stg03.rel" IniFile="_Stg03" />
-  <SplitEntry SourceFile="Stg03d.rel" IniFile="Stg03d" />
-  <SplitEntry SourceFile="_Stg04.rel" IniFile="_Stg04" />
-  <SplitEntry SourceFile="_Stg05.rel" IniFile="_Stg05" />
-  <SplitEntry SourceFile="_Stg06.rel" IniFile="_Stg06" />
-  <SplitEntry SourceFile="_Stg07.rel" IniFile="_Stg07" />
-  <SplitEntry SourceFile="_Stg08.rel" IniFile="_Stg08" />
-  <SplitEntry SourceFile="_Stg09.rel" IniFile="_Stg09" />
-  <SplitEntry SourceFile="_Stg10.rel" IniFile="_Stg10" />
-  <SplitEntry SourceFile="_Stg12.rel" IniFile="_Stg12" />
-  <SplitEntry SourceFile="_Adv00.rel" IniFile="_Adv00" />
-  <SplitEntry SourceFile="_Adv0100.rel" IniFile="_Adv0100" />
-  <SplitEntry SourceFile="_Adv0130.rel" IniFile="_Adv0130" />
-  <SplitEntry SourceFile="_Adv02.rel" IniFile="_Adv02" />
-  <SplitEntry SourceFile="_Adv03.rel" IniFile="_Adv03" />
-  <SplitEntry SourceFile="B_CHAOS0.rel" IniFile="B_CHAOS0" />
-  <SplitEntry SourceFile="B_CHAOS2.rel" IniFile="B_CHAOS2" />
-  <SplitEntry SourceFile="B_CHAOS4.rel" IniFile="B_CHAOS4" />
-  <SplitEntry SourceFile="_B_CHAOS6.rel" IniFile="_B_CHAOS6" />
-  <SplitEntry SourceFile="_B_CHAOS7.rel" IniFile="_B_CHAOS7" />
-  <SplitEntry SourceFile="b_e101.rel" IniFile="b_e101" />
-  <SplitEntry SourceFile="b_e101_r.rel" IniFile="b_e101_r" />
-  <SplitEntry SourceFile="B_EGM1.rel" IniFile="B_EGM1" />
-  <SplitEntry SourceFile="B_EGM2.rel" IniFile="B_EGM2" />
-  <SplitEntry SourceFile="B_EGM3.rel" IniFile="B_EGM3" />
-  <SplitEntry SourceFile="B_ROBO.rel" IniFile="B_ROBO" />
-  <SplitEntry SourceFile="AL_RACE.rel" IniFile="AL_RACE" />
-  <SplitEntry SourceFile="AL_GARDEN00.rel" IniFile="AL_GARDEN00" />
-  <SplitEntry SourceFile="AL_GARDEN01.rel" IniFile="AL_GARDEN01" />
-  <SplitEntry SourceFile="AL_GARDEN02.rel" IniFile="AL_GARDEN02" />
-  <SplitEntry SourceFile="sboard.rel" IniFile="sboard" />
-  <SplitEntry SourceFile="_Minicart.rel" IniFile="_Minicart" />
+  <SplitEntry SourceFile="_Main.rel" IniFile="_Main" CmnName="Characters, Enemies, Objects (_Main)" />
+  <SplitEntry SourceFile="AdvMain.rel" IniFile="AdvMain" CmnName="Characters, Enemies, Objects (AdvMain)" />
+  <SplitEntry SourceFile="AdvMainD.rel" IniFile="AdvMainD" CmnName="Characters, Enemies, Objects (AdvMainD)" />
+  <SplitEntry SourceFile="Stg00.rel" IniFile="Stg00" CmnName="Hedgehog Hammer" />
+  <SplitEntry SourceFile="Stg00d.rel" IniFile="Stg00d" CmnName="Hedgehog Hammer (Stg00d)" />
+  <SplitEntry SourceFile="_Stg01.rel" IniFile="_Stg01" CmnName="Emerald Coast" />
+  <SplitEntry SourceFile="Stg01d.rel" IniFile="Stg01d" CmnName="Emerald Coast (Stg01d)" />
+  <SplitEntry SourceFile="_Stg02.rel" IniFile="_Stg02" CmnName="Windy Valley" />
+  <SplitEntry SourceFile="_Stg03.rel" IniFile="_Stg03" CmnName="Twinkle Park" />
+  <SplitEntry SourceFile="Stg03d.rel" IniFile="Stg03d" CmnName="Twinkle Park (Stg03d)" />
+  <SplitEntry SourceFile="_Stg04.rel" IniFile="_Stg04" CmnName="Speed Highway" />
+  <SplitEntry SourceFile="_Stg05.rel" IniFile="_Stg05" CmnName="Red Mountain" />
+  <SplitEntry SourceFile="_Stg06.rel" IniFile="_Stg06" CmnName="Sky Deck" />
+  <SplitEntry SourceFile="_Stg07.rel" IniFile="_Stg07" CmnName="Lost World" />
+  <SplitEntry SourceFile="_Stg08.rel" IniFile="_Stg08" CmnName="Ice Cap" />
+  <SplitEntry SourceFile="_Stg09.rel" IniFile="_Stg09" CmnName="Casinopolis" />
+  <SplitEntry SourceFile="_Stg10.rel" IniFile="_Stg10" CmnName="Final Egg" />
+  <SplitEntry SourceFile="_Stg12.rel" IniFile="_Stg12" CmnName="Hot Shelter" />
+  <SplitEntry SourceFile="_Adv00.rel" IniFile="_Adv00" CmnName="Station Square" />
+  <SplitEntry SourceFile="_Adv0100.rel" IniFile="_Adv0100" CmnName="Egg Carrier Exterior" />
+  <SplitEntry SourceFile="_Adv0130.rel" IniFile="_Adv0130" CmnName="Egg Carrier Interior" />
+  <SplitEntry SourceFile="_Adv02.rel" IniFile="_Adv02" CmnName="Mystic Ruins" />
+  <SplitEntry SourceFile="_Adv03.rel" IniFile="_Adv03" CmnName="The Past" />
+  <SplitEntry SourceFile="B_CHAOS0.rel" IniFile="B_CHAOS0" CmnName="Chaos 0" />
+  <SplitEntry SourceFile="B_CHAOS2.rel" IniFile="B_CHAOS2" CmnName="Chaos 2" />
+  <SplitEntry SourceFile="B_CHAOS4.rel" IniFile="B_CHAOS4" CmnName="Chaos 4" />
+  <SplitEntry SourceFile="_B_CHAOS6.rel" IniFile="_B_CHAOS6" CmnName="Chaos 6" />
+  <SplitEntry SourceFile="_B_CHAOS7.rel" IniFile="_B_CHAOS7" CmnName="Perfect Chaos" />
+  <SplitEntry SourceFile="b_e101.rel" IniFile="b_e101" CmnName="E101" />
+  <SplitEntry SourceFile="b_e101_r.rel" IniFile="b_e101_r" CmnName="E101 mk.II" />
+  <SplitEntry SourceFile="B_EGM1.rel" IniFile="B_EGM1" CmnName="Egg Hornet" />
+  <SplitEntry SourceFile="B_EGM2.rel" IniFile="B_EGM2" CmnName="Egg Walker" />
+  <SplitEntry SourceFile="B_EGM3.rel" IniFile="B_EGM3" CmnName="Egg Viper" />
+  <SplitEntry SourceFile="B_ROBO.rel" IniFile="B_ROBO" CmnName="Zero" />
+  <SplitEntry SourceFile="AL_RACE.rel" IniFile="AL_RACE" CmnName="Chao Race" />
+  <SplitEntry SourceFile="AL_GARDEN00.rel" IniFile="AL_GARDEN00" CmnName="Station Square Garden" />
+  <SplitEntry SourceFile="AL_GARDEN01.rel" IniFile="AL_GARDEN01" CmnName="Egg Carrier Garden" />
+  <SplitEntry SourceFile="AL_GARDEN02.rel" IniFile="AL_GARDEN02" CmnName="Mystic Ruins Garden" />
+  <SplitEntry SourceFile="sboard.rel" IniFile="sboard" CmnName="Sand Hill" />
+  <SplitEntry SourceFile="_Minicart.rel" IniFile="_Minicart" CmnName="Twinkle Circuit" />
 </SplitTemplate>

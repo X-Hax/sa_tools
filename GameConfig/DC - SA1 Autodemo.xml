@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <GameInfo gameName="SA1AD" dataFolder="DC_SA1AutoDemo" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="fcb1da8942278871136e41e127ce979b" />
-  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" />
-  <SplitEntry SourceFile="STG00.PRS" IniFile="STG00" />
-  <SplitEntry SourceFile="STG01.PRS" IniFile="STG01" />
-  <SplitEntry SourceFile="STG02.PRS" IniFile="STG02" />
-  <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" />
-  <SplitEntry SourceFile="STG04.PRS" IniFile="STG04" />
-  <SplitEntry SourceFile="STG05.PRS" IniFile="STG05" />
-  <SplitEntry SourceFile="STG06.PRS" IniFile="STG06" />
-  <SplitEntry SourceFile="STG07.PRS" IniFile="STG07" />
-  <SplitEntry SourceFile="STG08.PRS" IniFile="STG08" />
-  <SplitEntry SourceFile="STG09.PRS" IniFile="STG09" />
-  <SplitEntry SourceFile="STG10.PRS" IniFile="STG10" />
-  <SplitEntry SourceFile="ADV00.PRS" IniFile="ADV00" />
-  <SplitEntry SourceFile="ADV00OBJ.PRS" IniFile="ADV00OBJ" />
-  <SplitEntry SourceFile="ADV0100.PRS" IniFile="ADV0100" />
-  <SplitEntry SourceFile="ADV0130.PRS" IniFile="ADV0130" />
-  <SplitEntry SourceFile="ADV02.PRS" IniFile="ADV02" />
-  <SplitEntry SourceFile="ADV02OBJ.PRS" IniFile="ADV02OBJ" />
-  <SplitEntry SourceFile="AL_GARDEN00.PRS" IniFile="AL_GARDEN00" />
-  <SplitEntry SourceFile="AL_GARDEN01.PRS" IniFile="AL_GARDEN01" />
-  <SplitEntry SourceFile="AL_GARDEN02.PRS" IniFile="AL_GARDEN02" />
-  <SplitEntry SourceFile="AL_RACE.PRS" IniFile="AL_RACE" />
-  <SplitEntry SourceFile="B_CHAOS0.PRS" IniFile="B_CHAOS0" />
-  <SplitEntry SourceFile="B_CHAOS2.PRS" IniFile="B_CHAOS2" />
-  <SplitEntry SourceFile="B_CHAOS4.PRS" IniFile="B_CHAOS4" />
-  <SplitEntry SourceFile="B_CHAOS7.PRS" IniFile="B_CHAOS7" />
-  <SplitEntry SourceFile="B_E101_R.PRS" IniFile="B_E101_R" />
-  <SplitEntry SourceFile="B_EGM1.PRS" IniFile="B_EGM1" />
-  <SplitEntry SourceFile="B_EGM3.PRS" IniFile="B_EGM3" />
-  <SplitEntry SourceFile="B_ROBO.PRS" IniFile="B_ROBO" />
-  <SplitEntry SourceFile="LAND1800.BIN" IniFile="LAND1800" />
-  <SplitEntry SourceFile="MINICART.PRS" IniFile="MINICART" />
-  <SplitEntry SourceFile="SBOARD.PRS" IniFile="SBOARD" />
-  <SplitEntry SourceFile="SHOOTING.PRS" IniFile="SHOOTING" />
-  <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" />
-  <SplitEntry SourceFile="A_MOT.PRS" IniFile="A_MOT" />
-  <SplitEntry SourceFile="B_MOT.PRS" IniFile="B_MOT" />
-  <SplitEntry SourceFile="K_MOT.PRS" IniFile="K_MOT" />
-  <SplitEntry SourceFile="S_SBMOT.PRS" IniFile="S_SBMOT" />
-  <SplitEntry SourceFile="M_SBMOT.PRS" IniFile="M_SBMOT" />
-  <SplitEntry SourceFile="EVF0800.BIN" IniFile="EVF0800" />
-  <SplitEntry SourceFile="EVF0801.BIN" IniFile="EVF0801" />
-  <SplitEntry SourceFile="EVF0802.BIN" IniFile="EVF0802" />
-  <SplitEntry SourceFile="EVF0804.BIN" IniFile="EVF0804" />
-  <SplitEntry SourceFile="EVF0805.BIN" IniFile="EVF0805" />
-  <SplitEntry SourceFile="EVF0806.BIN" IniFile="EVF0806" />
+  <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" CmnName="Characters, Enemies, Objects (1ST_READ)" />
+  <SplitEntry SourceFile="STG00.PRS" IniFile="STG00" CmnName="Practice Stage" />
+  <SplitEntry SourceFile="STG01.PRS" IniFile="STG01" CmnName="Emerald Coast" />
+  <SplitEntry SourceFile="STG02.PRS" IniFile="STG02" CmnName="Windy Valley" />
+  <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" CmnName="Twinkle Park" />
+  <SplitEntry SourceFile="STG04.PRS" IniFile="STG04" CmnName="Speed Highway" />
+  <SplitEntry SourceFile="STG05.PRS" IniFile="STG05" CmnName="Red Mountain" />
+  <SplitEntry SourceFile="STG06.PRS" IniFile="STG06" CmnName="Sky Deck" />
+  <SplitEntry SourceFile="STG07.PRS" IniFile="STG07" CmnName="Lost World" />
+  <SplitEntry SourceFile="STG08.PRS" IniFile="STG08" CmnName="Ice Cap" />
+  <SplitEntry SourceFile="STG09.PRS" IniFile="STG09" CmnName="Casinopolis" />
+  <SplitEntry SourceFile="STG10.PRS" IniFile="STG10" CmnName="Final Egg" />
+  <SplitEntry SourceFile="ADV00.PRS" IniFile="ADV00" CmnName="Station Square" />
+  <SplitEntry SourceFile="ADV00OBJ.PRS" IniFile="ADV00OBJ" CmnName="Station Square Objects" />
+  <SplitEntry SourceFile="ADV0100.PRS" IniFile="ADV0100" CmnName="Egg Carrier Exterior" />
+  <SplitEntry SourceFile="ADV0130.PRS" IniFile="ADV0130" CmnName="Egg Carrier Interior" />
+  <SplitEntry SourceFile="ADV02.PRS" IniFile="ADV02" CmnName="Mystic Ruins" />
+  <SplitEntry SourceFile="ADV02OBJ.PRS" IniFile="ADV02OBJ" CmnName="Mystic Ruins Objects" />
+  <SplitEntry SourceFile="AL_GARDEN00.PRS" IniFile="AL_GARDEN00" CmnName="Station Square Garden" />
+  <SplitEntry SourceFile="AL_GARDEN01.PRS" IniFile="AL_GARDEN01" CmnName="Egg Carrier Garden" />
+  <SplitEntry SourceFile="AL_GARDEN02.PRS" IniFile="AL_GARDEN02" CmnName="Mystic Ruins Garden" />
+  <SplitEntry SourceFile="AL_RACE.PRS" IniFile="AL_RACE" CmnName="Chao Race" />
+  <SplitEntry SourceFile="B_CHAOS0.PRS" IniFile="B_CHAOS0" CmnName="Chaos 0" />
+  <SplitEntry SourceFile="B_CHAOS2.PRS" IniFile="B_CHAOS2" CmnName="Chaos 2" />
+  <SplitEntry SourceFile="B_CHAOS4.PRS" IniFile="B_CHAOS4" CmnName="Chaos 4" />
+  <SplitEntry SourceFile="B_CHAOS7.PRS" IniFile="B_CHAOS7" CmnName="Perfect Chaos" />
+  <SplitEntry SourceFile="B_E101_R.PRS" IniFile="B_E101_R" CmnName="E101 mk.II" />
+  <SplitEntry SourceFile="B_EGM1.PRS" IniFile="B_EGM1" CmnName="Egg Hornet" />
+  <SplitEntry SourceFile="B_EGM3.PRS" IniFile="B_EGM3" CmnName="Egg Viper" />
+  <SplitEntry SourceFile="B_ROBO.PRS" IniFile="B_ROBO" CmnName="Zero" />
+  <SplitEntry SourceFile="LAND1800.BIN" IniFile="LAND1800" CmnName="Chaos 6" />
+  <SplitEntry SourceFile="MINICART.PRS" IniFile="MINICART" CmnName="Twinkle Circuit" />
+  <SplitEntry SourceFile="SBOARD.PRS" IniFile="SBOARD" CmnName="Sand Hill" />
+  <SplitEntry SourceFile="SHOOTING.PRS" IniFile="SHOOTING" CmnName="Sky Chase" />
+  <SplitEntry SourceFile="S_MOT.PRS" IniFile="S_MOT" CmnName="Sonic Motions" />
+  <SplitEntry SourceFile="A_MOT.PRS" IniFile="A_MOT" CmnName="Amy Motions" />
+  <SplitEntry SourceFile="B_MOT.PRS" IniFile="B_MOT" CmnName="Big Motions" />
+  <SplitEntry SourceFile="K_MOT.PRS" IniFile="K_MOT" CmnName="Knuckles Motions" />
+  <SplitEntry SourceFile="S_SBMOT.PRS" IniFile="S_SBMOT" CmnName="Sonic Snowboard Motions" />
+  <SplitEntry SourceFile="M_SBMOT.PRS" IniFile="M_SBMOT" CmnName="Tails Snowboard Motions" />
+  <SplitEntry SourceFile="EVF0800.BIN" IniFile="EVF0800" CmnName="Event Models" />
+  <SplitEntry SourceFile="EVF0801.BIN" IniFile="EVF0801" CmnName="Event Models" />
+  <SplitEntry SourceFile="EVF0802.BIN" IniFile="EVF0802" CmnName="Event Models" />
+  <SplitEntry SourceFile="EVF0804.BIN" IniFile="EVF0804" CmnName="Event Models" />
+  <SplitEntry SourceFile="EVF0805.BIN" IniFile="EVF0805" CmnName="Event Models" />
+  <SplitEntry SourceFile="EVF0806.BIN" IniFile="EVF0806" CmnName="Event Models" />
 </SplitTemplate>
