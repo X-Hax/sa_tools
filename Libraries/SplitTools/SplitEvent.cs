@@ -601,12 +601,13 @@ namespace SplitTools.SAArc
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
 				uint key;
-				if (fc[4] == 0xC && fc[3] == 0xBC)
+				if (fc[3] == 0xC && fc[2] == 0xBC)
 				{
 					Console.WriteLine("File is in DC format.");
 					ByteConverter.BigEndian = false;
 					key = 0xCBC0000;
 					satx.Game = Game.SA2;
+					satx.BigEndian = false;
 				}
 				else
 				{
@@ -616,6 +617,7 @@ namespace SplitTools.SAArc
 						ByteConverter.BigEndian = true;
 						key = 0;
 						satx.Game = Game.SA2B;
+						satx.BigEndian = true;
 					}
 					else
 					{
@@ -623,6 +625,7 @@ namespace SplitTools.SAArc
 						ByteConverter.BigEndian = true;
 						key = 0x818BFE60;
 						satx.Game = Game.SA2B;
+						satx.BigEndian = true;
 					}
 				}
 
@@ -885,29 +888,28 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = dir;
 			}
 		}
-		//public static void BuildTexlist(bool? isBigEndian, string filename)
-		//{
-		//	string dir = Environment.CurrentDirectory;
-		//	try
-		//	{
-		//		byte[] fc;
-		//		if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-		//			fc = Prs.Decompress(filename);
-		//		else
-		//			fc = File.ReadAllBytes(filename);
-		//		string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-		//		JsonSerializer js = new JsonSerializer();
-		//		EventExtraIniData ini;
-		//		using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
-		//		using (JsonTextReader jtr = new JsonTextReader(tr))
-		//			ini = js.Deserialize<EventExtraIniData>(jtr);
-		//		bool battle = ini.Game == Game.SA2B;
-		//		bool dcbeta = ini.Game == Game.SA2;
-		//		if (!isBigEndian.HasValue)
-		//			ByteConverter.BigEndian = ini.BigEndian;
-		//		else
-		//			ByteConverter.BigEndian = isBigEndian.Value;
-		//		List<byte> texdata = new List<byte>();
+		public static void BuildTexlist(bool? isBigEndian, string filename)
+		{
+			string dir = Environment.CurrentDirectory;
+			try
+			{
+				byte[] fc;
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					fc = Prs.Decompress(filename);
+				else
+					fc = File.ReadAllBytes(filename);
+				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				JsonSerializer js = new JsonSerializer();
+				EventTexlistData ini;
+				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+				using (JsonTextReader jtr = new JsonTextReader(tr))
+					ini = js.Deserialize<EventTexlistData>(jtr);
+				bool battle = ini.Game == Game.SA2B;
+				if (!isBigEndian.HasValue)
+					ByteConverter.BigEndian = ini.BigEndian;
+				else
+					ByteConverter.BigEndian = isBigEndian.Value;
+				List<byte> texdata = new List<byte>();
 		//		foreach (SubtitleInfo subs in ini.Subtitles)
 		//		{
 		//			texdata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
@@ -917,16 +919,16 @@ namespace SplitTools.SAArc
 		//		{
 		//			texdata.AddRange(audio.GetBytes());
 		//		}
-		//		if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-		//			FraGag.Compression.Prs.Compress(texdata.ToArray(), filename);
-		//		else
-		//			File.WriteAllBytes(filename, texdata.ToArray());
-		//	}
-		//	finally
-		//	{
-		//		Environment.CurrentDirectory = dir;
-		//	}
-		//}
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					FraGag.Compression.Prs.Compress(texdata.ToArray(), filename);
+				else
+					File.WriteAllBytes(filename, texdata.ToArray());
+			}
+			finally
+			{
+				Environment.CurrentDirectory = dir;
+			}
+		}
 
 		//Get Functions
 		private static string GetModel(byte[] fc, int address, uint key, string fn)
@@ -1523,6 +1525,7 @@ namespace SplitTools.SAArc
 			get { return Game.ToString(); }
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
+		public bool BigEndian { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
 		public string Texlist { get; set; }
 	}
