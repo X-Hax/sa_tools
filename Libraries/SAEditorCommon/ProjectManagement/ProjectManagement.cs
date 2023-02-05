@@ -38,8 +38,6 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlElement("SplitEntryEvent", typeof(SplitEntryEvent))]
 			public List<SplitEntryEvent> SplitEventEntries { get; set; }
-			[XmlElement("SplitEntryMiniEvent", typeof(SplitEntryMiniEvent))]
-			public List<SplitEntryMiniEvent> SplitMiniEventEntries { get; set; }
 		}
 
 		/// <summary>
@@ -67,8 +65,6 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlElement("SplitEntryEvent", typeof(SplitEntryEvent))]
 			public List<SplitEntryEvent> SplitEventEntries { get; set; }
-			[XmlElement("SplitEntryMiniEvent", typeof(SplitEntryMiniEvent))]
-			public List<SplitEntryMiniEvent> SplitMiniEventEntries { get; set; }
 		}
 
 		/// <summary>
@@ -206,6 +202,16 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("ModelFile")]
 			public string ModelFile { get; set; }
 			/// <summary>
+			/// Common name to be referenced for the general contents of what will be split.
+			/// </summary>
+			[XmlAttribute("CmnName")]
+			public string CmnName { get; set; }
+			/// <summary>
+			/// Model labeling file to be used with the Model file.
+			/// </summary>
+			[XmlAttribute("LabelFile")]
+			public string LabelFile { get; set; }
+			/// <summary>
 			/// List of Motion files uses by the Model File.
 			/// </summary>
 			[XmlElement("MotionFile")]
@@ -222,14 +228,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("EventFile")]
 			public string EventFile { get; set; }
-		}
-		public class SplitEntryMiniEvent
-		{
 			/// <summary>
-			/// Cutscene Archive filename.
+			/// Cutscene Archive Type. Used to determine split parameters
 			/// </summary>
-			[XmlAttribute("EventFile")]
-			public string EventFile { get; set; }
+			[XmlAttribute("EventType")]
+			public string EventType { get; set; }
 		}
 	}
 
@@ -632,7 +635,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			if (progress != null)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting data from " + splitMDL.ModelFile);
+
+				if (splitMDL.CmnName != null)
+					progress.SetStep("Splitting " + splitMDL.CmnName + " from " + splitMDL.ModelFile);
+				else
+					progress.SetStep("Splitting data from " + splitMDL.ModelFile);
 			}
 
 			#region Validating Inputs
@@ -654,28 +661,91 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// </summary>
 		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
 		{
-			string filePath = Path.Combine(gameFolder, splitEvent.EventFile + ".prs");
+			string mainext;
+			if (splitEvent.EventType == "MainBIN")
+				mainext = ".bin";
+			else
+				mainext = ".prs";
+			string filePath = Path.Combine(gameFolder, splitEvent.EventFile + $"{mainext}");
 			List<string> filePathEXArr = new List<string>();
 			string filePathTex = Path.Combine(gameFolder, splitEvent.EventFile + "texlist.prs");
 			string ext = null;
-			for (int i = 0; i < 7; i++)
+			switch (splitEvent.EventType)
 			{
-				switch (i)
-				{
-					case 0:
-					case 1:
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-						ext = i.ToString();
-						break;
-					case 6:
-						ext = "j";
-						break;
-				}
-				string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.prs");
-				filePathEXArr.Add(filePathEX);
+				case "Trial":
+					for (int l = 0; l < 2; l++)
+					{
+						ext = l.ToString();
+						string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.scr");
+						filePathEXArr.Add(filePathEX);
+					}
+					break;
+				case "Preview":
+					for (int l = 0; l < 5; l++)
+					{
+						ext = l.ToString();
+						string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.prs");
+						filePathEXArr.Add(filePathEX);
+					}
+					break;
+				case "MiniEvent":
+					for (int l = 0; l < 5; l++)
+					{
+						ext = l.ToString();
+						string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.scr");
+						filePathEXArr.Add(filePathEX);
+					}
+					break;
+				case "MiniEventPC":
+					for (int l = 0; l < 6; l++)
+					{
+						ext = l.ToString();
+						string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.scr");
+						filePathEXArr.Add(filePathEX);
+					}
+					break;
+				case "MainBIN":
+				case "MainPRS":
+					for (int l = 0; l < 6; l++)
+					{ 
+							switch (l)
+							{
+								case 0:
+								case 1:
+								case 2:
+								case 3:
+								case 4:
+									ext = l.ToString();
+									break;
+								case 5:
+									ext = "j";
+									break;
+							}
+						string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.prs");
+						filePathEXArr.Add(filePathEX);
+					}
+					break;
+				case "MainPC":
+					for (int l = 0; l < 7; l++)
+					{
+						switch (l)
+						{
+							case 0:
+							case 1:
+							case 2:
+							case 3:
+							case 4:
+							case 5:
+								ext = l.ToString();
+								break;
+							case 6:
+								ext = "j";
+								break;
+						}
+						string filePathEX = Path.Combine(gameFolder, splitEvent.EventFile + $"_{ext}.prs");
+						filePathEXArr.Add(filePathEX);
+					}
+					break;
 			}
 			string fileOutputFolder = Path.Combine(outputFolder, "Event\\bin");
 
@@ -695,49 +765,31 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			}
 			#endregion
 			if (overwrite)
-			{ 
-				sa2Event.Split(filePath, fileOutputFolder);
-				foreach (string ex in filePathEXArr)
-					sa2EventExtra.Split(ex, fileOutputFolder);
-				sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
-			}
-		}
-
-		/// <summary>
-		/// Splits data from a SplitMiniEntryEvent.
-		/// </summary>
-		public static void SplitTemplateMiniEventEntry(Templates.SplitEntryMiniEvent splitMiniEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
-		{
-			string filePath = Path.Combine(gameFolder, splitMiniEvent.EventFile + ".prs");
-			List<string> filePathEXArr = new List<string>();
-			for (int i = 0; i < 6; i++)
 			{
-				string filePathEX = Path.Combine(gameFolder, splitMiniEvent.EventFile + $"_{i}.scr");
-				filePathEXArr.Add(filePathEX);
-			}
-			string fileOutputFolder = Path.Combine(outputFolder, "Event\\bin");
-
-			if (progress != null)
-			{
-				progress.StepProgress();
-				progress.SetStep("Splitting data from " + splitMiniEvent.EventFile);
-			}
-
-			#region Validating Inputs
-			if (!File.Exists(filePath))
-			{
-				MessageBox.Show((filePath + " is missing.\n\nPress OK to abort."), "Split Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-				throw new Exception(SplitERRORVALUE.NoSourceFile.ToString());
-				//return (int)ERRORVALUE.NoSourceFile;
-			}
-			#endregion
-			if (overwrite)
-			{
-				SA2MiniEvent.Split(filePath, fileOutputFolder);
-				foreach (string ex in filePathEXArr)
+				switch (splitEvent.EventType)
 				{
-					sa2EventExtra.SplitMini(ex, fileOutputFolder);
+					case "MiniEvent":
+					case "MiniEventPC":
+						SA2MiniEvent.Split(filePath, fileOutputFolder);
+						foreach (string ex in filePathEXArr)
+							sa2EventExtra.SplitMini(ex, fileOutputFolder);
+						break;
+					case "Trial":
+					case "Preview":
+						sa2Event.Split(filePath, fileOutputFolder);
+						foreach (string ex in filePathEXArr)
+							sa2EventExtra.Split(ex, fileOutputFolder);
+						break;
+					case "MainPRS":
+					case "MainPC":
+						sa2Event.Split(filePath, fileOutputFolder);
+						foreach (string ex in filePathEXArr)
+							sa2EventExtra.Split(ex, fileOutputFolder);
+						sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
+						break;
+					case "MainBIN":
+						sa2Event.Split(filePath, fileOutputFolder + "_U");
+						break;
 				}
 			}
 		}
