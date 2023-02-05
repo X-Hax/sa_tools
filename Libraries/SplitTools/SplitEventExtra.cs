@@ -40,26 +40,23 @@ namespace SplitTools.SAArc
 				bool battle;
 				bool beta;
 				bool lang;
-				if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0)
+				if (fc.Length == 0x2DC00)
 				{
-					if (fc.Length == 0x2DC00)
-					{
-						Console.WriteLine("File is in DC Beta format.");
-						ByteConverter.BigEndian = false;
-						ini.Game = Game.SA2;
-						battle = false;
-						beta = true;
-						ini.BigEndian = false;
-					}
-					else
-					{
-						Console.WriteLine("File is in DC format.");
-						ByteConverter.BigEndian = false;
-						ini.Game = Game.SA2;
-						battle = false;
-						beta = false;
-						ini.BigEndian = false;
-					}
+					Console.WriteLine("File is in DC Beta format.");
+					ByteConverter.BigEndian = false;
+					ini.Game = Game.SA2;
+					battle = false;
+					beta = true;
+					ini.BigEndian = false;
+				}
+				else if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0 || (fc.Length > 0x9900 && fc[0x26800] > 0))
+				{ 
+					Console.WriteLine("File is in DC format.");
+					ByteConverter.BigEndian = false;
+					ini.Game = Game.SA2;
+					battle = false;
+					beta = false;
+					ini.BigEndian = false;
 				}
 				else
 				{
@@ -149,24 +146,24 @@ namespace SplitTools.SAArc
 					else
 						Console.WriteLine("Event does not use screen effects.");
 
-					int misc1count = 0;
+					int particlecount = 0;
 					for (int i = 0; i < 2048; i++)
 					{
 						address = 0xA800 + (0x38 * i);
-						MiscEffects1 misc1 = new MiscEffects1();
-						misc1.FrameStart = ByteConverter.ToUInt32(fc, address);
-						if (misc1.FrameStart != 0)
-							misc1count++;
-						misc1.Type1 = fc[address + 4];
-						misc1.Type2 = fc[address + 5];
-						misc1.Color = new Vertex(fc, address + 8);
-						misc1.Intensity = ByteConverter.ToSingle(fc, address + 0x14);
-						ini.MiscEffects1.Add(misc1);
+						ParticleEffects particle = new ParticleEffects();
+						particle.FrameStart = ByteConverter.ToUInt32(fc, address);
+						if (particle.FrameStart != 0)
+							particlecount++;
+						particle.Type1 = fc[address + 4];
+						particle.Type2 = fc[address + 5];
+						particle.Position = new Vertex(fc, address + 8);
+						particle.Intensity = ByteConverter.ToSingle(fc, address + 0x14);
+						ini.ParticleEffects.Add(particle);
 					}
-					if (misc1count != 0)
-						Console.WriteLine("Event contains {0} active unknown effect entr{1}.", misc1count, misc1count == 1 ? "y" : "ies");
+					if (particlecount != 0)
+						Console.WriteLine("Event contains {0} active standard particle effect entr{1}.", particlecount, particlecount == 1 ? "y" : "ies");
 					else
-						Console.WriteLine("Event does not use unknown effects.");
+						Console.WriteLine("Event does not use standard particle effects.");
 
 					int lightcount = 0;
 					if (beta)
@@ -214,27 +211,31 @@ namespace SplitTools.SAArc
 
 						//add a buffer of 0x10 between these two chunks for build operations
 
-						int misc2count = 0;
+						int particle2count = 0;
 						for (int i = 0; i < 64; i++)
 						{
 							address = 0x38800 + (0x40 * i);
-							MiscEffects2 misc2 = new MiscEffects2();
-							misc2.Unk1 = new Vertex(fc, address);
-							misc2.Unk2 = new Vertex(fc, address + 0xC);
-							misc2.Unk3 = new Vertex(fc, address + 0x18);
-							misc2.Unk4 = new Vertex(fc, address + 0x24);
-							misc2.Unk5 = ByteConverter.ToInt32(fc, address + 0x30);
-							misc2.Unk6 = ByteConverter.ToInt32(fc, address + 0x34);
-							misc2.Unk7 = ByteConverter.ToInt32(fc, address + 0x38);
-							misc2.Unk8 = ByteConverter.ToInt32(fc, address + 0x3C);
-							if (misc2.Unk5 > 0 || misc2.Unk6 > 0 || misc2.Unk7 > 0 || misc2.Unk8 > 0)
-								misc2count++;
-							ini.MiscEffects2.Add(misc2);
+							ParticleEffects2 particle2 = new ParticleEffects2();
+							particle2.Position = new Vertex(fc, address);
+							particle2.Unk2 = new Vertex(fc, address + 0xC);
+							particle2.Unk3 = ByteConverter.ToInt16(fc, address + 0x18);
+							particle2.Unk4 = ByteConverter.ToInt16(fc, address + 0x1A);
+							particle2.Unk5 = ByteConverter.ToInt16(fc, address + 0x1C);
+							particle2.Unk6 = ByteConverter.ToInt16(fc, address + 0x1E);
+							particle2.FrameStart = ByteConverter.ToUInt32(fc, address + 0x20);
+							if (particle2.FrameStart != 0)
+								particle2count++;
+							particle2.Unk7 = new Vertex(fc, address + 0x24);
+							particle2.Unk8 = ByteConverter.ToInt32(fc, address + 0x30);
+							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
+							particle2.Unk10 = ByteConverter.ToInt32(fc, address + 0x38);
+							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
+							ini.ParticleEffects2.Add(particle2);
 						}
-						if (misc2count != 0)
-							Console.WriteLine("Event contains {0} active unknown float-based effect entr{1}.", misc2count, misc2count == 1 ? "y" : "ies");
+						if (particle2count != 0)
+							Console.WriteLine("Event contains {0} active animated particle effect entr{1}.", particle2count, particle2count == 1 ? "y" : "ies");
 						else
-							Console.WriteLine("Event does not use unknown float-based effects.");
+							Console.WriteLine("Event does not use animated particle effects.");
 
 						int videocount = 0;
 						for (int i = 0; i < 64; i++)
@@ -428,9 +429,9 @@ namespace SplitTools.SAArc
 							extradata.AddRange(screen.GetBytesDC());
 					}
 
-					foreach (MiscEffects1 misc1 in ini.MiscEffects1)
+					foreach (ParticleEffects particle in ini.ParticleEffects)
 					{
-						extradata.AddRange(misc1.GetBytes());
+						extradata.AddRange(particle.GetBytes());
 					}
 
 					foreach (LightingInfo light in ini.Lighting)
@@ -438,9 +439,9 @@ namespace SplitTools.SAArc
 						extradata.AddRange(light.GetBytes());
 					}
 					extradata.AddRange(new byte[16]);
-					foreach (MiscEffects2 misc2 in ini.MiscEffects2)
+					foreach (ParticleEffects2 particle2 in ini.ParticleEffects2)
 					{
-						extradata.AddRange(misc2.GetBytes());
+						extradata.AddRange(particle2.GetBytes());
 					}
 					foreach (VideoInfo video in ini.VideoInfo)
 					{
@@ -518,9 +519,9 @@ namespace SplitTools.SAArc
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<AudioInfo> AudioInfo { get; set; } = new List<AudioInfo>();
 		public List<ScreenEffects> ScreenEffects { get; set; } = new List<ScreenEffects>();
-		public List<MiscEffects1> MiscEffects1 { get; set; } = new List<MiscEffects1>();
+		public List<ParticleEffects> ParticleEffects { get; set; } = new List<ParticleEffects>();
 		public List<LightingInfo> Lighting { get; set; } = new List<LightingInfo>();
-		public List<MiscEffects2> MiscEffects2 { get; set; } = new List<MiscEffects2>();
+		public List<ParticleEffects2> ParticleEffects2 { get; set; } = new List<ParticleEffects2>();
 		public List<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 	}
 
@@ -592,12 +593,12 @@ namespace SplitTools.SAArc
 	}
 
 	[Serializable]
-	public class MiscEffects1
+	public class ParticleEffects
 	{
 		public uint FrameStart { get; set; }
 		public byte Type1 { get; set; }
 		public byte Type2 { get; set; }
-		public Vertex Color { get; set; }
+		public Vertex Position { get; set; }
 		public float Intensity { get; set; }
 		public static int Size { get { return 0x38; } }
 
@@ -608,7 +609,7 @@ namespace SplitTools.SAArc
 			result.Add(Type1);
 			result.Add(Type2);
 			result.AddRange(new byte[2]);
-			result.AddRange(Color.GetBytes());
+			result.AddRange(Position.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Intensity));
 			result.Align(0x38);
 			return result.ToArray();
@@ -639,30 +640,38 @@ namespace SplitTools.SAArc
 		}
 	}
 	[Serializable]
-	public class MiscEffects2
+	public class ParticleEffects2
 	{
-		public Vertex Unk1 { get; set; }
+		public Vertex Position { get; set; }
 		public Vertex Unk2 { get; set; }
-		public Vertex Unk3 { get; set; }
-		public Vertex Unk4 { get; set; }
-		public int Unk5 { get; set; }
-		public int Unk6 { get; set; }
-		public int Unk7 { get; set; }
+		public short Unk3 { get; set; }
+		public short Unk4 { get; set; }
+		public short Unk5 { get; set; }
+		public short Unk6 { get; set; }
+		public uint FrameStart { get; set; }
+		public Vertex Unk7 { get; set; }
 		public int Unk8 { get; set; }
+		public int Unk9 { get; set; }
+		public int Unk10 { get; set; }
+		public int Unk11 { get; set; }
 
 		public static int Size { get { return 0x40; } }
 
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>(Size);
-			result.AddRange(Unk1.GetBytes());
+			result.AddRange(Position.GetBytes());
 			result.AddRange(Unk2.GetBytes());
-			result.AddRange(Unk3.GetBytes());
-			result.AddRange(Unk4.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Unk3));
+			result.AddRange(ByteConverter.GetBytes(Unk4));
 			result.AddRange(ByteConverter.GetBytes(Unk5));
 			result.AddRange(ByteConverter.GetBytes(Unk6));
-			result.AddRange(ByteConverter.GetBytes(Unk7));
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.AddRange(Unk7.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(Unk8));
+			result.AddRange(ByteConverter.GetBytes(Unk9));
+			result.AddRange(ByteConverter.GetBytes(Unk10));
+			result.AddRange(ByteConverter.GetBytes(Unk11));
 			result.Align(0x40);
 			return result.ToArray();
 		}
