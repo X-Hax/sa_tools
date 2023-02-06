@@ -225,10 +225,10 @@ namespace SplitTools.SAArc
 							particle2.FrameStart = ByteConverter.ToUInt32(fc, address + 0x20);
 							if (particle2.FrameStart != 0)
 								particle2count++;
-							particle2.Unk7 = new Vertex(fc, address + 0x24);
-							particle2.Unk8 = ByteConverter.ToInt32(fc, address + 0x30);
+							particle2.Spread = new Vertex(fc, address + 0x24);
+							particle2.Count = ByteConverter.ToInt32(fc, address + 0x30);
 							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
-							particle2.Unk10 = ByteConverter.ToInt32(fc, address + 0x38);
+							particle2.Type = ByteConverter.ToInt32(fc, address + 0x38);
 							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
 							ini.ParticleEffects2.Add(particle2);
 						}
@@ -557,7 +557,7 @@ namespace SplitTools.SAArc
 	public class ScreenEffects
 	{
 		public uint FrameStart { get; set; }
-		public int Type { get; set; }
+		public byte Type { get; set; }
 		public byte A { get; set; }
 		public byte R { get; set; }
 		public byte G { get; set; }
@@ -569,7 +569,8 @@ namespace SplitTools.SAArc
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(ByteConverter.GetBytes(Type));
+			result.Add(Type);
+			result.AddRange(new byte[3]);
 			result.Add(A);
 			result.Add(R);
 			result.Add(G);
@@ -582,7 +583,8 @@ namespace SplitTools.SAArc
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(ByteConverter.GetBytes(Type));
+			result.Add(Type);
+			result.AddRange(new byte[3]);
 			result.Add(B);
 			result.Add(G);
 			result.Add(R);
@@ -649,10 +651,10 @@ namespace SplitTools.SAArc
 		public short Unk5 { get; set; }
 		public short Unk6 { get; set; }
 		public uint FrameStart { get; set; }
-		public Vertex Unk7 { get; set; }
-		public int Unk8 { get; set; }
+		public Vertex Spread { get; set; }
+		public int Count { get; set; }
 		public int Unk9 { get; set; }
-		public int Unk10 { get; set; }
+		public int Type { get; set; }
 		public int Unk11 { get; set; }
 
 		public static int Size { get { return 0x40; } }
@@ -667,10 +669,10 @@ namespace SplitTools.SAArc
 			result.AddRange(ByteConverter.GetBytes(Unk5));
 			result.AddRange(ByteConverter.GetBytes(Unk6));
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(Unk7.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Unk8));
+			result.AddRange(Spread.GetBytes());
+			result.AddRange(ByteConverter.GetBytes(Count));
 			result.AddRange(ByteConverter.GetBytes(Unk9));
-			result.AddRange(ByteConverter.GetBytes(Unk10));
+			result.AddRange(ByteConverter.GetBytes(Type));
 			result.AddRange(ByteConverter.GetBytes(Unk11));
 			result.Align(0x40);
 			return result.ToArray();
