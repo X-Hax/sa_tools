@@ -21,6 +21,8 @@ namespace SA2EventViewer
 				fc = Prs.Decompress(filename);
 			else
 				fc = File.ReadAllBytes(filename);
+			if (Path.GetExtension(filename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
+				fc = Prs.Decompress(filename);
 			bool battle = false;
 			bool dcbeta = false;
 			uint key;
@@ -40,7 +42,11 @@ namespace SA2EventViewer
 			}
 			else
 			{
-				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+				if ((fc[37] == 0x25 && (fc[36] == 0x13 || fc[36] == 0x11)) ||
+					(fc[38] == 0x22) ||
+					((fc[36] == 0) && ((fc[1] == 0xFE) ||
+					(fc[1] == 0xF2) ||
+					((fc[1] == 0x27) && fc[2] == 0x9F))))
 				{
 					ByteConverter.BigEndian = false;
 					key = 0xC600000;
