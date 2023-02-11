@@ -97,7 +97,7 @@ namespace SA2CutsceneTextEditor
 			ByteConverter.BigEndian = true;
 			uint be = ByteConverter.ToUInt32(fc, 0);
 			uint imageBase = 0;
-			if (be > le)
+			if (be > le || (fc[0] == 0 && fc[0x8] > 0))
 			{
 				bigEndian = false;
 				imageBase = 0xCBD0000u;
@@ -110,7 +110,10 @@ namespace SA2CutsceneTextEditor
 
 			ByteConverter.BigEndian = bigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			useSJIS = Path.GetFileNameWithoutExtension(filename).Last() == '0';
+			if (Path.GetFileNameWithoutExtension(filename).Last() == '0' || 
+				Path.GetFileNameWithoutExtension(filename).Last() == 'E' || 
+				Path.GetFileNameWithoutExtension(filename).Last() == 'e')
+				useSJIS = true;
 			shiftJISToolStripMenuItem.Checked = useSJIS;
 			windows1252ToolStripMenuItem.Checked = !useSJIS;
 			Encoding encoding = useSJIS ? jpenc : euenc;
