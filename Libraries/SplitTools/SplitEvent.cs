@@ -40,6 +40,8 @@ namespace SplitTools.SAArc
 					fc = Prs.Decompress(evfilename);
 				else
 					fc = File.ReadAllBytes(evfilename);
+				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
+					fc = Prs.Decompress(evfilename);
 				EventIniData ini = new EventIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
@@ -86,7 +88,11 @@ namespace SplitTools.SAArc
 				}
 				else
 				{
-					if ((fc[37] == 0x25 && (fc[36] == 0x13 || fc[36] == 0x11)) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+					if ((fc[37] == 0x25 && (fc[36] == 0x13 || fc[36] == 0x11)) || 
+						(fc[38] == 0x22) || 
+						((fc[36] == 0) && ((fc[1] == 0xFE) || 
+						(fc[1] == 0xF2) || 
+						((fc[1] == 0x27) && fc[2] == 0x9F))))
 					{
 						Console.WriteLine("File is in DC Beta format.");
 						ByteConverter.BigEndian = false;
