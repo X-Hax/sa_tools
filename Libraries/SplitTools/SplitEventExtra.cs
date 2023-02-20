@@ -558,7 +558,7 @@ namespace SplitTools.SAArc
 			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry1, 16)));
 			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry2, 16)));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
-			result.Align(0x10);
+			result.Align(0x18);
 			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
 			result.Align(0x48);
 			return result.ToArray();
@@ -782,9 +782,9 @@ namespace SplitTools.SAArc
 			result.AddRange(new byte[1]);
 			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry, 16)));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
-			result.Align(0x10);
+			result.Align(0x1A);
 			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
-			result.Align(0x10);
+			result.Align(0x2A);
 			result.AddRange(new byte[2]);
 			result.AddRange(ByteConverter.GetBytes(RumblePower));
 			result.Align(0x4C);
