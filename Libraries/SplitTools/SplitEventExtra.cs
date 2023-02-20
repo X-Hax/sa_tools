@@ -107,6 +107,7 @@ namespace SplitTools.SAArc
 					audio.VoiceEntry1 = ByteConverter.ToInt16(fc, address + 4).ToCHex();
 					audio.VoiceEntry2 = ByteConverter.ToInt16(fc, address + 6).ToCHex();
 					audio.MusicEntry = fc.GetCString(address + 8);
+					audio.JingleEntry = fc.GetCString(address + 0x18);
 					ini.AudioInfo.Add(audio);
 				}
 				if (audiocount != 0)
@@ -139,6 +140,12 @@ namespace SplitTools.SAArc
 							screen.R = fc[address + 0xA];
 							screen.A = fc[address + 0xB];
 						}
+						screen.Unk1 = fc[address + 0xC];
+						screen.Unk2 = ByteConverter.ToInt16(fc, address + 0xE);
+						screen.Unk3 = ByteConverter.ToInt32(fc, address + 0x10);
+						screen.Unk4 = ByteConverter.ToInt32(fc, address + 0x14);
+						screen.Unk5 = ByteConverter.ToInt32(fc, address + 0x18);
+						screen.Unk6 = ByteConverter.ToInt32(fc, address + 0x1C);
 						ini.ScreenEffects.Add(screen);
 					}
 					if (screencount != 0)
@@ -154,10 +161,12 @@ namespace SplitTools.SAArc
 						particle.FrameStart = ByteConverter.ToUInt32(fc, address);
 						if (particle.FrameStart != 0)
 							particlecount++;
-						particle.Type1 = fc[address + 4];
-						particle.Type2 = fc[address + 5];
-						particle.Position = new Vertex(fc, address + 8);
-						particle.Intensity = ByteConverter.ToSingle(fc, address + 0x14);
+						particle.ParticleID = fc[address + 4];
+						particle.MotionID = fc[address + 5];
+						particle.TextureID = ByteConverter.ToSingle(fc, address + 0x8);
+						particle.PulseType = ByteConverter.ToSingle(fc, address + 0xC);
+						particle.Unknown = ByteConverter.ToSingle(fc, address + 0x10);
+						particle.ParticleSize = ByteConverter.ToSingle(fc, address + 0x14);
 						ini.ParticleEffects.Add(particle);
 					}
 					if (particlecount != 0)
@@ -344,6 +353,8 @@ namespace SplitTools.SAArc
 					fx.SFXEntry2 = fc[addr + 6];
 					fx.VoiceEntry = ByteConverter.ToUInt16(fc, addr + 8).ToCHex();
 					fx.MusicEntry = fc.GetCString(addr + 0xA);
+					fx.JingleEntry = fc.GetCString(addr + 0x1A);
+					fx.RumblePower = ByteConverter.ToSingle(fc, addr + 0x2C);
 					ini.Effects.Add(fx);
 				}
 				if (effectcount != 0)
@@ -387,11 +398,6 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
-				byte[] fc;
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					fc = Prs.Decompress(filename);
-				else
-					fc = File.ReadAllBytes(filename);
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
 				EventExtraIniData ini;
@@ -449,7 +455,11 @@ namespace SplitTools.SAArc
 					}
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				{
 					FraGag.Compression.Prs.Compress(extradata.ToArray(), filename);
+					if (!File.Exists(filename))
+						File.Create(filename);
+				}
 				else
 					File.WriteAllBytes(filename, extradata.ToArray());
 			}
@@ -463,11 +473,6 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
-				byte[] fc;
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					fc = Prs.Decompress(filename);
-				else
-					fc = File.ReadAllBytes(filename);
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
 				MiniEventExtraIniData ini;
@@ -493,7 +498,11 @@ namespace SplitTools.SAArc
 					extradata.AddRange(misc.GetBytes());
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				{
 					FraGag.Compression.Prs.Compress(extradata.ToArray(), filename);
+					if (!File.Exists(filename))
+						File.Create(filename);
+				}
 				else
 					File.WriteAllBytes(filename, extradata.ToArray());
 			}
@@ -538,6 +547,7 @@ namespace SplitTools.SAArc
 		public string VoiceEntry1 { get; set; }
 		public string VoiceEntry2 { get; set; }
 		public string MusicEntry { get; set; }
+		public string JingleEntry { get; set; }
 
 		public static int Size { get { return 0x48; } }
 
@@ -548,6 +558,8 @@ namespace SplitTools.SAArc
 			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry1, 16)));
 			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry2, 16)));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
+			result.Align(0x10);
+			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
 			result.Align(0x48);
 			return result.ToArray();
 		}
@@ -562,6 +574,12 @@ namespace SplitTools.SAArc
 		public byte R { get; set; }
 		public byte G { get; set; }
 		public byte B { get; set; }
+		public byte Unk1 { get; set; }
+		public short Unk2 { get; set; }
+		public int Unk3 { get; set; }
+		public int Unk4 { get; set; }
+		public int Unk5 { get; set; }
+		public int Unk6 { get; set; }
 
 		public static int Size { get { return 0x40; } }
 
@@ -575,6 +593,13 @@ namespace SplitTools.SAArc
 			result.Add(R);
 			result.Add(G);
 			result.Add(B);
+			result.Add(Unk1);
+			result.AddRange(new byte[1]);
+			result.AddRange(ByteConverter.GetBytes(Unk2));
+			result.AddRange(ByteConverter.GetBytes(Unk3));
+			result.AddRange(ByteConverter.GetBytes(Unk4));
+			result.AddRange(ByteConverter.GetBytes(Unk5));
+			result.AddRange(ByteConverter.GetBytes(Unk6));
 			result.Align(0x40);
 			return result.ToArray();
 		}
@@ -589,6 +614,13 @@ namespace SplitTools.SAArc
 			result.Add(G);
 			result.Add(R);
 			result.Add(A);
+			result.Add(Unk1);
+			result.AddRange(new byte[1]);
+			result.AddRange(ByteConverter.GetBytes(Unk2));
+			result.AddRange(ByteConverter.GetBytes(Unk3));
+			result.AddRange(ByteConverter.GetBytes(Unk4));
+			result.AddRange(ByteConverter.GetBytes(Unk5));
+			result.AddRange(ByteConverter.GetBytes(Unk6));
 			result.Align(0x40);
 			return result.ToArray();
 		}
@@ -598,21 +630,25 @@ namespace SplitTools.SAArc
 	public class ParticleEffects
 	{
 		public uint FrameStart { get; set; }
-		public byte Type1 { get; set; }
-		public byte Type2 { get; set; }
-		public Vertex Position { get; set; }
-		public float Intensity { get; set; }
+		public byte ParticleID { get; set; }
+		public byte MotionID { get; set; }
+		public float TextureID { get; set; }
+		public float PulseType { get; set; }
+		public float Unknown { get; set; }
+		public float ParticleSize { get; set; }
 		public static int Size { get { return 0x38; } }
 
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.Add(Type1);
-			result.Add(Type2);
+			result.Add(ParticleID);
+			result.Add(MotionID);
 			result.AddRange(new byte[2]);
-			result.AddRange(Position.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Intensity));
+			result.AddRange(ByteConverter.GetBytes(TextureID));
+			result.AddRange(ByteConverter.GetBytes(PulseType));
+			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(ByteConverter.GetBytes(ParticleSize));
 			result.Align(0x38);
 			return result.ToArray();
 		}
@@ -731,6 +767,8 @@ namespace SplitTools.SAArc
 		public byte SFXEntry2 { get; set; }
 		public string VoiceEntry { get; set; }
 		public string MusicEntry { get; set; }
+		public string JingleEntry { get; set; }
+		public float RumblePower { get; set; }
 
 		public static int Size { get { return 0x4C; } }
 
@@ -744,6 +782,11 @@ namespace SplitTools.SAArc
 			result.AddRange(new byte[1]);
 			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry, 16)));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
+			result.Align(0x10);
+			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
+			result.Align(0x10);
+			result.AddRange(new byte[2]);
+			result.AddRange(ByteConverter.GetBytes(RumblePower));
 			result.Align(0x4C);
 			return result.ToArray();
 		}
