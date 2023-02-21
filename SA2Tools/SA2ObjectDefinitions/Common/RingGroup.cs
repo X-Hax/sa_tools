@@ -45,8 +45,8 @@ namespace SA2ObjectDefinitions.Common
 		}
 		
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Number of Rings", typeof(byte), "Extended", null, 1, (o) => (byte)Math.Min(o.Scale.X + 1, 8), (o, v) => o.Scale.X = Math.Max(Math.Min((byte)v - 1, 8), 0)),
-			new PropertySpec("Size", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+			new PropertySpec("Number of Rings", typeof(byte), "Extended", null, 1, (o) => (byte)Math.Min(o.Scale.Z + 0, 8), (o, v) => o.Scale.X = Math.Max(Math.Min((byte)v - 0, 8), 0)),
+			new PropertySpec("Size", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
 		};
 
 		public override PropertySpec[] CustomProperties { get { return customProperties; } }
@@ -60,23 +60,21 @@ namespace SA2ObjectDefinitions.Common
 		}
 	}
 	
+	// TODO: Fix interaction between X-rotation and Y-rotation.
+	//  This problem isn't specific to RingLine, but it's much more noticeable with RingLine.
 	public class RingLine : RingGroup
 	{
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			HitResult result = HitResult.NoHit;
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				double v5;
-				if (i % 2 == 1)
-					v5 = i * item.Scale.Y * -0.5;
-				else
-					v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
-				Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
+                double v5 = i * item.Scale.X * -1;
+                Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
 				result = HitResult.Min(result, model.CheckHit(Near, Far, Viewport, Projection, View, transform, meshes));
@@ -90,18 +88,14 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (texs == null)
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				double v5;
-				if (i % 2 == 1)
-					v5 = i * item.Scale.Y * -0.5;
-				else
-					v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
-				Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
+                double v5 = i * item.Scale.X * -1;
+                Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
 				result.AddRange(model.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texs, meshes, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
@@ -115,18 +109,14 @@ namespace SA2ObjectDefinitions.Common
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				double v5;
-				if (i % 2 == 1)
-					v5 = i * item.Scale.Y * -0.5;
-				else
-					v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
-				Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
+                double v5 = i * item.Scale.X * -1;
+                Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
 				result.Add(new ModelTransform(model, transform.Top));
@@ -139,17 +129,13 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			BoundingSphere result = new BoundingSphere();
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
-				double v5;
-				if (i % 2 == 1)
-					v5 = i * item.Scale.Y * -0.5;
-				else
-					v5 = Math.Ceiling(i * 0.5) * item.Scale.Y;
+				double v5 = i * item.Scale.X * -1;
 				Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, 0, (float)v5), transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -167,15 +153,15 @@ namespace SA2ObjectDefinitions.Common
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
 			HitResult result = HitResult.NoHit;
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-					ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
-					0,
-					ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
-				transform.Push();
+                    0,
+                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+                transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
@@ -192,15 +178,15 @@ namespace SA2ObjectDefinitions.Common
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (texs == null)
 				texs = ObjectHelper.GetTextures("objtex_common", texarr, dev);
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-					ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
-					0,
-					ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
-				transform.Push();
+                    0,
+                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+                transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
@@ -217,15 +203,15 @@ namespace SA2ObjectDefinitions.Common
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
 			List<ModelTransform> result = new List<ModelTransform>();
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-					ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
-					0,
-					ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
-				transform.Push();
+                    0,
+                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+                transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
@@ -241,15 +227,15 @@ namespace SA2ObjectDefinitions.Common
 		{
 			MatrixStack transform = new MatrixStack();
 			BoundingSphere result = new BoundingSphere();
-			for (int i = 0; i < Math.Min(item.Scale.X + 1, 8); i++)
+			for (int i = 0; i < Math.Min(item.Scale.Z + 0, 8); i++)
 			{
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-					ObjectHelper.NJSin((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y,
-					0,
-					ObjectHelper.NJCos((int)(v4 / item.Scale.X * 65536.0 * 0.002777777777777778)) * item.Scale.Y);
-				transform.Push();
+                    0,
+                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+                transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
@@ -272,5 +258,15 @@ namespace SA2ObjectDefinitions.Common
 	public class MstRngC : RingCircle
 	{
 		public override string Name { get { return "Circle of Rings (Mystic Melody)"; } }
-	}
+    }
+
+    public class SwRngL : RingLine
+    {
+        public override string Name { get { return "Line of Rings (Switch)"; } }
+    }
+
+    public class SwRngC : RingCircle
+    {
+        public override string Name { get { return "Circle of Rings (Switch)"; } }
+    }
 }
