@@ -158,9 +158,9 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-                    0,
-                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
-                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+					0,
+					ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
                 transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
@@ -183,9 +183,9 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-                    0,
-                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
-                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+					0,
+					ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
                 transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
@@ -208,9 +208,9 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-                    0,
-                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
-                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+					0,
+					ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
                 transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
@@ -232,9 +232,9 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				double v4 = i * 360.0;
 				Vector3 v7 = new Vector3(
-                    0,
-                    ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
-                    ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
+					0,
+					ObjectHelper.NJSin((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X,
+					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * item.Scale.X);
                 transform.Push();
 				transform.NJTranslate(item.Position);
 				transform.NJRotateObject(item.Rotation);
