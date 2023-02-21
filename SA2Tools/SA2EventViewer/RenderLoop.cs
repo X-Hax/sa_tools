@@ -39,6 +39,12 @@ namespace SA2EventViewer
 							nextframe = animframe = 0;
 						}
 					}
+					if (animframe >= 0 && Playing)
+					{
+						evframe += animspeed;
+						if (evframe > @event.Scenes[0].FrameCount)
+							evframe = 0;
+					}
 					if (loaded)
 						NeedRedraw = true;
 					NeedUpdateAnimation = false;

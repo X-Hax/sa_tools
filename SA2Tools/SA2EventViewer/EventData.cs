@@ -21,36 +21,34 @@ namespace SA2EventViewer
 				fc = Prs.Decompress(filename);
 			else
 				fc = File.ReadAllBytes(filename);
+			if (Path.GetExtension(filename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
+				fc = Prs.Decompress(filename);
 			bool battle = false;
 			bool dcbeta = false;
 			uint key;
 			if (fc[0] == 0x81)
 			{
+				ByteConverter.BigEndian = true;
 				if (fc[0x2B] <= 0x01 && fc[0x2A] == 0)
 				{
-					ByteConverter.BigEndian = true;
 					key = 0x8125FE60;
 					battle = true;
 				}
 				else
 				{
-					ByteConverter.BigEndian = true;
 					key = 0x812FFE60;
 				}
 			}
 			else
 			{
-				if ((fc[37] == 0x25) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
-				{
-					ByteConverter.BigEndian = false;
-					key = 0xC600000;
+				ByteConverter.BigEndian = false;
+				key = 0xC600000;
+				int upptr = fc.GetPointer(0x20, 0xC600000);
+				int betacheck = fc[upptr + 0x134];
+				if ((uint)betacheck < 0xC600000 && betacheck != 0)
 					dcbeta = true;
-				}
 				else
-				{
-					ByteConverter.BigEndian = false;
-					key = 0xC600000;
-				}
+					dcbeta = false;
 			}
 			List<NJS_MOTION> motions = null;
 			if (battle)

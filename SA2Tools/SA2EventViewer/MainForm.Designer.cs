@@ -52,6 +52,7 @@ namespace SA2EventViewer
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportSA2MDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportSA2BMDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.camModeLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.cameraPosLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -59,8 +60,8 @@ namespace SA2EventViewer
             this.cameraFOVLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.sceneNumLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.animFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.MessageTimer = new System.Windows.Forms.Timer(this.components);
-			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.MessageTimer = new System.Windows.Forms.Timer(this.components);
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.buttonOpen = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.buttonLighting = new System.Windows.Forms.ToolStripButton();
@@ -77,7 +78,7 @@ namespace SA2EventViewer
             this.buttonPreviousFrame = new System.Windows.Forms.ToolStripButton();
             this.buttonPlayScene = new System.Windows.Forms.ToolStripButton();
             this.buttonNextFrame = new System.Windows.Forms.ToolStripButton();
-            this.exportSA2BMDLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eventFrameLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -99,8 +100,8 @@ namespace SA2EventViewer
             this.viewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(949, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(1107, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -198,8 +199,9 @@ namespace SA2EventViewer
             // 
             this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
+            this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(685, 521);
+            this.RenderPanel.Size = new System.Drawing.Size(842, 615);
             this.RenderPanel.TabIndex = 1;
             this.RenderPanel.SizeChanged += new System.EventHandler(this.RenderPanel_SizeChanged);
             this.RenderPanel.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panel1_KeyDown);
@@ -213,6 +215,7 @@ namespace SA2EventViewer
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.Location = new System.Drawing.Point(0, 67);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -222,8 +225,9 @@ namespace SA2EventViewer
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(949, 521);
-            this.splitContainer1.SplitterDistance = 685;
+            this.splitContainer1.Size = new System.Drawing.Size(1107, 615);
+            this.splitContainer1.SplitterDistance = 842;
+            this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 2;
             // 
             // tableLayoutPanel1
@@ -236,12 +240,13 @@ namespace SA2EventViewer
             this.tableLayoutPanel1.Controls.Add(this.numericUpDown1, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(260, 521);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(260, 615);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // propertyGrid1
@@ -249,11 +254,11 @@ namespace SA2EventViewer
             this.tableLayoutPanel1.SetColumnSpan(this.propertyGrid1, 2);
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.LineColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 26);
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 29);
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid1.Size = new System.Drawing.Size(260, 475);
+            this.propertyGrid1.Size = new System.Drawing.Size(303, 563);
             this.propertyGrid1.TabIndex = 14;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
@@ -262,16 +267,16 @@ namespace SA2EventViewer
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 6);
+            this.label1.Location = new System.Drawing.Point(4, 7);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.Size = new System.Drawing.Size(62, 15);
             this.label1.TabIndex = 15;
             this.label1.Text = "Timescale:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// numericUpDown1
-			// 
-			this.numericUpDown1.ValueChanged += new System.EventHandler(numericUpDown1_ValueChanged);
+            // 
+            // numericUpDown1
+            // 
             this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.numericUpDown1.DecimalPlaces = 2;
             this.numericUpDown1.Increment = new decimal(new int[] {
@@ -279,7 +284,8 @@ namespace SA2EventViewer
             0,
             0,
             131072});
-            this.numericUpDown1.Location = new System.Drawing.Point(67, 3);
+            this.numericUpDown1.Location = new System.Drawing.Point(74, 3);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             10,
             0,
@@ -291,13 +297,14 @@ namespace SA2EventViewer
             0,
             -2147483648});
             this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(78, 20);
+            this.numericUpDown1.Size = new System.Drawing.Size(91, 23);
             this.numericUpDown1.TabIndex = 16;
             this.numericUpDown1.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // contextMenuStrip1
             // 
@@ -305,22 +312,23 @@ namespace SA2EventViewer
             this.exportSA2MDLToolStripMenuItem,
             this.exportSA2BMDLToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
-			// 
-			// MessageTimer
-			// 
-			this.MessageTimer.Enabled = true;
-			this.MessageTimer.Interval = 1;
-			this.MessageTimer.Tick += new System.EventHandler(this.MessageTimer_Tick);
-			// 
-			// 
-			// exportSA2MDLToolStripMenuItem
-			// 
-			this.exportSA2MDLToolStripMenuItem.Enabled = false;
+            this.contextMenuStrip1.Size = new System.Drawing.Size(164, 48);
+            // 
+            // exportSA2MDLToolStripMenuItem
+            // 
+            this.exportSA2MDLToolStripMenuItem.Enabled = false;
             this.exportSA2MDLToolStripMenuItem.Name = "exportSA2MDLToolStripMenuItem";
-            this.exportSA2MDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exportSA2MDLToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.exportSA2MDLToolStripMenuItem.Text = "Export &SA2MDL";
             this.exportSA2MDLToolStripMenuItem.Click += new System.EventHandler(this.exportSA2MDLToolStripMenuItem_Click);
+            // 
+            // exportSA2BMDLToolStripMenuItem
+            // 
+            this.exportSA2BMDLToolStripMenuItem.Enabled = false;
+            this.exportSA2BMDLToolStripMenuItem.Name = "exportSA2BMDLToolStripMenuItem";
+            this.exportSA2BMDLToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.exportSA2BMDLToolStripMenuItem.Text = "Export SA2BMDL";
+            this.exportSA2BMDLToolStripMenuItem.Click += new System.EventHandler(this.exportSA2BMDLToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -330,10 +338,12 @@ namespace SA2EventViewer
             this.cameraAngleLabel,
             this.cameraFOVLabel,
             this.sceneNumLabel,
-            this.animFrameLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 588);
+            this.animFrameLabel,
+            this.eventFrameLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 682);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(949, 24);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(1107, 24);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -373,8 +383,14 @@ namespace SA2EventViewer
             // 
             this.animFrameLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.animFrameLabel.Name = "animFrameLabel";
-            this.animFrameLabel.Size = new System.Drawing.Size(61, 19);
-            this.animFrameLabel.Text = "Frame: -1";
+            this.animFrameLabel.Size = new System.Drawing.Size(95, 19);
+            this.animFrameLabel.Text = "Scene Frame: -1";
+            // 
+            // MessageTimer
+            // 
+            this.MessageTimer.Enabled = true;
+            this.MessageTimer.Interval = 1;
+            this.MessageTimer.Tick += new System.EventHandler(this.MessageTimer_Tick);
             // 
             // toolStrip1
             // 
@@ -399,7 +415,7 @@ namespace SA2EventViewer
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(949, 43);
+            this.toolStrip1.Size = new System.Drawing.Size(1107, 43);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -563,20 +579,19 @@ namespace SA2EventViewer
             this.buttonNextFrame.Text = "Next Frame";
             this.buttonNextFrame.Click += new System.EventHandler(this.buttonNextFrame_Click);
             // 
-            // exportSA2BMDLToolStripMenuItem
+            // eventFrameLabel
             // 
-            this.exportSA2BMDLToolStripMenuItem.Enabled = false;
-            this.exportSA2BMDLToolStripMenuItem.Name = "exportSA2BMDLToolStripMenuItem";
-            this.exportSA2BMDLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exportSA2BMDLToolStripMenuItem.Text = "Export SA2BMDL";
-			this.exportSA2BMDLToolStripMenuItem.Click += new System.EventHandler(this.exportSA2BMDLToolStripMenuItem_Click);
-
-			// 
-			// MainForm
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.eventFrameLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.eventFrameLabel.Name = "eventFrameLabel";
+            this.eventFrameLabel.Size = new System.Drawing.Size(101, 19);
+            this.eventFrameLabel.Text = "Overall Frame: -1";
+            this.eventFrameLabel.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(949, 612);
+            this.ClientSize = new System.Drawing.Size(1107, 706);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
@@ -584,6 +599,7 @@ namespace SA2EventViewer
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "SA2 Event Viewer";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -592,8 +608,8 @@ namespace SA2EventViewer
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResizeBegin += new System.EventHandler(this.MainForm_ResizeBegin);
             this.ResizeEnd += new System.EventHandler(this.MainForm_ResizeEnd);
-			this.Resize += new System.EventHandler(this.MainForm_Resize);
-			this.menuStrip1.ResumeLayout(false);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -660,6 +676,7 @@ namespace SA2EventViewer
 		private System.Windows.Forms.ToolStripMenuItem showAdvancedCameraInfoToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel cameraAngleLabel;
 		private System.Windows.Forms.ToolStripMenuItem exportSA2BMDLToolStripMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel eventFrameLabel;
 	}
 }
 

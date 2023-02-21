@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 using BoundingSphere = SAModel.BoundingSphere;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
@@ -69,6 +70,7 @@ namespace SA2EventViewer
 		Event @event;
 		int scenenum = 0;
 		float animframe = -1;
+		float evframe = -1;
 		float nextframe = -1;
 		float animspeed = 0.5f;
 		List<List<Mesh[]>> meshes;
@@ -176,6 +178,7 @@ namespace SA2EventViewer
 					nextframe = 0;
 					AnimationTimer.Stop();
 					animframe = -1;
+					evframe = -1;
 					LoadFile(a.FileName);
 				}
 		}
@@ -272,7 +275,8 @@ namespace SA2EventViewer
 			cameraPosLabel.Text = $"Camera Pos: {cam.Position}";
 			cameraFOVLabel.Text = $"FOV: {cam.FOV}";
 			sceneNumLabel.Text = $"Scene: {scenenum}";
-			animFrameLabel.Text = $"Frame: {animframe}";
+			animFrameLabel.Text = $"Scene Frame: {animframe}";
+			eventFrameLabel.Text = $"Overall Frame: {evframe}";
 			if (showAdvancedCameraInfoToolStripMenuItem.Checked)
 			{
 				if (lookKeyDown) cameramode = look;
@@ -562,6 +566,19 @@ namespace SA2EventViewer
 		private void NextAnimation()
 		{
 			scenenum++;
+			List<int> sceneframes = new List<int>();
+			if (scenenum != @event.Scenes.Count)
+			{
+				for (int n = 1; n < scenenum; n++)
+				{
+					int totalframe = @event.Scenes[n].FrameCount;
+					sceneframes.Add(totalframe);
+				}
+				int total = sceneframes.Sum();
+				evframe = total - 1;
+			}
+			else
+				evframe = (Playing ? 0 : -1);
 			animframe = (Playing ? 0 : -1);
 			nextframe = animframe;
 			if (scenenum == @event.Scenes.Count)
@@ -589,6 +606,21 @@ namespace SA2EventViewer
 		private void PreviousAnimation()
 		{
 			scenenum--;
+			List<int> sceneframes = new List<int>();
+			if (scenenum == -1 || Playing && scenenum == 0)
+				scenenum = @event.Scenes.Count - 1;
+			for (int n = 1; n < scenenum; n++)
+			{
+				int totalframe = @event.Scenes[n].FrameCount;
+				sceneframes.Add(totalframe);
+			}
+			int total = sceneframes.Sum();
+			if (Playing && scenenum == 1)
+				evframe = 0;
+			else
+				evframe = total - 1;
+			if (scenenum == 0)
+				evframe = (Playing ? 0 : -1);
 			animframe = (Playing ? 0 : -1);
 			nextframe = animframe;
 			if (scenenum == -1 || (Playing && scenenum == 0)) scenenum = @event.Scenes.Count - 1;
@@ -609,20 +641,30 @@ namespace SA2EventViewer
 
 		private void PreviousFrame()
 		{
+			List<int> sceneframes = new List<int>();
 			if (scenenum > 0)
 			{
 				animframe = (float)Math.Floor(animframe - 1);
+				evframe = (float)Math.Floor(evframe - 1);
 				if (animframe <= -1)
 				{
 					scenenum--;
 					if (scenenum == 0)
 						scenenum = @event.Scenes.Count - 1;
+					for (int n = 1; n <= scenenum; n++)
+					{
+						int totalframe = @event.Scenes[n].FrameCount;
+						sceneframes.Add(totalframe);
+					}
+					int total = sceneframes.Sum();
+					evframe = total - 1;
 					animframe = @event.Scenes[scenenum].FrameCount - 1;
-				}
+				}	
 				nextframe = animframe;
 				AnimationTimer.Stop();
 				Playing = false;
 				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				osd.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
 				NeedRedraw = true;
 			}
 		}
@@ -636,13 +678,19 @@ namespace SA2EventViewer
 				{
 					scenenum++;
 					if (scenenum == @event.Scenes.Count)
+					{
 						scenenum = 1;
+						evframe = -1;
+					}
 					animframe = -1;
 				}
 				nextframe = animframe;
+				if (animframe > -1)
+					evframe = (float)Math.Floor(evframe + 1);
 				AnimationTimer.Stop();
 				Playing = false;
 				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				osd.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
 				NeedRedraw = true;	
 			}
 		}
@@ -655,6 +703,8 @@ namespace SA2EventViewer
 					scenenum = 1;
 				if (animframe == -1)
 					nextframe = animframe = 0;
+				if (animframe == 0 && scenenum == 1)
+					evframe = 0;
 			}
 			Playing = !Playing;
 			if (Playing)
@@ -837,9 +887,15 @@ namespace SA2EventViewer
 			if (!loaded)
 				return;
 			if (negative)
+			{
 				nextframe -= animspeed;
+				evframe -= animspeed;
+			}
 			else
+			{
 				nextframe += animspeed;
+				evframe += animspeed;
+			}
 			NeedUpdateAnimation = true;
 			NeedRedraw = true;
 		}
@@ -1190,6 +1246,11 @@ namespace SA2EventViewer
 		private void MessageTimer_Tick(object sender, EventArgs e)
 		{
 			if (osd != null && osd.UpdateTimer()) NeedRedraw = true;
+		}
+
+		private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

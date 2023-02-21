@@ -40,6 +40,8 @@ namespace SplitTools.SAArc
 					fc = Prs.Decompress(evfilename);
 				else
 					fc = File.ReadAllBytes(evfilename);
+				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
+					fc = Prs.Decompress(evfilename);
 				EventIniData ini = new EventIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
@@ -57,14 +59,14 @@ namespace SplitTools.SAArc
 				bool dcbeta;
 				if (fc[0] == 0x81)
 				{
+					ByteConverter.BigEndian = true;
+					ini.Game = Game.SA2B;
+					dcbeta = false;
 					if (fc[0x2B] <= 0x01 && fc[0x2A] == 0)
 					{
 						Console.WriteLine("File is in GC/PC format.");
-						ByteConverter.BigEndian = true;
 						key = 0x8125FE60;
-						ini.Game = Game.SA2B;
 						battle = true;
-						dcbeta = false;
 						motions = ReadMotionFile(Path.ChangeExtension(evfilename, null) + "motion.bin");
 						ncams = ReadMotionFileCams(Path.ChangeExtension(evfilename, null) + "motion.bin");
 						ini.Motions = motions.Select(a => a?.Name).ToList();
@@ -77,31 +79,26 @@ namespace SplitTools.SAArc
 					else
 					{
 						Console.WriteLine("File is in GC/PC Beta format.");
-						ByteConverter.BigEndian = true;
 						key = 0x812FFE60;
-						ini.Game = Game.SA2B;
 						battle = false;
-						dcbeta = false;
 					}
 				}
 				else
 				{
-					if ((fc[37] == 0x25 && (fc[36] == 0x13 || fc[36] == 0x11)) || (fc[38] == 0x22) || ((fc[36] == 0) && ((fc[1] == 0xFE) || (fc[1] == 0xF2) || ((fc[1] == 0x27) && fc[2] == 0x9F))))
+					ByteConverter.BigEndian = false;
+					key = 0xC600000;
+					ini.Game = Game.SA2;
+					battle = false;
+					int upptr = fc.GetPointer(0x20, 0xC600000);
+					int betacheck = fc[upptr + 0x134];
+					if ((uint)betacheck < 0xC600000 && betacheck != 0)
 					{
 						Console.WriteLine("File is in DC Beta format.");
-						ByteConverter.BigEndian = false;
-						key = 0xC600000;
-						ini.Game = Game.SA2;
-						battle = false;
 						dcbeta = true;
 					}
 					else
 					{
 						Console.WriteLine("File is in DC format.");
-						ByteConverter.BigEndian = false;
-						key = 0xC600000;
-						ini.Game = Game.SA2;
-						battle = false;
 						dcbeta = false;
 					}
 
@@ -316,7 +313,7 @@ namespace SplitTools.SAArc
 							int cnt = ByteConverter.ToInt32(fc, ptr + 0x14);
 							for (int i = 0; i < cnt; i++)
 							{
-								scn.StaticMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Static Motion {i + 1}.saanim", motions, 1));
+								scn.ParticleMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Particle Motion {i + 1}.saanim", motions, 1));
 								ptr2 += sizeof(int);
 							}
 						}
@@ -828,8 +825,8 @@ namespace SplitTools.SAArc
 								int cnt = ByteConverter.ToInt32(fc, ptr + 0x14);
 								for (int i = 0; i < cnt; i++)
 								{
-									if (labels.ContainsKeySafe(info.StaticMotions[i]))
-										ByteConverter.GetBytes(labels[info.StaticMotions[i]]).CopyTo(fc, ptr2);
+									if (labels.ContainsKeySafe(info.ParticleMotions[i]))
+										ByteConverter.GetBytes(labels[info.ParticleMotions[i]]).CopyTo(fc, ptr2);
 									ptr2 += sizeof(int);
 								}
 							}
@@ -1237,7 +1234,7 @@ namespace SplitTools.SAArc
 		public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
 		public List<string> CameraMotions { get; set; } = new List<string>();
 		public List<string> NinjaCameras { get; set; } = new List<string>();
-		public List<string> StaticMotions { get; set; } = new List<string>();
+		public List<string> ParticleMotions { get; set; } = new List<string>();
 		public BigInfo Big { get; set; }
 		public int FrameCount { get; set; }
 	}
