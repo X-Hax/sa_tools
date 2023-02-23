@@ -204,16 +204,17 @@ namespace VrSharp.Gvr
 
             initalized = true;
         }
-        #endregion
+		#endregion
 
-        #region Palette
-        /// <summary>
-        /// Set the palette data from an external palette file.
-        /// </summary>
-        /// <param name="clut">A GvpPalette object</param>
-        public void SetPalette(GvpPalette palette)
+		#region Palette
+		/// <summary>
+		/// Set the palette data from an external palette file.
+		/// </summary>
+		/// <param name="clut">A GvpPalette object</param>
+		/// <param name="bank">Palette bank ID</param>
+		public void SetPalette(GvpPalette palette, int bank = 0)
         {
-            SetPalette((VpPalette)palette);
+            SetPalette((VpPalette)palette, bank);
         }
 
         /// <summary>

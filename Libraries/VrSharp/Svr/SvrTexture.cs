@@ -139,16 +139,17 @@ namespace VrSharp.Svr
 
             initalized = true;
         }
-        #endregion
+		#endregion
 
-        #region Palette
-        /// <summary>
-        /// Set the palette data from an external palette file.
-        /// </summary>
-        /// <param name="palette">A SvpPalette object</param>
-        public void SetPalette(SvpPalette palette)
+		#region Palette
+		/// <summary>
+		/// Set the palette data from an external palette file.
+		/// </summary>
+		/// <param name="palette">A SvpPalette object</param>
+		/// <param name="bank">Palette bank ID</param>
+		public void SetPalette(SvpPalette palette, int bank = 0)
         {
-            SetPalette((VpPalette)palette);
+            SetPalette((VpPalette)palette, bank);
         }
         #endregion
 
