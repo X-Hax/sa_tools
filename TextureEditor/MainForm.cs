@@ -1356,7 +1356,7 @@ namespace TextureEditor
 				if (check == 0x20534444) // DDS header
 				{
 					PixelFormat pxformat;
-					var image = Pfim.Pfim.FromStream(texmemstr, new Pfim.PfimConfig());
+					var image = Pfim.Pfimage.FromStream(texmemstr, new Pfim.PfimConfig());
 					switch (image.Format)
 					{
 						case Pfim.ImageFormat.Rgba32:

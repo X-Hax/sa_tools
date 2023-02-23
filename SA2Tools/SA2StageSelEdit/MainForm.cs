@@ -147,7 +147,7 @@ namespace SA2StageSelEdit
 			{
 				str.Seek(0, SeekOrigin.Begin);
 				PixelFormat pxformat;
-				var image = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+				var image = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
 				switch (image.Format)
 				{
 					case Pfim.ImageFormat.Rgba32:
