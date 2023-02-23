@@ -326,7 +326,7 @@ namespace VrSharp.Xvr
 			uint check = BitConverter.ToUInt32(ddsData, 0);
 			if (check == 0x20534444) // DDS header
 			{
-				img = Pfim.Pfim.FromStream(str, new Pfim.PfimConfig());
+				img = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
 				switch (img.Format)
 				{
 					case Pfim.ImageFormat.Rgba32:
