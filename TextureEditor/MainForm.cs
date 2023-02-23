@@ -149,9 +149,18 @@ namespace TextureEditor
 										pvr.TextureData.Seek(0, SeekOrigin.Begin);
 									}
 									PvrTexture pt = new PvrTexture(pvr.TextureData.ToArray());
-									defaultPalette.IsGVP = false;
-									pt.SetPalette(new PvpPalette(defaultPalette.GetBytes()));
-									pvr.Image = Palettize(pt.ToBitmap(), GetPalettedTextureFormat(pvr), paletteSet);
+									currentPalette.IsGVP = false;
+									try
+									{
+										pt.SetPalette(new PvpPalette(currentPalette.GetBytes()), paletteSet);
+									}
+									catch (Exception)
+									{
+										MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+										currentPalette = new TexturePalette(defaultPalette.GetBytes());
+										pt.SetPalette(new PvpPalette(currentPalette.GetBytes()), 0);
+									}
+									pvr.Image = pt.ToBitmap();
 								}
 								break;
 							default:
@@ -184,9 +193,18 @@ namespace TextureEditor
 										gvr.TextureData.Seek(0, SeekOrigin.Begin);
 									}
 									GvrTexture gt = new GvrTexture(gvr.TextureData.ToArray());
-									defaultPalette.IsGVP = true;
-									gt.SetPalette(new GvpPalette(defaultPalette.GetBytes()));
-									gvr.Image = Palettize(gt.ToBitmap(), GetPalettedTextureFormat(gvr), paletteSet);
+									currentPalette.IsGVP = true;
+									try
+									{
+										gt.SetPalette(new GvpPalette(currentPalette.GetBytes()), paletteSet);
+									}
+									catch (Exception)
+									{
+										MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+										currentPalette = new TexturePalette(defaultPalette.GetBytes());
+										gt.SetPalette(new GvpPalette(currentPalette.GetBytes()), 0);
+									}
+									gvr.Image = gt.ToBitmap();
 								}
 								break;
 							default:
@@ -970,74 +988,6 @@ namespace TextureEditor
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
-		}
-
-		private Bitmap Palettize(Bitmap unpalettedBitmap, PalettedTextureFormat indxfmt, int bankID)
-		{
-			if (paletteApplied)
-				return unpalettedBitmap;
-
-			Bitmap result;
-			int setsize = 16;
-			switch (indxfmt)
-			{
-				case PalettedTextureFormat.Index4:
-					result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format4bppIndexed);
-					break;
-				case PalettedTextureFormat.Index8:
-					setsize = 256;
-					result = new Bitmap(unpalettedBitmap.Width, unpalettedBitmap.Height, PixelFormat.Format8bppIndexed);
-					break;
-				default:
-					return unpalettedBitmap;
-			}
-			Color[] defaultpaletteSet = defaultPalette.Colors.ToArray();
-			List<Color> usedPaletteSet = new List<Color>(defaultPalette.Colors.Count);
-
-			// Prevent crash with 16-color palettes on a 256-color image
-			if (setsize > currentPalette.Colors.Count)
-			{
-				MessageBox.Show(this, "The current palette has fewer colors than the image. Using the default palette instead.", "Texture Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-				currentPalette = new TexturePalette();
-			}
-
-			// Add colors to the palettizer set
-			for (int i = 0; i < setsize; i++)
-			{
-				usedPaletteSet.Add(currentPalette.Colors[bankID * setsize + i]);
-			}
-
-			// Replace the palette in the Bitmap
-			var newAliasForPalette = result.Palette;
-			for (int i = 0; i < usedPaletteSet.Count; i++)
-			{
-				newAliasForPalette.Entries[i] = usedPaletteSet[i];
-			}
-			result.Palette = newAliasForPalette;
-
-			// Set pixels in the indexed image
-			int remaining = unpalettedBitmap.Height * unpalettedBitmap.Width;
-			using (var snoop_u = new BmpPixelSnoop(new Bitmap(unpalettedBitmap)))
-			{
-				for (int y = 0; y < unpalettedBitmap.Height; y++)
-					for (int x = 0; x < unpalettedBitmap.Width; x++)
-					{
-						for (int p = 0; p < setsize; p++)
-						{
-							if (snoop_u.GetPixel(x, y) == defaultpaletteSet[p])
-							{
-								remaining--;
-								TextureFunctions.SetPixelIndex(result, x, y, p);
-								break;
-							}
-						}
-					}
-			}
-			if (remaining > 0)
-				System.Windows.Forms.MessageBox.Show(remaining.ToString() + " pixels were not found in the palette.",
-					"Texture Editor Export Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-			paletteApplied = true;
-			return new Bitmap(result);
 		}
 
 		private Bitmap ScaleBitmapToWindow(Bitmap image, System.Drawing.Drawing2D.InterpolationMode mode)
@@ -1905,14 +1855,14 @@ namespace TextureEditor
 			{
 				PvrTexture pvrt = new PvrTexture(pvri.TextureData.ToArray());
 				defaultPalette.IsGVP = false;
-				pvrt.SetPalette(new PvpPalette(defaultPalette.GetBytes()));
+				pvrt.SetPalette(new PvpPalette(defaultPalette.GetBytes()), 0);
 				unpalettedBitmap = pvrt.ToBitmap();
 			}
 			else if (tex is GvrTextureInfo gvri)
 			{
 				GvrTexture gvrt = new GvrTexture(gvri.TextureData.ToArray());
 				defaultPalette.IsGVP = true;
-				gvrt.SetPalette(new GvpPalette(defaultPalette.GetBytes()));
+				gvrt.SetPalette(new GvpPalette(defaultPalette.GetBytes()), 0);
 				unpalettedBitmap = gvrt.ToBitmap();
 			}
 			else return tex.Image;
