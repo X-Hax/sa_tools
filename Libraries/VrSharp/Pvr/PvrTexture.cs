@@ -257,16 +257,17 @@ namespace VrSharp.Pvr
 
             initalized = true;
         }
-        #endregion
+		#endregion
 
-        #region Palette
-        /// <summary>
-        /// Set the palette data from an external palette file.
-        /// </summary>
-        /// <param name="clut">A PvpPalette object</param>
-        public void SetPalette(PvpPalette clut)
+		#region Palette
+		/// <summary>
+		/// Set the palette data from an external palette file.
+		/// </summary>
+		/// <param name="clut">A PvpPalette object</param>
+		/// <param name="bank">Palette bank ID</param>
+		public void SetPalette(PvpPalette clut, int bank = 0)
         {
-            SetPalette((VpPalette)clut);
+            SetPalette((VpPalette)clut, bank);
         }
         #endregion
 

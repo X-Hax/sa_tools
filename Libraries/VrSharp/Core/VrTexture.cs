@@ -418,36 +418,61 @@ namespace VrSharp
 
             return mipmaps;
         }
-        #endregion
+		#endregion
 
-        #region Palette
-        /// <summary>
-        /// Set the palette data from an external palette file.
-        /// </summary>
-        /// <param name="palette">A VpPalette object</param>
-        protected virtual void SetPalette(VpPalette palette)
-        {
-            if (!initalized)
-            {
-                throw new TextureNotInitalizedException("Cannot set the palette for this texture as it is not initalized.");
-            }
+		#region Palette
+		/// <summary>
+		/// Set the palette data from an external palette file.
+		/// </summary>
+		/// <param name="palette">A VpPalette object</param>
+		/// <param name="bank">Palette bank ID</param>
+		protected virtual void SetPalette(VpPalette palette, int bank)
+		{
+			if (!initalized)
+			{
+				throw new TextureNotInitalizedException("Cannot set the palette for this texture as it is not initalized.");
+			}
 
-            // No need to set an external palette if this data format doesn't require one.
-            // We can't just call the data codec here as the data format does not determine
-            // if a GVR uses an external palette.
-            if (!NeedsExternalPalette)
-            {
-                return;
-            }
+			// No need to set an external palette if this data format doesn't require one.
+			// We can't just call the data codec here as the data format does not determine
+			// if a GVR uses an external palette.
+			if (!NeedsExternalPalette)
+			{
+				return;
+			}
 
-            // If the palette is not initalized, don't use it
-            if (!palette.Initalized)
-            {
-                return;
-            }
-
-            dataCodec.PixelCodec = palette.PixelCodec;
-            dataCodec.SetPalette(palette.EncodedData, 0x10, palette.PaletteEntries);
+			// If the palette is not initalized, don't use it
+			if (!palette.Initalized)
+			{
+				return;
+			}
+			int numcolors = 0;
+			// Get the number of colors to jump for bank offsets
+			switch (dataCodec.Bpp)
+			{
+				case 4:
+					numcolors = 16;
+					break;
+				case 8:
+					numcolors = 256;
+					break;
+			}
+			// Set how many bytes to jump per color
+			int colorbytes = 0;
+			switch (palette.PixelCodec.Bpp)
+			{
+				case 8:
+					colorbytes = 1;
+					break;
+				case 16:
+					colorbytes = 2;
+					break;
+				case 32:
+					colorbytes = 4;
+					break;
+			}
+			dataCodec.PixelCodec = palette.PixelCodec;
+			dataCodec.SetPalette(palette.EncodedData, 0x10 + numcolors * colorbytes * bank, numcolors);
         }
 
         /// <summary>
