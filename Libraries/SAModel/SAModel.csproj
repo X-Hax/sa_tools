@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFramework>net7.0-windows</TargetFramework>
 		<OutputType>Library</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\..\build\lib\</OutputPath>
@@ -12,7 +12,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
 	</ItemGroup>
 	<PropertyGroup>
 		<DebugType>embedded</DebugType>

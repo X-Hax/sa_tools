@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFramework>net7.0-windows</TargetFramework>
 		<OutputType>Library</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
@@ -19,7 +19,7 @@
 		<Compile Remove="EndianWriter.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\bin\&quot;&#xD;&#xA;xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\tools\&quot;" />
