@@ -115,6 +115,13 @@ namespace SAModel
 			return "0x" + i.ToString("X");
 		}
 
+		public static string ToCHex(this float f)
+		{
+			var bytes = BitConverter.GetBytes(f);
+			var i = BitConverter.ToInt32(bytes, 0);
+			return "0x" + i.ToString("X8");
+		}
+
 		public static string ToC(this string str)
 		{
 			if (str == null)
