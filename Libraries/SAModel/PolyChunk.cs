@@ -1430,6 +1430,38 @@ namespace SAModel
 				return result.ToArray();
 			}
 
+			public void ToNJA(TextWriter writer, bool UVH)
+			{
+				if (Reversed)
+					writer.Write("\tStripR(" + Indexes.Length + "),");
+				else
+					writer.Write("\tStripL(" + Indexes.Length + "),");
+
+				if (UVs != null || VColors != null)
+				{
+					writer.Write(Environment.NewLine);
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write("\t" + Indexes[i].ToString() + ",");
+						if (UVs != null)
+							writer.WriteLine(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0f : 255.0f))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0f : 255.0f))).ToString() + " ),");
+						if (VColors != null)
+							writer.WriteLine(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+					}
+				}
+				else
+				{
+					writer.Write("  ");
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write(Indexes[i].ToString() + ", ");
+						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+							writer.Write(Environment.NewLine + "                   ");
+					}
+					writer.Write(Environment.NewLine);
+				}
+			}
+
 			public int Size
 			{
 				get
@@ -1612,7 +1644,7 @@ namespace SAModel
 				flags = flags.Remove(flags.Length - 1);
 
 			string chunkname = string.Empty;
-			float uvmultiplier = 255.0f;
+			bool UVH = false;
 
 			switch (Type)
 			{
@@ -1624,17 +1656,17 @@ namespace SAModel
 					break;
 				case ChunkType.Strip_StripUVH:
 					chunkname = "CnkS_UVH";
-					uvmultiplier = 1024.0f;
+					UVH = true;
 					break;
 				case ChunkType.Strip_StripNormal:
-					chunkname = " CnkS_VN";
+					chunkname = "CnkS_VN";
 					break;
 				case ChunkType.Strip_StripUVNNormal:
-					chunkname = " CnkS_UVN_VN";
+					chunkname = "CnkS_UVN_VN";
 					break;
 				case ChunkType.Strip_StripUVHNormal:
-					chunkname = " CnkS_UVH_VN";
-					uvmultiplier = 1024.0f;
+					chunkname = "CnkS_UVH_VN";
+					UVH = true;
 					break;
 				case ChunkType.Strip_StripColor:
 					chunkname = "CnkS_D8";
@@ -1644,7 +1676,7 @@ namespace SAModel
 					break;
 				case ChunkType.Strip_StripUVHColor:
 					chunkname = "CnkS_UVH_D8";
-					uvmultiplier = 1024.0f;
+					UVH = true;
 					break;
 				case ChunkType.Strip_Strip2:
 					chunkname = "CnkS_2";
@@ -1654,7 +1686,7 @@ namespace SAModel
 					break;
 				case ChunkType.Strip_StripUVH2:
 					chunkname = "CnkS_UVH2";
-					uvmultiplier = 1024.0f;
+					UVH = true;
 					break;
 			}
 
@@ -1670,36 +1702,7 @@ namespace SAModel
 
 			foreach(Strip item in Strips)
 			{
-				if (item.Reversed)
-					writer.Write("\tStripR(");
-				else
-					writer.Write("\tStripL(");
-
-				writer.Write(item.Indexes.Length);
-
-				if (item.UVs != null || item.VColors != null)
-				{
-					writer.Write(")," + Environment.NewLine);
-					for (int i = 0; i < item.Indexes.Length; ++i)
-					{
-						writer.Write("\t" + item.Indexes[i].ToString() + ",");
-						if (item.UVs != null)
-							writer.WriteLine(" \tUvn( " + ((uint)(item.UVs[i].U * uvmultiplier)).ToString() + ", " + ((uint)(item.UVs[i].V * uvmultiplier)).ToString() + " ),");
-						if (item.VColors != null)
-							writer.WriteLine(" \tD8888(" + item.VColors[i].A.ToString() + ", " + item.VColors[i].R.ToString() + ", " + item.VColors[i].G.ToString() + ", " + item.VColors[i].B.ToString() + "),");
-					}
-				}
-				else
-				{
-					writer.Write("),  ");
-					for (int i = 0; i < item.Indexes.Length; ++i)
-					{
-						writer.Write(item.Indexes[i].ToString() + ", ");
-						if (((i + 1) % 10) == 0 && i != item.Indexes.Length - 1)
-							writer.Write(Environment.NewLine + "                   ");
-					}
-					writer.Write(Environment.NewLine);
-				}
+				item.ToNJA(writer, UVH);
 			}
 
 			if (alignmentPadding > 0)
