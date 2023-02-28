@@ -263,7 +263,6 @@ namespace SAModel
 					item.ToNJA(writer);
 				}
 
-				writer.WriteLine("\tCnkNull(),");
 				writer.WriteLine("\tCnkEnd()");
 				writer.Write("END" + Environment.NewLine + Environment.NewLine);
 			}

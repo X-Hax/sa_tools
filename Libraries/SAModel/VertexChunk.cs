@@ -643,9 +643,6 @@ namespace SAModel
 						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
 					}
 					break;
-				case ChunkType.End:
-					writer.WriteLine("\tCnkEnd()");
-					break;
 			}
 		}
 

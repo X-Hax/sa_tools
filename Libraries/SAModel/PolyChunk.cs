@@ -1658,6 +1658,14 @@ namespace SAModel
 					break;
 			}
 
+			StripCount = (ushort)Strips.Count;
+			Size = 1;
+			foreach (Strip str in Strips)
+				Size += (ushort)(str.Size / 2);
+
+			int alignmentPadding = (Size % 2);
+			Size += (ushort)alignmentPadding;
+
 			writer.WriteLine("\t" + chunkname + "( " + flags + " ), " + Size.ToString() + ", _NB( UFO_0, " + StripCount + " ),");
 
 			foreach(Strip item in Strips)
@@ -1693,6 +1701,9 @@ namespace SAModel
 					writer.Write(Environment.NewLine);
 				}
 			}
+
+			if (alignmentPadding > 0)
+				writer.WriteLine("\tCnkNull(),");
 		}
 
 		public void UpdateFlags(NJS_MATERIAL mat)
