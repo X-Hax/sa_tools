@@ -1437,16 +1437,36 @@ namespace SAModel
 				else
 					writer.Write("\tStripL(" + Indexes.Length + "),");
 
-				if (UVs != null || VColors != null)
+				if (UVs != null || VColors != null || UserFlags1 != null)
 				{
 					writer.Write(Environment.NewLine);
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
 						writer.Write("\t" + Indexes[i].ToString() + ",");
+
 						if (UVs != null)
-							writer.WriteLine(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0f : 255.0f))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0f : 255.0f))).ToString() + " ),");
+							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0f : 255.0f))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0f : 255.0f))).ToString() + " ),");
+						
 						if (VColors != null)
-							writer.WriteLine(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+						
+						if (UserFlags1 != null && i > 1)
+						{
+							if (UserFlags3 != null)
+							{
+								writer.Write(" \tUf3( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + ", " + UserFlags3[i].ToString() + "),");
+							}
+							else if (UserFlags2 != null)
+							{
+								writer.Write(" \tUf2( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + "),");
+							}
+							else
+							{
+								writer.Write(" \tUf1( " + UserFlags1[i].ToString() + "),");
+							}
+						}
+
+						writer.Write(Environment.NewLine);
 					}
 				}
 				else
@@ -1698,7 +1718,7 @@ namespace SAModel
 			int alignmentPadding = (Size % 2);
 			Size += (ushort)alignmentPadding;
 
-			writer.WriteLine("\t" + chunkname + "( " + flags + " ), " + Size.ToString() + ", _NB( UFO_0, " + StripCount + " ),");
+			writer.WriteLine("\t" + chunkname + "( " + flags + " ), " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + StripCount + " ),");
 
 			foreach(Strip item in Strips)
 			{
