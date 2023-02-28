@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 
 namespace SAModel
@@ -455,6 +456,197 @@ namespace SAModel
 			if (next != null)
 				result.AddRange(next.GetBytes());
 			return result.ToArray();
+		}
+
+		public void ToNJA(TextWriter writer)
+		{
+			switch(Type)
+			{
+				case ChunkType.Vertex_VertexSH:
+					writer.WriteLine("\tCnkV_SH(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT_SH(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalSH:
+					writer.WriteLine("\tCnkV_VN_SH(0, " + (VertexCount * 8 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT_SH(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM_SH(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_Vertex:
+					writer.WriteLine("\tCnkV(0, " + (VertexCount * 3 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexDiffuse8:
+					writer.WriteLine("\tCnkV_D8(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexUserFlags:
+					writer.WriteLine("\tCnkV_UF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNinjaFlags:
+					writer.WriteLine("\tCnkV_NF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNFlags(" + UserFlags.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexDiffuseSpecular5:
+					writer.WriteLine("\tCnkV_S5(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD565S565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
+							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexDiffuseSpecular4:
+					writer.WriteLine("\tCnkV_S4(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD4444S565(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
+							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexDiffuseSpecular16:
+					writer.WriteLine("\tCnkV_IN(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD16S16(" + Diffuse[i].ToString() + ", " + Specular[i].ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormal:
+					writer.WriteLine("\tCnkV_VN(0, " + (VertexCount * 6 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuse8:
+					writer.WriteLine("\tCnkV_VN_D8(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalUserFlags:
+					writer.WriteLine("\tCnkV_VN_UF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalNinjaFlags:
+					writer.WriteLine("\tCnkV_VN_NF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNFlags(" + UserFlags.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
+					writer.WriteLine("\tCnkV_VN_S5(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD565S565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
+							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
+					writer.WriteLine("\tCnkV_VN_S4(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD4444S565(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
+							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalDiffuseSpecular16:
+					writer.WriteLine("\tCnkV_VN_IN(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD16S16(" + Diffuse[i].ToString() + ", " + Specular[i].ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalX:
+					writer.WriteLine("\tCnkV_VNX(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalXDiffuse8:
+					writer.WriteLine("\tCnkV_VNX_D8(0, " + (VertexCount * 5 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
+					}
+					break;
+				case ChunkType.Vertex_VertexNormalXUserFlags:
+					writer.WriteLine("\tCnkV_VNX_UF(0, " + (VertexCount * 5 + 1).ToString() + "),");
+					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					for (int i = 0; i < VertexCount; ++i)
+					{
+						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
+					}
+					break;
+				case ChunkType.End:
+					writer.WriteLine("\tCnkEnd()");
+					break;
+			}
 		}
 
 		object ICloneable.Clone() => Clone();

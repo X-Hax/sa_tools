@@ -577,31 +577,53 @@ namespace SAModel
 				Sibling.ToNJA(writer, labels, textures);
 				writer.WriteLine();
 			}
-			writer.WriteLine("OBJECT_START" + Environment.NewLine);
-			if (!isDup && Attach is BasicAttach)
+
+			bool isChunk = Attach is ChunkAttach;
+
+			if (!isChunk)
+				writer.WriteLine("OBJECT_START" + Environment.NewLine);
+			else
+				writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
+
+			if (!isDup)
 			{
-				BasicAttach basicattach = Attach as BasicAttach;
-				basicattach.ToNJA(writer, labels, textures);
-			}
-			else if (Attach is ChunkAttach)
-			{
-				//ChunkAttach ChunkAttach = Attach as ChunkAttach;
-				//ChunkAttach.ToNJA(writer, labels, textures);
+				if (Attach is BasicAttach)
+				{
+					BasicAttach basicattach = Attach as BasicAttach;
+					basicattach.ToNJA(writer, labels, textures);
+				}
+				else if (Attach is ChunkAttach)
+				{
+					ChunkAttach ChunkAttach = Attach as ChunkAttach;
+					ChunkAttach.ToNJA(writer, labels, textures);
+				}
 			}
 
-			writer.Write("OBJECT      ");
+			if (!isChunk)
+				writer.Write("OBJECT      ");
+			else
+				writer.Write("CNKOBJECT  ");
+
 			writer.Write(Name);
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
 			writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
-			writer.WriteLine("Model       " + (Attach != null ? Attach.Name : "NULL") + ",");
+			if (!isChunk)
+				writer.WriteLine("Model       " + (Attach != null ? Attach.Name : "NULL") + ",");
+			else
+				writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name : "NULL") + ",");
 			writer.WriteLine("OPosition  {0},", Position.ToNJA());
 			writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
 			writer.WriteLine("OScale     {0},", Scale.ToNJA());
 			writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name : "NULL") + ",");
 			writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name : "NULL") + ",");
 			writer.WriteLine("END" + Environment.NewLine);
-			writer.WriteLine("OBJECT_END");
+			
+			if (!isChunk)
+				writer.WriteLine("OBJECT_END");
+			else
+				writer.WriteLine("CNKOBJECT_END");
+
 			if (Parent == null)
 			{
 				writer.WriteLine(Environment.NewLine + "DEFAULT_START");
