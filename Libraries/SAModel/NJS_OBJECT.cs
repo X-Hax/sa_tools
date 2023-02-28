@@ -579,6 +579,13 @@ namespace SAModel
 			}
 
 			bool isChunk = Attach is ChunkAttach;
+			if (Attach == null)
+			{
+				NJS_OBJECT root = this;
+				while (root.Parent != null)
+					root = root.Parent;
+				isChunk = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is ChunkAttach;
+			}
 
 			if (!isChunk)
 				writer.WriteLine("OBJECT_START" + Environment.NewLine);
