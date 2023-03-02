@@ -467,7 +467,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT_SH(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT_SH( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalSH:
@@ -475,8 +475,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT_SH(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM_SH(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT_SH( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM_SH( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 					}
 					break;
 				case ChunkType.Vertex_Vertex:
@@ -484,7 +484,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuse8:
@@ -492,7 +492,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
 					}
 					break;
@@ -501,7 +501,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
 					}
 					break;
@@ -510,7 +510,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNFlags(" + UserFlags.ToString() + "),");
 					}
 					break;
@@ -519,7 +519,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD565S565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
 							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
 					}
@@ -529,7 +529,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD4444S565(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
 							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
 					}
@@ -539,7 +539,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD16S16(" + Diffuse[i].ToString() + ", " + Specular[i].ToString() + "),");
 					}
 					break;
@@ -548,8 +548,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuse8:
@@ -557,8 +557,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
 					}
 					break;
@@ -567,8 +567,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
 					}
 					break;
@@ -577,8 +577,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNFlags(" + UserFlags.ToString() + "),");
 					}
 					break;
@@ -587,8 +587,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD565S565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
 							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
 					}
@@ -598,8 +598,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD4444S565(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
 							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
 					}
@@ -609,8 +609,8 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tNORM(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tD16S16(" + Diffuse[i].ToString() + ", " + Specular[i].ToString() + "),");
 					}
 					break;
@@ -619,7 +619,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
 					}
 					break;
@@ -628,7 +628,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
 						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
 					}
@@ -638,7 +638,7 @@ namespace SAModel
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT(" + Vertices[i].X.ToCHex().ToString() + ", " + Vertices[i].Y.ToCHex().ToString() + ", " + Vertices[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
 						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
 					}

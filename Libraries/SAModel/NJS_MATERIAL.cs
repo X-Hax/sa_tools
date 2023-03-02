@@ -275,7 +275,7 @@ namespace SAModel
 			int callback = (int)(TextureID & 0xC0000000);
 			int texid = (int)(TextureID & ~0xC0000000);
 			result.Append("AttrTexId ( 0x" + callback.ToString("X") + ", " + texid + " )," + Environment.NewLine);
-			result.Append("AttrFlags ( 0x" + Flags.ToString("X8") + " )," + Environment.NewLine);
+			result.Append("AttrFlags ( 0x" + Flags.ToString("X8").ToLowerInvariant() + " )," + Environment.NewLine);
 			result.Append("MATEND" + Environment.NewLine);
 			return result.ToString();
 		}
