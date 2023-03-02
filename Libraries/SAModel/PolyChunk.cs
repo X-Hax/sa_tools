@@ -854,7 +854,7 @@ namespace SAModel
 			if (Ambient.HasValue)
 				writer.WriteLine("\tMAmbi( " + Ambient.Value.A.ToString() + ", " + Ambient.Value.R.ToString() + ", " + Ambient.Value.G.ToString() + ", " + Ambient.Value.B.ToString() + " ),");
 			if (Specular.HasValue)
-				writer.WriteLine("\tMSpec( " + Specular.Value.A.ToString() + ", " + Specular.Value.R.ToString() + ", " + Specular.Value.G.ToString() + ", " + Specular.Value.B.ToString() + " ),");
+				writer.WriteLine("\tMSpec( " + SpecularExponent.ToString() + ", " + Specular.Value.R.ToString() + ", " + Specular.Value.G.ToString() + ", " + Specular.Value.B.ToString() + " ),");
 		}
 	}
 
