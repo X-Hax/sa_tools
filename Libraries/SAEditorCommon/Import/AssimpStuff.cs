@@ -227,7 +227,7 @@ namespace SAModel.SAEditorCommon.Import
 							if (meshInfo.Vertices[i].Color.HasValue)
 								mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
 							if (meshInfo.Vertices[i].UV != null)
-								mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
+								mesh.TextureCoordinateChannels[0].Add(new Vector3D((float)meshInfo.Vertices[i].UV.U, (float)meshInfo.Vertices[i].UV.V, 1.0f));
 							vertexWeights.Add(weights[vertind + i]);
 						}
 
@@ -484,7 +484,7 @@ namespace SAModel.SAEditorCommon.Import
 						if (meshInfo.Vertices[i].Color.HasValue)
 							mesh.VertexColorChannels[0].Add(meshInfo.Vertices[i].Color.Value.ToAssimp());
 						if (meshInfo.Vertices[i].UV != null)
-							mesh.TextureCoordinateChannels[0].Add(new Vector3D(meshInfo.Vertices[i].UV.U, meshInfo.Vertices[i].UV.V, 1.0f));
+							mesh.TextureCoordinateChannels[0].Add(new Vector3D((float)meshInfo.Vertices[i].UV.U, (float)meshInfo.Vertices[i].UV.V, 1.0f));
 					}
 
 					mesh.PrimitiveType = PrimitiveType.Triangle;

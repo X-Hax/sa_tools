@@ -101,7 +101,7 @@ namespace SAModel.Direct3D
 		{
 			Position = data.Position.ToVector3();
 			if (data.UV != null)
-				UV = new Vector2(data.UV.U, data.UV.V);
+				UV = new Vector2((float)data.UV.U, (float)data.UV.V);
 			else
 				UV = new Vector2();
 		}
@@ -195,7 +195,7 @@ namespace SAModel.Direct3D
 			Position = data.Position.ToVector3();
 			Normal = data.Normal.ToVector3();
 			if (data.UV != null)
-				UV = new Vector2(data.UV.U, data.UV.V);
+				UV = new Vector2((float)data.UV.U, (float)data.UV.V);
 			else
 				UV = new Vector2();
 		}
@@ -307,7 +307,7 @@ namespace SAModel.Direct3D
 			Normal = data.Normal.ToVector3();
 			Color = (data.Color ?? System.Drawing.Color.White).ToArgb();
 			if (data.UV != null)
-				UV = new Vector2(data.UV.U, data.UV.V);
+				UV = new Vector2((float)data.UV.U, (float)data.UV.V);
 			else
 				UV = new Vector2();
 		}
