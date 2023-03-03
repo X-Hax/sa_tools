@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -142,6 +143,11 @@ namespace SAModel.SAEditorCommon
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 			{
 				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
+		
+				if (!StructConverter.StructConverter.DataTypeList.ContainsKey(item.Value.Type))
+				{
+					continue;
+				}
 
 				bool modified = exportStatus.Value;
 
