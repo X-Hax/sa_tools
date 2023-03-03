@@ -1445,7 +1445,7 @@ namespace SAModel
 						writer.Write("\t" + Indexes[i].ToString() + ",");
 
 						if (UVs != null)
-							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0f : 255.0f))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0f : 255.0f))).ToString() + " ),");
+							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
 						
 						if (VColors != null)
 							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
