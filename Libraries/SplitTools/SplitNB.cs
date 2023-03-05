@@ -347,8 +347,8 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 						{
 							for (int uv = 0; uv < mesh.UV.Length; uv++)
 							{
-								result.AddRange(BitConverter.GetBytes((short)(mesh.UV[uv].U * 255f)));
-								result.AddRange(BitConverter.GetBytes((short)(mesh.UV[uv].V * 255f)));
+								result.AddRange(BitConverter.GetBytes((short)(mesh.UV[uv].U * 255.0)));
+								result.AddRange(BitConverter.GetBytes((short)(mesh.UV[uv].V * 255.0)));
 								uvcount++;
 							}
 						}

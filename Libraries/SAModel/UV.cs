@@ -9,8 +9,8 @@ namespace SAModel
 	[Serializable]
 	public class UV : IEquatable<UV>, ICloneable
 	{
-		public float U { get; set; }
-		public float V { get; set; }
+		public double U { get; set; }
+		public double V { get; set; }
 
 		public static int Size
 		{
@@ -35,13 +35,13 @@ namespace SAModel
 			} //"Reverse" is for the order used in SADX Gamecube
 			else if (ByteConverter.Reverse || !ByteConverter.BigEndian || chunk)
 			{
-				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
-				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
+				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023.0 : 255.0);
+				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023.0 : 255.0);
 			}
 			else
 			{
-				V = ByteConverter.ToInt16(file, address) / (UVH ? 1023f : 255f);
-				U = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023f : 255f);
+				V = ByteConverter.ToInt16(file, address) / (UVH ? 1023.0 : 255.0);
+				U = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023.0 : 255.0);
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace SAModel
 			V = short.Parse(uv[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
 		}
 
-		public UV(float u, float v)
+		public UV(double u, double v)
 		{
 			U = u;
 			V = v;
@@ -66,8 +66,8 @@ namespace SAModel
 		public byte[] GetBytes(bool UVH)
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1023f : 255f))));
-			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1023f : 255f))));
+			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1023.0 : 255.0))));
+			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1023.0 : 255.0))));
 			return result.ToArray();
 		}
 
@@ -88,12 +88,12 @@ namespace SAModel
 		{
 			if (U == 0 && V == 0)
 				return "{ 0 }";
-			return "{ " + (short)(U * 255f) + ", " + (short)(V * 255f) + " }";
+			return "{ " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " }";
 		}
 
 		public string ToNJA()
 		{
-			return "UV ( " + (short)(U * 255f) + ", " + (short)(V * 255f) + " )";
+			return "UV ( " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " )";
 		}
 
 		public override bool Equals(object obj)

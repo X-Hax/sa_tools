@@ -251,6 +251,51 @@ namespace SAModel
 			writer.WriteLine(";");
 		}
 
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
+		{
+			if (Poly != null && !labels.Contains(PolyName))
+			{
+				writer.WriteLine("PLIST      " + PolyName + "[]");
+				writer.WriteLine("START");
+
+				foreach (PolyChunk item in Poly)
+				{
+					item.ToNJA(writer);
+				}
+
+				writer.WriteLine("\tCnkEnd()");
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			if (Vertex != null && !labels.Contains(VertexName))
+			{
+				writer.WriteLine("VLIST      " + VertexName + "[]");
+				writer.WriteLine("START");
+
+				foreach (VertexChunk item in Vertex)
+				{
+					item.ToNJA(writer);
+				}
+
+				writer.WriteLine("\tCnkEnd()");
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			writer.WriteLine("CNKMODEL   " + Name + "[]");
+			writer.WriteLine("START");
+			if (Vertex != null && !labels.Contains(VertexName))
+				writer.WriteLine("VList      " + VertexName + ",");
+			else
+				writer.WriteLine("VList      NULL,");
+			if (Poly != null && !labels.Contains(PolyName))
+				writer.WriteLine("PList      " + PolyName + ",");
+			else
+				writer.WriteLine("PList      NULL,");
+			writer.WriteLine("Center    " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
+			writer.WriteLine("Radius    " + Bounds.Radius.ToNJA() + ",");
+			writer.Write("END" + Environment.NewLine + Environment.NewLine);
+		}
+
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };
 		static VertexData[] VertexBuffer = new VertexData[32768];
 		static readonly CachedPoly[] PolyCache = new CachedPoly[255];

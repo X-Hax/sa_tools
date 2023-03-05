@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Security.Policy;
 
 namespace SAModel
 {
@@ -85,6 +87,8 @@ namespace SAModel
 
 		public abstract byte[] GetBytes();
 
+		public abstract void ToNJA(TextWriter writer);
+
 		object ICloneable.Clone() => Clone();
 
 		public virtual PolyChunk Clone() => (PolyChunk)MemberwiseClone();
@@ -145,6 +149,11 @@ namespace SAModel
 		{
 			Header = ByteConverter.ToUInt16(file, address);
 		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine("\tCnkNull(),");
+		}
 	}
 
 	[Serializable]
@@ -158,6 +167,11 @@ namespace SAModel
 		public PolyChunkEnd(byte[] file, int address)
 		{
 			Header = ByteConverter.ToUInt16(file, address);
+		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine("\tCnkEnd()");
 		}
 	}
 
@@ -185,6 +199,69 @@ namespace SAModel
 		{
 			Header = ByteConverter.ToUInt16(file, address);
 		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			string blendSrcStr = "FBS_SA";
+			switch (SourceAlpha)
+			{
+				case AlphaInstruction.Zero:
+					blendSrcStr = "FBS_ZER";
+					break;
+				case AlphaInstruction.One:
+					blendSrcStr = "FBS_ONE";
+					break;
+				case AlphaInstruction.OtherColor:
+					blendSrcStr = "FBS_OC";
+					break;
+				case AlphaInstruction.InverseOtherColor:
+					blendSrcStr = "FBS_IOC";
+					break;
+				case AlphaInstruction.SourceAlpha:
+					blendSrcStr = "FBS_SA";
+					break;
+				case AlphaInstruction.InverseSourceAlpha:
+					blendSrcStr = "FBS_ISA";
+					break;
+				case AlphaInstruction.DestinationAlpha:
+					blendSrcStr = "FBS_DA";
+					break;
+				case AlphaInstruction.InverseDestinationAlpha:
+					blendSrcStr = "FBS_IDA";
+					break;
+			}
+
+			string blendDstStr = "FBD_ISA";
+			switch (DestinationAlpha)
+			{
+				case AlphaInstruction.Zero:
+					blendDstStr = "FBD_ZER";
+					break;
+				case AlphaInstruction.One:
+					blendDstStr = "FBD_ONE";
+					break;
+				case AlphaInstruction.OtherColor:
+					blendDstStr = "FBD_OC";
+					break;
+				case AlphaInstruction.InverseOtherColor:
+					blendDstStr = "FBD_IOC";
+					break;
+				case AlphaInstruction.SourceAlpha:
+					blendDstStr = "FBD_SA";
+					break;
+				case AlphaInstruction.InverseSourceAlpha:
+					blendDstStr = "FBD_ISA";
+					break;
+				case AlphaInstruction.DestinationAlpha:
+					blendDstStr = "FBD_DA";
+					break;
+				case AlphaInstruction.InverseDestinationAlpha:
+					blendDstStr = "FBD_IDA";
+					break;
+			}
+
+			writer.WriteLine("\tCnkB_BA( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ),");
+		}
 	}
 
 	[Serializable]
@@ -208,6 +285,62 @@ namespace SAModel
 		{
 			Header = ByteConverter.ToUInt16(file, address);
 		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			string bits = string.Empty;
+			switch (Flags & 0xF)
+			{
+				case 0:
+					return;
+				case 1:
+					bits = "FDA_025";
+					break;
+				case 2:
+					bits = "FDA_050";
+					break;
+				case 3:
+					bits = "FDA_075";
+					break;
+				case 4:
+					bits = "FDA_100";
+					break;
+				case 5:
+					bits = "FDA_125";
+					break;
+				case 6:
+					bits = "FDA_150";
+					break;
+				case 7:
+					bits = "FDA_175";
+					break;
+				case 8:
+					bits = "FDA_200";
+					break;
+				case 9:
+					bits = "FDA_225";
+					break;
+				case 10:
+					bits = "FDA_250";
+					break;
+				case 11:
+					bits = "FDA_275";
+					break;
+				case 12:
+					bits = "FDA_300";
+					break;
+				case 13:
+					bits = "FDA_325";
+					break;
+				case 14:
+					bits = "FDA_350";
+					break;
+				case 15:
+					bits = "FDA_375";
+					break;
+			}
+			writer.WriteLine("\tCnkB_DA( " + bits + " ),");
+		}
 	}
 
 	[Serializable]
@@ -227,6 +360,11 @@ namespace SAModel
 		public PolyChunkBitsSpecularExponent(byte[] file, int address)
 		{
 			Header = ByteConverter.ToUInt16(file, address);
+		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
 		}
 	}
 
@@ -248,6 +386,11 @@ namespace SAModel
 		{
 			Header = ByteConverter.ToUInt16(file, address);
 		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine("\tCnkB_CP( " + List + " ),");
+		}
 	}
 
 	[Serializable]
@@ -267,6 +410,11 @@ namespace SAModel
 		public PolyChunkBitsDrawPolygonList(byte[] file, int address)
 		{
 			Header = ByteConverter.ToUInt16(file, address);
+		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			writer.WriteLine("\tCnkB_DP( " + List + " ),");
 		}
 	}
 
@@ -365,6 +513,96 @@ namespace SAModel
 			result.AddRange(ByteConverter.GetBytes(Header));
 			result.AddRange(ByteConverter.GetBytes(Data));
 			return result.ToArray();
+		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			string headbits = string.Empty;
+			if (FlipU)
+				headbits += "FFL_U|";
+			if (FlipV)
+				headbits += "FFL_V|";
+			if (ClampU)
+				headbits += "FCL_U|";
+			if (ClampV)
+				headbits += "FCL_V|";
+
+			switch(Flags & 0xF)
+			{
+				case 0:
+				default:
+					if (headbits != string.Empty)
+						headbits = headbits.Remove(headbits.Length - 1);
+					break;
+				case 1:
+					headbits += "FDA_025";
+					break;
+				case 2:
+					headbits += "FDA_050";
+					break;
+				case 3:
+					headbits += "FDA_075";
+					break;
+				case 4:
+					headbits += "FDA_100";
+					break;
+				case 5:
+					headbits += "FDA_125";
+					break;
+				case 6:
+					headbits += "FDA_150";
+					break;
+				case 7:
+					headbits += "FDA_175";
+					break;
+				case 8:
+					headbits += "FDA_200";
+					break;
+				case 9:
+					headbits += "FDA_225";
+					break;
+				case 10:
+					headbits += "FDA_250";
+					break;
+				case 11:
+					headbits += "FDA_275";
+					break;
+				case 12:
+					headbits += "FDA_300";
+					break;
+				case 13:
+					headbits += "FDA_325";
+					break;
+				case 14:
+					headbits += "FDA_350";
+					break;
+				case 15:
+					headbits += "FDA_375";
+					break;
+			}
+
+			if (headbits == string.Empty)
+				headbits = "0x0";
+
+			writer.Write("\tCnkT_TID( " + headbits + " ), _TID( ");
+
+			switch (FilterMode)
+			{
+			case FilterMode.PointSampled:
+				writer.Write("FFM_PS");
+				break;
+			case FilterMode.Bilinear:
+				writer.Write("FFM_BF");
+				break;
+			case FilterMode.Trilinear:
+				writer.Write("FFM_TF");
+				break;
+			}
+
+			if (SuperSample)
+				writer.Write("|FSS");
+
+			writer.WriteLine(", " + TextureID.ToString() + " ),");
 		}
 	}
 
@@ -526,6 +764,98 @@ namespace SAModel
 			}
 			return result.ToArray();
 		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			string letters = string.Empty;
+			int size = 0;
+
+			if (Diffuse.HasValue)
+			{
+				letters += 'D';
+				size += 2;
+			}
+			if (Ambient.HasValue)
+			{
+				letters += 'A';
+				size += 2;
+			}
+			if (Specular.HasValue)
+			{
+				letters += 'S';
+				size += 2;
+			}
+			if (Second)
+			{
+				letters += '2';
+			}
+
+			string blendSrcStr = "FBS_SA";
+			switch (SourceAlpha)
+			{
+				case AlphaInstruction.Zero:
+					blendSrcStr = "FBS_ZER";
+					break;
+				case AlphaInstruction.One:
+					blendSrcStr = "FBS_ONE";
+					break;
+				case AlphaInstruction.OtherColor:
+					blendSrcStr = "FBS_OC";
+					break;
+				case AlphaInstruction.InverseOtherColor:
+					blendSrcStr = "FBS_IOC";
+					break;
+				case AlphaInstruction.SourceAlpha:
+					blendSrcStr = "FBS_SA";
+					break;
+				case AlphaInstruction.InverseSourceAlpha:
+					blendSrcStr = "FBS_ISA";
+					break;
+				case AlphaInstruction.DestinationAlpha:
+					blendSrcStr = "FBS_DA";
+					break;
+				case AlphaInstruction.InverseDestinationAlpha:
+					blendSrcStr = "FBS_IDA";
+					break;
+			}
+
+			string blendDstStr = "FBD_ISA";
+			switch (DestinationAlpha)
+			{
+				case AlphaInstruction.Zero:
+					blendDstStr = "FBD_ZER";
+					break;
+				case AlphaInstruction.One:
+					blendDstStr = "FBD_ONE";
+					break;
+				case AlphaInstruction.OtherColor:
+					blendDstStr = "FBD_OC";
+					break;
+				case AlphaInstruction.InverseOtherColor:
+					blendDstStr = "FBD_IOC";
+					break;
+				case AlphaInstruction.SourceAlpha:
+					blendDstStr = "FBD_SA";
+					break;
+				case AlphaInstruction.InverseSourceAlpha:
+					blendDstStr = "FBD_ISA";
+					break;
+				case AlphaInstruction.DestinationAlpha:
+					blendDstStr = "FBD_DA";
+					break;
+				case AlphaInstruction.InverseDestinationAlpha:
+					blendDstStr = "FBD_IDA";
+					break;
+			}
+
+			writer.WriteLine("\tCnkM_" + letters + "( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ), " + size.ToString() +",");
+			if (Diffuse.HasValue)
+				writer.WriteLine("\tMDiff( " + Diffuse.Value.A.ToString() + ", " + Diffuse.Value.R.ToString() + ", " + Diffuse.Value.G.ToString() + ", " + Diffuse.Value.B.ToString() + " ),");
+			if (Ambient.HasValue)
+				writer.WriteLine("\tMAmbi( " + Ambient.Value.A.ToString() + ", " + Ambient.Value.R.ToString() + ", " + Ambient.Value.G.ToString() + ", " + Ambient.Value.B.ToString() + " ),");
+			if (Specular.HasValue)
+				writer.WriteLine("\tMSpec( " + SpecularExponent.ToString() + ", " + Specular.Value.R.ToString() + ", " + Specular.Value.G.ToString() + ", " + Specular.Value.B.ToString() + " ),");
+		}
 	}
 
 	[Serializable]
@@ -574,6 +904,11 @@ namespace SAModel
 			result.AddRange(ByteConverter.GetBytes(UY));
 			result.AddRange(ByteConverter.GetBytes(UZ));
 			return result.ToArray();
+		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
 		}
 	}
 
@@ -941,6 +1276,11 @@ namespace SAModel
 				result.Polys.Add(item.Clone());
 			return result;
 		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+		}
 	}
 
 	[Serializable]
@@ -1088,6 +1428,58 @@ namespace SAModel
 					}
 				}
 				return result.ToArray();
+			}
+
+			public void ToNJA(TextWriter writer, bool UVH)
+			{
+				if (Reversed)
+					writer.Write("\tStripR(" + Indexes.Length + "),");
+				else
+					writer.Write("\tStripL(" + Indexes.Length + "),");
+
+				if (UVs != null || VColors != null || UserFlags1 != null)
+				{
+					writer.Write(Environment.NewLine);
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write("\t" + Indexes[i].ToString() + ",");
+
+						if (UVs != null)
+							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
+						
+						if (VColors != null)
+							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+						
+						if (UserFlags1 != null && i > 1)
+						{
+							if (UserFlags3 != null)
+							{
+								writer.Write(" \tUf3( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + ", " + UserFlags3[i].ToString() + "),");
+							}
+							else if (UserFlags2 != null)
+							{
+								writer.Write(" \tUf2( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + "),");
+							}
+							else
+							{
+								writer.Write(" \tUf1( " + UserFlags1[i].ToString() + "),");
+							}
+						}
+
+						writer.Write(Environment.NewLine);
+					}
+				}
+				else
+				{
+					writer.Write("  ");
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write(Indexes[i].ToString() + ", ");
+						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+							writer.Write(Environment.NewLine + "                   ");
+					}
+					writer.Write(Environment.NewLine);
+				}
 			}
 
 			public int Size
@@ -1246,6 +1638,95 @@ namespace SAModel
 			foreach (Strip item in Strips)
 				result.Strips.Add(item.Clone());
 			return result;
+		}
+
+		public override void ToNJA(TextWriter writer)
+		{
+			string flags = string.Empty;
+
+			if (IgnoreLight)
+				flags += "FST_IL|";
+			if (IgnoreSpecular)
+				flags += "FST_IS|";
+			if (IgnoreAmbient)
+				flags += "FST_IA|";
+			if (UseAlpha)
+				flags += "FST_UA|";
+			if (DoubleSide)
+				flags += "FST_DB|";
+			if (FlatShading)
+				flags += "FST_FL|";
+			if (EnvironmentMapping)
+				flags += "FST_ENV|";
+			if (flags == string.Empty)
+				flags = "0x0";
+			else
+				flags = flags.Remove(flags.Length - 1);
+
+			string chunkname = string.Empty;
+			bool UVH = false;
+
+			switch (Type)
+			{
+				case ChunkType.Strip_Strip:
+					chunkname = "CnkS";
+					break;
+				case ChunkType.Strip_StripUVN:
+					chunkname = "CnkS_UVN";
+					break;
+				case ChunkType.Strip_StripUVH:
+					chunkname = "CnkS_UVH";
+					UVH = true;
+					break;
+				case ChunkType.Strip_StripNormal:
+					chunkname = "CnkS_VN";
+					break;
+				case ChunkType.Strip_StripUVNNormal:
+					chunkname = "CnkS_UVN_VN";
+					break;
+				case ChunkType.Strip_StripUVHNormal:
+					chunkname = "CnkS_UVH_VN";
+					UVH = true;
+					break;
+				case ChunkType.Strip_StripColor:
+					chunkname = "CnkS_D8";
+					break;
+				case ChunkType.Strip_StripUVNColor:
+					chunkname = "CnkS_UVN_D8";
+					break;
+				case ChunkType.Strip_StripUVHColor:
+					chunkname = "CnkS_UVH_D8";
+					UVH = true;
+					break;
+				case ChunkType.Strip_Strip2:
+					chunkname = "CnkS_2";
+					break;
+				case ChunkType.Strip_StripUVN2:
+					chunkname = "CnkS_UVN2";
+					break;
+				case ChunkType.Strip_StripUVH2:
+					chunkname = "CnkS_UVH2";
+					UVH = true;
+					break;
+			}
+
+			StripCount = (ushort)Strips.Count;
+			Size = 1;
+			foreach (Strip str in Strips)
+				Size += (ushort)(str.Size / 2);
+
+			int alignmentPadding = (Size % 2);
+			Size += (ushort)alignmentPadding;
+
+			writer.WriteLine("\t" + chunkname + "( " + flags + " ), " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + StripCount + " ),");
+
+			foreach(Strip item in Strips)
+			{
+				item.ToNJA(writer, UVH);
+			}
+
+			if (alignmentPadding > 0)
+				writer.WriteLine("\tCnkNull(),");
 		}
 
 		public void UpdateFlags(NJS_MATERIAL mat)
