@@ -17,6 +17,7 @@ namespace SAModel.GC
 		/// <param name="attrib"></param>
 		void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType);
 		public abstract byte[] GetBytes();
+		void ToNJA(TextWriter writer, string vtype);
 	}
 
 	[Serializable]
@@ -66,6 +67,10 @@ namespace SAModel.GC
 			result.Append(z);
 			result.Append(" }");
 			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, string vtype)
+		{
+			writer.WriteLine($"\t{vtype}( " + x.ToCHex().ToString().ToLowerInvariant() + ", " + y.ToCHex().ToString().ToLowerInvariant() + ", " + z.ToCHex().ToString().ToLowerInvariant() + " ),");
 		}
 	}
 
@@ -138,6 +143,10 @@ namespace SAModel.GC
 			result.Append(y);
 			result.Append(" }");
 			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, string vtype)
+		{
+			writer.WriteLine($"\t{vtype}( " + x.ToString() + ", " + y.ToString() + " ),");
 		}
 	}
 
@@ -400,6 +409,10 @@ namespace SAModel.GC
 					result.Append(alpha);
 					result.Append(" }");
 			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, string vtype)
+		{
+			writer.WriteLine($"\t{vtype}( " + red.ToString() + ", " + green.ToString() + ", " + blue.ToString() + ", " + alpha.ToString() + " ),");
 		}
 	}
 }

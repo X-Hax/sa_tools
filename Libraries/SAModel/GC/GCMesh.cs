@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
+using System.Diagnostics.Eventing.Reader;
 
 namespace SAModel.GC
 {
@@ -93,7 +95,7 @@ namespace SAModel.GC
 			int parameters_count = ByteConverter.ToInt32(file, address + 4);
 
 			int primitives_offset = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
-			int primitives_size = ByteConverter.ToInt32(file, address + 12);
+			uint primitives_size = ByteConverter.ToUInt32(file, address + 12);
 
 			// reading the parameters
 			parameters = new List<GCParameter>();
@@ -125,7 +127,7 @@ namespace SAModel.GC
 					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
 			}
 
-			int end_pos = primitives_offset + primitives_size;
+			int end_pos = primitives_offset + (int)primitives_size;
 
 			while (primitives_offset < end_pos)
 			{
@@ -133,7 +135,7 @@ namespace SAModel.GC
 				if (file[primitives_offset] == 0) break;
 				primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
 			}
-			primitiveSize = (uint)primitives_size;
+			primitiveSize = primitives_size;
 		}
 
 		/// <summary>
@@ -145,49 +147,6 @@ namespace SAModel.GC
 		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress, GCIndexAttributeFlags indexFlags)
 		{
 			List<byte> result = new List<byte>();
-			//List<GCIndexAttributeFlags> attributes = new List<GCIndexAttributeFlags>();
-			//int[] primSizeSingle = new int[primitives.Count];
-			//int[] primLoopSize = new int[primitives.Count];
-			////foreach (GCMesh m in meshes)
-			//foreach (GCPrimitive prim in primitives)
-			//{
-			//	//indexFlags = new GCIndexAttributeFlags();
-			//	// getting the index attribute parameter
-			//	GCIndexAttributeFlags? flags = IndexFlags;
-			//	GCIndexAttributeFlags? flags2 = _indexFlags2;
-			//	if (flags.HasValue)
-			//	{
-			//		indexFlags = flags.Value;
-			//		_indexFlags2 = indexFlags;
-			//		attributes.Add(indexFlags);
-			//	}
-			//	else if (!flags.HasValue)
-			//		indexFlags = _indexFlags2.Value;
-			//	if (indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.Color16BitIndex)
-			//	|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
-			//	|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Color16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
-			//	|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.Color16BitIndex | GCIndexAttributeFlags.UV16BitIndex))
-			//		primLoopSize = new int[(prim.loops.Count * 6) + 3];
-			//	else if (indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Color16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.Normal16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.Color16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex | GCIndexAttributeFlags.UV16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex | GCIndexAttributeFlags.UV16BitIndex))
-			//		primLoopSize = new int[(prim.loops.Count * 5) + 3];
-			//	else if (indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex)
-			//		|| indexFlags.HasFlag(GCIndexAttributeFlags.UV16BitIndex))
-			//		primLoopSize = new int[(prim.loops.Count * 4) + 3];
-			//	else
-			//		primLoopSize = new int[(prim.loops.Count * 3) + 3];
-			//	//primSizeSingle[i] = primLoopSize;
-			//	decimal primSizeRaw = primLoopSize.Sum();
-			//	uint dataSize = Convert.ToUInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
-			//	//primitiveSize = (uint)dataSize * 32;
-			//	primitiveSize = (uint)primSizeRaw;
-			//}
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
 			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
 			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
@@ -197,14 +156,6 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
-			//int[] primSizeSingle = new int[primitives.Count];
-			//for (int i = 0; i < primitives.Count; i++)
-			//{
-			//	primSizeSingle[i] = (primitives[i].loops.Count + 1) * 3;
-			//	decimal primSizeRaw = primSizeSingle.Sum();
-			//	uint interval = Convert.ToUInt32(Math.Ceiling(decimal.Divide(primSizeRaw, 32)));
-			//	primitiveSize = interval * 32;
-			//}
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
 			result.Append(", ");
@@ -217,16 +168,61 @@ namespace SAModel.GC
 			return result.ToString();
 		}
 
-		/// <summary>
-		/// Creates meshinfo to render
-		/// </summary>
-		/// <param name="material">A material with the current material properties</param>
-		/// <param name="positions">The position data</param>
-		/// <param name="normals">The normal data</param>
-		/// <param name="colors">The color data</param>
-		/// <param name="uvs">The uv data</param>
-		/// <returns>A mesh info for the mesh</returns>
-		public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs)
+		//WIP
+		public void ToNJA(TextWriter writer)
+		{
+			if (parameters != null && parameters.Count != 0)
+			{
+				writer.WriteLine("PARAMETER   " + ParameterName + "[]");
+				writer.WriteLine("START");
+				foreach (GCParameter item in parameters)
+					item.ToNJA(writer);
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			if (primitives != null)
+			{
+				writer.WriteLine("PRIMITIVE   " + PrimitiveName + "[]");
+				writer.WriteLine("START");
+				foreach (GCPrimitive item in primitives)
+					item.ToNJA(writer);
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+		}
+		public void RefToNJA(TextWriter writer)
+		{
+			if (parameters != null && parameters.Count != 0)
+			{
+				writer.WriteLine("Parameter   " + ParameterName + ",");
+				writer.WriteLine("ParamNum    " + parameters.Count + ",");
+			}
+			else
+			{
+				writer.WriteLine("Parameter   NULL" + ParameterName + ",");
+				writer.WriteLine("ParamNum    " + parameters.Count + ",");
+			}
+			if (primitives != null)
+			{
+				writer.WriteLine("Primitive   " + PrimitiveName + ",");
+				writer.WriteLine("PrimNum     " + primitiveSize + ",");
+			}
+			else
+			{
+				writer.WriteLine("Primitive   NULL" + PrimitiveName + ",");
+				writer.WriteLine("PrimNum     " + primitiveSize + ",");
+			}
+		}
+
+/// <summary>
+/// Creates meshinfo to render
+/// </summary>
+/// <param name="material">A material with the current material properties</param>
+/// <param name="positions">The position data</param>
+/// <param name="normals">The normal data</param>
+/// <param name="colors">The color data</param>
+/// <param name="uvs">The uv data</param>
+/// <returns>A mesh info for the mesh</returns>
+public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs)
 		{
 			// setting the material properties according to the parameters
 			foreach (GCParameter param in parameters)
@@ -280,7 +276,6 @@ namespace SAModel.GC
 					else indices[j] = t;
 					j++;
 				}
-
 
 				// creating the polygons
 				if (prim.primitiveType == GCPrimitiveType.Triangles)

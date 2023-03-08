@@ -281,6 +281,34 @@ namespace SAModel.GC
 				result.Append(" }");
 				return result.ToString();
 			}
+			public void ToNJA(TextWriter writer)
+			{
+				string primtype = null;
+				switch (primitiveType)
+				{
+					case GCPrimitiveType.Triangles:
+						primtype = "TRIANGLE";
+						break;
+					case GCPrimitiveType.TriangleStrip:
+						primtype = "TRISTRIP";
+						break;
+					case GCPrimitiveType.TriangleFan:
+						primtype = "TRIFAN";
+						break;
+					case GCPrimitiveType.Lines:
+						primtype = "LINE";
+						break;
+					case GCPrimitiveType.LineStrip:
+						primtype = "LINESTRIP";
+						break;
+					case GCPrimitiveType.Points:
+						primtype = "POINTS";
+						break;
+				}
+				writer.WriteLine($"\t{primtype}" + "(" + loops.Count + "),");
+				for (int i = 0; i < loops.Count; i++)
+					writer.WriteLine("\t" + loops[i] + ",");
+			}
 
 		/// <summary>
 		/// Convert the primitive into a triangle list

@@ -4246,19 +4246,6 @@ namespace SAModel.SAMDL
 						break;
 					}
 			}
-<<<<<<< HEAD
-			ModelDataEditor me = new ModelDataEditor(model, idx);
-			if (me.ShowDialog(this) == DialogResult.OK)
-			{
-				model = me.editedHierarchy.Clone();
-				model.FixParents();
-				model.FixSiblings();
-				RebuildModelCache();
-				NeedRedraw = true;
-				unsavedChanges = true;
-				selectedObject = model.GetObjects()[idx];
-				SelectedItemChanged();
-=======
 			switch (selectedObject.Attach)
 			{
 				case BasicAttach:
@@ -4268,9 +4255,13 @@ namespace SAModel.SAMDL
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();
+							model.FixParents();
+							model.FixSiblings();
 							RebuildModelCache();
 							NeedRedraw = true;
 							unsavedChanges = true;
+							selectedObject = model.GetObjects()[idx];
+							SelectedItemChanged();
 						}
 					}
 					break;
@@ -4286,7 +4277,6 @@ namespace SAModel.SAMDL
 						}
 					}
 					break;
->>>>>>> GC Models: Fixed bugs related to vertex/opaque mesh/transparent mesh label generation; WIP additions for struct compatibility.
 			}
 		}
 

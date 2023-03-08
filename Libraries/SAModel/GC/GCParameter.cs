@@ -119,6 +119,37 @@ namespace SAModel.GC
 			result.Append(" }");
 			return result.ToString();
 		}
+
+		public void ToNJA(TextWriter writer)
+		{
+			switch (type)
+			{
+				case ParameterType.VtxAttrFmt:
+					writer.WriteLine("\tVertAttribute " + data.ToCHex() + ",");
+					break;
+				case ParameterType.IndexAttributeFlags:
+					writer.WriteLine("\tIndexFlags    " + data.ToCHex() + ",");
+					break;
+				case ParameterType.Lighting:
+					writer.WriteLine("\tLighting      " + data.ToCHex() + ",");
+					break;
+				case ParameterType.BlendAlpha:
+					writer.WriteLine("\tBlendAlpha    " + data.ToCHex() + ",");
+					break;
+				case ParameterType.AmbientColor:
+					writer.WriteLine("\tAmbientColor  " + data.ToCHex() + ",");
+					break;
+				case ParameterType.Texture:
+					writer.WriteLine("\tTexture       " + data.ToCHex() + ",");
+					break;
+				case ParameterType.Unknown_9:
+					writer.WriteLine("\tUnk           " + data.ToCHex() + ",");
+					break;
+				case ParameterType.TexCoordGen:
+					writer.WriteLine("\tTexCoordGen   " + data.ToCHex() + ",");
+					break;
+			}
+		}
 	}
 
 	/// <summary>

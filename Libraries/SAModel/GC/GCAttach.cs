@@ -554,6 +554,60 @@ namespace SAModel.GC
 			writer.WriteLine(";");
 		}
 
+		//WIP
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
+		{
+			if (!labels.Contains(VertexName))
+			{
+				writer.WriteLine("VLIST      " + VertexName + "[]");
+				writer.WriteLine("START" + Environment.NewLine);
+				foreach (GCVertexSet item in vertexData)
+					item.ToNJA(writer);
+				foreach (GCVertexSet item in vertexData)
+					item.RefToNJA(writer);
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
+			{
+				writer.WriteLine("OPLIST      " + OpaqueMeshName + "[]");
+				writer.WriteLine("START" + Environment.NewLine);
+				foreach (GCMesh item in opaqueMeshes)
+					item.ToNJA(writer);
+				foreach (GCMesh item in opaqueMeshes)
+					item.RefToNJA(writer);
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			if (translucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
+			{
+				writer.WriteLine("APLIST      " + TranslucentMeshName + "[]");
+				writer.WriteLine("START" + Environment.NewLine);
+				foreach (GCMesh item in translucentMeshes)
+					item.ToNJA(writer);
+				foreach (GCMesh item in translucentMeshes)
+					item.RefToNJA(writer);
+				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			writer.WriteLine("GINJAMODEL  " + Name + "[]");
+			writer.WriteLine("START");
+			writer.WriteLine("VList       " + VertexName + ",");
+			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
+				writer.WriteLine("OPList      " + OpaqueMeshName + ",");
+			else
+				writer.WriteLine("OPList      NULL,");
+			if (translucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
+				writer.WriteLine("APList      " + TranslucentMeshName + ",");
+			else
+				writer.WriteLine("APList      NULL,");
+			writer.WriteLine("OPNum       " + opaqueMeshes.Count + ",");
+			writer.WriteLine("APNum       " + translucentMeshes.Count + ",");
+			writer.WriteLine("Center     " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
+			writer.WriteLine("Radius     " + Bounds.Radius.ToNJA() + ",");
+			writer.Write("END" + Environment.NewLine + Environment.NewLine);
+		}
+
 		#region Unused
 
 		/// <summary>

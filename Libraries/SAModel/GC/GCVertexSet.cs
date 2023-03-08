@@ -281,6 +281,64 @@ namespace SAModel.GC
 			return result.ToString();
 		}
 
+		//WIP
+		public void ToNJA(TextWriter writer)
+		{
+			string verttype = null;
+			string verttype2 = null;
+			switch (attribute)
+			{
+				case GCVertexAttribute.Position:
+					verttype = "POINT";
+					verttype2 = "POSITION   ";
+					break;
+				case GCVertexAttribute.Normal:
+					verttype = "NORMAL";
+					verttype2 = "NORMAL     ";
+					break;
+				case GCVertexAttribute.Color0:
+					verttype = "COLOR";
+					verttype2 = "COLOR0     ";
+					break;
+				case GCVertexAttribute.Tex0:
+					verttype = "UV";
+					verttype2 = "TEX0       ";
+					break;
+			}
+			writer.WriteLine($"{verttype2}" + DataName + "[]");
+			writer.WriteLine("START");
+			foreach (IOVtx vtx in data)
+			{
+				vtx.ToNJA(writer, verttype);
+			}
+			writer.WriteLine("END");
+		}
+		public void RefToNJA(TextWriter writer)
+		{
+			string verttype = null;
+			switch (attribute)
+			{
+				case GCVertexAttribute.Position:
+					verttype = "POSITION";
+					break;
+				case GCVertexAttribute.Normal:
+					verttype = "NORMAL";
+					break;
+				case GCVertexAttribute.Color0:
+					verttype = "COLOR0";
+					break;
+				case GCVertexAttribute.Tex0:
+					verttype = "TEX0";
+					break;
+			}
+			writer.WriteLine("\tVertAttr   " + $"{verttype}" + ",");
+			writer.WriteLine("\tSize       " + StructSize + ",");
+			writer.WriteLine("\tPoints     " + data.Count + ",");
+			writer.WriteLine("\tType       " + structType + ",");
+			writer.WriteLine("\tName       " + DataName + ",");
+			writer.WriteLine("\tCheckSize  " + (data.Count * StructSize) + ",");
+		}
+
 		public GCVertexSet Clone()
 		{
 			GCVertexSet result = (GCVertexSet)MemberwiseClone();
