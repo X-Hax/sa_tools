@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Windows.Forms;
 
 namespace SplitTools.SAArc
 {
@@ -95,6 +96,13 @@ namespace SplitTools.SAArc
 				List<byte> mtnfile = new List<byte>();
 				foreach (KeyValuePair<short, string> item in mtninfo.Indexes)
 				{
+					if (!animparts.ContainsKey(item.Value))
+					{
+						string msgError = "Error, The animation \"" + item.Value + "\" is missing. Please check your ini file and make sure the animation name matches.";
+						MessageBox.Show(msgError, "Missing Anim File");
+						return;
+					}
+
 					mtnfile.AddRange(ByteConverter.GetBytes(item.Key));
 					mtnfile.AddRange(ByteConverter.GetBytes(animparts[item.Value]));
 					mtnfile.AddRange(ByteConverter.GetBytes(animaddrs[item.Value]));
