@@ -60,17 +60,17 @@ namespace SAModel.GC
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(x);
+			result.Append(x.ToC());
 			result.Append(", ");
-			result.Append(y);
+			result.Append(y.ToC());
 			result.Append(", ");
-			result.Append(z);
+			result.Append(z.ToC());
 			result.Append(" }");
 			return result.ToString();
 		}
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + x.ToCHex().ToString().ToLowerInvariant() + ", " + y.ToCHex().ToString().ToLowerInvariant() + ", " + z.ToCHex().ToString().ToLowerInvariant() + " ),");
+			writer.WriteLine($"\t{vtype}( " + x.ToNJA() + ", " + y.ToNJA() + ", " + z.ToNJA() + " ),");
 		}
 	}
 
@@ -399,7 +399,7 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			StringBuilder result = new StringBuilder("{ ( ");
 					result.Append(red);
 					result.Append(", ");
 					result.Append(green);
@@ -407,7 +407,7 @@ namespace SAModel.GC
 					result.Append(blue);
 					result.Append(", ");
 					result.Append(alpha);
-					result.Append(" }");
+					result.Append(" ) }");
 			return result.ToString();
 		}
 		public void ToNJA(TextWriter writer, string vtype)

@@ -264,7 +264,7 @@ namespace SAModel.GC
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(attribute);
+			result.Append((byte)attribute);
 			result.Append(", ");
 			result.Append(StructSize);
 			result.Append(", ");
@@ -311,7 +311,7 @@ namespace SAModel.GC
 			{
 				vtx.ToNJA(writer, verttype);
 			}
-			writer.WriteLine("END");
+			writer.WriteLine("END" + Environment.NewLine);
 		}
 		public void RefToNJA(TextWriter writer)
 		{
@@ -331,12 +331,12 @@ namespace SAModel.GC
 					verttype = "TEX0";
 					break;
 			}
-			writer.WriteLine("\tVertAttr   " + $"{verttype}" + ",");
-			writer.WriteLine("\tSize       " + StructSize + ",");
-			writer.WriteLine("\tPoints     " + data.Count + ",");
-			writer.WriteLine("\tType       " + structType + ",");
-			writer.WriteLine("\tName       " + DataName + ",");
-			writer.WriteLine("\tCheckSize  " + (data.Count * StructSize) + ",");
+			writer.WriteLine("\tVertAttr     " + $"{verttype}" + ",");
+			writer.WriteLine("\tElementSize  " + StructSize + ",");
+			writer.WriteLine("\tPoints       " + data.Count + ",");
+			writer.WriteLine("\tType         " + "( " + structType + ", " + dataType + " ),");
+			writer.WriteLine("\tName         " + DataName + ",");
+			writer.WriteLine("\tCheckSize    " + (data.Count * StructSize) + "," + Environment.NewLine);
 		}
 
 		public GCVertexSet Clone()

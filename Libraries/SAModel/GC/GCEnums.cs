@@ -358,6 +358,28 @@ namespace SAModel.GC
 		Mask = (1 << 5) - 1
 	}
 
+	public enum GCUVScale
+	{
+		Default = 0,		// Normal Display
+		NoUV1 = 1,          // UV Map set to 0
+		NoUV2 = 2,			// Same as NoUV1	
+		NoUV3 = 3,          // Same as NoUV1	
+		NoUV4 = 4,          // Same as NoUV1	
+		NoUV5 = 5,          // Same as NoUV1	
+		NoUV6 = 6,          // Same as NoUV1	
+		NoUV7 = 7,          // Same as NoUV1	
+		Scale1 = 8,			// UV * 1.00
+		Scale2 = 9,         // UV * 0.50
+		Scale3 = 0xA,       // UV * 0.25
+		Scale4 = 0xB,       // UV * 0.125
+		Scale5 = 0xC,       // UV * 0.0625
+		Scale6 = 0xD,       // UV * 0.03125
+		Scale7 = 0xE,       // UV * 0.015625
+		Scale8 = 0xF,       // UV * 0.0078125
+		Scale9 = 0x10,		// Same as NoUV1
+
+	}
+
 	/// <summary>
 	/// Used to convert between NJ and GC enums
 	/// </summary>

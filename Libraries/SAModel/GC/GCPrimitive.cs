@@ -42,33 +42,33 @@ namespace SAModel.GC
 		}
 	}
 
+	/// <summary>
+	/// A collection of polygons
+	/// </summary>
+	[Serializable]
+	public class GCPrimitive
+	{
 		/// <summary>
-		/// A collection of polygons
+		/// The way in which triangles are being stored
 		/// </summary>
-		[Serializable]
-		public class GCPrimitive
+		public GCPrimitiveType primitiveType;
+
+		/// <summary>
+		/// The stored polygons
+		/// </summary>
+		public List<Loop> loops { get; set; }
+
+		/// <summary>
+		/// Create a new empty Primitive
+		/// </summary>
+		/// <param name="type">The type of primitive</param>
+		public GCPrimitive(GCPrimitiveType type)
 		{
-			/// <summary>
-			/// The way in which triangles are being stored
-			/// </summary>
-			public GCPrimitiveType primitiveType;
+			primitiveType = type;
+			loops = new List<Loop>();
+		}
 
 			/// <summary>
-			/// The stored polygons
-			/// </summary>
-			public List<Loop> loops { get; set; }
-
-			/// <summary>
-			/// Create a new empty Primitive
-			/// </summary>
-			/// <param name="type">The type of primitive</param>
-			public GCPrimitive(GCPrimitiveType type)
-			{
-				primitiveType = type;
-				loops = new List<Loop>();
-			}
-
-				/// <summary>
 		/// Read a primitive object from a file
 		/// </summary>
 		/// <param name="file">The files contents as a byte array</param>
@@ -173,11 +173,11 @@ namespace SAModel.GC
 			ByteConverter.BigEndian = wasBigEndian;
 		}
 
-			/// <summary>
-			/// Write the contents
-			/// </summary>
-			/// <param name="writer">The output stream</param>
-			/// <param name="indexFlags">How the indices of the loops are structured</param>
+		/// <summary>
+		/// Write the contents
+		/// </summary>
+		/// <param name="writer">The output stream</param>
+		/// <param name="indexFlags">How the indices of the loops are structured</param>
 
 		public byte[] GetBytes(GCIndexAttributeFlags indexFlags)
 		{
@@ -269,46 +269,53 @@ namespace SAModel.GC
 			return result.ToArray();
 		}
 
-			public virtual string ToStruct()
+		public string LoopStruct()
+		{
+			List<string> s = new List<string>(loops.Count);
+			for (int i = 0; i < loops.Count; i++)
+				s.Add(loops[i].ToString());
+			return string.Join(", ", s.ToArray());
+		}
+		public virtual string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append((byte)primitiveType);
+			result.Append(", ");
+			result.Append((ushort)loops.Count);
+			result.Append(", { ");
+			result.Append(LoopStruct());
+			result.Append(" }");
+			result.Append(" }");
+			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer)
+		{
+			string primtype = null;
+			switch (primitiveType)
 			{
-				StringBuilder result = new StringBuilder("{ ");
-				result.Append(primitiveType);
-				result.Append(", ");
-				result.Append((ushort)loops.Count);
-				result.Append(", ");
-				for (int i = 0; i < loops.Count; i++)
-					result.Append(loops[i]);
-				result.Append(" }");
-				return result.ToString();
+				case GCPrimitiveType.Triangles:
+					primtype = "GJD_PRIM_TRIANGLE";
+					break;
+				case GCPrimitiveType.TriangleStrip:
+					primtype = "GJD_PRIM_TRISTRIP";
+					break;
+				case GCPrimitiveType.TriangleFan:
+					primtype = "GJD_PRIM_TRIFAN";
+					break;
+				case GCPrimitiveType.Lines:
+					primtype = "GJD_PRIM_LINE";
+					break;
+				case GCPrimitiveType.LineStrip:
+					primtype = "GJD_PRIM_LINESTRIP";
+					break;
+				case GCPrimitiveType.Points:
+					primtype = "GJD_PRIM_POINT";
+					break;
 			}
-			public void ToNJA(TextWriter writer)
-			{
-				string primtype = null;
-				switch (primitiveType)
-				{
-					case GCPrimitiveType.Triangles:
-						primtype = "TRIANGLE";
-						break;
-					case GCPrimitiveType.TriangleStrip:
-						primtype = "TRISTRIP";
-						break;
-					case GCPrimitiveType.TriangleFan:
-						primtype = "TRIFAN";
-						break;
-					case GCPrimitiveType.Lines:
-						primtype = "LINE";
-						break;
-					case GCPrimitiveType.LineStrip:
-						primtype = "LINESTRIP";
-						break;
-					case GCPrimitiveType.Points:
-						primtype = "POINTS";
-						break;
-				}
-				writer.WriteLine($"\t{primtype}" + "(" + loops.Count + "),");
-				for (int i = 0; i < loops.Count; i++)
-					writer.WriteLine("\t" + loops[i] + ",");
-			}
+			writer.WriteLine($"\t{primtype}(" + loops.Count + "),");
+			for (int i = 0; i < loops.Count; i++)
+				writer.WriteLine("\t" + loops[i] + ",");
+		}
 
 		/// <summary>
 		/// Convert the primitive into a triangle list

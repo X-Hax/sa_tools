@@ -1771,18 +1771,24 @@ namespace SAModel.SAMDL
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
-						sw.Write("/* NINJA ");
+						sw.Write("/* ");
 						switch (outfmt)
 						{
 							case ModelFormat.Basic:
 							case ModelFormat.BasicDX:
 								if (dx)
-									sw.Write("Basic+ (with Sonic Adventure DX PC additions)");
+									sw.Write("NINJA Basic+ (with Sonic Adventure DX PC additions)");
 								else
-									sw.Write("Basic");
+									sw.Write("NINJA Basic");
 								break;
 							case ModelFormat.Chunk:
-								sw.Write("Chunk");
+								sw.Write("NINJA Chunk");
+								break;
+							case ModelFormat.GC:
+								sw.Write("GINJA (Ninja GameCube)");
+								break;
+							case ModelFormat.XJ:
+								sw.Write("XINJA (Ninja Xbox)");
 								break;
 						}
 						sw.WriteLine(" model");
@@ -1978,9 +1984,39 @@ namespace SAModel.SAMDL
 					catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
 					break;
 				case GC.GCAttach gatt:
+					string vtype = null;
 					gatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCVertexSet m in gatt.vertexData)
+					{
+						switch (m.attribute)
+						{
+							case GC.GCVertexAttribute.Position:
+								vtype = "position_";
+								break;
+							case GC.GCVertexAttribute.Normal:
+								vtype = "normal_";
+								break;
+							case GC.GCVertexAttribute.Color0:
+								vtype = "vcolor_";
+								break;
+							case GC.GCVertexAttribute.Tex0:
+								vtype = "uv_";
+								break;
+						}
+						m.DataName = $"{vtype}" + Extensions.GenerateIdentifier();
+					}
 					gatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCMesh m in gatt.opaqueMeshes)
+					{
+						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+					}
 					gatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCMesh m in gatt.translucentMeshes)
+					{
+						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+					}
 					break;
 			}
 			selectedObject.Attach = attach;
@@ -3704,14 +3740,38 @@ namespace SAModel.SAMDL
 							gcatt.OpaqueMeshName = FixLabel(gcatt.OpaqueMeshName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
+							foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+							{
+								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+								m.PrimitiveName = FixLabel(m.PrimitiveName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
 
 							gcatt.TranslucentMeshName = FixLabel(gcatt.TranslucentMeshName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
+							foreach (GC.GCMesh m in gcatt.translucentMeshes)
+							{
+								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+								m.PrimitiveName = FixLabel(m.PrimitiveName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
 
 							gcatt.VertexName = FixLabel(gcatt.VertexName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
+							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							{
+								v.DataName = FixLabel(v.DataName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
 						}
 						break;
 				}
@@ -3775,10 +3835,46 @@ namespace SAModel.SAMDL
 						break;
 					case GC.GCAttach:
 						{
+							string vtype = null;
 							GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
 							gcatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+							if (gcatt.translucentMeshes.Count != 0)
+							{
+								foreach (GC.GCMesh m in gcatt.translucentMeshes)
+								{
+									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+								}
+							}
 							gcatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+							if (gcatt.opaqueMeshes.Count != 0)
+							{
+								foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+								{
+									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+								}
+							}
 							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							{
+								switch (v.attribute)
+								{
+									case GC.GCVertexAttribute.Position:
+										vtype = "position_";
+										break;
+									case GC.GCVertexAttribute.Normal:
+										vtype = "normal_";
+										break;
+									case GC.GCVertexAttribute.Color0:
+										vtype = "vcolor_";
+										break;
+									case GC.GCVertexAttribute.Tex0:
+										vtype = "uv_";
+										break;
+								}
+								v.DataName = $"{vtype}" + Extensions.GenerateIdentifier();
+							}
 						}
 						break;
 				}

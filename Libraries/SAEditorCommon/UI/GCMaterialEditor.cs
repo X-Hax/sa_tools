@@ -80,14 +80,12 @@ namespace SAModel.SAEditorCommon.UI
 			// setting general
 			diffuseColorBox.BackColor = materials[index].DiffuseColor;
 			alphaDiffuseNumeric.Value = materials[index].DiffuseColor.A;
-			if(textures != null && materials[index].TextureID < textures.Length) textureBox.Image = DrawPreviewImage(textures[materials[index].TextureID].Image);
+			if (textures != null && materials[index].TextureID < textures.Length) textureBox.Image = DrawPreviewImage(textures[materials[index].TextureID].Image);
 			filterModeDropDown.SelectedIndex = (int)materials[index].FilterMode;
 			srcAlphaCombo.SelectedIndex = (int)materials[index].SourceAlpha;
 			dstAlphaCombo.SelectedIndex = (int)materials[index].DestinationAlpha;
 
 			// setting flags
-			pickStatusCheck.Checked = materials[index].PickStatus;
-			superSampleCheck.Checked = materials[index].SuperSample;
 			clampUCheck.Checked = materials[index].ClampU;
 			clampVCheck.Checked = materials[index].ClampV;
 			flipUCheck.Checked = materials[index].FlipU;
@@ -224,18 +222,6 @@ namespace SAModel.SAEditorCommon.UI
 		#endregion
 
 		#region Flag Check Event Methods
-
-		private void pickStatusCheck_Click(object sender, EventArgs e)
-		{
-			materials[comboMaterial.SelectedIndex].PickStatus = pickStatusCheck.Checked;
-			RaiseFormUpdated();
-		}
-
-		private void superSampleCheck_Click(object sender, EventArgs e)
-		{
-			materials[comboMaterial.SelectedIndex].SuperSample = superSampleCheck.Checked;
-			RaiseFormUpdated();
-		}
 
 		private void clampUCheck_Click(object sender, EventArgs e)
 		{

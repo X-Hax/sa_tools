@@ -16,7 +16,7 @@ namespace SAModel.GC
 		/// </summary>
 		public List<GCVertexSet> vertexData;
 		public string VertexName { get; set; }
-
+		public uint gap { get; set; }
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
@@ -78,7 +78,7 @@ namespace SAModel.GC
 			// The struct is 36/0x24 bytes long
 
 			uint vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
-			//uint gap = ByteConverter.ToUInt32(file, address + 4);
+			uint gap = ByteConverter.ToUInt32(file, address + 4);
 			int opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
 			int translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
 
@@ -366,6 +366,8 @@ namespace SAModel.GC
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(vertexData != null ? VertexName : "NULL");
 			result.Append(", ");
+			result.Append(gap);
+			result.Append(", ");
 			result.Append(opaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
 			result.Append(translucentMeshes.Count != 0 ? TranslucentMeshName : "NULL");
@@ -398,14 +400,16 @@ namespace SAModel.GC
 						switch (vertexData[i].attribute)
 						{
 							case GCVertexAttribute.Position:
+								writer.Write("SA2B_PositionData ");
+								break;
 							case GCVertexAttribute.Normal:
-								writer.Write("Vector3 ");
+								writer.Write("SA2B_NormalData ");
 								break;
 							case GCVertexAttribute.Color0:
-								writer.Write("Color ");
+								writer.Write("SA2B_Color0Data ");
 								break;
 							case GCVertexAttribute.Tex0:
-								writer.Write("UV ");
+								writer.Write("SA2B_Tex0Data ");
 								break;
 						}
 						writer.Write(vertexData[i].DataName);
@@ -440,17 +444,18 @@ namespace SAModel.GC
 					}
 				}
 				labels.Add(VertexName);
-				writer.Write("GC_VERTEX ");
+				writer.Write("SA2B_VertexData ");
 				writer.Write(VertexName);
 				writer.Write("[] = {");
 				List<string> chunks = new List<string>(vertexData.Count);
 				foreach (GCVertexSet item in vertexData)
 					chunks.Add(item.ToStruct());
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()) + ",");
-				writer.WriteLine("\t" + string.Join(Environment.NewLine + "\t", "{ Null, 0, 0, 0, NULL, 0 }"));
+				writer.WriteLine("\t" + string.Join(Environment.NewLine + "\t", "{ 255, 0, 0, 0, NULL, 0 }"));
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
+			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
 			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
 				for (int i = 0; i < opaqueMeshes.Count; i++)
@@ -460,7 +465,7 @@ namespace SAModel.GC
 						if (opaqueMeshes[i].parameters[j] != null && !labels.Contains(opaqueMeshes[i].ParameterName))
 						{
 							labels.Add(opaqueMeshes[i].ParameterName);
-							writer.Write("GC_PARAMETER ");
+							writer.Write("SA2B_ParameterData ");
 							writer.Write(opaqueMeshes[i].ParameterName);
 							writer.WriteLine("[] = {");
 							List<string> param = new List<string>(opaqueMeshes[i].parameters.Count);
@@ -477,24 +482,42 @@ namespace SAModel.GC
 					if (!labels.Contains(opaqueMeshes[i].PrimitiveName))
 					{
 						labels.Add(opaqueMeshes[i].PrimitiveName);
-						writer.Write("GC_PRIMITIVE ");
+						writer.Write("Uint8 ");
 						writer.Write(opaqueMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
-						List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
+						List<byte> pbytes = new List<byte>();
 						foreach (GCPrimitive item in opaqueMeshes[i].primitives)
-						prim.Add(item.ToStruct());
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
+						{
+							GCIndexAttributeFlags? t = opaqueMeshes[i].IndexFlags;
+							if (t.HasValue) indexFlags = t.Value;
+							for (int k = 0; k < opaqueMeshes[i].primitives.Count; k++)
+								pbytes.AddRange(opaqueMeshes[i].primitives[k].GetBytes(indexFlags));
+						}
+						byte[] cb = pbytes.ToArray();
+						int dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
+						int buffsize = (int)dataSize - cb.Length;
+						List<string> s = new List<string>(dataSize);
+						for (int j = 0; j < cb.Length; j++)
+							s.Add("0x" + cb[j].ToString("X") + (cb[j] < 0 ? "u" : ""));
+						for (int l = 0; l < buffsize; l++)
+							s.Add("0x0");
+						writer.Write(string.Join(", ", s.ToArray()));
+						//
+						//List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
+						//foreach (GCPrimitive item in opaqueMeshes[i].primitives)
+						//prim.Add(item.ToStruct());
+						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
 				}
 				labels.Add(OpaqueMeshName);
-				writer.Write("GC_POLY ");
+				writer.Write("SA2B_GeometryData ");
 				writer.Write(OpaqueMeshName);
 				writer.Write("[] = {");
 				List<string> chunks = new List<string>();
 				foreach (GCMesh item in opaqueMeshes)
-				chunks.Add(item.ToStruct());
+					chunks.Add(item.ToStruct());
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
 				writer.WriteLine(" };");
 				writer.WriteLine();
@@ -508,7 +531,7 @@ namespace SAModel.GC
 						if (translucentMeshes[i].parameters[j] != null && !labels.Contains(translucentMeshes[i].ParameterName))
 						{
 							labels.Add(translucentMeshes[i].ParameterName);
-							writer.Write("GC_PARAMETER ");
+							writer.Write("SA2B_ParameterData ");
 							writer.Write(translucentMeshes[i].ParameterName);
 							writer.WriteLine("[] = {");
 							List<string> param = new List<string>(translucentMeshes[i].parameters.Count);
@@ -525,29 +548,43 @@ namespace SAModel.GC
 					if (!labels.Contains(translucentMeshes[i].PrimitiveName))
 					{
 						labels.Add(translucentMeshes[i].PrimitiveName);
-						writer.Write("GC_PRIMITIVE ");
+						writer.Write("Uint8 ");
 						writer.Write(translucentMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
-						List<string> prim = new List<string>(translucentMeshes[i].primitives.Count);
+						List<byte> pbytes = new List<byte>();
 						foreach (GCPrimitive item in translucentMeshes[i].primitives)
-						prim.Add(item.ToStruct());
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
+						{
+							GCIndexAttributeFlags? t = translucentMeshes[i].IndexFlags;
+							if (t.HasValue) indexFlags = t.Value;
+							for (int k = 0; k < translucentMeshes[i].primitives.Count; k++)
+								pbytes.AddRange(translucentMeshes[i].primitives[k].GetBytes(indexFlags));
+						}
+						byte[] cb = pbytes.ToArray();
+						int dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
+						int buffsize = dataSize - cb.Length;
+						List<string> s = new List<string>(dataSize);
+						for (int j = 0; j < cb.Length; j++)
+							s.Add("0x" + cb[j].ToString("X") + (cb[j] < 0 ? "u" : ""));
+						for (int l = 0; l < buffsize; l++)
+							s.Add("0x0");
+						writer.Write(string.Join(", ", s.ToArray()));
+						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", s.ToArray()));
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
 				}
 				labels.Add(TranslucentMeshName);
-				writer.Write("GC_POLY ");
+				writer.Write("SA2B_GeometryData ");
 				writer.Write(TranslucentMeshName);
 				writer.Write("[] = {");
 				List<string> chunks = new List<string>();
 				foreach (GCMesh item in translucentMeshes)
-				chunks.Add(item.ToStruct());
+					chunks.Add(item.ToStruct());
 				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			writer.Write("NJS_GC_MODEL ");
+			writer.Write("SA2B_Model ");
 			writer.Write(Name);
 			writer.Write(" = ");
 			writer.Write(ToStruct(DX));
@@ -565,6 +602,12 @@ namespace SAModel.GC
 					item.ToNJA(writer);
 				foreach (GCVertexSet item in vertexData)
 					item.RefToNJA(writer);
+				writer.WriteLine("\tVertAttr   NULL" + ",");
+				writer.WriteLine("\tSize       0" + ",");
+				writer.WriteLine("\tPoints     0" + ",");
+				writer.WriteLine("\tType       NULL" + ",");
+				writer.WriteLine("\tName       NULL" + ",");
+				writer.WriteLine("\tCheckSize  0" + ",");
 				writer.Write("END" + Environment.NewLine + Environment.NewLine);
 			}
 
