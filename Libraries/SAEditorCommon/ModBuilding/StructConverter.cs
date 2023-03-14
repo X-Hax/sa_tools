@@ -79,6 +79,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "kartmodelsarray", "Kart Terrain Model Array" },
 			{ "kartsoundparameters", "Kart Sound Parameters" },
 			{ "kartspecialinfolist", "Kart Special Info" },
+			{ "kartcourse", "Kart Course" },
 			{ "string", "String" },
 			{ "texnamearray", "Texture Name Array" },
 			{ "texlistarray", "Texture List Array" },
@@ -1423,6 +1424,17 @@ namespace SAModel.SAEditorCommon.StructConverter
 								PlayerParameter plpm = PlayerParameter.Load(data.Filename);
 								writer.WriteLine("player_parameter {0} = {1};", name, plpm.ToStruct());
 								initlines.Add(string.Format("*(player_parameter*)0x{0:X} = {1};", data.Address + imagebase, name));
+							}
+							break;
+						case "kartcourse":
+							{
+								var kc = KartCourse.Load(data.Filename);
+								writer.WriteLine("char {0}_list[] = {{", name);
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", kc));
+								writer.WriteLine("};");
+								writer.WriteLine();
+								writer.WriteLine("KartCourse {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
+								initlines.Add(string.Format("*(KartCourse*)0x{0:X} = {1};", data.Address + imagebase, name));
 							}
 							break;
 					}

@@ -922,11 +922,11 @@ namespace SplitTools.SplitDLL
 						case "kartmodelsarray":
 							{
 								Directory.CreateDirectory(fileOutputPath);
-								List<KartModelsArray> result = new List<KartModelsArray>();
+								List<KartModelInfo> result = new List<KartModelInfo>();
 								List<string> hashes = new List<string>();
 								for (int i = 0; i < data.Length; i++)
 								{
-									KartModelsArray kartobj = new KartModelsArray();
+									KartModelInfo kartobj = new KartModelInfo();
 									int ptr = BitConverter.ToInt32(datafile, address);
 									if (ptr != 0)
 									{
@@ -966,15 +966,19 @@ namespace SplitTools.SplitDLL
 										output.Files[fn_col] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN_col));
 
 									}
-									kartobj.Unknown1 = ByteConverter.ToUInt32(datafile, address + 8);
-									kartobj.Unknown2 = ByteConverter.ToUInt32(datafile, address + 0xC);
-									kartobj.Unknown3 = ByteConverter.ToUInt32(datafile, address + 0x10);
-									kartobj.Unknown4 = ByteConverter.ToUInt32(datafile, address + 0x14);
-									ptr = BitConverter.ToInt32(datafile, address + 0x64);
+									kartobj.EndPoint = new Vertex(datafile, address + 8);
+									kartobj.YRotation = ByteConverter.ToUInt32(datafile, address + 0x14);
+									ptr = ByteConverter.ToInt32(datafile, address + 0x64);
 									if (ptr != 0)
 									{
-										kartobj.Unknown5 = ((uint)ptr - imageBase).ToCHex();
-										kartobj.Unknown6 = ByteConverter.ToInt32(datafile, address + 0x68);
+										ptr = (int)(ptr - imageBase);
+										int cnt = ByteConverter.ToInt32(datafile, address + 0x68);
+										kartobj.StreetLights = new List<KartStreetLightPos>(cnt);
+										for (int j = 0; j < cnt; j++)
+										{
+											kartobj.StreetLights.Add(new KartStreetLightPos() { Position = new Vertex(datafile, ptr), YRotation = ByteConverter.ToUInt32(datafile, ptr + 0xC) });
+											ptr += 0x10;
+										}
 									}
 									result.Add(kartobj);
 									address += 0x6C;

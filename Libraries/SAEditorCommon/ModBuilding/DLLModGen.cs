@@ -492,11 +492,18 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
 									writer.WriteLine();
 								}
-								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
-								writer.WriteLine("KartModelsArray {0}[] = {{", item.Export);
+								var data = IniSerializer.Deserialize<KartModelInfo[]>(Path.Combine(item.Filename, "info.ini"));
+								for (int i = 0; i < data.Length; i++)
+									if (data[i].StreetLights?.Count > 0)
+									{
+										writer.WriteLine("KartStreetLightPos {0}_lights_{1}[] = {{", item.Export, i);
+										writer.WriteLine("\t{0}", string.Join("," + Environment.NewLine + "\t", data[i].StreetLights));
+										writer.WriteLine("};");
+									}
+								writer.WriteLine("KartModelInfo {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
-								foreach (var obj in data)
-									objs.Add(obj.ToStruct());
+								for (int i = 0; i < data.Length; i++)
+									objs.Add(data[i].ToStruct(item.Export + "_lights_" + i));
 								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 								writer.WriteLine("};");
 							}
@@ -508,7 +515,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
 									writer.WriteLine();
 								}
-								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								var data = IniSerializer.Deserialize<KartObjectArray[]>(Path.Combine(item.Filename, "info.ini"));
 								writer.WriteLine("KartObjectArray {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
 								foreach (var obj in data)
@@ -524,7 +531,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
 									writer.WriteLine();
 								}
-								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								var data = IniSerializer.Deserialize<KartMenuElements[]>(Path.Combine(item.Filename, "info.ini"));
 								writer.WriteLine("KartMenuElements {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
 								foreach (var obj in data)
@@ -540,7 +547,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 									new ModelFile(file).Model.ToStructVariables(writer, false, new List<string>());
 									writer.WriteLine();
 								}
-								var data = IniSerializer.Deserialize<CharaObjectData[]>(Path.Combine(item.Filename, "info.ini"));
+								var data = IniSerializer.Deserialize<KartSoundParameters[]>(Path.Combine(item.Filename, "info.ini"));
 								writer.WriteLine("KartSoundParameters {0}[] = {{", item.Export);
 								List<string> objs = new List<string>(data.Length);
 								foreach (var obj in data)
