@@ -4534,9 +4534,9 @@ namespace SplitTools
 			return course;
 		}
 
-		public static List<byte> Load(string filename) => File.ReadAllText(filename).Split(',').Select(a => byte.Parse(a)).ToList();
+		public static List<byte> Load(string filename) => File.ReadAllLines(filename).Select(a => byte.Parse(a)).ToList();
 
-		public static void Save(List<byte> course, string filename) => File.WriteAllText(filename, string.Join(',', course));
+		public static void Save(List<byte> course, string filename) => File.WriteAllLines(filename, course.Select(a => a.ToString()));
 	}
 
 	public class ModelIndex
