@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using ByteConverter = SAModel.ByteConverter;
 
@@ -4477,18 +4479,16 @@ namespace SplitTools
 		}
 	}
 
-	public class KartModelsArray
+	public class KartModelInfo
 	{
 		public string Model { get; set; }
 		public string Collision { get; set; }
-		public uint Unknown1 { get; set; }
-		public uint Unknown2 { get; set; }
-		public uint Unknown3 { get; set; }
-		public uint Unknown4 { get; set; }
-		public string Unknown5 { get; set; }
-		public int Unknown6 { get; set; }
+		public Vertex EndPoint { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint YRotation { get; set; }
+		public List<KartStreetLightPos> StreetLights { get; set; }
 
-		public string ToStruct()
+		public string ToStruct(string label)
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			if (!string.IsNullOrEmpty(Model))
@@ -4497,21 +4497,46 @@ namespace SplitTools
 				sb.AppendFormat("{0}, ", Collision);
 			}
 			else
-				sb.Append("NULL, ");
-			sb.AppendFormat("{0}, ", Unknown1);
-			sb.AppendFormat("{0}, ", Unknown2);
-			sb.AppendFormat("{0}, ", Unknown3);
-			sb.AppendFormat("{0}, ", Unknown4);
-			if (!string.IsNullOrEmpty(Unknown5))
+				sb.Append("NULL, NULL, ");
+			sb.AppendFormat("{0}, ", EndPoint.ToStruct());
+			sb.AppendFormat("{0}, ", YRotation.ToCHex());
+			sb.Append("{ }, ");
+			if (StreetLights?.Count > 0)
 			{
-				sb.AppendFormat("{0}, ", Unknown5);
-				sb.AppendFormat("{0}", Unknown6);
+				sb.AppendFormat("{0}, ", label);
+				sb.AppendFormat("{0}", StreetLights.Count);
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(" }");
 			return sb.ToString();
 		}
+	}
+
+	public class KartStreetLightPos
+	{
+		public Vertex Position { get; set; }
+		[TypeConverter(typeof(UInt32HexConverter))]
+		public uint YRotation { get; set; }
+
+		public string ToStruct() => $"{{ {Position.ToStruct()}, {YRotation.ToCHex()} }}";
+	}
+
+	public static class KartCourse
+	{
+		public static List<byte> ReadBinary(byte[] file, int address, uint imageBase)
+		{
+			int ptr = (int)(ByteConverter.ToInt32(file, address) - imageBase);
+			int cnt = ByteConverter.ToInt32(file, address + 4);
+			var course = new List<byte>(cnt);
+			for (; cnt > 0; cnt--)
+				course.Add(file[ptr++]);
+			return course;
+		}
+
+		public static List<byte> Load(string filename) => File.ReadAllLines(filename).Select(a => byte.Parse(a)).ToList();
+
+		public static void Save(List<byte> course, string filename) => File.WriteAllLines(filename, course.Select(a => a.ToString()));
 	}
 
 	public class ModelIndex
