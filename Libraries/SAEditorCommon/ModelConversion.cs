@@ -21,7 +21,199 @@ namespace SAModel.SAEditorCommon.ModelConversion
 				case null:
 					return null;
 				default:
-					throw new ArgumentException("Unknown attach type passed to ToChunk.", "attach");
+					{
+						attach.ProcessVertexData();
+						ChunkAttach cnkatt = new ChunkAttach(true, true) { Name = attach.Name + "_cnk", Bounds = attach.Bounds };
+						VertexChunk vcnk;
+						bool hasnormal = true;
+						bool hasvcolor = attach.MeshInfo.Any(a => a.HasVC);
+						if (hasvcolor)
+						{
+							vcnk = new VertexChunk(ChunkType.Vertex_VertexDiffuse8);
+							hasnormal = false;
+						}
+						else if (hasnormal)
+							vcnk = new VertexChunk(ChunkType.Vertex_VertexNormal);
+						else
+							vcnk = new VertexChunk(ChunkType.Vertex_Vertex);
+						List<CachedVertex> cache = new List<CachedVertex>(attach.MeshInfo.Sum(a => a.Vertices.Length));
+						List<List<Strip>> strips = new List<List<Strip>>();
+						List<List<List<UV>>> uvs = new List<List<List<UV>>>();
+						foreach (var mesh in attach.MeshInfo)
+						{
+							List<Strip> polys = new List<Strip>();
+							List<List<UV>> us = null;
+							if (mesh.HasUV)
+								us = new List<List<UV>>();
+							foreach (var grp in mesh.Polys.GroupBy(a => a.PolyType))
+								switch (grp.Key)
+								{
+									case Basic_PolyType.Triangles:
+										{
+											List<ushort> tris = new List<ushort>();
+											Dictionary<ushort, UV> uvmap = new Dictionary<ushort, UV>();
+											foreach (Poly poly in grp)
+												for (int i = 0; i < 3; i++)
+												{
+													ushort ind = (ushort)cache.AddUnique(new CachedVertex(mesh.Vertices[poly.Indexes[i]]));
+													if (mesh.HasUV)
+														uvmap[ind] = mesh.Vertices[poly.Indexes[i]].UV;
+													tris.Add(ind);
+												}
+
+											nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+
+											// Add strips
+											for (var i = 0; i < primitiveGroups.Length; i++)
+											{
+												var primitiveGroup = primitiveGroups[i];
+												System.Diagnostics.Debug.Assert(primitiveGroup.Type == PrimitiveType.TriangleStrip);
+
+												var stripIndices = new ushort[primitiveGroup.Indices.Length];
+												List<UV> stripuv = new List<UV>();
+												for (var j = 0; j < primitiveGroup.Indices.Length; j++)
+												{
+													var vertexIndex = primitiveGroup.Indices[j];
+													stripIndices[j] = vertexIndex;
+													if (mesh.HasUV)
+														stripuv.Add(uvmap[vertexIndex]);
+												}
+
+												polys.Add(new Strip(stripIndices, false));
+												if (mesh.HasUV)
+													us.Add(stripuv);
+											}
+										}
+										break;
+									case Basic_PolyType.Quads:
+										{
+											List<ushort> tris = new List<ushort>();
+											Dictionary<ushort, UV> uvmap = new Dictionary<ushort, UV>();
+											foreach (Poly poly in grp)
+											{
+												ushort[] quad = new ushort[4];
+												for (int i = 0; i < 4; i++)
+												{
+													ushort ind = (ushort)cache.AddUnique(new CachedVertex(mesh.Vertices[poly.Indexes[i]]));
+													if (mesh.HasUV)
+														uvmap[ind] = mesh.Vertices[poly.Indexes[i]].UV;
+													quad[i] = ind;
+												}
+												tris.Add(quad[0]);
+												tris.Add(quad[1]);
+												tris.Add(quad[2]);
+												tris.Add(quad[2]);
+												tris.Add(quad[1]);
+												tris.Add(quad[3]);
+											}
+
+											nvStripifier.GenerateStrips(tris.ToArray(), out var primitiveGroups);
+
+											// Add strips
+											for (var i = 0; i < primitiveGroups.Length; i++)
+											{
+												var primitiveGroup = primitiveGroups[i];
+												System.Diagnostics.Debug.Assert(primitiveGroup.Type == PrimitiveType.TriangleStrip);
+
+												var stripIndices = new ushort[primitiveGroup.Indices.Length];
+												List<UV> stripuv = new List<UV>();
+												for (var j = 0; j < primitiveGroup.Indices.Length; j++)
+												{
+													var vertexIndex = primitiveGroup.Indices[j];
+													stripIndices[j] = vertexIndex;
+													if (mesh.HasUV)
+														stripuv.Add(uvmap[vertexIndex]);
+												}
+
+												polys.Add(new Strip(stripIndices, false));
+												if (mesh.HasUV)
+													us.Add(stripuv);
+											}
+										}
+										break;
+									case Basic_PolyType.NPoly:
+									case Basic_PolyType.Strips:
+										foreach (Strip poly in grp.Cast<Strip>())
+										{
+											List<UV> stripuv = new List<UV>();
+											ushort[] inds = (ushort[])poly.Indexes.Clone();
+											for (int i = 0; i < poly.Indexes.Length; i++)
+											{
+												inds[i] = (ushort)cache.AddUnique(new CachedVertex(mesh.Vertices[poly.Indexes[i]]));
+												if (mesh.HasUV)
+													stripuv.Add(mesh.Vertices[poly.Indexes[i]].UV);
+											}
+
+											polys.Add(new Strip(inds, poly.Reversed));
+											if (mesh.HasUV)
+												us.Add(stripuv);
+										}
+										break;
+								}
+							strips.Add(polys);
+							uvs.Add(us);
+						}
+						foreach (var item in cache)
+						{
+							vcnk.Vertices.Add(item.vertex);
+							if (hasnormal)
+								vcnk.Normals.Add(item.normal);
+							if (hasvcolor)
+								vcnk.Diffuse.Add(item.color);
+						}
+						cnkatt.Vertex.Add(vcnk);
+						for (int i = 0; i < attach.MeshInfo.Length; i++)
+						{
+							var mesh = attach.MeshInfo[i];
+							NJS_MATERIAL mat = attach.MeshInfo[i].Material;
+							if (mat != null)
+							{
+								cnkatt.Poly.Add(new PolyChunkTinyTextureID()
+								{
+									ClampU = mat.ClampU,
+									ClampV = mat.ClampV,
+									FilterMode = mat.FilterMode,
+									FlipU = mat.FlipU,
+									FlipV = mat.FlipV,
+									SuperSample = mat.SuperSample,
+									TextureID = (ushort)mat.TextureID
+								});
+								cnkatt.Poly.Add(new PolyChunkMaterial()
+								{
+									SourceAlpha = mat.SourceAlpha,
+									DestinationAlpha = mat.DestinationAlpha,
+									Diffuse = mat.DiffuseColor,
+									Specular = mat.SpecularColor,
+									SpecularExponent = (byte)mat.Exponent
+								});
+							}
+							PolyChunkStrip strip;
+							if (mesh.HasUV)
+								strip = new PolyChunkStrip(ChunkType.Strip_StripUVN);
+							else
+								strip = new PolyChunkStrip(ChunkType.Strip_Strip);
+							if (mat != null)
+							{
+								strip.IgnoreLight = mat.IgnoreLighting;
+								strip.IgnoreSpecular = mat.IgnoreSpecular;
+								strip.UseAlpha = mat.UseAlpha;
+								strip.DoubleSide = mat.DoubleSided;
+								strip.FlatShading = mat.FlatShading;
+								strip.EnvironmentMapping = mat.EnvironmentMap;
+							}
+							for (int i1 = 0; i1 < strips[i].Count; i1++)
+							{
+								Strip item = strips[i][i1];
+								UV[] uv2 = null;
+								if (mesh.HasUV)
+									uv2 = uvs[i][i1].ToArray();
+								strip.Strips.Add(new PolyChunkStrip.Strip(item.Reversed, item.Indexes, uv2, null));
+							}
+							cnkatt.Poly.Add(strip);
+						}
+
+						return cnkatt;
+					}
 			}
 		}
 
@@ -263,7 +455,64 @@ namespace SAModel.SAEditorCommon.ModelConversion
 				case null:
 					return null;
 				default:
-					throw new ArgumentException("Unknown attach type passed to ToBasic.", "attach");
+					{
+						attach.ProcessVertexData();
+						var basatt = new BasicAttach { Name = attach.Name + "_bas", Bounds = attach.Bounds.Clone() };
+						var vtxCache = new List<CachedVertex>(attach.MeshInfo.Sum(a => a.Vertices.Length));
+						foreach (var mesh in attach.MeshInfo)
+						{
+							var polys = new List<Poly>(mesh.Polys.Length);
+							var uvs = new List<UV>(mesh.Vertices.Length);
+							var vcs = new List<Color>(mesh.Vertices.Length);
+							var curType = mesh.Polys[0].PolyType;
+							foreach (var poly in mesh.Polys)
+							{
+								if (poly.PolyType != curType)
+								{
+									var newmesh2 = new NJS_MESHSET(polys.ToArray(), false, mesh.HasUV, mesh.HasVC);
+									if (mesh.Material != null)
+										newmesh2.MaterialID = (ushort)basatt.Material.Count;
+									if (mesh.HasUV)
+										uvs.CopyTo(newmesh2.UV);
+									if (mesh.HasVC)
+										vcs.CopyTo(newmesh2.VColor);
+									basatt.Mesh.Add(newmesh2);
+									polys.Clear();
+									uvs.Clear();
+									vcs.Clear();
+									curType = poly.PolyType;
+								}
+								Poly newpoly = poly.Clone();
+								for (int i = 0; i < newpoly.Indexes.Length; i++)
+								{
+									if (mesh.HasUV)
+										uvs.Add(mesh.Vertices[newpoly.Indexes[i]].UV.Clone());
+									if (mesh.HasVC)
+										vcs.Add(mesh.Vertices[newpoly.Indexes[i]].Color.Value);
+									newpoly.Indexes[i] = (ushort)vtxCache.AddUnique(new CachedVertex(mesh.Vertices[newpoly.Indexes[i]]));
+								}
+								polys.Add(newpoly);
+							}
+							var newmesh = new NJS_MESHSET(polys.ToArray(), false, mesh.HasUV, mesh.HasVC);
+							if (mesh.Material != null)
+							{
+								newmesh.MaterialID = (ushort)basatt.Material.Count;
+								basatt.Material.Add(mesh.Material.Clone());
+							}
+							if (mesh.HasUV)
+								uvs.CopyTo(newmesh.UV);
+							if (mesh.HasVC)
+								vcs.CopyTo(newmesh.VColor);
+							basatt.Mesh.Add(newmesh);
+						}
+						basatt.ResizeVertexes(vtxCache.Count);
+						for (int i = 0; i < vtxCache.Count; i++)
+						{
+							basatt.Vertex[i] = vtxCache[i].vertex.Clone();
+							basatt.Normal[i] = vtxCache[i].normal.Clone();
+						}
+						return basatt;
+					}
 			}
 		}
 
@@ -447,6 +696,14 @@ namespace SAModel.SAEditorCommon.ModelConversion
 			normal = n;
 			color = c;
 			uv = u;
+		}
+
+		public CachedVertex(VertexData data)
+		{
+			vertex = data.Position;
+			normal = data.Normal;
+			color = data.Color ?? Color.White;
+			uv = data.UV;
 		}
 
 		public bool Equals(CachedVertex other)

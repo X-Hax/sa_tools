@@ -1,4 +1,5 @@
 ﻿using SAModel;
+using SAModel.GC;
 using SAModel.SAEditorCommon.ModelConversion;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,20 @@ namespace LevelConverter
 				Console.Write("File: ");
 				filename = Console.ReadLine().Trim('"');
 			}
+			LandTableFormat outfmt;
+			if (args.Length > 1)
+				outfmt = Enum.Parse<LandTableFormat>(args[1], true);
+			else
+			{
+				Console.Write("Format: ");
+				outfmt = Enum.Parse<LandTableFormat>(Console.ReadLine(), true);
+			}
 			LandTable level = LandTable.LoadFromFile(filename);
+			if (level.Format == outfmt)
+			{
+				Console.WriteLine("Input and output formats identical, no conversion performed.");
+				return;
+			}
 			Dictionary<string, Attach> visitedAttaches = new Dictionary<string, Attach>();
 			switch (level.Format)
 			{
@@ -80,19 +94,23 @@ namespace LevelConverter
 							{
 								COL newcol = new COL() { Bounds = col.Bounds };
 								newcol.SurfaceFlags = SA1SurfaceFlags.Visible;
-								newcol.Model = new NJS_OBJECT() { Name = col.Model.Name + "_cnk" };
+								newcol.Model = new NJS_OBJECT() { Name = col.Model.Name + (outfmt == LandTableFormat.SA2 ? "_cnk" : "_gc") };
 								newcol.Model.Position = col.Model.Position;
 								newcol.Model.Rotation = col.Model.Rotation;
 								newcol.Model.Scale = col.Model.Scale;
 								BasicAttach basatt = (BasicAttach)col.Model.Attach;
-								string newname = basatt.Name + "_cnk";
+								string newname = basatt.Name + (outfmt == LandTableFormat.SA2 ? "_cnk" : "_gc");
 								if (visitedAttaches.ContainsKey(newname))
 									newcol.Model.Attach = visitedAttaches[newname];
 								else
 								{
-									ChunkAttach cnkatt = basatt.ToChunk();
-									visitedAttaches[newname] = cnkatt;
-									newcol.Model.Attach = cnkatt;
+									Attach newatt;
+									if (outfmt == LandTableFormat.SA2)
+										newatt = basatt.ToChunk();
+									else
+										throw new Exception("SA2B conversion not supported yet!");
+									visitedAttaches[newname] = newatt;
+									newcol.Model.Attach = newatt;
 								}
 								newcollist.Add(newcol);
 							}
@@ -105,52 +123,73 @@ namespace LevelConverter
 						level.COL = newcollist;
 					}
 					level.Anim = new List<GeoAnimData>();
-					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa2lvl"), LandTableFormat.SA2);
+					level.SaveToFile(System.IO.Path.ChangeExtension(filename, outfmt == LandTableFormat.SA2 ? "sa2lvl" : "sa2blvl"), outfmt);
 					break;
 				case LandTableFormat.SA2:
+				case LandTableFormat.SA2B:
 
-					foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach is ChunkAttach))
+					switch (outfmt)
 					{
-						col.Model.Attach = col.Model.Attach.ToBasic();
+						case LandTableFormat.SA1:
+						case LandTableFormat.SADX:
+							foreach (COL col in level.COL.Where((col) => col.Model?.Attach != null))
+							{
+								if (visitedAttaches.ContainsKey(col.Model.Attach.Name))
+									col.Model.Attach = visitedAttaches[col.Model.Attach.Name];
+								else
+								{
+									col.Model.Attach = col.Model.Attach.ToBasic();
+									visitedAttaches[col.Model.Attach.Name] = col.Model.Attach;
+								}
+							}
+
+							foreach (COL col in level.COL.Where((col) => col.Model?.Attach != null))
+							{
+								//fix flags differences
+								if ((col.SurfaceFlags & SA1SurfaceFlags.Diggable) == SA1SurfaceFlags.Diggable)
+								{
+									col.SurfaceFlags &= ~SA1SurfaceFlags.Diggable;
+									col.SurfaceFlags |= SA1SurfaceFlags.Stairs;
+								}
+
+								if ((col.SurfaceFlags & SA1SurfaceFlags.UseSkyDrawDistance) == SA1SurfaceFlags.UseSkyDrawDistance)
+								{
+									col.SurfaceFlags &= ~SA1SurfaceFlags.UseSkyDrawDistance;
+									col.SurfaceFlags |= SA1SurfaceFlags.Diggable;
+								}
+
+								if ((col.SurfaceFlags & SA1SurfaceFlags.Unclimbable) == SA1SurfaceFlags.Unclimbable)
+								{
+									col.SurfaceFlags &= ~SA1SurfaceFlags.Unclimbable;
+									col.SurfaceFlags |= SA1SurfaceFlags.CannotLand;
+								}
+
+								if ((col.SurfaceFlags & SA1SurfaceFlags.IncreasedAcceleration) == SA1SurfaceFlags.IncreasedAcceleration)
+								{
+									col.SurfaceFlags &= ~SA1SurfaceFlags.IncreasedAcceleration;
+									col.SurfaceFlags |= SA1SurfaceFlags.Unclimbable;
+								}
+
+								if ((col.SurfaceFlags & SA1SurfaceFlags.Waterfall) == SA1SurfaceFlags.Waterfall)
+								{
+									col.SurfaceFlags &= ~SA1SurfaceFlags.Waterfall;
+									col.SurfaceFlags |= SA1SurfaceFlags.Hurt;
+								}
+							}
+
+							level.Anim = new List<GeoAnimData>();
+							level.Attributes = SA1LandtableAttributes.LoadTextureFile; // set LandTable to use PVM/GVM
+							level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
+							break;
+						case LandTableFormat.SA2:
+							foreach (COL col in level.COL.Where((col) => col.Model?.Attach is GCAttach))
+								col.Model.Attach = col.Model.Attach.ToChunk();
+							level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa2lvl"), LandTableFormat.SA2);
+							break;
+
+						case LandTableFormat.SA2B:
+							throw new Exception("SA2B conversion not supported yet!");
 					}
-
-					foreach (COL col in level.COL.Where((col) => col.Model != null && col.Model.Attach != null))
-					{
-						//fix flags differences
-						if ((col.SurfaceFlags & SA1SurfaceFlags.Diggable) == SA1SurfaceFlags.Diggable)
-						{
-							col.SurfaceFlags &= ~SA1SurfaceFlags.Diggable;
-							col.SurfaceFlags |= SA1SurfaceFlags.Stairs;
-						}
-
-						if ((col.SurfaceFlags & SA1SurfaceFlags.UseSkyDrawDistance) == SA1SurfaceFlags.UseSkyDrawDistance)
-						{
-							col.SurfaceFlags &= ~SA1SurfaceFlags.UseSkyDrawDistance;
-							col.SurfaceFlags |= SA1SurfaceFlags.Diggable;
-						}
-
-						if ((col.SurfaceFlags & SA1SurfaceFlags.Unclimbable) == SA1SurfaceFlags.Unclimbable)
-						{
-							col.SurfaceFlags &= ~SA1SurfaceFlags.Unclimbable;
-							col.SurfaceFlags |= SA1SurfaceFlags.CannotLand;
-						}
-
-						if ((col.SurfaceFlags & SA1SurfaceFlags.IncreasedAcceleration) == SA1SurfaceFlags.IncreasedAcceleration)
-						{
-							col.SurfaceFlags &= ~SA1SurfaceFlags.IncreasedAcceleration;
-							col.SurfaceFlags |= SA1SurfaceFlags.Unclimbable;
-						}
-
-						if ((col.SurfaceFlags & SA1SurfaceFlags.Waterfall) == SA1SurfaceFlags.Waterfall)
-						{
-							col.SurfaceFlags &= ~SA1SurfaceFlags.Waterfall;
-							col.SurfaceFlags |= SA1SurfaceFlags.Hurt;
-						}
-					}
-
-					level.Anim = new List<GeoAnimData>();
-					level.Attributes = SA1LandtableAttributes.LoadTextureFile; // set LandTable to use PVM/GVM
-					level.SaveToFile(System.IO.Path.ChangeExtension(filename, "sa1lvl"), LandTableFormat.SA1);
 					break;
 			}
 		}
