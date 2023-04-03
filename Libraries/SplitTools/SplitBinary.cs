@@ -528,10 +528,11 @@ namespace SplitTools.Split
 						}
 					}
 					break;
-				case "texlist":
+				case "texturedata":
 					TextureList.Load(datafile, address, imageBase).Save(fileOutputPath);
 					break;
 				case "texnamearray":
+				case "texlist":
 					NJS_TEXLIST texnames = new NJS_TEXLIST(datafile, address, imageBase, labels, offset);
 					texnames.Save(fileOutputPath);
 					break;
@@ -593,6 +594,9 @@ namespace SplitTools.Split
 						MiniEventArray.Load(datafile, address, data.Length).Save(fileOutputPath);
 					else
 						DCMiniEventArray.Load(datafile, address, data.Length).Save(fileOutputPath);
+					break;
+				case "cutscenevoicearray":
+					SA2CutsceneVoices.Load(datafile, address).Save(fileOutputPath);
 					break;
 				case "stringarray":
 					{
@@ -1176,6 +1180,8 @@ namespace SplitTools.Split
 					break;
 				case "kartcourse":
 					KartCourse.Save(KartCourse.ReadBinary(datafile, address, imageBase), fileOutputPath);
+					break;
+				case "kartphysics":
 					break;
 				case "levelpathlist":
 					{

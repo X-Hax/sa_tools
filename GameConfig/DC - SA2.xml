@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2" dataFolder="DC_SA2" checkFile="1ST_READ.BIN" gameDataFolderName="SONIC2" checkHashes="1c1b63fcb551187e7c7b456b4e28a022,ef0138133ff61fca7075fd520abb7618" />
+  <GameInfo gameName="SA2" dataFolder="DC_SA2" checkFile="1ST_READ.BIN" gameDataFolderName="SONIC2" checkHashes="1c1b63fcb551187e7c7b456b4e28a022,ef0138133ff61fca7075fd520abb7618,48a4b38e2d315c9d67e1c2f0c1a879ad" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" CmnName="Common Objects and Character Data (1ST_READ)" />
   <SplitEntry SourceFile="SONIC2\ADVERTISE.PRS" IniFile="ADVERTISE" CmnName="Menus, Splash Screens, and GUI Elements" />
   <SplitEntry SourceFile="SONIC2\CART.PRS" IniFile="CART" CmnName="Kart Racing" />

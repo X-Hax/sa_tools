@@ -4198,6 +4198,95 @@ namespace SplitTools
 		Credits
 	}
 
+	public static class SA2CutsceneVoices
+	{
+		public static List<SA2CutsceneVoiceInfo> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2CutsceneVoiceInfo>>(filename);
+		}
+
+		public static List<SA2CutsceneVoiceInfo> Load(byte[] file, int address)
+		{
+			List<SA2CutsceneVoiceInfo> result = new List<SA2CutsceneVoiceInfo>();
+			int ptr = ByteConverter.ToInt32(file, address);
+			while (file[address] != 0xFF)
+			{
+				result.Add(new SA2CutsceneVoiceInfo(file, address));
+				address += SA2CutsceneVoiceInfo.Size;
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA2CutsceneVoiceInfo> voice, string filename)
+		{
+			IniSerializer.Serialize(voice, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2CutsceneVoiceInfo
+	{
+		[IniAlwaysInclude]
+		public string EventID { get; set; }
+		[IniAlwaysInclude]
+		public int EventVoiceID { get; set; }
+		[IniAlwaysInclude]
+		public int VoiceFileID { get; set; }
+		public static int Size { get { return 0x8; } }
+
+		public SA2CutsceneVoiceInfo() { }
+
+		public SA2CutsceneVoiceInfo(byte[] file, int address)
+		{
+			uint RealValue = ByteConverter.ToUInt32(file, address);
+			decimal EventIDConstant = Math.Floor(decimal.Divide(RealValue, 1000));
+			switch (EventIDConstant)
+			{
+				case 1:
+				case 7:
+				case 8:
+				case 10:
+				case 12:
+				case 13:
+				case 18:
+				case 23:
+				case 104:
+				case 108:
+				case 110:
+				case 114:
+				case 115:
+				case 117:
+				case 121:
+				case 125:
+					EventID = "ME" + EventIDConstant.ToString("X4");
+					break;
+				default:
+					EventID = "E" + EventIDConstant.ToString("X4");
+					break;
+			}
+			EventVoiceID = (int)(RealValue - (EventIDConstant * 1000));
+			address += sizeof(int);
+			VoiceFileID = ByteConverter.ToInt32(file, address);
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(EventID);
+			sb.Append(", ");
+			sb.Append(EventVoiceID);
+			sb.Append(", ");
+			sb.Append(VoiceFileID);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
 	public static class ChaoItemStats
 	{
 		public static ChaoItemStatsEntry[] Load(string filename)
