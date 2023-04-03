@@ -651,6 +651,10 @@ namespace SAToolsHub
 					tsSADXFontEdit.Visible = true;
 					break;
 				case "SA2PC":
+				case "SA2":
+				case "SA2GC":
+				case "SA2PRE":
+				case "SA2TT":
 					tsSA2EvView.Visible = true;
 					tsSA2EvTxt.Visible = true;
 					tsSA2MsgEdit.Visible = true;
@@ -836,7 +840,7 @@ namespace SAToolsHub
 			{
 				string gameIni = "sadxlvl.ini";
 
-				if (setGame == "SA2PC")
+				if (setGame.StartsWith("SA2"))
 				{
 					gameIni = "sa2lvl.ini";
 				}
@@ -901,7 +905,7 @@ namespace SAToolsHub
 
 		private void sA2StageSelectEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (setGame == "SA2PC")
+			if (setGame.StartsWith("SA2"))
 				if (projectDirectory != null)
 					sa2stgselStartInfo.Arguments = $"\"{projXML}\"";
 			Process proc = Process.Start(sa2stgselStartInfo);
