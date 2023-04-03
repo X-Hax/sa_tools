@@ -17,27 +17,27 @@
   <SplitEntryEvent EventFile="EVENT\E0103" EventType="Preview" />
   <SplitEntryEvent EventFile="EVENT\ME0104" EventType="MiniEvent" />
   <SplitEntryEvent EventFile="EVENT\E0106" EventType="Preview" />
-  <SplitEntryMDL BigEndian="false" ModelFile="EWALKMDL.PRS" CmnName="Mech Eggman Model Data">
+  <SplitEntryMDL ModelFile="EWALKMDL.PRS" CmnName="Mech Eggman Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="KNUCKMDL.PRS" CmnName="Knuckles Model Data">
+  <SplitEntryMDL ModelFile="KNUCKMDL.PRS" CmnName="Knuckles Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>KNUCKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="ROUGEMDL.PRS" CmnName="Rouge Model Data">
+  <SplitEntryMDL ModelFile="ROUGEMDL.PRS" CmnName="Rouge Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONICMDL.PRS" CmnName="Sonic Model Data">
+  <SplitEntryMDL ModelFile="SONICMDL.PRS" CmnName="Sonic Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="TERIOSMDL.PRS" CmnName="Shadow Model Data">
+  <SplitEntryMDL ModelFile="TERIOSMDL.PRS" CmnName="Shadow Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="TWALKMDL.PRS" CmnName="Mech Tails Model Data">
+  <SplitEntryMDL ModelFile="TWALKMDL.PRS" CmnName="Mech Tails Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>

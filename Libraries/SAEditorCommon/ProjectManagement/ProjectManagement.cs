@@ -192,11 +192,6 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		public class SplitEntryMDL
 		{
 			/// <summary>
-			/// Sets if files are big endian or little endian.
-			/// </summary>
-			[XmlAttribute("BigEndian")]
-			public bool BigEndian { get; set; }
-			/// <summary>
 			/// Model Archive filename.
 			/// </summary>
 			[XmlAttribute("ModelFile")]
@@ -653,7 +648,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(splitMDL.BigEndian, filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
+				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
 		}
 
 		/// <summary>

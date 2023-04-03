@@ -9,7 +9,7 @@ namespace SplitTools.SAArc
 {
 	public static class sa2MDL
 	{
-		public static void Split(bool? isBigEndian, string filePath, string outputFolder, string[] animationPaths)
+		public static void Split(string filePath, string outputFolder, string[] animationPaths)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -22,31 +22,22 @@ namespace SplitTools.SAArc
 				mdlfilename = Path.GetFullPath(mdlfilename);
 
 				// load model file
-				byte[] mdlfile = File.ReadAllBytes(mdlfilename);
+				byte[] mdlfile;
 				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
-				switch (isBigEndian)
+					mdlfile = FraGag.Compression.Prs.Decompress(mdlfilename);
+				else
+					mdlfile = File.ReadAllBytes(mdlfilename);
+				ByteConverter.BigEndian = false;
+				int addr = 0;
+				ushort ile = ByteConverter.ToUInt16(mdlfile, 0);
+				if (ile == 0)
 				{
-					case true:
-						ByteConverter.BigEndian = true;
-						break;
-					case false:
-						ByteConverter.BigEndian = false;
-						break;
-					case null:
-						ByteConverter.BigEndian = false;
-						int addr = 0;
-						short ile = ByteConverter.ToInt16(mdlfile, 0);
-						if (ile == 0)
-						{
-							ile = ByteConverter.ToInt16(mdlfile, 8);
-							addr = 8;
-						}
-						ByteConverter.BigEndian = true;
-						if (ile < ByteConverter.ToInt16(mdlfile, addr))
-							ByteConverter.BigEndian = false;
-						break;
+					ile = ByteConverter.ToUInt16(mdlfile, 8);
+					addr = 8;
 				}
+				ByteConverter.BigEndian = true;
+				if (ile < ByteConverter.ToUInt16(mdlfile, addr))
+					ByteConverter.BigEndian = false;
 				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				(string filename, byte[] data)[] animfiles = new (string, byte[])[animationPaths.Length];
 				for (int j = 0; j < animationPaths.Length; j++)

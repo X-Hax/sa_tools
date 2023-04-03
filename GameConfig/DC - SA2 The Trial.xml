@@ -4,8 +4,8 @@
   <SplitEntryEvent EventFile="EVENT\E0000" EventType="Trial" />
   <SplitEntry SourceFile="1ST_READ.bin" IniFile="1ST_READ" CmnName="Common Objects and Character Data (1ST_READ)" />
   <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" CmnName="City Escape" />
-  <SplitEntryMDL BigEndian="false" ModelFile="sonicmdl.prs" CmnName="Sonic Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>sonicmtn.prs</MotionFile>
+  <SplitEntryMDL ModelFile="SONICMDL.PRS" CmnName="Sonic Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

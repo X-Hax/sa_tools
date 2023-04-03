@@ -266,10 +266,10 @@ namespace Split
 							else
 								Console.WriteLine("File {0} doesn't exist.", animpath);
 						}
-						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
+						SplitTools.SAArc.sa2MDL.Split(fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
 					}
 					else
-						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
+						SplitTools.SAArc.sa2MDL.Split(fullpath_mdl, fullpath_out, null);
 					break;
                 case "dllexport":
                     int arrayid = -1;

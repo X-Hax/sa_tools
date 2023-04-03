@@ -64,7 +64,7 @@ namespace SplitMDL
 				animationFiles[i] = listBox1.Items[i].ToString();
 			}
 
-			SplitTools.SAArc.sa2MDL.Split(bigEndianCheckbox.Checked, filePathTextBox.Text, outputFolderPath.Text,
+			SplitTools.SAArc.sa2MDL.Split(filePathTextBox.Text, outputFolderPath.Text,
 				animationFiles);
 		}
 	}
