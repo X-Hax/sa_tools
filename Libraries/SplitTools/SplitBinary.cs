@@ -596,7 +596,16 @@ namespace SplitTools.Split
 						DCMiniEventArray.Load(datafile, address, data.Length).Save(fileOutputPath);
 					break;
 				case "cutscenevoicearray":
-					SA2CutsceneVoices.Load(datafile, address).Save(fileOutputPath);
+					if (data.CustomProperties.ContainsKey("beta"))
+					{
+						bool beta = bool.Parse(customProperties["beta"]);
+						if (beta == true)
+							SA2BetaCutsceneVoices.Load(datafile, address).Save(fileOutputPath);
+						else
+							SA2CutsceneVoices.Load(datafile, address).Save(fileOutputPath);
+					}
+					else
+						SA2CutsceneVoices.Load(datafile, address).Save(fileOutputPath);
 					break;
 				case "stringarray":
 					{
@@ -1182,6 +1191,8 @@ namespace SplitTools.Split
 					KartCourse.Save(KartCourse.ReadBinary(datafile, address, imageBase), fileOutputPath);
 					break;
 				case "kartphysics":
+					KartPhysics kpm = new KartPhysics(datafile, address);
+					kpm.Save(fileOutputPath);
 					break;
 				case "levelpathlist":
 					{

@@ -4208,11 +4208,12 @@ namespace SplitTools
 		public static List<SA2CutsceneVoiceInfo> Load(byte[] file, int address)
 		{
 			List<SA2CutsceneVoiceInfo> result = new List<SA2CutsceneVoiceInfo>();
-			int ptr = ByteConverter.ToInt32(file, address);
-			while (file[address] != 0xFF)
+			uint ptr = ByteConverter.ToUInt32(file, address);
+			while (ptr != 0xFFFFFFFF)
 			{
 				result.Add(new SA2CutsceneVoiceInfo(file, address));
 				address += SA2CutsceneVoiceInfo.Size;
+				ptr = ByteConverter.ToUInt32(file, address);
 			}
 			return result;
 		}
@@ -4228,6 +4229,10 @@ namespace SplitTools
 	{
 		[IniAlwaysInclude]
 		public string EventID { get; set; }
+		[IniIgnore]
+		public uint RealValue { get; set; }
+		[IniIgnore]
+		public int EventIDConstant { get; set; }
 		[IniAlwaysInclude]
 		public int EventVoiceID { get; set; }
 		[IniAlwaysInclude]
@@ -4238,8 +4243,8 @@ namespace SplitTools
 
 		public SA2CutsceneVoiceInfo(byte[] file, int address)
 		{
-			uint RealValue = ByteConverter.ToUInt32(file, address);
-			decimal EventIDConstant = Math.Floor(decimal.Divide(RealValue, 1000));
+			RealValue = ByteConverter.ToUInt32(file, address);
+			EventIDConstant = (int)Math.Floor(decimal.Divide(RealValue, 1000));
 			switch (EventIDConstant)
 			{
 				case 1:
@@ -4258,13 +4263,13 @@ namespace SplitTools
 				case 117:
 				case 121:
 				case 125:
-					EventID = "ME" + EventIDConstant.ToString("X4");
+					EventID = "ME" + EventIDConstant.ToString("D4");
 					break;
 				default:
-					EventID = "E" + EventIDConstant.ToString("X4");
+					EventID = "E" + EventIDConstant.ToString("D4");
 					break;
 			}
-			EventVoiceID = (int)(RealValue - (EventIDConstant * 1000));
+			EventVoiceID = (int)(RealValue % 1000);
 			address += sizeof(int);
 			VoiceFileID = ByteConverter.ToInt32(file, address);
 		}
@@ -4277,11 +4282,117 @@ namespace SplitTools
 		public string ToStruct()
 		{
 			StringBuilder sb = new StringBuilder("{ ");
-			sb.Append(EventID);
-			sb.Append(", ");
-			sb.Append(EventVoiceID);
+			sb.Append(RealValue);
 			sb.Append(", ");
 			sb.Append(VoiceFileID);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public static class SA2BetaCutsceneVoices
+	{
+		public static List<SA2BetaCutsceneVoiceInfo> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2BetaCutsceneVoiceInfo>>(filename);
+		}
+
+		public static List<SA2BetaCutsceneVoiceInfo> Load(byte[] file, int address)
+		{
+			List<SA2BetaCutsceneVoiceInfo> result = new List<SA2BetaCutsceneVoiceInfo>();
+			uint ptr = ByteConverter.ToUInt32(file, address);
+			while (ptr != 0xFFFFFFFF)
+			{
+				result.Add(new SA2BetaCutsceneVoiceInfo(file, address));
+				address += SA2BetaCutsceneVoiceInfo.Size;
+				ptr = ByteConverter.ToUInt32(file, address);
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA2BetaCutsceneVoiceInfo> voice, string filename)
+		{
+			IniSerializer.Serialize(voice, filename);
+		}
+	}
+
+	[Serializable]
+	public class SA2BetaCutsceneVoiceInfo
+	{
+		[IniAlwaysInclude]
+		public string EventID { get; set; }
+		[IniIgnore]
+		public int EventIDConstant { get; set; }
+		[IniIgnore]
+		public uint RealValueJP { get; set; }
+		[IniAlwaysInclude]
+		public int VoiceFileJPID { get; set; }
+		[IniAlwaysInclude]
+		public int EventVoiceJPID { get; set; }
+		[IniIgnore]
+		public uint RealValueEN { get; set; }
+		[IniAlwaysInclude]
+		public int VoiceFileENID { get; set; }
+		[IniAlwaysInclude]
+		public int EventVoiceENID { get; set; }
+		public static int Size { get { return 0x10; } }
+
+		public SA2BetaCutsceneVoiceInfo() { }
+
+		public SA2BetaCutsceneVoiceInfo(byte[] file, int address)
+		{
+			VoiceFileJPID = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			RealValueJP = ByteConverter.ToUInt32(file, address);
+			EventIDConstant = (int)Math.Floor(decimal.Divide(RealValueJP, 1000));
+			switch (EventIDConstant)
+			{
+				case 1:
+				case 7:
+				case 8:
+				case 10:
+				case 12:
+				case 13:
+				case 18:
+				case 23:
+				case 104:
+				case 108:
+				case 110:
+				case 114:
+				case 115:
+				case 117:
+				case 121:
+				case 125:
+					EventID = "ME" + EventIDConstant.ToString("D4");
+					break;
+				default:
+					EventID = "E" + EventIDConstant.ToString("D4");
+					break;
+			}
+			EventVoiceJPID = (int)(RealValueJP % 1000);
+			address += sizeof(int);
+			VoiceFileENID = ByteConverter.ToInt32(file, address);
+			address += sizeof(int);
+			RealValueEN = ByteConverter.ToUInt32(file, address);
+			EventVoiceENID = (int)(RealValueEN % 1000);
+
+		}
+
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(VoiceFileJPID);
+			sb.Append(", ");
+			sb.Append(RealValueJP);
+			sb.Append(", ");
+			sb.Append(VoiceFileENID);
+			sb.Append(", ");
+			sb.Append(RealValueEN);
 			sb.Append(" }");
 			return sb.ToString();
 		}
@@ -5223,6 +5334,58 @@ namespace SplitTools
 		}
 
 		public PlayerParameter()
+		{ }
+	}
+
+	public class KartPhysics
+	{
+		public float Acceleration { get; set; }
+		public float BrakePower { get; set; }
+		public float Deceleration { get; set; }
+		public float SpeedCap { get; set; }
+		public float Weight { get; set; }
+		public float Unk1 { get; set; }
+		public float DriftHandling { get; set; }
+		public float DriftSpeedThreshold { get; set; }
+		public float Unk2 { get; set; }
+		public float TopSpeed { get; set; }
+
+		public KartPhysics(byte[] file, int address)
+		{
+			Acceleration = ByteConverter.ToSingle(file, address);
+			BrakePower = ByteConverter.ToSingle(file, address + 4);
+			Deceleration = ByteConverter.ToSingle(file, address + 8);
+			SpeedCap = ByteConverter.ToSingle(file, address + 12);
+			Weight = ByteConverter.ToSingle(file, address + 16);
+			Unk1 = ByteConverter.ToSingle(file, address + 20);
+			DriftHandling = ByteConverter.ToSingle(file, address + 24);
+			DriftSpeedThreshold = ByteConverter.ToSingle(file, address + 28);
+			Unk2 = ByteConverter.ToSingle(file, address + 32);
+			TopSpeed = ByteConverter.ToSingle(file, address + 36);	
+		}
+
+		public static KartPhysics Load(string filename) => IniSerializer.Deserialize<KartPhysics>(filename);
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.AppendFormat("{0}, ", Acceleration.ToC());
+			sb.AppendFormat("{0}, ", BrakePower.ToC());
+			sb.AppendFormat("{0}, ", Deceleration.ToC());
+			sb.AppendFormat("{0}, ", SpeedCap.ToC());
+			sb.AppendFormat("{0}, ", Weight.ToC());
+			sb.AppendFormat("{0}, ", Unk1.ToC());
+			sb.AppendFormat("{0}, ", DriftHandling.ToC());
+			sb.AppendFormat("{0}, ", DriftSpeedThreshold.ToC());
+			sb.AppendFormat("{0}, ", Unk2.ToC());
+			sb.AppendFormat("{0}, ", TopSpeed.ToC());
+			sb.Append(" }");
+			return sb.ToString();
+		}
+
+		public KartPhysics()
 		{ }
 	}
 

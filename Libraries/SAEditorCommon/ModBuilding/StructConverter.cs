@@ -48,6 +48,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "charactersoundarray", "Character Sound Array" },
 			{ "charactervoicearray", "Character Voice Array" },
 			{ "minieventarray", "Mini-Event Array"},
+			{ "cutscenevoicearray", "Cutscene Voice Array" },
 			{ "stringarray", "String Array" },
 			{ "nextlevellist", "Next Level List" },
 			{ "cutscenetext", "Cutscene Text" },
@@ -80,6 +81,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "kartsoundparameters", "Kart Sound Parameters" },
 			{ "kartspecialinfolist", "Kart Special Info" },
 			{ "kartcourse", "Kart Course" },
+			{ "kartphysics", "Kart Physics Parameters" },
 			{ "string", "String" },
 			{ "texlist", "Texture List" },
 			{ "texlistarray", "Texture List Array" },
@@ -1331,6 +1333,17 @@ namespace SAModel.SAEditorCommon.StructConverter
 								}
 							}
 							break;
+						case "cutscenevoicearray":
+							{
+								List<SA2CutsceneVoiceInfo> list = SA2CutsceneVoices.Load(data.Filename);
+								writer.WriteLine("CutsceneVoices {0}[] = {{", name);
+								List<string> objs = new List<string>(list.Count + 1);
+								foreach (SA2CutsceneVoiceInfo obj in list)
+									objs.Add(obj.ToStruct());
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+							}
+							break;
 						case "chaoitemstats":
 							{
 								switch (iniData.Game)
@@ -1400,14 +1413,28 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "storysequence":
 							{
-								List<SA2StoryEntry> list = SA2StoryList.Load(data.Filename);
-								writer.WriteLine("StoryEntry {0}[] = {{", name);
-								List<string> objs = new List<string>(list.Count + 1);
-								foreach (SA2StoryEntry obj in list)
-									objs.Add(obj.ToStruct());
-								objs.Add("{ StoryEntryType_End }");
-								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
-								writer.WriteLine("};");
+								if (SA2B)
+								{
+									List<SA2StoryEntry> list = SA2StoryList.Load(data.Filename);
+									writer.WriteLine("StoryEntry {0}[] = {{", name);
+									List<string> objs = new List<string>(list.Count + 1);
+									foreach (SA2StoryEntry obj in list)
+										objs.Add(obj.ToStruct());
+									objs.Add("{ StoryEntryType_End }");
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+								}
+								else
+								{
+									List<SA2DCStoryEntry> list = SA2DCStoryList.Load(data.Filename);
+									writer.WriteLine("StoryEntry {0}[] = {{", name);
+									List<string> objs = new List<string>(list.Count + 1);
+									foreach (SA2DCStoryEntry obj in list)
+										objs.Add(obj.ToStruct());
+									objs.Add("{ StoryEntryType_End }");
+									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+									writer.WriteLine("};");
+								}
 							}
 							break;
 						case "string":
@@ -1424,6 +1451,13 @@ namespace SAModel.SAEditorCommon.StructConverter
 								PlayerParameter plpm = PlayerParameter.Load(data.Filename);
 								writer.WriteLine("player_parameter {0} = {1};", name, plpm.ToStruct());
 								initlines.Add(string.Format("*(player_parameter*)0x{0:X} = {1};", data.Address + imagebase, name));
+							}
+							break;
+						case "kartphysics":
+							{
+								KartPhysics kpm = KartPhysics.Load(data.Filename);
+								writer.WriteLine("kart_physics {0} = {1};", name, kpm.ToStruct());
+								initlines.Add(string.Format("*(kart_physics*)0x{0:X} = {1};", data.Address + imagebase, name));
 							}
 							break;
 						case "kartcourse":
