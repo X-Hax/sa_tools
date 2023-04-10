@@ -49,7 +49,7 @@ namespace SplitTools.SAArc
 					beta = true;
 					ini.BigEndian = false;
 				}
-				else if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0 || (fc.Length > 0x9900 && fc[0x26800] > 0))
+				else if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0 || (fc.Length > 0x9900 && (fc[0x9800] > 0 || fc[0x26800] > 0)))
 				{ 
 					Console.WriteLine("File is in DC format.");
 					ByteConverter.BigEndian = false;
@@ -104,8 +104,8 @@ namespace SplitTools.SAArc
 					audio.FrameStart = ByteConverter.ToUInt32(fc, address);
 					if (audio.FrameStart != 0)
 						audiocount++;
-					audio.VoiceEntry1 = ByteConverter.ToInt16(fc, address + 4).ToCHex();
-					audio.VoiceEntry2 = ByteConverter.ToInt16(fc, address + 6).ToCHex();
+					audio.VoiceEntry1 = ByteConverter.ToInt16(fc, address + 4);
+					audio.VoiceEntry2 = ByteConverter.ToInt16(fc, address + 6);
 					audio.MusicEntry = fc.GetCString(address + 8);
 					audio.JingleEntry = fc.GetCString(address + 0x18);
 					ini.AudioInfo.Add(audio);
@@ -140,12 +140,13 @@ namespace SplitTools.SAArc
 							screen.R = fc[address + 0xA];
 							screen.A = fc[address + 0xB];
 						}
-						screen.Unk1 = fc[address + 0xC];
-						screen.Unk2 = ByteConverter.ToInt16(fc, address + 0xE);
-						screen.Unk3 = ByteConverter.ToInt32(fc, address + 0x10);
-						screen.Unk4 = ByteConverter.ToInt32(fc, address + 0x14);
-						screen.Unk5 = ByteConverter.ToInt32(fc, address + 0x18);
-						screen.Unk6 = ByteConverter.ToInt32(fc, address + 0x1C);
+						screen.Fade = fc[address + 0xC];
+						screen.TexID = ByteConverter.ToInt16(fc, address + 0xE);
+						screen.VisibleTime = ByteConverter.ToInt32(fc, address + 0x10);
+						screen.PosX = ByteConverter.ToInt16(fc, address + 0x14);
+						screen.PosY = ByteConverter.ToInt16(fc, address + 0x16);
+						screen.Width = ByteConverter.ToSingle(fc, address + 0x18);
+						screen.Height = ByteConverter.ToSingle(fc, address + 0x1C);
 						ini.ScreenEffects.Add(screen);
 					}
 					if (screencount != 0)
@@ -177,29 +178,7 @@ namespace SplitTools.SAArc
 					int lightcount = 0;
 					if (beta)
 					{
-						for (int i = 0; i < 436; i++)
-						{
-							address = 0x26800 + (0x44 * i);
-							LightingInfo light = new LightingInfo();
-							light.FrameStart = ByteConverter.ToUInt32(fc, address);
-							if (light.FrameStart != 0)
-								lightcount++;
-							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
-							light.LightDirection = new Vertex(fc, address + 8);
-							light.Color = new Vertex(fc, address + 0x14);
-							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
-							light.AmbientColor = new Vertex(fc, address + 0x24);
-							ini.Lighting.Add(light);
-						}
-						if (lightcount != 0)
-							Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
-						else
-							Console.WriteLine("Event does not use lighting.");
-						// Space of 0x30 following the data chunk. Investigate further.
-					}
-					else
-					{
-						for (int i = 0; i < 1084; i++)
+						for (int i = 0; i < 256; i++)
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
@@ -218,7 +197,119 @@ namespace SplitTools.SAArc
 						else
 							Console.WriteLine("Event does not use lighting.");
 
-						//add a buffer of 0x10 between these two chunks for build operations
+						int blurcount = 0;
+						for (int i = 0; i < 64; i++)
+						{
+							address = 0x2AC00 + (0x40 * i);
+							BlurInfo blur = new BlurInfo();
+							blur.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (blur.FrameStart != 0)
+								blurcount++;
+							blur.Duration = ByteConverter.ToInt32(fc, address + 4);
+							blur.BlurModelID1 = fc[address + 8];
+							blur.BlurModelID2 = fc[address + 9];
+							blur.BlurModelID3 = fc[address + 0xA];
+							blur.BlurModelID4 = fc[address + 0xB];
+							blur.BlurModelID5 = fc[address + 0xC];
+							blur.BlurModelID6 = fc[address + 0xD];
+							blur.BlurInstances = ByteConverter.ToInt32(fc, address + 0x10);
+							ini.BlurInfo.Add(blur);
+						}
+						if (blurcount != 0)
+							Console.WriteLine("Event contains {0} active blur entr{1}.", blurcount, blurcount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use blur effects.");
+
+						int particle2count = 0;
+						for (int i = 0; i < 64; i++)
+						{
+							address = 0x2BC00 + (0x40 * i);
+							ParticleEffects2 particle2 = new ParticleEffects2();
+							particle2.Position = new Vertex(fc, address);
+							particle2.Unk2 = new Vertex(fc, address + 0xC);
+							particle2.Unk3 = ByteConverter.ToInt16(fc, address + 0x18);
+							particle2.Unk4 = ByteConverter.ToInt16(fc, address + 0x1A);
+							particle2.Unk5 = ByteConverter.ToInt16(fc, address + 0x1C);
+							particle2.Unk6 = ByteConverter.ToInt16(fc, address + 0x1E);
+							particle2.FrameStart = ByteConverter.ToUInt32(fc, address + 0x20);
+							if (particle2.FrameStart != 0)
+								particle2count++;
+							particle2.Spread = new Vertex(fc, address + 0x24);
+							particle2.Count = ByteConverter.ToInt32(fc, address + 0x30);
+							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
+							particle2.Type = ByteConverter.ToInt32(fc, address + 0x38);
+							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
+							ini.ParticleEffects2.Add(particle2);
+						}
+						if (particle2count != 0)
+							Console.WriteLine("Event contains {0} active particle generator entr{1}.", particle2count, particle2count == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use particle generators.");
+
+						int videocount = 0;
+						for (int i = 0; i < 64; i++)
+						{
+							address = 0x2CC00 + (0x40 * i);
+							VideoInfo video = new VideoInfo();
+							video.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (video.FrameStart != 0)
+								videocount++;
+							video.VideoType = ByteConverter.ToUInt16(fc, address + 0x4);
+							video.Unknown = ByteConverter.ToUInt16(fc, address + 0x6);
+							video.Depth = ByteConverter.ToSingle(fc, address + 0x8);
+							video.OverlayType = fc[address + 0xC];
+							video.OverlayTexID = fc[address + 0xD];
+							video.VideoName = fc.GetCString(address + 0x10);
+							ini.VideoInfo.Add(video);
+						}
+						if (videocount != 0)
+							Console.WriteLine("Event contains {0} active video entr{1}.", videocount, videocount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use video effects.");
+					}
+					else
+					{
+						for (int i = 0; i < 1024; i++)
+						{
+							address = 0x26800 + (0x44 * i);
+							LightingInfo light = new LightingInfo();
+							light.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (light.FrameStart != 0)
+								lightcount++;
+							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
+							light.LightDirection = new Vertex(fc, address + 8);
+							light.Color = new Vertex(fc, address + 0x14);
+							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
+							light.AmbientColor = new Vertex(fc, address + 0x24);
+							ini.Lighting.Add(light);
+						}
+						if (lightcount != 0)
+							Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use lighting.");
+
+						int blurcount = 0;
+						for (int i = 0; i < 64; i++)
+						{
+							address = 0x37800 + (0x40 * i);
+							BlurInfo blur = new BlurInfo();
+							blur.FrameStart = ByteConverter.ToUInt32(fc, address);
+							if (blur.FrameStart != 0)
+								blurcount++;
+							blur.Duration = ByteConverter.ToInt32(fc, address + 4);
+							blur.BlurModelID1 = fc[address + 8];
+							blur.BlurModelID2 = fc[address + 9];
+							blur.BlurModelID3 = fc[address + 0xA];
+							blur.BlurModelID4 = fc[address + 0xB];
+							blur.BlurModelID5 = fc[address + 0xC];
+							blur.BlurModelID6 = fc[address + 0xD];
+							blur.BlurInstances = ByteConverter.ToInt32(fc, address + 0x10);
+							ini.BlurInfo.Add(blur);
+						}
+						if (blurcount != 0)
+							Console.WriteLine("Event contains {0} active blur entr{1}.", blurcount, blurcount == 1 ? "y" : "ies");
+						else
+							Console.WriteLine("Event does not use blur effects.");
 
 						int particle2count = 0;
 						for (int i = 0; i < 64; i++)
@@ -242,9 +333,9 @@ namespace SplitTools.SAArc
 							ini.ParticleEffects2.Add(particle2);
 						}
 						if (particle2count != 0)
-							Console.WriteLine("Event contains {0} active animated particle effect entr{1}.", particle2count, particle2count == 1 ? "y" : "ies");
+							Console.WriteLine("Event contains {0} active particle generator entr{1}.", particle2count, particle2count == 1 ? "y" : "ies");
 						else
-							Console.WriteLine("Event does not use animated particle effects.");
+							Console.WriteLine("Event does not use particle generators.");
 
 						int videocount = 0;
 						for (int i = 0; i < 64; i++)
@@ -258,7 +349,7 @@ namespace SplitTools.SAArc
 							video.Unknown = ByteConverter.ToUInt16(fc, address + 0x6);
 							video.Depth = ByteConverter.ToSingle(fc, address + 0x8);
 							video.OverlayType = fc[address + 0xC];
-							video.OverlayType2 = fc[address + 0xD];
+							video.OverlayTexID = fc[address + 0xD];
 							video.VideoName = fc.GetCString(address + 0x10);
 							ini.VideoInfo.Add(video);
 						}
@@ -351,7 +442,7 @@ namespace SplitTools.SAArc
 					fx.FadeType = fc[addr + 4];
 					fx.SFXEntry1 = fc[addr + 5];
 					fx.SFXEntry2 = fc[addr + 6];
-					fx.VoiceEntry = ByteConverter.ToUInt16(fc, addr + 8).ToCHex();
+					fx.VoiceEntry = ByteConverter.ToInt16(fc, addr + 8);
 					fx.MusicEntry = fc.GetCString(addr + 0xA);
 					fx.JingleEntry = fc.GetCString(addr + 0x1A);
 					fx.RumblePower = ByteConverter.ToSingle(fc, addr + 0x2C);
@@ -444,7 +535,10 @@ namespace SplitTools.SAArc
 					{
 						extradata.AddRange(light.GetBytes());
 					}
-					extradata.AddRange(new byte[16]);
+					foreach (BlurInfo blur in ini.BlurInfo)
+					{
+						extradata.AddRange(blur.GetBytes());
+					}
 					foreach (ParticleEffects2 particle2 in ini.ParticleEffects2)
 					{
 						extradata.AddRange(particle2.GetBytes());
@@ -530,6 +624,7 @@ namespace SplitTools.SAArc
 		public List<ScreenEffects> ScreenEffects { get; set; } = new List<ScreenEffects>();
 		public List<ParticleEffects> ParticleEffects { get; set; } = new List<ParticleEffects>();
 		public List<LightingInfo> Lighting { get; set; } = new List<LightingInfo>();
+		public List<BlurInfo> BlurInfo { get; set; } = new List<BlurInfo>();
 		public List<ParticleEffects2> ParticleEffects2 { get; set; } = new List<ParticleEffects2>();
 		public List<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 	}
@@ -544,8 +639,8 @@ namespace SplitTools.SAArc
 	public class AudioInfo
 	{
 		public uint FrameStart { get; set; }
-		public string VoiceEntry1 { get; set; }
-		public string VoiceEntry2 { get; set; }
+		public int VoiceEntry1 { get; set; }
+		public int VoiceEntry2 { get; set; }
 		public string MusicEntry { get; set; }
 		public string JingleEntry { get; set; }
 
@@ -555,8 +650,8 @@ namespace SplitTools.SAArc
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry1, 16)));
-			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry2, 16)));
+			result.AddRange(ByteConverter.GetBytes(VoiceEntry1));
+			result.AddRange(ByteConverter.GetBytes(VoiceEntry2));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
 			result.Align(0x18);
 			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
@@ -574,12 +669,13 @@ namespace SplitTools.SAArc
 		public byte R { get; set; }
 		public byte G { get; set; }
 		public byte B { get; set; }
-		public byte Unk1 { get; set; }
-		public short Unk2 { get; set; }
-		public int Unk3 { get; set; }
-		public int Unk4 { get; set; }
-		public int Unk5 { get; set; }
-		public int Unk6 { get; set; }
+		public byte Fade { get; set; }
+		public short TexID { get; set; }
+		public int VisibleTime { get; set; }
+		public short PosX { get; set; }
+		public short PosY { get; set; }
+		public float Width { get; set; }
+		public float Height { get; set; }
 
 		public static int Size { get { return 0x40; } }
 
@@ -593,13 +689,14 @@ namespace SplitTools.SAArc
 			result.Add(R);
 			result.Add(G);
 			result.Add(B);
-			result.Add(Unk1);
+			result.Add(Fade);
 			result.AddRange(new byte[1]);
-			result.AddRange(ByteConverter.GetBytes(Unk2));
-			result.AddRange(ByteConverter.GetBytes(Unk3));
-			result.AddRange(ByteConverter.GetBytes(Unk4));
-			result.AddRange(ByteConverter.GetBytes(Unk5));
-			result.AddRange(ByteConverter.GetBytes(Unk6));
+			result.AddRange(ByteConverter.GetBytes(TexID));
+			result.AddRange(ByteConverter.GetBytes(VisibleTime));
+			result.AddRange(ByteConverter.GetBytes(PosX));
+			result.AddRange(ByteConverter.GetBytes(PosY));
+			result.AddRange(ByteConverter.GetBytes(Width));
+			result.AddRange(ByteConverter.GetBytes(Height));
 			result.Align(0x40);
 			return result.ToArray();
 		}
@@ -614,13 +711,14 @@ namespace SplitTools.SAArc
 			result.Add(G);
 			result.Add(R);
 			result.Add(A);
-			result.Add(Unk1);
+			result.Add(Fade);
 			result.AddRange(new byte[1]);
-			result.AddRange(ByteConverter.GetBytes(Unk2));
-			result.AddRange(ByteConverter.GetBytes(Unk3));
-			result.AddRange(ByteConverter.GetBytes(Unk4));
-			result.AddRange(ByteConverter.GetBytes(Unk5));
-			result.AddRange(ByteConverter.GetBytes(Unk6));
+			result.AddRange(ByteConverter.GetBytes(TexID));
+			result.AddRange(ByteConverter.GetBytes(VisibleTime));
+			result.AddRange(ByteConverter.GetBytes(PosX));
+			result.AddRange(ByteConverter.GetBytes(PosY));
+			result.AddRange(ByteConverter.GetBytes(Width));
+			result.AddRange(ByteConverter.GetBytes(Height));
 			result.Align(0x40);
 			return result.ToArray();
 		}
@@ -678,6 +776,37 @@ namespace SplitTools.SAArc
 		}
 	}
 	[Serializable]
+	public class BlurInfo
+	{
+		public uint FrameStart { get; set; }
+		public int Duration { get; set; }
+		public byte BlurModelID1 { get; set; }
+		public byte BlurModelID2 { get; set; }
+		public byte BlurModelID3 { get; set; }
+		public byte BlurModelID4 { get; set; }
+		public byte BlurModelID5 { get; set; }
+		public byte BlurModelID6 { get; set; }
+		public int BlurInstances { get; set; }
+		public static int Size { get { return 0x40; } }
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>(Size);
+			result.AddRange(ByteConverter.GetBytes(FrameStart));
+			result.Add(BlurModelID1);
+			result.Add(BlurModelID2);
+			result.Add(BlurModelID3);
+			result.Add(BlurModelID4);
+			result.Add(BlurModelID5);
+			result.Add(BlurModelID6);
+			result.AddRange(new byte[2]);
+			result.AddRange(ByteConverter.GetBytes(BlurInstances));
+			result.Align(0x40);
+			return result.ToArray();
+		}
+	}
+
+	[Serializable]
 	public class ParticleEffects2
 	{
 		public Vertex Position { get; set; }
@@ -722,7 +851,7 @@ namespace SplitTools.SAArc
 		public ushort Unknown { get; set; }
 		public float Depth { get; set; }
 		public byte OverlayType { get; set; }
-		public byte OverlayType2 { get; set; }
+		public byte OverlayTexID { get; set; }
 		public string VideoName { get; set; }
 		public static int Size { get { return 0x40; } }
 
@@ -734,7 +863,7 @@ namespace SplitTools.SAArc
 			result.AddRange(ByteConverter.GetBytes(Unknown));
 			result.AddRange(ByteConverter.GetBytes(Depth));
 			result.Add(OverlayType);
-			result.Add(OverlayType2);
+			result.Add(OverlayTexID);
 			result.AddRange(new byte[2]);
 			result.AddRange(Encoding.ASCII.GetBytes(VideoName));
 			result.Align(0x40);
@@ -765,7 +894,7 @@ namespace SplitTools.SAArc
 		public byte FadeType { get; set; }
 		public byte SFXEntry1 { get; set; }
 		public byte SFXEntry2 { get; set; }
-		public string VoiceEntry { get; set; }
+		public short VoiceEntry { get; set; }
 		public string MusicEntry { get; set; }
 		public string JingleEntry { get; set; }
 		public float RumblePower { get; set; }
@@ -780,7 +909,7 @@ namespace SplitTools.SAArc
 			result.Add(SFXEntry1);
 			result.Add(SFXEntry2);
 			result.AddRange(new byte[1]);
-			result.AddRange(ByteConverter.GetBytes((short)Convert.ToUInt16(VoiceEntry, 16)));
+			result.AddRange(ByteConverter.GetBytes(VoiceEntry));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
 			result.Align(0x1A);
 			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));

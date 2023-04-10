@@ -244,7 +244,7 @@ namespace SplitTools.SAArc
 							ini.MechParts.Add(i, null);
 						ptr += 4;
 					}
-					Console.WriteLine("Event contains {0} mech par{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "t" : "ts");
+					Console.WriteLine("Event contains {0} attached upgrade system pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
 				}
 				int gcnt = ByteConverter.ToInt32(fc, 8);
 				ptr = fc.GetPointer(0, key);
@@ -278,13 +278,13 @@ namespace SplitTools.SAArc
 									ent.GCModel = GetGCModel(fc, ptr2 + 12, key, $"Scene {gn + 1}\\Entity {en + 1} GC Model.sa2bmdl");
 									ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} Shadow Model.sa2mdl");
 									ent.Position = new Vertex(fc, ptr2 + 24);
-									ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 36);
+									ent.Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(fc, ptr2 + 36);
 									ent.Layer = ByteConverter.ToUInt32(fc, ptr2 + 40);
 								}
 								else
 								{
 									ent.Position = new Vertex(fc, ptr2 + 16);
-									ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 28);
+									ent.Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(fc, ptr2 + 28);
 								}
 								scn.Entities.Add(ent);
 								ptr2 += battle ? 0x2C : 0x20;
@@ -399,9 +399,9 @@ namespace SplitTools.SAArc
 					{
 						int rptr = fc.GetPointer(ptr + 0x84, key);
 						ReflectionInfo refl = new ReflectionInfo();
-						refl.Unk1 = ByteConverter.ToInt32(fc, ptr);
-						refl.Unk2 = ByteConverter.ToInt32(fc, ptr + 4);
-						//There's a huge gap here of 0x7C. Investigate further.
+						refl.Instances = ByteConverter.ToInt32(fc, ptr);
+						refl.Transparency = ByteConverter.ToInt32(fc, ptr + 4);
+						//There's a huge gap here of 0x7C. This space was reserved for transparency settings for a maximum of 32 reflection instances.
 						ReflectionMatrixData rmx = new ReflectionMatrixData(fc, rptr);
 						refl.ReflectData = GetReflectData(fc, ptr + 0x84, key, "ReflectionData.ini");
 						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "ReflectionData.ini");
@@ -431,7 +431,7 @@ namespace SplitTools.SAArc
 							ini.UnknownModelData.Add(i, null);
 						ptr += 4;
 					}
-					Console.WriteLine("Event contains {0} unknown model pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
+					Console.WriteLine("Event contains {0} blur model pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
 				}
 				ptr = fc.GetPointer(0x24, key);
 				if (ptr == 0 || dcbeta && ((fc[37] == 0x25) || (fc[38] == 0x22)))
@@ -1247,7 +1247,7 @@ namespace SplitTools.SAArc
 		public string GCModel { get; set; }
 		public string ShadowModel { get; set; }
 		public Vertex Position { get; set; }
-		public uint Flags { get; set; }
+		public SA2CutsceneEntityFlags Flags { get; set; }
 		public uint Layer { get; set; }
 	}
 
@@ -1345,8 +1345,8 @@ namespace SplitTools.SAArc
 
 	public class ReflectionInfo
 	{
-		public int Unk1 { get; set; }
-		public int Unk2 { get; set; }
+		public int Instances { get; set; }
+		public int Transparency { get; set; }
 		public string ReflectData { get; set; }
 	}
 
