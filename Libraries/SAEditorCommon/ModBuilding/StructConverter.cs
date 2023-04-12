@@ -636,7 +636,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine("};");
 							}
 							break;
-						case "texlist":
+						case "texturedata":
 							{
 								TextureListEntry[] list = TextureList.Load(data.Filename);
 								writer.WriteLine("PVMEntry {0}[] = {{", name);
