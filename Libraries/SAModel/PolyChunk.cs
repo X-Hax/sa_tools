@@ -1,5 +1,4 @@
-﻿using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -1601,10 +1600,10 @@ namespace SAModel
 
 						if (UVs != null)
 							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
-						
+
 						if (VColors != null)
 							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
-						
+
 						if (UserFlags1 != null && i > 1)
 						{
 							if (UserFlags3 != null)
