@@ -81,13 +81,16 @@ namespace SplitTools.SAArc
 					Console.WriteLine("File only contains audio/subtitle timings.");
 				int address = 0;
 				int subcount = 0;
+				int timestamps = 0;
 				for (int i = 0; i < 256; i++)
 				{
 					address = 0x8 * i;
 					SubtitleInfo subs = new SubtitleInfo();
-					subs.FrameStart = ByteConverter.ToUInt32(fc, address);
+					subs.FrameStart = ByteConverter.ToInt32(fc, address);
 					if (subs.FrameStart != 0)
 						subcount++;
+					if (subs.FrameStart == -1)
+						timestamps++;
 					subs.VisibleTime = ByteConverter.ToUInt32(fc, address + 4);
 					ini.Subtitles.Add(subs);
 				}
@@ -95,13 +98,17 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Event contains {0} active subtitle entr{1}.", subcount, subcount == 1 ? "y" : "ies");
 				else
 					Console.WriteLine("Event does not use subtitles.");
+				if (timestamps != 0)
+					Console.WriteLine("Event contains {0} opening text screen entr{1}.", timestamps, timestamps == 1 ? "y" : "ies");
+				else
+					Console.WriteLine("Event does not have an opening text screen.");
 
 				int audiocount = 0;
 				for (int i = 0; i < 512; i++)
 				{
 					address = 0x800 + (0x48 * i);
 					AudioInfo audio = new AudioInfo();
-					audio.FrameStart = ByteConverter.ToUInt32(fc, address);
+					audio.FrameStart = ByteConverter.ToInt32(fc, address);
 					if (audio.FrameStart != 0)
 						audiocount++;
 					audio.VoiceEntry1 = ByteConverter.ToInt16(fc, address + 4);
@@ -122,7 +129,7 @@ namespace SplitTools.SAArc
 					{
 						address = 0x9800 + (0x40 * i);
 						ScreenEffects screen = new ScreenEffects();
-						screen.FrameStart = ByteConverter.ToUInt32(fc, address);
+						screen.FrameStart = ByteConverter.ToInt32(fc, address);
 						if (screen.FrameStart != 0)
 							screencount++;
 						screen.Type = fc[address + 4];
@@ -159,7 +166,7 @@ namespace SplitTools.SAArc
 					{
 						address = 0xA800 + (0x38 * i);
 						ParticleEffects particle = new ParticleEffects();
-						particle.FrameStart = ByteConverter.ToUInt32(fc, address);
+						particle.FrameStart = ByteConverter.ToInt32(fc, address);
 						if (particle.FrameStart != 0)
 							particlecount++;
 						particle.ParticleID = fc[address + 4];
@@ -182,7 +189,7 @@ namespace SplitTools.SAArc
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
-							light.FrameStart = ByteConverter.ToUInt32(fc, address);
+							light.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (light.FrameStart != 0)
 								lightcount++;
 							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
@@ -202,7 +209,7 @@ namespace SplitTools.SAArc
 						{
 							address = 0x2AC00 + (0x40 * i);
 							BlurInfo blur = new BlurInfo();
-							blur.FrameStart = ByteConverter.ToUInt32(fc, address);
+							blur.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (blur.FrameStart != 0)
 								blurcount++;
 							blur.Duration = ByteConverter.ToInt32(fc, address + 4);
@@ -231,7 +238,7 @@ namespace SplitTools.SAArc
 							particle2.Unk4 = ByteConverter.ToInt16(fc, address + 0x1A);
 							particle2.Unk5 = ByteConverter.ToInt16(fc, address + 0x1C);
 							particle2.Unk6 = ByteConverter.ToInt16(fc, address + 0x1E);
-							particle2.FrameStart = ByteConverter.ToUInt32(fc, address + 0x20);
+							particle2.FrameStart = ByteConverter.ToInt32(fc, address + 0x20);
 							if (particle2.FrameStart != 0)
 								particle2count++;
 							particle2.Spread = new Vertex(fc, address + 0x24);
@@ -251,11 +258,11 @@ namespace SplitTools.SAArc
 						{
 							address = 0x2CC00 + (0x40 * i);
 							VideoInfo video = new VideoInfo();
-							video.FrameStart = ByteConverter.ToUInt32(fc, address);
+							video.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (video.FrameStart != 0)
 								videocount++;
-							video.VideoType = ByteConverter.ToUInt16(fc, address + 0x4);
-							video.Unknown = ByteConverter.ToUInt16(fc, address + 0x6);
+							video.PosX = ByteConverter.ToInt16(fc, address + 0x4);
+							video.PosY = ByteConverter.ToInt16(fc, address + 0x6);
 							video.Depth = ByteConverter.ToSingle(fc, address + 0x8);
 							video.OverlayType = fc[address + 0xC];
 							video.OverlayTexID = fc[address + 0xD];
@@ -273,7 +280,7 @@ namespace SplitTools.SAArc
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
-							light.FrameStart = ByteConverter.ToUInt32(fc, address);
+							light.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (light.FrameStart != 0)
 								lightcount++;
 							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
@@ -293,7 +300,7 @@ namespace SplitTools.SAArc
 						{
 							address = 0x37800 + (0x40 * i);
 							BlurInfo blur = new BlurInfo();
-							blur.FrameStart = ByteConverter.ToUInt32(fc, address);
+							blur.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (blur.FrameStart != 0)
 								blurcount++;
 							blur.Duration = ByteConverter.ToInt32(fc, address + 4);
@@ -322,7 +329,7 @@ namespace SplitTools.SAArc
 							particle2.Unk4 = ByteConverter.ToInt16(fc, address + 0x1A);
 							particle2.Unk5 = ByteConverter.ToInt16(fc, address + 0x1C);
 							particle2.Unk6 = ByteConverter.ToInt16(fc, address + 0x1E);
-							particle2.FrameStart = ByteConverter.ToUInt32(fc, address + 0x20);
+							particle2.FrameStart = ByteConverter.ToInt32(fc, address + 0x20);
 							if (particle2.FrameStart != 0)
 								particle2count++;
 							particle2.Spread = new Vertex(fc, address + 0x24);
@@ -342,11 +349,11 @@ namespace SplitTools.SAArc
 						{
 							address = 0x39800 + (0x40 * i);
 							VideoInfo video = new VideoInfo();
-							video.FrameStart = ByteConverter.ToUInt32(fc, address);
+							video.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (video.FrameStart != 0)
 								videocount++;
-							video.VideoType = ByteConverter.ToUInt16(fc, address + 0x4);
-							video.Unknown = ByteConverter.ToUInt16(fc, address + 0x6);
+							video.PosX = ByteConverter.ToInt16(fc, address + 0x4);
+							video.PosY = ByteConverter.ToInt16(fc, address + 0x6);
 							video.Depth = ByteConverter.ToSingle(fc, address + 0x8);
 							video.OverlayType = fc[address + 0xC];
 							video.OverlayTexID = fc[address + 0xD];
@@ -419,7 +426,7 @@ namespace SplitTools.SAArc
 				{
 					addr = 0x8 * i;
 					SubtitleInfo subs = new SubtitleInfo();
-					subs.FrameStart = ByteConverter.ToUInt32(fc, addr);
+					subs.FrameStart = ByteConverter.ToInt32(fc, addr);
 					if (subs.FrameStart != 0)
 						subcount++;
 					subs.VisibleTime = ByteConverter.ToUInt32(fc, addr + 4);
@@ -631,14 +638,14 @@ namespace SplitTools.SAArc
 
 	public class SubtitleInfo
 	{
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public uint VisibleTime { get; set; }
 	}
 
 	[Serializable]
 	public class AudioInfo
 	{
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public int VoiceEntry1 { get; set; }
 		public int VoiceEntry2 { get; set; }
 		public string MusicEntry { get; set; }
@@ -663,7 +670,7 @@ namespace SplitTools.SAArc
 	[Serializable]
 	public class ScreenEffects
 	{
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public byte Type { get; set; }
 		public byte A { get; set; }
 		public byte R { get; set; }
@@ -727,7 +734,7 @@ namespace SplitTools.SAArc
 	[Serializable]
 	public class ParticleEffects
 	{
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public byte ParticleID { get; set; }
 		public byte MotionID { get; set; }
 		public float TextureID { get; set; }
@@ -754,7 +761,7 @@ namespace SplitTools.SAArc
 	[Serializable]
 	public class LightingInfo
 	{
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public int FadeType { get; set; }
 		public Vertex LightDirection { get; set; }
 		public Vertex Color { get; set; }
@@ -778,7 +785,7 @@ namespace SplitTools.SAArc
 	[Serializable]
 	public class BlurInfo
 	{
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public int Duration { get; set; }
 		public byte BlurModelID1 { get; set; }
 		public byte BlurModelID2 { get; set; }
@@ -815,7 +822,7 @@ namespace SplitTools.SAArc
 		public short Unk4 { get; set; }
 		public short Unk5 { get; set; }
 		public short Unk6 { get; set; }
-		public uint FrameStart { get; set; }
+		public int FrameStart { get; set; }
 		public Vertex Spread { get; set; }
 		public int Count { get; set; }
 		public int Unk9 { get; set; }
@@ -846,9 +853,9 @@ namespace SplitTools.SAArc
 	[Serializable]
 	public class VideoInfo
 	{
-		public uint FrameStart { get; set; }
-		public ushort VideoType { get; set; }
-		public ushort Unknown { get; set; }
+		public int FrameStart { get; set; }
+		public short PosX { get; set; }
+		public short PosY { get; set; }
 		public float Depth { get; set; }
 		public byte OverlayType { get; set; }
 		public byte OverlayTexID { get; set; }
@@ -859,8 +866,8 @@ namespace SplitTools.SAArc
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(ByteConverter.GetBytes(VideoType));
-			result.AddRange(ByteConverter.GetBytes(Unknown));
+			result.AddRange(ByteConverter.GetBytes(PosX));
+			result.AddRange(ByteConverter.GetBytes(PosY));
 			result.AddRange(ByteConverter.GetBytes(Depth));
 			result.Add(OverlayType);
 			result.Add(OverlayTexID);
