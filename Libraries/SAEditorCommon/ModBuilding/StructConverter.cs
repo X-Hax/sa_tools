@@ -1456,8 +1456,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 						case "kartphysics":
 							{
 								KartPhysics kpm = KartPhysics.Load(data.Filename);
-								writer.WriteLine("kart_physics {0} = {1};", name, kpm.ToStruct());
-								initlines.Add(string.Format("*(kart_physics*)0x{0:X} = {1};", data.Address + imagebase, name));
+								writer.WriteLine("KartPhysics {0} = {1};", name, kpm.ToStruct());
+								initlines.Add(string.Format("*(KartPhysics*)0x{0:X} = {1};", data.Address + imagebase, name));
 							}
 							break;
 						case "kartcourse":
