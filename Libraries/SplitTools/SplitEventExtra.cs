@@ -111,8 +111,11 @@ namespace SplitTools.SAArc
 					audio.FrameStart = ByteConverter.ToInt32(fc, address);
 					if (audio.FrameStart != 0)
 						audiocount++;
-					audio.VoiceEntry1 = ByteConverter.ToInt16(fc, address + 4);
-					audio.VoiceEntry2 = ByteConverter.ToInt16(fc, address + 6);
+					audio.SFXInit = fc[address + 4];
+					// Sets the credits scroll speed. Higher values equal slower speeds.
+					audio.CreditsControl = fc[address + 5];
+					audio.VoiceEntry = ByteConverter.ToInt16(fc, address + 6);
+					// If the first character in the string is the character 0, music stops.
 					audio.MusicEntry = fc.GetCString(address + 8);
 					audio.JingleEntry = fc.GetCString(address + 0x18);
 					ini.AudioInfo.Add(audio);
@@ -646,8 +649,9 @@ namespace SplitTools.SAArc
 	public class AudioInfo
 	{
 		public int FrameStart { get; set; }
-		public int VoiceEntry1 { get; set; }
-		public int VoiceEntry2 { get; set; }
+		public byte SFXInit { get; set; }
+		public byte CreditsControl { get; set; }
+		public short VoiceEntry { get; set; }
 		public string MusicEntry { get; set; }
 		public string JingleEntry { get; set; }
 
@@ -657,8 +661,9 @@ namespace SplitTools.SAArc
 		{
 			List<byte> result = new List<byte>(Size);
 			result.AddRange(ByteConverter.GetBytes(FrameStart));
-			result.AddRange(ByteConverter.GetBytes(VoiceEntry1));
-			result.AddRange(ByteConverter.GetBytes(VoiceEntry2));
+			result.Add(SFXInit);
+			result.Add(CreditsControl);
+			result.AddRange(ByteConverter.GetBytes(VoiceEntry));
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
 			result.Align(0x18);
 			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
