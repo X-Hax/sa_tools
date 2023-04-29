@@ -163,11 +163,14 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
 		}
-
+		/// <summary>
+		/// Intended for use with SAMDL Project Mode
+		/// </summary>
+		public abstract class EntryType {}
 		/// <summary>
 		/// Stores names for the source file, data file, and a common name for processing data to be split.
 		/// </summary>
-		public class SplitEntry
+		public class SplitEntry : EntryType
 		{
 			/// <summary>
 			/// Input file to be split from.
@@ -189,7 +192,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Stores information on SA2 Model and Motion archives for splitting.
 		/// </summary>
-		public class SplitEntryMDL
+		public class SplitEntryMDL : EntryType
 		{
 			/// <summary>
 			/// Model Archive filename.
@@ -216,7 +219,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Stores information on SA2 cutscene archives for splitting.
 		/// </summary>
-		public class SplitEntryEvent
+		public class SplitEntryEvent : EntryType
 		{
 			/// <summary>
 			/// Cutscene Archive filename.
@@ -621,9 +624,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Splits data from a SplitEntryMDL.
 		/// </summary>
-		public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, string iniFolder, bool overwrite = true)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+
+			string labelfile = Path.Combine(iniFolder, (splitMDL.LabelFile.ToLower() + ".ini"));
 
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
@@ -648,7 +653,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
+				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), labelfile);
 		}
 
 		/// <summary>

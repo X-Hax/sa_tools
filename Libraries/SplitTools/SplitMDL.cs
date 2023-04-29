@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace SplitTools.SAArc
 {
 	public static class sa2MDL
 	{
-		public static void Split(string filePath, string outputFolder, string[] animationPaths)
+		public static void Split(string filePath, string outputFolder, string[] animationPaths, string labelfile = null)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -55,6 +56,16 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
+
+				// labels
+				Dictionary<int, string> sectionlist = new Dictionary<int, string>();
+				Dictionary<int, string> splitfilenames = new Dictionary<int, string>();
+				if (labelfile != null) labelfile = Path.GetFullPath(labelfile);
+				if (File.Exists(labelfile))
+				{
+					splitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(labelfile);
+				}
+				string[] metadata = new string[0];
 
 				// getting model pointers
 				int address = 0;
@@ -124,9 +135,30 @@ namespace SplitTools.SAArc
 							animlist.Add(rel);
 						}
 
+					// LABELS
+					if (labelfile != null)
+					{
+						metadata = splitfilenames[model.Key].Split('|'); // Filename|Description|Texture file
+						string outFilename = metadata[0];
+						if (splitfilenames[model.Key] == "NULL")
+							sectionlist.Add(model.Key, "NULL");
+						string outResult = outFilename;
+						if (metadata.Length > 1)
+							outResult += ("|" + metadata[1]);
+						if (metadata.Length > 2)
+							outResult += ("|" + metadata[2]);
+						sectionlist.Add(model.Key, outResult);
+					}
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
 						null, null, null, ModelFormat.Chunk);
+				}
+
+				// labels for SAMDL Project Mode
+				if (labelfile != null)
+				{
+					string sectionListFilename = Path.GetFileNameWithoutExtension(labelfile) + "_data.ini";
+					IniSerializer.Serialize(sectionlist, Path.Combine(outputFolder, sectionListFilename));
 				}
 
 				// save ini file

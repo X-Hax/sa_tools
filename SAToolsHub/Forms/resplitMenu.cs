@@ -179,7 +179,7 @@ namespace SAToolsHub
 			{
 				progress.SetTask("Splitting Character Models");
 				foreach (Templates.SplitEntryMDL splitMDL in splitMDLEntries)
-					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder, overwrite);
+					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder, iniFolder, overwrite);
 			}
 			// Split Event files for SA2
 			if (splitEventEntries.Count > 0)

@@ -144,7 +144,7 @@ namespace Split
                                 continue;
                             }
                             Console.Write("\nSplitting MDL file: {0}", splitEntryMDL.ModelFile);
-                            ProjectFunctions.SplitTemplateMDLEntry(splitEntryMDL, null, dataFolder, fullpath_out);
+                            ProjectFunctions.SplitTemplateMDLEntry(splitEntryMDL, null, dataFolder, fullpath_out, iniFolder);
                         }
 					if (template.SplitEventEntries != null)
 						foreach (Templates.SplitEntryEvent splitEntryEvent in template.SplitEventEntries)

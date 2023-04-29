@@ -497,7 +497,7 @@ namespace SAToolsHub
 						e.Cancel = true;
 						return ProjectSplitResult.Cancelled;
 					}
-					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder);
+					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder, iniFolder);
 				}
 			}
 			// Split Event files for SA2
