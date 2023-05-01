@@ -388,7 +388,7 @@ namespace SplitTools.SplitDLL
 									output.Items.Add(info);
                                     if (!labels.Contains(mdl.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString()))
                                     {
-                                        string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
+										string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
                                         if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
                                         {
                                             fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + modelext_arr);
@@ -398,7 +398,22 @@ namespace SplitTools.SplitDLL
 										// Metadata for SAMDL project mode
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
                                             output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
-										models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_arr));
+										// Animation assignments
+										ModelAnimations mdla = new ModelAnimations(fn, idx, mdl, modelfmt_arr);
+										string[] mdlanis = new string[0];
+										if (data.CustomProperties.ContainsKey("animations" + i.ToString()))
+										{
+											mdlanis = data.CustomProperties["animations" + i.ToString()].Split(',');
+											if (mdlanis.Length > 0)
+												mdla.Animations.AddRange(mdlanis.ToList());
+										}
+										if (data.CustomProperties.ContainsKey("animations"))
+										{
+											mdlanis = data.CustomProperties["animations"].Split(',');
+											if (mdlanis.Length > 0)
+												mdla.Animations.AddRange(mdlanis.ToList());
+										}
+										models.Add(mdla);
 										if (!labels.Contains(mdl.Name))
 											labels.AddRange(mdl.GetLabels());
 									}
