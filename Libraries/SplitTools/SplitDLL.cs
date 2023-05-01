@@ -589,7 +589,6 @@ namespace SplitTools.SplitDLL
 											if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_m"))
                                                 output.SAMDLData.Add(mfn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_m"]));
                                         }
-										
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
 										if (File.Exists(outputmfn) && !overwrite)
@@ -601,7 +600,16 @@ namespace SplitTools.SplitDLL
 											Directory.CreateDirectory(Path.GetDirectoryName(outputmfn));
 										if (!labels.Contains(ani.Model.Name) || data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
-											ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
+											if (data.CustomProperties.ContainsKey("animations" + i.ToString()))
+											{
+												string[] mdlanis = new string[0];
+												mdlanis = data.CustomProperties["animations" + i.ToString()].Split(',');
+												if (mdlanis.Length > 0)
+													ModelFile.CreateFile(outputmfn, ani.Model, mdlanis.ToArray(), null, $"{name}[{i}]->object",
+												null, modelfmt_def, nometa);
+											}
+											else
+												ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 												null, modelfmt_def, nometa);
 											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
 											if (!labels.Contains(ani.Model.Name)) labels.AddRange(ani.Model.GetLabels());
