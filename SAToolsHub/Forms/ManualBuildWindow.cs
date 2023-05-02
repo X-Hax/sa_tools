@@ -108,7 +108,6 @@ namespace SAModel.SAEditorCommon
 				tabListView.View = View.Details;
 				tabListView.CheckBoxes = true;
 				tabListView.ColumnClick += new ColumnClickEventHandler(listView1_SortChanged);
-
 				tabListView.ListViewItemSorter = lvwColumnSorter;
 
 				assemblyListViews.Add(assembly.Key, tabListView);
@@ -175,18 +174,32 @@ namespace SAModel.SAEditorCommon
 			listView.BeginUpdate();
 			listView.Items.Clear();
 
+			bool oneModified = false;
+
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
 				bool modified = itemsToExport[item.Key];
-
-				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); ;
+				if (!oneModified)
+					oneModified = modified;
+				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); 
 			}
 
 			foreach (var item in iniData.DataItems)
 			{
 				bool modified = itemsToExport[item.Filename];
-
 				listView.Items.Add(new ListViewItem(new[] { item.Filename, modified ? "Yes" : "No" }) { Checked = modified }); ;
+			}
+
+			//if at least one file got edited, sort by "descending" to show them at the beginning of the list.
+			if (oneModified)
+			{
+				for (int i = 0; i < listView.Columns.Count; i++)
+				{
+					lvwColumnSorter.SortColumn = listView.Columns[i].Index;
+					lvwColumnSorter.Order = SortOrder.Descending;
+				}
+
+				listView.Sort();
 			}
 
 			listView.EndUpdate();

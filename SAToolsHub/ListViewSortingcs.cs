@@ -46,33 +46,36 @@ public class ListViewColumnSorter : IComparer
 	/// <returns>The result of the comparison. "0" if equal, negative if 'x' is less than 'y' and positive if 'x' is greater than 'y'</returns>
 	public int Compare(object x, object y)
 	{
-		int compareResult;
+		int compareResult = 0;
 		ListViewItem listviewX, listviewY;
 
 		// Cast the objects to be compared to ListViewItem objects
 		listviewX = (ListViewItem)x;
 		listviewY = (ListViewItem)y;
 
-		// Compare the two items
-		switch (ColumnToSort)
-		{
-			case 2:
-				compareResult = ObjectCompare.Compare(((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Access, ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Access);
-				break;
-			case 3:
-				compareResult = ObjectCompare.Compare(((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Size, ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Size);
-				break;
-			default:
-				compareResult = ObjectCompare.Compare(listviewX.SubItems[ColumnToSort].Text, listviewY.SubItems[ColumnToSort].Text);
-				break;
-		}
+		object viewXObj = ((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag);
 
+		if (viewXObj != null && (ColumnToSort == 2 || ColumnToSort == 3))
+		{
+			// Compare the two items
+			switch (ColumnToSort)
+			{
+				case 2:
+					compareResult = ObjectCompare.Compare(((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Access, ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Access);
+					break;
+				case 3:
+					compareResult = ObjectCompare.Compare(((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Size, ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Size);
+					break;
+			}
+		}
+		else
+		{
+			compareResult = ObjectCompare.Compare(listviewX.SubItems[ColumnToSort].Text, listviewY.SubItems[ColumnToSort].Text); 
+		}
 
 		// Calculate correct return value based on object comparison
 		if (OrderOfSort == SortOrder.Ascending)
 		{
-			object viewXObj = ((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag);
-
 			if (viewXObj != null) 
 			{
 				// Ascending sort is selected, return normal result of compare operation
@@ -82,17 +85,12 @@ public class ListViewColumnSorter : IComparer
 					return compareResult - 1;
 				else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
 					return compareResult + 1;
-				else
-					return compareResult;
 			}
 
 			return compareResult;
-
 		}
 		else if (OrderOfSort == SortOrder.Descending)
 		{
-			object viewXObj = ((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag);
-
 			if (viewXObj != null)
 			{
 				// Descending sort is selected, return negative result of compare operation
