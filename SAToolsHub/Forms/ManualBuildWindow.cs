@@ -15,12 +15,13 @@ namespace SAModel.SAEditorCommon
 
 		private string projectFolder = "";
 		private string modFolder = "";
-        private string gameEXE = "";
+		private string gameEXE = "";
 		private Dictionary<string, AssemblyType> assemblies = new Dictionary<string, AssemblyType>();
 		private Dictionary<string, ListView> assemblyListViews = new Dictionary<string, ListView>();
 		private Dictionary<string, object> assemblyIniFiles = new Dictionary<string, object>(); // gotta box ini data to object so that dll ini and ini data can exist in the same list
 
 		private Dictionary<string, Dictionary<string, bool>> assemblyItemsToExport = new Dictionary<string, Dictionary<string, bool>>();
+		private ListViewColumnSorter lvwColumnSorter;
 
 		public ManualBuildWindow()
 		{
@@ -33,9 +34,9 @@ namespace SAModel.SAEditorCommon
 			this.projectFolder = projectFolder;
 			this.modFolder = modFolder;
 			this.assemblies = assemblies;
-            this.gameEXE = gameEXE;
+			this.gameEXE = gameEXE;
 
-            LoadingLabel.Visible = true;
+			LoadingLabel.Visible = true;
 		}
 
 		private void LoadIniFiles()
@@ -70,6 +71,7 @@ namespace SAModel.SAEditorCommon
 
 		private void SetTabsForAssemblies()
 		{
+			lvwColumnSorter = new ListViewColumnSorter();
 			assemblyItemTabs.TabPages.Clear();
 
 			foreach (KeyValuePair<string, ListView> listView in assemblyListViews)
@@ -105,6 +107,9 @@ namespace SAModel.SAEditorCommon
 
 				tabListView.View = View.Details;
 				tabListView.CheckBoxes = true;
+				tabListView.ColumnClick += new ColumnClickEventHandler(listView1_SortChanged);
+
+				tabListView.ListViewItemSorter = lvwColumnSorter;
 
 				assemblyListViews.Add(assembly.Key, tabListView);
 				assemblyItemTabs.TabPages.Add(assemblyPage);
@@ -126,11 +131,11 @@ namespace SAModel.SAEditorCommon
 
 				for (int i = 0; i < tabListView.Columns.Count; i++)
 				{
-                    if (i != tabListView.Columns.Count - 1) // Don't auto resize the "Changed" column
-					    tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
-                    else
-                        tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.HeaderSize);
-                }
+					if (i != tabListView.Columns.Count - 1) // Don't auto resize the "Changed" column
+						tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
+					else
+						tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.HeaderSize);
+				}
 			}
 		}
 
@@ -143,7 +148,7 @@ namespace SAModel.SAEditorCommon
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 			{
 				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
-		
+
 				if (!StructConverter.StructConverter.DataTypeList.ContainsKey(item.Value.Type))
 				{
 					continue;
@@ -185,6 +190,27 @@ namespace SAModel.SAEditorCommon
 			}
 
 			listView.EndUpdate();
+		}
+
+		private void listView1_SortChanged(object o, ColumnClickEventArgs e)
+		{
+			// Determine if clicked column is already the column that is being sorted.
+			if (e.Column == lvwColumnSorter.SortColumn)
+			{
+				// Reverse the current sort direction for this column.
+				lvwColumnSorter.Order =  (lvwColumnSorter.Order == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
+			}
+			else
+			{
+				// Set the column number that is to be sorted; default to descending.
+				lvwColumnSorter.SortColumn = e.Column;
+				lvwColumnSorter.Order = SortOrder.Descending;
+			}
+
+			// Perform the sort with these new sort options.
+			TabPage page = assemblyItemTabs.SelectedTab;
+			ListView listView = assemblyListViews[page.Text];
+			listView.Sort();
 		}
 
 		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -277,22 +303,22 @@ namespace SAModel.SAEditorCommon
 			if (folderDialog.ShowDialog() == DialogResult.OK)
 			{
 				string outputFolder = folderDialog.SelectedPath;
-                List<string> listIni_exe = new List<string>();
-                Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
-                foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
+				List<string> listIni_exe = new List<string>();
+				Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
+				foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 				{
-                    string iniPath = Path.Combine(projectFolder, assembly.Key + "_data.ini");
-                    switch (assembly.Value)
+					string iniPath = Path.Combine(projectFolder, assembly.Key + "_data.ini");
+					switch (assembly.Value)
 					{
 						case AssemblyType.Exe:
-                            listIni_exe.Add(iniPath);
-                            foreach (var item in assemblyItemsToExport[assembly.Key])
-                                if (item.Value)
-                                    itemsEXEToExport.Add(item.Key, item.Value);
-                            break;
+							listIni_exe.Add(iniPath);
+							foreach (var item in assemblyItemsToExport[assembly.Key])
+								if (item.Value)
+									itemsEXEToExport.Add(item.Key, item.Value);
+							break;
 
 						case AssemblyType.DLL:
-                            DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
+							DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 
@@ -300,13 +326,13 @@ namespace SAModel.SAEditorCommon
 							break;
 					}
 				}
-                if (listIni_exe.Count > 0)
-                {
-                    SplitTools.IniData EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(listIni_exe, ref itemsEXEToExport, true);
-                    SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
-                        itemsEXEToExport, Path.Combine(outputFolder, gameEXE + "_data.ini"));
-                }
-                MessageBox.Show(string.Format("INI Files have been exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
+				if (listIni_exe.Count > 0)
+				{
+					SplitTools.IniData EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(listIni_exe, ref itemsEXEToExport, true);
+					SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
+						itemsEXEToExport, Path.Combine(outputFolder, gameEXE + "_data.ini"));
+				}
+				MessageBox.Show(string.Format("INI Files have been exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
 			}
 			else
 				MessageBox.Show("No folder was provided.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

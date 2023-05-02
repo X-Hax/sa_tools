@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.DirectoryServices.ActiveDirectory;
 using System.Windows.Forms;
 
 
@@ -66,30 +67,46 @@ public class ListViewColumnSorter : IComparer
 				break;
 		}
 
+
 		// Calculate correct return value based on object comparison
 		if (OrderOfSort == SortOrder.Ascending)
 		{
-			// Ascending sort is selected, return normal result of compare operation
-			if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
-				return compareResult;
-			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type != "dir")
-				return compareResult - 1;
-			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
-				return compareResult + 1;
-			else
-				return compareResult;
+			object viewXObj = ((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag);
+
+			if (viewXObj != null) 
+			{
+				// Ascending sort is selected, return normal result of compare operation
+				if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+					return compareResult;
+				else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type != "dir")
+					return compareResult - 1;
+				else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+					return compareResult + 1;
+				else
+					return compareResult;
+			}
+
+			return compareResult;
+
 		}
 		else if (OrderOfSort == SortOrder.Descending)
 		{
-			// Descending sort is selected, return negative result of compare operation
-			if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
-				return (-compareResult);
-			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type != "dir")
-				return (-compareResult) - 1;
-			else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
-				return (-compareResult) + 1;
-			else
-				return (-compareResult);
+			object viewXObj = ((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag);
+
+			if (viewXObj != null)
+			{
+				// Descending sort is selected, return negative result of compare operation
+				if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+					return (-compareResult);
+				else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type == "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type != "dir")
+					return (-compareResult) - 1;
+				else if (((SAToolsHub.SAToolsHub.itemTags)listviewX.Tag).Type != "dir" && ((SAToolsHub.SAToolsHub.itemTags)listviewY.Tag).Type == "dir")
+					return (-compareResult) + 1;
+				else
+					return (-compareResult);
+			}
+
+			return (-compareResult);
 		}
 		else
 		{
