@@ -10,11 +10,11 @@ B_EGM3 *
 B_ROBO_NB *
 Chao
 Characters *
-CHRMODELS
-CommonObjects
-Enemies
+CHRMODELS *
+CommonObjects *
+Enemies *
 Event
-Fish
+Fish *
 Mission *
 SHOOTING *
 
