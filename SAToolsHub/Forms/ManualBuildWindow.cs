@@ -95,9 +95,8 @@ namespace SAModel.SAEditorCommon
 				tabListView.Parent = assemblyPage;
 				tabListView.Dock = DockStyle.Fill;
 				tabListView.ItemChecked += listView1_ItemChecked;
+
 				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 0, Text = "Name" });
-
-
 				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Type" });
 				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 2, Text = "Changed" });
 
@@ -184,16 +183,27 @@ namespace SAModel.SAEditorCommon
 
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
+
 				bool modified = itemsToExport[item.Key];
 
 				if (!oneModified)
 					oneModified = modified;
 
+				string name = Path.GetFileNameWithoutExtension(item.Key);
+
+				foreach (var samdlItem in iniData.SAMDLData)
+				{
+					if (Path.GetFileNameWithoutExtension(samdlItem.Key) == name)
+					{
+						name = samdlItem.Value.ModelName;
+					}
+				}
+
 				listView.Items.Add(new ListViewItem
 				(
 				new[]
 				{
-				item.Key, StructConverter.StructConverter.DataTypeList[item.Value.Type],
+				name, StructConverter.StructConverter.DataTypeList[item.Value.Type],
 				(modified ? "Yes" : "No")
 				})
 				{ Checked = modified });
