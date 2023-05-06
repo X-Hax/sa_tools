@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using SplitTools;
 using SplitTools.SplitDLL;
@@ -22,6 +23,7 @@ namespace SAModel.SAEditorCommon
 
 		private Dictionary<string, Dictionary<string, bool>> assemblyItemsToExport = new Dictionary<string, Dictionary<string, bool>>();
 		private ListViewColumnSorter lvwColumnSorter;
+		private ListView backupList = new();
 
 		public ManualBuildWindow()
 		{
@@ -138,6 +140,15 @@ namespace SAModel.SAEditorCommon
 			}
 		}
 
+		private void BackupList(ListView listView)
+		{
+			backupList.Items.Clear();
+
+			backupList.Items.AddRange((from ListViewItem item in listView.Items
+									   select (ListViewItem)item.Clone()
+				   ).ToArray());
+		}
+
 		private void FillListViewIniData(ListView listView, AssemblyType assemblyType, string assemblyname,
 			SplitTools.IniData iniData, Dictionary<string, bool> itemsToExport)
 		{
@@ -165,6 +176,7 @@ namespace SAModel.SAEditorCommon
 				{ Checked = modified });
 			}
 
+			BackupList(listView);
 			listView.EndUpdate();
 		}
 
@@ -181,7 +193,7 @@ namespace SAModel.SAEditorCommon
 				bool modified = itemsToExport[item.Key];
 				if (!oneModified)
 					oneModified = modified;
-				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); 
+				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified });
 			}
 
 			foreach (var item in iniData.DataItems)
@@ -202,6 +214,7 @@ namespace SAModel.SAEditorCommon
 				listView.Sort();
 			}
 
+			BackupList(listView);
 			listView.EndUpdate();
 		}
 
@@ -211,7 +224,7 @@ namespace SAModel.SAEditorCommon
 			if (e.Column == lvwColumnSorter.SortColumn)
 			{
 				// Reverse the current sort direction for this column.
-				lvwColumnSorter.Order =  (lvwColumnSorter.Order == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
+				lvwColumnSorter.Order = (lvwColumnSorter.Order == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
 			}
 			else
 			{
@@ -306,7 +319,7 @@ namespace SAModel.SAEditorCommon
 				MessageBox.Show(string.Format("Source code files exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
 			}
 			else
-				MessageBox.Show("No folder was provided.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("No folder was provided.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 		}
 
@@ -371,6 +384,25 @@ namespace SAModel.SAEditorCommon
 			CheckAllButton.Enabled = true;
 			CheckModifiedButton.Enabled = true;
 			UncheckAllButton.Enabled = true;
+		}
+
+		private void searchBox_TextChanged(object sender, EventArgs e)
+		{
+			TabPage page = assemblyItemTabs.SelectedTab;
+			ListView listView = assemblyListViews[page.Text];
+
+			listView.BeginUpdate();
+			listView.Items.Clear();
+
+			foreach (ListViewItem item in backupList.Items)
+			{
+				if (searchBox.Text != "" && !item.Text.ToLowerInvariant().Contains(searchBox.Text.ToLowerInvariant()))
+					continue;
+
+				listView.Items.Add(((ListViewItem)item.Clone()));
+			}
+
+			listView.EndUpdate();
 		}
 	}
 }
