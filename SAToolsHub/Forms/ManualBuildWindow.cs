@@ -97,15 +97,9 @@ namespace SAModel.SAEditorCommon
 				tabListView.ItemChecked += listView1_ItemChecked;
 				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 0, Text = "Name" });
 
-				if (assembly.Value == AssemblyType.Exe)
-				{
-					tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Type" });
-					tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 2, Text = "Changed" });
-				}
-				else
-				{
-					tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Changed" });
-				}
+
+				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Type" });
+				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 2, Text = "Changed" });
 
 				tabListView.View = View.Details;
 				tabListView.CheckBoxes = true;
@@ -191,15 +185,33 @@ namespace SAModel.SAEditorCommon
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
 				bool modified = itemsToExport[item.Key];
+
 				if (!oneModified)
 					oneModified = modified;
-				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified });
+
+				listView.Items.Add(new ListViewItem
+				(
+				new[]
+				{
+				item.Key, StructConverter.StructConverter.DataTypeList[item.Value.Type],
+				(modified ? "Yes" : "No")
+				})
+				{ Checked = modified });
+
 			}
 
 			foreach (var item in iniData.DataItems)
 			{
 				bool modified = itemsToExport[item.Filename];
-				listView.Items.Add(new ListViewItem(new[] { item.Filename, modified ? "Yes" : "No" }) { Checked = modified }); ;
+
+				listView.Items.Add(new ListViewItem
+				(
+				new[]
+				{
+				item.Filename, StructConverter.StructConverter.DataTypeList[item.Type],
+				(modified ? "Yes" : "No")
+				})
+				{ Checked = modified });
 			}
 
 			//if at least one file got edited, sort by "descending" to show them at the beginning of the list.
