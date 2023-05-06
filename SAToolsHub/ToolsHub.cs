@@ -11,6 +11,7 @@ using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using SplitTools.SplitDLL;
 using System.Net.Http;
+using System.Reflection.Emit;
 
 namespace SAToolsHub
 {
@@ -57,6 +58,8 @@ namespace SAToolsHub
 		public static SAToolsHubSettings hubSettings { get; set; }
 		List<string> copyPaths;
 		public static bool resplit { get; set; }
+
+		Properties.Settings AppConfig = Properties.Settings.Default; //(non user settings, recent files etc.)
 
 		public class itemTags
 		{
@@ -143,10 +146,31 @@ namespace SAToolsHub
 			}
 
 			disableOSWarningToolStripMenuItem.Checked = hubSettings.DisableX86Warning;
+
 		}
+
 
 		// TODO: ToolsHub - Migrate some Additional Functions out.
 		#region Additional Functions
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			// MRU list
+			System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
+			if (AppConfig.MRUList != null)
+			{
+				foreach (string file in AppConfig.MRUList)
+				{
+					if (File.Exists(file))
+					{
+						newlist.Add(file);
+						recentProjectsToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+					}
+				}
+			}
+
+			AppConfig.MRUList = newlist;
+		}
+
 		private void initProject()
 		{
 			Templates.ProjectTemplate projectFile;
@@ -163,12 +187,12 @@ namespace SAToolsHub
 			}
 		}
 
-		private void openProject(Templates.ProjectTemplate projFile)
+			private void openProject(Templates.ProjectTemplate projFile)
 		{
 			string rootFolder;
 			bool validFolders = true;
 			bool sapChanged = false;
-
+	
 			setGame = projFile.GameInfo.GameName;
 
 			projectDirectory = projFile.GameInfo.ProjectFolder;
@@ -266,6 +290,7 @@ namespace SAToolsHub
 				}
 
 				editToolStripMenuItem.Enabled = tsProjUtils.Enabled = true;
+				UpdateMRUList(projXML);
 			}
 		}
 
@@ -767,6 +792,7 @@ namespace SAToolsHub
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			AppConfig.Save();
 			this.Close();
 		}
 
@@ -1973,6 +1999,40 @@ namespace SAToolsHub
 		private void configSchemaBuilderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			configEditor.ShowDialog();
+		}
+
+		private void recentProject_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+				string path = AppConfig.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)];
+				resetOpenProject();
+				projXML = path;
+				Templates.ProjectTemplate projectFile = ProjectFunctions.openProjectFileString(projXML);
+				openProject(projectFile);		
+		}
+
+		private void UpdateMRUList(string filename)
+		{
+			if (AppConfig.MRUList.Count > 10)
+			{
+				for (int i = 9; i < AppConfig.MRUList.Count; i++)
+				{
+					AppConfig.MRUList.RemoveAt(i);
+				}
+			}
+			if (AppConfig.MRUList.Contains(filename))
+			{
+				int i = AppConfig.MRUList.IndexOf(filename);
+				AppConfig.MRUList.RemoveAt(i);
+			}
+			AppConfig.MRUList.Insert(0, filename);
+			recentProjectsToolStripMenuItem.DropDownItems.Clear();
+			foreach (string file in AppConfig.MRUList)
+			{
+				if (File.Exists(file))
+				{
+					recentProjectsToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+				}
+			}
 		}
 	}
 }

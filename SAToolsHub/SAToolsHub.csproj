@@ -14,6 +14,11 @@
 		<ApplicationIcon>Resources\ToolsHub_ico.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+		  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
 		<Compile Update="Updater\UpdaterWebClient.cs">
 			<SubType>Component</SubType>
 		</Compile>
@@ -29,6 +34,12 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="Updater\SizeSuffix.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Properties\Settings.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\7z*.*&quot; &quot;$(ProjectDir)..\build\lib\&quot;&#xD;&#xA;xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\build\&quot;" />

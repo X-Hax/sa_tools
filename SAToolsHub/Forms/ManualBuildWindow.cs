@@ -183,7 +183,6 @@ namespace SAModel.SAEditorCommon
 
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
-
 				bool modified = itemsToExport[item.Key];
 
 				if (!oneModified)

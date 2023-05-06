@@ -34,6 +34,7 @@
             this.projectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProjectToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.recentProjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editProjectInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsProjUtils = new System.Windows.Forms.ToolStripMenuItem();
             this.updateMetadataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -153,10 +154,11 @@
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
+			this.Load += new System.EventHandler(this.MainForm_Load);
+			// 
+			// menuStrip1
+			// 
+			this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectsToolStripMenuItem,
             this.buildToolStripMenuItem,
@@ -176,6 +178,7 @@
             this.projectsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newProjectToolStripMenuItem,
             this.openProjectToolStripMenuItem1,
+            this.recentProjectsToolStripMenuItem,
             this.editProjectInfoToolStripMenuItem,
             this.tsProjUtils,
             this.toolStripSeparator1,
@@ -207,9 +210,16 @@
             this.openProjectToolStripMenuItem1.ToolTipText = "Open an existing SADX or SA2 Project.";
             this.openProjectToolStripMenuItem1.Click += new System.EventHandler(this.openProjectToolStripMenuItem1_Click);
             // 
-            // editProjectInfoToolStripMenuItem
+            // recentProjectsToolStripMenuItem
             // 
-            this.editProjectInfoToolStripMenuItem.Enabled = false;
+            this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
+            this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(230, 54);
+            this.recentProjectsToolStripMenuItem.Text = "Recent Projects";
+			this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProject_DropDownItemClicked);
+			// 
+			// editProjectInfoToolStripMenuItem
+			// 
+			this.editProjectInfoToolStripMenuItem.Enabled = false;
             this.editProjectInfoToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsEditProj;
             this.editProjectInfoToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editProjectInfoToolStripMenuItem.Name = "editProjectInfoToolStripMenuItem";
@@ -232,7 +242,7 @@
             // updateMetadataToolStripMenuItem
             // 
             this.updateMetadataToolStripMenuItem.Name = "updateMetadataToolStripMenuItem";
-            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.updateMetadataToolStripMenuItem.Text = "Update Metadata";
             this.updateMetadataToolStripMenuItem.ToolTipText = "Updates metadata in split _data.ini files.";
             this.updateMetadataToolStripMenuItem.Click += new System.EventHandler(this.updateMetadataToolStripMenuItem_Click);
@@ -240,7 +250,7 @@
             // replitItemsToolStripMenuItem
             // 
             this.replitItemsToolStripMenuItem.Name = "replitItemsToolStripMenuItem";
-            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.replitItemsToolStripMenuItem.Text = "Resplit Item(s)";
             this.replitItemsToolStripMenuItem.ToolTipText = "Option to resplit specific ini files for the project.";
             this.replitItemsToolStripMenuItem.Click += new System.EventHandler(this.resplitItemsToolStripMenuItem_Click);
@@ -612,7 +622,7 @@
             this.checkForUpdatesToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("checkForUpdatesToolStripMenuItem.Image")));
             this.checkForUpdatesToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates";
             this.checkForUpdatesToolStripMenuItem.ToolTipText = "Checks for updates to any of the SA Tools programs.";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
@@ -620,12 +630,12 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(207, 6);
             // 
             // autoUpdateToolStripMenuItem
             // 
             this.autoUpdateToolStripMenuItem.Name = "autoUpdateToolStripMenuItem";
-            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.autoUpdateToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.autoUpdateToolStripMenuItem.Text = "Check on Statup";
             this.autoUpdateToolStripMenuItem.ToolTipText = "Enables update checks every time you start the program.";
             this.autoUpdateToolStripMenuItem.Click += new System.EventHandler(this.autoUpdateToolStripMenuItem_Click);
@@ -637,7 +647,7 @@
             this.dailyToolStripMenuItem,
             this.weeklyToolStripMenuItem});
             this.frequencyToolStripMenuItem.Name = "frequencyToolStripMenuItem";
-            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.frequencyToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.frequencyToolStripMenuItem.Text = "Update Frequency";
             this.frequencyToolStripMenuItem.ToolTipText = "Choose the frequency at which the program checks for updates.";
             // 
@@ -667,7 +677,7 @@
             // openSettingsLogsToolStripMenuItem
             // 
             this.openSettingsLogsToolStripMenuItem.Name = "openSettingsLogsToolStripMenuItem";
-            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.openSettingsLogsToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.openSettingsLogsToolStripMenuItem.Text = "Open Settings/Logs";
             this.openSettingsLogsToolStripMenuItem.ToolTipText = "Opens the folder where SA Tools store logs and preferences.";
             this.openSettingsLogsToolStripMenuItem.Click += new System.EventHandler(this.openSettingsLogsToolStripMenuItem_Click);
@@ -676,7 +686,7 @@
             // 
             this.disableOSWarningToolStripMenuItem.CheckOnClick = true;
             this.disableOSWarningToolStripMenuItem.Name = "disableOSWarningToolStripMenuItem";
-            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(212, 54);
+            this.disableOSWarningToolStripMenuItem.Size = new System.Drawing.Size(210, 54);
             this.disableOSWarningToolStripMenuItem.Text = "Disable OS Warning";
             this.disableOSWarningToolStripMenuItem.ToolTipText = "Disables the warning that appears when trying to update an x86 version of SA Tool" +
     "s on an x64 version of Windows.";
@@ -1064,7 +1074,6 @@
             this.columnHeader3,
             this.columnHeader4});
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView1.Name = "listView1";
@@ -1434,5 +1443,6 @@
 		private System.Windows.Forms.ToolStripMenuItem openSettingsLogsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem disableOSWarningToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem configSchemaBuilderToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem recentProjectsToolStripMenuItem;
 	}
 }
