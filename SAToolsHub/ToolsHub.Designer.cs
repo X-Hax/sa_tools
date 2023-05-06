@@ -143,6 +143,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelFileType = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelFileTip = new System.Windows.Forms.ToolStripStatusLabel();
+            this.resetRecentProjectsListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.rightToolStrip.SuspendLayout();
             this.topToolStrip.SuspendLayout();
@@ -154,12 +155,10 @@
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
-			this.Load += new System.EventHandler(this.MainForm_Load);
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-			// 
-			// menuStrip1
-			// 
-			this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.Control;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectsToolStripMenuItem,
             this.buildToolStripMenuItem,
@@ -213,14 +212,16 @@
             // 
             // recentProjectsToolStripMenuItem
             // 
+            this.recentProjectsToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsRecentProj;
+            this.recentProjectsToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.recentProjectsToolStripMenuItem.Name = "recentProjectsToolStripMenuItem";
             this.recentProjectsToolStripMenuItem.Size = new System.Drawing.Size(230, 54);
             this.recentProjectsToolStripMenuItem.Text = "Recent Projects";
-			this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProject_DropDownItemClicked);
-			// 
-			// editProjectInfoToolStripMenuItem
-			// 
-			this.editProjectInfoToolStripMenuItem.Enabled = false;
+            this.recentProjectsToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentProject_DropDownItemClicked);
+            // 
+            // editProjectInfoToolStripMenuItem
+            // 
+            this.editProjectInfoToolStripMenuItem.Enabled = false;
             this.editProjectInfoToolStripMenuItem.Image = global::SAToolsHub.Properties.Resources.tsEditProj;
             this.editProjectInfoToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editProjectInfoToolStripMenuItem.Name = "editProjectInfoToolStripMenuItem";
@@ -234,7 +235,8 @@
             // 
             this.tsProjUtils.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.updateMetadataToolStripMenuItem,
-            this.replitItemsToolStripMenuItem});
+            this.replitItemsToolStripMenuItem,
+            this.resetRecentProjectsListToolStripMenuItem});
             this.tsProjUtils.Enabled = false;
             this.tsProjUtils.Name = "tsProjUtils";
             this.tsProjUtils.Size = new System.Drawing.Size(230, 54);
@@ -243,7 +245,7 @@
             // updateMetadataToolStripMenuItem
             // 
             this.updateMetadataToolStripMenuItem.Name = "updateMetadataToolStripMenuItem";
-            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateMetadataToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.updateMetadataToolStripMenuItem.Text = "Update Metadata";
             this.updateMetadataToolStripMenuItem.ToolTipText = "Updates metadata in split _data.ini files.";
             this.updateMetadataToolStripMenuItem.Click += new System.EventHandler(this.updateMetadataToolStripMenuItem_Click);
@@ -251,7 +253,7 @@
             // replitItemsToolStripMenuItem
             // 
             this.replitItemsToolStripMenuItem.Name = "replitItemsToolStripMenuItem";
-            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.replitItemsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.replitItemsToolStripMenuItem.Text = "Resplit Item(s)";
             this.replitItemsToolStripMenuItem.ToolTipText = "Option to resplit specific ini files for the project.";
             this.replitItemsToolStripMenuItem.Click += new System.EventHandler(this.resplitItemsToolStripMenuItem_Click);
@@ -1291,6 +1293,13 @@
             this.toolStripStatusLabelFileTip.Size = new System.Drawing.Size(14, 19);
             this.toolStripStatusLabelFileTip.Text = " ";
             // 
+            // resetRecentProjectsListToolStripMenuItem
+            // 
+            this.resetRecentProjectsListToolStripMenuItem.Name = "resetRecentProjectsListToolStripMenuItem";
+            this.resetRecentProjectsListToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.resetRecentProjectsListToolStripMenuItem.Text = "Reset Recent Projects List";
+            this.resetRecentProjectsListToolStripMenuItem.Click += new System.EventHandler(this.resetRecentProjectsListToolStripMenuItem_Click);
+            // 
             // SAToolsHub
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1309,6 +1318,8 @@
             this.Name = "SAToolsHub";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SA Tools Hub";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.SAToolsHub_Shown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -1445,5 +1456,6 @@
 		private System.Windows.Forms.ToolStripMenuItem disableOSWarningToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem configSchemaBuilderToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem recentProjectsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem resetRecentProjectsListToolStripMenuItem;
 	}
 }

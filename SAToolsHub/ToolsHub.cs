@@ -159,6 +159,8 @@ namespace SAToolsHub
 		{
 			// MRU list
 			System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
+			bool exist = false;
+
 			if (AppConfig.MRUList != null)
 			{
 				foreach (string file in AppConfig.MRUList)
@@ -167,11 +169,21 @@ namespace SAToolsHub
 					{
 						newlist.Add(file);
 						recentProjectsToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+						exist = true;
 					}
 				}
 			}
 
 			AppConfig.MRUList = newlist;
+
+			if (exist)
+			{
+				string path = AppConfig.MRUList[0];
+				resetOpenProject();
+				projXML = path;
+				Templates.ProjectTemplate projectFile = ProjectFunctions.openProjectFileString(projXML);
+				openProject(projectFile);
+			}
 		}
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -824,6 +836,7 @@ namespace SAToolsHub
 			if (newProjFile != null)
 			{
 				openProject(ProjectFunctions.openProjectFileString(newProjFile));
+				UpdateMRUList(newProjFile);
 				projXML = newProjFile;
 				newProjFile = null;
 			}
@@ -2041,6 +2054,12 @@ namespace SAToolsHub
 					recentProjectsToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
 				}
 			}
+		}
+
+		private void resetRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			recentProjectsToolStripMenuItem.DropDownItems.Clear();
+			AppConfig.MRUList.Clear();
 		}
 	}
 }
