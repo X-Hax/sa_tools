@@ -12,6 +12,9 @@ using SplitTools;
 using SplitTools.SplitDLL;
 using System.Net.Http;
 using System.Reflection.Emit;
+using Microsoft.VisualBasic.Logging;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon;
 
 namespace SAToolsHub
 {
@@ -169,6 +172,11 @@ namespace SAToolsHub
 			}
 
 			AppConfig.MRUList = newlist;
+		}
+
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			AppConfig.Save();
 		}
 
 		private void initProject()
