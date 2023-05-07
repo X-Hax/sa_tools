@@ -83,6 +83,7 @@ namespace SAModel.SAEditorCommon
 			}
 
 			assemblyListViews.Clear();
+			searchBox.Clear();
 
 			foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 			{
@@ -188,7 +189,9 @@ namespace SAModel.SAEditorCommon
 				if (!oneModified)
 					oneModified = modified;
 
-				string name = Path.GetFileNameWithoutExtension(item.Key);
+				//unused for now as replacing path with name breaks export if there is no edit on the file.
+				
+				/*string name = Path.GetFileNameWithoutExtension(item.Key);
 
 				foreach (var samdlItem in iniData.SAMDLData)
 				{
@@ -196,17 +199,17 @@ namespace SAModel.SAEditorCommon
 					{
 						name = samdlItem.Value.ModelName;
 					}
-				}
+				}*/
 
 				listView.Items.Add(new ListViewItem
 				(
 				new[]
 				{
-				name, StructConverter.StructConverter.DataTypeList[item.Value.Type],
-				(modified ? "Yes" : "No")
+					item.Key,
+					StructConverter.StructConverter.DataTypeList[item.Value.Type],
+					(modified ? "Yes" : "No"),
 				})
 				{ Checked = modified });
-
 			}
 
 			foreach (var item in iniData.DataItems)
@@ -346,6 +349,7 @@ namespace SAModel.SAEditorCommon
 
 		private void IniExportButton_Click(object sender, EventArgs e)
 		{
+			searchBox.Clear();
 			var folderDialog = new FolderBrowserDialog();
 			if (folderDialog.ShowDialog() == DialogResult.OK)
 			{
@@ -410,6 +414,10 @@ namespace SAModel.SAEditorCommon
 		private void searchBox_TextChanged(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+
+			if (page is null)
+				return;
+
 			ListView listView = assemblyListViews[page.Text];
 
 			listView.BeginUpdate();
