@@ -13,7 +13,7 @@ Characters *
 CHRMODELS *
 CommonObjects *
 Enemies *
-Event
+Event *
 Fish *
 Mission *
 SHOOTING *
