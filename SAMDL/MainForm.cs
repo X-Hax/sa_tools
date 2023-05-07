@@ -718,6 +718,7 @@ namespace SAModel.SAMDL
 			AddModelToLibrary(model, false);
 			unsavedChanges = false;
 			UpdateAnimationDropdown();
+			UpdateAnimationStatus();
 		}
 
 		private void LoadBinFile(byte[] file)
@@ -4270,6 +4271,7 @@ namespace SAModel.SAMDL
 				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				buttonResetFrame.Enabled = buttonPrevFrame.Enabled = buttonNextFrame.Enabled = buttonPlayAnimation.Enabled = false;
 			}
+			buttonPlayAnimation.Image = AnimationPlaying ? SAMDL.Properties.Resources.stopanim : SAMDL.Properties.Resources.playanim;
 		}
 
 		private void comboAnimList_SelectedIndexChanged(System.Object sender, System.EventArgs e)
