@@ -528,6 +528,7 @@ namespace SplitTools.SplitDLL
 									{
 										nm = anilabels[ani.Animation.Name];
 										//Console.WriteLine("Animation {0} already exists", nm);
+										ani.Animation.Name = item.Key + "_" + i;
 									}
 									DllItemInfo info = new DllItemInfo()
 									{
