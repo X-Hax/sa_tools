@@ -268,10 +268,20 @@ namespace SplitTools.SAArc
 								{
 									ent.Motion = GetMotion(fc, ptr2 + 4, key, $"Scene {gn + 1}\\Entity {en + 1} Motion.saanim", motions, modelfiles[ent.Model].Model.CountAnimated());
 									if (ent.Motion != null)
-										modelfiles[ent.Model].Motions.Add(motionfiles[ent.Motion].Filename);
+									{
+										if (modelfiles[ent.Model].Filename.EndsWith("Root.sa2mdl"))
+											modelfiles[ent.Model].Motions.Add(motionfiles[ent.Motion].Filename);
+										else
+											modelfiles[ent.Model].Motions.Add("../" + motionfiles[ent.Motion].Filename);
+									}
 									ent.ShapeMotion = GetMotion(fc, ptr2 + 8, key, $"Scene {gn + 1}\\Entity {en + 1} Shape Motion.saanim", motions, modelfiles[ent.Model].Model.CountMorph());
 									if (ent.ShapeMotion != null)
-										modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
+									{
+										if (modelfiles[ent.Model].Filename.EndsWith("Root.sa2mdl"))
+											modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
+										else
+											modelfiles[ent.Model].Motions.Add("../" + motionfiles[ent.ShapeMotion].Filename);
+									}
 								}
 								if (battle)
 								{

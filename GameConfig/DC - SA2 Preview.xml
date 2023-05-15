@@ -17,28 +17,26 @@
   <SplitEntryEvent EventFile="EVENT\E0103" EventType="Preview" />
   <SplitEntryEvent EventFile="EVENT\ME0104" EventType="MiniEvent" />
   <SplitEntryEvent EventFile="EVENT\E0106" EventType="Preview" />
-  <SplitEntryMDL ModelFile="EWALKMDL.PRS" LabelFile="EWALKMDL" CmnName="Mech Eggman Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
+  <SplitEntryMDL ModelFile="EWALKMDL.PRS" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman Model Data">
     <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="KNUCKMDL.PRS" LabelFile="KNUCKMDL" CmnName="Knuckles Model Data">
+  <SplitEntryMDL ModelFile="KNUCKMDL.PRS" LabelFile="KNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>KNUCKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="ROUGEMDL.PRS" LabelFile="ROUGEMDL" CmnName="Rouge Model Data">
+  <SplitEntryMDL ModelFile="ROUGEMDL.PRS" LabelFile="ROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="SONICMDL.PRS" LabelFile="SONICMDL" CmnName="Sonic Model Data">
+  <SplitEntryMDL ModelFile="SONICMDL.PRS" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="TERIOSMDL.PRS" LabelFile="TERIOSMDL" CmnName="Shadow Model Data">
+  <SplitEntryMDL ModelFile="TERIOSMDL.PRS" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="TWALKMDL.PRS" LabelFile="TWALKMDL" CmnName="Mech Tails Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
+  <SplitEntryMDL ModelFile="TWALKMDL.PRS" LabelFile="TWALKMDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails Model Data">
     <MotionFile>TWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

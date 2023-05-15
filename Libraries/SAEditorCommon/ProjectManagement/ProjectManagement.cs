@@ -210,6 +210,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("LabelFile")]
 			public string LabelFile { get; set; }
 			/// <summary>
+			/// Animation labeling file to be used with the Motion file.
+			/// </summary>
+			[XmlAttribute("MTNLabelFile")]
+			public string MTNLabelFile { get; set; }
+			/// <summary>
 			/// List of Motion files uses by the Model File.
 			/// </summary>
 			[XmlElement("MotionFile")]
@@ -231,6 +236,16 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("EventType")]
 			public string EventType { get; set; }
+			/// <summary>
+			/// Common name to be referenced for the event.
+			/// </summary>
+			[XmlAttribute("CmnName")]
+			public string CmnName { get; set; }
+			/// <summary>
+			/// Model labeling file to be used with the Event file.
+			/// </summary>
+			[XmlAttribute("LabelFile")]
+			public string LabelFile { get; set; }
 		}
 	}
 
@@ -628,7 +643,9 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
 
-			string labelfile = Path.Combine(iniFolder, (splitMDL.LabelFile.ToLower() + ".ini"));
+			string mdllabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.LabelFile.ToLower() + ".ini"));
+
+			string mtnlabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.MTNLabelFile.ToLower() + ".ini"));
 
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
@@ -653,7 +670,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), labelfile);
+				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile);
 		}
 
 		/// <summary>
@@ -752,7 +769,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			if (progress != null)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting data from " + splitEvent.EventFile);
+
+				if (splitEvent.CmnName != null)
+					progress.SetStep("Splitting " + splitEvent.CmnName + " from " + splitEvent.EventFile);
+				else
+					progress.SetStep("Splitting data from " + splitEvent.EventFile);
 			}
 
 			#region Validating Inputs

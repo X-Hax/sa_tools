@@ -792,6 +792,7 @@ namespace SplitTools.Split
 						List<MotionTableEntry> result = new List<MotionTableEntry>();
 						List<string> hashes = new List<string>();
 						bool shortrot = false;
+						string animmeta = null;
 						if (customProperties.ContainsKey("shortrot"))
 							shortrot = bool.Parse(customProperties["shortrot"]);
 						int nodeCount = int.Parse(data.CustomProperties["nodecount"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
@@ -803,6 +804,8 @@ namespace SplitTools.Split
 							int mtnaddr = (int)(ByteConverter.ToUInt32(datafile, address) - imageBase);
 							if (!mtns.ContainsKey(mtnaddr))
 							{
+								if (customProperties.ContainsKey("meta" + i.ToString() + "_a"))
+									animmeta = customProperties["meta" + i.ToString() + "_a"];
 								NJS_MOTION motion = new NJS_MOTION(datafile, mtnaddr, imageBase, nodeCount, null, shortrot);
 								bmte.Motion = motion.Name;
 								mtns.Add(mtnaddr, motion.Name);
@@ -812,6 +815,7 @@ namespace SplitTools.Split
 								else
 									file_tosave = i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim";
 								string file = Path.Combine(fileOutputPath, file_tosave);
+								motion.Description = animmeta;
 								motion.Save(file, nometa);
 								hashes.Add(HelperFunctions.FileHash(file));
 							}
@@ -898,14 +902,17 @@ namespace SplitTools.Split
 							chara.MainModel = model.Name;
 							NJS_MOTION anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, model.CountAnimated());
 							chara.Animation1 = anim.Name;
+							anim.Description = $"{chnm} Default Pose";
 							anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim"), nometa);
 							hashes.Add($"{chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 1.saanim")));
 							anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 8) - imageBase), imageBase, model.CountAnimated());
 							chara.Animation2 = anim.Name;
+							anim.Description = $"{chnm} Selected Pose (Begin)";
 							anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim"), nometa);
 							hashes.Add($"{chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 2.saanim")));
 							anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 12) - imageBase), imageBase, model.CountAnimated());
 							chara.Animation3 = anim.Name;
+							anim.Description = $"{chnm} Selected Pose (Loop)";
 							anim.Save(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim"), nometa);
 							hashes.Add($"{chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"{chnm} Anim 3.saanim")));
 							ModelFile.CreateFile(Path.Combine(fileOutputPath, $"{chnm}.sa2mdl"), model, new[] { $"{chnm} Anim 1.saanim", $"{chnm} Anim 2.saanim", $"{chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
@@ -926,14 +933,17 @@ namespace SplitTools.Split
 								chara.SuperModel = model.Name;
 								anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 28) - imageBase), imageBase, model.CountAnimated());
 								chara.SuperAnimation1 = anim.Name;
+									anim.Description = $"Super {chnm} Default Pose";
 								anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim"), nometa);
 								hashes.Add($"Super {chnm} Anim 1.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 1.saanim")));
 								anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 32) - imageBase), imageBase, model.CountAnimated());
 								chara.SuperAnimation2 = anim.Name;
+								anim.Description = $"Super {chnm} Selected Pose (Begin)";
 								anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim"), nometa);
 								hashes.Add($"Super {chnm} Anim 2.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 2.saanim")));
 								anim = new NJS_MOTION(datafile, (int)(ByteConverter.ToInt32(datafile, address + 36) - imageBase), imageBase, model.CountAnimated());
 								chara.SuperAnimation3 = anim.Name;
+								anim.Description = $"Super {chnm} Selected Pose (Loop)";
 								anim.Save(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim"), nometa);
 								hashes.Add($"Super {chnm} Anim 3.saanim:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, $"Super {chnm} Anim 3.saanim")));
 								ModelFile.CreateFile(Path.Combine(fileOutputPath, $"Super {chnm}.sa2mdl"), model, new[] { $"Super {chnm} Anim 1.saanim", $"Super {chnm} Anim 2.saanim", $"Super {chnm} Anim 3.saanim" }, null, null, null, ModelFormat.Chunk, nometa);
@@ -1268,10 +1278,14 @@ namespace SplitTools.Split
 						Directory.CreateDirectory(fileOutputPath);
 						List<string> hashes = new List<string>();
 						int i = ByteConverter.ToInt16(datafile, address);
+						string animmeta = null;
 						while (i != -1)
 						{
-							new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2))
-								.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", nometa);
+							if (customProperties.ContainsKey("meta" + i.ToString() + "_a"))
+								animmeta = customProperties["meta" + i.ToString() + "_a"];
+							NJS_MOTION animdata = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
+							animdata.Description = animmeta;
+							animdata.Save(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim", nometa);
 							hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim"));
 							address += 8;
 							i = ByteConverter.ToInt16(datafile, address);
