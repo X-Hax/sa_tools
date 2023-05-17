@@ -47,58 +47,58 @@ namespace SAModel.SALVL
 			bool skipDefsNow = skipDefs;
             List<ObjectData> objectErrors = new List<ObjectData>();
             ObjectListEntry[] objlstini = ObjectList.Load(objectList, false);
-            if (Mission)
-                LevelData.MisnObjDefs = new List<ObjectDefinition>();
-            else
-            {
-                LevelData.ObjDefs = new List<ObjectDefinition>();
-                Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
-            }
+			if (Mission)
+				LevelData.MisnObjDefs = new List<ObjectDefinition>(new ObjectDefinition[objlstini.Length]);
+			else
+			{
+				LevelData.ObjDefs = new List<ObjectDefinition>(new ObjectDefinition[objlstini.Length]);
+				Directory.CreateDirectory("dllcache").Attributes |= FileAttributes.Hidden;
+			}
 
             List<KeyValuePair<string, string>> compileErrors = new List<KeyValuePair<string, string>>();
 
-            for (int ID = 0; ID < objlstini.Length; ID++)
-            {
-                string codeaddr = objlstini[ID].Name;
-                ObjectData defgroup;
-                ObjectDefinition def;
-                if (objdefini == null)
-                {
+			System.Threading.Tasks.Parallel.For(0, objlstini.Length, ID =>
+			{
+				string codeaddr = objlstini[ID].Name;
+				ObjectData defgroup;
+				ObjectDefinition def;
+				if (objdefini == null)
+				{
 					skipDefsNow = true;
-                    defgroup = new ObjectData();
-                }
-                else
-                {
-                    if (!objdefini.ContainsKey(codeaddr))
-                        codeaddr = "0";
-                    defgroup = objdefini[codeaddr];
-                }
+					defgroup = new ObjectData();
+				}
+				else
+				{
+					if (!objdefini.ContainsKey(codeaddr))
+						codeaddr = "0";
+					defgroup = objdefini[codeaddr];
+				}
 
-                if (!skipDefsNow && !string.IsNullOrEmpty(defgroup.CodeFile))
-                {
-                    if (progress != null) progress.SetStep("Compiling: " + defgroup.CodeFile);
+				if (!skipDefsNow && !string.IsNullOrEmpty(defgroup.CodeFile))
+				{
+					if (progress != null) progress.SetStep("Compiling: " + defgroup.CodeFile);
 
-                    bool errorOccured = false;
-                    string errorText = "";
+					bool errorOccured = false;
+					string errorText = "";
 
-                    def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
-                    if (errorOccured)
-                    {
-                        KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
-                            defgroup.CodeFile, errorText);
-                        log.Add(errorValue.Value);
-                        compileErrors.Add(errorValue);
-                    }
-                }
-                else
-                {
-                    def = new DefaultObjectDefinition();
-                }
+					def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
+					if (errorOccured)
+					{
+						KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
+							defgroup.CodeFile, errorText);
+						log.Add(errorValue.Value);
+						compileErrors.Add(errorValue);
+					}
+				}
+				else
+				{
+					def = new DefaultObjectDefinition();
+				}
 
-                if (Mission)
-                    LevelData.MisnObjDefs.Add(def);
-                else
-                    LevelData.ObjDefs.Add(def);
+				if (Mission)
+					LevelData.MisnObjDefs[ID] = def;
+				else
+					LevelData.ObjDefs[ID] = def;
 
 				// The only reason .Model is checked for null is for objects that don't yet have any
 				// models defined for them. It would be annoying seeing that error all the time!
@@ -120,9 +120,9 @@ namespace SAModel.SALVL
 					}
 				}
 
-                def.Init(defgroup, objlstini[ID].Name);
-                def.SetInternalName(objlstini[ID].Name);
-            }
+				def.Init(defgroup, objlstini[ID].Name);
+				def.SetInternalName(objlstini[ID].Name);
+			});
 
             if (compileErrors.Count > 0)
             {
