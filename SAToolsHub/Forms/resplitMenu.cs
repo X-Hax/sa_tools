@@ -67,8 +67,7 @@ namespace SAToolsHub
 		{
 			chkBoxEntries.Clear();
 			checkedListBox1.Items.Clear();
-
-			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplateFileForGame(SAToolsHub.setGame));
+			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplateFileForResplit(SAToolsHub.projType));
 
 			foreach (Templates.SplitEntry splitEntry in template.SplitEntries)
 			{
@@ -186,7 +185,7 @@ namespace SAToolsHub
 			{
 				progress.SetTask("Splitting Event Data");
 				foreach (Templates.SplitEntryEvent splitEvent in splitEventEntries)
-					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, overwrite);
+					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, iniFolder, overwrite);
 			}
 			// Project folders for buildable PC games
 			progress.SetTask("Updating Project File");
