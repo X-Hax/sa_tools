@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SADXGC" dataFolder="GC_SADX" checkFile="_Main.rel" gameDataFolderName="" checkHashes="036e39da11f19e6e3598ae6384dcae14" />
+  <GameInfo gameName="SADXGC" projectType="SADXGC" dataFolder="GC_SADX" checkFile="_Main.rel" gameDataFolderName="" checkHashes="036e39da11f19e6e3598ae6384dcae14" />
   <SplitEntry SourceFile="_Main.rel" IniFile="_Main" CmnName="Enemies and Objects (_Main.rel)" />
   <SplitEntry SourceFile="ModelsMiles.rel" IniFile="ModelsMiles" CmnName="Character Data (Sonic, Tails, Big)" />
   <SplitEntry SourceFile="ModelsKnuckles.rel" IniFile="ModelsKnuckles" CmnName="Character Data (Knuckles, Amy, Gamma, Eggman)" />

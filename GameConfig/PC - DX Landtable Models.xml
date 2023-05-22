@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SADXPC" dataFolder="PC_SADX\\land" gameDataFolderName="system" checkFile="sonic.exe" checkHashes="491c8a38328377bccff34810afb5f760" checkRange="004DB2A0-034F6FF0" />
+  <GameInfo gameName="SADXPC" projectType="SADXPCLandtableModels" dataFolder="PC_SADX\\land" gameDataFolderName="system" checkFile="sonic.exe" checkHashes="491c8a38328377bccff34810afb5f760" checkRange="004DB2A0-034F6FF0" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg00_land" CmnName="Hedgehog Hammer" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg01_land" CmnName="Emerald Coast" />
   <SplitEntry SourceFile="sonic.exe" IniFile="stg02_land" CmnName="Windy Valley" />

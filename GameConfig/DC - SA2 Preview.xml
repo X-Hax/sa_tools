@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2PRE" dataFolder="DC_SA2Preview" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="32e3542d1623d8cecbba80de688770e7" />
+  <GameInfo gameName="SA2PRE" projectType="SA2PRE" dataFolder="DC_SA2Preview" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="32e3542d1623d8cecbba80de688770e7" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" CmnName="Common Objects and Character Data (1ST_READ)" />
   <SplitEntry SourceFile="ADVERTISE.PRS" IniFile="ADVERTISE" CmnName="Menus, Splash Screens, and GUI Elements" />
   <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" CmnName="Green Forest" />
@@ -12,13 +12,18 @@
   <SplitEntry SourceFile="STG18.PRS" IniFile="STG18" CmnName="Dry Lagoon" />
   <SplitEntry SourceFile="STG21.PRS" IniFile="STG21" CmnName="Sand Ocean" />
   <SplitEntry SourceFile="STG41.PRS" IniFile="STG41" CmnName="Wild Canyon 2P" />
-  <SplitEntryEvent EventFile="EVENT\E0000" EventType="Preview" />
-  <SplitEntryEvent EventFile="EVENT\E0003" EventType="Preview" />
-  <SplitEntryEvent EventFile="EVENT\E0103" EventType="Preview" />
-  <SplitEntryEvent EventFile="EVENT\ME0104" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="EVENT\E0106" EventType="Preview" />
-  <SplitEntryMDL ModelFile="EWALKMDL.PRS" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman Model Data">
-    <MotionFile>EWALKMTN.PRS</MotionFile>
+  <SplitEntryEvent EventFile="EVENT\E0000" EventType="Preview" CmnName="Event #0: Hero Story Intro" LabelFile="E0000" />
+  <SplitEntryEvent EventFile="EVENT\E0003" EventType="Preview" CmnName="Event #3: Knuckles Meets Rouge" LabelFile="E0003" />
+  <SplitEntryEvent EventFile="EVENT\E0103" EventType="Preview" CmnName="Event #103: Rouge Meets Knuckles" LabelFile="E0103" />
+  <SplitEntryEvent EventFile="EVENT\ME0104" EventType="MiniEvent" CmnName="Event #104: Sand Ocean Mini-Event" LabelFile="ME0104" />
+  <SplitEntryEvent EventFile="EVENT\E0106" EventType="Preview" CmnName="Event #106: Shadow's Pathos (Abridged)" LabelFile="E0106" />
+  <SplitEntryMDL ModelFile="SONICMDL.PRS" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SONICMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="TERIOSMDL.PRS" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
   <SplitEntryMDL ModelFile="KNUCKMDL.PRS" LabelFile="KNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
@@ -28,15 +33,10 @@
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="SONICMDL.PRS" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>SONICMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL ModelFile="TERIOSMDL.PRS" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TERIOSMTN.PRS</MotionFile>
-  </SplitEntryMDL>
   <SplitEntryMDL ModelFile="TWALKMDL.PRS" LabelFile="TWALKMDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails Model Data">
     <MotionFile>TWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="EWALKMDL.PRS" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman Model Data">
+    <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

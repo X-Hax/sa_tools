@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2TT" dataFolder="DC_SA2TheTrial" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="f3d6cf600af7d8daf156eee220225379" />
-  <SplitEntryEvent EventFile="EVENT\E0000" EventType="Trial" CmnName="Event #0: Hero Story Intro" />
+  <GameInfo gameName="SA2TT" projectType="SA2TT" dataFolder="DC_SA2TheTrial" gameDataFolderName="" checkFile="1ST_READ.BIN" checkHashes="f3d6cf600af7d8daf156eee220225379" />
+  <SplitEntryEvent EventFile="EVENT\E0000" EventType="Trial" CmnName="Event #0: Hero Story Intro" LabelFile="E0000" />
   <SplitEntry SourceFile="1ST_READ.bin" IniFile="1ST_READ" CmnName="Common Objects and Character Data (1ST_READ)" />
   <SplitEntry SourceFile="STG13.PRS" IniFile="STG13" CmnName="City Escape" />
   <SplitEntryMDL ModelFile="SONICMDL.PRS" CmnName="Sonic Model Data" LabelFile="SONICMDL" MTNLabelFile="SONICMTN">

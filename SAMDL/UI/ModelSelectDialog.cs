@@ -16,6 +16,7 @@ namespace SAModel.SAMDL
 		public string SelectedCategory = "";
 		Dictionary<string, List<SplitEntry>> Categories = new Dictionary<string, List<SplitEntry>>();
 		Dictionary<string, List<SplitEntryMDL>> MDLCategories = new Dictionary<string, List<SplitEntryMDL>>();
+		Dictionary<string, List<SplitEntryEvent>> EVCategories = new Dictionary<string, List<SplitEntryEvent>>();
 		List<ModelLoadInfo> Models = new List<ModelLoadInfo>();
 		public string modFolder;
 		public string modSystemFolder;
@@ -78,7 +79,7 @@ namespace SAModel.SAMDL
 			return false;
 		}
 
-		private bool CheckLabelFile(SplitEntryMDL mdl)
+		private bool CheckMDLLabelFile(SplitEntryMDL mdl)
 		{
 			// Returns true if the split INI file for the entry has models
 			string inipath = Path.Combine(Path.Combine(modFolder, "figure\\bin"), mdl.LabelFile + "_data.ini");
@@ -97,6 +98,28 @@ namespace SAModel.SAMDL
 				switch (Path.GetExtension(entryFilename).ToLowerInvariant())
 				{
 					case ".sa1mdl":
+					case ".sa2mdl":
+					case ".sa2bmdl":
+						return true;
+					default:
+						break;
+				}
+			}
+			return false;
+		}
+		private bool CheckEVLabelFile(SplitEntryEvent ev)
+		{
+			// Returns true if the split INI file for the entry has models
+			string inipath = Path.Combine(Path.Combine(modFolder, "Event\\bin"), ev.LabelFile + "_data.ini");
+			if (!File.Exists(inipath))
+				return false;
+			// Check source file extension to determine what kind of split INI data is used with it
+			Dictionary<string, string> evFilenames = IniSerializer.Deserialize<Dictionary<string, string>>(inipath);
+			foreach (var evitem in evFilenames)
+			{
+				string entryFilename = evitem.Key;
+				switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+				{
 					case ".sa2mdl":
 					case ".sa2bmdl":
 						return true;
@@ -131,6 +154,18 @@ namespace SAModel.SAMDL
 				comboCategories.Items.Add(categoryName);
 			}
 		}
+		private void AddEVEntryToCategories(SplitEntryEvent entry, string categoryName)
+		{
+			if (EVCategories.ContainsKey(categoryName))
+				EVCategories[categoryName].Add(entry);
+			else
+			{
+				List<SplitEntryEvent> evlist = new List<SplitEntryEvent>();
+				evlist.Add(entry);
+				EVCategories.Add(categoryName, evlist);
+				comboCategories.Items.Add(categoryName);
+			}
+		}
 
 		public ModelSelectDialog(ProjectTemplate projFile, string lastCategory)
 		{
@@ -153,13 +188,24 @@ namespace SAModel.SAMDL
 			}
 			foreach (SplitEntryMDL mdl in projFile.SplitMDLEntries)
 			{
-				if (CheckLabelFile(mdl))
+				if (CheckMDLLabelFile(mdl))
 				{
 					string categoryName = mdl.LabelFile;
 					// To prevent a crash when category names aren't defined
 					if (mdl.CmnName != null && mdl.CmnName != "")
 						categoryName = mdl.CmnName;
 					AddMDLEntryToCategories(mdl, categoryName);
+				}
+			}
+			foreach (SplitEntryEvent ev in projFile.SplitEventEntries)
+			{
+				if (CheckEVLabelFile(ev))
+				{
+					string categoryName = ev.LabelFile;
+					// To prevent a crash when category names aren't defined
+					if (ev.CmnName != null && ev.CmnName != "")
+						categoryName = ev.CmnName;
+					AddEVEntryToCategories(ev, categoryName);
 				}
 			}
 
@@ -197,8 +243,86 @@ namespace SAModel.SAMDL
 				return;
 			Models.Clear();
 			SelectedCategory = comboCategories.GetItemText(comboCategories.SelectedItem);
-			if (!SelectedCategory.EndsWith("Model Data"))
-			{ 
+			if (SelectedCategory.EndsWith("Model Data"))
+			{
+				foreach (SplitEntryMDL entry in MDLCategories[SelectedCategory])
+				{
+					string inipath = Path.Combine(Path.Combine(modFolder, "figure\\bin"), entry.LabelFile + "_data.ini");
+					// Get models from inidata by type
+					Dictionary<int, string> mdlFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
+					foreach (var mdlitem in mdlFilenames)
+					{
+						string entryFilename = mdlitem.Value;
+						string entryDescription = "";
+						string entryTexture = "";
+						if (mdlitem.Value.Contains("|"))
+						{
+							string[] mdlMeta = mdlitem.Value.Split('|');
+							entryFilename = mdlMeta[0];
+							if (mdlMeta.Length > 1)
+								entryDescription = mdlMeta[1];
+							if (mdlMeta.Length > 2)
+								entryTexture = mdlMeta[2];
+						}
+						else
+							entryDescription = Path.GetFileNameWithoutExtension(mdlitem.Value);
+						switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+						{
+							case ".sa1mdl":
+							case ".sa2mdl":
+							case ".sa2bmdl":
+								string[] textures = new string[1];
+								textures[0] = entryTexture;
+								if (entryTexture == "")
+									textures = null;
+								Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null, null));
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			}
+			else if (SelectedCategory.StartsWith("Event #"))
+			{
+				foreach (SplitEntryEvent entry in EVCategories[SelectedCategory])
+				{
+					string inipath = Path.Combine(Path.Combine(modFolder, "Event\\bin"), entry.LabelFile + "_data.ini");
+
+					// Get models from inidata by type
+					Dictionary<string, string> evFilenamesC = IniSerializer.Deserialize<Dictionary<string, string>>(inipath);
+					foreach (var evitem in evFilenamesC)
+					{
+						string entryFilename = Path.Combine(Path.Combine(modFolder, $"Event\\bin\\{entry.LabelFile}"), evitem.Key);
+						string entryDescription = "";
+						string entryTexture = "";
+						if (evitem.Value.Contains("|"))
+						{
+							string[] evMeta = evitem.Value.Split('|');
+							entryDescription = evMeta[0];
+							if (evMeta.Length > 1)
+								entryTexture = evMeta[1];
+						}
+						else
+							entryDescription = Path.GetFileNameWithoutExtension(evitem.Value);
+						switch (Path.GetExtension(entryFilename).ToLowerInvariant())
+						{
+							case ".sa2mdl":
+							case ".sa2bmdl":
+								string[] textures = new string[1];
+								textures[0] = entryTexture;
+								if (entryTexture == "")
+									textures = null;
+								Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null, null));
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			}
+			else
+			{
 				foreach (SplitEntry entry in Categories[SelectedCategory])
 				{
 					string inipath = Path.Combine(modFolder, entry.IniFile + "_data.ini");
@@ -263,46 +387,6 @@ namespace SAModel.SAMDL
 								}
 							}
 							break;
-					}
-				}
-			}
-			else
-			{
-				foreach (SplitEntryMDL entry in MDLCategories[SelectedCategory])
-				{
-					string inipath = Path.Combine(Path.Combine(modFolder, "figure\\bin"), entry.LabelFile + "_data.ini");
-					// Get models from inidata by type
-					Dictionary<int, string> mdlFilenames = IniSerializer.Deserialize<Dictionary<int, string>>(inipath);
-					foreach (var mdlitem in mdlFilenames)
-					{
-						string entryFilename = mdlitem.Value;
-						string entryDescription = "";
-						string entryTexture = "";
-						if (mdlitem.Value.Contains("|"))
-						{
-							string[] mdlMeta = mdlitem.Value.Split('|');
-							entryFilename = mdlMeta[0];
-							if (mdlMeta.Length > 1)
-								entryDescription = mdlMeta[1];
-							if (mdlMeta.Length > 2)
-								entryTexture = mdlMeta[2];
-						}
-						else
-							entryDescription = Path.GetFileNameWithoutExtension(mdlitem.Value);
-						switch (Path.GetExtension(entryFilename).ToLowerInvariant())
-						{
-							case ".sa1mdl":
-							case ".sa2mdl":
-							case ".sa2bmdl":
-								string[] textures = new string[1];
-								textures[0] = entryTexture;
-								if (entryTexture == "")
-									textures = null;
-								Models.Add(new ModelLoadInfo(entryDescription, entryFilename, textures, null, null, null));
-								break;
-							default:
-								break;
-						}
 					}
 				}
 			}

@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2" dataFolder="DC_SA2" checkFile="1STREAD.BIN" gameDataFolderName="SONIC2" checkHashes="1c1b63fcb551187e7c7b456b4e28a022,ef0138133ff61fca7075fd520abb7618" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0000" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0001" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0002" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0003" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0004" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0005" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0006" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0007" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0008" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0010" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0011" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0013" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0014" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0015" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0016" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0017" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0018" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0019" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0021" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0022" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0023" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0024" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0025" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0026" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0027" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0028" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0100" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0101" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0102" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0103" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0104" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0105" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0106" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0107" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0108" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0109" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0110" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0111" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0112" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0113" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0114" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0115" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0116" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0117" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0118" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0119" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0120" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0121" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0122" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0123" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0124" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0125" EventType="MiniEvent" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0126" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0127" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0128" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0129" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0130" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0131" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0200" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0201" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0203" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0203" EventType="MainBIN" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0204" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0205" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0206" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0207" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0208" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0210" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0210" EventType="MainBIN" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0211" EventType="MainPRS" />
-  <SplitEntryEvent EventFile="SONIC2\EVENT\E0350" EventType="MainPRS" />
+  <GameInfo gameName="SA2" projectType="SA2Cutscenes" dataFolder="DC_SA2" checkFile="1STREAD.BIN" gameDataFolderName="SONIC2" checkHashes="1c1b63fcb551187e7c7b456b4e28a022,ef0138133ff61fca7075fd520abb7618" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0000" EventType="MainPRS" CmnName="Event #0: Hero Story Intro" LabelFile="E0000" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0001" EventType="MiniEvent" CmnName="Event #1: F-6t BIG FOOT Mini-Event" LabelFile="ME0001" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0002" EventType="MainPRS" CmnName="Event #2: Sonic Encounters Shadow" LabelFile="E0002" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0003" EventType="MainPRS" CmnName="Event #3: Knuckles Meets Rouge" LabelFile="E0003" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0004" EventType="MainPRS" CmnName="Event #4: Tails Flies to Prison Island" LabelFile="E0004" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0005" EventType="MainPRS" CmnName="Event #5: Tails vs. Eggman 1 Aftermath" LabelFile="E0005" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0006" EventType="MainPRS" CmnName="Event #6: Sonic Escapes His Cell" LabelFile="E0006" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0007" EventType="MiniEvent" CmnName="Event #7: Sonic vs. Shadow 1 Mini-Event (Sonic)" LabelFile="ME0007" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0008" EventType="MiniEvent" CmnName="Event #8: Green Forest Mini-Event" LabelFile="ME0008" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0010" EventType="MiniEvent" CmnName="Event #10: Pumpkin Hill Mini-Event" LabelFile="ME0010" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0011" EventType="MainPRS" CmnName="Event #11: Team Sonic Witnesses the ARK's Power" LabelFile="E0011" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0013" EventType="MiniEvent" CmnName="Event #13: Aquatic Mine Mini-Event" LabelFile="ME0013" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0014" EventType="MainPRS" CmnName="Event #14: Where's Eggman?" LabelFile="E0014" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0015" EventType="MainPRS" CmnName="Event #15: Eggman Threatens the President" LabelFile="E0015" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0016" EventType="MainPRS" CmnName="Event #16: Team Sonic Finds Eggman's Base" LabelFile="E0016" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0017" EventType="MainPRS" CmnName="Event #17: Knuckles Searches for the Gate Keys" LabelFile="E0017" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0018" EventType="MiniEvent" CmnName="Event #18: King Boom Boo Mini-Event" LabelFile="ME0018" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0019" EventType="MainPRS" CmnName="Event #19: Eggman Ambushes Team Sonic" LabelFile="E0019" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0021" EventType="MainPRS" CmnName="Event #21: Team Sonic Arrives on the ARK" LabelFile="E0021" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0022" EventType="MainPRS" CmnName="Event #22: Sonic Receives a Ransom Call" LabelFile="E0022" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0023" EventType="MiniEvent" CmnName="Event #23: Knuckles vs. Rouge Mini-Event (Knuckles)" LabelFile="ME0023" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0024" EventType="MainPRS" CmnName="Event #24: Knuckles vs. Rouge Aftermath (Hero)" LabelFile="E0024" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0025" EventType="MainPRS" CmnName="Event #25: Sonic and Eggman Face Off" LabelFile="E0025" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0026" EventType="MainPRS" CmnName="Event #26: Sonic's Last Chance" LabelFile="E0026" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0027" EventType="MainPRS" CmnName="Event #27: Sonic vs. Shadow 2 Prelude (Hero)" LabelFile="E0027" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0028" EventType="MainPRS" CmnName="Event #28: Hero Story Ending" LabelFile="E0028" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0100" EventType="MainPRS" CmnName="Event #100: Dark Story Intro" LabelFile="E0100" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0101" EventType="MainPRS" CmnName="Event #101: Eggman Awakens Shadow" LabelFile="E0101" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0102" EventType="MainPRS" CmnName="Event #102: Shadow Informs Eggman About the ARK" LabelFile="E0102" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0103" EventType="MainPRS" CmnName="Event #103: Rouge Meets Knuckles" LabelFile="E0103" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0104" EventType="MiniEvent" CmnName="Event #104: Sand Ocean Mini-Event" LabelFile="ME0104" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0105" EventType="MainPRS" CmnName="Event #105: Eggman Sees Shadow's Highway Robbery" LabelFile="E0105" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0106" EventType="MainPRS" CmnName="Event #106: Shadow's Pathos" LabelFile="E0106" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0107" EventType="MainPRS" CmnName="Event #107: Shadow Encounters Sonic" LabelFile="E0107" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0108" EventType="MiniEvent" CmnName="Event #108: Egg Quarters Mini-Event" LabelFile="ME0108" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0109" EventType="MainPRS" CmnName="Event #109: Rouge Warps to the ARK" LabelFile="E0109" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0110" EventType="MiniEvent" CmnName="Event #110: Lost Colony Mini-Event" LabelFile="ME0110" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0111" EventType="MainPRS" CmnName="Event #111: Gathering of the Dark" LabelFile="E0111" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0112" EventType="MainPRS" CmnName="Event #112: Arrival on Prison Island" LabelFile="E0112" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0113" EventType="MainPRS" CmnName="Event #113: Tails and Amy Complicate Eggman's Plan" LabelFile="E0113" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0114" EventType="MiniEvent" CmnName="Event #114: Security Hall Mini-Event" LabelFile="ME0114" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0115" EventType="MiniEvent" CmnName="Event #115: R-1/A FLYING DOG Mini-Event" LabelFile="ME0115" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0116" EventType="MainPRS" CmnName="Event #116: Shadow's Conscience" LabelFile="E0116" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0117" EventType="MiniEvent" CmnName="Event #117: Sonic vs. Shadow 1 Mini-Event (Shadow)" LabelFile="ME0117" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0118" EventType="MainPRS" CmnName="Event #118: Sonic vs. Shadow 1 Aftermath" LabelFile="E0118" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0119" EventType="MainPRS" CmnName="Event #119: Shadow Remembers Maria" LabelFile="E0119" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0120" EventType="MainPRS" CmnName="Event #120: Eggman Reworks His Plan" LabelFile="E0120" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0121" EventType="MiniEvent" CmnName="Event #121: Sky Rail Mini-Event" LabelFile="ME0121" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0122" EventType="MainPRS" CmnName="Event #122: Shadow Sees the Tornado" LabelFile="E0122" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0123" EventType="MainPRS" CmnName="Event #123: Eggman Fails to Ambush Team Sonic" LabelFile="E0123" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0124" EventType="MainPRS" CmnName="Event #124: Rouge Learns the Truth About Project Shadow" LabelFile="E0124" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\ME0125" EventType="MiniEvent" CmnName="Event #125: Knuckles vs. Rouge Mini-Event (Rouge)" LabelFile="ME0125" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0126" EventType="MainPRS" CmnName="Event #126: Knuckles vs. Rouge Aftermath (Dark)" LabelFile="E0126" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0127" EventType="MainPRS" CmnName="Event #127: Eggman's Final Plan" LabelFile="E0127" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0128" EventType="MainPRS" CmnName="Event #128: Eggman Sets a Trap for Sonic" LabelFile="E0128" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0129" EventType="MainPRS" CmnName="Event #129: Mystery of Shadow the Hedgehog" LabelFile="E0129" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0130" EventType="MainPRS" CmnName="Event #130: Sonic vs. Shadow 2 Prelude (Dark)" LabelFile="E0130" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0131" EventType="MainPRS" CmnName="Event #131: Dark Story Ending" LabelFile="E0131" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0200" EventType="MainPRS" CmnName="Event #200: Last Episode Intro" LabelFile="E0200" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0201" EventType="MainPRS" CmnName="Event #201: The ARK Falls" LabelFile="E0201"/>
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0203" EventType="MainPRS" CmnName="Event #203: Gerald's Diary and Madness (Beta)" LabelFile="E0203" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0203" EventType="MainBIN" CmnName="Event #203: Gerald's Diary and Madness" LabelFile="E0203_BIN" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0204" EventType="MainPRS" CmnName="Event #204: Amy Reasons with Shadow" LabelFile="E0204" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0205" EventType="MainPRS" CmnName="Event #205: Sonic and Knuckles Approach the Core" LabelFile="E0205" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0206" EventType="MainPRS" CmnName="Event #206: Knuckles Stops the Chaos Emeralds" LabelFile="E0206" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0207" EventType="MainPRS" CmnName="Event #207: Sonic and Shadow Transform" LabelFile="E0207" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0208" EventType="MainPRS" CmnName="Event #208: Shadow Gives His Life to Save the World" LabelFile="E0208" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0210" EventType="MainPRS" CmnName="Event #210: Last Episode Ending/Credits (Beta)" LabelFile="E0210" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0210" EventType="MainBIN" CmnName="Event #210: Last Episode Ending/Credits" LabelFile="E0210_BIN" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0211" EventType="MainPRS" CmnName="Event #211: Epilogue" LabelFile="E0211" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\E0350" EventType="MainPRS" CmnName="Event #350: SA2 Intro Cinematic" LabelFile="E0350" />
 </SplitTemplate>

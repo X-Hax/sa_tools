@@ -155,7 +155,7 @@ namespace Split
 								continue;
 							}
 							Console.Write("\nSplitting Event file: {0}", splitEntryEvent.EventFile);
-							ProjectFunctions.SplitTemplateEventEntry(splitEntryEvent, null, dataFolder, fullpath_out);
+							ProjectFunctions.SplitTemplateEventEntry(splitEntryEvent, null, dataFolder, fullpath_out, iniFolder);
 						}
 					break;
                 case "single":
