@@ -523,7 +523,7 @@ namespace SplitTools.SAArc
 						if (ptr2 != 0)
 						{ 
 							int cnt = ByteConverter.ToInt32(fc, ptr + 0x14);
-							Console.WriteLine("Scene {0} contains {1} particle motio{2}.", gn, cnt, ecnt == 1 ? "n" : "ns");
+							Console.WriteLine("Scene {0} contains {1} particle motio{2}.", gn, cnt == 0 ? "no" : cnt, cnt == 1 ? "n" : "ns");
 							for (int i = 0; i < cnt; i++)
 							{
 								scn.ParticleMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn}\\Particle Motion {i + 1}.saanim", motions, 1, $"{evname} Scene {gn} Particle Motion {i + 1}"));
