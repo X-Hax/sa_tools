@@ -46,7 +46,44 @@ namespace buildEvent
 		{
 			string fullpath_bin = Path.GetFullPath(args[0]);
 			string name = Path.GetFileName(fullpath_bin);
-			Queue<string> argq = new Queue<string>(args);
+			Wildcard evwcard = new Wildcard("e*", RegexOptions.IgnoreCase);
+			Wildcard mevwcard = new Wildcard("me*", RegexOptions.IgnoreCase);
+			Wildcard evxwcard = new Wildcard("e*_*", RegexOptions.IgnoreCase);
+			Wildcard mevxwcard = new Wildcard("me*_*", RegexOptions.IgnoreCase);
+			Wildcard exfwcard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
+			Wildcard mexfwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
+			if (!name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
+			{
+				if (mevwcard.IsMatch(name))
+				{
+					if (mevxwcard.IsMatch(name))
+					{
+						if (!name.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+							name += ".scr";
+					}
+					else
+					{
+						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+							name += ".prs";
+					}
+				}
+				else if (evwcard.IsMatch(name))
+				{
+					if (evxwcard.IsMatch(name))
+					{
+						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+						&& (!name.EndsWith(".scr", StringComparison.OrdinalIgnoreCase)))
+							name += ".prs";
+					}
+					else
+					{
+						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+							&& (!name.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)))
+							name += ".prs";
+					}
+				}
+			}
+				Queue<string> argq = new Queue<string>(args);
 			bool? be = null;
 			bool? lang = null;
 			switch (argq.Count)
@@ -101,31 +138,43 @@ namespace buildEvent
 					break;
 			}
 			string evfilename;
-			Wildcard exwcard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
-			Wildcard mexwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
 			if (argq.Count > 0)
 			{
 				evfilename = argq.Dequeue();
 				Console.WriteLine("File: {0}", evfilename);
-				if (mexwcard.IsMatch(name))
+				if (mexfwcard.IsMatch(name))
 				{
 					Console.WriteLine($"Building Mini-Event Extra file {name}");
-					sa2EventExtra.BuildMini(be, evfilename);
+					if (fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+						sa2EventExtra.BuildMini(be, evfilename);
+					else
+						sa2EventExtra.BuildMini(be, evfilename + ".scr");
 				}
-				else if (exwcard.IsMatch(name))
+				else if (exfwcard.IsMatch(name))
 				{
 					Console.WriteLine($"Building Event Extra file {name}");
-					sa2EventExtra.Build(be, lang, evfilename);
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+						|| fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+						sa2EventExtra.Build(be, lang, evfilename);
+					else
+						sa2EventExtra.Build(be, lang, evfilename + ".prs");
 				}
-				else if (evfilename.StartsWith("me", StringComparison.OrdinalIgnoreCase))
+				else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
 				{
 					Console.WriteLine($"Building Mini-Event {name}");
-					SA2MiniEvent.Build(evfilename);
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+						SA2MiniEvent.Build(evfilename);
+					else
+						SA2MiniEvent.Build(evfilename + ".prs");
 				}
 				else
 				{
 					Console.WriteLine($"Building Event {name}");
-					sa2Event.Build(evfilename);
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+						|| fullpath_bin.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+						sa2Event.Build(evfilename);
+					else
+						sa2Event.Build(evfilename + ".prs");
 				}
 
 			}
@@ -133,25 +182,39 @@ namespace buildEvent
 			{
 				Console.WriteLine("File: ");
 				evfilename = Console.ReadLine().Trim('"');
-				if (mexwcard.IsMatch(name))
+				if (mexfwcard.IsMatch(name))
 				{
 					Console.WriteLine($"Building Mini-Event Extra file {name}");
-					sa2EventExtra.BuildMini(be, evfilename);
+					if (fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+						sa2EventExtra.BuildMini(be, evfilename);
+					else
+						sa2EventExtra.BuildMini(be, evfilename + ".scr");
 				}
-				else if (exwcard.IsMatch(name))
+				else if (exfwcard.IsMatch(name))
 				{
 					Console.WriteLine($"Building Event Extra file {name}");
-					sa2EventExtra.Build(be, lang, evfilename);
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+						|| fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+						sa2EventExtra.Build(be, lang, evfilename);
+					else
+						sa2EventExtra.Build(be, lang, evfilename + ".prs");
 				}
-				else if (evfilename.StartsWith("me", StringComparison.OrdinalIgnoreCase))
+				else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
 				{
 					Console.WriteLine($"Building Mini-Event {name}");
-					SA2MiniEvent.Build(evfilename);
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+						SA2MiniEvent.Build(evfilename);
+					else
+						SA2MiniEvent.Build(evfilename + ".prs");
 				}
 				else
 				{
 					Console.WriteLine($"Building Event {name}");
-					sa2Event.Build(evfilename);
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+						|| fullpath_bin.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+						sa2Event.Build(evfilename);
+					else
+						sa2Event.Build(evfilename + ".prs");
 				}
 			}
 		}
