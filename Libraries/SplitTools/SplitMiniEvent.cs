@@ -189,7 +189,7 @@ namespace SplitTools.SAArc
 									// populating metadata file
 									string outResult = null;
 									// checks if the source ini is a placeholder
-									if (evsplitfilenames != null && mlength.Length != 0)
+									if (labelFile != null && mlength.Length != 0)
 									{
 										evmetadata = evsplitfilenames[modelfiles[parts.Model].Filename].Split('|'); // Description|Texture file
 										outResult += evmetadata[0] + "|" + evmetadata[1];
