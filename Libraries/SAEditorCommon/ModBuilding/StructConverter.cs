@@ -426,15 +426,15 @@ namespace SAModel.SAEditorCommon.StructConverter
 		}
 
         public static void ExportINI(SplitTools.IniData iniData,
-            Dictionary<string, bool> itemsToExport, string fileName)
+            Dictionary<string, bool> itemsToExport, SplitTools.Game game, string fileName)
 		{
 			string dstfol = Path.GetDirectoryName(fileName);
 
 			SplitTools.IniData output = new SplitTools.IniData
 			{
+				Game = game,
 				Files = new Dictionary<string, SplitTools.FileInfo>()
 			};
-
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in
 				iniData.Files.Where(i => itemsToExport[i.Key]))
 			{
@@ -450,7 +450,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 				switch (item.Value.Type)
 				{
 					case "deathzone":
-						switch (iniData.Game)
+						switch (game)
 						{
 							case Game.SA2:
 								{
