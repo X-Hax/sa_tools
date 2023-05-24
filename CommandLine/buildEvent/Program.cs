@@ -142,6 +142,7 @@ namespace buildEvent
 			{
 				evfilename = argq.Dequeue();
 				Console.WriteLine("File: {0}", evfilename);
+				System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 				if (mexfwcard.IsMatch(name))
 				{
 					Console.WriteLine($"Building Mini-Event Extra file {name}");
