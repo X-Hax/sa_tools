@@ -207,7 +207,7 @@ namespace SAModel.SAEditorCommon
 				(
 				new[]
 				{
-					item.Key,
+					item.Value.Name,
 					StructConverter.StructConverter.DataTypeList[item.Value.Type],
 					(modified ? "Yes" : "No"),
 				})

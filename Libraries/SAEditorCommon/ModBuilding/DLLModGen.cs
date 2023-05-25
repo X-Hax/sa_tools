@@ -328,7 +328,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 						break;
 				}
 
-				output.Files.Add(item.Key, new FileTypeHash(item.Value.Type, null));
+				output.Files.Add(item.Key, new FileTypeHash(item.Value.Type, null, item.Value.Name));
 				fileChk.Name = Path.GetFileName(item.Key);
 				fileChk.Label[0] = labelsChk.ElementAt(0);
 				if (labelsChk.Count > 1)
