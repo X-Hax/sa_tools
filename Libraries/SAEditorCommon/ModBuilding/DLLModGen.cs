@@ -299,7 +299,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 
 			List<string> labels = new List<string>();
 			foreach (KeyValuePair<string, FileTypeHash> item in
-				IniData.Files.Where(i => itemsToExport[i.Key]))
+				IniData.Files.Where(i => itemsToExport[i.Value.Name]))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dstfol, item.Key)));
 				File.Copy(item.Key, Path.Combine(dstfol, item.Key), true);
@@ -365,7 +365,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				}
 			}
 
-			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
 			{
 				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
 				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
@@ -392,7 +392,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				List<string> labels = new List<string>();
 				Dictionary<string, uint> texlists = new Dictionary<string, uint>();
 				foreach (KeyValuePair<string, FileTypeHash> item in
-					IniData.Files.Where(i => itemsToExport[i.Key]))
+					IniData.Files.Where(i => itemsToExport[i.Value.Name]))
 				{
 					switch (item.Value.Type)
 					{
@@ -427,7 +427,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					writer.WriteLine();
 				}
-				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
 					switch (item.Type)
 					{
 						case "soundlist":

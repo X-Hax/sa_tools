@@ -222,7 +222,7 @@ namespace SAModel.SAEditorCommon
 				(
 				new[]
 				{
-				item.Filename, StructConverter.StructConverter.DataTypeList[item.Type],
+				item.Metadata, StructConverter.StructConverter.DataTypeList[item.Type],
 				(modified ? "Yes" : "No")
 				})
 				{ Checked = modified });

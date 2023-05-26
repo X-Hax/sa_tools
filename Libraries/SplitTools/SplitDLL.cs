@@ -774,11 +774,6 @@ namespace SplitTools.SplitDLL
                                 if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 									Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 								texarrs.Save(fileOutputPath + ".satex");
-								string description = data.Filename + ".satex";
-								string fname = data.Filename + ".satex";
-								if (data.CustomProperties.ContainsKey("meta"))
-									description = data.CustomProperties["meta"];
-								output.Files[data.Filename + ".satex"] = new FileTypeHash("texlist", HelperFunctions.FileHash(fileOutputPath + ".satex"), description);
 							}
 							break;
 
@@ -809,9 +804,6 @@ namespace SplitTools.SplitDLL
 									if (!Directory.Exists(Path.GetDirectoryName(fn)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fn));
 									texarr.Save(fn);
-									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
-										description = data.CustomProperties["meta" + i.ToString()];
-									output.Files[fname] = new FileTypeHash("texlist", HelperFunctions.FileHash(fn), description);
 								}
 								address += 4;
 							}
@@ -830,7 +822,6 @@ namespace SplitTools.SplitDLL
 								string description = data.Filename;
 								if (data.CustomProperties.ContainsKey("meta"))
 									description = data.CustomProperties["meta"];
-								output.Files[data.Filename] = new FileTypeHash("soundlist", HelperFunctions.FileHash(fileOutputPath), description);
 							}
 							break;
 						case "animindexlist":
@@ -839,6 +830,7 @@ namespace SplitTools.SplitDLL
 								List<string> hashes = new List<string>();
 								int i = ByteConverter.ToInt16(datafile, address);
 								string animmeta = null;
+								string metaname = data.Filename;
 								while (i != -1)
 								{
 									if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
@@ -852,7 +844,9 @@ namespace SplitTools.SplitDLL
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
 								}
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "charaobjectdatalist":
@@ -860,6 +854,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<CharaObjectData> result = new List<CharaObjectData>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									string chnm = charaobjectnames[i];
@@ -934,7 +929,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "modelindex":
@@ -942,6 +939,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<ModelIndex> result = new List<ModelIndex>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									ModelIndex index = new ModelIndex();
@@ -955,7 +953,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartspecialinfolist":
@@ -963,6 +963,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartSpecialInfo> result = new List<KartSpecialInfo>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartSpecialInfo kart = new KartSpecialInfo();
@@ -1025,7 +1026,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartmodelsarray":
@@ -1033,6 +1036,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartModelInfo> result = new List<KartModelInfo>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartModelInfo kartobj = new KartModelInfo();
@@ -1076,7 +1080,7 @@ namespace SplitTools.SplitDLL
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_c"))
 										{
 											output.SAMDLData.Add(fn_col, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_c"]));
-											string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+											string[] mname = data.CustomProperties["meta" + i.ToString() + "_c"].Split('|');
 											meta_c = mname[0];
 										}
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
@@ -1104,7 +1108,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartobjectarray":
@@ -1112,6 +1118,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartObjectArray> result = new List<KartObjectArray>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartObjectArray kartset = new KartObjectArray();
@@ -1156,7 +1163,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartmenu":
@@ -1164,6 +1173,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartMenuElements> result = new List<KartMenuElements>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartMenuElements menu = new KartMenuElements();
@@ -1199,7 +1209,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartsoundparameters":
@@ -1207,6 +1219,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartSoundParameters> result = new List<KartSoundParameters>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartSoundParameters para = new KartSoundParameters();
@@ -1247,7 +1260,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "motiontable":
@@ -1259,6 +1274,7 @@ namespace SplitTools.SplitDLL
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								bool shortrot = false;
 								string metadesc = "";
+								string metaname = data.Filename;
 								if (data.CustomProperties.ContainsKey("shortrot"))
 									shortrot = bool.Parse(data.CustomProperties["shortrot"]);
 								for (int i = 0; i < data.Length; i++)
@@ -1309,7 +1325,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "cactionarray":

@@ -358,5 +358,7 @@ namespace SplitTools.SplitDLL
 		public string MD5Hash { get; set; }
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, string> CustomProperties { get; set; }
+		[IniName("meta")]
+		public string Metadata { get; set; }
 	}
 }
