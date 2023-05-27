@@ -20,6 +20,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 	{
 		static readonly Dictionary<string, string> typemap = new Dictionary<string, string>() {
 			{ "landtable", "LandTable *" },
+			{ "battlelandtable", "LandTable *" },
 			{ "landtablearray", "LandTable **" },
 			{ "model", "NJS_OBJECT *" },
 			{ "modelarray", "NJS_OBJECT **" },
@@ -42,7 +43,8 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{ "gcattacharray", "SA2B_Model **" },
 			{ "texlist", "NJS_TEXLIST *" },
 			{ "texlistarray", "NJS_TEXLIST **" },
-			{ "animindexlist", "AnimationIndex *" }
+			{ "animindexlist", "AnimationIndex *" },
+			{ "motiontable", "MotionTable *" }
 		};
 
 		private static void CheckItems(DllDataItemInfo item, DllIniData iniData, ref Dictionary<string, bool> defaultExportState)
@@ -397,6 +399,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					switch (item.Value.Type)
 					{
 						case "landtable":
+						case "battlelandtable":
 							LandTable tbl = LandTable.LoadFromFile(item.Key);
 							texlists.Add(tbl.Name, tbl.TextureList);
 							tbl.ToStructVariables(writer, landfmt, new List<string>());

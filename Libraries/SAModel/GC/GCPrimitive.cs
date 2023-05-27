@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -50,12 +51,12 @@ namespace SAModel.GC
 		/// <summary>
 		/// The way in which triangles are being stored
 		/// </summary>
-		public readonly GCPrimitiveType primitiveType;
+		public GCPrimitiveType primitiveType;
 
 		/// <summary>
 		/// The stored polygons
 		/// </summary>
-		public List<Loop> loops;
+		public List<Loop> loops { get; set; }
 
 		/// <summary>
 		/// Create a new empty Primitive
@@ -67,7 +68,7 @@ namespace SAModel.GC
 			loops = new List<Loop>();
 		}
 
-		/// <summary>
+			/// <summary>
 		/// Read a primitive object from a file
 		/// </summary>
 		/// <param name="file">The files contents as a byte array</param>
@@ -177,14 +178,16 @@ namespace SAModel.GC
 		/// </summary>
 		/// <param name="writer">The output stream</param>
 		/// <param name="indexFlags">How the indices of the loops are structured</param>
-		public void Write(BinaryWriter writer, GCIndexAttributeFlags indexFlags)
-		{
-			writer.Write((byte)primitiveType);
 
-			byte[] bytes = BitConverter.GetBytes((ushort)loops.Count);
+		public byte[] GetBytes(GCIndexAttributeFlags indexFlags)
+		{
+			List<byte> result = new List<byte>();
+			result.Add((byte)primitiveType);
+
+			byte[] big_endian_count = BitConverter.GetBytes((ushort)loops.Count);
 			// writing count as big endian
-			writer.Write(bytes[1]);
-			writer.Write(bytes[0]);
+			result.Add(big_endian_count[1]);
+			result.Add(big_endian_count[0]);
 
 			// checking the flags
 			bool hasFlag(GCIndexAttributeFlags flag)
@@ -208,28 +211,28 @@ namespace SAModel.GC
 
 				if (is_position_16bit)
 				{
-					bytes = BitConverter.GetBytes(v.PositionIndex);
-					// writing big endian
-					writer.Write(bytes[1]);
-					writer.Write(bytes[0]);
+					byte[] big_endian_pos = BitConverter.GetBytes(v.PositionIndex);
+					// writing count as big endian
+					result.Add(big_endian_pos[1]);
+					result.Add(big_endian_pos[0]);
 				}
 				else
 				{
-					writer.Write((byte)v.PositionIndex);
+					result.Add((byte)v.PositionIndex);
 				}
 
 				if (has_normal)
 				{
 					if (is_normal_16bit)
 					{
-						 bytes = BitConverter.GetBytes(v.NormalIndex);
-						// writing big endian
-						writer.Write(bytes[1]);
-						writer.Write(bytes[0]);
+						byte[] big_endian_nrm = BitConverter.GetBytes(v.NormalIndex);
+						// writing count as big endian
+						result.Add(big_endian_nrm[1]);
+						result.Add(big_endian_nrm[0]);
 					}
 					else
 					{
-						writer.Write((byte)v.NormalIndex);
+						result.Add((byte)v.NormalIndex);
 					}
 				}
 
@@ -237,14 +240,14 @@ namespace SAModel.GC
 				{
 					if (is_color_16bit)
 					{
-						bytes = BitConverter.GetBytes(v.Color0Index);
-						// writing big endian
-						writer.Write(bytes[1]);
-						writer.Write(bytes[0]);
+						byte[] big_endian_col = BitConverter.GetBytes(v.Color0Index);
+						// writing count as big endian
+						result.Add(big_endian_col[1]);
+						result.Add(big_endian_col[0]);
 					}
 					else
 					{
-						writer.Write((byte)v.Color0Index);
+						result.Add((byte)v.Color0Index);
 					}
 				}
 
@@ -252,17 +255,66 @@ namespace SAModel.GC
 				{
 					if (is_uv_16bit)
 					{
-						bytes = BitConverter.GetBytes(v.UV0Index);
-						// writing big endian
-						writer.Write(bytes[1]);
-						writer.Write(bytes[0]);
+						byte[] big_endian_uv = BitConverter.GetBytes(v.UV0Index);
+						// writing count as big endian
+						result.Add(big_endian_uv[1]);
+						result.Add(big_endian_uv[0]);
 					}
 					else
 					{
-						writer.Write((byte)v.UV0Index);
+						result.Add((byte)v.UV0Index);
 					}
 				}
 			}
+			return result.ToArray();
+		}
+
+		public string LoopStruct()
+		{
+			List<string> s = new List<string>(loops.Count);
+			for (int i = 0; i < loops.Count; i++)
+				s.Add(loops[i].ToString());
+			return string.Join(", ", s.ToArray());
+		}
+		public virtual string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append((byte)primitiveType);
+			result.Append(", ");
+			result.Append((ushort)loops.Count);
+			result.Append(", { ");
+			result.Append(LoopStruct());
+			result.Append(" }");
+			result.Append(" }");
+			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer)
+		{
+			string primtype = null;
+			switch (primitiveType)
+			{
+				case GCPrimitiveType.Triangles:
+					primtype = "GJD_PRIM_TRIANGLE";
+					break;
+				case GCPrimitiveType.TriangleStrip:
+					primtype = "GJD_PRIM_TRISTRIP";
+					break;
+				case GCPrimitiveType.TriangleFan:
+					primtype = "GJD_PRIM_TRIFAN";
+					break;
+				case GCPrimitiveType.Lines:
+					primtype = "GJD_PRIM_LINE";
+					break;
+				case GCPrimitiveType.LineStrip:
+					primtype = "GJD_PRIM_LINESTRIP";
+					break;
+				case GCPrimitiveType.Points:
+					primtype = "GJD_PRIM_POINT";
+					break;
+			}
+			writer.WriteLine($"\t{primtype}(" + loops.Count + "),");
+			for (int i = 0; i < loops.Count; i++)
+				writer.WriteLine("\t" + loops[i] + ",");
 		}
 
 		/// <summary>
@@ -318,7 +370,7 @@ namespace SAModel.GC
 					break;
 			}
 
-			if(degTriangles > 0)
+			if (degTriangles > 0)
 			{
 				Console.WriteLine("Degenerate triangles skipped: " + degTriangles);
 			}
@@ -327,8 +379,8 @@ namespace SAModel.GC
 		}
 
 		public override string ToString()
-		{
-			return $"{primitiveType}: {loops.Count}";
+			{
+				return $"{primitiveType}: {loops.Count}";
+			}
 		}
 	}
-}

@@ -163,7 +163,7 @@ namespace SAToolsHub
 			string projFolder = SAToolsHub.projectDirectory;
 			string iniFolder;
 
-			progress.SetMaxSteps(splitEntries.Count + splitMDLEntries.Count + 1);
+			progress.SetMaxSteps(splitEntries.Count + splitMDLEntries.Count + splitEventEntries.Count + 1);
 
 			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder)))
 				iniFolder = Path.Combine(appPath, "GameConfig", dataFolder);
@@ -197,7 +197,7 @@ namespace SAToolsHub
 		{
 			bool needsUpdate = false;
 
-			if (splitEntries.Count > 0 || splitMDLEntries.Count > 0)
+			if (splitEntries.Count > 0 || splitMDLEntries.Count > 0 || splitEventEntries.Count > 0)
 			{
 				Templates.ProjectTemplate projFile = ProjectFunctions.openProjectFileString(Path.GetFullPath(SAToolsHub.projXML));
 				Templates.ProjectInfo projInfo = projFile.GameInfo;

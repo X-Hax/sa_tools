@@ -781,7 +781,7 @@ namespace SAModel.SAMDL
 						model.Attach = new ChunkAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
 						break;
 					case ModelFormat.GC:
-						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value, null);
+						model.Attach = new GC.GCAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
 						break;
 					case ModelFormat.XJ:
 						model.Attach = new XJ.XJAttach(file, (int)objectaddress, (uint)modelinfo.numericUpDownKey.Value);
@@ -1020,7 +1020,7 @@ namespace SAModel.SAMDL
 			RebuildModelCache();
 			selectedObject = model;
 			setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled = buttonPlayAnimation.Enabled = buttonResetFrame.Enabled = false;
-			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = false;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			SelectedItemChanged();
@@ -1764,18 +1764,24 @@ namespace SAModel.SAMDL
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
-						sw.Write("/* NINJA ");
+						sw.Write("/* ");
 						switch (outfmt)
 						{
 							case ModelFormat.Basic:
 							case ModelFormat.BasicDX:
 								if (dx)
-									sw.Write("Basic+ (with Sonic Adventure DX PC additions)");
+									sw.Write("NINJA Basic+ (with Sonic Adventure DX PC additions)");
 								else
-									sw.Write("Basic");
+									sw.Write("NINJA Basic");
 								break;
 							case ModelFormat.Chunk:
-								sw.Write("Chunk");
+								sw.Write("NINJA Chunk");
+								break;
+							case ModelFormat.GC:
+								sw.Write("GINJA (Ninja GameCube)");
+								break;
+							case ModelFormat.XJ:
+								sw.Write("XINJA (Ninja Xbox)");
 								break;
 						}
 						sw.WriteLine(" model");
@@ -1904,6 +1910,7 @@ namespace SAModel.SAMDL
 				addChildToolStripMenuItem.Enabled = true;
 				clearChildrenToolStripMenuItem1.Enabled = selectedObject.Children.Count > 0;
 				deleteToolStripMenuItem.Enabled = true;
+				editModelDataToolStripMenuItem.Enabled = true;
 				deleteNodeToolStripMenuItem.Enabled = selectedObject.Parent != null;
 				emptyModelDataToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				splitToolStripMenuItem.Enabled = selectedObject.Attach != null;
@@ -1923,6 +1930,7 @@ namespace SAModel.SAMDL
 				copyModelToolStripMenuItem.Enabled = false;
 				pasteModelToolStripMenuItem.Enabled = Clipboard.ContainsData(GetAttachType().AssemblyQualifiedName);
 				addChildToolStripMenuItem.Enabled = false;
+				editModelDataToolStripMenuItem.Enabled = false;
 				PolyNormalstoolStripMenuItem.Enabled = editMaterialsToolStripMenuItem.Enabled = materialEditorToolStripMenuItem.Enabled = false;
 				splitToolStripMenuItem.Enabled = sortToolStripMenuItem.Enabled = false;
 				deleteToolStripMenuItem.Enabled = clearChildrenToolStripMenuItem1.Enabled = deleteNodeToolStripMenuItem.Enabled = emptyModelDataToolStripMenuItem.Enabled = false;
@@ -1968,7 +1976,40 @@ namespace SAModel.SAMDL
 					catt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 					catt.PolyName = "poly_" + Extensions.GenerateIdentifier();
 					break;
-				case GC.GCAttach:
+				case GC.GCAttach gatt:
+					string vtype = null;
+					gatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCVertexSet m in gatt.vertexData)
+					{
+						switch (m.attribute)
+						{
+							case GC.GCVertexAttribute.Position:
+								vtype = "position_";
+								break;
+							case GC.GCVertexAttribute.Normal:
+								vtype = "normal_";
+								break;
+							case GC.GCVertexAttribute.Color0:
+								vtype = "vcolor_";
+								break;
+							case GC.GCVertexAttribute.Tex0:
+								vtype = "uv_";
+								break;
+						}
+						m.DataName = $"{vtype}" + Extensions.GenerateIdentifier();
+					}
+					gatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCMesh m in gatt.opaqueMeshes)
+					{
+						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+					}
+					gatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+					foreach (GC.GCMesh m in gatt.translucentMeshes)
+					{
+						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+					}
 					break;
 			}
 			selectedObject.Attach = attach;
@@ -2333,7 +2374,7 @@ namespace SAModel.SAMDL
 			}
 			RebuildModelCache();
 			unsavedChanges = true;
-			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			saveAnimationsToolStripMenuItem.Enabled = animationList.Count > 0;
 			SelectedItemChanged();
@@ -3613,6 +3654,45 @@ namespace SAModel.SAMDL
 						}
 						break;
 					case GC.GCAttach:
+						{
+							GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
+
+							gcatt.OpaqueMeshName = FixLabel(gcatt.OpaqueMeshName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+							foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+							{
+								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+								m.PrimitiveName = FixLabel(m.PrimitiveName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
+
+							gcatt.TranslucentMeshName = FixLabel(gcatt.TranslucentMeshName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+							foreach (GC.GCMesh m in gcatt.translucentMeshes)
+							{
+								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+								m.PrimitiveName = FixLabel(m.PrimitiveName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
+
+							gcatt.VertexName = FixLabel(gcatt.VertexName, checkingLabels, out dup);
+							if (!string.IsNullOrEmpty(dup))
+								duplicateLabels.Add(dup);
+							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							{
+								v.DataName = FixLabel(v.DataName, checkingLabels, out dup);
+								if (!string.IsNullOrEmpty(dup))
+									duplicateLabels.Add(dup);
+							}
+						}
 						break;
 				}
 
@@ -3647,27 +3727,76 @@ namespace SAModel.SAMDL
 			if (obj.Attach != null)
 			{
 				obj.Attach.Name = "attach_" + Extensions.GenerateIdentifier();
-				if (obj.Attach is BasicAttach)
+				switch (obj.Attach)
 				{
-					BasicAttach basicatt = (BasicAttach)obj.Attach;
-					basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
-					basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
-					basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
-					basicatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-					if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
-						foreach (NJS_MESHSET meshset in basicatt.Mesh)
+					case BasicAttach:
 						{
-							meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
-							meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
-							meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
-							meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+							BasicAttach basicatt = (BasicAttach)obj.Attach;
+							basicatt.MaterialName = "material_" + Extensions.GenerateIdentifier();
+							basicatt.MeshName = "meshset_" + Extensions.GenerateIdentifier();
+							basicatt.NormalName = "normal_" + Extensions.GenerateIdentifier();
+							basicatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+							if (basicatt.Mesh != null && basicatt.Mesh.Count > 0)
+								foreach (NJS_MESHSET meshset in basicatt.Mesh)
+								{
+									meshset.PolyName = "poly_" + Extensions.GenerateIdentifier();
+									meshset.UVName = "uv_" + Extensions.GenerateIdentifier();
+									meshset.VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+									meshset.PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+								}
 						}
-				}
-				else if (obj.Attach is ChunkAttach)
-				{
-					ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
-					chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
-					chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+						break;
+					case ChunkAttach:
+						{
+							ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+							chunkatt.PolyName = "poly_" + Extensions.GenerateIdentifier();
+							chunkatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+						}
+						break;
+					case GC.GCAttach:
+						{
+							string vtype = null;
+							GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
+							gcatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+							if (gcatt.translucentMeshes.Count != 0)
+							{
+								foreach (GC.GCMesh m in gcatt.translucentMeshes)
+								{
+									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+								}
+							}
+							gcatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+							if (gcatt.opaqueMeshes.Count != 0)
+							{
+								foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+								{
+									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
+									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
+								}
+							}
+							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
+							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							{
+								switch (v.attribute)
+								{
+									case GC.GCVertexAttribute.Position:
+										vtype = "position_";
+										break;
+									case GC.GCVertexAttribute.Normal:
+										vtype = "normal_";
+										break;
+									case GC.GCVertexAttribute.Color0:
+										vtype = "vcolor_";
+										break;
+									case GC.GCVertexAttribute.Tex0:
+										vtype = "uv_";
+										break;
+								}
+								v.DataName = $"{vtype}" + Extensions.GenerateIdentifier();
+							}
+						}
+						break;
 				}
 			}
 			if (obj.Children != null && obj.Children.Count > 0)
@@ -4133,17 +4262,37 @@ namespace SAModel.SAMDL
 						break;
 					}
 			}
-			ModelDataEditor me = new ModelDataEditor(model, idx);
-			if (me.ShowDialog(this) == DialogResult.OK)
+			switch (selectedObject.Attach)
 			{
-				model = me.editedHierarchy.Clone();
-				model.FixParents();
-				model.FixSiblings();
-				RebuildModelCache();
-				NeedRedraw = true;
-				unsavedChanges = true;
-				selectedObject = model.GetObjects()[idx];
-				SelectedItemChanged();
+				case BasicAttach:
+				case ChunkAttach:
+					{
+						ModelDataEditor me = new ModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							model.FixParents();
+							model.FixSiblings();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+							selectedObject = model.GetObjects()[idx];
+							SelectedItemChanged();
+						}
+					}
+					break;
+				case GC.GCAttach:
+					{
+						GCModelDataEditor me = new GCModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+						}
+					}
+					break;
 			}
 		}
 

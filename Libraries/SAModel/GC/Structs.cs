@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using System.Collections.Generic;
 
 namespace SAModel.GC
 {
@@ -14,6 +16,8 @@ namespace SAModel.GC
 		/// <param name="writer">The output stream</param>
 		/// <param name="attrib"></param>
 		void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType);
+		public abstract byte[] GetBytes();
+		void ToNJA(TextWriter writer, string vtype);
 	}
 
 	[Serializable]
@@ -42,6 +46,31 @@ namespace SAModel.GC
 			writer.Write(x);
 			writer.Write(y);
 			writer.Write(z);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(x));
+			result.AddRange(ByteConverter.GetBytes(y));
+			result.AddRange(ByteConverter.GetBytes(z));
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(x.ToC());
+			result.Append(", ");
+			result.Append(y.ToC());
+			result.Append(", ");
+			result.Append(z.ToC());
+			result.Append(" }");
+			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, string vtype)
+		{
+			writer.WriteLine($"\t{vtype}( " + x.ToNJA() + ", " + y.ToNJA() + ", " + z.ToNJA() + " ),");
 		}
 	}
 
@@ -96,6 +125,28 @@ namespace SAModel.GC
 		{
 			writer.Write(x);
 			writer.Write(y);
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(ByteConverter.GetBytes(x));
+			result.AddRange(ByteConverter.GetBytes(y));
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(x);
+			result.Append(", ");
+			result.Append(y);
+			result.Append(" }");
+			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, string vtype)
+		{
+			writer.WriteLine($"\t{vtype}( " + x.ToString() + ", " + y.ToString() + " ),");
 		}
 	}
 
@@ -334,6 +385,34 @@ namespace SAModel.GC
 				default:
 					throw new ArgumentException($"{dataType} is not a valid output color type");
 			}
+		}
+
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.Add(red);
+			result.Add(green);
+			result.Add(blue);
+			result.Add(alpha);
+			return result.ToArray();
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ( ");
+					result.Append(red);
+					result.Append(", ");
+					result.Append(green);
+					result.Append(", ");
+					result.Append(blue);
+					result.Append(", ");
+					result.Append(alpha);
+					result.Append(" ) }");
+			return result.ToString();
+		}
+		public void ToNJA(TextWriter writer, string vtype)
+		{
+			writer.WriteLine($"\t{vtype}( " + red.ToString() + ", " + green.ToString() + ", " + blue.ToString() + ", " + alpha.ToString() + " ),");
 		}
 	}
 }
