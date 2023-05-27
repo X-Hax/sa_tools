@@ -245,7 +245,7 @@ namespace SAModel.SAMDL
 		void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
 			log.Add(e.Exception.ToString());
-			string errDesc = "SAMDL has crashed with the following error:\n" + e.Exception.GetType().Name+".\n\n" +
+			string errDesc = "SAMDL has crashed with the following error:\n" + e.Exception.GetType().Name + ".\n\n" +
 				"If you wish to report a bug, please include the following in your report:";
 			ErrorDialog report = new ErrorDialog("SAMDL", errDesc, log.GetLogString());
 			log.WriteLog();
@@ -689,6 +689,7 @@ namespace SAModel.SAMDL
 													i = ByteConverter.ToInt32(file, address);
 												}
 												animationList = new List<NJS_MOTION>(anis.Values);
+												UpdateAnimationDropdown();
 												setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 													buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 											}
@@ -704,7 +705,7 @@ namespace SAModel.SAMDL
 			currentFileName = filename;
 
 			RebuildModelCache();
-			loaded = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
+			loaded = editModelDataToolStripMenuItem.Enabled = modelInfoEditorToolStripMenuItem.Enabled = loadAnimationToolStripMenuItem.Enabled = saveMenuItem.Enabled = buttonSave.Enabled = buttonSaveAs.Enabled = saveAsToolStripMenuItem.Enabled = exportToolStripMenuItem.Enabled = importToolStripMenuItem.Enabled = renderToolStripMenuItem.Enabled = findToolStripMenuItem.Enabled = modelCodeToolStripMenuItem.Enabled = resetLabelsToolStripMenuItem.Enabled = true;
 			saveAnimationsToolStripMenuItem.Enabled = (animationList != null && animationList.Count > 0);
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 			showWeightsToolStripMenuItem.Enabled = buttonShowWeights.Enabled = hasWeight;
@@ -716,6 +717,8 @@ namespace SAModel.SAMDL
 			}
 			AddModelToLibrary(model, false);
 			unsavedChanges = false;
+			UpdateAnimationDropdown();
+			buttonPlayAnimation.Image = AnimationPlaying ? SAMDL.Properties.Resources.stopanim : SAMDL.Properties.Resources.playanim;
 		}
 
 		private void LoadBinFile(byte[] file)
@@ -749,7 +752,9 @@ namespace SAModel.SAMDL
 					rootSiblingMode = false;
 				}
 				if (modelinfo.checkBoxLoadMotion.Checked)
+				{
 					animationList = new List<NJS_MOTION>() { NJS_MOTION.ReadDirect(file, model.CountAnimated(), (int)motionaddress, (uint)modelinfo.numericUpDownKey.Value, null) };
+				}
 				setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled = buttonPrevAnimation.Enabled =
 					buttonResetFrame.Enabled = (animationList != null && animationList.Count > 0);
 			}
@@ -1023,6 +1028,7 @@ namespace SAModel.SAMDL
 			currentFileName = "";
 			UpdateStatusString();
 			unsavedChanges = false;
+			UpdateAnimationDropdown();
 		}
 
 		private void NewFileOperation(ModelFormat modelFormat)
@@ -1342,17 +1348,9 @@ namespace SAModel.SAMDL
 				currentAnimation = animationList[animnum];
 			else
 				currentAnimation = null;
-			if (currentAnimation != null)
-			{
-				osd.UpdateOSDItem("Animation: " + animationList[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Enabled = true;
-			}
-			else
-			{
-				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Enabled = false;
-			}
+			UpdateAnimationStatus();
 			animframe = 0;
+			comboAnimList.SelectedIndex = animnum + 1;
 			NeedRedraw = true;
 		}
 
@@ -1365,17 +1363,9 @@ namespace SAModel.SAMDL
 				currentAnimation = animationList[animnum];
 			else
 				currentAnimation = null;
-			if (currentAnimation != null)
-			{
-				osd.UpdateOSDItem("Animation: " + animationList[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Enabled = true;
-			}
-			else
-			{
-				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Enabled = false;
-			}
+			UpdateAnimationStatus();
 			animframe = 0;
+			comboAnimList.SelectedIndex = animnum + 1;
 			NeedRedraw = true;
 		}
 
@@ -1386,7 +1376,8 @@ namespace SAModel.SAMDL
 			if (animframe == currentAnimation.Frames) animframe = 0;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			AnimationTimer.Stop();
-			AnimationPlaying = buttonPlayAnimation.Checked = false;
+			AnimationPlaying = false;
+			buttonPlayAnimation.Image = SAMDL.Properties.Resources.playanim;
 			NeedRedraw = true;
 		}
 
@@ -1397,7 +1388,8 @@ namespace SAModel.SAMDL
 			if (animframe < 0) animframe = currentAnimation.Frames - 1;
 			osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			AnimationTimer.Stop();
-			AnimationPlaying = buttonPlayAnimation.Checked = false;
+			AnimationPlaying = false;
+			buttonPlayAnimation.Image = SAMDL.Properties.Resources.playanim;
 			NeedRedraw = true;
 		}
 
@@ -1407,7 +1399,8 @@ namespace SAModel.SAMDL
 			animframe = 0;
 			osd.UpdateOSDItem("Reset animation frame", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 			AnimationTimer.Stop();
-			AnimationPlaying = buttonPlayAnimation.Checked = false;
+			AnimationPlaying = false;
+			buttonPlayAnimation.Image = SAMDL.Properties.Resources.playanim;
 			NeedRedraw = true;
 		}
 
@@ -1415,7 +1408,7 @@ namespace SAModel.SAMDL
 		{
 			if (animationList == null || currentAnimation == null) return;
 			AnimationPlaying = !AnimationPlaying;
-			buttonPlayAnimation.Checked = AnimationPlaying;
+			buttonPlayAnimation.Image = AnimationPlaying ? SAMDL.Properties.Resources.stopanim : SAMDL.Properties.Resources.playanim;
 			if (AnimationPlaying)
 			{
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
@@ -1684,39 +1677,39 @@ namespace SAModel.SAMDL
 		}
 		#endregion
 
-        private void UpdateTexlist()
-        {
-            if (TextureInfo == null)
-            {
-                unloadTextureToolStripMenuItem.Enabled = false;
-                return;
-            }
-            if (TexList != null)
-            {
-                List<Texture> textures = new List<Texture>();
-                List<BMPInfo> texinfo = new List<BMPInfo>();
+		private void UpdateTexlist()
+		{
+			if (TextureInfo == null)
+			{
+				unloadTextureToolStripMenuItem.Enabled = false;
+				return;
+			}
+			if (TexList != null)
+			{
+				List<Texture> textures = new List<Texture>();
+				List<BMPInfo> texinfo = new List<BMPInfo>();
 				List<string> dupnames = new List<string>();
-                for (int i = 0; i < TexList.TextureNames.Length; i++)
-                    for (int j = 0; j < TextureInfo.Length; j++)
-                        if (string.IsNullOrEmpty(TexList.TextureNames[i]) || (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() && !dupnames.Contains(TexList.TextureNames[i].ToLowerInvariant())))
-                        {
-                            texinfo.Add(TextureInfo[j]);
-                            textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
+				for (int i = 0; i < TexList.TextureNames.Length; i++)
+					for (int j = 0; j < TextureInfo.Length; j++)
+						if (string.IsNullOrEmpty(TexList.TextureNames[i]) || (TexList.TextureNames[i].ToLowerInvariant() == TextureInfo[j].Name.ToLowerInvariant() && !dupnames.Contains(TexList.TextureNames[i].ToLowerInvariant())))
+						{
+							texinfo.Add(TextureInfo[j]);
+							textures.Add(TextureInfo[j].Image.ToTexture(d3ddevice));
 							dupnames.Add(TextureInfo[j].Name.ToLowerInvariant());
 							continue;
-                        }
-                Textures = textures.ToArray();
-                TextureInfoCurrent = texinfo.ToArray();
-            }
-            else
-            {
-                TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
-                for (int i = 0; i < TextureInfo.Length; i++)
-                    TextureInfoCurrent[i] = TextureInfo[i];
-                Textures = new Texture[TextureInfoCurrent.Length];
-                for (int j = 0; j < TextureInfoCurrent.Length; j++)
-                    Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
-            }
+						}
+				Textures = textures.ToArray();
+				TextureInfoCurrent = texinfo.ToArray();
+			}
+			else
+			{
+				TextureInfoCurrent = new BMPInfo[TextureInfo.Length];
+				for (int i = 0; i < TextureInfo.Length; i++)
+					TextureInfoCurrent[i] = TextureInfo[i];
+				Textures = new Texture[TextureInfoCurrent.Length];
+				for (int j = 0; j < TextureInfoCurrent.Length; j++)
+					Textures[j] = TextureInfoCurrent[j].Image.ToTexture(d3ddevice);
+			}
 			unloadTextureToolStripMenuItem.Enabled = textureRemappingToolStripMenuItem.Enabled = TextureInfoCurrent != null;
 		}
 
@@ -2495,7 +2488,7 @@ namespace SAModel.SAMDL
 			for (int i = 0; i < animationList.Count; i++)
 			{
 				var anim = animationList[i];
-				int endFrame = anim.Frames -1;
+				int endFrame = anim.Frames - 1;
 				if (anim.Models.ContainsKey(0))
 				{
 					AnimModelData animData = anim.Models[0];
@@ -2611,17 +2604,7 @@ namespace SAModel.SAMDL
 						string labelm = Path.ChangeExtension(fn, ".salabel");
 						if (File.Exists(labelm))
 							LabelMOTION.Load(labelm).Apply(anim);
-						if (first)
-						{
-							first = false;
-							animframe = 0;
-							animnum = animationList.Count;
-							animationList.Add(anim);
-							currentAnimation = anim;
-							NeedRedraw = true;
-						}
-						else
-							animationList.Add(anim);
+						first = AddAnimationToList(anim, first);
 						break;
 					case ".njm":
 						byte[] njmFile = File.ReadAllBytes(fn);
@@ -2634,17 +2617,7 @@ namespace SAModel.SAMDL
 						Dictionary<int, string> label = new Dictionary<int, string>();
 						label.Add(0, njmName);
 						NJS_MOTION njm = new NJS_MOTION(newFile, 0, 0, model.CountAnimated(), label, false);
-						if (first)
-						{
-							first = false;
-							animframe = 0;
-							animnum = animationList.Count;
-							animationList.Add(njm);
-							currentAnimation = njm;
-							NeedRedraw = true;
-						}
-						else
-							animationList.Add(njm);
+						first = AddAnimationToList(njm, first);
 						break;
 					case ".bin":
 					case ".prs":
@@ -2668,22 +2641,7 @@ namespace SAModel.SAMDL
 							{
 								NJS_MOTION mtn = new NJS_MOTION(anifile, aniaddr, 0, ByteConverter.ToInt16(anifile, address + 2));
 								processedanims[aniaddr] = i;
-
-								if (first)
-								{
-									first = false;
-									animframe = 0;
-									animationList = new List<NJS_MOTION>();
-									animationList.Add(mtn);
-
-									animnum = animationList.Count;
-									currentAnimation = animationList[0];
-									NeedRedraw = true;
-								}
-								else
-								{
-									animationList.Add(mtn);
-								}
+								first = AddAnimationToList(mtn, first);
 							}
 
 							address += 8;
@@ -2714,17 +2672,7 @@ namespace SAModel.SAMDL
 											{
 												JsonTextReader jtr = new JsonTextReader(tr2);
 												mot = js.Deserialize<NJS_MOTION>(jtr);
-												if (first)
-												{
-													first = false;
-													animframe = 0;
-													animnum = animationList.Count;
-													animationList.Add(mot);
-													currentAnimation = mot;
-													NeedRedraw = true;
-												}
-												else
-													animationList.Add(mot);
+												first = AddAnimationToList(mot, first);
 											}
 											break;
 
@@ -2739,17 +2687,7 @@ namespace SAModel.SAMDL
 											Dictionary<int, string> motLabel = new Dictionary<int, string>();
 											motLabel.Add(0, motName);
 											mot = new NJS_MOTION(newMotFile, 0, 0, model.CountAnimated(), motLabel, false);
-											if (first)
-											{
-												first = false;
-												animframe = 0;
-												animnum = animationList.Count;
-												animationList.Add(mot);
-												currentAnimation = mot;
-												NeedRedraw = true;
-											}
-											else
-												animationList.Add(mot);
+											first = AddAnimationToList(mot, first);
 											break;
 
 										case ".saanim":
@@ -2758,17 +2696,7 @@ namespace SAModel.SAMDL
 											string labelmo = Path.ChangeExtension(filePath, ".salabel");
 											if (File.Exists(labelmo))
 												LabelMOTION.Load(labelmo).Apply(mot);
-											if (first)
-											{
-												first = false;
-												animframe = 0;
-												animnum = animationList.Count;
-												animationList.Add(mot);
-												currentAnimation = mot;
-												NeedRedraw = true;
-											}
-											else
-												animationList.Add(mot);
+											first = AddAnimationToList(mot, first);
 											break;
 									}
 								}
@@ -2781,17 +2709,7 @@ namespace SAModel.SAMDL
 						{
 							JsonTextReader jtr = new JsonTextReader(tr2);
 							NJS_MOTION mot = js2.Deserialize<NJS_MOTION>(jtr);
-							if (first)
-							{
-								first = false;
-								animframe = 0;
-								animnum = animationList.Count;
-								animationList.Add(mot);
-								currentAnimation = mot;
-								NeedRedraw = true;
-							}
-							else
-								animationList.Add(mot);
+							first = AddAnimationToList(mot, first);
 						}
 						break;
 				}
@@ -2803,11 +2721,13 @@ namespace SAModel.SAMDL
 				AnimationPlaying = false;
 				buttonPlayAnimation.Checked = false;
 				osd.UpdateOSDItem("Play animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
-				buttonPlayAnimation.Enabled = AnimationPlaying = buttonPlayAnimation.Checked = true;
+				buttonPlayAnimation.Enabled = AnimationPlaying = true;
+				buttonPlayAnimation.Image = SAMDL.Properties.Resources.stopanim;
 				AnimationTimer.Start();
 				NeedRedraw = true;
 			}
 			saveAnimationsToolStripMenuItem.Enabled = animationList.Count > 0;
+			UpdateAnimationDropdown();
 		}
 
 		private void welcomeTutorialToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2886,17 +2806,17 @@ namespace SAModel.SAMDL
 		{
 			CheckModelLabels();
 			model.ProcessVertexData();
-            if (hasWeight = model.HasWeight)
-                meshes = model.ProcessWeightedModel().ToArray();
-            else
-            {
-                NJS_OBJECT[] models = model.GetObjects();
-                meshes = new Mesh[models.Length];
-                for (int i = 0; i < models.Length; i++)
-                    if (models[i].Attach != null)
-                        try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
-                        catch { }
-            }
+			if (hasWeight = model.HasWeight)
+				meshes = model.ProcessWeightedModel().ToArray();
+			else
+			{
+				NJS_OBJECT[] models = model.GetObjects();
+				meshes = new Mesh[models.Length];
+				for (int i = 0; i < models.Length; i++)
+					if (models[i].Attach != null)
+						try { meshes[i] = models[i].Attach.CreateD3DMesh(); }
+						catch { }
+			}
 			treeView1.BeginUpdate();
 			treeView1.Nodes.Clear();
 			nodeDict = new Dictionary<NJS_OBJECT, TreeNode>();
@@ -4457,6 +4377,65 @@ namespace SAModel.SAMDL
 			}
 			texList = new NJS_TEXLIST(texNames.ToArray());
 			return ninjaDataOffset;
+		}
+
+		private bool AddAnimationToList(NJS_MOTION anim, bool first)
+		{
+			if (first)
+			{
+				animationList = new List<NJS_MOTION>();
+				animframe = 0;
+				animnum = animationList.Count;
+				currentAnimation = anim;
+				NeedRedraw = true;
+			}
+			animationList.Add(anim);
+			return false;
+		}
+
+		private void UpdateAnimationDropdown()
+		{
+			comboAnimList.Items.Clear();
+			comboAnimList.Items.Add("None ");
+			int wd = TextRenderer.MeasureText("None ", comboAnimList.Font).Width;
+			foreach (NJS_MOTION anim in animationList)
+			{
+				string combo = anim.Name + " [" + anim.Description + "]";
+				comboAnimList.Items.Add(combo);
+				wd = Math.Max(wd, TextRenderer.MeasureText(combo, comboAnimList.Font).Width);
+			}
+			comboAnimList.Size = new System.Drawing.Size(wd, comboAnimList.Height);
+			comboAnimList.SelectedIndex = animationList.IndexOf(currentAnimation) + 1;
+		}
+
+		private void UpdateAnimationStatus()
+		{
+			if (currentAnimation != null)
+			{
+				osd.UpdateOSDItem("Animation: " + animationList[animnum].Name.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonResetFrame.Enabled = buttonPrevFrame.Enabled = buttonNextFrame.Enabled = buttonPlayAnimation.Enabled = true;
+			}
+			else
+			{
+				osd.UpdateOSDItem("No animation", RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
+				buttonResetFrame.Enabled = buttonPrevFrame.Enabled = buttonNextFrame.Enabled = buttonPlayAnimation.Enabled = false;
+			}
+		}
+
+		private void comboAnimList_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+		{
+			if (comboAnimList.SelectedIndex <= 0 || animationList == null || animationList.Count == 0)
+			{
+				animnum = -1;
+				currentAnimation = null;
+			}
+			else
+			{
+				animnum = comboAnimList.SelectedIndex - 1;
+				currentAnimation = animationList[animnum];
+			}
+			NeedRedraw = true;
+			UpdateAnimationStatus();
 		}
 	}
 }

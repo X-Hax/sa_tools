@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using SplitTools;
 using SplitTools.SplitDLL;
@@ -15,12 +16,15 @@ namespace SAModel.SAEditorCommon
 
 		private string projectFolder = "";
 		private string modFolder = "";
-        private string gameEXE = "";
+		private string gameEXE = "";
+		private SplitTools.Game game;
 		private Dictionary<string, AssemblyType> assemblies = new Dictionary<string, AssemblyType>();
 		private Dictionary<string, ListView> assemblyListViews = new Dictionary<string, ListView>();
 		private Dictionary<string, object> assemblyIniFiles = new Dictionary<string, object>(); // gotta box ini data to object so that dll ini and ini data can exist in the same list
 
 		private Dictionary<string, Dictionary<string, bool>> assemblyItemsToExport = new Dictionary<string, Dictionary<string, bool>>();
+		private ListViewColumnSorter lvwColumnSorter;
+		private ListView backupList = new();
 
 		public ManualBuildWindow()
 		{
@@ -33,9 +37,10 @@ namespace SAModel.SAEditorCommon
 			this.projectFolder = projectFolder;
 			this.modFolder = modFolder;
 			this.assemblies = assemblies;
-            this.gameEXE = gameEXE;
+			this.gameEXE = gameEXE;
+			this.game = game;
 
-            LoadingLabel.Visible = true;
+			LoadingLabel.Visible = true;
 		}
 
 		private void LoadIniFiles()
@@ -70,6 +75,7 @@ namespace SAModel.SAEditorCommon
 
 		private void SetTabsForAssemblies()
 		{
+			lvwColumnSorter = new ListViewColumnSorter();
 			assemblyItemTabs.TabPages.Clear();
 
 			foreach (KeyValuePair<string, ListView> listView in assemblyListViews)
@@ -79,6 +85,7 @@ namespace SAModel.SAEditorCommon
 			}
 
 			assemblyListViews.Clear();
+			searchBox.Clear();
 
 			foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 			{
@@ -91,20 +98,15 @@ namespace SAModel.SAEditorCommon
 				tabListView.Parent = assemblyPage;
 				tabListView.Dock = DockStyle.Fill;
 				tabListView.ItemChecked += listView1_ItemChecked;
-				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 0, Text = "Name" });
 
-				if (assembly.Value == AssemblyType.Exe)
-				{
-					tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Type" });
-					tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 2, Text = "Changed" });
-				}
-				else
-				{
-					tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Changed" });
-				}
+				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 0, Text = "Name" });
+				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 1, Text = "Type" });
+				tabListView.Columns.Add(new ColumnHeader() { DisplayIndex = 2, Text = "Changed" });
 
 				tabListView.View = View.Details;
 				tabListView.CheckBoxes = true;
+				tabListView.ColumnClick += new ColumnClickEventHandler(listView1_SortChanged);
+				tabListView.ListViewItemSorter = lvwColumnSorter;
 
 				assemblyListViews.Add(assembly.Key, tabListView);
 				assemblyItemTabs.TabPages.Add(assemblyPage);
@@ -126,12 +128,21 @@ namespace SAModel.SAEditorCommon
 
 				for (int i = 0; i < tabListView.Columns.Count; i++)
 				{
-                    if (i != tabListView.Columns.Count - 1) // Don't auto resize the "Changed" column
-					    tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
-                    else
-                        tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.HeaderSize);
-                }
+					if (i != tabListView.Columns.Count - 1) // Don't auto resize the "Changed" column
+						tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.ColumnContent);
+					else
+						tabListView.AutoResizeColumn(i, ColumnHeaderAutoResizeStyle.HeaderSize);
+				}
 			}
+		}
+
+		private void BackupList(ListView listView)
+		{
+			backupList.Items.Clear();
+
+			backupList.Items.AddRange((from ListViewItem item in listView.Items
+									   select (ListViewItem)item.Clone()
+				   ).ToArray());
 		}
 
 		private void FillListViewIniData(ListView listView, AssemblyType assemblyType, string assemblyname,
@@ -143,7 +154,7 @@ namespace SAModel.SAEditorCommon
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in iniData.Files)
 			{
 				KeyValuePair<string, bool> exportStatus = itemsToExport.First(export => export.Key == item.Key);
-		
+
 				if (!StructConverter.StructConverter.DataTypeList.ContainsKey(item.Value.Type))
 				{
 					continue;
@@ -161,6 +172,7 @@ namespace SAModel.SAEditorCommon
 				{ Checked = modified });
 			}
 
+			BackupList(listView);
 			listView.EndUpdate();
 		}
 
@@ -170,21 +182,87 @@ namespace SAModel.SAEditorCommon
 			listView.BeginUpdate();
 			listView.Items.Clear();
 
+			bool oneModified = false;
+
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
 				bool modified = itemsToExport[item.Key];
 
-				listView.Items.Add(new ListViewItem(new[] { item.Key, modified ? "Yes" : "No" }) { Checked = modified }); ;
+				if (!oneModified)
+					oneModified = modified;
+
+				//unused for now as replacing path with name breaks export if there is no edit on the file.
+				
+				/*string name = Path.GetFileNameWithoutExtension(item.Key);
+
+				foreach (var samdlItem in iniData.SAMDLData)
+				{
+					if (Path.GetFileNameWithoutExtension(samdlItem.Key) == name)
+					{
+						name = samdlItem.Value.ModelName;
+					}
+				}*/
+
+				listView.Items.Add(new ListViewItem
+				(
+				new[]
+				{
+					item.Value.Name,
+					StructConverter.StructConverter.DataTypeList[item.Value.Type],
+					(modified ? "Yes" : "No"),
+				})
+				{ Checked = modified });
 			}
 
 			foreach (var item in iniData.DataItems)
 			{
 				bool modified = itemsToExport[item.Filename];
 
-				listView.Items.Add(new ListViewItem(new[] { item.Filename, modified ? "Yes" : "No" }) { Checked = modified }); ;
+				listView.Items.Add(new ListViewItem
+				(
+				new[]
+				{
+				item.Metadata, StructConverter.StructConverter.DataTypeList[item.Type],
+				(modified ? "Yes" : "No")
+				})
+				{ Checked = modified });
 			}
 
+			//if at least one file got edited, sort by "descending" to show them at the beginning of the list.
+			if (oneModified)
+			{
+				for (int i = 0; i < listView.Columns.Count; i++)
+				{
+					lvwColumnSorter.SortColumn = listView.Columns[i].Index;
+					lvwColumnSorter.Order = SortOrder.Descending;
+				}
+
+				listView.Sort();
+			}
+
+			BackupList(listView);
 			listView.EndUpdate();
+		}
+
+		private void listView1_SortChanged(object o, ColumnClickEventArgs e)
+		{
+			// Determine if clicked column is already the column that is being sorted.
+			if (e.Column == lvwColumnSorter.SortColumn)
+			{
+				// Reverse the current sort direction for this column.
+				lvwColumnSorter.Order = (lvwColumnSorter.Order == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
+			}
+			else
+			{
+				// Set the column number that is to be sorted; default to descending.
+				lvwColumnSorter.SortColumn = e.Column;
+				lvwColumnSorter.Order = SortOrder.Descending;
+			}
+
+			// Perform the sort with these new sort options.
+			TabPage page = assemblyItemTabs.SelectedTab;
+			ListView listView = assemblyListViews[page.Text];
+			listView.Sort();
 		}
 
 		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -267,32 +345,33 @@ namespace SAModel.SAEditorCommon
 				MessageBox.Show(string.Format("Source code files exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
 			}
 			else
-				MessageBox.Show("No folder was provided.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("No folder was provided.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
 		}
 
 		private void IniExportButton_Click(object sender, EventArgs e)
 		{
+			searchBox.Clear();
 			var folderDialog = new FolderBrowserDialog();
 			if (folderDialog.ShowDialog() == DialogResult.OK)
 			{
 				string outputFolder = folderDialog.SelectedPath;
-                List<string> listIni_exe = new List<string>();
-                Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
-                foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
+				List<string> listIni_exe = new List<string>();
+				Dictionary<string, bool> itemsEXEToExport = new Dictionary<string, bool>();
+				foreach (KeyValuePair<string, AssemblyType> assembly in assemblies)
 				{
-                    string iniPath = Path.Combine(projectFolder, assembly.Key + "_data.ini");
-                    switch (assembly.Value)
+					string iniPath = Path.Combine(projectFolder, assembly.Key + "_data.ini");
+					switch (assembly.Value)
 					{
 						case AssemblyType.Exe:
-                            listIni_exe.Add(iniPath);
-                            foreach (var item in assemblyItemsToExport[assembly.Key])
-                                if (item.Value)
-                                    itemsEXEToExport.Add(item.Key, item.Value);
-                            break;
+							listIni_exe.Add(iniPath);
+							foreach (var item in assemblyItemsToExport[assembly.Key])
+								if (item.Value)
+									itemsEXEToExport.Add(item.Key, item.Value);
+							break;
 
 						case AssemblyType.DLL:
-                            DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
+							DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 
@@ -300,13 +379,13 @@ namespace SAModel.SAEditorCommon
 							break;
 					}
 				}
-                if (listIni_exe.Count > 0)
-                {
-                    SplitTools.IniData EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(listIni_exe, ref itemsEXEToExport, true);
-                    SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
-                        itemsEXEToExport, Path.Combine(outputFolder, gameEXE + "_data.ini"));
-                }
-                MessageBox.Show(string.Format("INI Files have been exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
+				if (listIni_exe.Count > 0)
+				{
+					SplitTools.IniData EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(listIni_exe, ref itemsEXEToExport, true);
+					SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
+						itemsEXEToExport, game, Path.Combine(outputFolder, gameEXE + "_data.ini"));
+				}
+				MessageBox.Show(string.Format("INI Files have been exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
 			}
 			else
 				MessageBox.Show("No folder was provided.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -332,6 +411,29 @@ namespace SAModel.SAEditorCommon
 			CheckAllButton.Enabled = true;
 			CheckModifiedButton.Enabled = true;
 			UncheckAllButton.Enabled = true;
+		}
+
+		private void searchBox_TextChanged(object sender, EventArgs e)
+		{
+			TabPage page = assemblyItemTabs.SelectedTab;
+
+			if (page is null)
+				return;
+
+			ListView listView = assemblyListViews[page.Text];
+
+			listView.BeginUpdate();
+			listView.Items.Clear();
+
+			foreach (ListViewItem item in backupList.Items)
+			{
+				if (searchBox.Text != "" && !item.Text.ToLowerInvariant().Contains(searchBox.Text.ToLowerInvariant()))
+					continue;
+
+				listView.Items.Add(((ListViewItem)item.Clone()));
+			}
+
+			listView.EndUpdate();
 		}
 	}
 }

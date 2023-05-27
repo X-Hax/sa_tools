@@ -199,11 +199,20 @@ namespace SAToolsHub.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap tsPaths {
+
+		internal static System.Drawing.Bitmap tsRecentProj
+		{
+			get
+			{
+				object obj = ResourceManager.GetObject("tsRecentProj", resourceCulture);
+				return ((System.Drawing.Bitmap)(obj));
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized resource of type System.Drawing.Bitmap.
+		/// </summary>
+		internal static System.Drawing.Bitmap tsPaths {
             get {
                 object obj = ResourceManager.GetObject("tsPaths", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));

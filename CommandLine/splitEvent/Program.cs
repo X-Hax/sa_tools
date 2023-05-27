@@ -46,6 +46,55 @@ namespace splitEvent
 			string fullpath_out;
 			string fullpath_bin = Path.GetFullPath(args[0]);
 			string name = Path.GetFileName(fullpath_bin);
+			Wildcard evwcard = new Wildcard("e*", RegexOptions.IgnoreCase);
+			Wildcard mevwcard = new Wildcard("me*", RegexOptions.IgnoreCase);
+			Wildcard evxwcard = new Wildcard("e*_*", RegexOptions.IgnoreCase);
+			Wildcard mevxwcard = new Wildcard("me*_*", RegexOptions.IgnoreCase);
+			Wildcard exfwcard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
+			Wildcard mexfwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
+			if (!name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
+			{
+				if (mevwcard.IsMatch(name))
+				{
+					if (mevxwcard.IsMatch(name))
+					{
+						if (!name.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+						{
+							fullpath_bin += ".scr";
+							name += ".scr";
+						}
+					}
+					else
+					{
+						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+						{ 
+							fullpath_bin += ".prs";
+							name += ".prs";
+						}
+					}
+				}
+				else if (evwcard.IsMatch(name))
+				{
+					if (evxwcard.IsMatch(name))
+					{
+						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+						&& (!name.EndsWith(".scr", StringComparison.OrdinalIgnoreCase)))
+						{
+							fullpath_bin += ".prs";
+							name += ".prs";
+						}
+					}
+					else
+					{
+						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+							&& (!name.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)))
+						{
+							fullpath_bin += ".prs";
+							name += ".prs";
+						}
+					}
+				}
+			}
 			if (!File.Exists(fullpath_bin))
 			{
 				Console.WriteLine("File {0} doesn't exist.", fullpath_bin);
@@ -65,13 +114,11 @@ namespace splitEvent
 				fullpath_out = Path.GetFullPath(fullpath_out);
 			}
 			Console.WriteLine("Output folder: {0}", fullpath_out);
-			Wildcard exwcard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
-			Wildcard mexwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
 			if (name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
 				sa2Event.SplitExternalTexlist(fullpath_bin, fullpath_out);
-			else if (mexwcard.IsMatch(name))
+			else if (mexfwcard.IsMatch(name))
 				sa2EventExtra.SplitMini(fullpath_bin, fullpath_out);
-			else if (exwcard.IsMatch(name))
+			else if (exfwcard.IsMatch(name))
 				sa2EventExtra.Split(fullpath_bin, fullpath_out);
 			else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
 				SA2MiniEvent.Split(fullpath_bin, fullpath_out);

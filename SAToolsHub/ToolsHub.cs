@@ -11,6 +11,10 @@ using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using SplitTools.SplitDLL;
 using System.Net.Http;
+using System.Reflection.Emit;
+using Microsoft.VisualBasic.Logging;
+using SAModel.SAEditorCommon.DataTypes;
+using SAModel.SAEditorCommon;
 
 namespace SAToolsHub
 {
@@ -50,13 +54,17 @@ namespace SAToolsHub
 		public static string projXML { get; set; }
 		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
+		public static string projType { get; set; }
 		public static string gameDirectory { get; set; }
 		public static string gameSystemDirectory { get; set; }
 		public static List<Templates.SplitEntry> projSplitEntries { get; set; }
 		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
+		public static List<Templates.SplitEntryEvent> projSplitEventEntries { get; set; }
 		public static SAToolsHubSettings hubSettings { get; set; }
 		List<string> copyPaths;
 		public static bool resplit { get; set; }
+
+		Properties.Settings AppConfig = Properties.Settings.Default; //(non user settings, recent files etc.)
 
 		public class itemTags
 		{
@@ -143,10 +151,48 @@ namespace SAToolsHub
 			}
 
 			disableOSWarningToolStripMenuItem.Checked = hubSettings.DisableX86Warning;
+
 		}
+
 
 		// TODO: ToolsHub - Migrate some Additional Functions out.
 		#region Additional Functions
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			// MRU list
+			System.Collections.Specialized.StringCollection newlist = new System.Collections.Specialized.StringCollection();
+			bool exist = false;
+
+			if (AppConfig.MRUList != null)
+			{
+				foreach (string file in AppConfig.MRUList)
+				{
+					if (File.Exists(file))
+					{
+						newlist.Add(file);
+						recentProjectsToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+						exist = true;
+					}
+				}
+			}
+
+			AppConfig.MRUList = newlist;
+
+			if (exist)
+			{
+				string path = AppConfig.MRUList[0];
+				resetOpenProject();
+				projXML = path;
+				Templates.ProjectTemplate projectFile = ProjectFunctions.openProjectFileString(projXML);
+				openProject(projectFile);
+			}
+		}
+
+		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			AppConfig.Save();
+		}
+
 		private void initProject()
 		{
 			Templates.ProjectTemplate projectFile;
@@ -163,13 +209,14 @@ namespace SAToolsHub
 			}
 		}
 
-		private void openProject(Templates.ProjectTemplate projFile)
+			private void openProject(Templates.ProjectTemplate projFile)
 		{
 			string rootFolder;
 			bool validFolders = true;
 			bool sapChanged = false;
-
+	
 			setGame = projFile.GameInfo.GameName;
+			projType = projFile.GameInfo.ProjectType;
 
 			projectDirectory = projFile.GameInfo.ProjectFolder;
 			gameDirectory = ProjectFunctions.GetGamePath(projFile.GameInfo.GameName);
@@ -253,6 +300,8 @@ namespace SAToolsHub
 				projSplitEntries = projFile.SplitEntries;
 				if (projFile.SplitMDLEntries != null)
 					projSplitMDLEntries = projFile.SplitMDLEntries;
+				if (projFile.SplitEventEntries != null)
+					projSplitEventEntries = projFile.SplitEventEntries;
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
@@ -266,6 +315,7 @@ namespace SAToolsHub
 				}
 
 				editToolStripMenuItem.Enabled = tsProjUtils.Enabled = true;
+				UpdateMRUList(projXML);
 			}
 		}
 
@@ -651,6 +701,10 @@ namespace SAToolsHub
 					tsSADXFontEdit.Visible = true;
 					break;
 				case "SA2PC":
+				case "SA2":
+				case "SA2GC":
+				case "SA2PRE":
+				case "SA2TT":
 					tsSA2EvView.Visible = true;
 					tsSA2EvTxt.Visible = true;
 					tsSA2MsgEdit.Visible = true;
@@ -763,6 +817,7 @@ namespace SAToolsHub
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			AppConfig.Save();
 			this.Close();
 		}
 
@@ -786,6 +841,7 @@ namespace SAToolsHub
 			if (newProjFile != null)
 			{
 				openProject(ProjectFunctions.openProjectFileString(newProjFile));
+				UpdateMRUList(newProjFile);
 				projXML = newProjFile;
 				newProjFile = null;
 			}
@@ -836,7 +892,7 @@ namespace SAToolsHub
 			{
 				string gameIni = "sadxlvl.ini";
 
-				if (setGame == "SA2PC")
+				if (setGame.StartsWith("SA2"))
 				{
 					gameIni = "sa2lvl.ini";
 				}
@@ -901,7 +957,7 @@ namespace SAToolsHub
 
 		private void sA2StageSelectEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (setGame == "SA2PC")
+			if (setGame.StartsWith("SA2"))
 				if (projectDirectory != null)
 					sa2stgselStartInfo.Arguments = $"\"{projXML}\"";
 			Process proc = Process.Start(sa2stgselStartInfo);
@@ -1934,6 +1990,26 @@ namespace SAToolsHub
 			return "";
 		}
 
+		public static string GetTemplateFileForResplit(string ptype)
+		{
+			string templatePath;
+			Dictionary<string, string> templateSearch = new Dictionary<string, string>();
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig")))
+				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig");
+			else
+				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../GameConfig");
+
+			string[] templateNames = Directory.GetFiles(templatePath, "*.xml", SearchOption.TopDirectoryOnly);
+			for (int i = 0; i < templateNames.Length; i++)
+			{
+				Templates.SplitTemplate tempTemplate = ProjectFunctions.openTemplateFile(templateNames[i], true);
+				templateSearch[templateNames[i]] = projType;
+				if (tempTemplate.GameInfo.ProjectType.ToUpperInvariant() == ptype.ToUpperInvariant())
+					return templateNames[i];
+			}
+			return "";
+		}
+
 		private void openSettingsLogsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			System.Diagnostics.Process.Start("explorer.exe", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SA Tools"));
@@ -1969,6 +2045,46 @@ namespace SAToolsHub
 		private void configSchemaBuilderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			configEditor.ShowDialog();
+		}
+
+		private void recentProject_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+				string path = AppConfig.MRUList[recentProjectsToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)];
+				resetOpenProject();
+				projXML = path;
+				Templates.ProjectTemplate projectFile = ProjectFunctions.openProjectFileString(projXML);
+				openProject(projectFile);		
+		}
+
+		private void UpdateMRUList(string filename)
+		{
+			if (AppConfig.MRUList.Count > 10)
+			{
+				for (int i = 9; i < AppConfig.MRUList.Count; i++)
+				{
+					AppConfig.MRUList.RemoveAt(i);
+				}
+			}
+			if (AppConfig.MRUList.Contains(filename))
+			{
+				int i = AppConfig.MRUList.IndexOf(filename);
+				AppConfig.MRUList.RemoveAt(i);
+			}
+			AppConfig.MRUList.Insert(0, filename);
+			recentProjectsToolStripMenuItem.DropDownItems.Clear();
+			foreach (string file in AppConfig.MRUList)
+			{
+				if (File.Exists(file))
+				{
+					recentProjectsToolStripMenuItem.DropDownItems.Add(file.Replace("&", "&&"));
+				}
+			}
+		}
+
+		private void resetRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			recentProjectsToolStripMenuItem.DropDownItems.Clear();
+			AppConfig.MRUList.Clear();
 		}
 	}
 }

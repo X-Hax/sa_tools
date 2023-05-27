@@ -1,22 +1,24 @@
+Labels for Texlists?
+
 == Animations Needed ==
-ADV00_DLL
-ADV0100_DLL
-ADV0130_DLL
-ADV02_DLL
-ADV03_DLL
-B_EGM1
-B_EGM2
-B_EGM3
-B_ROBO_NB
+ADV00_DLL *
+ADV0100_DLL *
+ADV0130_DLL *
+ADV02_DLL *
+ADV03_DLL *
+B_EGM1 *
+B_EGM2 *
+B_EGM3 *
+B_ROBO_NB *
 Chao
-Characters
-CHRMODELS
-CommonObjects
-Enemies
-Event
-Fish
-Mission
-SHOOTING
+Characters *
+CHRMODELS *
+CommonObjects *
+Enemies *
+Event *
+Fish *
+Mission *
+SHOOTING *
 
 == Cleanup ==
 STG12 - some models?

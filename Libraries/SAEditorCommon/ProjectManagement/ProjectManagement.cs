@@ -113,6 +113,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("checkRange")]
 			public string CheckRange { get; set; }
+			/// <summary>
+			/// Classification of the project type for use with certain functions. Null if it's the "main" project template.
+			/// </summary>
+			[XmlAttribute("projectType")]
+			public string ProjectType { get; set; }
 		}
 
 		/// <summary>
@@ -162,12 +167,20 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
+			/// <summary>
+			/// Classification of the project type for use with certain functions. Null if it's the "main" project template.
+			/// </summary>
+			[XmlAttribute("projectType")]
+			public string ProjectType { get; set; }
 		}
-
+		/// <summary>
+		/// Intended for use with SAMDL Project Mode
+		/// </summary>
+		public abstract class EntryType {}
 		/// <summary>
 		/// Stores names for the source file, data file, and a common name for processing data to be split.
 		/// </summary>
-		public class SplitEntry
+		public class SplitEntry : EntryType
 		{
 			/// <summary>
 			/// Input file to be split from.
@@ -189,13 +202,8 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Stores information on SA2 Model and Motion archives for splitting.
 		/// </summary>
-		public class SplitEntryMDL
+		public class SplitEntryMDL : EntryType
 		{
-			/// <summary>
-			/// Sets if files are big endian or little endian.
-			/// </summary>
-			[XmlAttribute("BigEndian")]
-			public bool BigEndian { get; set; }
 			/// <summary>
 			/// Model Archive filename.
 			/// </summary>
@@ -212,6 +220,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("LabelFile")]
 			public string LabelFile { get; set; }
 			/// <summary>
+			/// Animation labeling file to be used with the Motion file.
+			/// </summary>
+			[XmlAttribute("MTNLabelFile")]
+			public string MTNLabelFile { get; set; }
+			/// <summary>
 			/// List of Motion files uses by the Model File.
 			/// </summary>
 			[XmlElement("MotionFile")]
@@ -221,7 +234,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Stores information on SA2 cutscene archives for splitting.
 		/// </summary>
-		public class SplitEntryEvent
+		public class SplitEntryEvent : EntryType
 		{
 			/// <summary>
 			/// Cutscene Archive filename.
@@ -233,6 +246,16 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("EventType")]
 			public string EventType { get; set; }
+			/// <summary>
+			/// Common name to be referenced for the event.
+			/// </summary>
+			[XmlAttribute("CmnName")]
+			public string CmnName { get; set; }
+			/// <summary>
+			/// Model labeling file to be used with the Event file.
+			/// </summary>
+			[XmlAttribute("LabelFile")]
+			public string LabelFile { get; set; }
 		}
 	}
 
@@ -626,9 +649,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Splits data from a SplitEntryMDL.
 		/// </summary>
-		public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		public static void SplitTemplateMDLEntry(Templates.SplitEntryMDL splitMDL, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, string iniFolder, bool overwrite = true)
 		{
 			string filePath = Path.Combine(gameFolder, splitMDL.ModelFile);
+
+			string mdllabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.LabelFile.ToLower() + ".ini"));
+
+			string mtnlabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.MTNLabelFile.ToLower() + ".ini"));
 
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
@@ -653,13 +680,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(splitMDL.BigEndian, filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray());
+				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile);
 		}
 
 		/// <summary>
 		/// Splits data from a SplitEntryEvent.
 		/// </summary>
-		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, string iniFolder, bool overwrite = true)
 		{
 			string mainext;
 			if (splitEvent.EventType == "MainBIN")
@@ -667,6 +694,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			else
 				mainext = ".prs";
 			string filePath = Path.Combine(gameFolder, splitEvent.EventFile + $"{mainext}");
+			string labelfile = Path.Combine(Path.Combine(iniFolder, "event"), (splitEvent.LabelFile.ToLower() + ".ini"));
 			List<string> filePathEXArr = new List<string>();
 			string filePathTex = Path.Combine(gameFolder, splitEvent.EventFile + "texlist.prs");
 			string ext = null;
@@ -752,7 +780,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			if (progress != null)
 			{
 				progress.StepProgress();
-				progress.SetStep("Splitting data from " + splitEvent.EventFile);
+
+				if (splitEvent.CmnName != null)
+					progress.SetStep("Splitting " + splitEvent.CmnName + " from " + splitEvent.EventFile);
+				else
+					progress.SetStep("Splitting data from " + splitEvent.EventFile);
 			}
 
 			#region Validating Inputs
@@ -770,25 +802,25 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 				{
 					case "MiniEvent":
 					case "MiniEventPC":
-						SA2MiniEvent.Split(filePath, fileOutputFolder);
+						SA2MiniEvent.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.SplitMini(ex, fileOutputFolder);
 						break;
 					case "Trial":
 					case "Preview":
-						sa2Event.Split(filePath, fileOutputFolder);
+						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
 						break;
 					case "MainPRS":
 					case "MainPC":
-						sa2Event.Split(filePath, fileOutputFolder);
+						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
 						sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
 						break;
 					case "MainBIN":
-						sa2Event.Split(filePath, fileOutputFolder + "_U");
+						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						break;
 				}
 			}

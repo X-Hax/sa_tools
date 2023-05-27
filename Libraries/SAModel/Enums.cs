@@ -134,6 +134,20 @@ namespace SAModel
 		Visible			= unchecked((int)0x80000000)
 	}
 
+	[Flags]
+	public enum SA2CutsceneEntityFlags : int
+	{
+		HasEnvMap			= 0x1,
+		IgnoreCulling		= 0x2,
+		Unk1				= 0x4,
+		MultiLight1			= 0x8,
+		MultiLight2			= 0x10,
+		MultiLight3			= 0x20,
+		ModifierVolume		= 0x40,
+		ReflectModel		= 0x80,
+		BlurModel			= 0x100,
+		Unk2				= 0x200
+	}
 	public enum LandTableFormat
 	{
 		SA1,

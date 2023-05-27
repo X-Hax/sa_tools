@@ -963,6 +963,47 @@ namespace SAModel
 				return result.ToArray();
 			}
 
+			public void ToNJA(TextWriter writer)
+			{
+				if (UserFlags1 != null)
+				{
+					writer.Write(Environment.NewLine);
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write("\t" + Indexes[i].ToString() + ",");
+
+						if (UserFlags1 != null && i > 1)
+						{
+							if (UserFlags3 != null)
+							{
+								writer.Write(" \tUf3( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + ", " + UserFlags3.ToString() + "),");
+							}
+							else if (UserFlags2 != null)
+							{
+								writer.Write(" \tUf2( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + "),");
+							}
+							else
+							{
+								writer.Write(" \tUf1( " + UserFlags1.ToString() + "),");
+							}
+						}
+
+						writer.Write(Environment.NewLine);
+					}
+				}
+				else
+				{
+					writer.Write("  ");
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write(Indexes[i].ToString() + ", ");
+						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+							writer.Write(Environment.NewLine + "                   ");
+					}
+					writer.Write(Environment.NewLine);
+				}
+			}
+
 			public override int Size
 			{
 				get
@@ -1030,6 +1071,47 @@ namespace SAModel
 					}
 				}
 				return result.ToArray();
+			}
+
+			public void ToNJA(TextWriter writer)
+			{
+				if (UserFlags1 != null)
+				{
+					writer.Write(Environment.NewLine);
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write("\t" + Indexes[i].ToString() + ",");
+
+						if (UserFlags1 != null && i > 1)
+						{
+							if (UserFlags3 != null)
+							{
+								writer.Write(" \tUf3( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + ", " + UserFlags3.ToString() + "),");
+							}
+							else if (UserFlags2 != null)
+							{
+								writer.Write(" \tUf2( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + "),");
+							}
+							else
+							{
+								writer.Write(" \tUf1( " + UserFlags1.ToString() + "),");
+							}
+						}
+
+						writer.Write(Environment.NewLine);
+					}
+				}
+				else
+				{
+					writer.Write("  ");
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write(Indexes[i].ToString() + ", ");
+						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+							writer.Write(Environment.NewLine + "                   ");
+					}
+					writer.Write(Environment.NewLine);
+				}
 			}
 
 			public override int Size
@@ -1105,6 +1187,47 @@ namespace SAModel
 							}
 						}
 					}
+				}
+			}
+
+			public void ToNJA(TextWriter writer)
+			{
+				if (UserFlags1 != null)
+				{
+					writer.Write(Environment.NewLine);
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write("\t" + Indexes[i].ToString() + ",");
+
+						if (UserFlags1 != null && i > 1)
+						{
+							if (UserFlags3 != null)
+							{
+								writer.Write(" \tUf3( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + ", " + UserFlags3[i].ToString() + "),");
+							}
+							else if (UserFlags2 != null)
+							{
+								writer.Write(" \tUf2( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + "),");
+							}
+							else
+							{
+								writer.Write(" \tUf1( " + UserFlags1[i].ToString() + "),");
+							}
+						}
+
+						writer.Write(Environment.NewLine);
+					}
+				}
+				else
+				{
+					writer.Write("  ");
+					for (int i = 0; i < Indexes.Length; ++i)
+					{
+						writer.Write(Indexes[i].ToString() + ", ");
+						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+							writer.Write(Environment.NewLine + "                   ");
+					}
+					writer.Write(Environment.NewLine);
 				}
 			}
 
@@ -1279,7 +1402,38 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+			PolyCount = (ushort)Polys.Count;
+			Size = 1;
+			foreach (Poly ply in Polys)
+				Size += (ushort)(ply.Size / 2);
+			int alignmentPadding = Size % 2;
+			Size += (ushort)alignmentPadding;
+			switch (Type)
+			{
+				case ChunkType.Volume_Polygon3:
+					writer.WriteLine("\tCnkO_P3, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					foreach (Triangle item in Polys)
+					{
+						item.ToNJA(writer);
+					}
+					break;
+				case ChunkType.Volume_Polygon4:
+					writer.WriteLine("\tCnkO_P4, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					foreach (Quad item in Polys)
+					{
+						item.ToNJA(writer);
+					}
+					break;
+				case ChunkType.Volume_Strip:
+					writer.WriteLine("\tCnkO_ST, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					foreach (Strip item in Polys)
+					{
+						item.ToNJA(writer);
+					}
+					break;
+			}
+			if (alignmentPadding > 0)
+				writer.WriteLine("\tCnkNull(),");
 		}
 	}
 
@@ -1446,10 +1600,10 @@ namespace SAModel
 
 						if (UVs != null)
 							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
-						
+
 						if (VColors != null)
 							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
-						
+
 						if (UserFlags1 != null && i > 1)
 						{
 							if (UserFlags3 != null)

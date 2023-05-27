@@ -18,22 +18,47 @@ namespace ModelConverter
 			else
 			{
 				Console.Write("File: ");
-				filename = Console.ReadLine();
+				filename = Console.ReadLine().Trim('"');
+			}
+			ModelFormat outfmt;
+			if (args.Length > 1)
+				outfmt = Enum.Parse<ModelFormat>(args[1], true);
+			else
+			{
+				Console.Write("Format: ");
+				outfmt = Enum.Parse<ModelFormat>(Console.ReadLine(), true);
 			}
 			ModelFile model = new ModelFile(filename);
-			switch (model.Format)
+			foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach != null))
+				switch (outfmt)
+				{
+					case ModelFormat.Basic:
+					case ModelFormat.BasicDX:
+						obj.Attach = obj.Attach.ToBasic();
+						break;
+					case ModelFormat.Chunk:
+						obj.Attach = obj.Attach.ToChunk();
+						break;
+					default:
+						throw new Exception($"Output format {outfmt} not supported!");
+				}
+			switch (outfmt)
 			{
 				case ModelFormat.Basic:
-					foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach is BasicAttach))
-						obj.Attach = obj.Attach.ToChunk();
-					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa2mdl"), model.Model, null, null, null, null, ModelFormat.Chunk);
+				case ModelFormat.BasicDX:
+					filename = System.IO.Path.ChangeExtension(filename, "sa1mdl");
 					break;
 				case ModelFormat.Chunk:
-					foreach (NJS_OBJECT obj in model.Model.GetObjects().Where(obj => obj.Attach is ChunkAttach))
-						obj.Attach = obj.Attach.ToBasic();
-					ModelFile.CreateFile(System.IO.Path.ChangeExtension(filename, "sa1mdl"), model.Model, null, null, null, null, ModelFormat.Basic);
+					filename = System.IO.Path.ChangeExtension(filename, "sa2mdl");
+					break;
+				case ModelFormat.GC:
+					filename = System.IO.Path.ChangeExtension(filename, "sa2bmdl");
+					break;
+				case ModelFormat.XJ:
+					filename = System.IO.Path.ChangeExtension(filename, "xjmdl");
 					break;
 			}
+			ModelFile.CreateFile(filename, model.Model, null, null, null, null, outfmt);
 		}
 	}
 }

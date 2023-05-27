@@ -44,8 +44,9 @@ namespace SA2EventViewer
 				ByteConverter.BigEndian = false;
 				key = 0xC600000;
 				int upptr = fc.GetPointer(0x20, 0xC600000);
-				int betacheck = fc[upptr + 0x134];
-				if ((uint)betacheck < 0xC600000 && betacheck != 0)
+				int betacheck = fc[upptr + 0x14C];
+				int betacheck2 = fc[upptr + 0x16C];
+				if (betacheck != 0 || (fc[0x27] != 0xC && betacheck == 0 && betacheck2 != 0))
 					dcbeta = true;
 				else
 					dcbeta = false;
@@ -198,7 +199,7 @@ namespace SA2EventViewer
 		public NJS_OBJECT ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
-		public uint Flags { get; set; }
+		public SA2CutsceneEntityFlags Flags { get; set; }
 		public uint Layer { get; set; }
 
 		public static int Size(bool battle) => battle ? 44 : 32;
@@ -213,7 +214,7 @@ namespace SA2EventViewer
 				GCModel = Event.GetGCModel(file, address + 12, imageBase, models);
 				ShadowModel = Event.GetModel(file, address + 16, imageBase, models);
 				Position = new Vertex(file, address + 24);
-				Flags = ByteConverter.ToUInt32(file, address + 36);
+				Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(file, address + 36);
 				Layer = ByteConverter.ToUInt32(file, address + 40);
 			}
 			else
@@ -225,7 +226,7 @@ namespace SA2EventViewer
 				if (ptr != 0)
 					ShapeMotion = new NJS_MOTION(file, ptr, imageBase, Model.CountMorph());
 				Position = new Vertex(file, address + 16);
-				Flags = ByteConverter.ToUInt32(file, address + 28);
+				Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(file, address + 28);
 			}
 		}
 	}

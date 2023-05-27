@@ -172,7 +172,7 @@ namespace SADXTweaker2
 
 		private void textureListEditorToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			AddChildForm(typeof(TextureListEditor), "texlist", textureListEditorToolStripMenuItem);
+			AddChildForm(typeof(TextureListEditor), "texturedata", textureListEditorToolStripMenuItem);
 		}
 
 		private void levelTextureListEditorToolStripMenuItem_Click(object sender, EventArgs e)

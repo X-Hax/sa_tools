@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA1_v1004" dataFolder="DC_SA1" gameDataFolderName="SONICADV" checkFile="1ST_READ.BIN" checkHashes="a92c7748b8cb92f8222803f47d22b439" />
+  <GameInfo gameName="SA1_v1004" projectType="SA1_v1004" dataFolder="DC_SA1" gameDataFolderName="SONICADV" checkFile="1ST_READ.BIN" checkHashes="a92c7748b8cb92f8222803f47d22b439" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1004/1ST_READ" CmnName="Characters, Enemies, Objects (1ST_READ)" />
   <SplitEntry SourceFile="SONICADV/S_MOT.PRS" IniFile="S_MOT" CmnName="Characters (MOT Files)" />
   <SplitEntry SourceFile="SONICADV/S_SBMOT.PRS" IniFile="S_SBMOT" CmnName="Characters (MOT Files)" />

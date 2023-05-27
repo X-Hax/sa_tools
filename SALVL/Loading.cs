@@ -137,7 +137,7 @@ namespace SAModel.SALVL
 				return;
 			}
 
-			if (projFile.GameInfo.GameName == "SA2PC")
+			if (projFile.GameInfo.GameName.StartsWith("SA2"))
 			{
 				salvlini = IniDataSALVL.Load(Path.Combine(projFile.GameInfo.ProjectFolder, "sa2lvl.ini"));
 				salvlini.IsSA2 = true;

@@ -1,75 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2PC" dataFolder="PC_SA2" checkFile="sonic2app.exe" gameDataFolderName="resource/gd_PC" checkHashes="4f03dff9b720986cd922ab461d2a6c69,1c28ae7958300273484a32923788a060,743a9f6f652e2dd1f4184bf013eef3bd" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0000" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0001" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0002" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0003" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0004" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0005" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0006" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0007" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0008" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0010" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0011" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0013" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0014" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0015" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0016" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0017" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0018" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0019" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0021" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0022" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0023" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0024" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0025" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0026" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0027" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0028" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0100" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0101" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0102" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0103" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0104" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0105" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0106" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0107" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0108" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0109" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0110" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0111" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0112" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0113" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0114" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0115" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0116" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0117" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0118" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0119" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0120" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0121" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0122" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0123" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0124" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\me0125" EventType="MiniEventPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0126" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0127" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0128" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0129" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0130" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0131" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0200" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0201" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0203" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0204" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0205" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0206" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0207" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0208" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0210" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0211" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0350" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0360" EventType="MainPC" />
-  <SplitEntryEvent EventFile="resource\gd_PC\event\e0361" EventType="MainPC" />
+  <GameInfo gameName="SA2PC" projectType="SA2PCCutscenes" dataFolder="PC_SA2" checkFile="sonic2app.exe" gameDataFolderName="resource/gd_PC" checkHashes="4f03dff9b720986cd922ab461d2a6c69,1c28ae7958300273484a32923788a060,743a9f6f652e2dd1f4184bf013eef3bd" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0000" EventType="MainPC" CmnName="Event #0: Hero Story Intro" LabelFile="E0000" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0001" EventType="MiniEventPC" CmnName="Event #1: F-6t BIG FOOT Mini-Event" LabelFile="ME0001" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0002" EventType="MainPC" CmnName="Event #2: Sonic Encounters Shadow" LabelFile="E0002" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0003" EventType="MainPC" CmnName="Event #3: Knuckles Meets Rouge" LabelFile="E0003" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0004" EventType="MainPC" CmnName="Event #4: Tails Flies to Prison Island" LabelFile="E0004" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0005" EventType="MainPC" CmnName="Event #5: Tails vs. Eggman 1 Aftermath" LabelFile="E0005" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0006" EventType="MainPC" CmnName="Event #6: Sonic Escapes His Cell" LabelFile="E0006" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0007" EventType="MiniEventPC" CmnName="Event #7: Sonic vs. Shadow 1 Mini-Event (Sonic)" LabelFile="ME0007" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0008" EventType="MiniEventPC" CmnName="Event #8: Green Forest Mini-Event" LabelFile="ME0008" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0010" EventType="MiniEventPC" CmnName="Event #10: Pumpkin Hill Mini-Event" LabelFile="ME0010" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0011" EventType="MainPC" CmnName="Event #11: Team Sonic Witnesses the ARK's Power" LabelFile="E0011" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0013" EventType="MiniEventPC" CmnName="Event #13: Aquatic Mine Mini-Event" LabelFile="ME0013" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0014" EventType="MainPC" CmnName="Event #14: Where's Eggman?" LabelFile="E0014" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0015" EventType="MainPC" CmnName="Event #15: Eggman Threatens the President" LabelFile="E0015" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0016" EventType="MainPC" CmnName="Event #16: Team Sonic Finds Eggman's Base" LabelFile="E0016" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0017" EventType="MainPC" CmnName="Event #17: Knuckles Searches for the Gate Keys" LabelFile="E0017" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0018" EventType="MiniEventPC" CmnName="Event #18: King Boom Boo Mini-Event" LabelFile="ME0018" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0019" EventType="MainPC" CmnName="Event #19: Eggman Ambushes Team Sonic" LabelFile="E0019" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0021" EventType="MainPC" CmnName="Event #21: Team Sonic Arrives on the ARK" LabelFile="E0021" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0022" EventType="MainPC" CmnName="Event #22: Sonic Receives a Ransom Call" LabelFile="E0022" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0023" EventType="MiniEventPC" CmnName="Event #23: Knuckles vs. Rouge Mini-Event (Knuckles)" LabelFile="ME0023" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0024" EventType="MainPC" CmnName="Event #24: Knuckles vs. Rouge Aftermath (Hero)" LabelFile="E0024" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0025" EventType="MainPC" CmnName="Event #25: Sonic and Eggman Face Off" LabelFile="E0025" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0026" EventType="MainPC" CmnName="Event #26: Sonic's Last Chance" LabelFile="E0026" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0027" EventType="MainPC" CmnName="Event #27: Sonic vs. Shadow 2 Prelude (Hero)" LabelFile="E0027" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0028" EventType="MainPC" CmnName="Event #28: Hero Story Ending" LabelFile="E0028" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0100" EventType="MainPC" CmnName="Event #100: Dark Story Intro" LabelFile="E0100" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0101" EventType="MainPC" CmnName="Event #101: Eggman Awakens Shadow" LabelFile="E0101" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0102" EventType="MainPC" CmnName="Event #102: Shadow Informs Eggman About the ARK" LabelFile="E0102" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0103" EventType="MainPC" CmnName="Event #103: Rouge Meets Knuckles" LabelFile="E0103" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0104" EventType="MiniEventPC" CmnName="Event #104: Sand Ocean Mini-Event" LabelFile="ME0104" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0105" EventType="MainPC" CmnName="Event #105: Eggman Sees Shadow's Highway Robbery" LabelFile="E0105" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0106" EventType="MainPC" CmnName="Event #106: Shadow's Pathos" LabelFile="E0106" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0107" EventType="MainPC" CmnName="Event #107: Shadow Encounters Sonic" LabelFile="E0107" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0108" EventType="MiniEventPC" CmnName="Event #108: Egg Quarters Mini-Event" LabelFile="ME0108" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0109" EventType="MainPC" CmnName="Event #109: Rouge Warps to the ARK" LabelFile="E0109" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0110" EventType="MiniEventPC" CmnName="Event #110: Lost Colony Mini-Event" LabelFile="ME0110" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0111" EventType="MainPC" CmnName="Event #111: Gathering of the Dark" LabelFile="E0111" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0112" EventType="MainPC" CmnName="Event #112: Arrival on Prison Island" LabelFile="E0112" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0113" EventType="MainPC" CmnName="Event #113: Tails and Amy Complicate Eggman's Plan" LabelFile="E0113" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0114" EventType="MiniEventPC" CmnName="Event #114: Security Hall Mini-Event" LabelFile="ME0114" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0115" EventType="MiniEventPC" CmnName="Event #115: R-1/A FLYING DOG Mini-Event" LabelFile="ME0115" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0116" EventType="MainPC" CmnName="Event #116: Shadow's Conscience" LabelFile="E0116" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0117" EventType="MiniEventPC" CmnName="Event #117: Sonic vs. Shadow 1 Mini-Event (Shadow)" LabelFile="ME0117" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0118" EventType="MainPC" CmnName="Event #118: Sonic vs. Shadow 1 Aftermath" LabelFile="E0118" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0119" EventType="MainPC" CmnName="Event #119: Shadow Remembers Maria" LabelFile="E0119" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0120" EventType="MainPC" CmnName="Event #120: Eggman Reworks His Plan" LabelFile="E0120" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0121" EventType="MiniEventPC" CmnName="Event #121: Sky Rail Mini-Event" LabelFile="ME0121" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0122" EventType="MainPC" CmnName="Event #122: Shadow Sees the Tornado" LabelFile="E0122" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0123" EventType="MainPC" CmnName="Event #123: Eggman Fails to Ambush Team Sonic" LabelFile="E0123" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0124" EventType="MainPC" CmnName="Event #124: Rouge Learns the Truth About Project Shadow" LabelFile="E0124" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\me0125" EventType="MiniEventPC" CmnName="Event #125: Knuckles vs. Rouge Mini-Event (Rouge)" LabelFile="ME0125" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0126" EventType="MainPC" CmnName="Event #126: Knuckles vs. Rouge Aftermath (Dark)" LabelFile="E0126" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0127" EventType="MainPC" CmnName="Event #127: Eggman's Final Plan" LabelFile="E0127" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0128" EventType="MainPC" CmnName="Event #128: Eggman Sets a Trap for Sonic" LabelFile="E0128" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0129" EventType="MainPC" CmnName="Event #129: Mystery of Shadow the Hedgehog" LabelFile="E0129" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0130" EventType="MainPC" CmnName="Event #130: Sonic vs. Shadow 2 Prelude (Dark)" LabelFile="E0130" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0131" EventType="MainPC" CmnName="Event #131: Dark Story Ending" LabelFile="E0131" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0200" EventType="MainPC" CmnName="Event #200: Last Episode Intro" LabelFile="E0200" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0201" EventType="MainPC" CmnName="Event #201: The ARK Falls" LabelFile="E0201"/>
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0203" EventType="MainPC" CmnName="Event #203: Gerald's Diary and Madness" LabelFile="E0203" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0203" EventType="MainBIN" CmnName="Event #17: Knuckles Searches for the Gate Keys (Beta A)" LabelFile="E0203_BIN" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0204" EventType="MainPC" CmnName="Event #204: Amy Reasons with Shadow" LabelFile="E0204" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0205" EventType="MainPC" CmnName="Event #205: Sonic and Knuckles Approach the Core" LabelFile="E0205" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0206" EventType="MainPC" CmnName="Event #206: Knuckles Stops the Chaos Emeralds" LabelFile="E0206" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0207" EventType="MainPC" CmnName="Event #207: Sonic and Shadow Transform" LabelFile="E0207" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0207" EventType="MainBIN" CmnName="Event #17: Knuckles Searches for the Gate Keys (Beta B)" LabelFile="E0207_BIN" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0208" EventType="MainPC" CmnName="Event #208: Shadow Gives His Life to Save the World" LabelFile="E0208" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0210" EventType="MainPC" CmnName="Event #210: Last Episode Ending/Credits" LabelFile="E0210" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0211" EventType="MainPC" CmnName="Event #211: Epilogue" LabelFile="E0211" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0350" EventType="MainPC" CmnName="Event #350: SA2 Intro Cinematic (Dreamcast, Unfinished)" LabelFile="E0350" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0360" EventType="MainPC" CmnName="Event #360: SA2B Intro Cinematic (Japanese Logo)" LabelFile="E0360" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\e0361" EventType="MainPC" CmnName="Event #361: SA2B Intro Cinematic (English Logo)" LabelFile="E0361" />
 </SplitTemplate>

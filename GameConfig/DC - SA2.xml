@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2" dataFolder="DC_SA2" checkFile="1ST_READ.BIN" gameDataFolderName="SONIC2" checkHashes="1c1b63fcb551187e7c7b456b4e28a022,ef0138133ff61fca7075fd520abb7618" />
+  <GameInfo gameName="SA2" projectType="SA2" dataFolder="DC_SA2" checkFile="1ST_READ.BIN" gameDataFolderName="SONIC2" checkHashes="1c1b63fcb551187e7c7b456b4e28a022,ef0138133ff61fca7075fd520abb7618,48a4b38e2d315c9d67e1c2f0c1a879ad" />
   <SplitEntry SourceFile="1ST_READ.BIN" IniFile="1ST_READ" CmnName="Common Objects and Character Data (1ST_READ)" />
   <SplitEntry SourceFile="SONIC2\ADVERTISE.PRS" IniFile="ADVERTISE" CmnName="Menus, Splash Screens, and GUI Elements" />
   <SplitEntry SourceFile="SONIC2\CART.PRS" IniFile="CART" CmnName="Kart Racing" />
@@ -73,140 +73,129 @@
   <SplitEntry SourceFile="SONIC2\CHAOSTGRACELANDD.PRS" IniFile="CHAOSTGRACELANDD" CmnName="Dark Chao Race" />
   <SplitEntry SourceFile="SONIC2\CHAOSTGRACELANDH.PRS" IniFile="CHAOSTGRACELANDH" CmnName="Hero Chao Race" />
   <SplitEntry SourceFile="SONIC2\CHAOSTGRACELANDN.PRS" IniFile="CHAOSTGRACELANDN" CmnName="Neutral Chao Race" />
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\AMYMDL.PRS" LabelFile="AMYMDL.INI" CmnName="Amy Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>AMYMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\BKNUCKMDL.PRS" CmnName="Knuckles' Alternate Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>KNUCKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\BROUGEMDL.PRS" CmnName="Rouge's Alternate Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>ROUGEMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\BWALKMDL.PRS" CmnName="Big Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>EWALKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\CHAOS0MDL.PRS" CmnName="Chaos Zero Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>CHAOS0MTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\CWALKMDL.PRS" CmnName="Chao Walker Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>CWALKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\EGGMDL.PRS" CmnName="Eggman Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>EGGMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\EWALK1MDL.PRS" CmnName="Mech Eggman's Alternate Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>EWALKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\EWALKMDL.PRS" CmnName="Mech Eggman Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>EWALKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\HEWALKMDL.PRS" CmnName="Mech Eggman's Halloween Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>EWALKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\HKNUCKMDL.PRS" CmnName="Knuckles' Halloween Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>KNUCKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\HROUGEMDL.PRS" CmnName="Rouge's Halloween Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>ROUGEMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\HSHADOWMDL.PRS" CmnName="Shadow's Halloween Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TERIOSMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\HSONICMDL.PRS" CmnName="Sonic's Halloween Costume Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\SONICMDL.PRS" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\HTWALKMDL.PRS" CmnName="Mech Tails' Halloween Costume Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\TERIOSMDL.PRS" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TWALKMTN.PRS</MotionFile>
+    <MotionFile>TERIOSMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\KNUCKMDL.PRS" CmnName="Knuckles Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\KNUCKMDL.PRS" LabelFile="KNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>KNUCKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\METALSONICMDL.PRS" CmnName="Metal Sonic Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\ROUGEMDL.PRS" LabelFile="ROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>METALSONICMTN.PRS</MotionFile>
+    <MotionFile>ROUGEMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\MILESMDL.PRS" CmnName="Tails Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\TWALKMDL.PRS" LabelFile="TWALKMDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails Model Data">
+    <MotionFile>TWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\EWALKMDL.PRS" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman Model Data">
+    <MotionFile>EWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\MILESMDL.PRS" LabelFile="MILESMDL" MTNLabelFile="MILESMTN" CmnName="Tails Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>MILESMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\PSOSHADOWMDL.PRS" CmnName="Shadow's Alternate Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TERIOSMTN.PRS</MotionFile>
+  <SplitEntryMDL ModelFile="SONIC2\EGGMDL.PRS" LabelFile="EGGMDL" MTNLabelFile="EGGMTN" CmnName="Eggman Model Data">
+    <MotionFile>EGGMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\PSOSONICMDL.PRS" CmnName="Sonic's Alternate Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>SONICMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\ROUGEMDL.PRS" CmnName="Rouge Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>ROUGEMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\SONICMDL.PRS" CmnName="Sonic Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>SONICMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\SSHADOWMDL.PRS" CmnName="Super Shadow Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>SSHADOWMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\SSONICMDL.PRS" CmnName="Super Sonic Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\SSONICMDL.PRS" LabelFile="SSONICMDL" MTNLabelFile="SSONICMTN" CmnName="Super Sonic Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SSONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TERIOSMDL.PRS" CmnName="Shadow Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\SSHADOWMDL.PRS" LabelFile="SSHADOWMDL" MTNLabelFile="SSHADOWMTN" CmnName="Super Shadow Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TERIOSMTN.PRS</MotionFile>
+    <MotionFile>SSHADOWMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TICALMDL.PRS" CmnName="Tikal Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\AMYMDL.PRS" LabelFile="AMYMDL" MTNLabelFile="AMYMTN" CmnName="Amy Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>AMYMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\METALSONICMDL.PRS" LabelFile="METALSONICMDL" MTNLabelFile="METALSONICMTN" CmnName="Metal Sonic Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>METALSONICMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\TICALMDL.PRS" LabelFile="TICALMDL" MTNLabelFile="TICALMTN" CmnName="Tikal Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>TICALMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TWALK1MDL.PRS" CmnName="Mech Tails' Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\CHAOS0MDL.PRS" LabelFile="CHAOS0MDL" MTNLabelFile="CHAOS0MTN" CmnName="Chaos Zero Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TWALKMTN.PRS</MotionFile>
+    <MotionFile>CHAOS0MTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\TWALKMDL.PRS" CmnName="Mech Tails Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TWALKMTN.PRS</MotionFile>
+  <SplitEntryMDL ModelFile="SONIC2\CWALKMDL.PRS" LabelFile="CWALKMDL" MTNLabelFile="CWALKMTN" CmnName="Chao Walker Model Data">
+    <MotionFile>CWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\XEWALKMDL.PRS" CmnName="Mech Eggman's Christmas Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
+  <SplitEntryMDL ModelFile="SONIC2\BWALKMDL.PRS" LabelFile="BWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Big Model Data">
     <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\XKNUCKMDL.PRS" CmnName="Knuckles' Christmas Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>KNUCKMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\XROUGEMDL.PRS" CmnName="Rouge's Christmas Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>ROUGEMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\XSHADOWMDL.PRS" CmnName="Shadow's Christmas Costume Model Data">
-    <MotionFile>PLCOMMTN.PRS</MotionFile>
-    <MotionFile>TERIOSMTN.PRS</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\XSONICMDL.PRS" CmnName="Sonic's Christmas Costume Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\PSOSONICMDL.PRS" LabelFile="PSOSONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic's Alternate Costume Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="false" ModelFile="SONIC2\XTWALKMDL.PRS" CmnName="Mech Tails' Christmas Costume Model Data">
+  <SplitEntryMDL ModelFile="SONIC2\PSOSHADOWMDL.PRS" LabelFile="PSOSHADOWMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow's Alternate Costume Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>TERIOSMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\BKNUCKMDL.PRS" LabelFile="BKNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles' Alternate Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>KNUCKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\BROUGEMDL.PRS" LabelFile="BROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge's Alternate Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>ROUGEMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\TWALK1MDL.PRS" LabelFile="TWALK1MDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails' Alternate Costume Model Data">
     <MotionFile>TWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\EWALK1MDL.PRS" LabelFile="EWALK1MDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman's Alternate Costume Model Data">
+    <MotionFile>EWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\HSONICMDL.PRS" LabelFile="HSONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic's Halloween Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SONICMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\HSHADOWMDL.PRS" LabelFile="HSHADOWMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow's Halloween Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>TERIOSMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\HKNUCKMDL.PRS" LabelFile="HKNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles' Halloween Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>KNUCKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\HROUGEMDL.PRS" LabelFile="HROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge's Halloween Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>ROUGEMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\HTWALKMDL.PRS" LabelFile="HTWALKMDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails' Halloween Costume Model Data">
+    <MotionFile>TWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\HEWALKMDL.PRS" LabelFile="HEWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman's Halloween Costume Model Data">
+    <MotionFile>EWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\XSONICMDL.PRS" LabelFile="XSONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic's Christmas Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>SONICMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\XSHADOWMDL.PRS" LabelFile="XSHADOWMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow's Christmas Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>TERIOSMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\XKNUCKMDL.PRS" LabelFile="XKNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles' Christmas Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>KNUCKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\XROUGEMDL.PRS" LabelFile="XROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge's Christmas Costume Model Data">
+    <MotionFile>PLCOMMTN.PRS</MotionFile>
+    <MotionFile>ROUGEMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\XTWALKMDL.PRS" LabelFile="XTWALKMDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails' Christmas Costume Model Data">
+    <MotionFile>TWALKMTN.PRS</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="SONIC2\XEWALKMDL.PRS" LabelFile="XEWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman's Christmas Costume Model Data">
+    <MotionFile>EWALKMTN.PRS</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

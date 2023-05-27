@@ -9,7 +9,7 @@ namespace SplitTools.SAArc
 {
 	public static class sa2MTN
 	{
-		public static void Split(bool? isBigEndian, string filename)
+		public static void Split(string filename)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -21,24 +21,16 @@ namespace SplitTools.SAArc
 					file = FraGag.Compression.Prs.Decompress(file);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(filename));
 				Dictionary<int, int> processedanims = new Dictionary<int, int>();
-				switch (isBigEndian)
+				int addr = 0;
+				ushort ile = ByteConverter.ToUInt16(file, 0);
+				if (ile == 0)
 				{
-					case true:
-						ByteConverter.BigEndian = true;
-						break;
-					case null:
-						int addr = 0;
-						ushort ile = ByteConverter.ToUInt16(file, 0);
-						if (ile == 0)
-						{
-							ile = ByteConverter.ToUInt16(file, 8);
-							addr = 8;
-						}
-						ByteConverter.BigEndian = true;
-						if (ile < ByteConverter.ToUInt16(file, addr))
-							ByteConverter.BigEndian = false;
-						break;
+					ile = ByteConverter.ToUInt16(file, 8);
+					addr = 8;
 				}
+				ByteConverter.BigEndian = true;
+				if (ile < ByteConverter.ToUInt16(file, addr))
+					ByteConverter.BigEndian = false;
 				MTNInfo ini = new MTNInfo { BigEndian = ByteConverter.BigEndian };
 				int address = 0;
 				short i = ByteConverter.ToInt16(file, address);

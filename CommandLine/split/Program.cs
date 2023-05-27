@@ -144,7 +144,7 @@ namespace Split
                                 continue;
                             }
                             Console.Write("\nSplitting MDL file: {0}", splitEntryMDL.ModelFile);
-                            ProjectFunctions.SplitTemplateMDLEntry(splitEntryMDL, null, dataFolder, fullpath_out);
+                            ProjectFunctions.SplitTemplateMDLEntry(splitEntryMDL, null, dataFolder, fullpath_out, iniFolder);
                         }
 					if (template.SplitEventEntries != null)
 						foreach (Templates.SplitEntryEvent splitEntryEvent in template.SplitEventEntries)
@@ -155,7 +155,7 @@ namespace Split
 								continue;
 							}
 							Console.Write("\nSplitting Event file: {0}", splitEntryEvent.EventFile);
-							ProjectFunctions.SplitTemplateEventEntry(splitEntryEvent, null, dataFolder, fullpath_out);
+							ProjectFunctions.SplitTemplateEventEntry(splitEntryEvent, null, dataFolder, fullpath_out, iniFolder);
 						}
 					break;
                 case "single":
@@ -266,10 +266,10 @@ namespace Split
 							else
 								Console.WriteLine("File {0} doesn't exist.", animpath);
 						}
-						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
+						SplitTools.SAArc.sa2MDL.Split(fullpath_mdl, fullpath_out, mdlanimfiles.ToArray());
 					}
 					else
-						SplitTools.SAArc.sa2MDL.Split(bigendian, fullpath_mdl, fullpath_out, null);
+						SplitTools.SAArc.sa2MDL.Split(fullpath_mdl, fullpath_out, null);
 					break;
                 case "dllexport":
                     int arrayid = -1;

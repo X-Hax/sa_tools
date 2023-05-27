@@ -460,6 +460,22 @@ namespace SAModel
 
 		public void ToNJA(TextWriter writer)
 		{
+			string weighttype = string.Empty;
+			switch (WeightStatus)
+			{
+				case WeightStatus.Start:
+					weighttype = "FW_START";
+					break;
+				case WeightStatus.Middle:
+					weighttype = "FW_MIDDLE";
+					break;
+				case WeightStatus.End:
+					weighttype = "FW_END";
+					break;
+			}
+			string vertcalctype = string.Empty;
+			if (Flags >> 4 == 8)
+				vertcalctype = "FV_CONT|";
 			switch(Type)
 			{
 				case ChunkType.Vertex_VertexSH:
@@ -506,12 +522,15 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNinjaFlags:
-					writer.WriteLine("\tCnkV_NF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					if (HasWeight)
+						writer.WriteLine("\tCnkV_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 4 + 1).ToString() + "),");
+					else
+						writer.WriteLine("\tCnkV_NF(0, " + (VertexCount * 4 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
 						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNFlags(" + UserFlags.ToString() + "),");
+						writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
 					}
 					break;
 				case ChunkType.Vertex_VertexDiffuseSpecular5:
@@ -573,13 +592,16 @@ namespace SAModel
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalNinjaFlags:
-					writer.WriteLine("\tCnkV_VN_NF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					if (HasWeight)
+						writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 7 + 1).ToString() + "),");
+					else
+						writer.WriteLine("\tCnkV_VN_NF(0, " + (VertexCount * 7 + 1).ToString() + "),");
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
 						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
 						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNFlags(" + UserFlags.ToString() + "),");
+						writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
 					}
 					break;
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:

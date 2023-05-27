@@ -35,7 +35,7 @@ namespace SADXTweaker2
 		private void TextureListEditor_Load(object sender, EventArgs e)
 		{
 			levelList.BeginUpdate();
-			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("texlist", StringComparison.OrdinalIgnoreCase)))
+			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("texturedata", StringComparison.OrdinalIgnoreCase)))
 			{
 				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
 				textureLists.Add(new KeyValuePair<string, TextureListEntry[]>(path, TextureList.Load(path)));

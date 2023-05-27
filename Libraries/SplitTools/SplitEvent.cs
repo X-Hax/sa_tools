@@ -18,7 +18,7 @@ namespace SplitTools.SAArc
 		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
 		static Dictionary<string, TexAnimFileInfo> texanimfiles = new Dictionary<string, TexAnimFileInfo>();
 
-		public static void Split(string filename, string outputPath)
+		public static void Split(string filename, string outputPath, string labelFile = null)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
@@ -33,6 +33,9 @@ namespace SplitTools.SAArc
 				string evfilename = filename;
 
 				evfilename = Path.GetFullPath(evfilename);
+				string EventFileName = Path.GetFileNameWithoutExtension(evfilename);
+				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+					EventFileName += "_bin";
 
 				Console.WriteLine("Splitting file {0}...", evfilename);
 				byte[] fc;
@@ -51,7 +54,22 @@ namespace SplitTools.SAArc
 				}
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
-					Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
+					Directory.CreateDirectory(EventFileName);
+
+				// Metadata for SAMDL Project Mode
+				byte[] mlength = null;
+				Dictionary<string, string> evsectionlist = new Dictionary<string, string>();
+				Dictionary<string, string> evsplitfilenames = new Dictionary<string, string>();
+				if (labelFile != null) labelFile = Path.GetFullPath(labelFile);
+				if (File.Exists(labelFile))
+				{
+					evsplitfilenames = IniSerializer.Deserialize<Dictionary<string, string>>(labelFile);
+					mlength = File.ReadAllBytes(labelFile);
+				}
+				string evname = Path.GetFileNameWithoutExtension(evfilename);
+				string evtexname = Path.Combine("EVENT", evname);
+				string[] evmetadata = new string[0];
+
 				uint key;
 				List<NJS_MOTION> motions = null;
 				List<NJS_CAMERA> ncams = null;
@@ -71,7 +89,7 @@ namespace SplitTools.SAArc
 						ncams = ReadMotionFileCams(Path.ChangeExtension(evfilename, null) + "motion.bin");
 						ini.Motions = motions.Select(a => a?.Name).ToList();
 						foreach (var mtn in motions.Where(a => a != null))
-							motionfiles[mtn.Name] = new MotionInfo(null, mtn);
+							motionfiles[mtn.Name] = new MotionInfo(null, mtn, mtn.Description);
 						ini.NinjaCameras = ncams.Select(a => a?.Name).ToList();
 						foreach (var camdata in ncams.Where(a => a != null))
 							camarrayfiles[camdata.Name] = new CameraInfo(null, camdata);
@@ -90,8 +108,9 @@ namespace SplitTools.SAArc
 					ini.Game = Game.SA2;
 					battle = false;
 					int upptr = fc.GetPointer(0x20, 0xC600000);
-					int betacheck = fc[upptr + 0x134];
-					if ((uint)betacheck < 0xC600000 && betacheck != 0)
+					int betacheck = fc[upptr + 0x14C];
+					int betacheck2 = fc[upptr + 0x16C];
+					if (betacheck != 0 || (fc[0x27] != 0xC && betacheck == 0 && betacheck2 != 0))
 					{
 						Console.WriteLine("File is in DC Beta format.");
 						dcbeta = true;
@@ -135,9 +154,46 @@ namespace SplitTools.SAArc
 									break;
 							}
 							UpgradeInfo info = new UpgradeInfo();
-							info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl");
+							if (i >= 6 && i < 12)
+							{
+								string knucklesName = null;
+								switch (i)
+								{
+									case 6:
+									case 8:
+										knucklesName = "Knuckles' Left Hand";
+										break;
+									case 7:
+									case 9:
+										knucklesName = "Knuckles' Right Hand";
+										break;
+									case 10:
+									case 11:
+										knucklesName = "Knuckles Root";
+										break;
+								}
+								info.RootNode = GetModel(fc, ptr, key, $"{knucklesName}.sa2mdl", $"{evname} {knucklesName}");
+							}
+							else
+								info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl", $"{evname} {chnam} Root");
 							if (info.RootNode != null)
 							{
+								// populating metadata file
+								string outResultRoot = null;
+								string outResultU1 = null;
+								string outResultU2 = null;
+								// checks if the source ini is a placeholder
+								if (labelFile != null && mlength.Length != 0)
+								{
+									evmetadata = evsplitfilenames[modelfiles[info.RootNode].Filename].Split('|'); // Description|Texture file
+									outResultRoot += evmetadata[0] + "|" + evmetadata[1];
+									evsectionlist[modelfiles[info.RootNode].Filename] = outResultRoot;
+								}
+								else
+								{
+									outResultRoot += modelfiles[info.RootNode].MetaName + "|" + $"{evtexname}texture";
+									evsectionlist[modelfiles[info.RootNode].Filename] = outResultRoot;
+								}
 								int ptr2 = fc.GetPointer(ptr + 4, key);
 								if (ptr2 != 0)
 									info.AttachNode1 = $"object_{ptr2:X8}";
@@ -146,9 +202,23 @@ namespace SplitTools.SAArc
 								int ptr3 = fc.GetPointer(ptr + 8, key);
 								if (ptr3 != 0)
 								{
-									info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl");
+									info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl", $"{evname} {upnam} A");
 									Console.WriteLine($"Event contains {upnam}.");
 									upcount++;
+
+									// populating metadata file
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[info.Model1].Filename].Split('|'); // Description|Texture file
+										outResultU1 += evmetadata[0] + "|" + evmetadata[1];
+										evsectionlist[modelfiles[info.Model1].Filename] = outResultU1;
+									}
+									else
+									{
+										outResultU2 += modelfiles[info.Model1].MetaName + "|" + $"{evtexname}texture";
+										evsectionlist.Add(modelfiles[info.Model1].Filename, outResultU2);
+									}
 								}
 								else
 									info.Model1 = null;
@@ -159,7 +229,23 @@ namespace SplitTools.SAArc
 									info.AttachNode2 = null;
 								ptr3 = fc.GetPointer(ptr + 0x10, key);
 								if (ptr3 != 0)
-									info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
+								{
+									info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl", $"{evname} {upnam} B");
+									// populating metadata file
+									string outResult = null;
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[info.Model2].Filename].Split('|'); // Description|Texture file
+										outResult += evmetadata[0] + "|" + evmetadata[1];
+										evsectionlist[modelfiles[info.Model2].Filename] = outResult;
+									}
+									else
+									{
+										outResult += modelfiles[info.Model2].MetaName + "|" + $"{evtexname}texture";
+										evsectionlist.Add(modelfiles[info.Model2].Filename, outResult);
+									}
+								}
 								else
 									info.Model2 = null;
 							}
@@ -191,20 +277,49 @@ namespace SplitTools.SAArc
 									break;
 							}
 							UpgradeInfo info = new UpgradeInfo();
-							info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl");
+							info.RootNode = GetModel(fc, ptr, key, $"{chnam} Root.sa2mdl", $"{evname} {chnam} Root");
 							if (info.RootNode != null)
 							{
+								// populating metadata file
+								string outResultRoot = null;
+								// checks if the source ini is a placeholder
+								if (labelFile != null && mlength.Length != 0)
+								{
+									evmetadata = evsplitfilenames[modelfiles[info.RootNode].Filename].Split('|'); // Description|Texture file
+									outResultRoot += evmetadata[0] + "|" + evmetadata[1];
+									evsectionlist[modelfiles[info.RootNode].Filename] = outResultRoot;
+								}
+								else
+								{
+									outResultRoot += modelfiles[info.RootNode].MetaName + "|" + evtexname;
+									evsectionlist[modelfiles[info.RootNode].Filename] = outResultRoot;
+								}
 								int ptr2 = fc.GetPointer(ptr + 4, key);
 								if (ptr2 != 0)
 									info.AttachNode1 = $"object_{ptr2:X8}";
 								else
 									info.AttachNode1 = null;
+								string outResultU1 = null;
+								string outResultU2 = null;
 								int ptr3 = fc.GetPointer(ptr + 8, key);
 								if (ptr3 != 0)
 								{
-									info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl");
+									info.Model1 = GetModel(fc, ptr + 8, key, $"{upnam} Model 1.sa2mdl", $"{evname} {upnam} A");
 									Console.WriteLine($"Event contains {upnam}.");
 									upcount++;
+									// populating metadata file
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[info.Model1].Filename].Split('|'); // Description|Texture file
+										outResultU1 += evmetadata[0] + "|" + evmetadata[1];
+										evsectionlist[modelfiles[info.Model1].Filename] = outResultU1;
+									}
+									else
+									{
+										outResultU1 = modelfiles[info.Model1].MetaName + "|" + evtexname;
+										evsectionlist.Add(modelfiles[info.Model1].Filename, outResultU1);
+									}
 								}
 								else
 									info.Model1 = null;
@@ -215,7 +330,22 @@ namespace SplitTools.SAArc
 									info.AttachNode2 = null;
 								ptr3 = fc.GetPointer(ptr + 0x10, key);
 								if (ptr3 != 0)
-									info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl");
+								{
+									info.Model2 = GetModel(fc, ptr + 0x10, key, $"{upnam} Model 2.sa2mdl", $"{evname} {upnam} B");
+									// populating metadata file
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[info.Model2].Filename].Split('|'); // Description|Texture file
+										outResultU2 += evmetadata[0] + "|" + evmetadata[1];
+										evsectionlist[modelfiles[info.Model2].Filename] = outResultU2;
+									}
+									else
+									{
+										outResultU2 = modelfiles[info.Model2].MetaName + "|" + evtexname;
+										evsectionlist.Add(modelfiles[info.Model2].Filename, outResultU2);
+									}
+								}
 								else
 									info.Model2 = null;
 							}
@@ -237,14 +367,14 @@ namespace SplitTools.SAArc
 						if (ptr2 != 0)
 						{
 							name = $"object_{ptr2:X8}";
-							ini.MechParts.Add(i, name);
+							ini.UpgradeOverrideParts.Add(i, name);
 							namecount++;
 						}
 						else
-							ini.MechParts.Add(i, null);
+							ini.UpgradeOverrideParts.Add(i, null);
 						ptr += 4;
 					}
-					Console.WriteLine("Event contains {0} mech par{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "t" : "ts");
+					Console.WriteLine("Event contains {0} upgrade override system pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
 				}
 				int gcnt = ByteConverter.ToInt32(fc, 8);
 				ptr = fc.GetPointer(0, key);
@@ -253,45 +383,123 @@ namespace SplitTools.SAArc
 					Console.WriteLine("Event contains {0} scen{1}.", gcnt + 1, gcnt + 1 == 1 ? "e" : "es");
 					for (int gn = 0; gn <= gcnt; gn++)
 					{
-						Directory.CreateDirectory(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), $"Scene {gn + 1}"));
+						Directory.CreateDirectory(Path.Combine(EventFileName, $"Scene {gn}"));
 						SceneInfo scn = new SceneInfo();
 						int ptr2 = fc.GetPointer(ptr, key);
 						int ecnt = ByteConverter.ToInt32(fc, ptr + 4);
 						if (ptr2 != 0)
 						{
-							Console.WriteLine("Scene {0} contains {1} entit{2}.", gn + 1, ecnt, ecnt == 1 ? "y" : "ies");
+							Console.WriteLine("Scene {0} contains {1} entit{2}.", gn, ecnt, ecnt == 1 ? "y" : "ies");
 							for (int en = 0; en < ecnt; en++)
 							{
 								EntityInfo ent = new EntityInfo();
-								ent.Model = GetModel(fc, ptr2, key, $"Scene {gn + 1}\\Entity {en + 1} Model.sa2mdl");
+								ent.Model = GetModel(fc, ptr2, key, $"Scene {gn}\\Entity {en + 1} Model.sa2mdl", $"{evname} Scene {gn} Entity {en + 1}");
+								string EntityName = null;
+
 								if (ent.Model != null)
 								{
-									ent.Motion = GetMotion(fc, ptr2 + 4, key, $"Scene {gn + 1}\\Entity {en + 1} Motion.saanim", motions, modelfiles[ent.Model].Model.CountAnimated());
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[ent.Model].Filename].Split('|');
+										EntityName = evmetadata[0];
+									}
+									else
+										EntityName = modelfiles[ent.Model].MetaName;
+									ent.Motion = GetMotion(fc, ptr2 + 4, key, $"Scene {gn}\\Entity {en + 1} Motion.saanim", motions, modelfiles[ent.Model].Model.CountAnimated(), $"{EntityName} Scene {gn} Animation");
 									if (ent.Motion != null)
-										modelfiles[ent.Model].Motions.Add(motionfiles[ent.Motion].Filename);
-									ent.ShapeMotion = GetMotion(fc, ptr2 + 8, key, $"Scene {gn + 1}\\Entity {en + 1} Shape Motion.saanim", motions, modelfiles[ent.Model].Model.CountMorph());
+									{
+										// add metadata to animations found in motion.bin files
+										if (battle)
+											motionfiles[ent.Motion].Description = $"{EntityName} Scene {gn} Animation";
+
+										if (modelfiles[ent.Model].Filename.EndsWith("Root.sa2mdl") || modelfiles[ent.Model].Filename.EndsWith("Hand.sa2mdl"))
+											modelfiles[ent.Model].Motions.Add(motionfiles[ent.Motion].Filename);
+										else
+											modelfiles[ent.Model].Motions.Add("../" + motionfiles[ent.Motion].Filename);
+									}
+									ent.ShapeMotion = GetMotion(fc, ptr2 + 8, key, $"Scene {gn}\\Entity {en + 1} Shape Motion.saanim", motions, modelfiles[ent.Model].Model.CountMorph(), $"{EntityName} Scene {gn} Shape Motion");
 									if (ent.ShapeMotion != null)
-										modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
+									{
+										// add metadata to animations found in motion.bin files
+										if (battle)
+											motionfiles[ent.Motion].Description = $"{EntityName} Scene {gn} Shape Motion";
+										
+										if (modelfiles[ent.Model].Filename.EndsWith("Root.sa2mdl") || modelfiles[ent.Model].Filename.EndsWith("Hand.sa2mdl"))
+											modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
+										else
+											modelfiles[ent.Model].Motions.Add("../" + motionfiles[ent.ShapeMotion].Filename);
+									}
+									// populating metadata file
+									string outResult = null;
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[ent.Model].Filename].Split('|'); // Description|Texture file
+										outResult += evmetadata[0] + "|" + evmetadata[1];
+										evsectionlist[modelfiles[ent.Model].Filename] = outResult;
+									}
+									else
+									{
+										if (!dcbeta)
+											outResult += modelfiles[ent.Model].MetaName + "|" + $"{evtexname}texture";
+										else
+											outResult += modelfiles[ent.Model].MetaName + "|" + evtexname;
+										evsectionlist[modelfiles[ent.Model].Filename] = outResult;
+									}
 								}
 								if (battle)
 								{
-									ent.GCModel = GetGCModel(fc, ptr2 + 12, key, $"Scene {gn + 1}\\Entity {en + 1} GC Model.sa2bmdl");
-									ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn + 1}\\Entity {en + 1} Shadow Model.sa2mdl");
+									ent.GCModel = GetGCModel(fc, ptr2 + 12, key, $"Scene {gn}\\Entity {en + 1} GC Model.sa2bmdl", $"{evname} Scene {gn} Entity {en + 1} GC Model");
+									ent.ShadowModel = GetModel(fc, ptr2 + 16, key, $"Scene {gn}\\Entity {en + 1} Shadow Model.sa2mdl", $"{EntityName} Shadow Model");
 									ent.Position = new Vertex(fc, ptr2 + 24);
-									ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 36);
+									ent.Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(fc, ptr2 + 36);
 									ent.Layer = ByteConverter.ToUInt32(fc, ptr2 + 40);
+									// populating metadata file
+									if (ent.GCModel != null)
+									{
+										string outResultGC = null;
+										// checks if the source ini is a placeholder
+										if (labelFile != null && mlength.Length != 0)
+										{
+											evmetadata = evsplitfilenames[modelfiles[ent.GCModel].Filename].Split('|'); // Description|Texture file
+											outResultGC += evmetadata[0] + "|" + evmetadata[1];
+											evsectionlist[modelfiles[ent.GCModel].Filename] = outResultGC;
+										}
+										else
+										{
+											outResultGC = modelfiles[ent.GCModel].MetaName + "|" + $"{evtexname}texture";
+											evsectionlist[modelfiles[ent.GCModel].Filename] = outResultGC;
+										}
+									}
+									if (ent.ShadowModel != null)
+									{
+										string outResultShadow = null;
+										// checks if the source ini is a placeholder
+										if (labelFile != null && mlength.Length != 0)
+										{
+											evmetadata = evsplitfilenames[modelfiles[ent.ShadowModel].Filename].Split('|'); // Description|Texture file
+											outResultShadow += evmetadata[0];
+											evsectionlist[modelfiles[ent.ShadowModel].Filename] = outResultShadow;
+										}
+										else
+										{
+											outResultShadow = modelfiles[ent.ShadowModel].MetaName;
+											evsectionlist[modelfiles[ent.ShadowModel].Filename] = outResultShadow;
+										}
+									}
 								}
 								else
 								{
 									ent.Position = new Vertex(fc, ptr2 + 16);
-									ent.Flags = ByteConverter.ToUInt32(fc, ptr2 + 28);
+									ent.Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(fc, ptr2 + 28);
 								}
 								scn.Entities.Add(ent);
 								ptr2 += battle ? 0x2C : 0x20;
 							}
 						}
 						else
-							Console.WriteLine("Scene {0} contains no entities.", gn + 1);
+							Console.WriteLine("Scene {0} contains no entities.", gn);
 						ptr2 = fc.GetPointer(ptr + 8, key);
 						if (ptr2 != 0)
 						{
@@ -299,32 +507,42 @@ namespace SplitTools.SAArc
 							int cnt = ByteConverter.ToInt32(fc, ptr + 12);
 							for (int i = 0; i < cnt; i++)
 							{
-								scn.CameraMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1}.saanim", motions, 1));
+								scn.CameraMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn}\\Camera Motion {i + 1}.saanim", motions, 1, $"{evname} Scene {gn} Camera Animation {i + 1}"));
 								if (battle)
-									scn.NinjaCameras.Add(GetGCCamData(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini", ncams));
+								{
+									// add metadata to animations found in motion.bin files
+									motionfiles[scn.CameraMotions[i]].Description = $"{evname} Scene {gn} Camera Animation {i + 1}";
+									scn.NinjaCameras.Add(GetGCCamData(fc, ptr2, key, $"Scene {gn}\\Camera Motion {i + 1} Attributes.ini", ncams));
+								}
 								else
-									scn.NinjaCameras.Add(GetCamData(fc, ptr2, key, $"Scene {gn + 1}\\Camera Motion {i + 1} Attributes.ini", ncams));
+									scn.NinjaCameras.Add(GetCamData(fc, ptr2, key, $"Scene {gn}\\Camera Motion {i + 1} Attributes.ini", ncams));
 								ptr2 += sizeof(int);
 							}
 						}
 						ptr2 = fc.GetPointer(ptr + 0x10, key);
 						if (ptr2 != 0)
-						{
+						{ 
 							int cnt = ByteConverter.ToInt32(fc, ptr + 0x14);
+							Console.WriteLine("Scene {0} contains {1} particle motio{2}.", gn, cnt == 0 ? "no" : cnt, cnt == 1 ? "n" : "ns");
 							for (int i = 0; i < cnt; i++)
 							{
-								scn.ParticleMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn + 1}\\Particle Motion {i + 1}.saanim", motions, 1));
+								scn.ParticleMotions.Add(GetMotion(fc, ptr2, key, $"Scene {gn}\\Particle Motion {i + 1}.saanim", motions, 1, $"{evname} Scene {gn} Particle Motion {i + 1}"));
+								// add metadata to animations found in motion.bin files
+								if (battle)
+									motionfiles[scn.ParticleMotions[i]].Description = $"{evname} Scene {gn} Particle Motion {i + 1}";
 								ptr2 += sizeof(int);
 							}
 						}
+						else
+							Console.WriteLine("Scene {0} contains no particle motions.", gn);
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
 						if (ptr2 != 0)
 						{
 							BigInfo big = new BigInfo();
-							big.Model = GetModel(fc, ptr2, key, $"Scene {gn + 1}\\Big Model.sa2mdl");
+							big.Model = GetModel(fc, ptr2, key, $"Scene {gn}\\Big Model.sa2mdl", $"{evname} Scene {gn} Big Model");
 							if (big.Model != null)
 							{
-								Console.WriteLine("Scene {0} contains Big the Cat cameo.", gn + 1);
+								Console.WriteLine("Scene {0} contains Big the Cat cameo.", gn);
 								int anicnt = modelfiles[big.Model].Model.CountAnimated();
 								int ptr3 = fc.GetPointer(ptr2 + 4, key);
 								if (ptr3 != 0)
@@ -332,13 +550,35 @@ namespace SplitTools.SAArc
 									int cnt = ByteConverter.ToInt32(fc, ptr2 + 8);
 									for (int i = 0; i < cnt; i++)
 									{
-										big.Motions.Add(new string[] { GetMotion(fc, ptr3, key, $"Scene {gn + 1}\\Big Motion {i + 1}a.saanim", motions, anicnt), GetMotion(fc, ptr3 + 4, key, $"Scene {gn + 1}\\Big Motion {i + 1}b.saanim", motions, anicnt) });
+										big.Motions.Add(new string[] { GetMotion(fc, ptr3, key, $"Scene {gn}/Big Motion {i + 1}a.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}A"), GetMotion(fc, ptr3 + 4, key, $"Scene {gn}\\Big Motion {i + 1}b.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}B") });
+										// add metadata to animations found in motion.bin files
+										if (battle)
+										{
+											int ptr4 = fc.GetPointer(ptr3 + 4, key);
+											motionfiles[big.Motions[i][0]].Description = $"{evname} Scene {gn} Big Motion {i + 1}A";
+											if (ptr4 != 0)
+												motionfiles[big.Motions[i][1]].Description = $"{evname} Scene {gn} Big Motion {i + 1}B";
+										}
 										ptr3 += 8;
 									}
 								}
+								// populating metadata file
+								string outResultBig = null;
+								// checks if the source ini is a placeholder
+								if (labelFile != null && mlength.Length != 0)
+								{
+									evmetadata = evsplitfilenames[modelfiles[big.Model].Filename].Split('|'); // Description|Texture file
+									outResultBig += evmetadata[0] + "|" + evmetadata[1];
+									evsectionlist[modelfiles[big.Model].Filename] = outResultBig;
+								}
+								else
+								{
+									outResultBig = modelfiles[big.Model].MetaName + "|" + $"{evtexname}texture";
+									evsectionlist.Add(modelfiles[big.Model].Filename, outResultBig);
+								}
 							}
 							else
-								Console.WriteLine("Scene {0} does not contain Big the Cat cameo.", gn + 1);
+								Console.WriteLine("Scene {0} does not contain Big the Cat cameo.", gn);
 							big.Unknown = ByteConverter.ToInt32(fc, ptr2 + 12);
 							scn.Big = big;
 						}
@@ -352,7 +592,7 @@ namespace SplitTools.SAArc
 				ptr = fc.GetPointer(0x1C, key);
 				if (ptr != 0)
 				{
-					ini.TailsTails = GetModel(fc, ptr, key, $"Tails' tails.sa2mdl");
+					ini.TailsTails = GetModel(fc, ptr, key, $"Tails' tails.sa2mdl", $"{evname} Tails' Tails");
 					int ptr2 = fc.GetPointer(ptr, key);
 					if (ptr2 == 0)
 						Console.WriteLine("Event does not contain Tails' tails.");
@@ -368,7 +608,7 @@ namespace SplitTools.SAArc
 						Console.WriteLine("Event contains an internal texture list.");
 						NJS_TEXLIST tls = new NJS_TEXLIST(fc, ptr, key);
 						ini.Texlist = GetTexlist(fc, 4, key, "InternalTexlist.satex");
-						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "InternalTexlist.satex");
+						string fp = Path.Combine(EventFileName, "InternalTexlist.satex");
 						tls.Save(fp);
 						ini.Files.Add("InternalTexlist.satex", HelperFunctions.FileHash(fp));
 					}
@@ -384,7 +624,7 @@ namespace SplitTools.SAArc
 						Console.WriteLine("Event contains internal texture sizes.");
 						TexSizes tsz = new TexSizes(fc, ptr);
 						ini.TexSizes = GetTexSizes(fc, 0xC, key, "TextureSizes.ini");
-						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "TextureSizes.ini");
+						string fp = Path.Combine(EventFileName, "TextureSizes.ini");
 						tsz.Save(fp);
 						ini.Files.Add("TextureSizes.ini", HelperFunctions.FileHash(fp));
 					}
@@ -399,12 +639,12 @@ namespace SplitTools.SAArc
 					{
 						int rptr = fc.GetPointer(ptr + 0x84, key);
 						ReflectionInfo refl = new ReflectionInfo();
-						refl.Unk1 = ByteConverter.ToInt32(fc, ptr);
-						refl.Unk2 = ByteConverter.ToInt32(fc, ptr + 4);
-						//There's a huge gap here of 0x7C. Investigate further.
+						refl.Instances = ByteConverter.ToInt32(fc, ptr);
+						refl.Transparency = ByteConverter.ToInt32(fc, ptr + 4);
+						//There's a huge gap here of 0x7C. This space was reserved for transparency settings for a maximum of 32 reflection instances.
 						ReflectionMatrixData rmx = new ReflectionMatrixData(fc, rptr);
 						refl.ReflectData = GetReflectData(fc, ptr + 0x84, key, "ReflectionData.ini");
-						string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "ReflectionData.ini");
+						string fp = Path.Combine(EventFileName, "ReflectionData.ini");
 						rmx.Save(fp);
 						ini.Files.Add("ReflectionData.ini", HelperFunctions.FileHash(fp));
 						ini.ReflectionInfo.Add(refl);
@@ -424,21 +664,21 @@ namespace SplitTools.SAArc
 						if (ptr2 != 0)
 						{
 							name = $"object_{ptr2:X8}";
-							ini.UnknownModelData.Add(i, name);
+							ini.BlurModels.Add(i, name);
 							namecount++;
 						}
 						else
-							ini.UnknownModelData.Add(i, null);
+							ini.BlurModels.Add(i, null);
 						ptr += 4;
 					}
-					Console.WriteLine("Event contains {0} unknown model pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
+					Console.WriteLine("Event contains {0} blur model pointe{1}.", namecount == 0 ? "no" : $"{namecount}", namecount == 1 ? "r" : "rs");
 				}
 				ptr = fc.GetPointer(0x24, key);
 				if (ptr == 0 || dcbeta && ((fc[37] == 0x25) || (fc[38] == 0x22)))
 					Console.WriteLine("Event does not contain texture animation data.");
 				else
 				{
-					Directory.CreateDirectory(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), "Texture Animations"));
+					Directory.CreateDirectory(Path.Combine(EventFileName, "Texture Animations"));
 					TexAnimInfo tanim = new TexAnimInfo();
 					int ptr2 = fc.GetPointer(ptr, key);
 					if (battle)
@@ -517,7 +757,7 @@ namespace SplitTools.SAArc
 							Console.WriteLine("Event contains 1 model with texture animation data.");
 					}
 
-				}	
+				}
 				int shmap = ByteConverter.ToInt32(fc, 0x28);
 				if (battle && shmap == 0)
 				{
@@ -532,37 +772,49 @@ namespace SplitTools.SAArc
 				foreach (var item in motionfiles.Values)
 				{
 					string fn = item.Filename ?? $"Unknown Motion {motions.IndexOf(item.Motion)}.saanim";
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					string fp = Path.Combine(EventFileName, fn);
+					// applies metadata to animations found in motion.bin files
+					if (battle)
+					{ 
+						string meta = item.Description ?? $"Unassigned Motion {motions.IndexOf(item.Motion)}";
+						item.Motion.Description = meta;
+					}
 					item.Motion.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in camarrayfiles.Values)
 				{
 					string fn = item.Filename;
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					string fp = Path.Combine(EventFileName, fn);
 					item.CamData.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in texanimfiles.Values)
 				{
 					string fn = item.Filename;
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), fn);
+					string fp = Path.Combine(EventFileName, fn);
 					item.TextureAnimation.Save(fp);
 					ini.Files.Add(fn, HelperFunctions.FileHash(fp));
 				}
 				foreach (var item in modelfiles.Values)
 				{
-					string fp = Path.Combine(Path.GetFileNameWithoutExtension(evfilename), item.Filename);
+					string fp = Path.Combine(EventFileName, item.Filename);
 					ModelFile.CreateFile(fp, item.Model, item.Motions.ToArray(), null, null, null, item.Format);
 					ini.Files.Add(item.Filename, HelperFunctions.FileHash(fp));
+				}
+				// Creates metadata ini file for SAMDL Project Mode
+				if (labelFile != null)
+				{
+					string evsectionListFilename = Path.GetFileNameWithoutExtension(labelFile) + "_data.ini";
+					IniSerializer.Serialize(evsectionlist, Path.Combine(outputPath, evsectionListFilename));
 				}
 				JsonSerializer js = new JsonSerializer
 				{
 					Formatting = Formatting.Indented,
 					NullValueHandling = NullValueHandling.Ignore
 				};
-				using (var tw = File.CreateText(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), Path.ChangeExtension(Path.GetFileName(evfilename), ".json"))))
-					js.Serialize(tw, ini);
+					using (var tw = File.CreateText(Path.Combine(EventFileName, Path.ChangeExtension(Path.GetFileName(evfilename), ".json"))))
+						js.Serialize(tw, ini);
 			}
 			finally
 			{
@@ -860,16 +1112,16 @@ namespace SplitTools.SAArc
 				if (ptr != 0)
 					for (int i = 0; i < 64; i++)
 					{
-						if (ini.UnknownModelData.ContainsKey(i) && labels.ContainsKeySafe(ini.UnknownModelData[i]))
-							ByteConverter.GetBytes(labels[ini.UnknownModelData[i]]).CopyTo(fc, ptr);
+						if (ini.BlurModels.ContainsKey(i) && labels.ContainsKeySafe(ini.BlurModels[i]))
+							ByteConverter.GetBytes(labels[ini.BlurModels[i]]).CopyTo(fc, ptr);
 						ptr += 4;
 					}
 				ptr = fc.GetPointer(0x18, key);
 				if (ptr != 0)
 					for (int i = 0; i < 93; i++)
 					{
-						if (ini.MechParts.ContainsKey(i) && labels.ContainsKeySafe(ini.MechParts[i]))
-							ByteConverter.GetBytes(labels[ini.MechParts[i]]).CopyTo(fc, ptr);
+						if (ini.UpgradeOverrideParts.ContainsKey(i) && labels.ContainsKeySafe(ini.UpgradeOverrideParts[i]))
+							ByteConverter.GetBytes(labels[ini.UpgradeOverrideParts[i]]).CopyTo(fc, ptr);
 						ptr += 4;
 					}
 				ptr = fc.GetPointer(0x1C, key);
@@ -928,7 +1180,7 @@ namespace SplitTools.SAArc
 		}
 
 		//Get Functions
-		private static string GetModel(byte[] fc, int address, uint key, string fn)
+		private static string GetModel(byte[] fc, int address, uint key, string fn, string meta = null)
 			{
 				string name = null;
 				int ptr3 = fc.GetPointer(address, key);
@@ -944,13 +1196,13 @@ namespace SplitTools.SAArc
 							if (modelfiles.ContainsKey(s))
 								modelfiles.Remove(s);
 						nodenames.AddRange(names);
-						modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk));
+						modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk, meta));
 					}
 				}
 				return name;
 			}
 
-		private static string GetGCModel(byte[] fc, int address, uint key, string fn)
+		private static string GetGCModel(byte[] fc, int address, uint key, string fn, string meta = null)
 		{
 			string name = null;
 			int ptr3 = fc.GetPointer(address, key);
@@ -966,13 +1218,13 @@ namespace SplitTools.SAArc
 						if (modelfiles.ContainsKey(s))
 							modelfiles.Remove(s);
 					nodenames.AddRange(names);
-					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.GC));
+					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.GC, meta));
 				}
 			}
 			return name;
 		}
 
-		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt)
+		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt, string meta = null)
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
@@ -983,6 +1235,7 @@ namespace SplitTools.SAArc
 				if (ptr3 != 0)
 				{
 					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
+					mtn.Description = meta;
 					mtn.OptimizeShape();
 				}
 			}
@@ -1149,12 +1402,14 @@ namespace SplitTools.SAArc
 		public NJS_OBJECT Model { get; set; }
 		public ModelFormat Format { get; set; }
 		public List<string> Motions { get; set; } = new List<string>();
+		public string MetaName { get; set; }
 
-		public ModelInfo(string fn, NJS_OBJECT obj, ModelFormat format)
+		public ModelInfo(string fn, NJS_OBJECT obj, ModelFormat format, string desc = null)
 		{
 			Filename = fn;
 			Model = obj;
 			Format = format;
+			MetaName = desc;
 		}
 	}
 
@@ -1162,11 +1417,13 @@ namespace SplitTools.SAArc
 	{
 		public string Filename { get; set; }
 		public NJS_MOTION Motion { get; set; }
+		public string Description { get; set; }
 
-		public MotionInfo(string fn, NJS_MOTION mtn)
+		public MotionInfo(string fn, NJS_MOTION mtn, string desc = null)
 		{
 			Filename = fn;
 			Motion = mtn;
+			Description = desc;
 		}
 	}
 
@@ -1193,6 +1450,15 @@ namespace SplitTools.SAArc
 			TextureAnimation = texanim;
 		}
 	}
+	public class EventMetaInfo
+	{
+		[IniName("type")]
+		public string Type { get; set; }
+		[IniName("filename")]
+		public string Filename { get; set; }
+		[IniName("meta")]
+		public string Metadata { get; set; }
+	}
 
 	public class EventIniData
 	{
@@ -1207,8 +1473,8 @@ namespace SplitTools.SAArc
 		}
 		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
 		public List<UpgradeInfo> Upgrades { get; set; } = new List<UpgradeInfo>();
-		public Dictionary<int, string> UnknownModelData { get; set; } = new Dictionary<int, string>();
-		public Dictionary<int, string> MechParts { get; set; } = new Dictionary<int, string>();
+		public Dictionary<int, string> BlurModels { get; set; } = new Dictionary<int, string>();
+		public Dictionary<int, string> UpgradeOverrideParts { get; set; } = new Dictionary<int, string>();
 		public string TailsTails { get; set; }
 		public string Texlist { get; set; }
 		public string TexSizes { get; set; }
@@ -1247,7 +1513,7 @@ namespace SplitTools.SAArc
 		public string GCModel { get; set; }
 		public string ShadowModel { get; set; }
 		public Vertex Position { get; set; }
-		public uint Flags { get; set; }
+		public SA2CutsceneEntityFlags Flags { get; set; }
 		public uint Layer { get; set; }
 	}
 
@@ -1345,8 +1611,8 @@ namespace SplitTools.SAArc
 
 	public class ReflectionInfo
 	{
-		public int Unk1 { get; set; }
-		public int Unk2 { get; set; }
+		public int Instances { get; set; }
+		public int Transparency { get; set; }
 		public string ReflectData { get; set; }
 	}
 

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace SplitTools.SAArc
 {
 	public static class sa2MDL
 	{
-		public static void Split(bool? isBigEndian, string filePath, string outputFolder, string[] animationPaths)
+		public static void Split(string filePath, string outputFolder, string[] animationPaths, string mdllabelfile = null, string mtnlabelfile = null)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -22,31 +23,22 @@ namespace SplitTools.SAArc
 				mdlfilename = Path.GetFullPath(mdlfilename);
 
 				// load model file
-				byte[] mdlfile = File.ReadAllBytes(mdlfilename);
+				byte[] mdlfile;
 				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					mdlfile = FraGag.Compression.Prs.Decompress(mdlfile);
-				switch (isBigEndian)
+					mdlfile = FraGag.Compression.Prs.Decompress(mdlfilename);
+				else
+					mdlfile = File.ReadAllBytes(mdlfilename);
+				ByteConverter.BigEndian = false;
+				int addr = 0;
+				ushort ile = ByteConverter.ToUInt16(mdlfile, 0);
+				if (ile == 0)
 				{
-					case true:
-						ByteConverter.BigEndian = true;
-						break;
-					case false:
-						ByteConverter.BigEndian = false;
-						break;
-					case null:
-						ByteConverter.BigEndian = false;
-						int addr = 0;
-						short ile = ByteConverter.ToInt16(mdlfile, 0);
-						if (ile == 0)
-						{
-							ile = ByteConverter.ToInt16(mdlfile, 8);
-							addr = 8;
-						}
-						ByteConverter.BigEndian = true;
-						if (ile < ByteConverter.ToInt16(mdlfile, addr))
-							ByteConverter.BigEndian = false;
-						break;
+					ile = ByteConverter.ToUInt16(mdlfile, 8);
+					addr = 8;
 				}
+				ByteConverter.BigEndian = true;
+				if (ile < ByteConverter.ToUInt16(mdlfile, addr))
+					ByteConverter.BigEndian = false;
 				Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				(string filename, byte[] data)[] animfiles = new (string, byte[])[animationPaths.Length];
 				for (int j = 0; j < animationPaths.Length; j++)
@@ -64,6 +56,26 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(mdlfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(mdlfilename));
+
+				// mdl labels
+				Dictionary<int, string> mdlsectionlist = new Dictionary<int, string>();
+				Dictionary<int, string> mdlsplitfilenames = new Dictionary<int, string>();
+				if (mdllabelfile != null) mdllabelfile = Path.GetFullPath(mdllabelfile);
+				if (File.Exists(mdllabelfile))
+				{
+					mdlsplitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(mdllabelfile);
+				}
+				string[] mdlmetadata = new string[0];
+
+				// mtn labels
+				Dictionary<int, string> mtnsectionlist = new Dictionary<int, string>();
+				Dictionary<int, string> mtnsplitfilenames = new Dictionary<int, string>();
+				if (mtnlabelfile != null) mtnlabelfile = Path.GetFullPath(mtnlabelfile);
+				if (File.Exists(mtnlabelfile))
+				{
+					mtnsplitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(mtnlabelfile);
+				}
+				string[] mtnmetadata = new string[0];
 
 				// getting model pointers
 				int address = 0;
@@ -97,6 +109,7 @@ namespace SplitTools.SAArc
 				// load animations
 				Dictionary<int, string> animfns = new Dictionary<int, string>();
 				Dictionary<int, NJS_MOTION> anims = new Dictionary<int, NJS_MOTION>();
+				string animmeta = null;
 				foreach ((string anifilename, byte[] anifile) in animfiles)
 				{
 					Dictionary<int, int> processedanims = new Dictionary<int, int>();
@@ -106,11 +119,24 @@ namespace SplitTools.SAArc
 					i = ByteConverter.ToInt16(anifile, address);
 					while (i != -1)
 					{
+						if (mtnlabelfile != null)
+						{
+							mtnmetadata = mtnsplitfilenames[i].Split('|'); // Filename|Description
+							string outFilename = mtnmetadata[0];
+							if (!mtnmetadata[0].StartsWith("NO FILE"))
+							{
+								animmeta = mtnmetadata[1];
+								mtnsectionlist[i] = outFilename + "|" + animmeta;
+							}
+							else
+								mtnsectionlist[i] = "NULL";
+						}
 						int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
 						if (!processedanims.ContainsKey(aniaddr))
 						{
 							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
 							animfns[i] = Path.Combine(anifilename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
+							anims[i].Description = animmeta;
 							anims[i].Save(animfns[i]);
 							processedanims[aniaddr] = i;
 						}
@@ -120,22 +146,49 @@ namespace SplitTools.SAArc
 					}
 					IniSerializer.Serialize(ini, Path.Combine(anifilename, anifilename + ".ini"));
 				}
-
 				// save output model files
 				foreach (KeyValuePair<int, NJS_OBJECT> model in models)
 				{
 					List<string> animlist = new List<string>();
 					foreach (KeyValuePair<int, NJS_MOTION> anim in anims)
+					{
 						if (model.Value.CountAnimated() == anim.Value.ModelParts)
 						{
 							string rel = animfns[anim.Key].Replace(outputFolder, string.Empty);
 							if (rel.Length > 1 && rel[1] != ':') rel = "../" + rel;
 							animlist.Add(rel);
 						}
-
+					}
+					// Model Labels
+					if (mdllabelfile != null)
+					{
+						mdlmetadata = mdlsplitfilenames[model.Key].Split('|'); // Filename|Description|Texture file
+						string outFilename = mdlmetadata[0];
+						if (mdlsplitfilenames[model.Key] == "NULL")
+							mdlsectionlist.Add(model.Key, "NULL");
+						string outResult = outFilename;
+						if (mdlmetadata.Length > 1)
+							outResult += ("|" + mdlmetadata[1]);
+						if (mdlmetadata.Length > 2)
+							outResult += ("|" + mdlmetadata[2]);
+						mdlsectionlist.Add(model.Key, outResult);
+					}
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
 						null, null, null, ModelFormat.Chunk);
+				}
+
+				// labels for SAMDL Project Mode
+				if (mdllabelfile != null)
+				{
+					string mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdllabelfile) + "_data.ini";
+					IniSerializer.Serialize(mdlsectionlist, Path.Combine(outputFolder, mdlsectionListFilename));
+				}
+
+				if (mtnlabelfile != null)
+				{
+					string mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnlabelfile) + "_data.ini";
+					IniSerializer.Serialize(mtnsectionlist, Path.Combine(outputFolder, mtnsectionListFilename));
 				}
 
 				// save ini file

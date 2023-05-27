@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <GameInfo gameName="SA2GC" dataFolder="GC_SA2B" gameDataFolderName="files" checkFile="sys/main.dol" checkHashes="efb19690749bcb262ed468ceafcb3e5b" />
+  <GameInfo gameName="SA2GC" projectType="SA2GC" dataFolder="GC_SA2B" gameDataFolderName="files" checkFile="sys/main.dol" checkHashes="efb19690749bcb262ed468ceafcb3e5b" />
   <SplitEntry SourceFile="sys/main.dol" IniFile="boot" CmnName="Common Objects and Character Data (main.dol)" />
   <SplitEntry SourceFile="files/advertiseD.rel" IniFile="advertiseD" CmnName="Menus, Splash Screens, and GUI Elements" />
   <SplitEntry SourceFile="files/CartD.rel" IniFile="CartD" CmnName="Kart Racing" />
@@ -92,96 +92,88 @@
   <SplitEntry SourceFile="files/ChaoStgRaceHero.prs" IniFile="ChaoStgRaceHero" CmnName="Hero Chao Race" />
   <SplitEntry SourceFile="files/ChaoStgRaceNeut.prs" IniFile="ChaoStgRaceNeut" CmnName="Normal Chao Race" />
   <SplitEntry SourceFile="files/ChaoStgStadium.prs" IniFile="ChaoStgStadium" CmnName="Chao Stadium" />
-  <SplitEntryMDL BigEndian="true" ModelFile="files/amymdl.prs" CmnName="Amy Model Data">
+  <SplitEntryMDL ModelFile="files/sonicmdl.prs" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>amymtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/bknuckmdl.prs" CmnName="Knuckles' Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="files/teriosmdl.prs" LabelFile="TERIOSMDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>teriosmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/knuckmdl.prs" LabelFile="KNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>knuckmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/brougemdl.prs" CmnName="Rouge's Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="files/rougemdl.prs" LabelFile="ROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>rougemtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/chaos0mdl.prs" CmnName="Chaos Zero Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>chaos0mtn.prs</MotionFile>
+  <SplitEntryMDL ModelFile="files/twalkmdl.prs" LabelFile="TWALKMDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails Model Data">
+    <MotionFile>twalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/cwalkmdl.prs" CmnName="Chao Walker Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>cwalkmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/dwalkmdl.prs" CmnName="Dark Chao Walker Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>dwalkmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/eggmdl.prs" CmnName="Eggman Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>eggmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/ewalk1mdl.prs" CmnName="Mech Eggman's Army Camo Costume Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
+  <SplitEntryMDL ModelFile="files/ewalkmdl.prs" LabelFile="EWALKMDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman Model Data">
     <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/ewalk2mdl.prs" CmnName="Mech Eggman's Dark Tank Costume Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>ewalkmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/ewalkmdl.prs" CmnName="Mech Eggman Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>ewalkmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/knuckmdl.prs" CmnName="Knuckles Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>knuckmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/metalsonicmdl.prs" CmnName="Metal Sonic Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>metalsonicmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/milesmdl.prs" CmnName="Tails Model Data">
+  <SplitEntryMDL ModelFile="files/milesmdl.prs" LabelFile="MILESMDL" MTNLabelFile="MILESMTN" CmnName="Tails Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>milesmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/rougemdl.prs" CmnName="Rouge Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>rougemtn.prs</MotionFile>
+  <SplitEntryMDL ModelFile="files/eggmdl.prs" LabelFile="EGGMDL" MTNLabelFile="EGGMTN" CmnName="Eggman Model Data">
+    <MotionFile>eggmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/shadow1mdl.prs" CmnName="Shadow's Alternate Costume Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>teriosmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/sonic1mdl.prs" CmnName="Sonic's Alternate Costume Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>sonicmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/sonicmdl.prs" CmnName="Sonic Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>sonicmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/sshadowmdl.prs" CmnName="Super Shadow Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>sshadowmtn.prs</MotionFile>
-  </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/ssonicmdl.prs" CmnName="Super Sonic Model Data">
+  <SplitEntryMDL ModelFile="files/ssonicmdl.prs" LabelFile="SSONICMDL" MTNLabelFile="SSONICMTN" CmnName="Super Sonic Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>ssonicmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/teriosmdl.prs" CmnName="Shadow Model Data">
+  <SplitEntryMDL ModelFile="files/sshadowmdl.prs" LabelFile="SSHADOWMDL" MTNLabelFile="SSHADOWMTN" CmnName="Super Shadow Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>teriosmtn.prs</MotionFile>
+    <MotionFile>sshadowmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/ticalmdl.prs" CmnName="Tikal Model Data">
+  <SplitEntryMDL ModelFile="files/amymdl.prs" LabelFile="AMYMDL" MTNLabelFile="AMYMTN" CmnName="Amy Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>amymtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/metalsonicmdl.prs" LabelFile="METALSONICMDL" MTNLabelFile="METALSONICMTN" CmnName="Metal Sonic Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>metalsonicmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/ticalmdl.prs" LabelFile="TICALMDL" MTNLabelFile="TICALMTN" CmnName="Tikal Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
     <MotionFile>ticalmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/twalk1mdl.prs" CmnName="Mech Tails' Alternate Costume Model Data">
+  <SplitEntryMDL ModelFile="files/chaos0mdl.prs" LabelFile="CHAOS0MDL" MTNLabelFile="CHAOS0MTN" CmnName="Chaos Zero Model Data">
     <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>chaos0mtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/cwalkmdl.prs" LabelFile="CWALKMDL" MTNLabelFile="CWALKMTN" CmnName="Chao Walker Model Data">
+    <MotionFile>cwalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/dwalkmdl.prs" LabelFile="DWALKMDL" MTNLabelFile="DWALKMTN" CmnName="Dark Chao Walker Model Data">
+    <MotionFile>dwalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/sonic1mdl.prs" LabelFile="SONIC1MDL" MTNLabelFile="SONICMTN" CmnName="Sonic's Alternate Costume Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>sonicmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/shadow1mdl.prs" LabelFile="SHADOW1MDL" MTNLabelFile="TERIOSMTN" CmnName="Shadow's Alternate Costume Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>teriosmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/bknuckmdl.prs" LabelFile="BKNUCKMDL" MTNLabelFile="KNUCKMTN" CmnName="Knuckles' Alternate Costume Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>knuckmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/brougemdl.prs" LabelFile="BROUGEMDL" MTNLabelFile="ROUGEMTN" CmnName="Rouge's Alternate Costume Model Data">
+    <MotionFile>plcommtn.prs</MotionFile>
+    <MotionFile>rougemtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/twalk1mdl.prs" LabelFile="TWALK1MDL" MTNLabelFile="TWALKMTN" CmnName="Mech Tails' Alternate Costume Model Data">
     <MotionFile>twalkmtn.prs</MotionFile>
   </SplitEntryMDL>
-  <SplitEntryMDL BigEndian="true" ModelFile="files/twalkmdl.prs" CmnName="Mech Tails Model Data">
-    <MotionFile>plcommtn.prs</MotionFile>
-    <MotionFile>twalkmtn.prs</MotionFile>
+  <SplitEntryMDL ModelFile="files/ewalk1mdl.prs" LabelFile="EWALK1MDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman's Army Camo Costume Model Data">
+    <MotionFile>ewalkmtn.prs</MotionFile>
+  </SplitEntryMDL>
+  <SplitEntryMDL ModelFile="files/ewalk2mdl.prs" LabelFile="EWALK2MDL" MTNLabelFile="EWALKMTN" CmnName="Mech Eggman's Dark Tank Costume Model Data">
+    <MotionFile>ewalkmtn.prs</MotionFile>
   </SplitEntryMDL>
 </SplitTemplate>

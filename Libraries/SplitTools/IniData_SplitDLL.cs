@@ -133,11 +133,14 @@ namespace SplitTools.SplitDLL
 	{
 		public string Type { get; set; }
 		public string Hash { get; set; }
+		public string Name { get; set; }
 
-		public FileTypeHash(string type, string hash)
+
+		public FileTypeHash(string type, string hash, string name)
 		{
 			Type = type;
 			Hash = hash;
+			Name = name;
 		}
 
 		public FileTypeHash(string data)
@@ -145,11 +148,12 @@ namespace SplitTools.SplitDLL
 			string[] split = data.Split('|');
 			Type = split[0];
 			Hash = split[1];
+			Name = split[2];
 		}
 
 		public override string ToString()
 		{
-			return Type + "|" + Hash;
+			return Type + "|" + Hash + "|" + Name;
 		}
 	}
 
@@ -354,5 +358,7 @@ namespace SplitTools.SplitDLL
 		public string MD5Hash { get; set; }
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, string> CustomProperties { get; set; }
+		[IniName("meta")]
+		public string Metadata { get; set; }
 	}
 }
