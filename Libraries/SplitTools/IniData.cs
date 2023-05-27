@@ -4830,7 +4830,7 @@ namespace SplitTools
 	public class MotionTableEntry
 	{
 		public string Motion { get; set; }
-		[TypeConverter(typeof(UInt32HexConverter))]
+		[TypeConverter(typeof(UInt16HexConverter))]
 		public ushort LoopProperty { get; set; }
 		public ushort? Flag1 { get { return null; } set { if (value.HasValue) LoopProperty = value.Value; } }
 		public ushort Pose { get; set; }
