@@ -246,6 +246,18 @@ namespace SplitTools.SplitDLL
 									}
 									ModelAnimations mdla = new ModelAnimations(data.Filename, name, mdl, modelfmt_obj, meta);
 									string[] mdlanis = new string[0];
+									string[] mdlanisfromfolder = new string[0];
+									if (data.CustomProperties.ContainsKey("animationfolder"))
+									{
+										string folname = Directory.GetParent(fileOutputPath).ToString();
+										mdlanisfromfolder = Directory.GetFiles(Path.Combine(folname, data.CustomProperties["animationfolder"]), "*.saanim", SearchOption.TopDirectoryOnly);
+										if (mdlanisfromfolder.Length > 0)
+										{
+											for (int s = 0; s < mdlanisfromfolder.Length; s++)
+												mdlanisfromfolder[s] = Path.Combine(data.CustomProperties["animationfolder"], Path.GetFileName(mdlanisfromfolder[s]));
+											mdla.Animations.AddRange(mdlanisfromfolder.ToList());
+										}
+									}
 									if (data.CustomProperties.ContainsKey("animations"))
 									{
 										mdlanis = data.CustomProperties["animations"].Split(',');
@@ -426,15 +438,34 @@ namespace SplitTools.SplitDLL
 										// Animation assignments
 										ModelAnimations mdla = new ModelAnimations(fn, idx, mdl, modelfmt_arr, meta);
 										string[] mdlanis = new string[0];
+										string[] mdlanisfromfolder = new string[0];
+										string[] mdlanisfromfolderc = new string[0];
+										if (data.CustomProperties.ContainsKey("animationfolder"))
+										{
+											string folname = Directory.GetParent(fileOutputPath).ToString();
+											mdlanisfromfolder = Directory.GetFiles(Path.Combine(folname, data.CustomProperties["animationfolder"]), "*.saanim", SearchOption.TopDirectoryOnly);
+											if (mdlanisfromfolder.Length > 0)
+											{
+												for (int s = 0; s < mdlanisfromfolder.Length; s++)
+													mdlanisfromfolder[s] = Path.Combine(data.CustomProperties["animationfolder"], Path.GetFileName(mdlanisfromfolder[s]));
+												mdla.Animations.AddRange(mdlanisfromfolder.ToList());
+											}
+										}
+										// Custom animation folder setting for SA2 Chao motions
+										if (data.CustomProperties.ContainsKey("animationfolderc"))
+										{
+											string cname = Directory.GetParent(Directory.GetParent(fileOutputPath).ToString()).ToString();
+											mdlanisfromfolderc = Directory.GetFiles(Path.Combine(cname, data.CustomProperties["animationfolderc"]), "*.saanim", SearchOption.TopDirectoryOnly);
+											if (mdlanisfromfolderc.Length > 0)
+											{
+												for (int s = 0; s < mdlanisfromfolderc.Length; s++)
+													mdlanisfromfolderc[s] = Path.Combine(@"..\" + data.CustomProperties["animationfolderc"], Path.GetFileName(mdlanisfromfolderc[s]));
+												mdla.Animations.AddRange(mdlanisfromfolderc.ToList());
+											}
+										}
 										if (data.CustomProperties.ContainsKey("animations" + i.ToString()))
 										{
 											mdlanis = data.CustomProperties["animations" + i.ToString()].Split(',');
-											if (mdlanis.Length > 0)
-												mdla.Animations.AddRange(mdlanis.ToList());
-										}
-										if (data.CustomProperties.ContainsKey("animations"))
-										{
-											mdlanis = data.CustomProperties["animations"].Split(',');
 											if (mdlanis.Length > 0)
 												mdla.Animations.AddRange(mdlanis.ToList());
 										}
