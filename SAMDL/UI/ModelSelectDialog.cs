@@ -3,6 +3,7 @@ using SplitTools;
 using SplitTools.SplitDLL;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using static SAModel.SAEditorCommon.ProjectManagement.Templates;
@@ -382,6 +383,19 @@ namespace SAModel.SAMDL
 									case "gcmodel":
 										Models.Add(new ModelLoadInfo(item.Key, item.Value, modFolder));
 										break;
+									case "modelarray":
+									case "attacharray":
+									case "basicmodelarray":
+									case "basicattacharray":
+									case "basicdxmodelarray":
+									case "basicdxattacharray":
+									case "chunkmodelarray":
+									case "chunkattacharray":
+									case "gcmodelarray":
+									case "gcattacharray":
+										for (int i = 0; i < item.Value.Length; i++)
+											Models.Add(new ModelLoadInfo(item.Key + " " + (i + 1), item.Value, item.Value.Length, modFolder)); 
+										break;
 									default:
 										break;
 								}
@@ -606,6 +620,70 @@ namespace SAModel.SAMDL
 			{
 				string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
 				TextureNames = NJS_TEXLIST.Load(texnamefile);
+			}
+		}
+		// Used for model arrays in binary split operations
+		public ModelLoadInfo(string name, SplitTools.FileInfo split, int length, string modFolder)
+		{
+			string modelext_arr;
+			string modelext_def = ".sa1mdl";
+			switch (split.Type)
+			{
+				case "basicmodelarray":
+				case "basicattacharray":
+				case "basicdxmodelarray":
+				case "basicdxattacharray":
+					modelext_arr = ".sa1mdl";
+					break;
+				case "chunkmodelarray":
+				case "chunkattacharray":
+					modelext_arr = ".sa2mdl";
+					break;
+				case "gcmodelarray":
+				case "gcattacharray":
+					modelext_arr = ".sa2bmdl";
+					break;
+				case "modelarray":
+				case "attacharray":
+				default:
+					modelext_arr = modelext_def;
+					break;
+			}
+			length = split.Length;
+			for (int m = 0; m < length; m++)
+			{
+				ModelName = name;
+				ModelFilePath = Path.Combine(split.Filename, m.ToString("D3", NumberFormatInfo.InvariantInfo) + modelext_arr);
+				if (split.CustomProperties.ContainsKey("filename" + m.ToString()))
+				{
+					ModelName = split.CustomProperties["filename" + m.ToString()];
+					ModelFilePath = Path.GetFileName(Path.Combine(split.Filename, split.CustomProperties["filename" + m.ToString()]));
+				}
+				if (split.CustomProperties.ContainsKey("texture"))
+					TextureArchives = split.CustomProperties["texture"].Split(',');
+				if (split.CustomProperties.ContainsKey("texturepalette"))
+					TexturePalettePath = split.CustomProperties["texturepalette"];
+				if (split.CustomProperties.ContainsKey("texids"))
+				{
+					string[] texids_s = split.CustomProperties["texids"].Split(',');
+					List<int> texid_list = new List<int>();
+					for (int i = 0; i < texids_s.Length; i++)
+						texid_list.Add(int.Parse(texids_s[i], System.Globalization.NumberStyles.Integer));
+					TextureIDs = texid_list.ToArray();
+				}
+				else if (split.CustomProperties.ContainsKey("texnames"))
+				{
+					string texnamefile = Path.Combine(modFolder, split.CustomProperties["texnames"]);
+					TextureNames = NJS_TEXLIST.Load(texnamefile);
+				}
+				else if (split.CustomProperties.ContainsKey("texlistfolder"))
+				{
+					string texnamefolder = Path.Combine(modFolder, split.CustomProperties["texlistfolder"]);
+					if (split.CustomProperties.ContainsKey("texlistname" + m.ToString()))
+						TextureNames = NJS_TEXLIST.Load(Path.Combine(texnamefolder, split.CustomProperties["texlistname" + m.ToString()] + ".satex"));
+					else
+					TextureNames = NJS_TEXLIST.Load(Path.Combine(texnamefolder, m.ToString("D3", NumberFormatInfo.InvariantInfo) + ".satex"));
+				}
 			}
 		}
 
