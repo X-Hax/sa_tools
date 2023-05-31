@@ -637,7 +637,7 @@ namespace SAModel.SALVL
 		public void Set_SADXOptionsVisible(Boolean flag)
 		{
 			lightsEditorToolStripMenuItem.Visible = flag;
-            fogEditorToolStripMenuItem.Visible = flag;
+			fogEditorToolStripMenuItem.Visible = flag;
 
 			//char icon / menu
 			characterToolStripMenuItem.Visible = flag;
@@ -876,7 +876,7 @@ namespace SAModel.SALVL
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo == null) 
+			if (transformGizmo == null)
 				transformGizmo = new TransformGizmo();
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			SetGizmoPivotAndLocality(true);
@@ -1946,7 +1946,7 @@ namespace SAModel.SALVL
 					if (ext == ".sa2lvl" || ext == ".sa2blvl")
 					{
 						Set_SADXOptionsVisible(false);
-					} 
+					}
 					else
 					{
 						Set_SADXOptionsVisible(true);
