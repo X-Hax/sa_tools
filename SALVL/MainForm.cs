@@ -2426,5 +2426,10 @@ namespace SAModel.SALVL
 				if (sfd.ShowDialog() == DialogResult.OK)
 					new LabelLANDTABLE(LevelData.geo).Save(sfd.FileName);
 		}
+
+		private void addLevelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportLevelAnimation();
+		}
 	}
 }

@@ -612,7 +612,7 @@
 			// 
 			addLevelPieceToolStripMenuItem.Image = Properties.Resources.levelitem;
 			addLevelPieceToolStripMenuItem.Name = "addLevelPieceToolStripMenuItem";
-			addLevelPieceToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+			addLevelPieceToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			addLevelPieceToolStripMenuItem.Text = "Level Piece";
 			addLevelPieceToolStripMenuItem.Click += levelPieceToolStripMenuItem_Click;
 			// 
@@ -620,14 +620,15 @@
 			// 
 			addLevelAnimationToolStripMenuItem.Image = Properties.Resources.geoanim;
 			addLevelAnimationToolStripMenuItem.Name = "addLevelAnimationToolStripMenuItem";
-			addLevelAnimationToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+			addLevelAnimationToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			addLevelAnimationToolStripMenuItem.Text = "Level Animation";
+			addLevelAnimationToolStripMenuItem.Click += addLevelAnimationToolStripMenuItem_Click;
 			// 
 			// addSETItemToolStripMenuItem
 			// 
 			addSETItemToolStripMenuItem.Image = Properties.Resources.set;
 			addSETItemToolStripMenuItem.Name = "addSETItemToolStripMenuItem";
-			addSETItemToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+			addSETItemToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			addSETItemToolStripMenuItem.Text = "SET Item";
 			addSETItemToolStripMenuItem.Click += objectToolStripMenuItem_Click;
 			// 
@@ -635,7 +636,7 @@
 			// 
 			addCAMItemToolStripMenuItem.Image = Properties.Resources.cam;
 			addCAMItemToolStripMenuItem.Name = "addCAMItemToolStripMenuItem";
-			addCAMItemToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+			addCAMItemToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			addCAMItemToolStripMenuItem.Text = "CAM Item";
 			addCAMItemToolStripMenuItem.Click += cameraToolStripMenuItem_Click;
 			// 
@@ -643,7 +644,7 @@
 			// 
 			addMissionItemToolStripMenuItem.Image = Properties.Resources.mis;
 			addMissionItemToolStripMenuItem.Name = "addMissionItemToolStripMenuItem";
-			addMissionItemToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+			addMissionItemToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			addMissionItemToolStripMenuItem.Text = "Mission Item";
 			addMissionItemToolStripMenuItem.Click += missionObjectToolStripMenuItem_Click;
 			// 
@@ -651,7 +652,7 @@
 			// 
 			addDeathZoneToolStripMenuItem.Image = Properties.Resources.deathzone;
 			addDeathZoneToolStripMenuItem.Name = "addDeathZoneToolStripMenuItem";
-			addDeathZoneToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+			addDeathZoneToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			addDeathZoneToolStripMenuItem.Text = "Death Zone";
 			addDeathZoneToolStripMenuItem.Click += deathZoneToolStripMenuItem_Click;
 			// 
@@ -1350,7 +1351,7 @@
 			RenderPanel.Location = new System.Drawing.Point(0, 0);
 			RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			RenderPanel.Name = "RenderPanel";
-			RenderPanel.Size = new System.Drawing.Size(762, 331);
+			RenderPanel.Size = new System.Drawing.Size(762, 330);
 			RenderPanel.TabIndex = 1;
 			RenderPanel.SizeChanged += RenderPanel_SizeChanged;
 			RenderPanel.DragDrop += RenderPanel_DragDrop;
@@ -1500,7 +1501,7 @@
 			// 
 			PropertiesSplitter.Panel2.Controls.Add(propertyGrid1);
 			PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
-			PropertiesSplitter.SplitterDistance = 963;
+			PropertiesSplitter.SplitterDistance = 962;
 			PropertiesSplitter.SplitterWidth = 5;
 			PropertiesSplitter.TabIndex = 2;
 			// 
@@ -1520,8 +1521,8 @@
 			// LibrarySplitter.Panel2
 			// 
 			LibrarySplitter.Panel2.Controls.Add(libraryTabControl);
-			LibrarySplitter.Size = new System.Drawing.Size(959, 635);
-			LibrarySplitter.SplitterDistance = 331;
+			LibrarySplitter.Size = new System.Drawing.Size(958, 635);
+			LibrarySplitter.SplitterDistance = 330;
 			LibrarySplitter.SplitterWidth = 5;
 			LibrarySplitter.TabIndex = 3;
 			// 
@@ -1539,8 +1540,8 @@
 			// ItemsSplitter.Panel2
 			// 
 			ItemsSplitter.Panel2.Controls.Add(RenderPanel);
-			ItemsSplitter.Size = new System.Drawing.Size(959, 331);
-			ItemsSplitter.SplitterDistance = 192;
+			ItemsSplitter.Size = new System.Drawing.Size(958, 330);
+			ItemsSplitter.SplitterDistance = 191;
 			ItemsSplitter.SplitterWidth = 5;
 			ItemsSplitter.TabIndex = 0;
 			// 
@@ -1550,7 +1551,7 @@
 			sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
 			sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
 			sceneGraphControl1.Name = "sceneGraphControl1";
-			sceneGraphControl1.Size = new System.Drawing.Size(192, 331);
+			sceneGraphControl1.Size = new System.Drawing.Size(191, 330);
 			sceneGraphControl1.TabIndex = 0;
 			// 
 			// libraryTabControl
@@ -1562,7 +1563,7 @@
 			libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			libraryTabControl.Name = "libraryTabControl";
 			libraryTabControl.SelectedIndex = 0;
-			libraryTabControl.Size = new System.Drawing.Size(959, 299);
+			libraryTabControl.Size = new System.Drawing.Size(958, 300);
 			libraryTabControl.TabIndex = 0;
 			// 
 			// modelLibraryPage
@@ -1572,7 +1573,7 @@
 			modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			modelLibraryPage.Name = "modelLibraryPage";
 			modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			modelLibraryPage.Size = new System.Drawing.Size(951, 271);
+			modelLibraryPage.Size = new System.Drawing.Size(950, 272);
 			modelLibraryPage.TabIndex = 1;
 			modelLibraryPage.Text = "Model Library";
 			modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1584,7 +1585,7 @@
 			modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
 			modelLibraryControl1.Name = "modelLibraryControl1";
 			modelLibraryControl1.SelectedModel = null;
-			modelLibraryControl1.Size = new System.Drawing.Size(943, 265);
+			modelLibraryControl1.Size = new System.Drawing.Size(942, 266);
 			modelLibraryControl1.TabIndex = 0;
 			// 
 			// setLibraryPage
@@ -1593,7 +1594,7 @@
 			setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			setLibraryPage.Name = "setLibraryPage";
 			setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			setLibraryPage.Size = new System.Drawing.Size(952, 270);
+			setLibraryPage.Size = new System.Drawing.Size(951, 271);
 			setLibraryPage.TabIndex = 0;
 			setLibraryPage.Text = "SET Library";
 			setLibraryPage.UseVisualStyleBackColor = true;
@@ -1609,7 +1610,7 @@
 			propertyGrid1.Location = new System.Drawing.Point(0, 0);
 			propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
 			propertyGrid1.Name = "propertyGrid1";
-			propertyGrid1.Size = new System.Drawing.Size(359, 635);
+			propertyGrid1.Size = new System.Drawing.Size(360, 635);
 			propertyGrid1.TabIndex = 13;
 			propertyGrid1.ToolbarVisible = false;
 			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
