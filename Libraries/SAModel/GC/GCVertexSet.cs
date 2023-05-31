@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace SAModel.GC
 {
@@ -69,12 +70,14 @@ namespace SAModel.GC
 		/// <summary>
 		/// The vertex data
 		/// </summary>
-		public readonly List<IOVtx> data;
+		public List<IOVtx> data;
 
 		/// <summary>
-		/// The address of the vertex attribute (gets set after writing
+		/// The address of the vertex attribute (gets set after writing)
 		/// </summary>
 		private uint dataAddress;
+
+		public string DataName { get; set; }
 
 		/// <summary>
 		/// Creates a new empty vertex attribute using the default struct setups
@@ -124,13 +127,18 @@ namespace SAModel.GC
 			data = new List<IOVtx>();
 		}
 
+		public GCVertexSet(byte[] file, uint address, uint imageBase)
+		: this(file, address, imageBase, new Dictionary<int, string>())
+		{
+		}
+
 		/// <summary>
 		/// Read an entire vertex data set
 		/// </summary>
 		/// <param name="file">The files contents</param>
 		/// <param name="address">The starting address of the file</param>
 		/// <param name="imageBase">The image base of the addresses</param>
-		public GCVertexSet(byte[] file, uint address, uint imageBase)
+		public GCVertexSet(byte[] file, uint address, uint imageBase, Dictionary<int, string> labels)
 		{
 			attribute = (GCVertexAttribute)file[address];
 			if (attribute == GCVertexAttribute.Null) return;
@@ -152,7 +160,21 @@ namespace SAModel.GC
 			switch (attribute)
 			{
 				case GCVertexAttribute.Position:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "position_" + tmpaddr.ToString("X8");
+					for (int i = 0; i < count; i++)
+					{
+						data.Add(new Vector3(file, tmpaddr));
+						tmpaddr += 12;
+					}
+					break;
 				case GCVertexAttribute.Normal:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "normal_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Vector3(file, tmpaddr));
@@ -160,12 +182,20 @@ namespace SAModel.GC
 					}
 					break;
 				case GCVertexAttribute.Color0:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "vcolor_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Color(file, tmpaddr, dataType, out tmpaddr));
 					}
 					break;
 				case GCVertexAttribute.Tex0:
+					if (labels.ContainsKey(tmpaddr))
+						DataName = labels[tmpaddr];
+					else
+						DataName = "uv_" + tmpaddr.ToString("X8");
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new UV(file, tmpaddr));
@@ -216,6 +246,111 @@ namespace SAModel.GC
 			writer.Write((uint)(data.Count * StructSize));
 
 			dataAddress = 0;
+		}
+
+		public byte[] GetBytes(uint dataAddress)
+		{
+			List<byte> result = new List<byte>();
+			result.Add((byte)attribute);
+			result.Add((byte)StructSize);
+			result.AddRange(ByteConverter.GetBytes((ushort)data.Count));
+			uint structure = (uint)structType;
+			structure |= (uint)((byte)dataType << 4);
+			result.AddRange(ByteConverter.GetBytes(structure));
+			result.AddRange(ByteConverter.GetBytes(dataAddress));
+			result.AddRange(ByteConverter.GetBytes((uint)(data.Count * StructSize)));
+			return result.ToArray();
+		}
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append((byte)attribute);
+			result.Append(", ");
+			result.Append(StructSize);
+			result.Append(", ");
+			result.Append(data.Count);
+			result.Append(", ");
+			uint structure = (uint)structType;
+			structure |= (uint)((byte)dataType << 4);
+			result.Append(structure);
+			result.Append(", ");
+			result.Append(data != null ? DataName : "NULL");
+			result.Append(", ");
+			result.Append((uint)(data.Count * StructSize));
+			result.Append(" }");
+			return result.ToString();
+		}
+
+		//WIP
+		public void ToNJA(TextWriter writer)
+		{
+			string verttype = null;
+			string verttype2 = null;
+			switch (attribute)
+			{
+				case GCVertexAttribute.Position:
+					verttype = "POINT";
+					verttype2 = "POSITION   ";
+					break;
+				case GCVertexAttribute.Normal:
+					verttype = "NORMAL";
+					verttype2 = "NORMAL     ";
+					break;
+				case GCVertexAttribute.Color0:
+					verttype = "COLOR";
+					verttype2 = "COLOR0     ";
+					break;
+				case GCVertexAttribute.Tex0:
+					verttype = "UV";
+					verttype2 = "TEX0       ";
+					break;
+			}
+			writer.WriteLine($"{verttype2}" + DataName + "[]");
+			writer.WriteLine("START");
+			foreach (IOVtx vtx in data)
+			{
+				vtx.ToNJA(writer, verttype);
+			}
+			writer.WriteLine("END" + Environment.NewLine);
+		}
+		public void RefToNJA(TextWriter writer)
+		{
+			string verttype = null;
+			switch (attribute)
+			{
+				case GCVertexAttribute.Position:
+					verttype = "POSITION";
+					break;
+				case GCVertexAttribute.Normal:
+					verttype = "NORMAL";
+					break;
+				case GCVertexAttribute.Color0:
+					verttype = "COLOR0";
+					break;
+				case GCVertexAttribute.Tex0:
+					verttype = "TEX0";
+					break;
+			}
+			writer.WriteLine("\tVertAttr     " + $"{verttype}" + ",");
+			writer.WriteLine("\tElementSize  " + StructSize + ",");
+			writer.WriteLine("\tPoints       " + data.Count + ",");
+			writer.WriteLine("\tType         " + "( " + structType + ", " + dataType + " ),");
+			writer.WriteLine("\tName         " + DataName + ",");
+			writer.WriteLine("\tCheckSize    " + (data.Count * StructSize) + "," + Environment.NewLine);
+		}
+
+		public GCVertexSet Clone()
+		{
+			GCVertexSet result = (GCVertexSet)MemberwiseClone();
+			//result.data = new List<IOVtx>(data.Count);
+			//foreach (IOVtx item in data)
+				//result.data.Add(item.Clone());
+			//result.Normals = new List<Vector3>(Normals.Count);
+			//foreach (Vector3 item in Normals)
+			//	result.Normals.Add(item.Clone());
+			//result.Colors = new List<Color>(Colors);
+			//result.UVs = new List<UV>(UVs);
+			return result;
 		}
 	}
 }

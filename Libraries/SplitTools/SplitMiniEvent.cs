@@ -15,7 +15,7 @@ namespace SplitTools.SAArc
 		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
 		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
 
-		public static void Split(string filename, string outputPath)
+		public static void Split(string filename, string outputPath, string labelFile = null)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
@@ -45,6 +45,19 @@ namespace SplitTools.SAArc
 				else
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
+				// Metadata for SAMDL Project Mode
+				byte[] mlength = null;
+				Dictionary<string, string> evsectionlist = new Dictionary<string, string>();
+				Dictionary<string, string> evsplitfilenames = new Dictionary<string, string>();
+				if (labelFile != null) labelFile = Path.GetFullPath(labelFile);
+				if (File.Exists(labelFile))
+				{
+					evsplitfilenames = IniSerializer.Deserialize<Dictionary<string, string>>(labelFile);
+					mlength = File.ReadAllBytes(labelFile);
+				}
+				string evname = Path.GetFileNameWithoutExtension(evfilename);
+				string[] evmetadata = new string[0];
+
 				uint key;
 				List<NJS_MOTION> motions = null;
 				List<NJS_CAMERA> ncams = null;
@@ -70,31 +83,40 @@ namespace SplitTools.SAArc
 					address = 8 + (4 * i);
 					int ptr = fc.GetPointer(address, key);
 					string chnm = null;
+					string texname = null;
 					switch (i)
 					{
 						case 0:
 							chnm = "Sonic";
+							texname = "SONICTEX";
 							break;
 						case 1:
 							chnm = "Shadow";
+							texname = "TERIOSTEX";
 							break;
 						case 2:
 							chnm = "Tails";
+							texname = "MILESTEX";
 							break;
 						case 3:
 							chnm = "Eggman";
+							texname = "EGGTEX";
 							break;
 						case 4:
 							chnm = "Knuckles";
+							texname = "KNUCKTEX";
 							break;
 						case 5:
 							chnm = "Rouge";
+							texname = "ROUGETEX";
 							break;
 						case 6:
 							chnm = "Mech Tails";
+							texname = "TWALKTEX";
 							break;
 						case 7:
 							chnm = "Mech Eggman";
+							texname = "EWALKTEX";
 							break;
 					}
 					if (ptr != 0)
@@ -112,37 +134,42 @@ namespace SplitTools.SAArc
 							case 5:
 								data.Name = $"evassets_{ptr:X8}";
 								data.Character = chnm;
-								data.BodyAnims = GetMotion(fc, ptr, key, $"{chnm}\\Body.saanim", motions, 62);
+								data.BodyAnims = GetMotion(fc, ptr, key, $"{chnm}\\Body.saanim", motions, 62, $"{evname} {chnm} Body Motions");
 								break;
 							case 3:
 								data.Name = $"evassets_{ptr:X8}";
 								data.Character = chnm;
-								data.BodyAnims = GetMotion(fc, ptr, key, $"{chnm}\\Body.saanim", motions, 45);
+								data.BodyAnims = GetMotion(fc, ptr, key, $"{chnm}\\Body.saanim", motions, 45, $"{evname} {chnm} Body Motions");
 								break;
 							case 6:
 							case 7:
 								data.Name = $"evassets_{ptr:X8}";
 								data.Character = chnm;
-								data.BodyAnims = GetMotion(fc, ptr, key, $"{chnm}\\Body.saanim", motions, 33);
+								data.BodyAnims = GetMotion(fc, ptr, key, $"{chnm}\\Body.saanim", motions, 33, $"{evname} {chnm} Body Motions");
 								break;
 						}
 						int address2;
 						for (int j = 0; j < 4; j++)
 						{
 							string prnm = null;
+							string partmetaname = null;
 							switch (j)
 							{
 								case 0:
 									prnm = "Head";
+									partmetaname = prnm;
 									break;
 								case 1:
 									prnm = "Mouth";
+									partmetaname = prnm;
 									break;
 								case 2:
 									prnm = "LeftHand";
+									partmetaname = "Left Hand";
 									break;
 								case 3:
 									prnm = "RightHand";
+									partmetaname = "Right Hand";
 									break;
 							}
 							address2 = ptr + 4 + (0xC * j);
@@ -150,15 +177,29 @@ namespace SplitTools.SAArc
 							if (ptr2 != 0)
 							{
 								MiniEventParts parts = new MiniEventParts();
-								parts.Model = GetModel(fc, address2, key, $"{chnm}\\{prnm}.sa2mdl");
+								parts.Model = GetModel(fc, address2, key, $"{chnm}\\{prnm}.sa2mdl", $"{evname} {chnm} {partmetaname}");
 								if (parts.Model != null)
 								{
-									parts.Anims = GetMotion(fc, address2 + 4, key, $"{chnm}\\{prnm}.saanim", motions, modelfiles[parts.Model].Model.CountAnimated());
+									parts.Anims = GetMotion(fc, address2 + 4, key, $"{chnm}\\{prnm}.saanim", motions, modelfiles[parts.Model].Model.CountAnimated(), $"{evname} {chnm} EV {partmetaname} Animation");
 									if (parts.Anims != null)
 										modelfiles[parts.Model].Motions.Add($"{prnm}.saanim");
-									parts.ShapeMotions = GetMotion(fc, address2 + 8, key, $"{chnm}\\{prnm}Shape.saanim", motions, modelfiles[parts.Model].Model.CountMorph());
+									parts.ShapeMotions = GetMotion(fc, address2 + 8, key, $"{chnm}\\{prnm}Shape.saanim", motions, modelfiles[parts.Model].Model.CountMorph(), $"{evname} {chnm} EV {partmetaname} Shape Motion");
 									if (parts.ShapeMotions != null)
 										modelfiles[parts.Model].Motions.Add($"{prnm}Shape.saanim");
+									// populating metadata file
+									string outResult = null;
+									// checks if the source ini is a placeholder
+									if (labelFile != null && mlength.Length != 0)
+									{
+										evmetadata = evsplitfilenames[modelfiles[parts.Model].Filename].Split('|'); // Description|Texture file
+										outResult += evmetadata[0] + "|" + evmetadata[1];
+										evsectionlist[modelfiles[parts.Model].Filename] = outResult;
+									}
+									else
+									{
+										outResult += modelfiles[parts.Model].MetaName + "|" + $"{texname}";
+										evsectionlist.Add(modelfiles[parts.Model].Filename, outResult);
+									}
 								}
 								data.Parts.Add(parts);
 							}
@@ -172,7 +213,7 @@ namespace SplitTools.SAArc
 				int camaddr = ByteConverter.ToInt32(fc, 4);
 				if (cam != 0)
 				{
-					ini.Camera = GetMotion(fc, 4, key, $"Camera.saanim", motions, 1);
+					ini.Camera = GetMotion(fc, 4, key, $"Camera.saanim", motions, 1, $"{evname} Camera Animation");
 					ini.NinjaCamera = GetCamData(fc, 4, key, "CameraAttributes.ini", ncams);
 				}
 				else
@@ -203,6 +244,13 @@ namespace SplitTools.SAArc
 					Formatting = Formatting.Indented,
 					NullValueHandling = NullValueHandling.Ignore
 				};
+
+				// Creates metadata ini file for SAMDL Project Mode
+				if (labelFile != null)
+				{
+					string evsectionListFilename = Path.GetFileNameWithoutExtension(labelFile) + "_data.ini";
+					IniSerializer.Serialize(evsectionlist, Path.Combine(outputPath, evsectionListFilename));
+				}
 				using (var tw = File.CreateText(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
 					js.Serialize(tw, ini);
 			}
@@ -295,7 +343,7 @@ namespace SplitTools.SAArc
 		}
 
 		//Get Functions
-		private static string GetModel(byte[] fc, int address, uint key, string fn)
+		private static string GetModel(byte[] fc, int address, uint key, string fn, string meta = null)
 		{
 			string name = null;
 			int ptr3 = fc.GetPointer(address, key);
@@ -311,13 +359,13 @@ namespace SplitTools.SAArc
 						if (modelfiles.ContainsKey(s))
 							modelfiles.Remove(s);
 					nodenames.AddRange(names);
-					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk));
+					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk, meta));
 				}
 			}
 			return name;
 		}
 
-		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt)
+		private static string GetMotion(byte[] fc, int address, uint key, string fn, List<NJS_MOTION> motions, int cnt, string meta = null)
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
@@ -328,12 +376,13 @@ namespace SplitTools.SAArc
 				if (ptr3 != 0)
 				{
 					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
+					mtn.Description = meta;
 					mtn.OptimizeShape();
 				}
 			}
 			if (mtn == null) return null;
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
-				motionfiles[mtn.Name] = new MotionInfo(fn, mtn);
+				motionfiles[mtn.Name] = new MotionInfo(fn, mtn, meta);
 			return mtn.Name;
 		}
 

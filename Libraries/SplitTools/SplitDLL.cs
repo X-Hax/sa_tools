@@ -147,7 +147,11 @@ namespace SplitTools.SplitDLL
 									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
 									land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
-									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath));
+									string description = data.Filename;
+									// Metadata for SA Tools Hub manual build operations
+									if (data.CustomProperties.ContainsKey("meta"))
+										description = data.CustomProperties["meta"];
+									output.Files[data.Filename] = new FileTypeHash("landtable", HelperFunctions.FileHash(fileOutputPath), description);
 									labels.AddRange(land.GetLabels());
 								}
 							}
@@ -184,7 +188,11 @@ namespace SplitTools.SplitDLL
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										land.SaveToFile(outputFN, landfmt_def, nometa);
-										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN));
+										string description = fileName;
+										// Metadata for SA Tools Hub manual build operations
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+											description = data.CustomProperties["meta" + i.ToString()];
+										output.Files[fileName] = new FileTypeHash("landtable", HelperFunctions.FileHash(outputFN), description);
 										labels.AddRange(land.GetLabels());
 									}
 								}
@@ -230,8 +238,26 @@ namespace SplitTools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(mdl.Name))
 								{
-									ModelAnimations mdla = new ModelAnimations(data.Filename, name, mdl, modelfmt_obj);
+									string meta = data.Filename;
+									if (data.CustomProperties.ContainsKey("meta"))
+									{
+										string[] mname = data.CustomProperties["meta"].Split('|');
+										meta = mname[0];
+									}
+									ModelAnimations mdla = new ModelAnimations(data.Filename, name, mdl, modelfmt_obj, meta);
 									string[] mdlanis = new string[0];
+									string[] mdlanisfromfolder = new string[0];
+									if (data.CustomProperties.ContainsKey("animationfolder"))
+									{
+										string folname = Directory.GetParent(fileOutputPath).ToString();
+										mdlanisfromfolder = Directory.GetFiles(Path.Combine(folname, data.CustomProperties["animationfolder"]), "*.saanim", SearchOption.TopDirectoryOnly);
+										if (mdlanisfromfolder.Length > 0)
+										{
+											for (int s = 0; s < mdlanisfromfolder.Length; s++)
+												mdlanisfromfolder[s] = Path.Combine(data.CustomProperties["animationfolder"], Path.GetFileName(mdlanisfromfolder[s]));
+											mdla.Animations.AddRange(mdlanisfromfolder.ToList());
+										}
+									}
 									if (data.CustomProperties.ContainsKey("animations"))
 									{
 										mdlanis = data.CustomProperties["animations"].Split(',');
@@ -292,7 +318,13 @@ namespace SplitTools.SplitDLL
 								output.Items.Add(info);
 								if (!labels.Contains(dummy.Name))
 								{
-									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_att));
+									string meta = data.Filename;
+									if (data.CustomProperties.ContainsKey("meta"))
+									{
+										string[] mname = data.CustomProperties["meta"].Split('|');
+										meta = mname[0];
+									}
+									models.Add(new ModelAnimations(data.Filename, name, mdl, modelfmt_att, meta));
 									labels.AddRange(mdl.GetLabels());
 								}
                                 // Metadata for SAMDL project mode
@@ -396,20 +428,44 @@ namespace SplitTools.SplitDLL
 										if (File.Exists(Path.Combine(projectFolderName, fn)) && !overwrite)
 											return 0;
 										// Metadata for SAMDL project mode
+										string meta = fn;
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
-                                            output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+										{
+											output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+											string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+											meta = mname[0];
+										}
 										// Animation assignments
-										ModelAnimations mdla = new ModelAnimations(fn, idx, mdl, modelfmt_arr);
+										ModelAnimations mdla = new ModelAnimations(fn, idx, mdl, modelfmt_arr, meta);
 										string[] mdlanis = new string[0];
+										string[] mdlanisfromfolder = new string[0];
+										string[] mdlanisfromfolderc = new string[0];
+										if (data.CustomProperties.ContainsKey("animationfolder"))
+										{
+											string folname = Directory.GetParent(fileOutputPath).ToString();
+											mdlanisfromfolder = Directory.GetFiles(Path.Combine(folname, data.CustomProperties["animationfolder"]), "*.saanim", SearchOption.TopDirectoryOnly);
+											if (mdlanisfromfolder.Length > 0)
+											{
+												for (int s = 0; s < mdlanisfromfolder.Length; s++)
+													mdlanisfromfolder[s] = Path.Combine(data.CustomProperties["animationfolder"], Path.GetFileName(mdlanisfromfolder[s]));
+												mdla.Animations.AddRange(mdlanisfromfolder.ToList());
+											}
+										}
+										// Custom animation folder setting for SA2 Chao motions
+										if (data.CustomProperties.ContainsKey("animationfolderc"))
+										{
+											string cname = Directory.GetParent(Directory.GetParent(fileOutputPath).ToString()).ToString();
+											mdlanisfromfolderc = Directory.GetFiles(Path.Combine(cname, data.CustomProperties["animationfolderc"]), "*.saanim", SearchOption.TopDirectoryOnly);
+											if (mdlanisfromfolderc.Length > 0)
+											{
+												for (int s = 0; s < mdlanisfromfolderc.Length; s++)
+													mdlanisfromfolderc[s] = Path.Combine(@"..\" + data.CustomProperties["animationfolderc"], Path.GetFileName(mdlanisfromfolderc[s]));
+												mdla.Animations.AddRange(mdlanisfromfolderc.ToList());
+											}
+										}
 										if (data.CustomProperties.ContainsKey("animations" + i.ToString()))
 										{
 											mdlanis = data.CustomProperties["animations" + i.ToString()].Split(',');
-											if (mdlanis.Length > 0)
-												mdla.Animations.AddRange(mdlanis.ToList());
-										}
-										if (data.CustomProperties.ContainsKey("animations"))
-										{
-											mdlanis = data.CustomProperties["animations"].Split(',');
 											if (mdlanis.Length > 0)
 												mdla.Animations.AddRange(mdlanis.ToList());
 										}
@@ -491,9 +547,14 @@ namespace SplitTools.SplitDLL
 											if (File.Exists(Path.Combine(projectFolderName, fn)) && !overwrite)
 												return 0;
 											// Metadata for SAMDL project mode
+											string meta = fn;
 											if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
-                                                output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
-                                            models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_att));
+											{
+												output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+												string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+												meta = mname[0];
+											}
+                                            models.Add(new ModelAnimations(fn, idx, mdl, modelfmt_att, meta));
 											if (!labels.Contains(mdl.Name))
 												labels.AddRange(mdl.GetLabels());
 										}
@@ -550,10 +611,14 @@ namespace SplitTools.SplitDLL
 									string fn = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim");
 									if (anifiles.ContainsKey(nm))
 										outputFN = anifiles[nm];
+									string description = outputFN;
 									if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_a"))
 									{
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
+										{
 											metadesc = data.CustomProperties["meta" + i.ToString() + "_a"];
+											description = data.CustomProperties["meta" + i.ToString() + "_a"];
+										}
 										outputFN = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_a"] + ".saanim");
 										ani.Animation.Description = metadesc;
@@ -568,7 +633,7 @@ namespace SplitTools.SplitDLL
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										//Console.WriteLine("Saving animation: {0}", outputFN);
 										ani.Animation.Save(outputFN, nometa);
-										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
+										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN), description);
 										if (!anifiles.ContainsKey(nm))
 											anifiles.Add(nm, outputFN);
 									}
@@ -582,13 +647,18 @@ namespace SplitTools.SplitDLL
 									else
 									{
 										string mfn = Path.ChangeExtension(fn, modelext_def);
+										string mdescription = mfn;
 										if (data.CustomProperties.ContainsKey("filename" + i.ToString() + "_m"))
 										{
                                             mfn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString() + "_m"] + modelext_def);
-											
+
 											// Metadata for SAMDL project mode
 											if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_m"))
-                                                output.SAMDLData.Add(mfn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_m"]));
+											{
+												output.SAMDLData.Add(mfn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_m"]));
+												string[] mname = data.CustomProperties["meta" + i.ToString() + "_m"].Split('|');
+												mdescription = mname[0];
+											}
                                         }
 										string outputmfn = Path.Combine(projectFolderName, mfn);
 										System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
@@ -612,7 +682,7 @@ namespace SplitTools.SplitDLL
 											else
 												ModelFile.CreateFile(outputmfn, ani.Model, new[] { animationName }, null, $"{name}[{i}]->object",
 												null, modelfmt_def, nometa);
-											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn));
+											output.Files[mfn] = new FileTypeHash("model", HelperFunctions.FileHash(outputmfn), mdescription);
 											if (!labels.Contains(ani.Model.Name)) labels.AddRange(ani.Model.GetLabels());
 										}
 									}
@@ -649,10 +719,15 @@ namespace SplitTools.SplitDLL
 								{
 									if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 										Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
+									string description = data.Filename;
 									if (data.CustomProperties.ContainsKey("meta"))
+									{
 										metadesc = data.CustomProperties["meta"];
+										description = data.CustomProperties["meta"];
+									}
 									ani.Description = metadesc;
 									ani.Save(fileOutputPath, nometa);
+									output.Files[data.Filename] = new FileTypeHash("animation", HelperFunctions.FileHash(fileOutputPath), description);
 								}
 							}
 							break;
@@ -701,11 +776,15 @@ namespace SplitTools.SplitDLL
 												return 0;
 											if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 												Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+											string description = fn;
 											if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
+											{
 												metadesc = data.CustomProperties["meta" + i.ToString() + "_a"];
+												description = data.CustomProperties["meta" + i.ToString() + "_a"];
+											}
 											ani.Description = metadesc;
 											ani.Save(outputFN, nometa);
-											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
+											output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN), description);
 										}
 									}
 									address += 4;
@@ -743,9 +822,13 @@ namespace SplitTools.SplitDLL
 									ptr -= imageBase;
 									NJS_TEXLIST texarr = new NJS_TEXLIST(datafile, (int)ptr, imageBase);
 									string fn = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".satex");
+									string description = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".satex");
+									string fname = Path.Combine(data.Filename, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".satex");
 									if (data.CustomProperties.ContainsKey("filename" + i.ToString()))
 									{
 										fn = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + ".satex");
+										description = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".satex");
+										fname = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".satex");
 									}
 									if (File.Exists(fn) && !overwrite)
 										return 0;
@@ -767,6 +850,9 @@ namespace SplitTools.SplitDLL
 								};
 								output.Items.Add(info);
 								SA2SoundList.Load(datafile, address, imageBase).Save(fileOutputPath);
+								string description = data.Filename;
+								if (data.CustomProperties.ContainsKey("meta"))
+									description = data.CustomProperties["meta"];
 							}
 							break;
 						case "animindexlist":
@@ -775,6 +861,7 @@ namespace SplitTools.SplitDLL
 								List<string> hashes = new List<string>();
 								int i = ByteConverter.ToInt16(datafile, address);
 								string animmeta = null;
+								string metaname = data.Filename;
 								while (i != -1)
 								{
 									if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
@@ -788,7 +875,9 @@ namespace SplitTools.SplitDLL
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
 								}
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "charaobjectdatalist":
@@ -796,6 +885,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<CharaObjectData> result = new List<CharaObjectData>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									string chnm = charaobjectnames[i];
@@ -870,7 +960,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "modelindex":
@@ -878,6 +970,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<ModelIndex> result = new List<ModelIndex>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									ModelIndex index = new ModelIndex();
@@ -891,7 +984,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartspecialinfolist":
@@ -899,6 +994,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartSpecialInfo> result = new List<KartSpecialInfo>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartSpecialInfo kart = new KartSpecialInfo();
@@ -913,14 +1009,19 @@ namespace SplitTools.SplitDLL
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
 									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									string meta = fn;
 									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+									{
 										output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+										string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+										meta = mname[0];
+									}
 									if (File.Exists(outputFN) && !overwrite)
 										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
-									output.Files[fn] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN));
+									output.Files[fn] = new FileTypeHash("chunkmodel", HelperFunctions.FileHash(outputFN), meta);
 									int ptr = BitConverter.ToInt32(datafile, address + 8);
 									if (ptr != 0)
 									{
@@ -935,8 +1036,14 @@ namespace SplitTools.SplitDLL
 										}
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+										string meta_l = fn_l;
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_l"))
+										{
+											string[] mname = data.CustomProperties["meta" + i.ToString() + "_l"].Split('|');
+											meta_l = mname[0];
+										}
 										ModelFile.CreateFile(outputFN_l, model, null, null, null, null, ModelFormat.Chunk, nometa);
-										output.Files[fn_l] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN_l));
+										output.Files[fn_l] = new FileTypeHash("chunkmodel", HelperFunctions.FileHash(outputFN_l), meta_l);
 										// Metadata for SAMDL project mode
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_l"))
 											output.SAMDLData.Add(fn_l, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_l"]));
@@ -950,7 +1057,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartmodelsarray":
@@ -958,6 +1067,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartModelInfo> result = new List<KartModelInfo>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartModelInfo kartobj = new KartModelInfo();
@@ -974,14 +1084,19 @@ namespace SplitTools.SplitDLL
 											fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2bmdl");
 										}
 										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+										string meta = fn;
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										{
 											output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+											string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+											meta = mname[0];
+										}
 										if (File.Exists(outputFN) && !overwrite)
 											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.GC, nometa);
-										output.Files[fn] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN));
+										output.Files[fn] = new FileTypeHash("gcmodel", HelperFunctions.FileHash(outputFN), meta);
 										NJS_OBJECT collision = new NJS_OBJECT(datafile, (int)(BitConverter.ToInt32(datafile, address + 4) - imageBase), imageBase, ModelFormat.Basic, new Dictionary<int, Attach>());
 										kartobj.Collision = collision.Name;
 										string outputFN_col = Path.Combine(fileOutputPath, i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".sa1mdl");
@@ -992,12 +1107,17 @@ namespace SplitTools.SplitDLL
 											fn_col = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa1mdl");
 										}
 										// Metadata for SAMDL project mode
+										string meta_c = fn_col;
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_c"))
+										{
 											output.SAMDLData.Add(fn_col, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString() + "_c"]));
+											string[] mname = data.CustomProperties["meta" + i.ToString() + "_c"].Split('|');
+											meta_c = mname[0];
+										}
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										ModelFile.CreateFile(outputFN_col, collision, null, null, null, null, ModelFormat.Basic, nometa);
-										output.Files[fn_col] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN_col));
+										output.Files[fn_col] = new FileTypeHash("basicmodel", HelperFunctions.FileHash(outputFN_col), meta_c);
 
 									}
 									kartobj.EndPoint = new Vertex(datafile, address + 8);
@@ -1019,7 +1139,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartobjectarray":
@@ -1027,6 +1149,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartObjectArray> result = new List<KartObjectArray>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartObjectArray kartset = new KartObjectArray();
@@ -1046,8 +1169,14 @@ namespace SplitTools.SplitDLL
 											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+										string meta = fn;
+										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+										{
+											string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+											meta = mname[0];
+										}
 										ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
-										output.Files[fn] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN));
+										output.Files[fn] = new FileTypeHash("chunkmodel", HelperFunctions.FileHash(outputFN), meta);
 
 										// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
@@ -1065,7 +1194,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartmenu":
@@ -1073,6 +1204,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartMenuElements> result = new List<KartMenuElements>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartMenuElements menu = new KartMenuElements();
@@ -1088,12 +1220,17 @@ namespace SplitTools.SplitDLL
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
 									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									string meta = fn;
 									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+									{
 										output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+										string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+										meta = mname[0];
+									}
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
-									output.Files[fn] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN));
+									output.Files[fn] = new FileTypeHash("chunkmodel", HelperFunctions.FileHash(outputFN), meta);
 									menu.SPD = datafile[address + 0xC];
 									menu.ACL = datafile[address + 0xD];
 									menu.BRK = datafile[address + 0xE];
@@ -1103,7 +1240,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "kartsoundparameters":
@@ -1111,6 +1250,7 @@ namespace SplitTools.SplitDLL
 								Directory.CreateDirectory(fileOutputPath);
 								List<KartSoundParameters> result = new List<KartSoundParameters>();
 								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
 								for (int i = 0; i < data.Length; i++)
 								{
 									KartSoundParameters para = new KartSoundParameters();
@@ -1133,20 +1273,27 @@ namespace SplitTools.SplitDLL
 										fn = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + ".sa2mdl");
 									}
 									// Metadata for SAMDL project mode (formatted as "Description|TextureArchiveFilenames|Texture IDs (optional)|Texture names (optional)")
+									string meta = fn;
 									if (data.CustomProperties.ContainsKey("meta" + i.ToString()))
+									{
 										output.SAMDLData.Add(fn, new SAMDLMetadata(data.CustomProperties["meta" + i.ToString()]));
+										string[] mname = data.CustomProperties["meta" + i.ToString()].Split('|');
+										meta = mname[0];
+									}
 									if (File.Exists(outputFN) && !overwrite)
 										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 									ModelFile.CreateFile(outputFN, model, null, null, null, null, ModelFormat.Chunk, nometa);
-									output.Files[fn] = new FileTypeHash("model", HelperFunctions.FileHash(outputFN));
+									output.Files[fn] = new FileTypeHash("chunkmodel", HelperFunctions.FileHash(outputFN), meta);
 									result.Add(para);
 									address += 0x18;
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "motiontable":
@@ -1158,6 +1305,7 @@ namespace SplitTools.SplitDLL
 								Dictionary<int, string> mtns = new Dictionary<int, string>();
 								bool shortrot = false;
 								string metadesc = "";
+								string metaname = data.Filename;
 								if (data.CustomProperties.ContainsKey("shortrot"))
 									shortrot = bool.Parse(data.CustomProperties["shortrot"]);
 								for (int i = 0; i < data.Length; i++)
@@ -1180,11 +1328,15 @@ namespace SplitTools.SplitDLL
 											return 0;
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
+										string meta = fn;
 										if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
+										{
 											metadesc = data.CustomProperties["meta" + i.ToString() + "_a"];
+											meta = data.CustomProperties["meta" + i.ToString() + "_a"];
+										}
 										motion.Description = metadesc;
 										motion.Save(outputFN, nometa);
-										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN));
+										output.Files[fn] = new FileTypeHash("animation", HelperFunctions.FileHash(outputFN), meta);
 									}
 									else
 										bmte.Motion = mtns[mtnaddr];
@@ -1204,7 +1356,9 @@ namespace SplitTools.SplitDLL
 								}
 								IniSerializer.Serialize(result, Path.Combine(fileOutputPath, "info.ini"));
 								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
-								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()) });
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
 						case "cactionarray":
@@ -1302,7 +1456,7 @@ namespace SplitTools.SplitDLL
 							type = "gcmodel";
 							break;
 					}
-					output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(modelOutputPath));
+					output.Files[item.Filename] = new FileTypeHash(type, HelperFunctions.FileHash(modelOutputPath), item.Metadata);
 				}
                 IniSerializer.Serialize(output, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename))
                     + "_data.ini");
@@ -1412,14 +1566,16 @@ namespace SplitTools.SplitDLL
         public NJS_OBJECT Model { get; private set; }
 		public ModelFormat Format { get; private set; }
 		public List<string> Animations { get; private set; }
+		public string Metadata { get; private set; }
 
-		public ModelAnimations(string filename, string name, NJS_OBJECT model, ModelFormat format)
+		public ModelAnimations(string filename, string name, NJS_OBJECT model, ModelFormat format, string metadata)
 		{
 			Filename = filename;
 			Name = name;
 			Model = model;
 			Format = format;
 			Animations = new List<string>();
+			Metadata = metadata;
 		}
 	}
 

@@ -35,6 +35,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "gcattacharray", "SA2B Attach Model Array" },
 			{ "action", "Action (animation+model)" },
 			{ "animation", "Animation" },
+			{ "motion", "Animation" },
+			{ "motionarray", "Animation Array" },
 			{ "objlist", "Object List" },
 			{ "startpos", "Start Positions" },
 			{ "texturedata", "Texture Pack Data" },
@@ -76,10 +78,12 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "animindexlist", "Animation Index List" },
 			{ "storysequence", "Story Sequence" },
 			{ "charaobjectdatalist", "2P Battle Screen Character Data" },
+			{ "modelindex", "Model Index Array" },
 			{ "kartmenu", "Kart Menu Elements" },
 			{ "kartmodelsarray", "Kart Terrain Model Array" },
 			{ "kartsoundparameters", "Kart Sound Parameters" },
 			{ "kartspecialinfolist", "Kart Special Info" },
+			{ "kartobjectarray", "Kart Object Array" },
 			{ "kartcourse", "Kart Course" },
 			{ "kartphysics", "Kart Physics Parameters" },
 			{ "string", "String" },
@@ -426,15 +430,15 @@ namespace SAModel.SAEditorCommon.StructConverter
 		}
 
         public static void ExportINI(SplitTools.IniData iniData,
-            Dictionary<string, bool> itemsToExport, string fileName)
+            Dictionary<string, bool> itemsToExport, SplitTools.Game game, string fileName)
 		{
 			string dstfol = Path.GetDirectoryName(fileName);
 
 			SplitTools.IniData output = new SplitTools.IniData
 			{
+				Game = game,
 				Files = new Dictionary<string, SplitTools.FileInfo>()
 			};
-
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in
 				iniData.Files.Where(i => itemsToExport[i.Key]))
 			{
@@ -450,7 +454,7 @@ namespace SAModel.SAEditorCommon.StructConverter
 				switch (item.Value.Type)
 				{
 					case "deathzone":
-						switch (iniData.Game)
+						switch (game)
 						{
 							case Game.SA2:
 								{

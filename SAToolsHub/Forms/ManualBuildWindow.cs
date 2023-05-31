@@ -17,6 +17,7 @@ namespace SAModel.SAEditorCommon
 		private string projectFolder = "";
 		private string modFolder = "";
 		private string gameEXE = "";
+		private SplitTools.Game game;
 		private Dictionary<string, AssemblyType> assemblies = new Dictionary<string, AssemblyType>();
 		private Dictionary<string, ListView> assemblyListViews = new Dictionary<string, ListView>();
 		private Dictionary<string, object> assemblyIniFiles = new Dictionary<string, object>(); // gotta box ini data to object so that dll ini and ini data can exist in the same list
@@ -37,6 +38,7 @@ namespace SAModel.SAEditorCommon
 			this.modFolder = modFolder;
 			this.assemblies = assemblies;
 			this.gameEXE = gameEXE;
+			this.game = game;
 
 			LoadingLabel.Visible = true;
 		}
@@ -205,7 +207,7 @@ namespace SAModel.SAEditorCommon
 				(
 				new[]
 				{
-					item.Key,
+					item.Value.Name,
 					StructConverter.StructConverter.DataTypeList[item.Value.Type],
 					(modified ? "Yes" : "No"),
 				})
@@ -220,7 +222,7 @@ namespace SAModel.SAEditorCommon
 				(
 				new[]
 				{
-				item.Filename, StructConverter.StructConverter.DataTypeList[item.Type],
+				item.Metadata, StructConverter.StructConverter.DataTypeList[item.Type],
 				(modified ? "Yes" : "No")
 				})
 				{ Checked = modified });
@@ -381,7 +383,7 @@ namespace SAModel.SAEditorCommon
 				{
 					SplitTools.IniData EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(listIni_exe, ref itemsEXEToExport, true);
 					SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
-						itemsEXEToExport, Path.Combine(outputFolder, gameEXE + "_data.ini"));
+						itemsEXEToExport, game, Path.Combine(outputFolder, gameEXE + "_data.ini"));
 				}
 				MessageBox.Show(string.Format("INI Files have been exported to {0}", outputFolder), "Success", MessageBoxButtons.OK);
 			}

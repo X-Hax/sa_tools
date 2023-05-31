@@ -20,6 +20,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 	{
 		static readonly Dictionary<string, string> typemap = new Dictionary<string, string>() {
 			{ "landtable", "LandTable *" },
+			{ "battlelandtable", "LandTable *" },
 			{ "landtablearray", "LandTable **" },
 			{ "model", "NJS_OBJECT *" },
 			{ "modelarray", "NJS_OBJECT **" },
@@ -42,7 +43,8 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{ "gcattacharray", "SA2B_Model **" },
 			{ "texlist", "NJS_TEXLIST *" },
 			{ "texlistarray", "NJS_TEXLIST **" },
-			{ "animindexlist", "AnimationIndex *" }
+			{ "animindexlist", "AnimationIndex *" },
+			{ "motiontable", "MotionTable *" }
 		};
 
 		private static void CheckItems(DllDataItemInfo item, DllIniData iniData, ref Dictionary<string, bool> defaultExportState)
@@ -299,7 +301,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 
 			List<string> labels = new List<string>();
 			foreach (KeyValuePair<string, FileTypeHash> item in
-				IniData.Files.Where(i => itemsToExport[i.Key]))
+				IniData.Files.Where(i => itemsToExport[i.Value.Name]))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dstfol, item.Key)));
 				File.Copy(item.Key, Path.Combine(dstfol, item.Key), true);
@@ -328,7 +330,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 						break;
 				}
 
-				output.Files.Add(item.Key, new FileTypeHash(item.Value.Type, null));
+				output.Files.Add(item.Key, new FileTypeHash(item.Value.Type, null, item.Value.Name));
 				fileChk.Name = Path.GetFileName(item.Key);
 				fileChk.Label[0] = labelsChk.ElementAt(0);
 				if (labelsChk.Count > 1)
@@ -365,7 +367,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				}
 			}
 
-			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
 			{
 				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
 				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
@@ -392,11 +394,12 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				List<string> labels = new List<string>();
 				Dictionary<string, uint> texlists = new Dictionary<string, uint>();
 				foreach (KeyValuePair<string, FileTypeHash> item in
-					IniData.Files.Where(i => itemsToExport[i.Key]))
+					IniData.Files.Where(i => itemsToExport[i.Value.Name]))
 				{
 					switch (item.Value.Type)
 					{
 						case "landtable":
+						case "battlelandtable":
 							LandTable tbl = LandTable.LoadFromFile(item.Key);
 							texlists.Add(tbl.Name, tbl.TextureList);
 							tbl.ToStructVariables(writer, landfmt, new List<string>());
@@ -427,7 +430,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					writer.WriteLine();
 				}
-				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
 					switch (item.Type)
 					{
 						case "soundlist":

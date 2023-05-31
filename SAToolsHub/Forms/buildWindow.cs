@@ -109,9 +109,23 @@ namespace SAToolsHub
 			if (iniEXEFiles.Count > 0)
 			{
 				EXEiniData = SAModel.SAEditorCommon.StructConverter.StructConverter.LoadMultiINI(iniEXEFiles, ref itemsEXEToExport, false);
-
+				SplitTools.Game game = SplitTools.Game.SA1;
+				switch (SAToolsHub.setGame)
+				{
+					case "SA2":
+					case "SA2TT":
+					case "SA2PRE":
+						game = SplitTools.Game.SA2;
+						break;
+					case "SA2GC":
+					case "SA2PC":
+						game = SplitTools.Game.SA2B;
+						break;
+					default:
+						break;
+				}
 				SAModel.SAEditorCommon.StructConverter.StructConverter.ExportINI(EXEiniData,
-					itemsEXEToExport, Path.Combine(modFolder, gameEXE + "_data.ini"));
+					itemsEXEToExport, game, Path.Combine(modFolder, gameEXE + "_data.ini"));
 			}
 
 			if (iniDLLFiles.Count > 0)

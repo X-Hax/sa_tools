@@ -44,8 +44,9 @@ namespace SA2EventViewer
 				ByteConverter.BigEndian = false;
 				key = 0xC600000;
 				int upptr = fc.GetPointer(0x20, 0xC600000);
-				int betacheck = fc[upptr + 0x134];
-				if ((uint)betacheck < 0xC600000 && betacheck != 0)
+				int betacheck = fc[upptr + 0x14C];
+				int betacheck2 = fc[upptr + 0x16C];
+				if (betacheck != 0 || (fc[0x27] != 0xC && betacheck == 0 && betacheck2 != 0))
 					dcbeta = true;
 				else
 					dcbeta = false;

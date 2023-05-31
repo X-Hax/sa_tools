@@ -113,6 +113,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("checkRange")]
 			public string CheckRange { get; set; }
+			/// <summary>
+			/// Classification of the project type for use with certain functions. Null if it's the "main" project template.
+			/// </summary>
+			[XmlAttribute("projectType")]
+			public string ProjectType { get; set; }
 		}
 
 		/// <summary>
@@ -162,6 +167,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("canBuild")]
 			public bool CanBuild { get; set; }
+			/// <summary>
+			/// Classification of the project type for use with certain functions. Null if it's the "main" project template.
+			/// </summary>
+			[XmlAttribute("projectType")]
+			public string ProjectType { get; set; }
 		}
 		/// <summary>
 		/// Intended for use with SAMDL Project Mode
@@ -676,7 +686,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Splits data from a SplitEntryEvent.
 		/// </summary>
-		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, bool overwrite = true)
+		public static void SplitTemplateEventEntry(Templates.SplitEntryEvent splitEvent, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string outputFolder, string iniFolder, bool overwrite = true)
 		{
 			string mainext;
 			if (splitEvent.EventType == "MainBIN")
@@ -684,6 +694,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			else
 				mainext = ".prs";
 			string filePath = Path.Combine(gameFolder, splitEvent.EventFile + $"{mainext}");
+			string labelfile = Path.Combine(Path.Combine(iniFolder, "event"), (splitEvent.LabelFile.ToLower() + ".ini"));
 			List<string> filePathEXArr = new List<string>();
 			string filePathTex = Path.Combine(gameFolder, splitEvent.EventFile + "texlist.prs");
 			string ext = null;
@@ -791,25 +802,25 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 				{
 					case "MiniEvent":
 					case "MiniEventPC":
-						SA2MiniEvent.Split(filePath, fileOutputFolder);
+						SA2MiniEvent.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.SplitMini(ex, fileOutputFolder);
 						break;
 					case "Trial":
 					case "Preview":
-						sa2Event.Split(filePath, fileOutputFolder);
+						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
 						break;
 					case "MainPRS":
 					case "MainPC":
-						sa2Event.Split(filePath, fileOutputFolder);
+						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
 						sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
 						break;
 					case "MainBIN":
-						sa2Event.Split(filePath, fileOutputFolder + "_U");
+						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						break;
 				}
 			}

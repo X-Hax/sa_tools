@@ -637,7 +637,7 @@ namespace SAModel.SALVL
 		public void Set_SADXOptionsVisible(Boolean flag)
 		{
 			lightsEditorToolStripMenuItem.Visible = flag;
-            fogEditorToolStripMenuItem.Visible = flag;
+			fogEditorToolStripMenuItem.Visible = flag;
 
 			//char icon / menu
 			characterToolStripMenuItem.Visible = flag;
@@ -876,7 +876,7 @@ namespace SAModel.SALVL
 
 		void LevelData_StateChanged()
 		{
-			if (transformGizmo == null) 
+			if (transformGizmo == null)
 				transformGizmo = new TransformGizmo();
 			transformGizmo.Enabled = selectedItems.ItemCount > 0;
 			SetGizmoPivotAndLocality(true);
@@ -1946,7 +1946,7 @@ namespace SAModel.SALVL
 					if (ext == ".sa2lvl" || ext == ".sa2blvl")
 					{
 						Set_SADXOptionsVisible(false);
-					} 
+					}
 					else
 					{
 						Set_SADXOptionsVisible(true);
@@ -2425,6 +2425,11 @@ namespace SAModel.SALVL
 			using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 				if (sfd.ShowDialog() == DialogResult.OK)
 					new LabelLANDTABLE(LevelData.geo).Save(sfd.FileName);
+		}
+
+		private void addLevelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportLevelAnimation();
 		}
 	}
 }

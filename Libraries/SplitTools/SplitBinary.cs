@@ -246,13 +246,48 @@ namespace SplitTools.Split
 						if (data.CustomProperties.ContainsKey("reverse"))
 							ByteConverter.Reverse = true;
 						NJS_OBJECT mdl = new NJS_OBJECT(datafile, address, imageBase, mdlformat, labels, new Dictionary<int, Attach>());
-						string[] mdlanis = new string[0];
+						List<string> mdlanis = new List<string>();
+						string[] mdlanisfiles;
+						string[] mdlmorphs;
+						string[] mdlanisfromfolder;
+						string[] mdlanisfromfolderc;
+						if (customProperties.ContainsKey("animationfolder"))
+						{
+							mdlanisfromfolder = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(fileOutputPath), customProperties["animationfolder"]), "*.saanim", SearchOption.TopDirectoryOnly);
+							if (mdlanisfromfolder.Length > 0)
+							{
+								for (int s = 0; s < mdlanisfromfolder.Length; s++)
+									mdlanisfromfolder[s] = Path.Combine(customProperties["animationfolder"], Path.GetFileName(mdlanisfromfolder[s]));
+							}
+							mdlanis.AddRange(mdlanisfromfolder);
+						}
+						// Custom animation folder setting for SADX Chao motions
+						if (customProperties.ContainsKey("animationfolderc"))
+						{
+							string cname1 = Path.GetDirectoryName(Directory.GetParent(fileOutputPath).ToString());
+							string[] cfoldernames = customProperties["animationfolderc"].Split('|');
+							for (int f = 0; f < cfoldernames.Length; f++)
+							{
+								mdlanisfromfolderc = Directory.GetFiles(Path.Combine(cname1, cfoldernames[f]), "*.saanim", SearchOption.TopDirectoryOnly);
+								if (mdlanisfromfolderc.Length > 0)
+								{
+									for (int s = 0; s < mdlanisfromfolderc.Length; s++)
+										mdlanisfromfolderc[s] = Path.Combine(@"..\" + cfoldernames[f], Path.GetFileName(mdlanisfromfolderc[s]));
+								}
+								mdlanis.AddRange(mdlanisfromfolderc);
+							}
+						}
 						if (customProperties.ContainsKey("animations"))
-							mdlanis = customProperties["animations"].Split(',');
-						string[] mdlmorphs = new string[0];
+						{
+							mdlanisfiles = customProperties["animations"].Split(',');
+							mdlanis.AddRange(mdlanisfiles);
+						}
 						if (customProperties.ContainsKey("morphs"))
+						{
 							mdlmorphs = customProperties["morphs"].Split(',');
-						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis, null, itemName, null, mdlformat, nometa);
+							mdlanis.AddRange(mdlmorphs);
+						}
+						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis.ToArray(), null, itemName, null, mdlformat, nometa);
 						if (data.CustomProperties.ContainsKey("reverse")) 
 							ByteConverter.Reverse = rev;
 					}
@@ -311,13 +346,47 @@ namespace SplitTools.Split
 						{
 							Attach = dummy
 						};
-						string[] attanis = new string[0];
+						List<string> attanis = new List<string>();
+						string[] attanisfiles;
+						string[] attmorphs;
+						string[] attanisfromfolder;
+						string[] attanisfromfolderc;
+						if (customProperties.ContainsKey("animationfolder"))
+						{
+							attanisfromfolder = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(fileOutputPath), customProperties["animationfolder"]), "*.saanim", SearchOption.TopDirectoryOnly);
+							if (attanisfromfolder.Length > 0)
+							{
+								for (int s = 0; s < attanisfromfolder.Length; s++)
+									attanisfromfolder[s] = Path.Combine(customProperties["animationfolder"], Path.GetFileName(attanisfromfolder[s]));
+							}
+							attanis.AddRange(attanisfromfolder);
+						}
+						if (customProperties.ContainsKey("animationfolderc"))
+						{
+							string cname1 = Path.GetDirectoryName(Directory.GetParent(fileOutputPath).ToString());
+							string[] cfoldernames = customProperties["animationfolderc"].Split('|');
+							for (int f = 0; f < cfoldernames.Length; f++)
+							{
+								attanisfromfolderc = Directory.GetFiles(Path.Combine(cname1, cfoldernames[f]), "*.saanim", SearchOption.TopDirectoryOnly);
+								if (attanisfromfolderc.Length > 0)
+								{
+									for (int s = 0; s < attanisfromfolderc.Length; s++)
+										attanisfromfolderc[s] = Path.Combine(@"..\" + cfoldernames[f], Path.GetFileName(attanisfromfolderc[s]));
+								}
+								attanis.AddRange(attanisfromfolderc);
+							}
+						}
 						if (customProperties.ContainsKey("animations"))
-							attanis = customProperties["animations"].Split(',');
-						string[] attmorphs = new string[0];
+						{
+							attanisfiles = customProperties["animations"].Split(',');
+							attanis.AddRange(attanisfiles);
+						}
 						if (customProperties.ContainsKey("morphs"))
+						{
 							attmorphs = customProperties["morphs"].Split(',');
-						ModelFile.CreateFile(fileOutputPath, mdl, attanis, null, itemName, null, modelfmt_att, nometa);
+							attanis.AddRange(attmorphs);
+						}
+						ModelFile.CreateFile(fileOutputPath, mdl, attanis.ToArray(), null, itemName, null, modelfmt_att, nometa);
 					}
 					break;
 				case "modelarray":

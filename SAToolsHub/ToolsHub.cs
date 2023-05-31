@@ -54,10 +54,12 @@ namespace SAToolsHub
 		public static string projXML { get; set; }
 		public static string projectDirectory { get; set; }
 		public static string setGame { get; set; }
+		public static string projType { get; set; }
 		public static string gameDirectory { get; set; }
 		public static string gameSystemDirectory { get; set; }
 		public static List<Templates.SplitEntry> projSplitEntries { get; set; }
 		public static List<Templates.SplitEntryMDL> projSplitMDLEntries { get; set; }
+		public static List<Templates.SplitEntryEvent> projSplitEventEntries { get; set; }
 		public static SAToolsHubSettings hubSettings { get; set; }
 		List<string> copyPaths;
 		public static bool resplit { get; set; }
@@ -214,6 +216,7 @@ namespace SAToolsHub
 			bool sapChanged = false;
 	
 			setGame = projFile.GameInfo.GameName;
+			projType = projFile.GameInfo.ProjectType;
 
 			projectDirectory = projFile.GameInfo.ProjectFolder;
 			gameDirectory = ProjectFunctions.GetGamePath(projFile.GameInfo.GameName);
@@ -297,6 +300,8 @@ namespace SAToolsHub
 				projSplitEntries = projFile.SplitEntries;
 				if (projFile.SplitMDLEntries != null)
 					projSplitMDLEntries = projFile.SplitMDLEntries;
+				if (projFile.SplitEventEntries != null)
+					projSplitEventEntries = projFile.SplitEventEntries;
 
 				toggleButtons(setGame);
 				closeProjectToolStripMenuItem.Enabled = true;
@@ -1982,6 +1987,26 @@ namespace SAToolsHub
 					return templateNames[i];
 			}
 			MessageBox.Show("No template file detected for " + game + ".");
+			return "";
+		}
+
+		public static string GetTemplateFileForResplit(string ptype)
+		{
+			string templatePath;
+			Dictionary<string, string> templateSearch = new Dictionary<string, string>();
+			if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig")))
+				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "GameConfig");
+			else
+				templatePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "../GameConfig");
+
+			string[] templateNames = Directory.GetFiles(templatePath, "*.xml", SearchOption.TopDirectoryOnly);
+			for (int i = 0; i < templateNames.Length; i++)
+			{
+				Templates.SplitTemplate tempTemplate = ProjectFunctions.openTemplateFile(templateNames[i], true);
+				templateSearch[templateNames[i]] = projType;
+				if (tempTemplate.GameInfo.ProjectType.ToUpperInvariant() == ptype.ToUpperInvariant())
+					return templateNames[i];
+			}
 			return "";
 		}
 

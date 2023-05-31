@@ -16,6 +16,7 @@ namespace SAToolsHub
 		// Variables
 		string templatesPath;
 		string gameName;
+		string projectType;
 		string gamePath;
 		string projFolder;
 		string dataFolder;
@@ -137,6 +138,7 @@ namespace SAToolsHub
 					Templates.ProjectInfo projInfo = new Templates.ProjectInfo();
 
 					projInfo.GameName = gameName;
+					projInfo.ProjectType = projectType;
 					projInfo.CheckFile = checkFile;
 					projInfo.GameDataFolder = gameDataFolder;
 					projInfo.ProjectFolder = (checkBoxSaveDifferentFolder.Checked && textBoxProjFolder.Text != "") ? projFolder : Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
@@ -288,6 +290,7 @@ namespace SAToolsHub
 			if (template != null)
 			{
 				gameName = template.GameInfo.GameName;
+				projectType = template.GameInfo.ProjectType;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
 				// This should never happen under normal circumstances
 				if (gamePath == "")
@@ -511,7 +514,7 @@ namespace SAToolsHub
 						e.Cancel = true;
 						return ProjectSplitResult.Cancelled;
 					}
-					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder);
+					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, iniFolder);
 				}
 			}
 			// Project folders for buildable PC games

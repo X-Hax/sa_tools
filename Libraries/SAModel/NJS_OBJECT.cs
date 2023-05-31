@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
+using SAModel.GC;
 
 namespace SAModel
 {
@@ -578,19 +579,29 @@ namespace SAModel
 				writer.WriteLine();
 			}
 
+			bool isBasic = Attach is BasicAttach;
 			bool isChunk = Attach is ChunkAttach;
+			bool isGinja = Attach is GCAttach;
+			bool isXinja = Attach is XJ.XJAttach;
 			if (Attach == null)
 			{
 				NJS_OBJECT root = this;
 				while (root.Parent != null)
 					root = root.Parent;
+				isBasic = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is BasicAttach;
 				isChunk = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is ChunkAttach;
+				isGinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is GCAttach;
+				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
 
-			if (!isChunk)
+			if (isBasic)
 				writer.WriteLine("OBJECT_START" + Environment.NewLine);
-			else
+			else if (isChunk)
 				writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
+			else if (isGinja)
+				writer.WriteLine("GCOBJECT_START" + Environment.NewLine);
+			else if (isXinja)
+				writer.WriteLine("XBOBJECT_START" + Environment.NewLine);
 
 			if (!isDup)
 			{
@@ -604,21 +615,39 @@ namespace SAModel
 					ChunkAttach ChunkAttach = Attach as ChunkAttach;
 					ChunkAttach.ToNJA(writer, labels, textures);
 				}
+				else if (Attach is GCAttach)
+				{
+					GCAttach gcattach = Attach as GCAttach;
+					gcattach.ToNJA(writer, labels, textures);
+				}
+				else if (Attach is XJ.XJAttach)
+				{
+					XJ.XJAttach xjattach = Attach as XJ.XJAttach;
+					//ChunkAttach.ToNJA(writer, labels, textures);
+				}
 			}
 
-			if (!isChunk)
+			if (isBasic)
 				writer.Write("OBJECT      ");
-			else
+			else if (isChunk)
 				writer.Write("CNKOBJECT  ");
+			else if (isGinja)
+				writer.Write("GCOBJECT    ");
+			else if (isXinja)
+				writer.Write("XBOBJECT    ");
 
 			writer.Write(Name);
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
 			writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
-			if (!isChunk)
+			if (isBasic)
 				writer.WriteLine("Model       " + (Attach != null ? Attach.Name : "NULL") + ",");
-			else
+			else if (isChunk)
 				writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name : "NULL") + ",");
+			else if (isGinja)
+				writer.WriteLine("GINJAModel " + (Attach != null ? Attach.Name : "NULL") + ",");
+			else if (isXinja)
+				writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name : "NULL") + ",");
 			writer.WriteLine("OPosition  {0},", Position.ToNJA());
 			writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
 			writer.WriteLine("OScale     {0},", Scale.ToNJA());
@@ -626,10 +655,14 @@ namespace SAModel
 			writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name : "NULL") + ",");
 			writer.WriteLine("END" + Environment.NewLine);
 			
-			if (!isChunk)
+			if (isBasic)
 				writer.WriteLine("OBJECT_END");
-			else
+			else if (isChunk)
 				writer.WriteLine("CNKOBJECT_END");
+			else if (isGinja)
+				writer.WriteLine("GCOBJECT_END");
+			else if (isXinja)
+				writer.WriteLine("XBOBJECT_END");
 
 			if (Parent == null)
 			{
