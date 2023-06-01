@@ -82,6 +82,7 @@ namespace SplitTools.SAArc
 				{
 					address = 8 + (4 * i);
 					int ptr = fc.GetPointer(address, key);
+					MiniEventMaster data = new MiniEventMaster();
 					string chnm = null;
 					string texname = null;
 					switch (i)
@@ -124,7 +125,6 @@ namespace SplitTools.SAArc
 						ini.MainDataAddrs.Add(i, $"evassets_{ptr:X8}");
 						Console.WriteLine($"{chnm} is in this Mini-Event");
 						Directory.CreateDirectory(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), $"{chnm}"));
-						MiniEventMaster data = new MiniEventMaster();
 						switch (i)
 						{
 							case 0:
@@ -207,7 +207,10 @@ namespace SplitTools.SAArc
 						ini.MainData.Add(data);
 					}
 					else
+					{
+						ini.MainData.Add(null);
 						ini.MainDataAddrs.Add(i, null);
+					}
 				}
 				int cam = fc.GetPointer(4, key);
 				int camaddr = ByteConverter.ToInt32(fc, 4);
