@@ -164,9 +164,9 @@ namespace buildEvent
 				{
 					Console.WriteLine($"Building Mini-Event {name}");
 					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
-						SA2MiniEvent.Build(evfilename);
+						SA2MiniEvent.Build(be, evfilename);
 					else
-						SA2MiniEvent.Build(evfilename + ".prs");
+						SA2MiniEvent.Build(be, evfilename + ".prs");
 				}
 				else
 				{
@@ -204,9 +204,9 @@ namespace buildEvent
 				{
 					Console.WriteLine($"Building Mini-Event {name}");
 					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
-						SA2MiniEvent.Build(evfilename);
+						SA2MiniEvent.Build(be, evfilename);
 					else
-						SA2MiniEvent.Build(evfilename + ".prs");
+						SA2MiniEvent.Build(be, evfilename + ".prs");
 				}
 				else
 				{

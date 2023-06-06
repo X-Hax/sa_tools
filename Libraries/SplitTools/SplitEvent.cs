@@ -1739,8 +1739,8 @@ namespace SplitTools.SAArc
 				Name = labels[address];
 			else
 				Name = "camdata_" + address.ToString("X8");
-			uint ncamaddr = ByteConverter.ToUInt32(file, address);
-			uint animaddr = ByteConverter.ToUInt32(file, address + 4);
+			int ncamaddr = ByteConverter.ToInt32(file, address);
+			int animaddr = ByteConverter.ToInt32(file, address + 4);
 			int ncamptr = (int)(ncamaddr - imageBase);
 			int animptr = (int)(animaddr - imageBase);
 			if (labels != null && labels.ContainsKey(ncamptr))
@@ -1754,10 +1754,9 @@ namespace SplitTools.SAArc
 				CameraAnimation = "animation_" + animptr.ToString("X8");
 		}
 
-		public static NJS_CAMERA[] Load(string filename)
-		{
-			return IniSerializer.Deserialize<NJS_CAMERA[]>(filename);
-		}
+		public NJS_CAMERA() { }
+
+		public static NJS_CAMERA Load(string filename) => IniSerializer.Deserialize<NJS_CAMERA>(filename);
 
 		public static int Size { get { return 0x40; } }
 
