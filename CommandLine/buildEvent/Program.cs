@@ -143,7 +143,24 @@ namespace buildEvent
 				evfilename = argq.Dequeue();
 				Console.WriteLine("File: {0}", evfilename);
 				System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-				if (mexfwcard.IsMatch(name))
+				if (name.Contains("TAILSPLAIN", StringComparison.OrdinalIgnoreCase))
+				{
+					Console.WriteLine("Building Tails' Cyclone file");
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+						sa2EventTailsPlane.Build(be, evfilename);
+					else
+						sa2EventTailsPlane.Build(be, evfilename + ".prs");
+				}
+				else if (name.EndsWith("TEXLIST.PRS", StringComparison.OrdinalIgnoreCase)
+					|| name.EndsWith("TEXLIST", StringComparison.OrdinalIgnoreCase))
+				{
+					Console.WriteLine($"Building Event Texlist file {name}");
+					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+						sa2Event.BuildTexlist(be, evfilename);
+					else
+						sa2Event.BuildTexlist (be, evfilename + ".prs");
+				}
+				else if (mexfwcard.IsMatch(name))
 				{
 					Console.WriteLine($"Building Mini-Event Extra file {name}");
 					if (fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))

@@ -529,9 +529,9 @@ namespace SplitTools.SAArc
 		}
 		public bool BigEndian { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
-
+		[JsonIgnore]
 		public SA2CharacterFlags CharacterFlags { get; set; }
-		[JsonProperty(PropertyName = "Characters")]
+		[JsonProperty(PropertyName = "CharacterFlags")]
 		public string CharFlagString
 		{
 			get { return CharacterFlags.ToString(); }

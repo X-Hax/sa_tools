@@ -72,4 +72,5 @@
   <SplitEntryEvent EventFile="SONIC2\EVENT\E0210" EventType="MainBIN" CmnName="Event #210: Last Episode Ending/Credits" LabelFile="E0210_BIN" />
   <SplitEntryEvent EventFile="SONIC2\EVENT\E0211" EventType="MainPRS" CmnName="Event #211: Epilogue" LabelFile="E0211" />
   <SplitEntryEvent EventFile="SONIC2\EVENT\E0350" EventType="MainPRS" CmnName="Event #350: SA2 Intro Cinematic" LabelFile="E0350" />
+  <SplitEntryEvent EventFile="SONIC2\EVENT\TAILSPLAIN" EventType="Cyclone" CmnName="Event #409: Prison Island Explodes" LabelFile="TAILSPLAIN" />
 </SplitTemplate>

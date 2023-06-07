@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SplitTools.SAArc
 {
@@ -1142,36 +1143,60 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
-				byte[] fc;
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					fc = Prs.Decompress(filename);
-				else
-					fc = File.ReadAllBytes(filename);
+				filename = Path.GetFullPath(filename);
+				if (Directory.Exists(filename))
+					filename += ".prs";
+				Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
-				EventTexlistData ini;
+				EventTexlistData evinfo;
 				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
 				using (JsonTextReader jtr = new JsonTextReader(tr))
-					ini = js.Deserialize<EventTexlistData>(jtr);
-				bool battle = ini.Game == Game.SA2B;
+					evinfo = js.Deserialize<EventTexlistData>(jtr);
+				uint gamekey;
 				if (!isBigEndian.HasValue)
-					ByteConverter.BigEndian = ini.BigEndian;
+					ByteConverter.BigEndian = evinfo.BigEndian;
 				else
 					ByteConverter.BigEndian = isBigEndian.Value;
-				List<byte> texdata = new List<byte>();
-		//		foreach (SubtitleInfo subs in ini.Subtitles)
-		//		{
-		//			texdata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
-		//			texdata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
-		//		}
-		//		foreach (AudioInfo audio in ini.AudioInfo)
-		//		{
-		//			texdata.AddRange(audio.GetBytes());
-		//		}
-				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-					FraGag.Compression.Prs.Compress(texdata.ToArray(), filename);
+				List<byte> evfile = new List<byte>();
+				List<byte> databytes = new List<byte>();
+				if (evinfo.BigEndian == true)
+					gamekey = 0;
 				else
-					File.WriteAllBytes(filename, texdata.ToArray());
+					gamekey = 0xCBC0000;
+				uint imageBase = gamekey + 4;
+				uint tlsstart = gamekey + 4;
+				NJS_TEXLIST tex = NJS_TEXLIST.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "ExternalTexlist.satex"));
+				List<byte> texbytes = new List<byte>();
+				List<byte> namebytes = new List<byte>();
+				Dictionary<int, int> texaddrs = new Dictionary<int, int>();
+				for (int t = 0; t < tex.NumTextures; t++)
+				{
+					string names = tex.TextureNames[t];
+					string texname = names.PadRight(28);
+					namebytes.AddRange(Encoding.ASCII.GetBytes(texname));
+					namebytes.AddRange(new byte[4]);
+					int texaddr = 0x20 * t;
+					texaddrs[t] = texaddr;
+				}
+				databytes.AddRange(namebytes);
+				int texlistaddr = (int)(imageBase + (tex.NumTextures * 0xC));
+				imageBase += (uint)((tex.NumTextures * 0xC) + 8);
+				evfile.AddRange(ByteConverter.GetBytes(texlistaddr));
+				for (int n = 0; n < tex.NumTextures; n++)
+				{
+					int tlsaddrs = (int)imageBase + texaddrs[n];
+					evfile.AddRange(ByteConverter.GetBytes(tlsaddrs));
+					evfile.AddRange(new byte[8]);
+				}
+				evfile.AddRange(ByteConverter.GetBytes(tlsstart));
+				evfile.AddRange(ByteConverter.GetBytes(tex.NumTextures));
+				evfile.AddRange(databytes);
+
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
+				else
+					File.WriteAllBytes(filename, evfile.ToArray());
 			}
 			finally
 			{
