@@ -1,10 +1,12 @@
 ﻿using FraGag.Compression;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SAModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web.Services.Description;
 
 namespace SplitTools.SAArc
 {
@@ -82,6 +84,7 @@ namespace SplitTools.SAArc
 				{
 					address = 8 + (4 * i);
 					int ptr = fc.GetPointer(address, key);
+					MiniEventMaster data = new MiniEventMaster();
 					string chnm = null;
 					string texname = null;
 					switch (i)
@@ -124,7 +127,6 @@ namespace SplitTools.SAArc
 						ini.MainDataAddrs.Add(i, $"evassets_{ptr:X8}");
 						Console.WriteLine($"{chnm} is in this Mini-Event");
 						Directory.CreateDirectory(Path.Combine(Path.GetFileNameWithoutExtension(evfilename), $"{chnm}"));
-						MiniEventMaster data = new MiniEventMaster();
 						switch (i)
 						{
 							case 0:
@@ -177,6 +179,7 @@ namespace SplitTools.SAArc
 							if (ptr2 != 0)
 							{
 								MiniEventParts parts = new MiniEventParts();
+								parts.Part = prnm;
 								parts.Model = GetModel(fc, address2, key, $"{chnm}\\{prnm}.sa2mdl", $"{evname} {chnm} {partmetaname}");
 								if (parts.Model != null)
 								{
@@ -203,11 +206,16 @@ namespace SplitTools.SAArc
 								}
 								data.Parts.Add(parts);
 							}
+							else
+								data.Parts.Add(null);
 						}
 						ini.MainData.Add(data);
 					}
 					else
+					{
+						ini.MainData.Add(null);
 						ini.MainDataAddrs.Add(i, null);
+					}
 				}
 				int cam = fc.GetPointer(4, key);
 				int camaddr = ByteConverter.ToInt32(fc, 4);
@@ -260,86 +268,188 @@ namespace SplitTools.SAArc
 			}
 		}
 
-		public static void Build(string filename)
+		public static void Build(bool? isBigEndian, string filename)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
 			motionfiles.Clear();
 			camarrayfiles.Clear();
 
-			byte[] fc;
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				fc = Prs.Decompress(filename);
-			else
-				fc = File.ReadAllBytes(filename);
-			string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
-			JsonSerializer js = new JsonSerializer();
-			MiniEventIniData ini;
-			using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
-			using (JsonTextReader jtr = new JsonTextReader(tr))
-				ini = js.Deserialize<MiniEventIniData>(jtr);
-			uint key;
-			if (fc[4] == 0x81)
+			string dir = Environment.CurrentDirectory;
+			try
 			{
-				ByteConverter.BigEndian = true;
-				key = 0x816DFE60;
-			}
-			else
-			{
-				ByteConverter.BigEndian = false;
-				key = 0xCB00000;
-			}
-			List<byte> modelbytes = new List<byte>(fc);
-			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".sa2mdl", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
-				modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes((uint)(key + modelbytes.Count), false, labels, new List<uint>(), out uint _));
-			foreach (string file in ini.Files.Where(a => a.Key.EndsWith(".saanim", StringComparison.OrdinalIgnoreCase) && HelperFunctions.FileHash(Path.Combine(path, a.Key)) != a.Value).Select(a => a.Key))
-				modelbytes.AddRange(NJS_MOTION.Load(Path.Combine(path, file)).GetBytes((uint)(key + modelbytes.Count), labels, out uint _));
-			fc = modelbytes.ToArray();
-			int address;
-			for (int i = 0; i < 8; i++)
-			{
-				address = 8 + (4 * i);
-				int ptr = fc.GetPointer(address, key);
-				if (ptr != 0)
+				filename = Path.GetFullPath(filename);
+				if (Directory.Exists(filename))
+					filename += ".prs";
+				Environment.CurrentDirectory = Path.GetDirectoryName(filename);
+				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
+				JsonSerializer js = new JsonSerializer();
+				MiniEventIniData evinfo;
+				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
+				using (JsonTextReader jtr = new JsonTextReader(tr))
+				evinfo = js.Deserialize<MiniEventIniData>(jtr);
+				uint gamekey;
+				if (!isBigEndian.HasValue)
+					ByteConverter.BigEndian = evinfo.BigEndian;
+				else
+					ByteConverter.BigEndian = isBigEndian.Value;
+				List<byte> evfile = new List<byte>();
+				List<byte> databytes = new List<byte>();
+				Dictionary<string, int> animaddrs = new Dictionary<string, int>();
+				Dictionary<int, int> banimaddrs = new Dictionary<int, int>();
+				Dictionary<int, uint> mdladdrs = new Dictionary<int, uint>();
+				Dictionary<int, int> panimaddrs = new Dictionary<int, int>();
+				Dictionary<int, int> pshapeaddrs = new Dictionary<int, int>();
+				Dictionary<int, int> masterarrayaddrs = new Dictionary<int, int>();
+				Dictionary<string, uint> labels = new Dictionary<string, uint>();
+				if (evinfo.BigEndian == true)
+					gamekey = 0x816DFE60;
+				else
+					gamekey = 0xCB00000;
+				uint imageBase = gamekey + 0x2C;
+				// Character flags
+				evfile.AddRange(ByteConverter.GetBytes(Convert.ToUInt32(evinfo.CharacterFlags)));
+				for (int i = 0; i < 8; i++)
 				{
-					MiniEventMaster info = ini.MainData[i];
-					if (info.BodyAnims != null)
+					if (evinfo.MainDataAddrs[i] != null)
 					{
-						if (labels.ContainsKeySafe(info.BodyAnims))
-							ByteConverter.GetBytes(labels[info.BodyAnims]).CopyTo(fc, ptr);
-						int address2;
-						for (int j = 0; j < 4; j++)
+						masterarrayaddrs[i] = (int)imageBase;
+						MiniEventMaster master = evinfo.MainData[i];
+						if (master.BodyAnims != null)
 						{
-							address2 = ptr + 4 + (0xC * j);
-							int ptr2 = fc.GetPointer(address2, key);
-							if (ptr2 != 0)
+							for (int p = 0; p < 4; p++)
 							{
-								MiniEventParts parts = ini.MainData[i].Parts[j];
-								if (info.Parts != null)
+								MiniEventParts part = master.Parts[p];
+								// There has to be a better way to do this
+								int constant = i * 10;
+								if (part != null)
 								{
-									if (labels.ContainsKeySafe(info.Parts[j].Model))
-										ByteConverter.GetBytes(labels[info.Parts[j].Model]).CopyTo(fc, address2);
-									if (labels.ContainsKeySafe(info.Parts[j].Anims))
-										ByteConverter.GetBytes(labels[info.Parts[j].Anims]).CopyTo(fc, address2 + 4);
-									if (labels.ContainsKeySafe(info.Parts[j].ShapeMotions))
-										ByteConverter.GetBytes(labels[info.Parts[j].ShapeMotions]).CopyTo(fc, address2 + 8);
+									if (part.Anims != null)
+									{
+										List<byte> animbytes = new List<byte>();
+										NJS_MOTION anim = NJS_MOTION.Load(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), part.Part + ".saanim"));
+										animbytes.AddRange(anim.GetBytes(imageBase, out uint addranim));
+										panimaddrs[constant + p] = (int)(addranim + imageBase);
+										databytes.AddRange(animbytes);
+										imageBase += (uint)animbytes.Count;
+									}
+									else
+									{
+										panimaddrs[constant + p] = 0;
+									}
+									if (part.ShapeMotions != null)
+									{
+										List<byte> shapebytes = new List<byte>();
+										NJS_MOTION shape = NJS_MOTION.Load(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), part.Part + "Shape.saanim"));
+										shapebytes.AddRange(shape.GetBytes(imageBase, out uint addrshape));
+										pshapeaddrs[constant + p] = (int)(addrshape + imageBase);
+										databytes.AddRange(shapebytes);
+										imageBase += (uint)shapebytes.Count;
+									}
+									else
+									{
+										pshapeaddrs[constant + p] = 0;
+									}
+									NJS_OBJECT partmdldata = new ModelFile(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), part.Part + ".sa2mdl")).Model;
+									byte[] tmpmdl = partmdldata.GetBytes(imageBase, false, labels, new List<uint>(), out uint addrmdl);
+									databytes.AddRange(tmpmdl);
+									mdladdrs[constant + p] = labels[partmdldata.Name];
+									imageBase += (uint)tmpmdl.Length;
 								}
+								else
+								{
+									mdladdrs[constant + p] = 0;
+									panimaddrs[constant + p] = 0;
+									pshapeaddrs[constant + p] = 0;
+								}
+							}
+							List<byte> banimbytes = new List<byte>();
+							NJS_MOTION banim = NJS_MOTION.Load(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), "Body.saanim"));
+							banimbytes.AddRange(banim.GetBytes(imageBase, out uint addrbody));
+							banimaddrs[i] = (int)(addrbody + imageBase);
+							databytes.AddRange(banimbytes);
+							imageBase += (uint)banimbytes.Count;
+						}
+					}
+				}
+				// Camera data always exists
+				NJS_CAMERA camfile = NJS_CAMERA.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "CameraAttributes.ini"));
+				List<byte> ncambytes = new List<byte>();
+				NinjaCamera ndata = camfile.NinjaCameraData;
+				int ncamaddr = (int)imageBase;
+				ncambytes.AddRange(ndata.GetBytes());
+				databytes.AddRange(ncambytes);
+				imageBase += (uint)ncambytes.Count;
+
+				List<byte> canimbytes = new List<byte>();
+				NJS_MOTION camanim = NJS_MOTION.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "Camera.saanim"));
+				canimbytes.AddRange(camanim.GetBytes(imageBase, out uint addrcam));
+				animaddrs[camanim.Name] = (int)(addrcam + imageBase);
+				databytes.AddRange(canimbytes);
+				imageBase += (uint)canimbytes.Count;
+				evfile.AddRange(ByteConverter.GetBytes(animaddrs[camanim.Name]));
+
+				// Sets up NJS_CAMERA pointers
+				databytes.AddRange(ByteConverter.GetBytes(ncamaddr));
+				databytes.AddRange(ByteConverter.GetBytes(animaddrs[camanim.Name]));
+
+				// Calculates pointers for main arrays
+				imageBase += 8;
+				for (int a = 0; a < 8; a++)
+				{
+					if (evinfo.MainDataAddrs[a] != null)
+					{
+						int masterptr = (int)imageBase;
+						evfile.AddRange(ByteConverter.GetBytes(imageBase));
+						imageBase += 0x34;
+					}
+					else
+						evfile.AddRange(new byte[4]);
+				}
+				evfile.AddRange(new byte[4]);
+				// Raw data goes here
+				evfile.AddRange(databytes);
+				// Calculations for master pointer array
+				for (int d = 0; d < 8; d++)
+				{
+					MiniEventMaster data = evinfo.MainData[d];
+					if (data != null)
+					{
+						if (data.BodyAnims != null)
+						{
+							evfile.AddRange(ByteConverter.GetBytes(banimaddrs[d]));
+							for (int p = 0; p < 4; p++)
+							{
+								int constant = d * 10;
+								MiniEventParts part = data.Parts[p];
+								if (part != null)
+								{
+									evfile.AddRange(ByteConverter.GetBytes(mdladdrs[constant + p]));
+									if (part.Anims != null)
+										evfile.AddRange(ByteConverter.GetBytes(panimaddrs[constant + p]));
+									else
+										evfile.AddRange(new byte[4]);
+									if (part.ShapeMotions != null)
+										evfile.AddRange(ByteConverter.GetBytes(pshapeaddrs[constant + p]));
+									else
+										evfile.AddRange(new byte[4]);
+								}
+								else
+									evfile.AddRange(new byte[0xC]);
 							}
 						}
 					}
 				}
+
+				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
+				else
+					File.WriteAllBytes(filename, evfile.ToArray());
 			}
-			int cam = fc.GetPointer(4, key);
-			if (cam != 0 && labels.ContainsKeySafe(ini.Camera))
+			finally
 			{
-				ByteConverter.GetBytes(labels[ini.Camera]).CopyTo(fc, 4);
-				ByteConverter.GetBytes(labels[ini.Camera]).CopyTo(fc, cam + 0x10);
+				Environment.CurrentDirectory = dir;
 			}
-			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				Prs.Compress(fc, filename);
-			else
-				File.WriteAllBytes(filename, fc);
 		}
 
 		//Get Functions
@@ -419,8 +529,14 @@ namespace SplitTools.SAArc
 		}
 		public bool BigEndian { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
-
+		[JsonIgnore]
 		public SA2CharacterFlags CharacterFlags { get; set; }
+		[JsonProperty(PropertyName = "CharacterFlags")]
+		public string CharFlagString
+		{
+			get { return CharacterFlags.ToString(); }
+			set { CharacterFlags = (SA2CharacterFlags)Enum.Parse(typeof(SA2CharacterFlags), value); }
+		}
 		public string Camera { get; set; }
 		public string NinjaCamera { get; set; }
 		public Dictionary<int, string> MainDataAddrs { get; set; } = new Dictionary<int, string>();
@@ -437,6 +553,7 @@ namespace SplitTools.SAArc
 
 	public class MiniEventParts
 	{
+		public string Part { get; set; }
 		public string Model { get; set; }
 		public string Anims { get; set; }
 		public string ShapeMotions { get; set; }

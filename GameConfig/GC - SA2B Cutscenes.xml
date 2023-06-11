@@ -74,4 +74,5 @@
   <SplitEntryEvent EventFile="files\event\e0350" EventType="MainPRS" CmnName="Event #350: SA2 Intro Cinematic (Dreamcast, Unfinished)" LabelFile="E0350" />
   <SplitEntryEvent EventFile="files\event\e0360" EventType="MainPRS" CmnName="Event #360: SA2B Intro Cinematic (Japanese Logo)" LabelFile="E0360" />
   <SplitEntryEvent EventFile="files\event\e0361" EventType="MainPRS" CmnName="Event #361: SA2B Intro Cinematic (English Logo)" LabelFile="E0361" />
+  <SplitEntryEvent EventFile="files\event\tailsPlain" EventType="Cyclone" CmnName="Event #409: Prison Island Explodes" LabelFile="TAILSPLAIN" />
 </SplitTemplate>

@@ -4943,9 +4943,9 @@ namespace SplitTools
 	{
 		public Vertex Position { get; set; } // Camera position
 		public Vertex Vector { get; set; } // Camera vector in unit direction[Local Z axis]
-		[TypeConverter(typeof(UInt32HexConverter))]
+		//[TypeConverter(typeof(UInt32HexConverter))]
 		public int Roll { get; set; } // Camera roll
-		[TypeConverter(typeof(UInt32HexConverter))]
+		//[TypeConverter(typeof(UInt32HexConverter))]
 		public int Angle { get; set; } // Camera angle
 		public float NearClip { get; set; } // Near clip 
 		public float FarClip { get; set; } // Far clip
@@ -4968,6 +4968,11 @@ namespace SplitTools
 		{
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
+		public static NinjaCamera Load(string filename)
+		{
+			return IniSerializer.Deserialize<NinjaCamera>(filename);
+		}
+		public NinjaCamera(){ }
 
 		public static int Size { get { return 0x40; } }
 

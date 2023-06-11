@@ -74,4 +74,5 @@
   <SplitEntryEvent EventFile="resource\gd_PC\event\e0350" EventType="MainPC" CmnName="Event #350: SA2 Intro Cinematic (Dreamcast, Unfinished)" LabelFile="E0350" />
   <SplitEntryEvent EventFile="resource\gd_PC\event\e0360" EventType="MainPC" CmnName="Event #360: SA2B Intro Cinematic (Japanese Logo)" LabelFile="E0360" />
   <SplitEntryEvent EventFile="resource\gd_PC\event\e0361" EventType="MainPC" CmnName="Event #361: SA2B Intro Cinematic (English Logo)" LabelFile="E0361" />
+  <SplitEntryEvent EventFile="resource\gd_PC\event\tailsPlain" EventType="Cyclone" CmnName="Event #409: Prison Island Explodes" LabelFile="TAILSPLAIN" />
 </SplitTemplate>

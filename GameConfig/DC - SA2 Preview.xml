@@ -17,6 +17,7 @@
   <SplitEntryEvent EventFile="EVENT\E0103" EventType="Preview" CmnName="Event #103: Rouge Meets Knuckles" LabelFile="E0103" />
   <SplitEntryEvent EventFile="EVENT\ME0104" EventType="MiniEvent" CmnName="Event #104: Sand Ocean Mini-Event" LabelFile="ME0104" />
   <SplitEntryEvent EventFile="EVENT\E0106" EventType="Preview" CmnName="Event #106: Shadow's Pathos (Abridged)" LabelFile="E0106" />
+  <SplitEntryEvent EventFile="EVENT\TAILSPLAIN" EventType="Cyclone" CmnName="Event #409: Prison Island Explodes" LabelFile="TAILSPLAIN" />
   <SplitEntryMDL ModelFile="SONICMDL.PRS" LabelFile="SONICMDL" MTNLabelFile="SONICMTN" CmnName="Sonic Model Data">
     <MotionFile>PLCOMMTN.PRS</MotionFile>
     <MotionFile>SONICMTN.PRS</MotionFile>

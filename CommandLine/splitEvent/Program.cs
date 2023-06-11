@@ -114,7 +114,9 @@ namespace splitEvent
 				fullpath_out = Path.GetFullPath(fullpath_out);
 			}
 			Console.WriteLine("Output folder: {0}", fullpath_out);
-			if (name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
+			if (name.Contains("tailsplain", StringComparison.OrdinalIgnoreCase))
+				sa2EventTailsPlane.Split(fullpath_bin, fullpath_out);
+			else if (name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
 				sa2Event.SplitExternalTexlist(fullpath_bin, fullpath_out);
 			else if (mexfwcard.IsMatch(name))
 				sa2EventExtra.SplitMini(fullpath_bin, fullpath_out);

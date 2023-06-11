@@ -822,6 +822,9 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 					case "MainBIN":
 						sa2Event.Split(filePath, fileOutputFolder, labelfile);
 						break;
+					case "Cyclone":
+						sa2EventTailsPlane.Split(filePath, fileOutputFolder, labelfile);
+						break;
 				}
 			}
 		}
