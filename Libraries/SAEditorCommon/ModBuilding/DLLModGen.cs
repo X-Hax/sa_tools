@@ -396,7 +396,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				List<string> labels = new List<string>();
 				Dictionary<string, uint> texlists = new Dictionary<string, uint>();
 				foreach (KeyValuePair<string, FileTypeHash> item in
-					IniData.Files.Where(i => itemsToExport[i.Value.Name]))
+					IniData.Files.Where(i => itemsToExport[i.Key]))
 				{
 					switch (item.Value.Type)
 					{
@@ -433,7 +433,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					writer.WriteLine();
 				}
-				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
+				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
 					switch (item.Type)
 					{
 						case "soundlist":
