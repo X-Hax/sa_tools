@@ -34,6 +34,8 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{ "gcmodel", "NJS_OBJECT *" },
 			{ "gcmodelarray", "NJS_OBJECT **" },
 			{ "gcattach", "SA2B_Model **" },
+			{ "motion", "NJS_MOTION *" },
+			{ "animation", "NJS_MOTION *" },
 			{ "actionarray", "NJS_ACTION **" },
 			{ "motionarray", "NJS_MOTION **" },
 			{ "morph", "NJS_MODEL_SADX *" },
@@ -301,7 +303,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 
 			List<string> labels = new List<string>();
 			foreach (KeyValuePair<string, FileTypeHash> item in
-				IniData.Files.Where(i => itemsToExport[i.Value.Name]))
+				IniData.Files.Where(i => itemsToExport[i.Key]))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dstfol, item.Key)));
 				File.Copy(item.Key, Path.Combine(dstfol, item.Key), true);
@@ -367,7 +369,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				}
 			}
 
-			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
+			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
 			{
 				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
 				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
@@ -423,6 +425,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 							labels.AddRange(mdl.GetLabels());
 							break;
 						case "animation":
+						case "motion":
 							NJS_MOTION ani = NJS_MOTION.Load(item.Key);
 							ani.ToStructVariables(writer);
 							labels.Add(ani.Name);
