@@ -15,14 +15,4 @@
 		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-		<Compile Remove="Speed Highway\BasicDisplayXYZ.cs" />
-		<Compile Remove="Speed Highway\BasicDisplay_Y.cs" />
-		<Compile Remove="Speed Highway\O Ev.cs" />
-		<Compile Remove="Speed Highway\O FlyS.cs" />
-		<Compile Remove="Speed Highway\O Fount.cs" />
-		<Compile Remove="Speed Highway\O TankA.cs" />
-		<Compile Remove="Speed Highway\OPoster.cs" />
-		<Compile Remove="Speed Highway\Sign B.cs" />
-	</ItemGroup>
 </Project>
