@@ -4398,14 +4398,15 @@ namespace SAModel.SAMDL
 			comboAnimList.Items.Clear();
 			comboAnimList.Items.Add("None ");
 			int wd = TextRenderer.MeasureText("None ", comboAnimList.Font).Width;
-			foreach (NJS_MOTION anim in animationList)
-			{
-				string combo = anim.Name + " [" + anim.Description + "]";
-				comboAnimList.Items.Add(combo);
-				wd = Math.Max(wd, TextRenderer.MeasureText(combo, comboAnimList.Font).Width);
-			}
+			if (animationList != null)
+				foreach (NJS_MOTION anim in animationList)
+				{
+					string combo = anim.Name + " [" + anim.Description + "]";
+					comboAnimList.Items.Add(combo);
+					wd = Math.Max(wd, TextRenderer.MeasureText(combo, comboAnimList.Font).Width);
+				}
 			comboAnimList.Size = new System.Drawing.Size(wd, comboAnimList.Height);
-			comboAnimList.SelectedIndex = animationList.IndexOf(currentAnimation) + 1;
+			comboAnimList.SelectedIndex = currentAnimation != null ? animationList.IndexOf(currentAnimation) + 1 : 0;
 		}
 
 		private void UpdateAnimationStatus()
