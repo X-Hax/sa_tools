@@ -2075,7 +2075,7 @@ namespace SAModel.SAMDL
 					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 					break;
 			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname, selectedObject.Attach is ChunkAttach))
 			{
 				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
 				dlg.ShowDialog(this);

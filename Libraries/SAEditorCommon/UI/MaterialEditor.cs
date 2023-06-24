@@ -18,8 +18,9 @@ namespace SAModel.SAEditorCommon.UI
 		private List<NJS_MATERIAL> materials; // Material list that is being edited
 		private readonly List<NJS_MATERIAL> materialsOriginal; // Original material list at the time of opening the dialog
 		private readonly BMPInfo[] textures;
+		private bool chunk = false;
 
-		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
+		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null, bool chunk = false)
 		{
 			materials = mats;
 			materialsOriginal = new List<NJS_MATERIAL>();
@@ -31,6 +32,7 @@ namespace SAModel.SAEditorCommon.UI
 			InitializeComponent();
 			if (!string.IsNullOrEmpty(matsName))
 				this.Text = "Material Editor: " + matsName;
+			this.chunk = chunk;
 		}
 
 		private void MaterialEditor_Load(object sender, EventArgs e)
@@ -106,9 +108,15 @@ namespace SAModel.SAEditorCommon.UI
 			DisplayFlags(index);
 
 			// Material list controls
-			upButton.Enabled = materials.Count > 1 && index > 0;
-			downButton.Enabled = materials.Count > 1 && index < materials.Count - 1;
-			deleteButton.Enabled = materials.Count > 1;
+			if (!chunk)
+			{
+				resetButton.Enabled = cloneButton.Enabled = true;
+				upButton.Enabled = materials.Count > 1 && index > 0;
+				downButton.Enabled = materials.Count > 1 && index < materials.Count - 1;
+				deleteButton.Enabled = materials.Count > 1;
+			}
+			else
+				resetButton.Enabled = cloneButton.Enabled = upButton.Enabled = downButton.Enabled = deleteButton.Enabled = false;
 		}
 
 		private void RaiseFormUpdated()
