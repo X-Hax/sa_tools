@@ -57,7 +57,7 @@ namespace SAModel.GC
 		public static GCParameter Read(byte[] file, int address)
 		{
 			GCParameter result = null;
-			ParameterType paramType = (ParameterType)BitConverter.ToUInt32(file, address);
+			ParameterType paramType = (ParameterType)file[address];
 
 			switch (paramType)
 			{
@@ -98,14 +98,15 @@ namespace SAModel.GC
 		/// <param name="writer">The stream writer</param>
 		public void Write(BinaryWriter writer)
 		{
-			writer.Write((uint)type);
+			writer.Write((byte)type);
 			writer.Write(data);
 		}
 
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes((uint)type));
+			result.Add((byte)type);
+			result.AddRange(new byte[3]);
 			result.AddRange(ByteConverter.GetBytes(data));
 			return result.ToArray();
 		}
@@ -113,7 +114,7 @@ namespace SAModel.GC
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append((uint)type);
+			result.Append((byte)type);
 			result.Append(", ");
 			result.AppendFormat(data.ToCHex());
 			result.Append(" }");

@@ -181,7 +181,7 @@ namespace SplitTools.SAArc
 			}
 		}
 
-		public static void Build(bool? isBigEndian, string filename)
+		public static void Build(bool? isBigEndian, string filename, string fileOutputPath)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
@@ -191,6 +191,7 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
+				if (fileOutputPath[fileOutputPath.Length - 1] != '/') fileOutputPath = string.Concat(fileOutputPath, "/");
 				filename = Path.GetFullPath(filename);
 				if (Directory.Exists(filename))
 					filename += ".prs";
@@ -218,7 +219,7 @@ namespace SplitTools.SAArc
 					gamekey = 0xCB00000;
 				uint imageBase = gamekey + 0x10;
 				uint tlsstart = gamekey + 0x10;
-				NJS_TEXLIST tex = NJS_TEXLIST.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "tailsPlain.satex"));
+				NJS_TEXLIST tex = NJS_TEXLIST.Load(Path.Combine(path, "tailsPlain.satex"));
 				List<byte> texbytes = new List<byte>();
 				List<byte> namebytes = new List<byte>();
 				Dictionary<int, int> texaddrs = new Dictionary<int, int>();
@@ -234,20 +235,20 @@ namespace SplitTools.SAArc
 				int texlistaddr = (int)(imageBase + (tex.NumTextures * 0xC));
 				imageBase += (uint)((tex.NumTextures * 0xC) + 8);
 
-				NJS_OBJECT partmdldata = new ModelFile(Path.Combine(Path.GetFileNameWithoutExtension(filename), "tailsPlain.sa2mdl")).Model;
+				NJS_OBJECT partmdldata = new ModelFile(Path.Combine(path, "tailsPlain.sa2mdl")).Model;
 				byte[] tmpmdl = partmdldata.GetBytes(imageBase, false, labels, new List<uint>(), out uint addrmdl);
 				databytes.AddRange(tmpmdl);
 				mdladdrs[0] = labels[partmdldata.Name];
 				imageBase += (uint)tmpmdl.Length;
 
 				List<byte> animbytes = new List<byte>();
-				NJS_MOTION anim = NJS_MOTION.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "tailsPlain.saanim"));
+				NJS_MOTION anim = NJS_MOTION.Load(Path.Combine(path, "tailsPlain.saanim"));
 				animbytes.AddRange(anim.GetBytes(imageBase, out uint addranim));
 				panimaddrs[0] = (int)(addranim + imageBase);
 				databytes.AddRange(animbytes);
 				imageBase += (uint)animbytes.Count;
 
-				NJS_CAMERA camfile = NJS_CAMERA.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "CameraAttributes.ini"));
+				NJS_CAMERA camfile = NJS_CAMERA.Load(Path.Combine(path, "CameraAttributes.ini"));
 				List<byte> ncambytes = new List<byte>();
 				NinjaCamera ndata = camfile.NinjaCameraData;
 				int ncamaddr = (int)imageBase;
@@ -256,7 +257,7 @@ namespace SplitTools.SAArc
 				imageBase += (uint)ncambytes.Count;
 
 				List<byte> canimbytes = new List<byte>();
-				NJS_MOTION camanim = NJS_MOTION.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "Camera.saanim"));
+				NJS_MOTION camanim = NJS_MOTION.Load(Path.Combine(path, "Camera.saanim"));
 				canimbytes.AddRange(camanim.GetBytes(imageBase, out uint addrcam));
 				animaddrs[camanim.Name] = (int)(addrcam + imageBase);
 				databytes.AddRange(canimbytes);
@@ -282,8 +283,19 @@ namespace SplitTools.SAArc
 				evfile.AddRange(ByteConverter.GetBytes(tex.NumTextures));
 				evfile.AddRange(databytes);
 
+				if (fileOutputPath.Length != 0)
+				{
+					if (!Directory.Exists(fileOutputPath))
+						Directory.CreateDirectory(fileOutputPath);
+					filename = Path.Combine(fileOutputPath, Path.GetFileName(filename));
+				}
+
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				{ 
 					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
+					if (!File.Exists(filename))
+						File.Create(filename);
+				}
 				else
 					File.WriteAllBytes(filename, evfile.ToArray());
 			}

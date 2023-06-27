@@ -46,6 +46,7 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = false;
 					ini.Game = Game.SA2;
 					battle = false;
+					ini.BattleFormat = false;
 					beta = true;
 					ini.BigEndian = false;
 				}
@@ -55,6 +56,7 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = false;
 					ini.Game = Game.SA2;
 					battle = false;
+					ini.BattleFormat = false;
 					beta = false;
 					ini.BigEndian = false;
 				}
@@ -64,6 +66,7 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = true;
 					ini.Game = Game.SA2B;
 					battle = true;
+					ini.BattleFormat = true;
 					beta = false;
 					ini.BigEndian = true;
 				}
@@ -192,6 +195,14 @@ namespace SplitTools.SAArc
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
+							if (i < 64)
+								light.LightSet = "Light1";
+							else if (i < 128)
+								light.LightSet = "Light2";
+							else if (i < 192)
+								light.LightSet = "Light3";
+							else
+								light.LightSet = "Light4";
 							light.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (light.FrameStart != 0)
 								lightcount++;
@@ -249,7 +260,7 @@ namespace SplitTools.SAArc
 							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
 							particle2.Type = ByteConverter.ToInt32(fc, address + 0x38);
 							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
-							ini.ParticleEffects2.Add(particle2);
+							ini.ParticleGenerators.Add(particle2);
 						}
 						if (particle2count != 0)
 							Console.WriteLine("Event contains {0} active particle generator entr{1}.", particle2count, particle2count == 1 ? "y" : "ies");
@@ -283,6 +294,14 @@ namespace SplitTools.SAArc
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
+							if (i < 256)
+								light.LightSet = "Light1";
+							else if (i < 512)
+								light.LightSet = "Light2";
+							else if (i < 768)
+								light.LightSet = "Light3";
+							else
+								light.LightSet = "Light4";
 							light.FrameStart = ByteConverter.ToInt32(fc, address);
 							if (light.FrameStart != 0)
 								lightcount++;
@@ -340,7 +359,7 @@ namespace SplitTools.SAArc
 							particle2.Unk9 = ByteConverter.ToInt32(fc, address + 0x34);
 							particle2.Type = ByteConverter.ToInt32(fc, address + 0x38);
 							particle2.Unk11 = ByteConverter.ToInt32(fc, address + 0x3C);
-							ini.ParticleEffects2.Add(particle2);
+							ini.ParticleGenerators.Add(particle2);
 						}
 						if (particle2count != 0)
 							Console.WriteLine("Event contains {0} active particle generator entr{1}.", particle2count, particle2count == 1 ? "y" : "ies");
@@ -494,24 +513,35 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = dir;
 			}
 		}
-		public static void Build(bool? isBigEndian, bool? isLanguageFile, string filename)
+		public static void Build(bool? isBigEndian, bool? isLanguageFile, string filename, string fileOutputPath)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
 			{
+				if (fileOutputPath[fileOutputPath.Length - 1] != '/') fileOutputPath = string.Concat(fileOutputPath, "/");
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
 				EventExtraIniData ini;
 				using (TextReader tr = File.OpenText(Path.Combine(path, Path.ChangeExtension(Path.GetFileName(filename), ".json"))))
 				using (JsonTextReader jtr = new JsonTextReader(tr))
 					ini = js.Deserialize<EventExtraIniData>(jtr);
-				bool battle = ini.Game == Game.SA2B;
-				bool dcbeta = ini.Game == Game.SA2;
+				bool battle = ini.BattleFormat;
+				//bool dcbeta = ini.Game == Game.SA2;
 				bool language = ini.LanguageOnly;
 				if (!isBigEndian.HasValue)
+				{
 					ByteConverter.BigEndian = ini.BigEndian;
+					battle = ini.BattleFormat;
+				}
 				else
+				{
 					ByteConverter.BigEndian = isBigEndian.Value;
+					if (ByteConverter.BigEndian == true)
+						battle = true;
+					else
+						battle = false;
+
+				}
 				if (!isLanguageFile.HasValue)
 					language = ini.LanguageOnly;
 				else
@@ -519,7 +549,10 @@ namespace SplitTools.SAArc
 				List<byte> extradata = new List<byte>();
 				foreach (SubtitleInfo subs in ini.Subtitles)
 				{
+					if (subs.FrameStart != -1)
 					extradata.AddRange(ByteConverter.GetBytes(subs.FrameStart));
+					else
+						extradata.AddRange(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF });
 					extradata.AddRange(ByteConverter.GetBytes(subs.VisibleTime));
 				}
 				foreach (AudioInfo audio in ini.AudioInfo)
@@ -549,7 +582,7 @@ namespace SplitTools.SAArc
 					{
 						extradata.AddRange(blur.GetBytes());
 					}
-					foreach (ParticleEffects2 particle2 in ini.ParticleEffects2)
+					foreach (ParticleEffects2 particle2 in ini.ParticleGenerators)
 					{
 						extradata.AddRange(particle2.GetBytes());
 					}
@@ -557,6 +590,12 @@ namespace SplitTools.SAArc
 					{
 						extradata.AddRange(video.GetBytes());
 					}
+				}
+				if (fileOutputPath.Length != 0)
+				{
+					if (!Directory.Exists(fileOutputPath))
+						Directory.CreateDirectory(fileOutputPath);
+					filename = Path.Combine(fileOutputPath, Path.GetFileName(filename));
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
@@ -572,11 +611,12 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = dir;
 			}
 		}
-		public static void BuildMini(bool? isBigEndian, string filename)
+		public static void BuildMini(bool? isBigEndian, string filename, string fileOutputPath)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
 			{
+				if (fileOutputPath[fileOutputPath.Length - 1] != '/') fileOutputPath = string.Concat(fileOutputPath, "/");
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
 				MiniEventExtraIniData ini;
@@ -600,6 +640,12 @@ namespace SplitTools.SAArc
 				foreach (MiscMiniEffect misc in ini.Unknown)
 				{
 					extradata.AddRange(misc.GetBytes());
+				}
+				if (fileOutputPath.Length != 0)
+				{
+					if (!Directory.Exists(fileOutputPath))
+						Directory.CreateDirectory(fileOutputPath);
+					filename = Path.Combine(fileOutputPath, Path.GetFileName(filename));
 				}
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
@@ -628,6 +674,7 @@ namespace SplitTools.SAArc
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
 		public bool BigEndian { get; set; }
+		public bool BattleFormat { get; set; }
 		public bool LanguageOnly { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<AudioInfo> AudioInfo { get; set; } = new List<AudioInfo>();
@@ -635,7 +682,7 @@ namespace SplitTools.SAArc
 		public List<ParticleEffects> ParticleEffects { get; set; } = new List<ParticleEffects>();
 		public List<LightingInfo> Lighting { get; set; } = new List<LightingInfo>();
 		public List<BlurInfo> BlurInfo { get; set; } = new List<BlurInfo>();
-		public List<ParticleEffects2> ParticleEffects2 { get; set; } = new List<ParticleEffects2>();
+		public List<ParticleEffects2> ParticleGenerators { get; set; } = new List<ParticleEffects2>();
 		public List<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
 	}
 
@@ -766,6 +813,7 @@ namespace SplitTools.SAArc
 	[Serializable]
 	public class LightingInfo
 	{
+		public string LightSet { get; set; }
 		public int FrameStart { get; set; }
 		public int FadeType { get; set; }
 		public Vertex LightDirection { get; set; }
@@ -877,7 +925,11 @@ namespace SplitTools.SAArc
 			result.Add(OverlayType);
 			result.Add(OverlayTexID);
 			result.AddRange(new byte[2]);
-			result.AddRange(Encoding.ASCII.GetBytes(VideoName));
+			// Some files are cute and have leftover text in them. This ensures the strings aren't too long.
+			if (VideoName.Length < 0x30)
+				result.AddRange(Encoding.ASCII.GetBytes(VideoName));
+			else
+				result.AddRange(Encoding.ASCII.GetBytes(VideoName.Remove(0x30)));
 			result.Align(0x40);
 			return result.ToArray();
 		}

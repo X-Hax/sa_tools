@@ -390,10 +390,20 @@ namespace SAModel.GC
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>();
-			result.Add(red);
-			result.Add(green);
-			result.Add(blue);
-			result.Add(alpha);
+			if (ByteConverter.BigEndian)
+			{
+				result.Add(alpha);
+				result.Add(blue);
+				result.Add(green);
+				result.Add(red);
+			}
+			else
+			{
+				result.Add(red);
+				result.Add(green);
+				result.Add(blue);
+				result.Add(alpha);
+			}
 			return result.ToArray();
 		}
 
