@@ -409,15 +409,9 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ( ");
-					result.Append(red);
-					result.Append(", ");
-					result.Append(green);
-					result.Append(", ");
-					result.Append(blue);
-					result.Append(", ");
-					result.Append(alpha);
-					result.Append(" ) }");
+			StringBuilder result = new StringBuilder("{ ");
+					result.Append("0x" + $"{alpha.ToString("X2")}" + $"{blue.ToString("X2")}" + $"{green.ToString("X2")}" + $"{red.ToString("X2")}");
+					result.Append(" }");
 			return result.ToString();
 		}
 		public void ToNJA(TextWriter writer, string vtype)

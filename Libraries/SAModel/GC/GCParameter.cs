@@ -116,6 +116,8 @@ namespace SAModel.GC
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append((byte)type);
 			result.Append(", ");
+			result.Append("0, 0, 0");
+			result.Append(", ");
 			result.AppendFormat(data.ToCHex());
 			result.Append(" }");
 			return result.ToString();
