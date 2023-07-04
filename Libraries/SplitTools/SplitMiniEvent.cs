@@ -268,7 +268,7 @@ namespace SplitTools.SAArc
 			}
 		}
 
-		public static void Build(bool? isBigEndian, string filename)
+		public static void Build(bool? isBigEndian, string filename, string fileOutputPath)
 		{
 			nodenames.Clear();
 			modelfiles.Clear();
@@ -278,6 +278,7 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
+				if (fileOutputPath[fileOutputPath.Length - 1] != '/') fileOutputPath = string.Concat(fileOutputPath, "/");
 				filename = Path.GetFullPath(filename);
 				if (Directory.Exists(filename))
 					filename += ".prs";
@@ -300,7 +301,6 @@ namespace SplitTools.SAArc
 				Dictionary<int, uint> mdladdrs = new Dictionary<int, uint>();
 				Dictionary<int, int> panimaddrs = new Dictionary<int, int>();
 				Dictionary<int, int> pshapeaddrs = new Dictionary<int, int>();
-				Dictionary<int, int> masterarrayaddrs = new Dictionary<int, int>();
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
 				if (evinfo.BigEndian == true)
 					gamekey = 0x816DFE60;
@@ -313,7 +313,6 @@ namespace SplitTools.SAArc
 				{
 					if (evinfo.MainDataAddrs[i] != null)
 					{
-						masterarrayaddrs[i] = (int)imageBase;
 						MiniEventMaster master = evinfo.MainData[i];
 						if (master.BodyAnims != null)
 						{
@@ -327,7 +326,7 @@ namespace SplitTools.SAArc
 									if (part.Anims != null)
 									{
 										List<byte> animbytes = new List<byte>();
-										NJS_MOTION anim = NJS_MOTION.Load(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), part.Part + ".saanim"));
+										NJS_MOTION anim = NJS_MOTION.Load(Path.Combine(Path.Combine(path, $"{master.Character}"), part.Part + ".saanim"));
 										animbytes.AddRange(anim.GetBytes(imageBase, out uint addranim));
 										panimaddrs[constant + p] = (int)(addranim + imageBase);
 										databytes.AddRange(animbytes);
@@ -340,7 +339,8 @@ namespace SplitTools.SAArc
 									if (part.ShapeMotions != null)
 									{
 										List<byte> shapebytes = new List<byte>();
-										NJS_MOTION shape = NJS_MOTION.Load(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), part.Part + "Shape.saanim"));
+										NJS_MOTION shape = NJS_MOTION.Load(Path.Combine(Path.Combine(path, $"{master.Character}"), part.Part + "Shape.saanim"));
+										shape.OptimizeShape();
 										shapebytes.AddRange(shape.GetBytes(imageBase, out uint addrshape));
 										pshapeaddrs[constant + p] = (int)(addrshape + imageBase);
 										databytes.AddRange(shapebytes);
@@ -350,7 +350,7 @@ namespace SplitTools.SAArc
 									{
 										pshapeaddrs[constant + p] = 0;
 									}
-									NJS_OBJECT partmdldata = new ModelFile(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), part.Part + ".sa2mdl")).Model;
+									NJS_OBJECT partmdldata = new ModelFile(Path.Combine(Path.Combine(path, $"{master.Character}"), part.Part + ".sa2mdl")).Model;
 									byte[] tmpmdl = partmdldata.GetBytes(imageBase, false, labels, new List<uint>(), out uint addrmdl);
 									databytes.AddRange(tmpmdl);
 									mdladdrs[constant + p] = labels[partmdldata.Name];
@@ -364,7 +364,7 @@ namespace SplitTools.SAArc
 								}
 							}
 							List<byte> banimbytes = new List<byte>();
-							NJS_MOTION banim = NJS_MOTION.Load(Path.Combine(Path.Combine(Path.GetFileNameWithoutExtension(filename), $"{master.Character}"), "Body.saanim"));
+							NJS_MOTION banim = NJS_MOTION.Load(Path.Combine(Path.Combine(path, $"{master.Character}"), "Body.saanim"));
 							banimbytes.AddRange(banim.GetBytes(imageBase, out uint addrbody));
 							banimaddrs[i] = (int)(addrbody + imageBase);
 							databytes.AddRange(banimbytes);
@@ -373,7 +373,7 @@ namespace SplitTools.SAArc
 					}
 				}
 				// Camera data always exists
-				NJS_CAMERA camfile = NJS_CAMERA.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "CameraAttributes.ini"));
+				NJS_CAMERA camfile = NJS_CAMERA.Load(Path.Combine(path, "CameraAttributes.ini"));
 				List<byte> ncambytes = new List<byte>();
 				NinjaCamera ndata = camfile.NinjaCameraData;
 				int ncamaddr = (int)imageBase;
@@ -382,7 +382,7 @@ namespace SplitTools.SAArc
 				imageBase += (uint)ncambytes.Count;
 
 				List<byte> canimbytes = new List<byte>();
-				NJS_MOTION camanim = NJS_MOTION.Load(Path.Combine(Path.GetFileNameWithoutExtension(filename), "Camera.saanim"));
+				NJS_MOTION camanim = NJS_MOTION.Load(Path.Combine(path, "Camera.saanim"));
 				canimbytes.AddRange(camanim.GetBytes(imageBase, out uint addrcam));
 				animaddrs[camanim.Name] = (int)(addrcam + imageBase);
 				databytes.AddRange(canimbytes);
@@ -441,8 +441,19 @@ namespace SplitTools.SAArc
 					}
 				}
 
+				if (fileOutputPath.Length != 0)
+				{
+					if (!Directory.Exists(fileOutputPath))
+						Directory.CreateDirectory(fileOutputPath);
+					filename = Path.Combine(fileOutputPath, Path.GetFileName(filename));
+				}
+
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				{
 					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
+					if (!File.Exists(filename))
+						File.Create(filename);
+				}
 				else
 					File.WriteAllBytes(filename, evfile.ToArray());
 			}

@@ -390,24 +390,28 @@ namespace SAModel.GC
 		public byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>();
-			result.Add(red);
-			result.Add(green);
-			result.Add(blue);
-			result.Add(alpha);
+			if (ByteConverter.BigEndian)
+			{
+				result.Add(alpha);
+				result.Add(blue);
+				result.Add(green);
+				result.Add(red);
+			}
+			else
+			{
+				result.Add(red);
+				result.Add(green);
+				result.Add(blue);
+				result.Add(alpha);
+			}
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ( ");
-					result.Append(red);
-					result.Append(", ");
-					result.Append(green);
-					result.Append(", ");
-					result.Append(blue);
-					result.Append(", ");
-					result.Append(alpha);
-					result.Append(" ) }");
+			StringBuilder result = new StringBuilder("{ ");
+					result.Append("0x" + $"{alpha.ToString("X2")}" + $"{blue.ToString("X2")}" + $"{green.ToString("X2")}" + $"{red.ToString("X2")}");
+					result.Append(" }");
 			return result.ToString();
 		}
 		public void ToNJA(TextWriter writer, string vtype)

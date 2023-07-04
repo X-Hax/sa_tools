@@ -146,16 +146,18 @@ namespace SAModel.GC
 
 		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress, GCIndexAttributeFlags indexFlags)
 		{
+			uint primsize = Convert.ToUInt32(Math.Ceiling((decimal)primitiveSize / 32) * 32);
 			List<byte> result = new List<byte>();
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
 			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
 			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
-			result.AddRange(ByteConverter.GetBytes(primitiveSize));
+			result.AddRange(ByteConverter.GetBytes(primsize));
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
+			uint primsize = Convert.ToUInt32(Math.Ceiling((decimal)primitiveSize / 32) * 32);
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
 			result.Append(", ");
@@ -163,7 +165,7 @@ namespace SAModel.GC
 			result.Append(", ");
 			result.Append(primitiveSize != 0 ? PrimitiveName : "NULL");
 			result.Append(", ");
-			result.Append(primitives != null ? (uint)primitiveSize : 0);
+			result.Append(primitives != null ? (uint)primsize : 0);
 			result.Append(" }");
 			return result.ToString();
 		}

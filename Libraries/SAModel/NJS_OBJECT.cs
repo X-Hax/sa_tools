@@ -190,6 +190,8 @@ namespace SAModel
 			result.AddRange(Scale.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(0)); //Child placeholder
 			result.AddRange(ByteConverter.GetBytes(0)); //Sibling placeholder
+			if (Attach is GCAttach)
+				result.AddRange(new byte[4]);
 			result.Align(4);
 
 			int currentEnd = result.Count;
@@ -307,6 +309,8 @@ namespace SAModel
 			objBytes.AddRange(Scale.GetBytes());
 			objBytes.AddRange(ByteConverter.GetBytes(childaddr));
 			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
+			if (Attach is GCAttach)
+				objBytes.AddRange(new byte[4]);
 			
 			if (isFirst) //Formal ninja requires the initial object first since there's not a pointer to it
 			{
@@ -356,7 +360,7 @@ namespace SAModel
 			// BasicAttach has no internal distinction between Basic and BasicDX
 			ModelFormat result = ModelFormat.BasicDX;
 			if (Attach is ChunkAttach) result = ModelFormat.Chunk;
-			else if (Attach is GC.GCAttach) result = ModelFormat.GC;
+			else if (Attach is GCAttach) result = ModelFormat.GC;
 			return result;
 		}
 
@@ -555,6 +559,8 @@ namespace SAModel
 			result.Append(Children.Count > 0 ? "&" + Children[0].Name : "NULL");
 			result.Append(", ");
 			result.Append(Sibling != null ? "&" + Sibling.Name : "NULL");
+			if (Attach is GCAttach)
+				result.Append(", NULL");
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -699,7 +705,10 @@ namespace SAModel
 				Attach.ToStructVariables(writer, DX, labels, textures);
 				writer.WriteLine();
 			}
-			writer.Write("NJS_OBJECT ");
+			writer.Write("NJS_OBJECT");
+			if (Attach is GCAttach)
+				writer.Write("_SA2B");
+			writer.Write(" ");
 			writer.Write(Name);
 			writer.Write(" = ");
 			writer.Write(ToStruct());
