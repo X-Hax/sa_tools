@@ -553,7 +553,8 @@ namespace SAToolsHub
 					MessageBox.Show(this, "Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					break;
 				case ProjectSplitResult.ItemFailure:
-					MessageBox.Show(this, "Item failed to split properly. Please check the SplitLog.log file at:\n\n" + projFolder, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					if (MessageBox.Show(this, "Item failed to split properly. The log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+						System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + Path.Combine(projFolder, "SplitLog.log") + "\"") { CreateNoWindow = false });
 					break;
 				case ProjectSplitResult.Success:
 					MessageBox.Show(this, "Project successfully created!", "Success", MessageBoxButtons.OK, MessageBoxIcon.None);
