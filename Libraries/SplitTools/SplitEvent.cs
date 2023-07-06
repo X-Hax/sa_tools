@@ -1170,7 +1170,7 @@ namespace SplitTools.SAArc
 				{
 					foreach (string file in evinfo.Files.Where(a => a.Key.EndsWith(".sa2bmdl", StringComparison.OrdinalIgnoreCase)).Select(a => a.Key))
 					{
-						modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetBytes(imageBase + (uint)modelbytes.Count, false, labels, new List<uint>(), out uint gcmodelend));
+						modelbytes.AddRange(new ModelFile(Path.Combine(path, file)).Model.GetGCBytes(imageBase + (uint)modelbytes.Count, labels, new List<uint>(), out uint gcmodelend));
 					}
 					// Motion file building
 					string motionfilename = filename;

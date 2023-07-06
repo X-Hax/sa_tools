@@ -309,8 +309,6 @@ namespace SAModel
 			objBytes.AddRange(Scale.GetBytes());
 			objBytes.AddRange(ByteConverter.GetBytes(childaddr));
 			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
-			if (Attach is GCAttach)
-				objBytes.AddRange(new byte[4]);
 			
 			if (isFirst) //Formal ninja requires the initial object first since there's not a pointer to it
 			{
@@ -325,6 +323,97 @@ namespace SAModel
 				result.RemoveRange(0, 0x34);
 				result.InsertRange(0, objBytes);
 			} else
+			{
+				//POF0
+				if (attachaddr != 0)
+					njOffsets.Add((uint)(imageBase + result.Count));
+				if (childaddr != 0)
+					njOffsets.Add((uint)(imageBase + result.Count));
+				if (siblingaddr != 0)
+					njOffsets.Add((uint)(imageBase + result.Count));
+
+				result.AddRange(objBytes);
+			}
+			labels.Add(Name, address + imageBase);
+			return result.ToArray();
+		}
+
+		public byte[] GetGCBytes(uint imageBase, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address, bool isFirst = false)
+		{
+			List<byte> result = new List<byte>();
+			if (isFirst)
+			{
+				result.AddRange(new byte[0x34]); //Add size of NGS_OBJECT if first since we're inserting later
+			}
+			FixSiblings();
+			uint childaddr = 0;
+			uint siblingaddr = 0;
+			uint attachaddr = 0;
+			byte[] tmpbyte;
+			if (Children.Count > 0)
+			{
+				if (labels.ContainsKey(Children[0].Name))
+					childaddr = labels[Children[0].Name];
+				else
+				{
+					result.Align(4);
+					tmpbyte = Children[0].GetGCBytes(imageBase + (uint)result.Count, labels, njOffsets, out childaddr);
+					childaddr += imageBase + (uint)result.Count;
+					result.AddRange(tmpbyte);
+				}
+			}
+			if (Sibling != null)
+			{
+				if (labels.ContainsKey(Sibling.Name))
+					siblingaddr = labels[Sibling.Name];
+				else
+				{
+					result.Align(4);
+					tmpbyte = Sibling.GetGCBytes(imageBase + (uint)result.Count, labels, njOffsets, out siblingaddr);
+					siblingaddr += imageBase + (uint)result.Count;
+					result.AddRange(tmpbyte);
+				}
+			}
+			if (Attach != null)
+			{
+				if (labels.ContainsKey(Attach.Name))
+					attachaddr = labels[Attach.Name];
+				else
+				{
+					result.Align(4);
+					tmpbyte = Attach.GetBytes(imageBase + (uint)result.Count, false, labels, njOffsets, out attachaddr);
+					attachaddr += imageBase + (uint)result.Count;
+					result.AddRange(tmpbyte);
+				}
+			}
+
+			result.Align(4);
+			address = isFirst ? 0 : (uint)result.Count;
+			ObjectFlags flags = GetFlags();
+			List<byte> objBytes = new List<byte>();
+			objBytes.AddRange(ByteConverter.GetBytes((int)flags));
+			objBytes.AddRange(ByteConverter.GetBytes(attachaddr));
+			objBytes.AddRange(Position.GetBytes());
+			objBytes.AddRange(Rotation.GetBytes());
+			objBytes.AddRange(Scale.GetBytes());
+			objBytes.AddRange(ByteConverter.GetBytes(childaddr));
+			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
+			objBytes.AddRange(new byte[4]);
+
+			if (isFirst) //Formal ninja requires the initial object first since there's not a pointer to it
+			{
+				//POF0
+				if (attachaddr != 0)
+					njOffsets.Add(0x4);
+				if (childaddr != 0)
+					njOffsets.Add(0x2C);
+				if (siblingaddr != 0)
+					njOffsets.Add(0x30);
+
+				result.RemoveRange(0, 0x34);
+				result.InsertRange(0, objBytes);
+			}
+			else
 			{
 				//POF0
 				if (attachaddr != 0)
@@ -559,8 +648,6 @@ namespace SAModel
 			result.Append(Children.Count > 0 ? "&" + Children[0].Name : "NULL");
 			result.Append(", ");
 			result.Append(Sibling != null ? "&" + Sibling.Name : "NULL");
-			if (Attach is GCAttach)
-				result.Append(", NULL");
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -705,10 +792,7 @@ namespace SAModel
 				Attach.ToStructVariables(writer, DX, labels, textures);
 				writer.WriteLine();
 			}
-			writer.Write("NJS_OBJECT");
-			if (Attach is GCAttach)
-				writer.Write("_SA2B");
-			writer.Write(" ");
+			writer.Write("NJS_OBJECT ");
 			writer.Write(Name);
 			writer.Write(" = ");
 			writer.Write(ToStruct());
