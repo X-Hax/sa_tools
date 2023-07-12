@@ -93,7 +93,6 @@ namespace SAModel.DataToolbox
 			if (ImageBase == 0)
 				ImageBase = HelperFunctions.SetupEXE(ref datafile) ?? 0;
 			// Output folder
-			OutputFolder = Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(SourceFilename));
 			if (Directory.Exists(OutputFolder)) 
 				Directory.Delete(OutputFolder, true);
 			Directory.CreateDirectory(OutputFolder);

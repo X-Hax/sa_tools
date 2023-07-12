@@ -487,7 +487,7 @@ namespace SplitTools.SAArc
 									{
 										// add metadata to animations found in motion.bin files
 										if (battle)
-											motionfiles[ent.Motion].Description = $"{EntityName} Scene {gn} Shape Motion";
+											motionfiles[ent.ShapeMotion].Description = $"{EntityName} Scene {gn} Shape Motion";
 
 										if (modelfiles[ent.Model].Filename.EndsWith("Root.sa2mdl") || modelfiles[ent.Model].Filename.EndsWith("Hand.sa2mdl"))
 											modelfiles[ent.Model].Motions.Add(motionfiles[ent.ShapeMotion].Filename);
@@ -654,17 +654,24 @@ namespace SplitTools.SAArc
 										{
 											int ptr4 = fc.GetPointer(ptr3 + 4, key);
 											motionfiles[big.Motions[i][0]].Description = $"{evname} Scene {gn} Big Motion {i + 1}A";
+											modelfiles[big.Model].Motions.Add("../" + motionfiles[big.Motions[i][0]].Filename);
 											if (ptr4 != 0)
+											{
 												motionfiles[big.Motions[i][1]].Description = $"{evname} Scene {gn} Big Motion {i + 1}B";
+												modelfiles[big.Model].Motions.Add("../" + motionfiles[big.Motions[i][1]].Filename);
+											}
+
 										}
 										else
 										{
 											ini.Motions.Add(m, big.Motions[i][0]);
+											modelfiles[big.Model].Motions.Add("../" + motionfiles[big.Motions[i][0]].Filename);
 											m++;
 											int ptr4 = fc.GetPointer(ptr3 + 4, key);
 											if (ptr4 != 0)
 											{
 												ini.Motions.Add(m, big.Motions[i][1]);
+												modelfiles[big.Model].Motions.Add("../" + motionfiles[big.Motions[i][1]].Filename);
 												m++;
 											}
 										}

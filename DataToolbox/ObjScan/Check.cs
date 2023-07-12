@@ -176,30 +176,6 @@ namespace SAModel.DataToolbox
 					if (vertlist == 0 && child == 0 && sibling == 0) return false;
 					if (attach == 0 && flags == 0) return false;
 					if (attach == 0 && child == 0 && sibling == 0) return false;
-					if (child == address + ImageBase || child == attach) return false;
-					if (sibling == address + ImageBase || sibling == attach) return false;
-					if (child != 0 && child == sibling) return false;
-					if (numhierarchy != -1 && child != 0)
-					{
-						if (numhierarchy < 3)
-						{
-							numhierarchy++;
-							return CheckModel(child - ImageBase, numhierarchy, modelfmt);
-						}
-						else
-							return CheckModel(child - ImageBase, -1, modelfmt);
-					}
-					if (numhierarchy != -1 && sibling != 0)
-					{
-						if (numhierarchy < 3)
-						{
-							numhierarchy++;
-							return CheckModel(sibling - ImageBase, numhierarchy, modelfmt);
-						}
-						else
-							return CheckModel(sibling - ImageBase, -1, modelfmt);
-					}
-					if (attach == 0 && flags == 0) return false;
 					break;
 				case ModelFormat.GC:
 					if (address <= 0 || address > datafile.Length - 20) return false;
@@ -271,7 +247,6 @@ namespace SAModel.DataToolbox
 						else
 							return CheckModel(sibling - ImageBase, -1, modelfmt);
 					}
-					if (attach == 0 && flags == 0) return false;
 					break;
 			}
 			if (numhierarchy != -1) Console.WriteLine("Trying {0} model at {1}", modelfmt.ToString(), address.ToString("X"));
