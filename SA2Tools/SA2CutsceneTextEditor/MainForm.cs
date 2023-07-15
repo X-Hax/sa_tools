@@ -79,7 +79,7 @@ namespace SA2CutsceneTextEditor
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "prs", Filter = "Supported Files|*.prs;*.bin|All Files|*.*" })
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "prs", Filter = "Subtitle Files|evmes??.prs;evmes??.bin|All Files|*.*" })
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 					LoadFile(dlg.FileName);
 		}

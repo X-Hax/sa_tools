@@ -79,7 +79,17 @@ namespace SA2MessageFileEditor
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "prs", Filter = "Supported Files|*.prs;*.bin|All Files|*.*" })
+			using (OpenFileDialog dlg = new OpenFileDialog() {
+				DefaultExt = "prs",
+				Filter = "Supported Files|bh?????.prs;eh?????.prs;mcwarn_?.prs;mh*.prs;mission?.prs;msg*.prs;text_?.prs;" +
+				"bh?????.bin;eh?????.bin;mcwarn_?.bin;mh*.bin;mission?.bin;msg*.bin;text_?.bin" +
+				"|Emerald Hint Files|eh?????.prs;eh?????.bin" +
+				"|Omochao Hint Files|bh?????.prs;mh?????.prs;bh?????.bin;mh?????.bin" +
+				"|Mission Text Files|mission?.prs;mission?.bin" +
+				"|Chao Text Files|msg*.prs;mhchao*.prs;msg*.bin;mhchao*.bin" +
+				"|System Text Files|mcwarn_?.prs;mhsys?.prs;text_?.prs;mcwarn_?.bin;mhsys?.bin;text_?.bin" +
+				"|All Files|*.*" 
+			})
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 					LoadFile(dlg.FileName);
 		}

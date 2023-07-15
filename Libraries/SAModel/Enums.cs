@@ -135,7 +135,7 @@ namespace SAModel
 	}
 
 	[Flags]
-	public enum SA2CutsceneEntityFlags : int
+	public enum SA2DCCutsceneEntityFlags : int
 	{
 		HasEnvMap			= 0x1,
 		IgnoreCulling		= 0x2,
@@ -147,6 +147,21 @@ namespace SAModel
 		ReflectModel		= 0x80,
 		BlurModel			= 0x100,
 		Unk2				= 0x200
+	}
+
+	[Flags]
+	public enum SA2CutsceneEntityFlags : int
+	{
+		HasEnvMap			= 0x1,
+		NoShapeMotion		= 0x2,
+		Unk1				= 0x4,
+		NoAnimation			= 0x8,
+		Unk2				= 0x10,
+		Unk3				= 0x20,
+		ModifierVolume		= 0x40,
+		ReflectModel		= 0x80,
+		BlurModel			= 0x100,
+		Unk4				= 0x200
 	}
 	public enum LandTableFormat
 	{
