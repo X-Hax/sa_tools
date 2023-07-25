@@ -57,6 +57,74 @@ namespace SAModel.SALVL
 
             List<KeyValuePair<string, string>> compileErrors = new List<KeyValuePair<string, string>>();
 
+#if DEBUG
+			for (int ID = 0; ID < objlstini.Length; ID++)
+			{
+				string codeaddr = objlstini[ID].Name;
+				ObjectData defgroup;
+				ObjectDefinition def;
+				if (objdefini == null)
+				{
+					skipDefsNow = true;
+					defgroup = new ObjectData();
+				}
+				else
+				{
+					if (!objdefini.ContainsKey(codeaddr))
+						codeaddr = "0";
+					defgroup = objdefini[codeaddr];
+				}
+
+				if (!skipDefsNow && !string.IsNullOrEmpty(defgroup.CodeFile))
+				{
+					if (progress != null) progress.SetStep("Compiling: " + defgroup.CodeFile);
+
+					bool errorOccured = false;
+					string errorText = "";
+
+					def = CompileObjectDefinition(defgroup, out errorOccured, out errorText);
+					if (errorOccured)
+					{
+						KeyValuePair<string, string> errorValue = new KeyValuePair<string, string>(
+							defgroup.CodeFile, errorText);
+						log.Add(errorValue.Value);
+						compileErrors.Add(errorValue);
+					}
+				}
+				else
+				{
+					def = new DefaultObjectDefinition();
+				}
+
+				if (Mission)
+					LevelData.MisnObjDefs[ID] = def;
+				else
+					LevelData.ObjDefs[ID] = def;
+
+				// The only reason .Model is checked for null is for objects that don't yet have any
+				// models defined for them. It would be annoying seeing that error all the time!
+				if (string.IsNullOrEmpty(defgroup.CodeFile) && !string.IsNullOrEmpty(defgroup.Model))
+				{
+					if (progress != null) progress.SetStep("Loading: " + defgroup.Model);
+					// Otherwise, if the model file doesn't exist and/or no texture file is defined,
+					// load the "default object" instead ("?").
+					if (!File.Exists(defgroup.Model) || // Model file missing OR
+						string.IsNullOrEmpty(defgroup.Texture) || // Texture file undefined OR
+						LevelData.Textures == null ||  // Textures not loaded OR
+								((!LevelData.Textures.ContainsKey(defgroup.Texture) && // Texture file not among loaded textures 1 AND
+								(!LevelData.Textures.ContainsKey(defgroup.Texture.ToLowerInvariant()) && // Texture file not among loaded textures 2 AND
+								(!LevelData.Textures.ContainsKey(defgroup.Texture.ToUpperInvariant())))))) // Texture file not among loaded textures 3
+					{
+						ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+						objectErrors.Add(error);
+						defgroup.Model = null;
+					}
+				}
+
+				def.Init(defgroup, objlstini[ID].Name);
+				def.SetInternalName(objlstini[ID].Name);
+			};
+#else
 			System.Threading.Tasks.Parallel.For(0, objlstini.Length, ID =>
 			{
 				string codeaddr = objlstini[ID].Name;
@@ -123,8 +191,9 @@ namespace SAModel.SALVL
 				def.Init(defgroup, objlstini[ID].Name);
 				def.SetInternalName(objlstini[ID].Name);
 			});
+#endif
 
-            if (compileErrors.Count > 0)
+			if (compileErrors.Count > 0)
             {
                 DialogResult result = MessageBox.Show(this, "Could not compile object definitions. Would you like to update them to the latest defaults? This will reset any custom object code.",
                     "Object Definitions Compilation Error", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
