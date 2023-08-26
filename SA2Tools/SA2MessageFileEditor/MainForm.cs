@@ -81,11 +81,11 @@ namespace SA2MessageFileEditor
 		{
 			using (OpenFileDialog dlg = new OpenFileDialog() {
 				DefaultExt = "prs",
-				Filter = "Supported Files|bh?????.prs;eh?????.prs;mcwarn_?.prs;mh*.prs;mission?.prs;msg*.prs;text_?.prs;" +
-				"bh?????.bin;eh?????.bin;mcwarn_?.bin;mh*.bin;mission?.bin;msg*.bin;text_?.bin" +
+				Filter = "Supported Files|bh?????.prs;eh?????.prs;ex_mission?.prs;mcwarn_?.prs;mh*.prs;mission?.prs;msg*.prs;text_?.prs;" +
+				"bh?????.bin;eh?????.bin;ex_mission?.bin;mcwarn_?.bin;mh*.bin;mission?.bin;msg*.bin;text_?.bin" +
 				"|Emerald Hint Files|eh?????.prs;eh?????.bin" +
 				"|Omochao Hint Files|bh?????.prs;mh?????.prs;bh?????.bin;mh?????.bin" +
-				"|Mission Text Files|mission?.prs;mission?.bin" +
+				"|Mission Text Files|ex_mission?.prs;mission?.prs;ex_mission?.bin;mission?.bin" +
 				"|Chao Text Files|msg*.prs;mhchao*.prs;msg*.bin;mhchao*.bin" +
 				"|System Text Files|mcwarn_?.prs;mhsys?.prs;text_?.prs;mcwarn_?.bin;mhsys?.bin;text_?.bin" +
 				"|All Files|*.*" 
