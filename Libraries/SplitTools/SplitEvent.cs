@@ -629,10 +629,7 @@ namespace SplitTools.SAArc
 							}
 						}
 						else
-						{
 							Console.WriteLine("Scene {0} contains no particle motions.", gn);
-							scn.ParticleMotions.Add(null);
-						}
 						ptr2 = fc.GetPointer(ptr + 0x18, key);
 						if (ptr2 != 0)
 						{
