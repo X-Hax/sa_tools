@@ -696,14 +696,33 @@ namespace SplitTools.Split
 					break;
 				case "recapscreen":
 					{
-						RecapScreenList.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath, out string[][] hashes);
-						string[] hash2 = new string[hashes.Length];
-						for (int i = 0; i < hashes.Length; i++)
+						if (SA2)
 						{
-							hash2[i] = string.Join(",", hashes[i]);
+							bool PCLang = false;
+							if (game == Game.SA2B && !ByteConverter.BigEndian)
+								PCLang = true;
+							if (data.CustomProperties.ContainsKey("beta"))
+							{
+								bool beta = bool.Parse(customProperties["beta"]);
+								if (beta == true)
+									SA2BetaRecapScreenList.Load(datafile, address, imageBase).Save(fileOutputPath);
+								else
+									SA2RecapScreenList.Load(datafile, address, imageBase, PCLang).Save(fileOutputPath);
+							}
+							else
+								SA2RecapScreenList.Load(datafile, address, imageBase, PCLang).Save(fileOutputPath);
 						}
-						data.MD5Hash = string.Join(":", hash2);
-						nohash = true;
+						else
+						{
+							RecapScreenList.Load(datafile, address, imageBase, data.Length).Save(fileOutputPath, out string[][] hashes);
+							string[] hash2 = new string[hashes.Length];
+							for (int i = 0; i < hashes.Length; i++)
+							{
+								hash2[i] = string.Join(",", hashes[i]);
+							}
+							data.MD5Hash = string.Join(":", hash2);
+							nohash = true;
+						}
 					}
 					break;
 				case "npctext":

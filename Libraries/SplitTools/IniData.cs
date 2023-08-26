@@ -1961,6 +1961,14 @@ namespace SplitTools
 		}
 	}
 
+	public static class SA2MenuVoiceArray
+	{ }
+	[Serializable]
+	public class SA2MenuVoiceData
+	{
+
+	}
+
 	[Serializable]
 	public static class RecapScreenList
 	{
@@ -2033,6 +2041,276 @@ namespace SplitTools
 		public float Speed { get; set; }
 		[IniAlwaysInclude]
 		public string Text { get; set; }
+	}
+	public static class SA2RecapScreenList
+	{
+		public static List<SA2RecapScreen> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2RecapScreen>>(filename);
+		}
+
+		public static List<SA2RecapScreen> Load(byte[] file, int address, uint imageBase, bool PC)
+		{
+			List<SA2RecapScreen> result = new List<SA2RecapScreen>();
+			int storytype = ByteConverter.ToInt32(file, address);
+			while (storytype != -1)
+			{
+				result.Add(new SA2RecapScreen(file, address, imageBase, PC));
+				address += SA2RecapScreen.Size;
+				storytype = ByteConverter.ToInt32(file, address);
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA2RecapScreen> recap, string filename)
+		{
+			IniSerializer.Serialize(recap, filename);
+		}
+	}
+	public class SA2RecapScreen
+	{
+		public SA2RecapScreen(){}
+
+		[IniAlwaysInclude]
+		public int StoryType { get; set; }
+		[IniAlwaysInclude]
+		public int StorySequenceID { get; set; }
+		[IniAlwaysInclude]
+		public int CharBGID { get; set; }
+		[IniAlwaysInclude]
+		public List<SA2SummaryData> SummaryData { get; set; }
+		[IniAlwaysInclude]
+		public int SummaryCount { get; set; }
+
+		public static int Size { get { return 0x14; } }
+
+		public SA2RecapScreen(byte[] file, int address, uint imageBase, bool PC)
+		{
+			StoryType = ByteConverter.ToInt32(file, address);
+			StorySequenceID = ByteConverter.ToInt32(file, address + 4);
+			CharBGID = ByteConverter.ToInt32(file, address + 8);
+			int ptr = ByteConverter.ToInt32(file, address + 0xC);
+			if (ptr != 0)
+			{
+				ptr = (int)(ptr - imageBase);
+				int cnt = ByteConverter.ToInt32(file, address + 0x10);
+				SummaryData = new List<SA2SummaryData>(cnt);
+
+				for (int j = 0; j < cnt; j++)
+				{
+					if (PC)
+					{
+						SummaryData.Add(new SA2PCSummaryData(file, ptr));
+						ptr += SA2PCSummaryData.Size;
+					}
+					else
+					{
+						SummaryData.Add(new SA2DCGCSummaryData(file, ptr));
+						ptr += SA2DCGCSummaryData.Size;
+					}
+				}
+			}
+			SummaryCount = ByteConverter.ToInt32(file, address + 0x10);
+		}
+
+			public string ToStruct(string label)
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(StoryType);
+			sb.Append(StorySequenceID);
+			sb.Append(CharBGID);
+			if (SummaryData?.Count > 0)
+			{
+				sb.AppendFormat("{0}, ", label);
+				sb.AppendFormat("{0}", SummaryCount);
+			}
+			else
+				sb.Append("NULL");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+	[Serializable]
+	public abstract class SA2SummaryData {}
+
+	[Serializable]
+	public class SA2PCSummaryData : SA2SummaryData 
+	{
+		[IniAlwaysInclude]
+		public int StringID { get; set; }
+		[IniAlwaysInclude]
+		public int VoiceID { get; set; }
+		[IniAlwaysInclude]
+		public int JPNFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int ENGFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int FRNFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int SPAFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int GERFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int ITAFrameStart { get; set; }
+		public SA2PCSummaryData() { }
+		public static int Size { get { return 0x20; } }
+		public SA2PCSummaryData(byte[] file, int address)
+		{
+			StringID = ByteConverter.ToInt32(file, address);
+			VoiceID = ByteConverter.ToInt32(file, address + 4);
+			JPNFrameStart = ByteConverter.ToInt32(file, address + 8);
+			ENGFrameStart = ByteConverter.ToInt32(file, address + 0xC);
+			FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
+			SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
+			GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
+			ITAFrameStart = ByteConverter.ToInt32(file, address + 0x1C);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(StringID);
+			sb.Append(VoiceID);
+			sb.Append(JPNFrameStart);
+			sb.Append(ENGFrameStart);
+			sb.Append(FRNFrameStart);
+			sb.Append(SPAFrameStart);
+			sb.Append(GERFrameStart);
+			sb.Append(ITAFrameStart);
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2DCGCSummaryData : SA2SummaryData
+	{
+		[IniAlwaysInclude]
+		public int StringID { get; set; }
+		[IniAlwaysInclude]
+		public int VoiceID { get; set; }
+		[IniAlwaysInclude]
+		public int JPNFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int ENGFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int FRNFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int SPAFrameStart { get; set; }
+		[IniAlwaysInclude]
+		public int GERFrameStart { get; set; }
+		public SA2DCGCSummaryData() { }
+		public static int Size { get { return 0x1C; } }
+		public SA2DCGCSummaryData(byte[] file, int address)
+		{
+			StringID = ByteConverter.ToInt32(file, address);
+			VoiceID = ByteConverter.ToInt32(file, address + 4);
+			JPNFrameStart = ByteConverter.ToInt32(file, address + 8);
+			ENGFrameStart = ByteConverter.ToInt32(file, address + 0xC);
+			FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
+			SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
+			GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			sb.Append(StringID);
+			sb.Append(VoiceID);
+			sb.Append(JPNFrameStart);
+			sb.Append(ENGFrameStart);
+			sb.Append(FRNFrameStart);
+			sb.Append(SPAFrameStart);
+			sb.Append(GERFrameStart);
+			sb.Append("NULL ");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public static class SA2BetaRecapScreenList
+	{
+		public static List<SA2BetaRecapScreen> Load(string filename)
+		{
+			return IniSerializer.Deserialize<List<SA2BetaRecapScreen>>(filename);
+		}
+
+		public static List<SA2BetaRecapScreen> Load(byte[] file, int address, uint imageBase)
+		{
+			List<SA2BetaRecapScreen> result = new List<SA2BetaRecapScreen>();
+			int sumdata = ByteConverter.ToInt32(file, address);
+			while (sumdata != 255)
+			{
+				result.Add(new SA2BetaRecapScreen(file, address, imageBase));
+				address += SA2BetaRecapScreen.Size;
+				sumdata = ByteConverter.ToInt32(file, address);
+			}
+			return result;
+		}
+
+		public static void Save(this List<SA2BetaRecapScreen> recap, string filename)
+		{
+			IniSerializer.Serialize(recap, filename);
+		}
+	}
+	public class SA2BetaRecapScreen
+	{
+		public SA2BetaRecapScreen() { }
+
+		[IniAlwaysInclude]
+		public List<SA2BetaSummaryData> SummaryData { get; set; }
+		[IniAlwaysInclude]
+		public int SummaryCount { get; set; }
+
+		public static int Size { get { return 0x8; } }
+
+		public SA2BetaRecapScreen(byte[] file, int address, uint imageBase)
+		{
+			int ptr = ByteConverter.ToInt32(file, address);
+			if (ptr != 0)
+			{
+				ptr = (int)(ptr - imageBase);
+				int cnt = ByteConverter.ToInt32(file, address + 4);
+				SummaryData = new List<SA2BetaSummaryData>(cnt);
+
+				for (int j = 0; j < cnt; j++)
+				{
+					SummaryData.Add(new SA2BetaSummaryData()
+					{
+						StringID = ByteConverter.ToInt32(file, ptr),
+						VoiceID = ByteConverter.ToInt32(file, ptr + 4),
+						FrameStart = ByteConverter.ToInt32(file, ptr + 8),
+					}
+					);
+					ptr += 0xC;
+				}
+			}
+			SummaryCount = ByteConverter.ToInt32(file, address + 4);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder sb = new StringBuilder("{ ");
+			if (SummaryData?.Count > 0)
+			{
+				sb.AppendFormat("{0}, ", label);
+				sb.AppendFormat("{0}", SummaryCount);
+			}
+			else
+				sb.Append("NULL");
+			sb.Append(" }");
+			return sb.ToString();
+		}
+	}
+
+	public class SA2BetaSummaryData
+	{
+		[IniAlwaysInclude]
+		public int StringID { get; set; }
+		[IniAlwaysInclude]
+		public int VoiceID { get; set; }
+		[IniAlwaysInclude]
+		public int FrameStart { get; set; }
 	}
 
 	public static class NPCTextList
