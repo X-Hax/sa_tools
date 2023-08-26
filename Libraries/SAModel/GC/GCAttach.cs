@@ -602,12 +602,12 @@ namespace SAModel.GC
 					item.ToNJA(writer);
 				foreach (GCVertexSet item in vertexData)
 					item.RefToNJA(writer);
-				writer.WriteLine("\tVertAttr   NULL" + ",");
-				writer.WriteLine("\tSize       0" + ",");
-				writer.WriteLine("\tPoints     0" + ",");
-				writer.WriteLine("\tType       NULL" + ",");
-				writer.WriteLine("\tName       NULL" + ",");
-				writer.WriteLine("\tCheckSize  0" + ",");
+				writer.WriteLine("\tVertAttr     NULL" + ",");
+				writer.WriteLine("\tElementSize  0" + ",");
+				writer.WriteLine("\tPoints       0" + ",");
+				writer.WriteLine("\tType         NULL" + ",");
+				writer.WriteLine("\tName         NULL" + ",");
+				writer.WriteLine("\tCheckSize    0" + ",");
 				writer.Write("END" + Environment.NewLine + Environment.NewLine);
 			}
 
