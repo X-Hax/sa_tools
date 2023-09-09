@@ -140,127 +140,136 @@ namespace SAModel
 						result.AddRange(item.GetBytes());
 				}
 			}
-			uint meshAddress;
-			if (labels.ContainsKey(MeshName))
-				meshAddress = labels[MeshName];
-			else
+			uint meshAddress = 0;
+			if (Mesh != null && Mesh.Count > 0)
 			{
-				uint[] polyAddrs = new uint[Mesh.Count];
-				uint[] polyNormalAddrs = new uint[Mesh.Count];
-				uint[] vColorAddrs = new uint[Mesh.Count];
-				uint[] uVAddrs = new uint[Mesh.Count];
-				for (int i = 0; i < Mesh.Count; i++)
+				if (labels.ContainsKey(MeshName))
+					meshAddress = labels[MeshName];
+				else
 				{
-					if (labels.ContainsKey(Mesh[i].PolyName))
-						polyAddrs[i] = labels[Mesh[i].PolyName];
-					else
+					uint[] polyAddrs = new uint[Mesh.Count];
+					uint[] polyNormalAddrs = new uint[Mesh.Count];
+					uint[] vColorAddrs = new uint[Mesh.Count];
+					uint[] uVAddrs = new uint[Mesh.Count];
+					for (int i = 0; i < Mesh.Count; i++)
 					{
-						result.Align(4);
-						polyAddrs[i] = (uint)result.Count + imageBase;
-						labels.Add(Mesh[i].PolyName, polyAddrs[i]);
-						for (int j = 0; j < Mesh[i].Poly.Count; j++)
-							result.AddRange(Mesh[i].Poly[j].GetBytes());
-					}
-				}
-				for (int i = 0; i < Mesh.Count; i++)
-				{
-					if (Mesh[i].PolyNormal != null && Mesh[i].PolyNormal.Length > 0)
-					{
-						if (labels.ContainsKey(Mesh[i].PolyNormalName))
-							polyNormalAddrs[i] = labels[Mesh[i].PolyNormalName];
+						if (labels.ContainsKey(Mesh[i].PolyName))
+							polyAddrs[i] = labels[Mesh[i].PolyName];
 						else
 						{
 							result.Align(4);
-							polyNormalAddrs[i] = (uint)result.Count + imageBase;
-							labels.Add(Mesh[i].PolyNormalName, polyNormalAddrs[i]);
-							for (int j = 0; j < Mesh[i].PolyNormal.Length; j++)
-								result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
+							polyAddrs[i] = (uint)result.Count + imageBase;
+							labels.Add(Mesh[i].PolyName, polyAddrs[i]);
+							for (int j = 0; j < Mesh[i].Poly.Count; j++)
+								result.AddRange(Mesh[i].Poly[j].GetBytes());
 						}
 					}
-				}
-				for (int i = 0; i < Mesh.Count; i++)
-				{
-					if (Mesh[i].VColor != null && Mesh[i].VColor.Length > 0)
+					for (int i = 0; i < Mesh.Count; i++)
 					{
-						if (labels.ContainsKey(Mesh[i].VColorName))
-							vColorAddrs[i] = labels[Mesh[i].VColorName];
-						else
+						if (Mesh[i].PolyNormal != null && Mesh[i].PolyNormal.Length > 0)
 						{
-							result.Align(4);
-							vColorAddrs[i] = (uint)result.Count + imageBase;
-							labels.Add(Mesh[i].VColorName, vColorAddrs[i]);
-							for (int j = 0; j < Mesh[i].VColor.Length; j++)
-								result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
+							if (labels.ContainsKey(Mesh[i].PolyNormalName))
+								polyNormalAddrs[i] = labels[Mesh[i].PolyNormalName];
+							else
+							{
+								result.Align(4);
+								polyNormalAddrs[i] = (uint)result.Count + imageBase;
+								labels.Add(Mesh[i].PolyNormalName, polyNormalAddrs[i]);
+								for (int j = 0; j < Mesh[i].PolyNormal.Length; j++)
+									result.AddRange(Mesh[i].PolyNormal[j].GetBytes());
+							}
 						}
 					}
-				}
-				for (int i = 0; i < Mesh.Count; i++)
-				{
-					if (Mesh[i].UV != null && Mesh[i].UV.Length > 0)
+					for (int i = 0; i < Mesh.Count; i++)
 					{
-						if (labels.ContainsKey(Mesh[i].UVName))
-							uVAddrs[i] = labels[Mesh[i].UVName];
-						else
+						if (Mesh[i].VColor != null && Mesh[i].VColor.Length > 0)
 						{
-							result.Align(4);
-							uVAddrs[i] = (uint)result.Count + imageBase;
-							labels.Add(Mesh[i].UVName, uVAddrs[i]);
-							for (int j = 0; j < Mesh[i].UV.Length; j++)
-								result.AddRange(Mesh[i].UV[j].GetBytes());
+							if (labels.ContainsKey(Mesh[i].VColorName))
+								vColorAddrs[i] = labels[Mesh[i].VColorName];
+							else
+							{
+								result.Align(4);
+								vColorAddrs[i] = (uint)result.Count + imageBase;
+								labels.Add(Mesh[i].VColorName, vColorAddrs[i]);
+								for (int j = 0; j < Mesh[i].VColor.Length; j++)
+									result.AddRange(VColor.GetBytes(Mesh[i].VColor[j]));
+							}
 						}
+					}
+					for (int i = 0; i < Mesh.Count; i++)
+					{
+						if (Mesh[i].UV != null && Mesh[i].UV.Length > 0)
+						{
+							if (labels.ContainsKey(Mesh[i].UVName))
+								uVAddrs[i] = labels[Mesh[i].UVName];
+							else
+							{
+								result.Align(4);
+								uVAddrs[i] = (uint)result.Count + imageBase;
+								labels.Add(Mesh[i].UVName, uVAddrs[i]);
+								for (int j = 0; j < Mesh[i].UV.Length; j++)
+									result.AddRange(Mesh[i].UV[j].GetBytes());
+							}
+						}
+					}
+					result.Align(4);
+					meshAddress = (uint)result.Count + imageBase;
+					labels.Add(MeshName, meshAddress);
+					for (int i = 0; i < Mesh.Count; i++)
+					{
+						//POF0
+						if (polyAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0x4));
+						if (polyNormalAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0xC));
+						if (vColorAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0x10));
+						if (uVAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0x14));
+
+						result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], DX));
 					}
 				}
 				result.Align(4);
-				meshAddress = (uint)result.Count + imageBase;
-				labels.Add(MeshName, meshAddress);
-				for (int i = 0; i < Mesh.Count; i++)
-				{
-					//POF0
-					if (polyAddrs[i] != 0)
-						njOffsets.Add((uint)(result.Count + imageBase + 0x4)); 
-					if (polyNormalAddrs[i] != 0)
-						njOffsets.Add((uint)(result.Count + imageBase + 0xC)); 
-					if (vColorAddrs[i] != 0)
-						njOffsets.Add((uint)(result.Count + imageBase + 0x10)); 
-					if (uVAddrs[i] != 0)
-						njOffsets.Add((uint)(result.Count + imageBase + 0x14)); 
-
-					result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], DX));
-				}
 			}
-			result.Align(4);
-			uint vertexAddress;
-			if (labels.ContainsKey(VertexName))
-				vertexAddress = labels[VertexName];
-			else
+			uint vertexAddress = 0;
+			if (Vertex != null && Vertex.Length > 0)
 			{
-				vertexAddress = (uint)result.Count + imageBase;
-				labels.Add(VertexName, vertexAddress);
-				foreach (Vertex item in Vertex)
+				if (labels.ContainsKey(VertexName))
+					vertexAddress = labels[VertexName];
+				else
 				{
-					if (item == null)
-						result.AddRange(new byte[SAModel.Vertex.Size]);
-					else
-						result.AddRange(item.GetBytes());
+					vertexAddress = (uint)result.Count + imageBase;
+					labels.Add(VertexName, vertexAddress);
+					foreach (Vertex item in Vertex)
+					{
+						if (item == null)
+							result.AddRange(new byte[SAModel.Vertex.Size]);
+						else
+							result.AddRange(item.GetBytes());
+					}
 				}
+				result.Align(4);
 			}
-			result.Align(4);
-			uint normalAddress;
-			if (labels.ContainsKey(NormalName))
-				normalAddress = labels[NormalName];
-			else
+			uint normalAddress = 0;
+			if (Normal != null && Normal.Length > 0)
 			{
-				normalAddress = (uint)result.Count + imageBase;
-				labels.Add(NormalName, normalAddress);
-				foreach (Vertex item in Normal)
+				if (labels.ContainsKey(NormalName))
+					normalAddress = labels[NormalName];
+				else
 				{
-					if (item == null)
-						result.AddRange(new byte[SAModel.Vertex.Size]);
-					else
-						result.AddRange(item.GetBytes());
+					normalAddress = (uint)result.Count + imageBase;
+					labels.Add(NormalName, normalAddress);
+					foreach (Vertex item in Normal)
+					{
+						if (item == null)
+							result.AddRange(new byte[SAModel.Vertex.Size]);
+						else
+							result.AddRange(item.GetBytes());
+					}
 				}
+				result.Align(4);
 			}
-			result.Align(4);
 			address = (uint)result.Count;
 
 			//POF0
