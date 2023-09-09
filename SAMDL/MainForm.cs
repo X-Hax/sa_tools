@@ -478,7 +478,9 @@ namespace SAModel.SAMDL
 			// Model file
 			if (ModelFile.CheckModelFile(filename))
 			{
+#if !DEBUG
 				try
+#endif
 				{
 					ModelFile modelFile = new ModelFile(filename);
 					if (!string.IsNullOrEmpty(modelFile.Description))
@@ -505,6 +507,7 @@ namespace SAModel.SAMDL
 					if (File.Exists(labelname))
 						LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(labelname));
 				}
+#if !DEBUG
 				catch (Exception ex)
 				{
 					log.Add("Loading the model from " + filename + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
@@ -517,6 +520,7 @@ namespace SAModel.SAMDL
 					report.ShowDialog();
 					return;
 				}
+#endif
 			}
 			else
 			{
