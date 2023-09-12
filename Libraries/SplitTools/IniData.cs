@@ -3961,11 +3961,13 @@ namespace SplitTools
 		public string ModelA { get; set; }
 		public string ModelB { get; set; }
 		[IniAlwaysInclude]
-		public byte WeldType { get; set; }
-		public short Unknown { get; set; }
+		public WeldType WeldType { get; set; }
+		public byte ModelAIndex { get; set; }
+		public byte ModelBIndex { get; set; }
 		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
 		public List<ushort> VertIndexes { get; set; }
 		public string VertIndexName { get; set; }
+		public WeldDirection? Direction { get; set; }
 
 		public static int Size { get { return 0x18; } }
 
@@ -3994,21 +3996,27 @@ namespace SplitTools
 					ModelB = "object_" + ((uint)ptr - imageBase).ToString("X8");
 				else
 					ModelB = ptr.ToCHex();
-			int cnt = file[address++] * 2;
-			WeldType = file[address++];
-			Unknown = ByteConverter.ToInt16(file, address);
-			address += sizeof(short);
-			address += sizeof(int);
-			ptr = ByteConverter.ToInt32(file, address);
-			if (ptr != 0)
+			int cnt = file[address++];
+			WeldType = (WeldType)file[address++];
+			ModelAIndex = file[address++];
+			ModelBIndex = file[address++];
+			if (WeldType >= WeldType.RightHandPosition)
+				Direction = (WeldDirection)cnt;
+			else
 			{
-				ptr = (int)((uint)ptr - imageBase);
-				VertIndexName = "vi_" + ptr.ToString("X8");
-				VertIndexes = new List<ushort>(cnt);
-				for (int i = 0; i < cnt; i++)
+				cnt *= 2;
+				address += sizeof(int);
+				ptr = ByteConverter.ToInt32(file, address);
+				if (ptr != 0)
 				{
-					VertIndexes.Add(ByteConverter.ToUInt16(file, ptr));
-					ptr += sizeof(ushort);
+					ptr = (int)((uint)ptr - imageBase);
+					VertIndexName = "vi_" + ptr.ToString("X8");
+					VertIndexes = new List<ushort>(cnt);
+					for (int i = 0; i < cnt; i++)
+					{
+						VertIndexes.Add(ByteConverter.ToUInt16(file, ptr));
+						ptr += sizeof(ushort);
+					}
 				}
 			}
 		}
@@ -4027,19 +4035,44 @@ namespace SplitTools
 			sb.Append(", ");
 			sb.Append(ModelB ?? "nullptr");
 			sb.Append(", ");
-			if (VertIndexes != null)
+			if (WeldType >= WeldType.RightHandPosition)
+				sb.Append((int)Direction.Value);
+			else if (VertIndexes != null)
 				sb.AppendFormat("(uint8_t)(LengthOfArray({0}) / 2)", VertIndexName);
 			else
 				sb.Append("0");
 			sb.Append(", ");
 			sb.Append(WeldType);
 			sb.Append(", ");
-			sb.Append(Unknown);
+			sb.Append(ModelAIndex);
+			sb.Append(", ");
+			sb.Append(ModelBIndex);
 			sb.Append(", nullptr, ");
 			sb.Append(VertIndexes != null ? VertIndexName : "nullptr");
 			sb.Append(" }");
 			return sb.ToString();
 		}
+	}
+
+	public enum WeldType
+	{
+		None,
+		Average,
+		Source,
+		Destination,
+		RightHandPosition,
+		LeftHandPosition,
+		RightFootPosition,
+		LeftFootPosition,
+		User0Position,
+		User1Position
+	}
+
+	public enum WeldDirection
+	{
+		X,
+		Y,
+		Z
 	}
 
 	public static class BlackMarketItemAttributesList
