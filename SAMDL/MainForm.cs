@@ -410,10 +410,13 @@ namespace SAModel.SAMDL
 			DialogResult result = a.ShowDialog(this);
 			if (result == DialogResult.OK)
 			{
+#if !DEBUG
 				try
+#endif
 				{
 					LoadFile(a.FileName);
 				}
+#if !DEBUG
 				catch (Exception ex)
 				{
 					log.Add("Loading the model from " + a.FileName + " failed for the following reason(s):" + System.Environment.NewLine + ex.ToString() + System.Environment.NewLine);
@@ -433,6 +436,7 @@ namespace SAModel.SAMDL
 							break;
 					}
 				}
+#endif
 			}
 		}
 
