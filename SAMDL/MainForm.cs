@@ -512,7 +512,7 @@ namespace SAModel.SAMDL
 						}
 						catch (Exception)
 						{
-							MessageBox.Show(this, "SAMDL was unable to import labels from the .saanim file. Model hierarchy may have been altered.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							MessageBox.Show(this, "SAMDL was unable to import labels from the .salabel file. Model hierarchy may have been altered.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						}
 					}
 				}
