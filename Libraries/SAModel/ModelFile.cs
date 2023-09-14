@@ -330,17 +330,16 @@ namespace SAModel
 							var weights = new List<VertexWeight>(wcnt);
 							for (int wi = 0; wi < wcnt; wi++)
 							{
-								weights.Add(new VertexWeight()
-								{
-									Node = nodedict[labels[ByteConverter.ToInt32(wght, off)]],
-									Vertex = ByteConverter.ToInt32(wght, off + 4),
-									Weight = ByteConverter.ToSingle(wght, off + 8)
-								});
+								weights.Add(new VertexWeight(
+									nodedict[labels[ByteConverter.ToInt32(wght, off)]],
+									ByteConverter.ToInt32(wght, off + 4),
+									ByteConverter.ToSingle(wght, off + 8)));
 								off += 12;
 							}
 							mdl.VertexWeights.Add(ind, weights);
 						}
 						addr = ByteConverter.ToInt32(wght, off);
+						off += 4;
 					}
 				}
 				if (filename != null)
