@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -29,6 +30,18 @@ namespace SAModel
 		public ReadOnlyCollection<NJS_MOTION> Animations { get; private set; }
 		public string Author { get; set; }
 		public string Description { get; set; }
+		public NJS_OBJECT RightHandNode { get; set; }
+		public NodeDirection RightHandDir { get; set; }
+		public NJS_OBJECT LeftHandNode { get; set; }
+		public NodeDirection LeftHandDir { get; set; }
+		public NJS_OBJECT RightFootNode { get; set; }
+		public NodeDirection RightFootDir { get; set; }
+		public NJS_OBJECT LeftFootNode { get; set; }
+		public NodeDirection LeftFootDir { get; set; }
+		public NJS_OBJECT User0Node { get; set; }
+		public NodeDirection User0Dir { get; set; }
+		public NJS_OBJECT User1Node { get; set; }
+		public NodeDirection User1Dir { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 		private string[] animationFiles;
 
@@ -49,6 +62,7 @@ namespace SAModel
 			Metadata = new Dictionary<uint, byte[]>();
 			Dictionary<int, string> labels = new Dictionary<int, string>();
 			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
+			byte[] rhnd = null, lhnd = null, rfnd = null, lfnd = null, u0nd = null, u1nd = null, wght = null;
 			if (version < 2)
 			{
 				if (version == 1)
@@ -192,6 +206,27 @@ namespace SAModel
 								case ChunkTypes.Description:
 									Description = chunk.GetCString(chunkaddr);
 									break;
+								case ChunkTypes.RightHandNode:
+									rhnd = chunk;
+									break;
+								case ChunkTypes.LeftHandNode:
+									lhnd = chunk;
+									break;
+								case ChunkTypes.RightFootNode:
+									rfnd = chunk;
+									break;
+								case ChunkTypes.LeftFootNode:
+									lfnd = chunk;
+									break;
+								case ChunkTypes.User0Node:
+									u0nd = chunk;
+									break;
+								case ChunkTypes.User1Node:
+									u1nd = chunk;
+									break;
+								case ChunkTypes.Weights:
+									wght = chunk;
+									break;
 								case ChunkTypes.End:
 									finished = true;
 									break;
@@ -221,6 +256,93 @@ namespace SAModel
 						throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
 				}
 				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels, attaches);
+				var nodedict = Model.EnumerateObjects().ToDictionary(a => a.Name);
+				if (rhnd != null)
+				{
+					int addr = ByteConverter.ToInt32(rhnd, 0);
+					if (labels.TryGetValue(addr, out string label))
+					{
+						RightHandNode = nodedict[label];
+						RightHandDir = (NodeDirection)ByteConverter.ToInt32(rhnd, 4);
+					}
+				}
+				if (lhnd != null)
+				{
+					int addr = ByteConverter.ToInt32(lhnd, 0);
+					if (labels.TryGetValue(addr, out string label))
+					{
+						LeftHandNode = nodedict[label];
+						LeftHandDir = (NodeDirection)ByteConverter.ToInt32(lhnd, 4);
+					}
+				}
+				if (rfnd != null)
+				{
+					int addr = ByteConverter.ToInt32(rfnd, 0);
+					if (labels.TryGetValue(addr, out string label))
+					{
+						RightFootNode = nodedict[label];
+						RightFootDir = (NodeDirection)ByteConverter.ToInt32(rfnd, 4);
+					}
+				}
+				if (lfnd != null)
+				{
+					int addr = ByteConverter.ToInt32(lfnd, 0);
+					if (labels.TryGetValue(addr, out string label))
+					{
+						LeftFootNode = nodedict[label];
+						LeftFootDir = (NodeDirection)ByteConverter.ToInt32(lfnd, 4);
+					}
+				}
+				if (u0nd != null)
+				{
+					int addr = ByteConverter.ToInt32(u0nd, 0);
+					if (labels.TryGetValue(addr, out string label))
+					{
+						User0Node = nodedict[label];
+						User0Dir = (NodeDirection)ByteConverter.ToInt32(u0nd, 4);
+					}
+				}
+				if (u1nd != null)
+				{
+					int addr = ByteConverter.ToInt32(u1nd, 0);
+					if (labels.TryGetValue(addr, out string label))
+					{
+						User1Node = nodedict[label];
+						User1Dir = (NodeDirection)ByteConverter.ToInt32(u1nd, 4);
+					}
+				}
+				if (wght != null)
+				{
+					int addr = ByteConverter.ToInt32(wght, 0);
+					int off = 4;
+					while (addr != -1)
+					{
+						var mdl = nodedict[labels[addr]].Attach;
+						int vcnt = ByteConverter.ToInt32(wght, off);
+						off += 4;
+						mdl.VertexWeights = new Dictionary<int, List<VertexWeight>>(vcnt);
+						for (int vi = 0; vi < vcnt; vi++)
+						{
+							int ind = ByteConverter.ToInt32(wght, off);
+							off += 4;
+							int wcnt = ByteConverter.ToInt32(wght, off);
+							off += 4;
+							var weights = new List<VertexWeight>(wcnt);
+							for (int wi = 0; wi < wcnt; wi++)
+							{
+								weights.Add(new VertexWeight()
+								{
+									Node = nodedict[labels[ByteConverter.ToInt32(wght, off)]],
+									Vertex = ByteConverter.ToInt32(wght, off + 4),
+									Weight = ByteConverter.ToSingle(wght, off + 8)
+								});
+								off += 12;
+							}
+							mdl.VertexWeights.Add(ind, weights);
+						}
+						addr = ByteConverter.ToInt32(wght, off);
+					}
+				}
 				if (filename != null)
 				{
 					string path = Path.GetDirectoryName(filename);
@@ -264,6 +386,47 @@ namespace SAModel
 				}
 			}
 			ByteConverter.BigEndian = be;
+		}
+
+		public ModelFile(ModelFormat format, NJS_OBJECT model, string basePath, params string[] animationFiles)
+		{
+			switch (format)
+			{
+				case ModelFormat.Basic:
+				case ModelFormat.Chunk:
+				case ModelFormat.GC:
+				case ModelFormat.XJ:
+					break;
+				default:
+					throw new ArgumentException($"Cannot save {format} format models to file!", "format");
+			}
+			Format = format;
+			Model = model;
+			this.animationFiles = animationFiles;
+			List<NJS_MOTION> anims = new List<NJS_MOTION>();
+			try
+			{
+				foreach (string item in animationFiles)
+				{
+					if (Path.GetExtension(item).ToLowerInvariant() == ".json")
+					{
+						JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+						using (TextReader tr = File.OpenText(Path.Combine(basePath, item)))
+						{
+							using (JsonTextReader jtr = new JsonTextReader(tr))
+								anims.Add(js.Deserialize<NJS_MOTION>(jtr));
+						}
+					}
+					else
+						anims.Add(NJS_MOTION.Load(Path.Combine(basePath, item), Model.CountAnimated()));
+				}
+			}
+			catch
+			{
+				anims.Clear();
+			}
+			Animations = anims.AsReadOnly();
+			Metadata = new Dictionary<uint, byte[]>();
 		}
 
 		public static bool CheckModelFile(string filename)
@@ -382,6 +545,72 @@ namespace SAModel
 				chunk.Add(0);
 				chunk.Align(4);
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
+				file.AddRange(ByteConverter.GetBytes(chunk.Count));
+				file.AddRange(chunk);
+			}
+			if (RightHandNode != null)
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightHandNode));
+				file.AddRange(ByteConverter.GetBytes(8));
+				file.AddRange(ByteConverter.GetBytes(labels[RightHandNode.Name]));
+				file.AddRange(ByteConverter.GetBytes((int)RightHandDir));
+			}
+			if (LeftHandNode != null)
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftHandNode));
+				file.AddRange(ByteConverter.GetBytes(8));
+				file.AddRange(ByteConverter.GetBytes(labels[LeftHandNode.Name]));
+				file.AddRange(ByteConverter.GetBytes((int)LeftHandDir));
+			}
+			if (RightFootNode != null)
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightFootNode));
+				file.AddRange(ByteConverter.GetBytes(8));
+				file.AddRange(ByteConverter.GetBytes(labels[RightFootNode.Name]));
+				file.AddRange(ByteConverter.GetBytes((int)RightFootDir));
+			}
+			if (LeftFootNode != null)
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftFootNode));
+				file.AddRange(ByteConverter.GetBytes(8));
+				file.AddRange(ByteConverter.GetBytes(labels[LeftFootNode.Name]));
+				file.AddRange(ByteConverter.GetBytes((int)LeftFootDir));
+			}
+			if (User0Node != null)
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User0Node));
+				file.AddRange(ByteConverter.GetBytes(8));
+				file.AddRange(ByteConverter.GetBytes(labels[User0Node.Name]));
+				file.AddRange(ByteConverter.GetBytes((int)User0Dir));
+			}
+			if (User1Node != null)
+			{
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User1Node));
+				file.AddRange(ByteConverter.GetBytes(8));
+				file.AddRange(ByteConverter.GetBytes(labels[User1Node.Name]));
+				file.AddRange(ByteConverter.GetBytes((int)User1Dir));
+			}
+			if (Model.EnumerateObjects().Any(a => a.Attach?.VertexWeights != null))
+			{
+				List<byte> chunk = new List<byte>();
+				foreach (var node in Model.EnumerateObjects().Where(a => a.Attach?.VertexWeights != null))
+				{
+					chunk.AddRange(ByteConverter.GetBytes(labels[node.Name]));
+					chunk.AddRange(ByteConverter.GetBytes(node.Attach.VertexWeights.Count));
+					foreach (var vert in node.Attach.VertexWeights)
+					{
+						chunk.AddRange(ByteConverter.GetBytes(vert.Key));
+						chunk.AddRange(ByteConverter.GetBytes(vert.Value.Count));
+						foreach (var weight in vert.Value)
+						{
+							chunk.AddRange(ByteConverter.GetBytes(labels[weight.Node.Name]));
+							chunk.AddRange(ByteConverter.GetBytes(weight.Vertex));
+							chunk.AddRange(ByteConverter.GetBytes(weight.Weight));
+						}
+					}
+				}
+				chunk.AddRange(ByteConverter.GetBytes(-1));
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Weights));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
 			}
@@ -581,7 +810,21 @@ namespace SAModel
 			Tool = 0x4C4F4F54,
 			Description = 0x43534544,
 			Texture = 0x584554,
+			RightHandNode = 0x444E4852,
+			LeftHandNode = 0x444E484C,
+			RightFootNode = 0x444E4652,
+			LeftFootNode = 0x444E464C,
+			User0Node = 0x444E3055,
+			User1Node = 0x444E3155,
+			Weights = 0x54484757,
 			End = 0x444E45
+		}
+
+		public enum NodeDirection
+		{
+			X,
+			Y,
+			Z
 		}
 	}
 }

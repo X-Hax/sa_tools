@@ -485,20 +485,22 @@ namespace SAModel
 			return GetBytes(imageBase, DX, out uint address);
 		}
 
-		public NJS_OBJECT[] GetObjects()
+		public IEnumerable<NJS_OBJECT> EnumerateObjects()
 		{
-			List<NJS_OBJECT> result = new List<NJS_OBJECT> { this };
-			foreach (NJS_OBJECT item in Children)
-				result.AddRange(item.GetObjects());
+			yield return this;
+			foreach (NJS_OBJECT obj in Children)
+				foreach (NJS_OBJECT child in obj.EnumerateObjects())
+					yield return child;
 			if (Parent == null && Sibling != null)
-				result.AddRange(Sibling.GetObjects());
-			return result.ToArray();
+				foreach (NJS_OBJECT obj in Sibling.EnumerateObjects())
+					yield return obj;
 		}
 
-        public NJS_OBJECT[] GetObjectsAnimated()
-        {
-            return GetObjects().Where(a => a.Animate).ToArray();
-        }
+		public NJS_OBJECT[] GetObjects() => EnumerateObjects().ToArray();
+
+		public IEnumerable<NJS_OBJECT> EnumerateObjectsAnimated() => EnumerateObjects().Where(a => a.Animate);
+
+        public NJS_OBJECT[] GetObjectsAnimated() => EnumerateObjectsAnimated().ToArray();
 
         public int[] GetVertexCounts()
         {

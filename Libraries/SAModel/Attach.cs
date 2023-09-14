@@ -11,6 +11,7 @@ namespace SAModel
 	{
 		public string Name { get; set; }
 		public BoundingSphere Bounds { get; set; }
+		public Dictionary<int, List<VertexWeight>> VertexWeights { get; set; }
 		[NonSerialized]
 		private MeshInfo[] meshInfo;
 
