@@ -509,7 +509,16 @@ namespace SAModel.SAMDL
 						buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 					string labelname = Path.ChangeExtension(filename, ".salabel");
 					if (File.Exists(labelname))
-						LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(labelname));
+					{
+						try
+						{
+							LabelOBJECT.ImportLabels(model, LabelOBJECT.Load(labelname));
+						}
+						catch (Exception)
+						{
+							MessageBox.Show(this, "SAMDL was unable to import labels from the .salabel file. Model hierarchy may have been altered.", "SAMDL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						}
+					}
 				}
 #if !DEBUG
 				catch (Exception ex)
