@@ -17,15 +17,16 @@ namespace TextureEditor
         public string Name { get; set; }
         public uint GlobalIndex { get; set; }
         public bool Mipmap { get; set; }
-        public Bitmap Image { get; set; }
-        public abstract bool CheckMipmap();
+        public Bitmap Image { get; set; } // Preview image
+		public MemoryStream TextureData { get; set; } // Texture data in target format
+		public abstract bool CheckMipmap();
     }
 
     class PvrTextureInfo : TextureInfo
     {
         public PvrDataFormat DataFormat { get; set; }
         public PvrPixelFormat PixelFormat { get; set; }
-        public MemoryStream TextureData { get; set; }
+    
         public PvrTextureInfo() { }
 
         public PvrTextureInfo(TextureInfo tex)
@@ -102,7 +103,6 @@ namespace TextureEditor
     {
         public GvrDataFormat DataFormat { get; set; }
         public GvrPixelFormat PixelFormat { get; set; }
-        public MemoryStream TextureData { get; set; }
 
         public GvrTextureInfo() { }
 
@@ -112,7 +112,7 @@ namespace TextureEditor
             GlobalIndex = tex.GlobalIndex;
             Image = tex.Image;
             Mipmap = tex.Mipmap;
-            PixelFormat = GvrPixelFormat.Unknown;
+            PixelFormat = GvrPixelFormat.NonIndexed;
             DataFormat = GvrDataFormat.Unknown;
             if (tex is GvrTextureInfo gvrt)
             {
@@ -144,7 +144,7 @@ namespace TextureEditor
             Name = name;
             GlobalIndex = gbix;
             DataFormat = GvrDataFormat.Unknown;
-            PixelFormat = GvrPixelFormat.Unknown;
+            PixelFormat = GvrPixelFormat.NonIndexed;
             if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
                 Image = new Bitmap(TextureEditor.Properties.Resources.error);
             else
@@ -331,7 +331,6 @@ namespace TextureEditor
 		public DXGIFormat DataFormat { get; set; }
 		public DXGIFormat PixelFormat { get; set; }
 		public bool useAlpha { get; set; }
-		public MemoryStream TextureData { get; set; }
 		public XvrTextureInfo() { }
 
 		public XvrTextureInfo(TextureInfo tex)

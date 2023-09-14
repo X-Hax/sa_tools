@@ -1689,7 +1689,7 @@ namespace TextureEditor
 							comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
 					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = Math.Min(comboBoxCurrentPaletteBank.Items.Count-1, paletteSet);
 					palettePreview.Image = GeneratePalettePreview();
-					labelPaletteFormat.Text = currentPalette.pixelCodec.ToString() + " / " + currentPalette.Colors.Count.ToString() + " colors";
+					labelPaletteFormat.Text = currentPalette.PixelCodec.ToString() + " / " + currentPalette.Colors.Count.ToString() + " colors";
 					labelPaletteFormat.Show();
 					palettePreview.Show();
 					panelPaletteInfo.Show();
@@ -1936,12 +1936,12 @@ namespace TextureEditor
 				return result;
 		}
 
-		private void RetrievePaletteFromIndexedBitmap(Bitmap bitmap, PalettedTextureFormat texfmt, PixelCodec codec, bool gvp = false)
+		private void RetrievePaletteFromIndexedBitmap(Bitmap bitmap, PalettedTextureFormat texfmt, PalettePixelCodec codec, bool gvp = false)
 		{
 			if (bitmap.PixelFormat != PixelFormat.Format4bppIndexed && bitmap.PixelFormat != PixelFormat.Format8bppIndexed)
 				return;
 
-			currentPalette.pixelCodec = codec;
+			currentPalette.PixelCodec = codec;
 			currentPalette.Colors.Clear();
 
 			for (int c = 0; c < bitmap.Palette.Entries.Length; c++)
