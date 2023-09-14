@@ -253,7 +253,7 @@ namespace SAModel.SAEditorCommon.Import
 								var aiBone = aiBoneMap[vertexWeight.Index];
 
 								// Assimps way of storing weights is not very efficient
-								aiBone.VertexWeights.Add(new VertexWeight(i, vertexWeight.Weight));
+								aiBone.VertexWeights.Add(new Assimp.VertexWeight(i, vertexWeight.Weight));
 							}
 						}
 
