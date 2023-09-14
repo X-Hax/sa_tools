@@ -156,7 +156,7 @@ namespace TextureEditor
                     return GvrPixelFormat.Rgb5a3;
                 case 0:
                 default:
-                    return GvrPixelFormat.Unknown;
+                    return GvrPixelFormat.NonIndexed;
             }
         }
 

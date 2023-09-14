@@ -252,7 +252,7 @@ namespace VrSharp.Gvr
             }
             else
             {
-                this.pixelFormat = GvrPixelFormat.Unknown;
+                this.pixelFormat = GvrPixelFormat.NonIndexed;
                 pixelCodec = null;
 
                 // Convert the bitmap to an array
@@ -380,7 +380,7 @@ namespace VrSharp.Gvr
             }
 
             PTStream.WriteUInt16(destination, 0);
-            if (PixelFormat != GvrPixelFormat.Unknown)
+            if (PixelFormat != GvrPixelFormat.NonIndexed)
             {
                 destination.WriteByte((byte)(((byte)pixelFormat << 4) | ((byte)dataFlags & 0x0F)));
             }
