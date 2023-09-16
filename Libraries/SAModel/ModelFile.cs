@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using Newtonsoft.Json;
@@ -391,6 +392,9 @@ namespace SAModel
 		{
 			switch (format)
 			{
+				case ModelFormat.BasicDX:
+					format = ModelFormat.Basic;
+					break;
 				case ModelFormat.Basic:
 				case ModelFormat.Chunk:
 				case ModelFormat.GC:
@@ -447,202 +451,18 @@ namespace SAModel
 			}
 		}
 
-		public void SaveToFile(string filename)
+		public void SaveToFile(string filename, bool nometa = false, bool useNinjaMetaData = false)
 		{
+			uint ninjaMagic;
+			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
 			bool be = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = false;
+			if (!useNinjaMetaData)
+				ByteConverter.BigEndian = false;
 			List<byte> file = new List<byte>();
 			ulong magic;
 			switch (Format)
 			{
 				case ModelFormat.Basic:
-					magic = SA1MDLVer;
-					break;
-				case ModelFormat.Chunk:
-					magic = SA2MDLVer;
-					break;
-				case ModelFormat.GC:
-					magic = SA2BMDLVer;
-					break;
-				case ModelFormat.XJ:
-					magic = XJMDLVer;
-					break;
-				default:
-					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
-			}
-			file.AddRange(ByteConverter.GetBytes(magic));
-			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] mdl = Model.GetBytes(0x10, false, labels, new List<uint>(), out uint addr);
-			file.AddRange(ByteConverter.GetBytes(addr + 0x10));
-			file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
-			file.AddRange(mdl);
-			string path = Path.GetDirectoryName(filename);
-			if (labels.Count > 0)
-			{
-				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
-				int straddr = (labels.Count * 8) + 8;
-				List<byte> strbytes = new List<byte>();
-				foreach (KeyValuePair<string, uint> label in labels)
-				{
-					chunk.AddRange(ByteConverter.GetBytes(label.Value));
-					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
-					strbytes.AddRange(Encoding.UTF8.GetBytes(label.Key));
-					strbytes.Add(0);
-					strbytes.Align(4);
-				}
-				chunk.AddRange(ByteConverter.GetBytes(-1L));
-				chunk.AddRange(strbytes);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (Animations.Count > 0)
-			{
-				using (TextWriter tw = File.CreateText(Path.ChangeExtension(filename, ".action")))
-				{
-					for (int a = 0; a < animationFiles.Count(); a++)
-					{
-						tw.WriteLine(animationFiles[a]);
-					}
-					tw.Flush();
-					tw.Close();
-				}
-				/*
-				//Old animation code
-				List<byte> chunk = new List<byte>((Animations.Count + 1) * 4);
-				int straddr = (Animations.Count + 1) * 4;
-				List<byte> strbytes = new List<byte>();
-				for (int i = 0; i < Animations.Count; i++)
-				{
-					//Animations[i].Save(Path.Combine(path, animationFiles[i]));
-					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
-					strbytes.AddRange(Encoding.UTF8.GetBytes(animationFiles[i]));
-					strbytes.Add(0);
-					strbytes.Align(4);
-				}
-				chunk.AddRange(ByteConverter.GetBytes(-1));
-				chunk.AddRange(strbytes);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Animation));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-				*/
-			}
-			if (!string.IsNullOrEmpty(Author))
-			{
-				List<byte> chunk = new List<byte>(Author.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(Author));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Author));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (!string.IsNullOrEmpty(Description))
-			{
-				List<byte> chunk = new List<byte>(Description.Length + 1);
-				chunk.AddRange(Encoding.UTF8.GetBytes(Description));
-				chunk.Add(0);
-				chunk.Align(4);
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			if (RightHandNode != null)
-			{
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightHandNode));
-				file.AddRange(ByteConverter.GetBytes(8));
-				file.AddRange(ByteConverter.GetBytes(labels[RightHandNode.Name]));
-				file.AddRange(ByteConverter.GetBytes((int)RightHandDir));
-			}
-			if (LeftHandNode != null)
-			{
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftHandNode));
-				file.AddRange(ByteConverter.GetBytes(8));
-				file.AddRange(ByteConverter.GetBytes(labels[LeftHandNode.Name]));
-				file.AddRange(ByteConverter.GetBytes((int)LeftHandDir));
-			}
-			if (RightFootNode != null)
-			{
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightFootNode));
-				file.AddRange(ByteConverter.GetBytes(8));
-				file.AddRange(ByteConverter.GetBytes(labels[RightFootNode.Name]));
-				file.AddRange(ByteConverter.GetBytes((int)RightFootDir));
-			}
-			if (LeftFootNode != null)
-			{
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftFootNode));
-				file.AddRange(ByteConverter.GetBytes(8));
-				file.AddRange(ByteConverter.GetBytes(labels[LeftFootNode.Name]));
-				file.AddRange(ByteConverter.GetBytes((int)LeftFootDir));
-			}
-			if (User0Node != null)
-			{
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User0Node));
-				file.AddRange(ByteConverter.GetBytes(8));
-				file.AddRange(ByteConverter.GetBytes(labels[User0Node.Name]));
-				file.AddRange(ByteConverter.GetBytes((int)User0Dir));
-			}
-			if (User1Node != null)
-			{
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User1Node));
-				file.AddRange(ByteConverter.GetBytes(8));
-				file.AddRange(ByteConverter.GetBytes(labels[User1Node.Name]));
-				file.AddRange(ByteConverter.GetBytes((int)User1Dir));
-			}
-			if (Model.EnumerateObjects().Any(a => a.Attach?.VertexWeights != null))
-			{
-				List<byte> chunk = new List<byte>();
-				foreach (var node in Model.EnumerateObjects().Where(a => a.Attach?.VertexWeights != null))
-				{
-					chunk.AddRange(ByteConverter.GetBytes(labels[node.Name]));
-					chunk.AddRange(ByteConverter.GetBytes(node.Attach.VertexWeights.Count));
-					foreach (var vert in node.Attach.VertexWeights)
-					{
-						chunk.AddRange(ByteConverter.GetBytes(vert.Key));
-						chunk.AddRange(ByteConverter.GetBytes(vert.Value.Count));
-						foreach (var weight in vert.Value)
-						{
-							chunk.AddRange(ByteConverter.GetBytes(labels[weight.Node.Name]));
-							chunk.AddRange(ByteConverter.GetBytes(weight.Vertex));
-							chunk.AddRange(ByteConverter.GetBytes(weight.Weight));
-						}
-					}
-				}
-				chunk.AddRange(ByteConverter.GetBytes(-1));
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Weights));
-				file.AddRange(ByteConverter.GetBytes(chunk.Count));
-				file.AddRange(chunk);
-			}
-			foreach (KeyValuePair<uint, byte[]> item in Metadata)
-			{
-				file.AddRange(ByteConverter.GetBytes(item.Key));
-				file.AddRange(ByteConverter.GetBytes(item.Value.Length));
-				file.AddRange(item.Value);
-			}
-			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
-			file.AddRange(new byte[4]);
-			File.WriteAllBytes(filename, file.ToArray());
-			ByteConverter.BigEndian = be;
-		}
-
-		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
-			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false)
-		{
-			uint ninjaMagic;
-			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
-			bool be = ByteConverter.BigEndian;
-			if(useNinjaMetaData == false)
-			{
-				ByteConverter.BigEndian = false;
-			}
-			if (format == ModelFormat.BasicDX)
-				format = ModelFormat.Basic;
-			List<byte> file = new List<byte>();
-			ulong magic;
-			switch (format)
-			{
-				case ModelFormat.Basic:
-				case ModelFormat.BasicDX:
 					magic = SA1MDLVer;
 					ninjaMagic = NJBMMagic;
 					break;
@@ -659,16 +479,17 @@ namespace SAModel
 					ninjaMagic = NJCMMagic; //XJ uses Chunk's magic
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + format.ToString() + " format models to file!", "format");
+					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
 			}
+			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			List<uint> njOffsets = new List<uint>();
 			byte[] mdl;
 			uint addr;
 
-			if(useNinjaMetaData == true)
+			if (useNinjaMetaData)
 			{
-				mdl = model.NJGetBytes(imageBase, false, labels, njOffsets, out addr);
+				mdl = Model.NJGetBytes(imageBase, false, labels, njOffsets, out addr);
 				//***Ninja metadata should always be little endian!***
 				file.AddRange(BitConverter.GetBytes(ninjaMagic));
 				file.AddRange(BitConverter.GetBytes(mdl.Length));
@@ -676,7 +497,7 @@ namespace SAModel
 			}
 			else
 			{
-				mdl = model.GetBytes(imageBase, false, labels, njOffsets, out addr);
+				mdl = Model.GetBytes(imageBase, false, labels, njOffsets, out addr);
 				file.AddRange(ByteConverter.GetBytes(magic));
 				file.AddRange(ByteConverter.GetBytes(addr + 0x10));
 				file.AddRange(ByteConverter.GetBytes(mdl.Length + 0x10));
@@ -684,6 +505,7 @@ namespace SAModel
 			file.AddRange(mdl);
 			if (!nometa)
 			{
+				string path = Path.GetDirectoryName(Path.GetFullPath(filename));
 				if (labels.Count > 0)
 				{
 					List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
@@ -703,7 +525,7 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
-				if (animationFiles != null && animationFiles.Length > 0)
+				if (Animations.Count > 0)
 				{
 					using (TextWriter tw = File.CreateText(Path.ChangeExtension(filename, ".action")))
 					{
@@ -716,11 +538,12 @@ namespace SAModel
 					}
 					/*
 					//Old animation code
-					List<byte> chunk = new List<byte>((animationFiles.Length + 1) * 4);
-					int straddr = (animationFiles.Length + 1) * 4;
+					List<byte> chunk = new List<byte>((Animations.Count + 1) * 4);
+					int straddr = (Animations.Count + 1) * 4;
 					List<byte> strbytes = new List<byte>();
-					for (int i = 0; i < animationFiles.Length; i++)
+					for (int i = 0; i < Animations.Count; i++)
 					{
+						//Animations[i].Save(Path.Combine(path, animationFiles[i]));
 						chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
 						strbytes.AddRange(Encoding.UTF8.GetBytes(animationFiles[i]));
 						strbytes.Add(0);
@@ -733,37 +556,102 @@ namespace SAModel
 					file.AddRange(chunk);
 					*/
 				}
-				if (!string.IsNullOrEmpty(author))
+				if (!string.IsNullOrEmpty(Author))
 				{
-					List<byte> chunk = new List<byte>(author.Length + 1);
-					chunk.AddRange(Encoding.UTF8.GetBytes(author));
+					List<byte> chunk = new List<byte>(Author.Length + 1);
+					chunk.AddRange(Encoding.UTF8.GetBytes(Author));
 					chunk.Add(0);
 					chunk.Align(4);
 					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Author));
 					file.AddRange(ByteConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
-				if (!string.IsNullOrEmpty(description))
+				if (!string.IsNullOrEmpty(Description))
 				{
-					List<byte> chunk = new List<byte>(description.Length + 1);
-					chunk.AddRange(Encoding.UTF8.GetBytes(description));
+					List<byte> chunk = new List<byte>(Description.Length + 1);
+					chunk.AddRange(Encoding.UTF8.GetBytes(Description));
 					chunk.Add(0);
 					chunk.Align(4);
 					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
 					file.AddRange(ByteConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
 				}
-				if (metadata != null)
+				if (RightHandNode != null)
 				{
-					foreach (KeyValuePair<uint, byte[]> item in metadata)
-					{
-						file.AddRange(ByteConverter.GetBytes(item.Key));
-						file.AddRange(ByteConverter.GetBytes(item.Value.Length));
-						file.AddRange(item.Value);
-					}
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightHandNode));
+					file.AddRange(ByteConverter.GetBytes(8));
+					file.AddRange(ByteConverter.GetBytes(labels[RightHandNode.Name]));
+					file.AddRange(ByteConverter.GetBytes((int)RightHandDir));
 				}
+				if (LeftHandNode != null)
+				{
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftHandNode));
+					file.AddRange(ByteConverter.GetBytes(8));
+					file.AddRange(ByteConverter.GetBytes(labels[LeftHandNode.Name]));
+					file.AddRange(ByteConverter.GetBytes((int)LeftHandDir));
+				}
+				if (RightFootNode != null)
+				{
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightFootNode));
+					file.AddRange(ByteConverter.GetBytes(8));
+					file.AddRange(ByteConverter.GetBytes(labels[RightFootNode.Name]));
+					file.AddRange(ByteConverter.GetBytes((int)RightFootDir));
+				}
+				if (LeftFootNode != null)
+				{
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftFootNode));
+					file.AddRange(ByteConverter.GetBytes(8));
+					file.AddRange(ByteConverter.GetBytes(labels[LeftFootNode.Name]));
+					file.AddRange(ByteConverter.GetBytes((int)LeftFootDir));
+				}
+				if (User0Node != null)
+				{
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User0Node));
+					file.AddRange(ByteConverter.GetBytes(8));
+					file.AddRange(ByteConverter.GetBytes(labels[User0Node.Name]));
+					file.AddRange(ByteConverter.GetBytes((int)User0Dir));
+				}
+				if (User1Node != null)
+				{
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User1Node));
+					file.AddRange(ByteConverter.GetBytes(8));
+					file.AddRange(ByteConverter.GetBytes(labels[User1Node.Name]));
+					file.AddRange(ByteConverter.GetBytes((int)User1Dir));
+				}
+				if (Model.EnumerateObjects().Any(a => a.Attach?.VertexWeights != null))
+				{
+					List<byte> chunk = new List<byte>();
+					foreach (var node in Model.EnumerateObjects().Where(a => a.Attach?.VertexWeights != null))
+					{
+						chunk.AddRange(ByteConverter.GetBytes(labels[node.Name]));
+						chunk.AddRange(ByteConverter.GetBytes(node.Attach.VertexWeights.Count));
+						foreach (var vert in node.Attach.VertexWeights)
+						{
+							chunk.AddRange(ByteConverter.GetBytes(vert.Key));
+							chunk.AddRange(ByteConverter.GetBytes(vert.Value.Count));
+							foreach (var weight in vert.Value)
+							{
+								chunk.AddRange(ByteConverter.GetBytes(labels[weight.Node.Name]));
+								chunk.AddRange(ByteConverter.GetBytes(weight.Vertex));
+								chunk.AddRange(ByteConverter.GetBytes(weight.Weight));
+							}
+						}
+					}
+					chunk.AddRange(ByteConverter.GetBytes(-1));
+					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Weights));
+					file.AddRange(ByteConverter.GetBytes(chunk.Count));
+					file.AddRange(chunk);
+				}
+				foreach (KeyValuePair<uint, byte[]> item in Metadata)
+				{
+					file.AddRange(ByteConverter.GetBytes(item.Key));
+					file.AddRange(ByteConverter.GetBytes(item.Value.Length));
+					file.AddRange(item.Value);
+				}
+				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
+				file.AddRange(new byte[4]);
 			}
-			if(useNinjaMetaData == true)
+			if (useNinjaMetaData)
 			{
 				/*
 				List<uint> addresses = new List<uint>();
@@ -778,26 +666,40 @@ namespace SAModel
 				addresses.Sort();*/
 				njOffsets = njOffsets.Distinct().ToList();
 				njOffsets.Sort();
-				List<byte> pof0 = new List<byte>();
-				pof0.Add(0x41);
-				for(int i = 1; i < njOffsets.Count; i++)
+				List<byte> pof0 = new List<byte>
+				{
+					0x41
+				};
+				for (int i = 1; i < njOffsets.Count; i++)
 				{
 					pof0.AddRange(POF0Helper.calcPOF0Pointer(njOffsets[i - 1], njOffsets[i]));
 				}
 				POF0Helper.finalizePOF0(pof0);
 				file.AddRange(pof0);
-				
-				if(metadata.Count != 0 && metadata.ContainsKey(uint.MaxValue))
+
+				if (Metadata.Count != 0 && Metadata.ContainsKey(uint.MaxValue))
 				{
-					file.InsertRange(0, metadata[uint.MaxValue]);
+					file.InsertRange(0, Metadata[uint.MaxValue]);
 				}
-			} else
+			}
+			else
 			{
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 				file.AddRange(new byte[4]);
 			}
 			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
+		}
+
+		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
+			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false)
+		{
+			new ModelFile(format, model, Path.GetDirectoryName(Path.GetFullPath(filename)), animationFiles)
+			{
+				Author = author,
+				Description = description,
+				Metadata = metadata
+			}.SaveToFile(filename, nometa, useNinjaMetaData);
 		}
 
 		public enum ChunkTypes : uint
