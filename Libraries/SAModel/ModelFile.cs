@@ -698,7 +698,7 @@ namespace SAModel
 			{
 				Author = author,
 				Description = description,
-				Metadata = metadata
+				Metadata = metadata ?? new Dictionary<uint, byte[]>()
 			}.SaveToFile(filename, nometa, useNinjaMetaData);
 		}
 
