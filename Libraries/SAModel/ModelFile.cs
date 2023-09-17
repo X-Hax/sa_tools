@@ -481,7 +481,6 @@ namespace SAModel
 				default:
 					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
 			}
-			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			List<uint> njOffsets = new List<uint>();
 			byte[] mdl;
