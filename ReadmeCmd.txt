@@ -19,3 +19,4 @@ splitMiniEvent: Extracts data from SA2 in-level cutscenes
 splitMTN: Extracts data from SA2 MTN files
 splitShapeMotion: Extracts data from Ninja Shape animations
 TextureRemap: Remaps texture IDs in a model file
+WeldConverter: Converts a model's vertex welds to a custom weight format
