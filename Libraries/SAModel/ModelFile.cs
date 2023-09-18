@@ -647,8 +647,6 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes(item.Value.Length));
 					file.AddRange(item.Value);
 				}
-				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
-				file.AddRange(new byte[4]);
 			}
 			if (useNinjaMetaData)
 			{
