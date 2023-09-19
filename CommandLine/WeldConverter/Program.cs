@@ -66,48 +66,6 @@ foreach (var weld in welds)
 					objA.Attach.VertexWeights.Add(weld.VertIndexes[i], new List<VertexWeight>() { new VertexWeight(objB, weld.VertIndexes[i + 1], 1) });
 			}
 			break;
-		case WeldType.RightHandPosition:
-			if (nodedict.TryGetValue(weld.ModelA, out objA))
-			{
-				model.RightHandNode = objA;
-				model.RightHandDir = (ModelFile.NodeDirection)weld.Direction.Value;
-			}
-			break;
-		case WeldType.LeftHandPosition:
-			if (nodedict.TryGetValue(weld.ModelA, out objA))
-			{
-				model.LeftHandNode = objA;
-				model.LeftHandDir = (ModelFile.NodeDirection)weld.Direction.Value;
-			}
-			break;
-		case WeldType.RightFootPosition:
-			if (nodedict.TryGetValue(weld.ModelA, out objA))
-			{
-				model.RightFootNode = objA;
-				model.RightFootDir = (ModelFile.NodeDirection)weld.Direction.Value;
-			}
-			break;
-		case WeldType.LeftFootPosition:
-			if (nodedict.TryGetValue(weld.ModelA, out objA))
-			{
-				model.LeftFootNode = objA;
-				model.LeftFootDir = (ModelFile.NodeDirection)weld.Direction.Value;
-			}
-			break;
-		case WeldType.User0Position:
-			if (nodedict.TryGetValue(weld.ModelA, out objA))
-			{
-				model.User0Node = objA;
-				model.User0Dir = (ModelFile.NodeDirection)weld.Direction.Value;
-			}
-			break;
-		case WeldType.User1Position:
-			if (nodedict.TryGetValue(weld.ModelA, out objA))
-			{
-				model.User1Node = objA;
-				model.User1Dir = (ModelFile.NodeDirection)weld.Direction.Value;
-			}
-			break;
 	}
 }
 model.SaveToFile(mdlfn);

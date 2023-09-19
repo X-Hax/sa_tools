@@ -31,18 +31,6 @@ namespace SAModel
 		public ReadOnlyCollection<NJS_MOTION> Animations { get; private set; }
 		public string Author { get; set; }
 		public string Description { get; set; }
-		public NJS_OBJECT RightHandNode { get; set; }
-		public NodeDirection RightHandDir { get; set; }
-		public NJS_OBJECT LeftHandNode { get; set; }
-		public NodeDirection LeftHandDir { get; set; }
-		public NJS_OBJECT RightFootNode { get; set; }
-		public NodeDirection RightFootDir { get; set; }
-		public NJS_OBJECT LeftFootNode { get; set; }
-		public NodeDirection LeftFootDir { get; set; }
-		public NJS_OBJECT User0Node { get; set; }
-		public NodeDirection User0Dir { get; set; }
-		public NJS_OBJECT User1Node { get; set; }
-		public NodeDirection User1Dir { get; set; }
 		public Dictionary<uint, byte[]> Metadata { get; set; }
 		private string[] animationFiles;
 
@@ -63,7 +51,7 @@ namespace SAModel
 			Metadata = new Dictionary<uint, byte[]>();
 			Dictionary<int, string> labels = new Dictionary<int, string>();
 			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
-			byte[] rhnd = null, lhnd = null, rfnd = null, lfnd = null, u0nd = null, u1nd = null, wght = null;
+			byte[] wght = null;
 			if (version < 2)
 			{
 				if (version == 1)
@@ -207,24 +195,6 @@ namespace SAModel
 								case ChunkTypes.Description:
 									Description = chunk.GetCString(chunkaddr);
 									break;
-								case ChunkTypes.RightHandNode:
-									rhnd = chunk;
-									break;
-								case ChunkTypes.LeftHandNode:
-									lhnd = chunk;
-									break;
-								case ChunkTypes.RightFootNode:
-									rfnd = chunk;
-									break;
-								case ChunkTypes.LeftFootNode:
-									lfnd = chunk;
-									break;
-								case ChunkTypes.User0Node:
-									u0nd = chunk;
-									break;
-								case ChunkTypes.User1Node:
-									u1nd = chunk;
-									break;
 								case ChunkTypes.Weights:
 									wght = chunk;
 									break;
@@ -258,60 +228,6 @@ namespace SAModel
 				}
 				Model = new NJS_OBJECT(file, ByteConverter.ToInt32(file, 8), 0, Format, labels, attaches);
 				var nodedict = Model.EnumerateObjects().ToDictionary(a => a.Name);
-				if (rhnd != null)
-				{
-					int addr = ByteConverter.ToInt32(rhnd, 0);
-					if (labels.TryGetValue(addr, out string label))
-					{
-						RightHandNode = nodedict[label];
-						RightHandDir = (NodeDirection)ByteConverter.ToInt32(rhnd, 4);
-					}
-				}
-				if (lhnd != null)
-				{
-					int addr = ByteConverter.ToInt32(lhnd, 0);
-					if (labels.TryGetValue(addr, out string label))
-					{
-						LeftHandNode = nodedict[label];
-						LeftHandDir = (NodeDirection)ByteConverter.ToInt32(lhnd, 4);
-					}
-				}
-				if (rfnd != null)
-				{
-					int addr = ByteConverter.ToInt32(rfnd, 0);
-					if (labels.TryGetValue(addr, out string label))
-					{
-						RightFootNode = nodedict[label];
-						RightFootDir = (NodeDirection)ByteConverter.ToInt32(rfnd, 4);
-					}
-				}
-				if (lfnd != null)
-				{
-					int addr = ByteConverter.ToInt32(lfnd, 0);
-					if (labels.TryGetValue(addr, out string label))
-					{
-						LeftFootNode = nodedict[label];
-						LeftFootDir = (NodeDirection)ByteConverter.ToInt32(lfnd, 4);
-					}
-				}
-				if (u0nd != null)
-				{
-					int addr = ByteConverter.ToInt32(u0nd, 0);
-					if (labels.TryGetValue(addr, out string label))
-					{
-						User0Node = nodedict[label];
-						User0Dir = (NodeDirection)ByteConverter.ToInt32(u0nd, 4);
-					}
-				}
-				if (u1nd != null)
-				{
-					int addr = ByteConverter.ToInt32(u1nd, 0);
-					if (labels.TryGetValue(addr, out string label))
-					{
-						User1Node = nodedict[label];
-						User1Dir = (NodeDirection)ByteConverter.ToInt32(u1nd, 4);
-					}
-				}
 				if (wght != null)
 				{
 					int addr = ByteConverter.ToInt32(wght, 0);
@@ -574,48 +490,6 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Description));
 					file.AddRange(ByteConverter.GetBytes(chunk.Count));
 					file.AddRange(chunk);
-				}
-				if (RightHandNode != null)
-				{
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightHandNode));
-					file.AddRange(ByteConverter.GetBytes(8));
-					file.AddRange(ByteConverter.GetBytes(labels[RightHandNode.Name]));
-					file.AddRange(ByteConverter.GetBytes((int)RightHandDir));
-				}
-				if (LeftHandNode != null)
-				{
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftHandNode));
-					file.AddRange(ByteConverter.GetBytes(8));
-					file.AddRange(ByteConverter.GetBytes(labels[LeftHandNode.Name]));
-					file.AddRange(ByteConverter.GetBytes((int)LeftHandDir));
-				}
-				if (RightFootNode != null)
-				{
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.RightFootNode));
-					file.AddRange(ByteConverter.GetBytes(8));
-					file.AddRange(ByteConverter.GetBytes(labels[RightFootNode.Name]));
-					file.AddRange(ByteConverter.GetBytes((int)RightFootDir));
-				}
-				if (LeftFootNode != null)
-				{
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.LeftFootNode));
-					file.AddRange(ByteConverter.GetBytes(8));
-					file.AddRange(ByteConverter.GetBytes(labels[LeftFootNode.Name]));
-					file.AddRange(ByteConverter.GetBytes((int)LeftFootDir));
-				}
-				if (User0Node != null)
-				{
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User0Node));
-					file.AddRange(ByteConverter.GetBytes(8));
-					file.AddRange(ByteConverter.GetBytes(labels[User0Node.Name]));
-					file.AddRange(ByteConverter.GetBytes((int)User0Dir));
-				}
-				if (User1Node != null)
-				{
-					file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.User1Node));
-					file.AddRange(ByteConverter.GetBytes(8));
-					file.AddRange(ByteConverter.GetBytes(labels[User1Node.Name]));
-					file.AddRange(ByteConverter.GetBytes((int)User1Dir));
 				}
 				if (Model.EnumerateObjects().Any(a => a.Attach?.VertexWeights != null))
 				{
