@@ -50,10 +50,11 @@ namespace SAModel
 		public List<PolyChunk> Poly { get; set; }
 		public string PolyName { get; set; }
 
-		public bool HasWeight
+		public override bool HasWeight
 		{
 			get
 			{
+				if (base.HasWeight) return true;
 				if (Poly == null || !Poly.Any(a => a is PolyChunkStrip))
 					return Vertex != null && Vertex.Any(a => a.HasWeight);
 				List<int> ids = new List<int>();

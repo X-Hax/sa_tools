@@ -6,7 +6,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
+using System.Security.Cryptography.Xml;
 using Color = System.Drawing.Color;
 
 namespace SAModel.Direct3D
@@ -353,7 +356,7 @@ namespace SAModel.Direct3D
 		{
 			int numverts = 0;
 			byte data = 0;
-			if (attach == null || attach.MeshInfo == null) return null;
+			if (attach?.MeshInfo == null) return null;
 			foreach (MeshInfo item in attach.MeshInfo)
 			{
 				numverts += item.Vertices.Length;
@@ -400,31 +403,158 @@ namespace SAModel.Direct3D
 
 		public static List<Mesh> ProcessWeightedModel(this NJS_OBJECT obj)
 		{
+			var node = obj.EnumerateObjects().FirstOrDefault(a => a.Attach != null);
+			switch (node?.Attach)
+			{
+				case BasicAttach:
+					return obj.ProcessWeightedBasicModel();
+				case ChunkAttach:
+					return obj.ProcessWeightedChunkModel();
+				default:
+					return Enumerable.Repeat<Mesh>(null, obj.EnumerateObjects().Count()).ToList();
+			}
+		}
+
+		private static List<Mesh> ProcessWeightedBasicModel(this NJS_OBJECT obj)
+		{
+			NJS_OBJECT[] nodes = obj.GetObjects();
+			List<Matrix> matrices = new List<Matrix>();
+			obj.GetMatrices(new MatrixStack(), matrices);
+			List<Mesh> meshes = new List<Mesh>();
+			int mdlindex = -1;
+			foreach (var o2 in obj.EnumerateObjects())
+			{
+				mdlindex++;
+				if (o2.Attach is BasicAttach basatt)
+					meshes.Add(ProcessWeightedBasicAttach(basatt, nodes, matrices, mdlindex));
+				else
+					meshes.Add(null);
+			}
+			return meshes;
+		}
+
+		private static Mesh ProcessWeightedBasicAttach(BasicAttach attach, NJS_OBJECT[] nodes, List<Matrix> matrices, int mdlindex)
+		{
+			Vertex[] newVerts = (Vertex[])attach.Vertex.Clone();
+			Vertex[] newNorms = (Vertex[])attach.Normal.Clone();
+			List<WeightData>[] weightBuf = new List<WeightData>[newVerts.Length];
+			for (int i = 0; i < newVerts.Length; i++)
+			{
+				Vertex newpos, newnor;
+				if (attach.VertexWeights != null && attach.VertexWeights.TryGetValue(i, out var vw))
+				{
+					List<WeightData> wd = new List<WeightData>(vw.Count);
+					newpos = new Vertex();
+					newnor = new Vertex();
+					foreach (var v in vw)
+					{
+						int ni = Array.IndexOf(nodes, v.Node);
+						var va = (BasicAttach)v.Node.Attach;
+						var origpos = va.Vertex[v.Vertex].ToVector3();
+						newpos += (Vector3.TransformCoordinate(origpos, matrices[ni]) * v.Weight).ToVertex();
+						Vector3 orignor = va.Normal[v.Vertex].ToVector3();
+						newnor += (Vector3.TransformNormal(orignor, matrices[ni]) * v.Weight).ToVertex();
+						wd.Add(new WeightData(ni, origpos, orignor, v.Weight));
+					}
+					newVerts[i] = newpos;
+					newNorms[i] = newnor;
+					weightBuf[i] = wd;
+				}
+				else
+				{
+					var origpos = newVerts[i].ToVector3();
+					var orignor = newNorms[i].ToVector3();
+					newVerts[i] = Vector3.TransformCoordinate(origpos, matrices[mdlindex]).ToVertex();
+					newNorms[i] = Vector3.TransformNormal(orignor, matrices[mdlindex]).ToVertex();
+					weightBuf[i] = new List<WeightData>() { new WeightData(mdlindex, origpos, newNorms[i].ToVector3(), 1) };
+				}
+			}
+
+			List<MeshInfo> result = new List<MeshInfo>();
+			List<List<WeightData>> weights = new List<List<WeightData>>();
+			foreach (NJS_MESHSET mesh in attach.Mesh)
+			{
+				bool hasVColor = mesh.VColor != null;
+				bool hasUV = mesh.UV != null;
+				List<Poly> polys = new List<Poly>();
+				List<VertexData> verts = new List<VertexData>();
+				int currentstriptotal = 0;
+				foreach (Poly poly in mesh.Poly)
+				{
+					Poly newpoly = null;
+					switch (mesh.PolyType)
+					{
+						case Basic_PolyType.Triangles:
+							newpoly = new Triangle();
+							break;
+						case Basic_PolyType.Quads:
+							newpoly = new Quad();
+							break;
+						case Basic_PolyType.NPoly:
+						case Basic_PolyType.Strips:
+							newpoly = new Strip(poly.Indexes.Length, ((Strip)poly).Reversed);
+							break;
+					}
+					for (int i = 0; i < poly.Indexes.Length; i++)
+					{
+						var v = new VertexData(
+							newVerts[poly.Indexes[i]],
+							newNorms[poly.Indexes[i]],
+							hasVColor ? Color.FromArgb(mesh.VColor[currentstriptotal].R, mesh.VColor[currentstriptotal].G, mesh.VColor[currentstriptotal].B) : null,
+							hasUV ? mesh.UV[currentstriptotal++] : null);
+						if (verts.Contains(v))
+							newpoly.Indexes[i] = (ushort)verts.IndexOf(v);
+						else
+						{
+							weights.Add(weightBuf[poly.Indexes[i]]);
+							newpoly.Indexes[i] = (ushort)verts.Count;
+							verts.Add(v);
+						}
+					}
+					polys.Add(newpoly);
+				}
+				NJS_MATERIAL mat = null;
+				if (attach.Material != null && mesh.MaterialID < attach.Material.Count)
+					mat = attach.Material[mesh.MaterialID];
+				result.Add(new MeshInfo(mat, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
+			}
+			attach.MeshInfo = result.ToArray();
+			if (attach.MeshInfo.All(a => a.Vertices.Length == 0))
+				return null;
+			if (attach.MeshInfo.Any(a => a.HasUV))
+				return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
+			else
+				return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
+		}
+
+		public static List<Mesh> ProcessWeightedChunkModel(this NJS_OBJECT obj)
+		{
 			List<Mesh> meshes = new List<Mesh>();
 			int mdlindex = -1;
 			do
 			{
-				ProcessWeightedModel(obj, new MatrixStack(), meshes, ref mdlindex);
+				ProcessWeightedChunkModel(obj, new MatrixStack(), meshes, ref mdlindex);
 				obj = obj.Sibling;
 			} while (obj != null);
 			return meshes;
 		}
 
-		private static void ProcessWeightedModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
+		private static void ProcessWeightedChunkModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
 		{
 			mdlindex++;
 			transform.Push();
 			obj.ProcessTransforms(transform);
-			if (obj.Attach is ChunkAttach attach)
-				meshes.Add(ProcessWeightedAttach(attach, transform, mdlindex));
+			if (obj.Attach is ChunkAttach cnkatt)
+				meshes.Add(ProcessWeightedChunkAttach(cnkatt, transform, mdlindex));
 			else
 				meshes.Add(null);
 			foreach (NJS_OBJECT child in obj.Children)
-				ProcessWeightedModel(child, transform, meshes, ref mdlindex);
+				ProcessWeightedChunkModel(child, transform, meshes, ref mdlindex);
 			transform.Pop();
 		}
 
-		private static Mesh ProcessWeightedAttach(ChunkAttach attach, MatrixStack transform, int mdlindex)
+
+		private static Mesh ProcessWeightedChunkAttach(ChunkAttach attach, MatrixStack transform, int mdlindex)
 		{
 			if (attach.Vertex != null)
 			{
@@ -506,16 +636,9 @@ namespace SAModel.Direct3D
 			if (attach.Poly != null)
 				result = ProcessPolyList(attach.Poly, 0, weights);
 			attach.MeshInfo = result.ToArray();
-			int numverts = 0;
-			bool uv = false;
-			foreach (MeshInfo item in attach.MeshInfo)
-			{
-				numverts += item.Vertices.Length;
-				if (item.HasUV)
-					uv = true;
-			}
-			if (numverts == 0) return null;
-			if (uv)
+			if (attach.MeshInfo.All(a => a.Vertices.Length == 0))
+				return null;
+			if (attach.MeshInfo.Any(a => a.HasUV))
 				return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
 			else
 				return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
@@ -584,7 +707,7 @@ namespace SAModel.Direct3D
 									var v = new VertexData(
 										VertexBuffer[strip.Indexes[k]].Position,
 										VertexBuffer[strip.Indexes[k]].Normal,
-										hasVColor ? (Color?)strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
+										hasVColor ? strip.VColors[k] : VertexBuffer[strip.Indexes[k]].Color,
 										hasUV ? strip.UVs[k] : null);
 									if (verts.Contains(v))
 										str.Indexes[k] = (ushort)verts.IndexOf(v);

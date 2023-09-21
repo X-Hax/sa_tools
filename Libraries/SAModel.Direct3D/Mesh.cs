@@ -411,7 +411,7 @@ namespace SAModel.Direct3D
 		{
 			byte[] color1 = new byte[] { 0, 0, 127 };
 			byte[] color2 = new byte[] { 251, 64, 0 };
-			float t = 0;
+			float t;
 			if (weight < 0.25f)
 			{
 				color2 = new byte[] { 0, 153, 158 };

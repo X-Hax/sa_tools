@@ -59,7 +59,7 @@ namespace SAModel
 		{
 			get
 			{
-				if (Attach is ChunkAttach ca && ca.HasWeight) return true;
+				if (Attach != null && Attach.HasWeight) return true;
 				foreach (NJS_OBJECT child in Children)
 					if (child.HasWeight)
 						return true;

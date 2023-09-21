@@ -21,6 +21,8 @@ namespace SAModel
 			set { meshInfo = value; }
 		}
 
+		public virtual bool HasWeight => VertexWeights != null;
+
 		public static int Size(ModelFormat format)
 		{
 			switch (format)
