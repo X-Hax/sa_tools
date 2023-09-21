@@ -70,7 +70,28 @@ namespace ModelConverter
 			ModelFile.CreateFile(filename, model.Model, null, null, null, null, outfmt);
 		}
 
-		static void WeightedChunkToBasic(NJS_OBJECT obj) => WeightedChunkToBasic(obj, new Dictionary<int, List<VertexWeight>>());
+		static readonly List<PolyChunk>[] PolyCache = new List<PolyChunk>[255];
+		static void WeightedChunkToBasic(NJS_OBJECT obj)
+		{
+			if (obj.Attach is ChunkAttach attach)
+				if (attach.Poly != null)
+					for (int i = 0; i < attach.Poly.Count; i++)
+					{
+						switch (attach.Poly[i].Type)
+						{
+							case ChunkType.Bits_CachePolygonList:
+								PolyCache[((PolyChunkBitsCachePolygonList)attach.Poly[i]).List] = attach.Poly.Skip(i + 1).ToList();
+								attach.Poly = attach.Poly.Take(i).ToList();
+								break;
+							case ChunkType.Bits_DrawPolygonList:
+								int list = ((PolyChunkBitsDrawPolygonList)attach.Poly[i]).List;
+								attach.Poly.RemoveAt(i);
+								attach.Poly.InsertRange(i--, PolyCache[list]);
+								break;
+						}
+					}
+			WeightedChunkToBasic(obj, new Dictionary<int, List<VertexWeight>>());
+		}
 
 		static void WeightedChunkToBasic(NJS_OBJECT obj, Dictionary<int, List<VertexWeight>> weightDict)
 		{
@@ -122,7 +143,9 @@ namespace ModelConverter
 				NJS_MATERIAL material = new NJS_MATERIAL() { UseTexture = true };
 				SortedSet<int> usedVerts = new SortedSet<int>();
 				if (cnkatt.Poly != null)
-					foreach (PolyChunk chunk in cnkatt.Poly)
+					for (int pi = 0; pi < cnkatt.Poly.Count; pi++)
+					{
+						PolyChunk chunk = cnkatt.Poly[pi];
 						switch (chunk.Type)
 						{
 							case ChunkType.Bits_BlendAlpha:
@@ -252,6 +275,8 @@ namespace ModelConverter
 								}
 								break;
 						}
+					}
+
 				int numVtx = maxVtx - minVtx + 1;
 				basatt.ResizeVertexes(numVtx);
 				Array.Copy(VertexBuffer, minVtx, basatt.Vertex, 0, numVtx);
