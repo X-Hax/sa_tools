@@ -17,11 +17,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 		private float offset;
 		private bool hasWeight;
 
-		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager, bool Weight = false)
+		public StartPosItem(NJS_OBJECT model, string textures, float offset, Vertex position, int yrot, Device dev, EditorItemSelection selectionManager)
 			: base(selectionManager)
 		{
 			Model = model;
-			hasWeight = Weight;
+			hasWeight = model.HasWeight;
 
 			model.ProcessVertexData();
 

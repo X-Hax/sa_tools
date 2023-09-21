@@ -982,10 +982,10 @@ namespace SAModel.SALVL
 
 				if (File.Exists(character.Model))
 					LevelData.StartPositions[i] = new StartPosItem(new ModelFile(character.Model).Model,
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems, salvlini.IsSA2);
+					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 				else
 					LevelData.StartPositions[i] = new StartPosItem(new NJS_OBJECT(),
-					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems, salvlini.IsSA2);
+					character.Textures, character.Height, pos, rot, d3ddevice, selectedItems);
 
 				if (File.Exists(character.TextureList))
 					LoadTextureList(character.TextureList, modSystemFolder);
