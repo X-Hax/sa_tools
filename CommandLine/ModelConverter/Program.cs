@@ -70,26 +70,27 @@ namespace ModelConverter
 			ModelFile.CreateFile(filename, model.Model, null, null, null, null, outfmt);
 		}
 
-		static readonly List<PolyChunk>[] PolyCache = new List<PolyChunk>[255];
 		static void WeightedChunkToBasic(NJS_OBJECT obj)
 		{
-			if (obj.Attach is ChunkAttach attach)
-				if (attach.Poly != null)
-					for (int i = 0; i < attach.Poly.Count; i++)
-					{
-						switch (attach.Poly[i].Type)
+			List<PolyChunk>[] PolyCache = new List<PolyChunk>[255];
+			foreach (var o2 in obj.EnumerateObjects())
+				if (o2.Attach is ChunkAttach attach)
+					if (attach.Poly != null)
+						for (int i = 0; i < attach.Poly.Count; i++)
 						{
-							case ChunkType.Bits_CachePolygonList:
-								PolyCache[((PolyChunkBitsCachePolygonList)attach.Poly[i]).List] = attach.Poly.Skip(i + 1).ToList();
-								attach.Poly = attach.Poly.Take(i).ToList();
-								break;
-							case ChunkType.Bits_DrawPolygonList:
-								int list = ((PolyChunkBitsDrawPolygonList)attach.Poly[i]).List;
-								attach.Poly.RemoveAt(i);
-								attach.Poly.InsertRange(i--, PolyCache[list]);
-								break;
+							switch (attach.Poly[i].Type)
+							{
+								case ChunkType.Bits_CachePolygonList:
+									PolyCache[((PolyChunkBitsCachePolygonList)attach.Poly[i]).List] = attach.Poly.Skip(i + 1).ToList();
+									attach.Poly = attach.Poly.Take(i).ToList();
+									break;
+								case ChunkType.Bits_DrawPolygonList:
+									int list = ((PolyChunkBitsDrawPolygonList)attach.Poly[i]).List;
+									attach.Poly.RemoveAt(i);
+									attach.Poly.InsertRange(i--, PolyCache[list]);
+									break;
+							}
 						}
-					}
 			WeightedChunkToBasic(obj, new Dictionary<int, List<VertexWeight>>());
 		}
 
