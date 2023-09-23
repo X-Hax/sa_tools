@@ -323,27 +323,28 @@ namespace SAModel
 			Model = model;
 			this.animationFiles = animationFiles;
 			List<NJS_MOTION> anims = new List<NJS_MOTION>();
-			try
-			{
-				foreach (string item in animationFiles)
+			if (animationFiles != null)
+				try
 				{
-					if (Path.GetExtension(item).ToLowerInvariant() == ".json")
+					foreach (string item in animationFiles)
 					{
-						JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
-						using (TextReader tr = File.OpenText(Path.Combine(basePath, item)))
+						if (Path.GetExtension(item).ToLowerInvariant() == ".json")
 						{
-							using (JsonTextReader jtr = new JsonTextReader(tr))
-								anims.Add(js.Deserialize<NJS_MOTION>(jtr));
+							JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
+							using (TextReader tr = File.OpenText(Path.Combine(basePath, item)))
+							{
+								using (JsonTextReader jtr = new JsonTextReader(tr))
+									anims.Add(js.Deserialize<NJS_MOTION>(jtr));
+							}
 						}
+						else
+							anims.Add(NJS_MOTION.Load(Path.Combine(basePath, item), Model.CountAnimated()));
 					}
-					else
-						anims.Add(NJS_MOTION.Load(Path.Combine(basePath, item), Model.CountAnimated()));
 				}
-			}
-			catch
-			{
-				anims.Clear();
-			}
+				catch
+				{
+					anims.Clear();
+				}
 			Animations = anims.AsReadOnly();
 			Metadata = new Dictionary<uint, byte[]>();
 		}

@@ -83,6 +83,12 @@ namespace ModelConverter
 								case ChunkType.Bits_CachePolygonList:
 									PolyCache[((PolyChunkBitsCachePolygonList)attach.Poly[i]).List] = attach.Poly.Skip(i + 1).ToList();
 									attach.Poly = attach.Poly.Take(i).ToList();
+									if (attach.Poly.Count == 0)
+									{
+										attach.Poly = null;
+										if (attach.Vertex == null)
+											o2.Attach = null;
+									}
 									break;
 								case ChunkType.Bits_DrawPolygonList:
 									int list = ((PolyChunkBitsDrawPolygonList)attach.Poly[i]).List;
@@ -90,6 +96,8 @@ namespace ModelConverter
 									attach.Poly.InsertRange(i--, PolyCache[list]);
 									break;
 							}
+							if (attach.Poly == null)
+								break;
 						}
 			WeightedChunkToBasic(obj, new Dictionary<int, List<VertexWeight>>());
 		}
