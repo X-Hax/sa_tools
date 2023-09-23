@@ -113,8 +113,7 @@ namespace ModelConverter
 				Array.Fill(NormalBuffer, new Vertex());
 				Color?[] ColorBuffer = new Color?[short.MaxValue + 1];
 				float?[] WeightBuffer = new float?[short.MaxValue + 1];
-				int minVtx = int.MaxValue;
-				int maxVtx = int.MinValue;
+				SortedSet<ushort> usedVerts = new SortedSet<ushort>();
 				if (cnkatt.Vertex != null)
 					foreach (VertexChunk chunk in cnkatt.Vertex)
 					{
@@ -123,7 +122,7 @@ namespace ModelConverter
 							for (int i = 0; i < chunk.VertexCount; i++)
 							{
 								// Store vertex in cache
-								var vertexCacheId = (int)(chunk.IndexOffset + (chunk.NinjaFlags[i] & 0xFFFF));
+								var vertexCacheId = (ushort)(chunk.IndexOffset + (chunk.NinjaFlags[i] & 0xFFFF));
 
 								VertexBuffer[vertexCacheId] = chunk.Vertices[i];
 								NormalBuffer[vertexCacheId] = chunk.Normals[i];
@@ -132,8 +131,7 @@ namespace ModelConverter
 								WeightBuffer[vertexCacheId] = (chunk.NinjaFlags[i] >> 16) / 255f;
 								if (chunk.WeightStatus == WeightStatus.Start)
 									weightDict[vertexCacheId] = new List<VertexWeight>();
-								minVtx = Math.Min(minVtx, vertexCacheId);
-								maxVtx = Math.Max(maxVtx, vertexCacheId);
+								usedVerts.Add(vertexCacheId);
 							}
 						}
 						else
@@ -145,12 +143,10 @@ namespace ModelConverter
 							Array.Fill(WeightBuffer, 1, chunk.IndexOffset, chunk.VertexCount);
 							for (int i = 0; i < chunk.VertexCount; i++)
 								weightDict[chunk.IndexOffset + i] = new List<VertexWeight>();
-							minVtx = Math.Min(minVtx, chunk.IndexOffset);
-							maxVtx = Math.Max(maxVtx, chunk.IndexOffset + chunk.VertexCount - 1);
+							usedVerts.UnionWith(Enumerable.Range(chunk.IndexOffset, chunk.VertexCount).Select(a => (ushort)a));
 						}
 					}
 				NJS_MATERIAL material = new NJS_MATERIAL() { UseTexture = true };
-				SortedSet<int> usedVerts = new SortedSet<int>();
 				if (cnkatt.Poly != null)
 					for (int pi = 0; pi < cnkatt.Poly.Count; pi++)
 					{
@@ -259,10 +255,6 @@ namespace ModelConverter
 									List<Color> vcolors = hasVColor ? new List<Color>() : null;
 									foreach (PolyChunkStrip.Strip strip in c2.Strips)
 									{
-										minVtx = Math.Min(minVtx, strip.Indexes.Min());
-										maxVtx = Math.Max(maxVtx, strip.Indexes.Max());
-										foreach (ushort ind in strip.Indexes)
-											usedVerts.Add(ind);
 										strips.Add(new Strip((ushort[])strip.Indexes.Clone(), strip.Reversed));
 										if (hasUV)
 											uvs.AddRange(strip.UVs);
@@ -271,6 +263,7 @@ namespace ModelConverter
 										else if (hasVertVColor)
 											foreach (ushort i in strip.Indexes)
 												vcolors.Add(ColorBuffer[i] ?? Color.White);
+										usedVerts.UnionWith(strip.Indexes);
 									}
 									NJS_MESHSET mesh = new NJS_MESHSET(strips.ToArray(), false, hasUV, hasVColor);
 									if (hasUV)
@@ -286,21 +279,22 @@ namespace ModelConverter
 						}
 					}
 
-				int numVtx = maxVtx - minVtx + 1;
+				var usedVtxArray = usedVerts.ToArray();
+				int numVtx = usedVerts.Count;
 				basatt.ResizeVertexes(numVtx);
-				Array.Copy(VertexBuffer, minVtx, basatt.Vertex, 0, numVtx);
-				Array.Copy(NormalBuffer, minVtx, basatt.Normal, 0, numVtx);
+				usedVtxArray.Select(a => VertexBuffer[a]).ToArray().CopyTo(basatt.Vertex, 0);
+				usedVtxArray.Select(a => NormalBuffer[a]).ToArray().CopyTo(basatt.Normal, 0);
 				foreach (NJS_MESHSET mesh in basatt.Mesh)
 					foreach (Poly poly in mesh.Poly)
 						for (int i = 0; i < poly.Indexes.Length; i++)
-							poly.Indexes[i] = (ushort)(poly.Indexes[i] - minVtx);
-				for (int i = minVtx; i <= maxVtx; i++)
-					if (WeightBuffer[i].HasValue)
-						weightDict[i].Add(new VertexWeight(obj, i - minVtx, WeightBuffer[i].Value));
+							poly.Indexes[i] = (ushort)Array.BinarySearch(usedVtxArray, poly.Indexes[i]);
+				for (int i = 0; i < usedVtxArray.Length; i++)
+					if (WeightBuffer[usedVtxArray[i]].HasValue)
+						weightDict[usedVtxArray[i]].Add(new VertexWeight(obj, i, WeightBuffer[usedVtxArray[i]].Value));
 				Dictionary<int, List<VertexWeight>> weights = new Dictionary<int, List<VertexWeight>>();
-				foreach (int ind in usedVerts)
-					if (weightDict.TryGetValue(ind, out var weight) && (weight.Count > 1 || weight[0].Node != obj))
-						weights.Add(ind - minVtx, weight);
+				for (int i = 0; i < usedVtxArray.Length; i++)
+					if (weightDict.TryGetValue(usedVtxArray[i], out var weight) && (weight.Count > 1 || weight[0].Node != obj))
+						weights.Add(i, weight);
 				if (weights.Count > 0)
 					basatt.VertexWeights = weights;
 				obj.Attach = basatt;
