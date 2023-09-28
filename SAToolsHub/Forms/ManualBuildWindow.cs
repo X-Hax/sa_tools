@@ -371,7 +371,7 @@ namespace SAModel.SAEditorCommon
 							break;
 
 						case AssemblyType.DLL:
-							DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
+							DLLModGenerator.DLLModGen.ExportINIManual((DllIniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 
