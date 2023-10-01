@@ -700,13 +700,13 @@ namespace VrSharp.Pvr
                 int destinationIndex = 0;
 
                 // Decode texture data
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < height / PixelCodec.NumPixels; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
                         PixelCodec.DecodePixel(source, sourceIndex, destination, destinationIndex);
                         sourceIndex += (PixelCodec.Bpp >> 3);
-                        destinationIndex += 4;
+                        destinationIndex += 4 * PixelCodec.NumPixels;
                     }
                 }
 

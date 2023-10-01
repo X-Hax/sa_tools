@@ -12,6 +12,8 @@ namespace VrSharp
         // Returns the bits per pixel for this pixel format.
         public abstract int Bpp { get; }
 
+		public abstract int NumPixels { get; }
+
         // Decode & Encode a pixel
         public abstract void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex);
         public abstract void EncodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex);

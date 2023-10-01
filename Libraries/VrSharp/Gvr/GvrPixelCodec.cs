@@ -13,7 +13,12 @@ namespace VrSharp.Gvr
                 get { return true; }
             }
 
-            public override int Bpp
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override int Bpp
             {
                 get { return 16; }
             }
@@ -48,7 +53,12 @@ namespace VrSharp.Gvr
                 get { return 16; }
             }
 
-            public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
             {
                 ushort pixel = PTMethods.ToUInt16BE(source, sourceIndex);
 
@@ -80,7 +90,12 @@ namespace VrSharp.Gvr
                 get { return true; }
             }
 
-            public override int Bpp
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override int Bpp
             {
                 get { return 16; }
             }

@@ -14,7 +14,12 @@ namespace VrSharp.Pvr
                 get { return true; }
             }
 
-            public override int Bpp
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override int Bpp
             {
                 get { return 16; }
             }
@@ -52,7 +57,12 @@ namespace VrSharp.Pvr
                 get { return true; }
             }
 
-            public override int Bpp
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override int Bpp
             {
                 get { return 16; }
             }
@@ -94,7 +104,12 @@ namespace VrSharp.Pvr
                 get { return 16; }
             }
 
-            public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
             {
                 ushort pixel = BitConverter.ToUInt16(source, sourceIndex);
 
@@ -132,6 +147,11 @@ namespace VrSharp.Pvr
 				get { return 32; } //Using 32 Bpp because YUV requires two pixels to decode one pixel
 			}
 
+			public override int NumPixels
+			{
+				get { return 2; }
+			}
+
 			public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
 			{
 				ushort pixel1 = BitConverter.ToUInt16(source, sourceIndex);
@@ -140,13 +160,13 @@ namespace VrSharp.Pvr
 				int Y0 = (pixel1 & 0xFF00) >> 8, U = (pixel1 & 0x00FF);
 				int Y1 = (pixel2 & 0xFF00) >> 8, V = (pixel2 & 0x00FF);
 
-				byte r1 = MathExtensions.ClampByte((int)(Y0 + 1.375 * (V - 128)));
-				byte g1 = MathExtensions.ClampByte((int)(Y0 - 0.6875 * (V - 128) - 0.34375 * (U - 128)));
-				byte b1 = MathExtensions.ClampByte((int)(Y0 + 1.71875 * (U - 128)));
+				byte r1 = MathExtensions.ClampByte((int)(Y0 + 1.375 * (V - 128.0)));
+				byte g1 = MathExtensions.ClampByte((int)(Y0 - 0.6875 * (V - 128.0) - 0.34375 * (U - 128.0)));
+				byte b1 = MathExtensions.ClampByte((int)(Y0 + 1.71875 * (U - 128.0)));
 
-				byte r2 = MathExtensions.ClampByte((int)(Y1 + 1.375 * (V - 128)));
-				byte g2 = MathExtensions.ClampByte((int)(Y1 - 0.6875 * (V - 128) - 0.34375 * (U - 128)));
-				byte b2 = MathExtensions.ClampByte((int)(Y1 + 1.71875 * (U - 128)));
+				byte r2 = MathExtensions.ClampByte((int)(Y1 + 1.375 * (V - 128.0)));
+				byte g2 = MathExtensions.ClampByte((int)(Y1 - 0.6875 * (V - 128.0) - 0.34375 * (U - 128.0)));
+				byte b2 = MathExtensions.ClampByte((int)(Y1 + 1.71875 * (U - 128.0)));
 
 				destination[destinationIndex + 3] = 0xFF;
 				destination[destinationIndex + 2] = r1;
@@ -176,8 +196,8 @@ namespace VrSharp.Pvr
 				byte g = (byte)((g2 + g1) / 2);
 				byte b = (byte)((b2 + b1) / 2);
 
-				uint U = (uint)(128.0f - 0.14 * r - 0.29 * g + 0.43 * b);
-				uint V = (uint)(128.0f + 0.36 * r - 0.29 * g - 0.07 * b);
+				uint U = (uint)(128.0f - 0.14f * r - 0.29f * g + 0.43f * b);
+				uint V = (uint)(128.0f + 0.36f * r - 0.29f * g - 0.07f * b);
 
 				ushort pixel1 = (ushort)((Y0 << 8) | U);
 				ushort pixel2 = (ushort)((Y1 << 8) | V);
@@ -196,6 +216,11 @@ namespace VrSharp.Pvr
 			public override bool CanEncode
 			{
 				get { return true; }
+			}
+
+			public override int NumPixels
+			{
+				get { return 1; }
 			}
 
 			public override int Bpp
@@ -266,6 +291,11 @@ namespace VrSharp.Pvr
 				get { return true; }
 			}
 
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
 			public override int Bpp
 			{
 				get { return 16; }
@@ -300,6 +330,11 @@ namespace VrSharp.Pvr
 			public override bool CanEncode
 			{
 				get { return true; }
+			}
+
+			public override int NumPixels
+			{
+				get { return 1; }
 			}
 
 			public override int Bpp
