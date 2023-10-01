@@ -137,7 +137,9 @@ namespace TextureEditor
 						switch (pvr.DataFormat)
 						{
 							case PvrDataFormat.Index4:
+							case PvrDataFormat.Index4Mipmaps:
 							case PvrDataFormat.Index8:
+							case PvrDataFormat.Index8Mipmaps:
 								if (!paletteApplied)
 								{
 									if (pvr.TextureData == null)
@@ -1415,7 +1417,7 @@ namespace TextureEditor
 								return;
 							PvrPixelFormat pvrPixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(bmp);
 							PvrDataFormat pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false, true);
-							if (pvrDataFormat == PvrDataFormat.Index4 || pvrDataFormat == PvrDataFormat.Index8)
+							if (pvrDataFormat == PvrDataFormat.Index4 || pvrDataFormat == PvrDataFormat.Index8 || pvrDataFormat == PvrDataFormat.Index4Mipmaps || pvrDataFormat == PvrDataFormat.Index8Mipmaps)
 							{
 								IndexedImageImportDialog idximp = new IndexedImageImportDialog(bmp, oldpvr, compatibleGVPToolStripMenuItem.Checked);
 								DialogResult dialogResult = idximp.ShowDialog();
@@ -1828,8 +1830,10 @@ namespace TextureEditor
 				switch (pvri.DataFormat)
 				{
 					case PvrDataFormat.Index4:
+					case PvrDataFormat.Index4Mipmaps:
 						return PalettedTextureFormat.Index4;
 					case PvrDataFormat.Index8:
+					case PvrDataFormat.Index8Mipmaps:
 						return PalettedTextureFormat.Index8;
 					default:
 						return PalettedTextureFormat.NotIndexed;

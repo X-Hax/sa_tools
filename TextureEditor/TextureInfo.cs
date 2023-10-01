@@ -87,10 +87,10 @@ namespace TextureEditor
             DataFormat = texture.DataFormat;
             Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
             PixelFormat = texture.PixelFormat;
-            if (texture.NeedsExternalPalette)
-                Image = new Bitmap(Properties.Resources.error);
-            else
-                Image = texture.ToBitmap();
+			if (texture.NeedsExternalPalette)
+				Image = new Bitmap(Properties.Resources.error);
+			else
+				Image = texture.ToBitmap();
         }
 
         public override bool CheckMipmap()
