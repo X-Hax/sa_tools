@@ -152,13 +152,22 @@ namespace TextureEditor
 									}
 									PvrTexture pt = new PvrTexture(pvr.TextureData.ToArray());
 									currentPalette.IsGVP = false;
+									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
+									int neededcolors = (pvr.DataFormat == PvrDataFormat.Index4 | pvr.DataFormat == PvrDataFormat.Index4Mipmaps) ? 16 : 256;
+									int colorcount = currentPalette.Colors.Count();
+									if (neededcolors - colorcount > 0)
+									{
+										MessageBox.Show(this, "The current palette contains " + colorcount.ToString() + " colors, while the indexed texture requires " + neededcolors.ToString() + ".\nMissing color slots were filled with Black.", "Palette application warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+										for (int i = 0; i < neededcolors - colorcount; i++)
+											currentPalette.Colors.Add(Color.Black);
+									}
 									try
 									{
-										pt.SetPalette(new PvpPalette(currentPalette.GetBytes()), paletteSet);
+									pt.SetPalette(new PvpPalette(currentPalette.GetBytes()), paletteSet);
 									}
-									catch (Exception)
+									catch (Exception ex)
 									{
-										MessageBox.Show(this, "Palette data couldn't be applied. This can be caused by using 16-color palettes on 256-color indexed images. Select a correct palette file and try again.", "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+										MessageBox.Show(this, "Palette data couldn't be applied: " + ex.Message.ToString(), "Palette application error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 										currentPalette = new TexturePalette(defaultPalette.GetBytes());
 										pt.SetPalette(new PvpPalette(currentPalette.GetBytes()), 0);
 									}
