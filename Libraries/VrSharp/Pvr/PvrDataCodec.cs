@@ -4,9 +4,9 @@ namespace VrSharp.Pvr
 {
     public abstract class PvrDataCodec : VrDataCodec
     {
-        #region Square Twiddled
-        // Square Twiddled
-        public class SquareTwiddled : PvrDataCodec
+		#region Square Twiddled
+		// Square Twiddled
+		public class SquareTwiddled : PvrDataCodec
         {
             public override bool CanEncode
             {
@@ -373,11 +373,116 @@ namespace VrSharp.Pvr
                 return destination;
             }
         }
-        #endregion
+		#endregion
 
-        #region 8-bit Indexed with External Palette
-        // 8-bit Indexed with External Palette
-        public class Index8 : PvrDataCodec
+		#region 4-bit Indexed with External Palette + Mipmaps
+		// Looks the same as regular 4-bit indexed?
+		public class Index4Mipmap : PvrDataCodec
+		{
+			public override bool CanEncode
+			{
+				get { return true; }
+			}
+
+			public override int Bpp
+			{
+				get { return 4; }
+			}
+
+			public override bool HasMipmaps
+			{
+				get { return true; }
+			}
+
+			public override int PaletteEntries
+			{
+				get { return 16; }
+			}
+
+			public override bool NeedsExternalPalette
+			{
+				get { return true; }
+			}
+
+			public override byte[] Decode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				byte[] destination = new byte[width * height * 4];
+				int destinationIndex;
+
+				// Get the size of each block to process.
+				int size = Math.Min(width, height);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Decode texture data
+				for (int y = 0; y < height; y += size)
+				{
+					for (int x = 0; x < width; x += size)
+					{
+						for (int y2 = 0; y2 < size; y2++)
+						{
+							for (int x2 = 0; x2 < size; x2++)
+							{
+								byte index = (byte)((source[sourceIndex + (((twiddleMap[x2] << 1) | twiddleMap[y2]) >> 1)] >> ((y2 & 0x1) * 4)) & 0xF);
+								destinationIndex = ((((y + y2) * width) + (x + x2)) * 4);
+
+								for (int i = 0; i < 4; i++)
+								{
+									destination[destinationIndex] = palette[index][i];
+									destinationIndex++;
+								}
+							}
+						}
+
+						sourceIndex += (size * size) >> 1;
+					}
+				}
+
+				return destination;
+			}
+
+			public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				byte[] destination = new byte[(width * height) >> 1];
+				int destinationIndex = 0;
+
+				// Get the size of each block to process.
+				int size = Math.Min(width, height);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Encode texture data
+				for (int y = 0; y < height; y += size)
+				{
+					for (int x = 0; x < width; x += size)
+					{
+						for (int y2 = 0; y2 < size; y2++)
+						{
+							for (int x2 = 0; x2 < size; x2++)
+							{
+								byte index = destination[destinationIndex + (((twiddleMap[x2] << 1) | twiddleMap[y2]) >> 1)];
+								index |= (byte)((source[sourceIndex + (((y + y2) * width) + (x + x2))] & 0xF) << ((y2 & 0x1) * 4));
+
+								destination[destinationIndex + (((twiddleMap[x2] << 1) | twiddleMap[y2]) >> 1)] = index;
+							}
+						}
+
+						destinationIndex += (size * size) >> 1;
+					}
+				}
+
+				return destination;
+			}
+		}
+		#endregion
+
+		#region 8-bit Indexed with External Palette
+		// 8-bit Indexed with External Palette
+		public class Index8 : PvrDataCodec
         {
             public override bool CanEncode
             {
@@ -470,11 +575,113 @@ namespace VrSharp.Pvr
                 return destination;
             }
         }
-        #endregion
+		#endregion
 
-        #region Rectangle
-        // Rectangle
-        public class Rectangle : PvrDataCodec
+		#region 8-bit Indexed with External Palette + Mipmaps
+		// Looks the same as regular 8-bit indexed?
+		public class Index8Mipmap : PvrDataCodec
+		{
+			public override bool CanEncode
+			{
+				get { return true; }
+			}
+
+			public override int Bpp
+			{
+				get { return 8; }
+			}
+
+			public override bool HasMipmaps
+			{
+				get { return true; }
+			}
+
+			public override int PaletteEntries
+			{
+				get { return 256; }
+			}
+
+			public override bool NeedsExternalPalette
+			{
+				get { return true; }
+			}
+
+			public override byte[] Decode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				byte[] destination = new byte[width * height * 4];
+				int destinationIndex;
+
+				// Get the size of each block to process.
+				int size = Math.Min(width, height);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Decode texture data
+				for (int y = 0; y < height; y += size)
+				{
+					for (int x = 0; x < width; x += size)
+					{
+						for (int y2 = 0; y2 < size; y2++)
+						{
+							for (int x2 = 0; x2 < size; x2++)
+							{
+								byte index = source[sourceIndex + ((twiddleMap[x2] << 1) | twiddleMap[y2])];
+								destinationIndex = ((((y + y2) * width) + (x + x2)) * 4);
+
+								for (int i = 0; i < 4; i++)
+								{
+									destination[destinationIndex] = palette[index][i];
+									destinationIndex++;
+								}
+							}
+						}
+
+						sourceIndex += (size * size);
+					}
+				}
+
+				return destination;
+			}
+
+			public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				byte[] destination = new byte[width * height];
+				int destinationIndex = 0;
+
+				// Get the size of each block to process.
+				int size = Math.Min(width, height);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Encode texture data
+				for (int x = 0; x < width; x += size)
+				{
+					for (int y = 0; y < height; y += size)
+					{
+						for (int y2 = 0; y2 < size; y2++)
+						{
+							for (int x2 = 0; x2 < size; x2++)
+							{
+								destination[destinationIndex + ((twiddleMap[x2] << 1) | twiddleMap[y2])] = source[sourceIndex + (((y + y2) * width) + (x + x2))];
+							}
+						}
+
+						destinationIndex += (size * size);
+					}
+				}
+
+				return destination;
+			}
+		}
+		#endregion
+
+		#region Rectangle
+		// Rectangle
+		public class Rectangle : PvrDataCodec
         {
             public override bool CanEncode
             {
@@ -794,9 +1001,15 @@ namespace VrSharp.Pvr
                     return new VqMipmaps();
                 case PvrDataFormat.Index4:
                     return new Index4();
-                case PvrDataFormat.Index8:
+				case PvrDataFormat.Index4Mipmaps:
+					return new Index4Mipmap();
+				case PvrDataFormat.Index8:
                     return new Index8();
-                case PvrDataFormat.Rectangle:
+				case PvrDataFormat.Index8Mipmaps:
+					return new Index8Mipmap();
+				case PvrDataFormat.Raw:
+				case PvrDataFormat.Rectangle:
+				case PvrDataFormat.RectangleStride:
                     return new Rectangle();
                 case PvrDataFormat.RectangleTwiddled:
                     return new RectangleTwiddled();

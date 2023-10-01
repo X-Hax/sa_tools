@@ -5,27 +5,43 @@ namespace VrSharp.Pvr
     // Pvr Pixel Formats
     public enum PvrPixelFormat : byte
     {
-        Argb1555 = 0x00,
-        Rgb565   = 0x01,
-        Argb4444 = 0x02,
-        Unknown  = 0xFF,
-    }
+		Argb1555 = 0x00,
+		Rgb565   = 0x01,
+		Argb4444 = 0x02,
+		Yuv422   = 0x03,
+		Bump88   = 0x04,
+		Rgb555   = 0x05,
+		Argb8888 = 0x06, //Palettize only!
+		DdsDxt1  = 0x80, //DDS DXT1 RGB, no transparency
+		DdsDxt3  = 0x81, //DDS DXT3 RGBA, transparency
+		Unknown  = 0xFF,
+	}
 
     // Pvr Data Formats
     public enum PvrDataFormat : byte
     {
+		Raw						 = 0x00,
         SquareTwiddled           = 0x01,
         SquareTwiddledMipmaps    = 0x02,
         Vq                       = 0x03,
         VqMipmaps                = 0x04,
         Index4                   = 0x05,
+		Index4Mipmaps			 = 0x06,
         Index8                   = 0x07,
+        Index8Mipmaps	         = 0x08,
         Rectangle                = 0x09,
-        RectangleTwiddled        = 0x0D,
-        SmallVq                  = 0x10,
+		RectangleMipmap			 = 0x0A, // Reserved: Can't use.
+		RectangleStride			 = 0x0B,
+		RectangleStrideMipmap	 = 0x0C, // Reserved: Can't use.
+		RectangleTwiddled        = 0x0D,
+		Bitmap					 = 0x0E, // Should not be supported
+		BitmapMipmap			 = 0x0F, // Should not be supported
+		SmallVq                  = 0x10,
         SmallVqMipmaps           = 0x11,
         SquareTwiddledMipmapsAlt = 0x12,
-        Unknown                  = 0xFF,
+		DDS						 = 0x80,
+		DDS_2					 = 0x87,
+		Unknown                  = 0xFF,
     }
 
     // Pvr Compression Formats
