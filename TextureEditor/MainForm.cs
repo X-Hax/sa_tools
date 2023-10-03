@@ -32,6 +32,7 @@ namespace TextureEditor
 
 		// Palette stuff
 		static int paletteSet = 0;
+		bool customPaletteLoaded = false;
 		bool paletteApplied = false;
 		TexturePalette currentPalette = new TexturePalette();
 		TexturePalette defaultPalette = new TexturePalette();
@@ -140,6 +141,11 @@ namespace TextureEditor
 							case PvrDataFormat.Index4Mipmaps:
 							case PvrDataFormat.Index8:
 							case PvrDataFormat.Index8Mipmaps:
+								string pvppath = Path.GetDirectoryName(archiveFilename) + "\\" + pvr.Name + ".pvp";
+								if (!customPaletteLoaded && File.Exists(pvppath))
+								{
+									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
+								}
 								if (!paletteApplied)
 								{
 									if (pvr.TextureData == null)
@@ -193,6 +199,11 @@ namespace TextureEditor
 						{
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
+								string gvppath = Path.GetDirectoryName(archiveFilename) + "\\" + gvr.Name + ".gvp";
+								if (!customPaletteLoaded && File.Exists(gvppath))
+								{
+									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), settingsfile.SACompatiblePalettes);
+								}
 								if (!paletteApplied)
 								{
 									if (gvr.TextureData == null)
@@ -421,6 +432,7 @@ namespace TextureEditor
 		private bool LoadArchive(string filename)
 		{
 			// Load file
+			customPaletteLoaded = false;
 			byte[] datafile = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				datafile = FraGag.Compression.Prs.Decompress(datafile);
@@ -1787,6 +1799,7 @@ namespace TextureEditor
 				DialogResult dr = fd.ShowDialog(this);
 				if (dr == DialogResult.OK)
 				{
+					customPaletteLoaded = true;
 					switch (Path.GetExtension(fd.FileName).ToLowerInvariant())
 					{
 						case ".png":
