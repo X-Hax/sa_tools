@@ -145,6 +145,7 @@ namespace TextureEditor
 								if (!customPaletteLoaded && File.Exists(pvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
+									paletteSet = 0;
 								}
 								if (!paletteApplied)
 								{
@@ -203,6 +204,7 @@ namespace TextureEditor
 								if (!customPaletteLoaded && File.Exists(gvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), settingsfile.SACompatiblePalettes);
+									paletteSet = 0;
 								}
 								if (!paletteApplied)
 								{
@@ -1707,6 +1709,7 @@ namespace TextureEditor
 					numericUpDownStartBank.Value = Math.Min(currentPalette.StartBank, numericUpDownStartBank.Maximum);
 					numericUpDownStartColor.Maximum = rowsize - 1;
 					numericUpDownStartColor.Value = Math.Min(currentPalette.StartColor, numericUpDownStartColor.Maximum);
+					currentPalette.StartBank = Math.Min((short)(maxbanks - 1), currentPalette.StartBank); // Apparently some PVP files in PSO have broken bank IDs
 					for (int i = 0; i < numrows; i++)
 						if (currentPalette.StartBank + i < maxbanks)
 							comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
