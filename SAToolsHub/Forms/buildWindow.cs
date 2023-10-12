@@ -24,6 +24,7 @@ namespace SAToolsHub
 		List<string> iniEXEFiles = new List<string>();
 		List<string> iniDLLFiles = new List<string>();
 		List<string> sa2MdlMtnFiles = new List<string>();
+		List<Templates.SplitEntry> nbFiles = new List<Templates.SplitEntry>();
 
 		public buildWindow()
 		{
@@ -52,6 +53,13 @@ namespace SAToolsHub
 				foreach (string chrFile in chkBoxMDL.CheckedItems)
 				{
 					sa2MdlMtnFiles.Add(Path.Combine(Path.Combine(SAToolsHub.projectDirectory, "figure", "bin"), chrFile));
+				}
+			}
+			if (SAToolsHub.setGame == "SADXPC")
+			{
+				foreach (Templates.SplitEntry nbFile in checkNBFiles.CheckedItems)
+				{
+					nbFiles.Add(nbFile);
 				}
 			}
 
@@ -152,6 +160,20 @@ namespace SAToolsHub
 						sa2MDL.Build(true, file);
 					if (file.Contains("mtn"))
 						sa2MTN.Build(true, file);
+				}
+			}
+
+			if (nbFiles.Count > 0)
+			{
+				foreach (Templates.SplitEntry file in nbFiles)
+				{
+					string iniFile = Path.Combine(SAToolsHub.projectDirectory, (file.IniFile + "_data.ini"));
+
+					if (File.Exists(iniFile))
+					{
+						string output = Path.Combine(SAToolsHub.projectDirectory, file.SourceFile);
+						SplitTools.Split.SplitNB.BuildNBFile(iniFile, output);
+					}
 				}
 			}
 		}
@@ -302,6 +324,7 @@ namespace SAToolsHub
 			chkBoxEXE.Items.Clear();
 			chkBoxDLL.Items.Clear();
 			chkBoxMDL.Items.Clear();
+			checkNBFiles.Items.Clear();
 			iniEXEFiles.Clear();
 			iniDLLFiles.Clear();
 			sa2MdlMtnFiles.Clear();
@@ -314,6 +337,9 @@ namespace SAToolsHub
 					gameEXE = "sonic";
 					sysFolder = "system";
 
+					if (!tabControl1.Contains(tabNB))
+						tabControl1.TabPages.Add(tabNB);
+
 					tabControl1.TabPages.Remove(tabMDL);
 					break;
 				case ("SA2PC"):
@@ -324,6 +350,8 @@ namespace SAToolsHub
 
 					if (!tabControl1.Contains(tabMDL))
 						tabControl1.TabPages.Add(tabMDL);
+
+					tabControl1.TabPages.Remove(tabNB);
 					DirectoryInfo charFiles = new DirectoryInfo(Path.Combine(SAToolsHub.projectDirectory, "figure\\bin"));
 
 					foreach (DirectoryInfo dir in charFiles.GetDirectories())
@@ -337,7 +365,7 @@ namespace SAToolsHub
 					break;
 			}
 
-			foreach(Templates.SplitEntry splitEntry in SAToolsHub.projSplitEntries)
+			foreach (Templates.SplitEntry splitEntry in SAToolsHub.projSplitEntries)
 			{
 				string srcFile = splitEntry.SourceFile.ToLower();
 				if (srcFile.Contains("exe"))
@@ -357,9 +385,18 @@ namespace SAToolsHub
 					else
 						chkBoxDLL.DisplayMember = "IniFile";
 				}
+
+				if (srcFile.Contains("nb"))
+				{
+					checkNBFiles.Items.Add(splitEntry);
+					if (splitEntry.CmnName != null)
+						checkNBFiles.DisplayMember = "CmnName";
+					else
+						checkNBFiles.DisplayMember = "IniFile";
+				}
 			}
 		}
-		
+
 		private void btnManual_Click(object sender, EventArgs e)
 		{
 			SplitTools.Game game;
@@ -419,6 +456,14 @@ namespace SAToolsHub
 					chkBoxMDL.SetItemChecked(i, true);
 				}
 			}
+
+			if (tabControl1.SelectedTab == tabNB)
+			{
+				for (int i = 0; i < checkNBFiles.Items.Count; i++)
+				{
+					checkNBFiles.SetItemChecked(i, true);
+				}
+			}
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -444,6 +489,14 @@ namespace SAToolsHub
 				for (int i = 0; i < chkBoxMDL.Items.Count; i++)
 				{
 					chkBoxMDL.SetItemChecked(i, false);
+				}
+			}
+
+			if (tabControl1.SelectedTab == tabNB)
+			{
+				for (int i = 0; i < checkNBFiles.Items.Count; i++)
+				{
+					checkNBFiles.SetItemChecked(i, false);
 				}
 			}
 		}

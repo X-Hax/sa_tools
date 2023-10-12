@@ -11,8 +11,7 @@ namespace SplitTools.Split
 	{
 
 		[DllImport("shlwapi.dll", SetLastError = true)]
-		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath,
-string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+		private static extern bool PathRelativePathTo(System.Text.StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 
 		private enum AnimSections
 		{
@@ -43,7 +42,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 			result.AddRange(BitConverter.GetBytes(numfiles));
 			foreach (var item in sectionlist)
 			{
-				string insidepath = Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filename), item.Key.ToString("D2"));
+				string insidepath = Path.Combine(Path.GetDirectoryName(filename), item.Value.Split("|")[0]);
 				byte[] writeout;
 				// Convert models and motions to BIN
 				if (item.Value != "NULL")
@@ -51,7 +50,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 					switch (Path.GetExtension(item.Value).ToLowerInvariant())
 					{
 						case ".sa1mdl":
-							ModelFile mdlfile = new ModelFile(insidepath + ".sa1mdl");
+							ModelFile mdlfile = new ModelFile(insidepath);
 							writeout = GetSections(mdlfile.Model);
 							result.AddRange(BitConverter.GetBytes((ushort)1));
 							result.AddRange(BitConverter.GetBytes((ushort)0xCDCD));
@@ -60,7 +59,7 @@ string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 							File.WriteAllBytes(insidepath + ".bin", writeout);
 							break;
 						case ".saanim":
-							NJS_MOTION mot = NJS_MOTION.Load(insidepath + ".saanim");
+							NJS_MOTION mot = NJS_MOTION.Load(insidepath);
 							if (verbose > 1) Console.WriteLine("Section {0}", item.Key);
 							writeout = GetSections(mot, verbose);
 							result.AddRange(BitConverter.GetBytes((ushort)3));
