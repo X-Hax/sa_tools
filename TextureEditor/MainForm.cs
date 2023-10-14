@@ -11,11 +11,25 @@ using VrSharp.Gvr;
 using VrSharp.Pvr;
 using ArchiveLib;
 using SAModel.SAEditorCommon;
+using VrSharp.Xvr;
+using BCnEncoder.Encoder;
+using BCnEncoder.Shared;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
+using BCnEncoder.ImageSharp;
+
 using static ArchiveLib.GenericArchive;
 using static TextureEditor.TexturePalette;
 using static SAModel.SAEditorCommon.SettingsFile;
 using static ArchiveLib.XVM;
-using VrSharp.Xvr;
+
+using Application = System.Windows.Forms.Application;
+using Color = System.Drawing.Color;
+using Size = System.Drawing.Size;
+using Image = System.Drawing.Image;
+using BCnEncoder.Decoder;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace TextureEditor
 {
@@ -677,6 +691,23 @@ namespace TextureEditor
 			return xvr;
 		}
 
+		private MemoryStream EncodeDDS(PakTextureInfo tex)
+		{
+			Image<Rgba32> image;
+				MemoryStream ms = new MemoryStream();
+				tex.Image.Save(ms, ImageFormat.Png);
+				image = SixLabors.ImageSharp.Image.Load<Rgba32>(ms.ToArray());
+				ms.Dispose();
+			BcEncoder encoder = new BcEncoder();
+			encoder.OutputOptions.GenerateMipMaps = tex.Mipmap;
+			encoder.OutputOptions.Quality = CompressionQuality.BestQuality;
+			encoder.OutputOptions.Format = (TextureFunctions.GetAlphaLevelFromBitmap(tex.Image) != 0) ? CompressionFormat.Bc3 : CompressionFormat.Bc1;
+			encoder.OutputOptions.FileFormat = OutputFileFormat.Dds;
+			MemoryStream ddsData = new MemoryStream();
+			encoder.EncodeToStream(image, ddsData);
+			return ddsData;
+		}
+
 		private void SaveTextures()
 		{
 			byte[] data;
@@ -725,11 +756,10 @@ namespace TextureEditor
 						pak.FolderName = filenoext;
 						string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
-						foreach (TextureInfo item in textures)
+						foreach (PakTextureInfo item in textures)
 						{
-							using (MemoryStream tex = new MemoryStream())
+							using (MemoryStream tex = EncodeDDS(item))
 							{
-								item.Image.Save(tex, ImageFormat.Png);
 								byte[] tb = tex.ToArray();
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
