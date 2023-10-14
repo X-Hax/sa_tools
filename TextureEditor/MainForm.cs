@@ -371,7 +371,17 @@ namespace TextureEditor
 					newtextures = new List<TextureInfo>(pak.Entries.Count);
 					foreach (PAKFile.PAKEntry fl in pak.Entries)
 					{
-						newtextures.Add(new PakTextureInfo(Path.GetFileNameWithoutExtension(fl.Name), 0, fl.GetBitmap(), GvrDataFormat.Dxt1, 0, new MemoryStream(fl.Data)));
+						// Handle non-texture data to prevent crashing in SOC\model.pak
+						Bitmap bmp;
+						try
+						{
+							bmp = fl.GetBitmap();
+						}
+						catch (Exception ex)
+						{
+							bmp = new Bitmap(TextureEditor.Properties.Resources.error);
+						}
+						newtextures.Add(new PakTextureInfo(Path.GetFileNameWithoutExtension(fl.Name), 0, bmp, GvrDataFormat.Dxt1, 0, new MemoryStream(fl.Data)));
 					}
 				}
 				else
