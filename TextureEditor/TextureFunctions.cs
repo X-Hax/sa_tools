@@ -50,10 +50,7 @@ namespace TextureEditor
         /// </returns>
         public static int GetAlphaLevelFromBitmap(Bitmap img)
         {
-            Bitmap argb;
-            if (img.PixelFormat != PixelFormat.Format32bppArgb)
-                argb = new Bitmap(img);
-            else argb = img;
+			Bitmap argb = (img.PixelFormat == PixelFormat.Format32bppArgb) ? img : new Bitmap(img);
             BitmapData bmpd = argb.LockBits(new Rectangle(Point.Empty, argb.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             int stride = bmpd.Stride;
             byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];

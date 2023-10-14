@@ -145,7 +145,7 @@ namespace TextureEditor
 								if (!customPaletteLoaded && File.Exists(pvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
-									paletteSet = 0;
+									paletteSet = Math.Min(currentPalette.GetMaxBanks(pvr.DataFormat == PvrDataFormat.Index8 || pvr.DataFormat == PvrDataFormat.Index8Mipmaps), paletteSet);
 								}
 								if (!paletteApplied)
 								{
@@ -204,7 +204,7 @@ namespace TextureEditor
 								if (!customPaletteLoaded && File.Exists(gvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), settingsfile.SACompatiblePalettes);
-									paletteSet = 0;
+									paletteSet = Math.Min(currentPalette.GetMaxBanks(gvr.DataFormat == GvrDataFormat.Index8), paletteSet);
 								}
 								if (!paletteApplied)
 								{

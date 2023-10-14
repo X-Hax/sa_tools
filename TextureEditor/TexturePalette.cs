@@ -347,5 +347,11 @@ namespace TextureEditor
                     return data;
             }
         }
+
+		public int GetMaxBanks(bool index8)
+		{
+			int colr = Colors.Count;
+			return (index8 == true) ? colr / 256 : colr / 16;
+		}
     }
 }
