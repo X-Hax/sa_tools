@@ -448,43 +448,56 @@ namespace TextureEditor
 			// Check if the file is a PVR/GVR/XVR
 			PuyoArchiveType puyotype = PuyoArchiveType.Unknown;
 			if (PvrTexture.Is(datafile))
+			{
 				puyotype = PuyoArchiveType.PVMFile;
+				currentFormat = TextureFormat.PVM;
+			}
 			else if (GvrTexture.Is(datafile))
+			{
 				puyotype = PuyoArchiveType.GVMFile;
+				currentFormat = TextureFormat.GVM;
+			}
 			else if (XvrTexture.Is(datafile))
+			{
 				puyotype = PuyoArchiveType.XVMFile;
-
+				currentFormat = TextureFormat.XVM;
+			}
 			// If the file is a single PVR/GVR/XVR, create a PVM/GVM/XVM archive and add the texture to it.
 			if (puyotype != PuyoArchiveType.Unknown)
 			{
+				string[] otherfiles = Directory.GetFiles(Path.GetDirectoryName(filename), "*" + Path.GetExtension(filename), SearchOption.TopDirectoryOnly);
 				PuyoFile arc = new PuyoFile(puyotype);
 				textures.Clear();
-				switch (puyotype)
+				int selIndex = 0;
+				for (int i = 0; i < otherfiles.Length; i++)
 				{
-					case PuyoArchiveType.PVMFile:
-						currentFormat = TextureFormat.PVM;
-						arc.Entries.Add(new PVMEntry(datafile, Path.GetFileNameWithoutExtension(filename)));
-						MemoryStream strp = new MemoryStream(arc.Entries[0].Data);
-						textures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(filename).Split('.')[0], strp));
-						break;
-					case PuyoArchiveType.GVMFile:
-						currentFormat = TextureFormat.GVM;
-						arc.Entries.Add(new GVMEntry(datafile, Path.GetFileNameWithoutExtension(filename)));
-						MemoryStream strg = new MemoryStream(arc.Entries[0].Data);
-						textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(filename).Split('.')[0], strg));
-						break;
-					case PuyoArchiveType.XVMFile:
-						arc.Entries.Add(new XVMEntry(datafile, Path.GetFileNameWithoutExtension(filename)));
-						currentFormat = TextureFormat.XVM;
-						MemoryStream strx = new MemoryStream(arc.Entries[0].Data);
-						textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(filename).Split('.')[0], strx));
-						break;
+					datafile = File.ReadAllBytes(otherfiles[i]);
+					if (Path.GetFileName(otherfiles[i]) == Path.GetFileName(filename))
+						selIndex = i;
+					switch (puyotype)
+					{
+						case PuyoArchiveType.PVMFile:
+							arc.Entries.Add(new PVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
+							MemoryStream strp = new MemoryStream(arc.Entries[i].Data);
+							textures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strp));
+							break;
+						case PuyoArchiveType.GVMFile:
+							arc.Entries.Add(new GVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
+							MemoryStream strg = new MemoryStream(arc.Entries[i].Data);
+							textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strg));
+							break;
+						case PuyoArchiveType.XVMFile:
+							arc.Entries.Add(new XVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
+							MemoryStream strx = new MemoryStream(arc.Entries[i].Data);
+							textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strx));
+							break;
+					}
 				}
 				listBox1.Items.Clear();
 				listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
 				UpdateTextureCount();
 				UpdateMRUList(Path.GetFullPath(filename));
-				listBox1.SelectedIndex = 0;
+				listBox1.SelectedIndex = selIndex;
 				return true;
 			}
 			// Otherwise load the file as an archive
