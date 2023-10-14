@@ -163,14 +163,24 @@ namespace TextureEditor
         /// <param name="gbix">Global Index to set.</param>
         /// <param name="bigendian">Big Endian.</param>
         /// </summary>
-        public static MemoryStream UpdateGBIX(MemoryStream stream, uint gbix, bool bigendian = false)
+        public static MemoryStream UpdateGBIX(MemoryStream stream, uint gbix, bool bigendian = false, bool xvr = false)
         {
             byte[] arr = stream.ToArray();
+			byte[] value = BitConverter.GetBytes(gbix);
+			// In XVR, there's no GBIX header and the GBIX is always at 0x10
+			if (xvr)
+			{
+				arr[10] = value[0];
+				arr[11] = value[1];
+				arr[12] = value[2];
+				arr[13] = value[3];
+				return new MemoryStream(arr);
+			}
+			// In PVR or GVR, the GBIX header is not always in the same place so we have to look for it first
             for (int u = 0; u < arr.Length - 4; u++)
             {
                 if (BitConverter.ToUInt32(arr, u) == 0x58494247) // GBIX
                 {
-                    byte[] value = BitConverter.GetBytes(gbix);
                     if (bigendian)
                     {
                         arr[u + 11] = value[0];

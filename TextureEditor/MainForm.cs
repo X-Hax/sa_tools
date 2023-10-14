@@ -681,6 +681,8 @@ namespace TextureEditor
 
 		private MemoryStream EncodeXVR(XvrTextureInfo tex)
 		{
+			if (tex.TextureData != null)
+				return TextureFunctions.UpdateGBIX(tex.TextureData, tex.GlobalIndex, false, true);
 			XvrTextureEncoder encoder = new XvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
 			encoder.GlobalIndex = tex.GlobalIndex;
 			encoder.HasAlpha = tex.useAlpha;
