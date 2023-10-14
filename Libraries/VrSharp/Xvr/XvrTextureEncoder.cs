@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using static VrSharp.Xvr.DirectXTexUtility;
 
 namespace VrSharp.Xvr
@@ -260,7 +259,7 @@ namespace VrSharp.Xvr
 			}
 			BcEncoder encoder = new BcEncoder();
 
-			encoder.OutputOptions.GenerateMipMaps = true;
+			encoder.OutputOptions.GenerateMipMaps = useMipmaps;
 			encoder.OutputOptions.Quality = CompressionQuality.BestQuality;
 
 			type = 0;
