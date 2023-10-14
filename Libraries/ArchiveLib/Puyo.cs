@@ -6,6 +6,7 @@ using System.Text;
 using VrSharp;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
+using VrSharp.Xvr;
 using SAModel;
 using static ArchiveLib.GenericArchive;
 
@@ -17,6 +18,7 @@ namespace ArchiveLib
         Unknown,
         PVMFile,
         GVMFile,
+		XVMFile,
     }
 
     public class PuyoFile : GenericArchive
@@ -24,21 +26,23 @@ namespace ArchiveLib
         // Archive chunks
         const uint Magic_PVM = 0x484D5650; // PVMH archive
         const uint Magic_GVM = 0x484D5647; // GVMH archive
+		const uint Magic_XVM = 0x484D5658; // XVMH archive
 
-        // PVM metadata chunks
-        const uint Magic_MDLN = 0x4E4C444D; // Model Name
+		// PVM metadata chunks
+		const uint Magic_MDLN = 0x4E4C444D; // Model Name
         const uint Magic_COMM = 0x4D4D4F43; // Model Comment
         const uint Magic_CONV = 0x564E4F43; // PVM Converter
         const uint Magic_IMGC = 0x43474D49; // Image Container
         const uint Magic_PVMI = 0x494D5650; // PVM File Info
-
-        // Texture chunks
-        const uint Magic_GBIX = 0x58494247; // PVR texture header (GBIX)
+		
+		// Texture chunks
+		const uint Magic_GBIX = 0x58494247; // PVR texture header (GBIX)
         const uint Magic_PVRT = 0x54525650; // PVR texture header (texture data)
         const uint Magic_GVRT = 0x54525647; // GVR texture header (texture data)
         const uint Magic_PVRI = 0x49525650; // PVR texture header (metadata)
+		const uint Magic_XVRT = 0x54525658; // XVR texture header (texture data)
 
-        public bool PaletteRequired;
+		public bool PaletteRequired;
         public PuyoArchiveType Type;
 
 		[FlagsAttribute]
@@ -67,14 +71,18 @@ namespace ArchiveLib
 
         public static PuyoArchiveType Identify(byte[] data)
         {
-            uint magic = BitConverter.ToUInt32(data, 0);
+			if (data.Length < 4)
+				return PuyoArchiveType.Unknown;
+			uint magic = BitConverter.ToUInt32(data, 0);
             switch (magic)
             {
                 case Magic_PVM:
                     return PuyoArchiveType.PVMFile;
                 case Magic_GVM:
                     return PuyoArchiveType.GVMFile;
-                default:
+				case Magic_XVM:
+					return PuyoArchiveType.XVMFile;
+				default:
                     return PuyoArchiveType.Unknown;
             }
         }
@@ -126,15 +134,15 @@ namespace ArchiveLib
 					SetPalette(a.FileName);
 		}
 
-        public PuyoFile(bool gvm = false) 
+        public PuyoFile(PuyoArchiveType type = PuyoArchiveType.PVMFile) 
         {
-            Type = gvm ? PuyoArchiveType.GVMFile : PuyoArchiveType.PVMFile;
+            Type = type;
         }
 
         /// <summary>
-        /// This function checks the specified offset in a byte array to verify if it begins with a PVR/GVR texture header. 
+        /// This function checks the specified offset in a byte array to verify if it begins with a PVR/GVR/XVR texture header. 
 		/// Sometimes there is padding or metadata that needs to be skipped in order to read the texture.
-		/// The function loops through the array until it finds a PVRT/GVRT header and returns its offset.
+		/// The function loops through the array until it finds a PVRT/GVRT/XVRT header and returns its offset.
         /// </summary>
         public int GetPVRTOffset(byte[] pvmdata, int offset)
         {
@@ -145,6 +153,7 @@ namespace ArchiveLib
                 // If a valid texture header is found, that's it
                 case Magic_PVRT:
                 case Magic_GVRT:
+                case Magic_XVRT:
                     return currentoffset;
 
                 // If a metadata chunk is recognized, skip it
@@ -180,29 +189,35 @@ namespace ArchiveLib
                 case PuyoArchiveType.GVMFile:
                     ByteConverter.BigEndian = true;
                     break;
-                default:
+				case PuyoArchiveType.XVMFile:
+					ByteConverter.BigEndian = false;
+					break;
+				default:
                     throw new Exception("Error: Unknown archive format");
             }
 
             // Get PVM/GVM flags and calculate item size in the entry table
-            ushort numtextures = ByteConverter.ToUInt16(pvmdata, 0x0A);
+            ushort numtextures = ByteConverter.ToUInt16(pvmdata, Type == PuyoArchiveType.XVMFile ? 0x08 : 0x0A);
             int pvmentrysize = 2;
             int gbixoffset = 0;
             int nameoffset = 0;
+			PuyoArchiveFlags flags = 0; // XVM doesn't have flags
+			if (Type != PuyoArchiveType.XVMFile)
+			{
+				flags = (PuyoArchiveFlags)ByteConverter.ToUInt16(pvmdata, 0x08);
+				if (flags.HasFlag(PuyoArchiveFlags.Filenames))
+					nameoffset = pvmentrysize;
+				pvmentrysize += 28;
+				if (flags.HasFlag(PuyoArchiveFlags.PixelDataFormat))
+					pvmentrysize += 2;
+				if (flags.HasFlag(PuyoArchiveFlags.TextureDimensions))
+					pvmentrysize += 2;
+				if (flags.HasFlag(PuyoArchiveFlags.GlobalIndex))
+					gbixoffset = pvmentrysize;
+				pvmentrysize += 4;
+			}			
 
-            PuyoArchiveFlags flags = (PuyoArchiveFlags)ByteConverter.ToUInt16(pvmdata, 0x08);
-            if (flags.HasFlag(PuyoArchiveFlags.Filenames))
-                nameoffset = pvmentrysize;
-            pvmentrysize += 28;
-            if (flags.HasFlag(PuyoArchiveFlags.PixelDataFormat))
-                pvmentrysize += 2;
-            if (flags.HasFlag(PuyoArchiveFlags.TextureDimensions))
-                pvmentrysize += 2;
-            if (flags.HasFlag(PuyoArchiveFlags.GlobalIndex))
-                gbixoffset = pvmentrysize;
-            pvmentrysize += 4;
-
-            int offsetfirst = BitConverter.ToInt32(pvmdata, 0x4) + 8; // Always Little Endian
+			int offsetfirst = BitConverter.ToInt32(pvmdata, 0x4) + 8; // Always Little Endian
             int textureaddr = GetPVRTOffset(pvmdata, offsetfirst); // Where texture data begins
 
             for (int t = 0; t < numtextures; t++)
@@ -250,21 +265,26 @@ namespace ArchiveLib
                 if (t < numtextures - 1)  // Get the address of the next PVRT chunk, unless it's the last one
                     textureaddr = GetPVRTOffset(pvmdata, textureaddr + size + 8);
 
-                // Add PVR/GVR texture to the entry list
-                if (Type == PuyoArchiveType.PVMFile)
-                {
-                    PvrTexture pvrt = new PvrTexture(pvrchunk);
-                    if (pvrt.NeedsExternalPalette)
-                        PaletteRequired = true;
-                    Entries.Add(new PVMEntry(pvrchunk, entryfn + ".pvr"));
-                }
-                else
-                {
-                    GvrTexture gvrt = new GvrTexture(pvrchunk);
-                    if (gvrt.NeedsExternalPalette)
-                        PaletteRequired = true;
-                    Entries.Add(new GVMEntry(pvrchunk, entryfn + ".gvr"));
-                }
+				// Add PVR/GVR/XVR texture to the entry list
+				switch (Type)
+				{
+					case PuyoArchiveType.PVMFile:
+						PvrTexture pvrt = new PvrTexture(pvrchunk);
+						if (pvrt.NeedsExternalPalette)
+							PaletteRequired = true;
+						Entries.Add(new PVMEntry(pvrchunk, entryfn + ".pvr"));
+						break;
+					case PuyoArchiveType.GVMFile:
+						GvrTexture gvrt = new GvrTexture(pvrchunk);
+						if (gvrt.NeedsExternalPalette)
+							PaletteRequired = true;
+						Entries.Add(new GVMEntry(pvrchunk, entryfn + ".gvr"));
+						break;
+					case PuyoArchiveType.XVMFile:
+						XvrTexture xvrt = new XvrTexture(pvrchunk);
+						Entries.Add(new XVMEntry(pvrchunk, entryfn + ".xvr"));
+						break;
+				}
             }
             ByteConverter.BigEndian = bigendianbk;
         }
@@ -274,70 +294,103 @@ namespace ArchiveLib
             bool bigendianbk = ByteConverter.BigEndian;
             ByteConverter.BigEndian = Type == PuyoArchiveType.GVMFile;
             List<byte> result = new List<byte>();
-            result.AddRange(Type == PuyoArchiveType.PVMFile ? BitConverter.GetBytes(Magic_PVM) : BitConverter.GetBytes(Magic_GVM));
+			bool hasEntryTable = true;
 
-            // Create entry list
-            List<byte> entrytable = new List<byte>();
-            uint firstoffset = 12;
-            for (int i = 0; i < Entries.Count; i++)
-            {
-                entrytable.AddRange(ByteConverter.GetBytes((ushort)i));
-                byte[] namestring = System.Text.Encoding.ASCII.GetBytes(Path.GetFileNameWithoutExtension(Entries[i].Name));
-                byte[] namefull = new byte[28];
-                Array.Copy(namestring, namefull, namestring.Length);
-                entrytable.AddRange(namefull);
-                ushort dimensions = 0;
-                uint gbix = 0;
-                if (Entries[i] is PVMEntry pvme)
-                {
-                    PvrTexture pvrt = new PvrTexture(pvme.Data);
-                    entrytable.Add((byte)pvrt.PixelFormat);
-                    entrytable.Add((byte)pvrt.DataFormat);
-                    dimensions |= (ushort)(((byte)Math.Log(pvrt.TextureWidth, 2) - 2) & 0xF);
-                    dimensions |= (ushort)((((byte)Math.Log(pvrt.TextureHeight, 2) - 2) & 0xF) << 4);
-                    gbix = pvrt.GlobalIndex;
-                }
-                else if (Entries[i] is GVMEntry gvme)
-                {
-                    GvrTexture gvrt = new GvrTexture(gvme.Data);
-                    entrytable.Add((byte)gvrt.PixelFormat);
-                    entrytable.Add((byte)gvrt.DataFormat);
-                    dimensions |= (ushort)(((byte)Math.Log(gvrt.TextureWidth, 2) - 2) & 0xF);
-                    dimensions |= (ushort)((((byte)Math.Log(gvrt.TextureHeight, 2) - 2) & 0xF) << 4);
-                    gbix = gvrt.GlobalIndex;
-                }
-                entrytable.AddRange(ByteConverter.GetBytes(dimensions));
-                entrytable.AddRange(ByteConverter.GetBytes(gbix));
-            }
+			uint magic = 0;
+			switch (Type)
+			{
+				case PuyoArchiveType.PVMFile:
+					magic = Magic_PVM;
+					hasEntryTable = true;
+					break;
+				case PuyoArchiveType.GVMFile:
+					magic = Magic_GVM;
+					hasEntryTable = true;
+					break;
+				case PuyoArchiveType.XVMFile:
+					magic = Magic_XVM;
+					hasEntryTable = false;
+					break;
+			}
+            result.AddRange(BitConverter.GetBytes(magic));
 
-            // Add padding if the data isn't aligned by 16
-            if ((12 + entrytable.Count) % 16 != 0)
-            {
-                do
-                {
-                    entrytable.Add(0);
-                }
-                while ((12 + entrytable.Count) % 16 != 0);
-            }
-
-            // Write other header stuff
-            result.AddRange(BitConverter.GetBytes((uint)(firstoffset+entrytable.Count-8))); // Offset of the first texture, Little Endian
-            result.AddRange(ByteConverter.GetBytes((ushort)0xF)); // PVM/GVM flags
-            result.AddRange(ByteConverter.GetBytes((ushort)Entries.Count));
-            result.AddRange(entrytable);
-            
+			// Create entry list
+			if (hasEntryTable)
+			{
+				List<byte> entrytable = new List<byte>();
+				uint firstoffset = 0xC;
+				for (int i = 0; i < Entries.Count; i++)
+				{
+					entrytable.AddRange(ByteConverter.GetBytes((ushort)i));
+					byte[] namestring = System.Text.Encoding.ASCII.GetBytes(Path.GetFileNameWithoutExtension(Entries[i].Name));
+					byte[] namefull = new byte[28];
+					Array.Copy(namestring, namefull, namestring.Length);
+					entrytable.AddRange(namefull);
+					ushort dimensions = 0;
+					uint gbix = 0;
+					if (Entries[i] is PVMEntry pvme)
+					{
+						PvrTexture pvrt = new PvrTexture(pvme.Data);
+						entrytable.Add((byte)pvrt.PixelFormat);
+						entrytable.Add((byte)pvrt.DataFormat);
+						dimensions |= (ushort)(((byte)Math.Log(pvrt.TextureWidth, 2) - 2) & 0xF);
+						dimensions |= (ushort)((((byte)Math.Log(pvrt.TextureHeight, 2) - 2) & 0xF) << 4);
+						gbix = pvrt.GlobalIndex;
+					}
+					else if (Entries[i] is GVMEntry gvme)
+					{
+						GvrTexture gvrt = new GvrTexture(gvme.Data);
+						entrytable.Add((byte)gvrt.PixelFormat);
+						entrytable.Add((byte)gvrt.DataFormat);
+						dimensions |= (ushort)(((byte)Math.Log(gvrt.TextureWidth, 2) - 2) & 0xF);
+						dimensions |= (ushort)((((byte)Math.Log(gvrt.TextureHeight, 2) - 2) & 0xF) << 4);
+						gbix = gvrt.GlobalIndex;
+					}
+					entrytable.AddRange(ByteConverter.GetBytes(dimensions));
+					entrytable.AddRange(ByteConverter.GetBytes(gbix));
+				}
+				// Add padding if the data isn't aligned by 16
+				if ((12 + entrytable.Count) % 16 != 0)
+				{
+					do
+					{
+						entrytable.Add(0);
+					}
+					while ((12 + entrytable.Count) % 16 != 0);
+				}
+				// Write other header stuff
+				result.AddRange(BitConverter.GetBytes((uint)(firstoffset + entrytable.Count - 8))); // Offset of the first texture, Little Endian
+				result.AddRange(ByteConverter.GetBytes((ushort)0xF)); // PVM/GVM flags
+				result.AddRange(ByteConverter.GetBytes((ushort)Entries.Count));
+				result.AddRange(entrytable);
+			}
+			// Or write empty bytes like in XVM
+			else
+			{
+				result.AddRange(BitConverter.GetBytes(0x38));
+				result.AddRange(BitConverter.GetBytes(Entries.Count));
+				result.AddRange(new byte[0x34]);
+			}
             // Write texture data
             for (int i = 0; i < Entries.Count; i++)
             {
-                // Align by 16
-                int length = Entries[i].Data.Length - 16;
-                if (length % 16 != 0)
-                    do
-                        length++;
-                    while (length % 16 != 0);
-                byte[] nogbix = new byte[length];
-                Array.Copy(Entries[i].Data, 16, nogbix, 0, Entries[i].Data.Length - 16);
-                result.AddRange(nogbix);
+				if (hasEntryTable)
+				{
+					// Align by 16
+					int length = Entries[i].Data.Length - 16;
+					if (length % 16 != 0)
+						do
+							length++;
+						while (length % 16 != 0);
+					byte[] nogbix = new byte[length];
+					Array.Copy(Entries[i].Data, 16, nogbix, 0, Entries[i].Data.Length - 16);
+					result.AddRange(nogbix);
+				}
+				else
+				{
+					result.AddRange(Entries[i].Data);
+					result.AddRange(new byte[Entries[i].Data.Length % 0x10]);
+				}
             }
             ByteConverter.BigEndian = bigendianbk;
             return result.ToArray();
@@ -413,4 +466,36 @@ namespace ArchiveLib
             return gvrt.ToBitmap();
         }
     }
+
+	public class XVMEntry : GenericArchiveEntry
+	{
+		public uint GBIX;
+
+		public XVMEntry(byte[] xvrdata, string name)
+		{
+			Name = name;
+			Data = xvrdata;
+			XvrTexture xvrt = new XvrTexture(xvrdata);
+			GBIX = xvrt.GlobalIndex;
+		}
+
+		public XVMEntry(string filename)
+		{
+			Name = Path.GetFileName(filename);
+			Data = File.ReadAllBytes(filename);
+			XvrTexture xvrt = new XvrTexture(Data);
+			GBIX = xvrt.GlobalIndex;
+		}
+
+		public uint GetGBIX()
+		{
+			return GBIX;
+		}
+
+		public override Bitmap GetBitmap()
+		{
+			XvrTexture xvrt = new XvrTexture(Data);
+			return xvrt.ToBitmap();
+		}
+	}
 }

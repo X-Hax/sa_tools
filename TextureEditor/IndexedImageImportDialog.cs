@@ -18,7 +18,7 @@ namespace TextureEditor
         bool SACompatible;
         bool gamecube;
         public PalettedTextureFormat outFormat;
-        public PixelCodec outCodec;
+        public PalettePixelCodec outCodec;
 
 		public IndexedImageImportDialog(Bitmap setbitmap, TextureInfo settexinfo, bool setSACompatible=true)
 		{
@@ -119,17 +119,17 @@ namespace TextureEditor
         {
             // Pixel codec
             if (radioButtonRGB565.Checked)
-                outCodec = PixelCodec.RGB565;
+                outCodec = PalettePixelCodec.RGB565;
             else if (radioButtonARGB1555.Checked)
-                outCodec = PixelCodec.ARGB1555;
+                outCodec = PalettePixelCodec.ARGB1555;
             else if (radioButtonARGB4444.Checked)
-                outCodec = PixelCodec.ARGB4444;
+                outCodec = PalettePixelCodec.ARGB4444;
             else if (radioButtonARGB8888.Checked)
-                outCodec = PixelCodec.ARGB8888;
+                outCodec = PalettePixelCodec.ARGB8888;
             else if (radioButtonIntensity8A.Checked)
-                outCodec = PixelCodec.Intensity8A;
+                outCodec = PalettePixelCodec.Intensity8A;
             else if (radioButtonRGB5A3.Checked)
-                outCodec = PixelCodec.RGB5A3;
+                outCodec = PalettePixelCodec.RGB5A3;
             // Indexed format
             if (radioButtonIndex8.Checked)
                 outFormat = PalettedTextureFormat.Index8;

@@ -52,11 +52,9 @@ namespace ArchiveTool
                     break;
                 case (".pvm"):
                 case (".gvm"):
+                case (".xvm"):
                     arc = new PuyoFile(arcdata);
                     break;
-				case (".xvm"):
-					arc = new XVM(arcdata);
-					break;
 				case (".pb"):
                     arc = new PBFile(arcdata);
                     break;

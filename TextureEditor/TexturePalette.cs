@@ -19,12 +19,12 @@ namespace TextureEditor
 
         public bool IsGVP { get; set; }
         public bool IsSACompatible { get; set; }
-        public PixelCodec pixelCodec { get; set; }
+        public PalettePixelCodec PixelCodec { get; set; }
         public short StartBank { get; set; }
         public short StartColor { get; set; }
         public List<Color> Colors { get; set; }
 
-        public enum PixelCodec : short
+        public enum PalettePixelCodec : short
         {
             ARGB1555 = 0, // Probably Intensity8 in other Gamecube games
             RGB565 = 1,
@@ -39,17 +39,17 @@ namespace TextureEditor
             bool bigendbk = ByteConverter.BigEndian;
             IsGVP = BitConverter.ToUInt32(palettedata, 0) == Magic_GVP;
             ByteConverter.BigEndian = IsGVP;
-            pixelCodec = (PixelCodec)ByteConverter.ToInt16(palettedata, 0x8);
+            PixelCodec = (PalettePixelCodec)ByteConverter.ToInt16(palettedata, 0x8);
 
             // SADX/SA2 formats
             if (!saCompatible)
-                switch (pixelCodec)
+                switch (PixelCodec)
                 {
-                    case PixelCodec.ARGB1555:
-                        pixelCodec = PixelCodec.Intensity8A;
+                    case PalettePixelCodec.ARGB1555:
+                        PixelCodec = PalettePixelCodec.Intensity8A;
                         break;
-                    case PixelCodec.ARGB4444:
-                        pixelCodec = PixelCodec.RGB5A3;
+                    case PalettePixelCodec.ARGB4444:
+                        PixelCodec = PalettePixelCodec.RGB5A3;
                         break;
                     default:
                         break;
@@ -60,9 +60,9 @@ namespace TextureEditor
             Colors = new List<Color>();
             for (int i = 0; i < numColors; i++)
             {
-                int id = (i * (pixelCodec == PixelCodec.ARGB8888 ? 4 : 2)) + 16;
-                byte[] colorb = GetEncodedColorData(palettedata, id, IsGVP, pixelCodec);
-                Color result = DecodeColor(colorb, pixelCodec);
+                int id = (i * (PixelCodec == PalettePixelCodec.ARGB8888 ? 4 : 2)) + 16;
+                byte[] colorb = GetEncodedColorData(palettedata, id, IsGVP, PixelCodec);
+                Color result = DecodeColor(colorb, PixelCodec);
                 Colors.Add(result);
             }
             ByteConverter.BigEndian = bigendbk;
@@ -79,41 +79,41 @@ namespace TextureEditor
                 {
                     // No transparency
                     case 0:
-                        pixelCodec = PixelCodec.RGB565;
+                        PixelCodec = PalettePixelCodec.RGB565;
                         break;
                     // 1 bit transparency
                     case 1:
                         if (saCompatible)
-                            pixelCodec = PixelCodec.ARGB1555;
+                            PixelCodec = PalettePixelCodec.ARGB1555;
                         else
-                            pixelCodec = PixelCodec.RGB5A3;
+                            PixelCodec = PalettePixelCodec.RGB5A3;
                         break;
                     // Full transparency
                     case 2:
                         if (saCompatible)
-                            pixelCodec = PixelCodec.ARGB4444;
+                            PixelCodec = PalettePixelCodec.ARGB4444;
                         else
-                            pixelCodec = PixelCodec.RGB5A3;
+                            PixelCodec = PalettePixelCodec.RGB5A3;
                         break;
                 }
             }
-            else pixelCodec = PixelCodec.ARGB8888;
+            else PixelCodec = PalettePixelCodec.ARGB8888;
             Colors = new List<Color>();
             for (int y = 0; y < bitmap.Height; y++)
             {
                 for (int x = 0; x < bitmap.Width; x++)
-                    if (pixelCodec == PixelCodec.ARGB8888) // This is done separately because ARGB888 is encoded in a different order in PVP/GVP
+                    if (PixelCodec == PalettePixelCodec.ARGB8888) // This is done separately because ARGB888 is encoded in a different order in PVP/GVP
                         Colors.Add(bitmap.GetPixel(x, y));
                 else
-                    Colors.Add(DecodeColor(EncodeColor(bitmap.GetPixel(x, y), pixelCodec), pixelCodec));
+                    Colors.Add(DecodeColor(EncodeColor(bitmap.GetPixel(x, y), PixelCodec), PixelCodec));
             }
         }
 
-        public TexturePalette(bool gvp = false, PixelCodec codec = PixelCodec.RGB565)
+        public TexturePalette(bool gvp = false, PalettePixelCodec codec = PalettePixelCodec.RGB565)
         {
             StartBank = 0;
             StartColor = 0;
-            pixelCodec = codec;
+            PixelCodec = codec;
             IsGVP = gvp;
             Colors = new List<Color>();
             int numcolor = 256;
@@ -134,7 +134,7 @@ namespace TextureEditor
                     red = x * 16;
                     blue = y * 16;
                     Color rgb8 = Color.FromArgb(red, green, blue);
-                    Color result = DecodeColor(EncodeColor(rgb8, pixelCodec), pixelCodec);
+                    Color result = DecodeColor(EncodeColor(rgb8, PixelCodec), PixelCodec);
                     Colors.Add(result);
                     gencolor++;
                 }
@@ -147,23 +147,23 @@ namespace TextureEditor
             ByteConverter.BigEndian = IsGVP;
             List<byte> result = new List<byte>();
             result.AddRange(BitConverter.GetBytes(IsGVP ? Magic_GVP : Magic_PVP));
-            int sizenoheader = Colors.Count * (pixelCodec == PixelCodec.ARGB8888 ? 4 : 2) + 8; // Size without header
+            int sizenoheader = Colors.Count * (PixelCodec == PalettePixelCodec.ARGB8888 ? 4 : 2) + 8; // Size without header
             result.AddRange(BitConverter.GetBytes((uint)sizenoheader));
             // Endianness varies from here
             // Intensity8A (0) is ARGB1555 is SADX/SA2 and RGB5A3 (2) is ARGB4444 is SADX/SA2
-            PixelCodec pixelCodec_real = pixelCodec;
-            if (pixelCodec == PixelCodec.Intensity8A)
-                pixelCodec_real = PixelCodec.ARGB1555;
-            else if (pixelCodec == PixelCodec.RGB5A3)
-                pixelCodec_real = PixelCodec.ARGB4444;
-            result.AddRange(ByteConverter.GetBytes((ushort)pixelCodec_real));
+            PalettePixelCodec PixelCodec_real = PixelCodec;
+            if (PixelCodec == PalettePixelCodec.Intensity8A)
+                PixelCodec_real = PalettePixelCodec.ARGB1555;
+            else if (PixelCodec == PalettePixelCodec.RGB5A3)
+                PixelCodec_real = PalettePixelCodec.ARGB4444;
+            result.AddRange(ByteConverter.GetBytes((ushort)PixelCodec_real));
             result.AddRange(ByteConverter.GetBytes(StartBank));
             result.AddRange(ByteConverter.GetBytes(StartColor));
             result.AddRange(ByteConverter.GetBytes((ushort)Colors.Count));
             foreach (Color color in Colors)
             {
-                byte[] encodedColor = EncodeColor(color, pixelCodec);
-                if (pixelCodec == PixelCodec.ARGB8888)
+                byte[] encodedColor = EncodeColor(color, PixelCodec);
+                if (PixelCodec == PalettePixelCodec.ARGB8888)
                 {
                     uint value = BitConverter.ToUInt32(encodedColor, 0); // Little Endian
                     result.AddRange(ByteConverter.GetBytes(value)); // May be converted to Big Endian
@@ -188,13 +188,13 @@ namespace TextureEditor
             return result;
         }
 
-        public byte[] EncodeColor(Color color, PixelCodec pixelCodec)
+        public byte[] EncodeColor(Color color, PalettePixelCodec PixelCodec)
         {
-            byte[] result = new byte[pixelCodec == PixelCodec.ARGB8888 ? 4 : 2];
+            byte[] result = new byte[PixelCodec == PalettePixelCodec.ARGB8888 ? 4 : 2];
             ushort pixel = 0x0000;
-            switch (pixelCodec)
+            switch (PixelCodec)
             {
-                case PixelCodec.ARGB1555:
+                case PalettePixelCodec.ARGB1555:
                     pixel |= (ushort)((color.A >> 7) << 15);
                     pixel |= (ushort)((color.R >> 3) << 10);
                     pixel |= (ushort)((color.G >> 3) << 5);
@@ -202,7 +202,7 @@ namespace TextureEditor
                     result[1] = (byte)((pixel >> 8) & 0xFF);
                     result[0] = (byte)(pixel & 0xFF);
                     break;
-                case PixelCodec.ARGB4444:
+                case PalettePixelCodec.ARGB4444:
                     pixel |= (ushort)((color.A >> 4) << 12);
                     pixel |= (ushort)((color.R >> 4) << 8);
                     pixel |= (ushort)((color.G >> 4) << 4);
@@ -210,17 +210,17 @@ namespace TextureEditor
                     result[1] = (byte)((pixel >> 8) & 0xFF);
                     result[0] = (byte)(pixel & 0xFF);
                     break;
-                case PixelCodec.ARGB8888:
+                case PalettePixelCodec.ARGB8888:
                     result[3] = color.A;
                     result[2] = color.R;
                     result[1] = color.G;
                     result[0] = color.B;
                     break;
-                case PixelCodec.Intensity8A:
+                case PalettePixelCodec.Intensity8A:
                     result[1] = color.A;
                     result[0] = (byte)((0.30 * color.R) + (0.59 * color.G) + (0.11 * color.B));
                     break;
-                case PixelCodec.RGB5A3:
+                case PalettePixelCodec.RGB5A3:
                     if (color.A <= 0xDA) // Argb3444
                     {
                         pixel |= (ushort)((color.A >> 5) << 12);
@@ -238,7 +238,7 @@ namespace TextureEditor
                     result[1] = (byte)(pixel & 0xFF);
                     result[0] = (byte)((pixel >> 8) & 0xFF);
                     break;
-                case PixelCodec.RGB565:
+                case PalettePixelCodec.RGB565:
                 default:
                     pixel |= (ushort)((color.R >> 3) << 11);
                     pixel |= (ushort)((color.G >> 2) << 5);
@@ -250,7 +250,7 @@ namespace TextureEditor
             return result;
         }
 
-        public Color DecodeColor(byte[] rgb, PixelCodec codec)
+        public Color DecodeColor(byte[] rgb, PalettePixelCodec codec)
         {
             int a = 255;
             int r;
@@ -258,19 +258,19 @@ namespace TextureEditor
             int b;
             switch (codec)
             {
-                case PixelCodec.ARGB1555:
+                case PalettePixelCodec.ARGB1555:
                     a = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 15) & 0x01) * 0xFF);
                     r = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 10) & 0x1F) * 0xFF / 0x1F);
                     g = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 5) & 0x1F) * 0xFF / 0x1F);
                     b = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 0) & 0x1F) * 0xFF / 0x1F);
                     break;
-                case PixelCodec.ARGB4444:
+                case PalettePixelCodec.ARGB4444:
                     a = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 12) & 0x0F) * 0xFF / 0x0F);
                     r = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 8) & 0x0F) * 0xFF / 0x0F);
                     g = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 4) & 0x0F) * 0xFF / 0x0F);
                     b = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 0) & 0x0F) * 0xFF / 0x0F);
                     break;
-                case PixelCodec.RGB5A3:
+                case PalettePixelCodec.RGB5A3:
                     ushort pixel = BitConverter.ToUInt16(rgb, 0);
                     if ((pixel & 0x8000) != 0) // RGB555
                     {
@@ -287,19 +287,19 @@ namespace TextureEditor
                         b = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 0) & 0x0F) * 0xFF / 0x0F);
                     }
                     break;
-                case PixelCodec.Intensity8A:
+                case PalettePixelCodec.Intensity8A:
                     a = rgb[0];
                     r = rgb[1];
                     g = rgb[1];
                     b = rgb[1];
                     break;
-                case PixelCodec.ARGB8888:
+                case PalettePixelCodec.ARGB8888:
                     a = rgb[0];
                     r = rgb[1];
                     g = rgb[2];
                     b = rgb[3];
                     break;
-                case PixelCodec.RGB565:
+                case PalettePixelCodec.RGB565:
                 default:
                     r = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 11) & 0x1F) * 0xFF / 0x1F);
                     g = (byte)(((BitConverter.ToUInt16(rgb, 0) >> 5) & 0x3F) * 0xFF / 0x3F);
@@ -309,12 +309,12 @@ namespace TextureEditor
             return Color.FromArgb(a, r, g, b);
         }
 
-        public byte[] GetEncodedColorData(byte[] color, int index, bool bigEndian, PixelCodec pixelCodec)
+        public byte[] GetEncodedColorData(byte[] color, int index, bool bigEndian, PalettePixelCodec PixelCodec)
         {
-            byte[] data = new byte[pixelCodec == PixelCodec.ARGB8888 ? 4 : 2];
-            switch (pixelCodec)
+            byte[] data = new byte[PixelCodec == PalettePixelCodec.ARGB8888 ? 4 : 2];
+            switch (PixelCodec)
             {
-                case PixelCodec.ARGB8888:
+                case PalettePixelCodec.ARGB8888:
                     if (bigEndian)
                     {
                         data[0] = color[index];
@@ -330,9 +330,9 @@ namespace TextureEditor
                         data[3] = color[index];
                     }
                     return data;
-                case PixelCodec.ARGB1555:
-                case PixelCodec.ARGB4444:
-                case PixelCodec.RGB565:
+                case PalettePixelCodec.ARGB1555:
+                case PalettePixelCodec.ARGB4444:
+                case PalettePixelCodec.RGB565:
                 default:
                     if (bigEndian)
                     {
@@ -347,5 +347,11 @@ namespace TextureEditor
                     return data;
             }
         }
+
+		public int GetMaxBanks(bool index8)
+		{
+			int colr = Colors.Count;
+			return (index8 == true) ? colr / 256 : colr / 16;
+		}
     }
 }

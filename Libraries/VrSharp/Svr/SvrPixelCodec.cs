@@ -13,7 +13,12 @@ namespace VrSharp.Svr
                 get { return true; }
             }
 
-            public override int Bpp
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override int Bpp
             {
                 get { return 16; }
             }
@@ -72,7 +77,12 @@ namespace VrSharp.Svr
                 get { return true; }
             }
 
-            public override int Bpp
+			public override int NumPixels
+			{
+				get { return 1; }
+			}
+
+			public override int Bpp
             {
                 get { return 32; }
             }

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using ArchiveLib;
 using static ArchiveLib.GenericArchive;
-using static ArchiveLib.XVM;
 
 namespace SAModel.Direct3D.TextureSystem
 {
@@ -48,20 +47,25 @@ namespace SAModel.Direct3D.TextureSystem
                     arc = new PBFile(file);
                     break;
                 case ".pvr":
-                case ".gvr":
-                    arc = new PuyoFile(ext == ".gvr");
-                    PuyoFile parcx = (PuyoFile)arc;
-                    if (ext == ".gvr")
-                        arc.Entries.Add(new GVMEntry(filename));
-                    else
-                        arc.Entries.Add(new PVMEntry(filename));
+					arc = new PuyoFile(PuyoArchiveType.PVMFile);
+					PuyoFile parcx = (PuyoFile)arc;
+					arc.Entries.Add(new PVMEntry(filename));
 					if (paletteFile != null)
 						parcx.SetPalette(Path.Combine(Path.GetDirectoryName(filename), paletteFile));
 					if (parcx.PaletteRequired)
-                        parcx.AddPaletteFromDialog(Path.GetDirectoryName(filename));
-                    break;
+						parcx.AddPaletteFromDialog(Path.GetDirectoryName(filename));
+					break;
+				case ".gvr":
+					arc = new PuyoFile(PuyoArchiveType.GVMFile);
+					PuyoFile garcx = (PuyoFile)arc;
+					arc.Entries.Add(new GVMEntry(filename));
+					if (paletteFile != null)
+						garcx.SetPalette(Path.Combine(Path.GetDirectoryName(filename), paletteFile));
+					if (garcx.PaletteRequired)
+						garcx.AddPaletteFromDialog(Path.GetDirectoryName(filename));
+					break;
 				case ".xvr":
-					arc = new XVM();
+					arc = new PuyoFile(PuyoArchiveType.XVMFile);
 					arc.Entries.Add(new XVMEntry(filename));
 					break;
 				case ".png":
@@ -74,12 +78,10 @@ namespace SAModel.Direct3D.TextureSystem
 				case ".prs":
                     file = FraGag.Compression.Prs.Decompress(file);
                     goto default;
-				case ".xvm":
-					arc = new XVM(file);
-					break;
                 case ".pvm":
                 case ".gvm":
-                default:
+				case ".xvm":
+				default:
                     arc = new PuyoFile(file);
                     PuyoFile parc = (PuyoFile)arc;
 					if (paletteFile != null)

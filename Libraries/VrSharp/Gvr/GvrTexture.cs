@@ -168,7 +168,7 @@ namespace VrSharp.Gvr
             }
             else
             {
-                pixelFormat = GvrPixelFormat.Unknown;
+                pixelFormat = GvrPixelFormat.NonIndexed;
 
                 if (dataCodec != null)
                 {

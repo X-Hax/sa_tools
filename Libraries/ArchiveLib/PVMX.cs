@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 
 // Custom texture pack format developed by SonicFreak94 for SADX Mod Loader.
 namespace ArchiveLib
@@ -141,37 +143,69 @@ namespace ArchiveLib
             return str.ToArray();
         }
 
-        public class PVMXEntry : GenericArchiveEntry
-        {
-            public int Width { get; set; }
+		public class PVMXEntry : GenericArchiveEntry
+		{
+			public int Width { get; set; }
 
-            public int Height { get; set; }
+			public int Height { get; set; }
 
-            public uint GBIX { get; set; }
+			public uint GBIX { get; set; }
 
-            public PVMXEntry(string name, uint gbix, byte[] data, int width, int height)
-            {
-                Name = name;
-                Width = width;
-                Height = height;
-                Data = data;
-                GBIX = gbix;
-            }
+			public PVMXEntry(string name, uint gbix, byte[] data, int width, int height)
+			{
+				Name = name;
+				Width = width;
+				Height = height;
+				Data = data;
+				GBIX = gbix;
+			}
 
-            public bool HasDimensions()
-            {
-                if (Width != 0 || Height != 0)
-                    return true;
-                else
-                    return false;
-            }
+			public bool HasDimensions()
+			{
+				if (Width != 0 || Height != 0)
+					return true;
+				else
+					return false;
+			}
 
-            public override Bitmap GetBitmap()
-            {
-                MemoryStream ms = new MemoryStream(Data);
-                return new Bitmap(ms);
-            }
-        }
+			public override Bitmap GetBitmap()
+			{
+				Bitmap bitmap;
+				uint check = BitConverter.ToUInt32(Data, 0);
+				if (check == 0x20534444) // DDS
+				{
+					PixelFormat pxformat;
+					var image = Pfim.Pfimage.FromStream(new MemoryStream(Data), new Pfim.PfimConfig());
+					switch (image.Format)
+					{
+						case Pfim.ImageFormat.Rgba32:
+							pxformat = PixelFormat.Format32bppArgb;
+							break;
+						case Pfim.ImageFormat.Rgb24:
+							pxformat = PixelFormat.Format24bppRgb;
+							break;
+						case Pfim.ImageFormat.R5g5b5:
+							pxformat = PixelFormat.Format16bppRgb555;
+							break;
+						case Pfim.ImageFormat.R5g5b5a1:
+							pxformat = PixelFormat.Format16bppArgb1555;
+							break;
+						case Pfim.ImageFormat.R5g6b5:
+							pxformat = PixelFormat.Format16bppRgb565;
+							break;
+						default:
+							throw new NotImplementedException("Unsupported DDS image format");
+					}
+					bitmap = new Bitmap(image.Width, image.Height, pxformat);
+					BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
+					Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+					bitmap.UnlockBits(bmpData);
+				}
+				else
+					bitmap = new Bitmap(new MemoryStream(Data));
+				return bitmap;
+			}
+		}
 
         struct OffData
         {

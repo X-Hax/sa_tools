@@ -50,10 +50,7 @@ namespace TextureEditor
         /// </returns>
         public static int GetAlphaLevelFromBitmap(Bitmap img)
         {
-            Bitmap argb;
-            if (img.PixelFormat != PixelFormat.Format32bppArgb)
-                argb = new Bitmap(img);
-            else argb = img;
+			Bitmap argb = (img.PixelFormat == PixelFormat.Format32bppArgb) ? img : new Bitmap(img);
             BitmapData bmpd = argb.LockBits(new Rectangle(Point.Empty, argb.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             int stride = bmpd.Stride;
             byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
@@ -156,7 +153,7 @@ namespace TextureEditor
                     return GvrPixelFormat.Rgb5a3;
                 case 0:
                 default:
-                    return GvrPixelFormat.Unknown;
+                    return GvrPixelFormat.NonIndexed;
             }
         }
 
@@ -166,14 +163,24 @@ namespace TextureEditor
         /// <param name="gbix">Global Index to set.</param>
         /// <param name="bigendian">Big Endian.</param>
         /// </summary>
-        public static MemoryStream UpdateGBIX(MemoryStream stream, uint gbix, bool bigendian = false)
+        public static MemoryStream UpdateGBIX(MemoryStream stream, uint gbix, bool bigendian = false, bool xvr = false)
         {
             byte[] arr = stream.ToArray();
+			byte[] value = BitConverter.GetBytes(gbix);
+			// In XVR, there's no GBIX header and the GBIX is always at 0x10
+			if (xvr)
+			{
+				arr[0x10] = value[0];
+				arr[0x11] = value[1];
+				arr[0x12] = value[2];
+				arr[0x13] = value[3];
+				return new MemoryStream(arr);
+			}
+			// In PVR or GVR, the GBIX header is not always in the same place so we have to look for it first
             for (int u = 0; u < arr.Length - 4; u++)
             {
                 if (BitConverter.ToUInt32(arr, u) == 0x58494247) // GBIX
                 {
-                    byte[] value = BitConverter.GetBytes(gbix);
                     if (bigendian)
                     {
                         arr[u + 11] = value[0];
@@ -208,5 +215,16 @@ namespace TextureEditor
                 return false;
             }
         }
-    }
+
+		/// <summary>
+		/// Checks if the specified byte array has a DDS header.
+		/// </summary>
+		public static bool CheckIfTextureIsDDS(byte[] file)
+		{
+			if (file == null || file.Length < 4)
+				return false;
+			uint check = BitConverter.ToUInt32(file, 0);
+			return (check == 0x20534444);
+		}
+	}
 }

@@ -11,8 +11,6 @@ using static ArchiveLib.PVMXFile;
 using static ArchiveLib.ARCXFile;
 using static ArchiveLib.MLTFile;
 using static ArchiveLib.gcaxMLTFile;
-using System.Runtime.InteropServices;
-using static ArchiveLib.XVM;
 
 namespace ArchiveTool
 {
@@ -85,11 +83,11 @@ namespace ArchiveTool
                         }
                         break;
                     case ".gvr":
-                        arc = new PuyoFile(true);
+                        arc = new PuyoFile(PuyoArchiveType.GVMFile);
                         folderMode = ArchiveFromFolderMode.GVM;
                         break;
 					case ".xvr":
-						arc = new XVM();
+						arc = new PuyoFile(PuyoArchiveType.XVMFile);
 						folderMode = ArchiveFromFolderMode.XVM;
 						break;
                     case ".wav":

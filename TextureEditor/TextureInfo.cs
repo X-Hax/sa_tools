@@ -17,15 +17,16 @@ namespace TextureEditor
         public string Name { get; set; }
         public uint GlobalIndex { get; set; }
         public bool Mipmap { get; set; }
-        public Bitmap Image { get; set; }
-        public abstract bool CheckMipmap();
+        public Bitmap Image { get; set; } // Preview image
+		public MemoryStream TextureData { get; set; } // Texture data in target format
+		public abstract bool CheckMipmap(); // Checks if the texture format allows mipmaps (the texture itself may or may not have them)
     }
 
     class PvrTextureInfo : TextureInfo
     {
         public PvrDataFormat DataFormat { get; set; }
         public PvrPixelFormat PixelFormat { get; set; }
-        public MemoryStream TextureData { get; set; }
+    
         public PvrTextureInfo() { }
 
         public PvrTextureInfo(TextureInfo tex)
@@ -86,10 +87,10 @@ namespace TextureEditor
             DataFormat = texture.DataFormat;
             Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
             PixelFormat = texture.PixelFormat;
-            if (texture.NeedsExternalPalette)
-                Image = new Bitmap(Properties.Resources.error);
-            else
-                Image = texture.ToBitmap();
+			if (texture.NeedsExternalPalette)
+				Image = new Bitmap(Properties.Resources.error);
+			else
+				Image = texture.ToBitmap();
         }
 
         public override bool CheckMipmap()
@@ -102,7 +103,6 @@ namespace TextureEditor
     {
         public GvrDataFormat DataFormat { get; set; }
         public GvrPixelFormat PixelFormat { get; set; }
-        public MemoryStream TextureData { get; set; }
 
         public GvrTextureInfo() { }
 
@@ -112,7 +112,7 @@ namespace TextureEditor
             GlobalIndex = tex.GlobalIndex;
             Image = tex.Image;
             Mipmap = tex.Mipmap;
-            PixelFormat = GvrPixelFormat.Unknown;
+            PixelFormat = GvrPixelFormat.NonIndexed;
             DataFormat = GvrDataFormat.Unknown;
             if (tex is GvrTextureInfo gvrt)
             {
@@ -144,7 +144,7 @@ namespace TextureEditor
             Name = name;
             GlobalIndex = gbix;
             DataFormat = GvrDataFormat.Unknown;
-            PixelFormat = GvrPixelFormat.Unknown;
+            PixelFormat = GvrPixelFormat.NonIndexed;
             if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
                 Image = new Bitmap(TextureEditor.Properties.Resources.error);
             else
@@ -183,7 +183,8 @@ namespace TextureEditor
             Name = tex.Name;
             GlobalIndex = tex.GlobalIndex;
             Image = tex.Image;
-        }
+			TextureData = null;
+		}
 
         public PvmxTextureInfo(PvmxTextureInfo tex)
             : this((TextureInfo)tex)
@@ -191,11 +192,12 @@ namespace TextureEditor
             Dimensions = tex.Dimensions;
         }
 
-        public PvmxTextureInfo(string name, uint gbix, Bitmap bitmap)
+        public PvmxTextureInfo(string name, uint gbix, Bitmap bitmap, MemoryStream stream = null)
         {
             Name = name;
             GlobalIndex = gbix;
             Image = bitmap;
+			TextureData = stream;
         }
 
         public override bool CheckMipmap()
@@ -292,6 +294,7 @@ namespace TextureEditor
                 flags.Add("VQ");
             return string.Join(", ", flags);
         }
+
         public PakTextureInfo(TextureInfo tex)
         {
             Name = tex.Name;
@@ -308,9 +311,10 @@ namespace TextureEditor
             Mipmap = tex.Mipmap;
             if (tex.Mipmap)
                 SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+			TextureData = null;
         }
 
-        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped)
+        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null)
         {
             Name = name;
             GlobalIndex = gbix;
@@ -318,6 +322,7 @@ namespace TextureEditor
             DataFormat = format;
             SurfaceFlags = flags;
             Mipmap = (SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0;
+			TextureData = str;
         }
 
         public override bool CheckMipmap()
@@ -331,7 +336,6 @@ namespace TextureEditor
 		public DXGIFormat DataFormat { get; set; }
 		public DXGIFormat PixelFormat { get; set; }
 		public bool useAlpha { get; set; }
-		public MemoryStream TextureData { get; set; }
 		public XvrTextureInfo() { }
 
 		public XvrTextureInfo(TextureInfo tex)
@@ -378,7 +382,7 @@ namespace TextureEditor
 			useAlpha = texture.UseAlpha;
 			GlobalIndex = texture.GlobalIndex;
 			DataFormat = texture.DXGIPixelFormat;
-			Mipmap = true;
+			Mipmap = texture.HasMipmaps;
 			PixelFormat = texture.DXGIPixelFormat;
 			Image = texture.ToBitmap();
 		}
