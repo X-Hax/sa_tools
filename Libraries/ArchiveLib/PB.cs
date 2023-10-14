@@ -23,31 +23,38 @@ namespace ArchiveLib
             }
         }
 
-        public PBFile(byte[] pbdata)
-        {
-            Entries = new List<GenericArchiveEntry>();
-            int numtextures = pbdata[4];
-            for (int u = 0; u < numtextures; u++)
-            {
-                Entries.Add(new PBEntry(pbdata, 8 + 16 * u, u.ToString("D3") + ".pvr"));
-                //Console.WriteLine("Added header {0}: offset {1}, pixel format {2}, data format {3}, GBIX {4}, width {5}, height {6}", u, hdr.Offset, hdr.PixelFormat, hdr.DataFormat, hdr.GBIX, hdr.Width, hdr.Height);
-            }
-            for (int u = 0; u < numtextures; u++)
-            {
-                PBEntry pbentry = (PBEntry)Entries[u];
-                int chunksize;
-                if (u == numtextures - 1) chunksize = pbdata.Length - pbentry.Offset;
-                else
-                {
-                    PBEntry pbentry_1 = (PBEntry)Entries[u + 1];
-                    chunksize = pbentry_1.Offset - pbentry.Offset;
-                }
-                byte[] headerless = new byte[chunksize];
-                Array.Copy(pbdata, pbentry.Offset, headerless, 0, chunksize);
-                pbentry.Data = pbentry.GetPVR(headerless);
-                //Console.WriteLine("Added data: offset {0}, length {1}", headers[u].Offset, pbchunk.Length);
-            }
-        }
+		public static bool Identify(byte[] data)
+		{
+			if (data == null || data.Length < 4)
+				return false;
+			return (BitConverter.ToUInt32(data, 0) == 0x02425650);
+		}
+
+		public PBFile(byte[] pbdata)
+		{
+			Entries = new List<GenericArchiveEntry>();
+			int numtextures = pbdata[4];
+			for (int u = 0; u < numtextures; u++)
+			{
+				Entries.Add(new PBEntry(pbdata, 8 + 16 * u, u.ToString("D3") + ".pvr"));
+				//Console.WriteLine("Added header {0}: offset {1}, pixel format {2}, data format {3}, GBIX {4}, width {5}, height {6}", u, hdr.Offset, hdr.PixelFormat, hdr.DataFormat, hdr.GBIX, hdr.Width, hdr.Height);
+			}
+			for (int u = 0; u < numtextures; u++)
+			{
+				PBEntry pbentry = (PBEntry)Entries[u];
+				int chunksize;
+				if (u == numtextures - 1) chunksize = pbdata.Length - pbentry.Offset;
+				else
+				{
+					PBEntry pbentry_1 = (PBEntry)Entries[u + 1];
+					chunksize = pbentry_1.Offset - pbentry.Offset;
+				}
+				byte[] headerless = new byte[chunksize];
+				Array.Copy(pbdata, pbentry.Offset, headerless, 0, chunksize);
+				pbentry.Data = pbentry.GetPVR(headerless);
+				//Console.WriteLine("Added data: offset {0}, length {1}", headers[u].Offset, pbchunk.Length);
+			}
+		}
 
         public PBFile(int count)
         {
@@ -90,6 +97,17 @@ namespace ArchiveLib
             }
             return result.ToArray();
         }
+
+		public PuyoFile GetPVM()
+		{
+			PuyoFile pvm = new PuyoFile(PuyoArchiveType.PVMFile);
+			pvm.hasNameData = false;
+			foreach (PBEntry entry in Entries)
+			{
+				pvm.Entries.Add(new PVMEntry(entry.Data, entry.Name));
+			}
+			return pvm;
+		}
     }
 
     public class PBEntry : GenericArchiveEntry
@@ -134,11 +152,22 @@ namespace ArchiveLib
             Height = BitConverter.ToUInt16(pbdata, tempaddr + 14);
         }
 
-        public PBEntry(string filename, int offset)
+		public PBEntry(byte[] pvrdata, int offset)
+		{
+			Data = pvrdata;
+			PvrTexture pvrt = new PvrTexture(Data);
+			Offset = offset;
+			PixelFormat = pvrt.PixelFormat;
+			DataFormat = pvrt.DataFormat;
+			GBIX = pvrt.GlobalIndex;
+			Width = pvrt.TextureWidth;
+			Height = pvrt.TextureHeight;
+		}
+
+		public PBEntry(string filename, int offset)
         {
             Data = File.ReadAllBytes(filename);
             PvrTexture pvrt = new PvrTexture(Data);
-            byte[] data = GetHeaderless();
             Name = Path.GetFileNameWithoutExtension(filename);
             Offset = offset;
             PixelFormat = pvrt.PixelFormat;

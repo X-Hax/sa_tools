@@ -403,6 +403,8 @@ namespace TextureEditor
 			}
 			else
 			{
+				if (PBFile.Identify(datafile))
+					datafile = new PBFile(datafile).GetPVM().GetBytes();
 				PuyoArchiveType idResult = PuyoFile.Identify(datafile);
 				if (idResult == PuyoArchiveType.Unknown)
 				{
@@ -523,6 +525,8 @@ namespace TextureEditor
 				currentFormat = TextureFormat.PAK;
 			else
 			{
+				if (PBFile.Identify(datafile))
+					datafile = new PBFile(datafile).GetPVM().GetBytes();
 				PuyoArchiveType identifyResult = PuyoFile.Identify(datafile);
 				switch (identifyResult)
 				{
@@ -619,6 +623,8 @@ namespace TextureEditor
 						foreach (PvrTextureInfo tex in textures)
 							puyo.Entries.Add(new PVMEntry(EncodePVR(tex).ToArray(), tex.Name));
 						data = puyo.GetBytes();
+						if (Path.GetExtension(archiveFilename).Equals(".pb", StringComparison.OrdinalIgnoreCase))
+							data = puyo.GetPB().GetBytes();
 						unsaved = false;
 						break;
 					case TextureFormat.GVM:
@@ -697,7 +703,7 @@ namespace TextureEditor
 						return;
 				}
 			}
-			if (Path.GetExtension(archiveFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				if (Path.GetExtension(archiveFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				FraGag.Compression.Prs.Compress(data, archiveFilename);
 			else
 				File.WriteAllBytes(archiveFilename, data);
@@ -793,7 +799,7 @@ namespace TextureEditor
 					ext = "pvm";
 					break;
 			}
-			using (SaveFileDialog dlg = new SaveFileDialog() { FilterIndex = (int)savefmt + 1, DefaultExt = ext, Filter = "PVM Files|*.pvm;*.prs|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak|XVM Files|*.xvm;*.prs" })
+			using (SaveFileDialog dlg = new SaveFileDialog() { FilterIndex = (int)savefmt + 1, DefaultExt = ext, Filter = "PVM Files|*.pvm;*.prs;*.pb|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak|XVM Files|*.xvm;*.prs" })
 			{
 				if (archiveFilename != null)
 				{
@@ -996,7 +1002,7 @@ namespace TextureEditor
 		private void addTextureButton_Click(object sender, EventArgs e)
 		{
 			string defext = null;
-			string filter = "Supported Files|*.prs;*.pvm;*.gvm;*.pvmx;*.pak;*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds";
+			string filter = "Supported Files|*.prs;*.pvm;*.pb;*.gvm;*.pvmx;*.pak;*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds";
 			switch (currentFormat)
 			{
 				case TextureFormat.PVM:
@@ -1030,6 +1036,7 @@ namespace TextureEditor
 							// Add textures from archives
 							case ".prs":
 							case ".pvm":
+							case ".pb":
 							case ".gvm":
 							case ".xvm":
 							case ".pak":

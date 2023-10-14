@@ -395,7 +395,17 @@ namespace ArchiveLib
             ByteConverter.BigEndian = bigendianbk;
             return result.ToArray();
         }
-    }
+
+		public PBFile GetPB()
+		{
+			PBFile pb = new PBFile(Entries.Count);			
+			for (int i = 0; i< Entries.Count; i++)
+			{
+				pb.Entries.Add(new PBEntry(Entries[i].Data, pb.GetCurrentOffset(i, Entries.Count)));
+			}
+			return pb;
+		}
+}
 
     public class PVMEntry : GenericArchiveEntry
     {
