@@ -170,10 +170,10 @@ namespace TextureEditor
 			// In XVR, there's no GBIX header and the GBIX is always at 0x10
 			if (xvr)
 			{
-				arr[10] = value[0];
-				arr[11] = value[1];
-				arr[12] = value[2];
-				arr[13] = value[3];
+				arr[0x10] = value[0];
+				arr[0x11] = value[1];
+				arr[0x12] = value[2];
+				arr[0x13] = value[3];
 				return new MemoryStream(arr);
 			}
 			// In PVR or GVR, the GBIX header is not always in the same place so we have to look for it first
@@ -215,5 +215,14 @@ namespace TextureEditor
                 return false;
             }
         }
-    }
+
+		/// <summary>
+		/// Checks if the specified byte array has a DDS header.
+		/// </summary>
+		public static bool CheckIfTextureIsDDS(byte[] file)
+		{
+			uint check = BitConverter.ToUInt32(file, 0);
+			return (check == 0x20534444);
+		}
+	}
 }
