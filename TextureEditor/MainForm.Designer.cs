@@ -1048,6 +1048,7 @@
 			usePNGInsteadOfDDSToolStripMenuItem.Text = "Use PNG instead of DDS";
 			usePNGInsteadOfDDSToolStripMenuItem.ToolTipText = "Use PNG instead of DDS in PAK files. PNG has better quality but loads slower and lacks built-in mipmaps.";
 			usePNGInsteadOfDDSToolStripMenuItem.CheckedChanged += usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged;
+			usePNGInsteadOfDDSToolStripMenuItem.CheckOnClick = true;
 			// 
 			// MainForm
 			// 
