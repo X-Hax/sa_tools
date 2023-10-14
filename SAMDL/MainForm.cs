@@ -141,6 +141,7 @@ namespace SAModel.SAMDL
 				{
 					case ".nj":
 					case ".gj":
+					case ".xj":
 					case ".sa1mdl":
 					case ".sa2mdl":
 					case ".sa2bmdl":
