@@ -221,6 +221,7 @@ namespace TextureEditor
 		/// </summary>
 		public static bool CheckIfTextureIsDDS(byte[] file)
 		{
+			if (file == null || file.Length < 4)
 			uint check = BitConverter.ToUInt32(file, 0);
 			return (check == 0x20534444);
 		}
