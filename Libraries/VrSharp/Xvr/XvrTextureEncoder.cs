@@ -293,8 +293,8 @@ namespace VrSharp.Xvr
 			outBytes.AddRange(BitConverter.GetBytes(GetFlags()));
 			outBytes.AddRange(BitConverter.GetBytes(type));
 			outBytes.AddRange(BitConverter.GetBytes(globalIndex));
-			outBytes.AddRange(BitConverter.GetBytes(TextureHeight));
 			outBytes.AddRange(BitConverter.GetBytes(TextureWidth));
+			outBytes.AddRange(BitConverter.GetBytes(TextureHeight));
 			outBytes.AddRange(BitConverter.GetBytes(length - 0x40));
 			outBytes.AddRange(new byte[0x24]);
 
