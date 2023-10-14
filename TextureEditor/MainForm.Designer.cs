@@ -71,6 +71,7 @@
 			exportPalettedIndexedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportPalettedFullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureFilteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			usePNGInsteadOfDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			splitContainer1 = new System.Windows.Forms.SplitContainer();
 			listBox1 = new System.Windows.Forms.ListBox();
 			panel1 = new System.Windows.Forms.Panel();
@@ -115,7 +116,7 @@
 			contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
 			copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			usePNGInsteadOfDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			saveTextureButton = new System.Windows.Forms.Button();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -213,7 +214,7 @@
 			// 
 			// newToolStripMenuItem
 			// 
-			newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newPVMToolStripMenuItem, newGVMToolStripMenuItem, newPVMXToolStripMenuItem, newPAKToolStripMenuItem, newXVMToolStripMenuItem });
+			newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newPVMToolStripMenuItem, newGVMToolStripMenuItem, newXVMToolStripMenuItem, newPVMXToolStripMenuItem, newPAKToolStripMenuItem });
 			newToolStripMenuItem.Image = Properties.Resources._new;
 			newToolStripMenuItem.Name = "newToolStripMenuItem";
 			newToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
@@ -278,7 +279,7 @@
 			// 
 			// saveAsToolStripMenuItem
 			// 
-			saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { saveAsPVMToolStripMenuItem, saveAsGVMToolStripMenuItem, saveAsPVMXToolStripMenuItem, saveAsPAKToolStripMenuItem, saveXVMToolStripMenuItem });
+			saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { saveAsPVMToolStripMenuItem, saveAsGVMToolStripMenuItem, saveXVMToolStripMenuItem, saveAsPVMXToolStripMenuItem, saveAsPAKToolStripMenuItem });
 			saveAsToolStripMenuItem.Image = Properties.Resources.saveas;
 			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S;
@@ -332,7 +333,7 @@
 			importTexturePackToolStripMenuItem.Name = "importTexturePackToolStripMenuItem";
 			importTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I;
 			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			importTexturePackToolStripMenuItem.Text = "&Import texture pack...";
+			importTexturePackToolStripMenuItem.Text = "&Import folder texture pack...";
 			importTexturePackToolStripMenuItem.ToolTipText = "Import a folder texture pack with an index file.";
 			importTexturePackToolStripMenuItem.Click += importTexturePackToolStripMenuItem_Click;
 			// 
@@ -342,7 +343,7 @@
 			exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
 			exportTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
 			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			exportTexturePackToolStripMenuItem.Text = "&Export texture pack...";
+			exportTexturePackToolStripMenuItem.Text = "&Export folder texture pack...";
 			exportTexturePackToolStripMenuItem.ToolTipText = "Export a folder texture pack with an index file.";
 			exportTexturePackToolStripMenuItem.Click += exportTexturePackToolStripMenuItem_Click;
 			// 
@@ -480,6 +481,15 @@
 			textureFilteringToolStripMenuItem.ToolTipText = "Enable bicubic interpolation when resizing the preview image.";
 			textureFilteringToolStripMenuItem.CheckedChanged += textureFilteringToolStripMenuItem_CheckedChanged;
 			textureFilteringToolStripMenuItem.Click += textureFilteringToolStripMenuItem_Click;
+			// 
+			// usePNGInsteadOfDDSToolStripMenuItem
+			// 
+			usePNGInsteadOfDDSToolStripMenuItem.CheckOnClick = true;
+			usePNGInsteadOfDDSToolStripMenuItem.Name = "usePNGInsteadOfDDSToolStripMenuItem";
+			usePNGInsteadOfDDSToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			usePNGInsteadOfDDSToolStripMenuItem.Text = "Use PNG instead of DDS";
+			usePNGInsteadOfDDSToolStripMenuItem.ToolTipText = "Use PNG instead of DDS in PAK files. PNG has better quality but loads slower and lacks built-in mipmaps.";
+			usePNGInsteadOfDDSToolStripMenuItem.CheckedChanged += usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged;
 			// 
 			// splitContainer1
 			// 
@@ -704,7 +714,7 @@
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.Size = new System.Drawing.Size(396, 395);
+			tableLayoutPanel1.Size = new System.Drawing.Size(393, 387);
 			tableLayoutPanel1.TabIndex = 6;
 			// 
 			// textureSizeLabel
@@ -724,12 +734,13 @@
 			// 
 			importExportPanel.AutoSize = true;
 			importExportPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			importExportPanel.Controls.Add(saveTextureButton);
 			importExportPanel.Controls.Add(exportButton);
 			importExportPanel.Controls.Add(importButton);
 			importExportPanel.Location = new System.Drawing.Point(4, 204);
 			importExportPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			importExportPanel.Name = "importExportPanel";
-			importExportPanel.Size = new System.Drawing.Size(139, 31);
+			importExportPanel.Size = new System.Drawing.Size(191, 31);
 			importExportPanel.TabIndex = 5;
 			// 
 			// exportButton
@@ -737,7 +748,7 @@
 			exportButton.AutoSize = true;
 			exportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			exportButton.Enabled = false;
-			exportButton.Location = new System.Drawing.Point(75, 3);
+			exportButton.Location = new System.Drawing.Point(71, 3);
 			exportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			exportButton.Name = "exportButton";
 			exportButton.Size = new System.Drawing.Size(60, 25);
@@ -798,21 +809,25 @@
 			// 
 			// panel3
 			// 
+			panel3.AutoSize = true;
+			panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			panel3.Controls.Add(buttonLoadPalette);
 			panel3.Controls.Add(buttonSavePalette);
 			panel3.Controls.Add(buttonResetPalette);
 			panel3.Location = new System.Drawing.Point(4, 353);
 			panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panel3.Name = "panel3";
-			panel3.Size = new System.Drawing.Size(203, 39);
+			panel3.Size = new System.Drawing.Size(171, 31);
 			panel3.TabIndex = 27;
 			// 
 			// buttonLoadPalette
 			// 
+			buttonLoadPalette.AutoSize = true;
+			buttonLoadPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			buttonLoadPalette.Location = new System.Drawing.Point(4, 3);
 			buttonLoadPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			buttonLoadPalette.Name = "buttonLoadPalette";
-			buttonLoadPalette.Size = new System.Drawing.Size(61, 27);
+			buttonLoadPalette.Size = new System.Drawing.Size(52, 25);
 			buttonLoadPalette.TabIndex = 17;
 			buttonLoadPalette.Text = "Load...";
 			buttonLoadPalette.UseVisualStyleBackColor = true;
@@ -821,10 +836,12 @@
 			// 
 			// buttonSavePalette
 			// 
-			buttonSavePalette.Location = new System.Drawing.Point(71, 3);
+			buttonSavePalette.AutoSize = true;
+			buttonSavePalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			buttonSavePalette.Location = new System.Drawing.Point(64, 3);
 			buttonSavePalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			buttonSavePalette.Name = "buttonSavePalette";
-			buttonSavePalette.Size = new System.Drawing.Size(61, 27);
+			buttonSavePalette.Size = new System.Drawing.Size(50, 25);
 			buttonSavePalette.TabIndex = 18;
 			buttonSavePalette.Text = "Save...";
 			buttonSavePalette.UseVisualStyleBackColor = true;
@@ -833,10 +850,12 @@
 			// 
 			// buttonResetPalette
 			// 
-			buttonResetPalette.Location = new System.Drawing.Point(139, 3);
+			buttonResetPalette.AutoSize = true;
+			buttonResetPalette.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			buttonResetPalette.Location = new System.Drawing.Point(122, 3);
 			buttonResetPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			buttonResetPalette.Name = "buttonResetPalette";
-			buttonResetPalette.Size = new System.Drawing.Size(61, 27);
+			buttonResetPalette.Size = new System.Drawing.Size(45, 25);
 			buttonResetPalette.TabIndex = 19;
 			buttonResetPalette.Text = "Reset";
 			buttonResetPalette.UseVisualStyleBackColor = true;
@@ -852,7 +871,7 @@
 			panelPaletteInfo.Controls.Add(numericUpDownStartBank);
 			panelPaletteInfo.Controls.Add(comboBoxCurrentPaletteBank);
 			panelPaletteInfo.Controls.Add(labelPaletteFormat);
-			panelPaletteInfo.Location = new System.Drawing.Point(215, 241);
+			panelPaletteInfo.Location = new System.Drawing.Point(212, 241);
 			panelPaletteInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panelPaletteInfo.Name = "panelPaletteInfo";
 			panelPaletteInfo.Size = new System.Drawing.Size(177, 106);
@@ -1041,14 +1060,18 @@
 			pasteToolStripMenuItem.Text = "&Paste";
 			pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
 			// 
-			// usePNGInsteadOfDDSToolStripMenuItem
+			// saveTextureButton
 			// 
-			usePNGInsteadOfDDSToolStripMenuItem.Name = "usePNGInsteadOfDDSToolStripMenuItem";
-			usePNGInsteadOfDDSToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			usePNGInsteadOfDDSToolStripMenuItem.Text = "Use PNG instead of DDS";
-			usePNGInsteadOfDDSToolStripMenuItem.ToolTipText = "Use PNG instead of DDS in PAK files. PNG has better quality but loads slower and lacks built-in mipmaps.";
-			usePNGInsteadOfDDSToolStripMenuItem.CheckedChanged += usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged;
-			usePNGInsteadOfDDSToolStripMenuItem.CheckOnClick = true;
+			saveTextureButton.AutoSize = true;
+			saveTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			saveTextureButton.Enabled = false;
+			saveTextureButton.Location = new System.Drawing.Point(138, 3);
+			saveTextureButton.Name = "saveTextureButton";
+			saveTextureButton.Size = new System.Drawing.Size(50, 25);
+			saveTextureButton.TabIndex = 8;
+			saveTextureButton.Text = "Save...";
+			saveTextureButton.UseVisualStyleBackColor = true;
+			saveTextureButton.Click += saveTextureButton_Click;
 			// 
 			// MainForm
 			// 
@@ -1085,6 +1108,7 @@
 			importExportPanel.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)palettePreview).EndInit();
 			panel3.ResumeLayout(false);
+			panel3.PerformLayout();
 			panelPaletteInfo.ResumeLayout(false);
 			panelPaletteInfo.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownStartColor).EndInit();
@@ -1182,6 +1206,7 @@
 		private System.Windows.Forms.ToolStripMenuItem newXVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveXVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem usePNGInsteadOfDDSToolStripMenuItem;
+		private System.Windows.Forms.Button saveTextureButton;
 	}
 }
 

@@ -117,7 +117,7 @@ namespace TextureEditor
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 			bool en = listBox1.SelectedIndex != -1;
-			removeTextureButton.Enabled = textureName.Enabled = globalIndex.Enabled = importButton.Enabled = exportButton.Enabled = en;
+			removeTextureButton.Enabled = textureName.Enabled = globalIndex.Enabled = importButton.Enabled = exportButton.Enabled = saveTextureButton.Enabled = en;
 			if (en)
 			{
 				suppress = true;
@@ -1440,6 +1440,50 @@ namespace TextureEditor
 			listBox1.Select();
 		}
 
+		private void saveTextureButton_Click(object sender, EventArgs e)
+		{
+			string ext = "png";
+			switch (currentFormat)
+			{
+				case TextureFormat.PVM:
+					ext = "pvr";
+					break;
+				case TextureFormat.GVM:
+					ext = "gvr";
+					break;
+				case TextureFormat.XVM:
+					ext = "xvr";
+					break;
+				case TextureFormat.PAK:
+					ext = TextureFunctions.CheckIfTextureIsDDS(textures[listBox1.SelectedIndex].TextureData.ToArray()) ? "dds" : "png";
+					break;
+				case TextureFormat.PVMX:
+					ext = TextureFunctions.CheckIfTextureIsDDS(textures[listBox1.SelectedIndex].TextureData.ToArray()) ? "dds" : "png";
+					break;
+			}
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = ext, FileName = textures[listBox1.SelectedIndex].Name, Filter = "All Files|*.*" })
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					TextureInfo info = textures[listBox1.SelectedIndex];
+					if (info.TextureData == null)
+					{
+						if (info is PvrTextureInfo pvrt)
+							info.TextureData = EncodePVR(pvrt);
+						else if (info is GvrTextureInfo gvrt)
+							info.TextureData = EncodeGVR(gvrt);
+						else if (info is XvrTextureInfo xvrt)
+							info.TextureData = EncodeXVR(xvrt);
+						else if (info is PakTextureInfo pakt)
+							info.TextureData = EncodeDDS(pakt);
+						else
+							info.Image.Save(info.TextureData, ImageFormat.Png);
+					}
+					File.WriteAllBytes(dlg.FileName, textures[listBox1.SelectedIndex].TextureData.ToArray());
+				}
+
+			listBox1.Select();
+		}
+
 		private void PAKEnableAlphaForAll(bool enable)
 		{
 			if (textures == null || textures.Count == 0)
@@ -2153,5 +2197,6 @@ namespace TextureEditor
 			settingsfile.SACompatiblePalettes = compatibleGVPToolStripMenuItem.Checked;
 		}
 		#endregion
+
 	}
 }
