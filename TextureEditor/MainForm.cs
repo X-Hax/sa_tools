@@ -489,7 +489,7 @@ namespace TextureEditor
 						case PuyoArchiveType.XVMFile:
 							arc.Entries.Add(new XVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
 							MemoryStream strx = new MemoryStream(arc.Entries[i].Data);
-							textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strx));
+							textures.Add(new XvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strx));
 							break;
 					}
 				}
