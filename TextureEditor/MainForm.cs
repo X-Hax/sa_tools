@@ -42,6 +42,7 @@ namespace TextureEditor
 		string archiveFilename;
 		List<TextureInfo> textures = new List<TextureInfo>();
 		bool suppress = false;
+		bool nonIndexedPAK = false;
 
 		// Palette stuff
 		static int paletteSet = 0;
@@ -117,7 +118,8 @@ namespace TextureEditor
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
 			bool en = listBox1.SelectedIndex != -1;
-			removeTextureButton.Enabled = textureName.Enabled = globalIndex.Enabled = importButton.Enabled = exportButton.Enabled = saveTextureButton.Enabled = en;
+			removeTextureButton.Enabled = textureName.Enabled = importButton.Enabled = exportButton.Enabled = saveTextureButton.Enabled = en;
+			globalIndex.Enabled = (en && !nonIndexedPAK);
 			if (en)
 			{
 				suppress = true;
@@ -322,6 +324,7 @@ namespace TextureEditor
 
 		private List<TextureInfo> GetTexturesFromFile(string fname)
 		{
+			nonIndexedPAK = false;
 			byte[] datafile = File.ReadAllBytes(fname);
 			if (Path.GetExtension(fname).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				datafile = FraGag.Compression.Prs.Decompress(datafile);
@@ -361,28 +364,31 @@ namespace TextureEditor
 						indexName = fl.Name;
 					}
 				}
+				// Handle non-indexed PAKs in the SOC folder
 				if (!hasIndex)
 				{
-					MessageBox.Show("This PAK archive does not contain an index file, and Texture Editor cannot open it. Use ArchiveTool to open such files.", "Texture Editor");
-					textures.Clear();
-					listBox1.Items.Clear();
-					archiveFilename = null;
-					Text = "PAK Editor";
-					UpdateTextureCount();
-					return new List<TextureInfo>();
+					nonIndexedPAK = true;
+					newtextures = new List<TextureInfo>(pak.Entries.Count);
+					foreach (PAKFile.PAKEntry fl in pak.Entries)
+					{
+						newtextures.Add(new PakTextureInfo(Path.GetFileNameWithoutExtension(fl.Name), 0, fl.GetBitmap(), GvrDataFormat.Dxt1, 0, new MemoryStream(fl.Data)));
+					}
 				}
-				byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
-				newtextures = new List<TextureInfo>(inf.Length / 0x3C);
-				for (int i = 0; i < inf.Length; i += 0x3C)
+				else
 				{
-					// Load a PAK INF entry
-					byte[] pakentry = new byte[0x3C];
-					Array.Copy(inf, i, pakentry, 0, 0x3C);
-					PAKInfEntry entry = new PAKInfEntry(pakentry);
-					// Load texture data
-					byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
-					MemoryStream str = new MemoryStream(dds);
-					newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+					byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
+					newtextures = new List<TextureInfo>(inf.Length / 0x3C);
+					for (int i = 0; i < inf.Length; i += 0x3C)
+					{
+						// Load a PAK INF entry
+						byte[] pakentry = new byte[0x3C];
+						Array.Copy(inf, i, pakentry, 0, 0x3C);
+						PAKInfEntry entry = new PAKInfEntry(pakentry);
+						// Load texture data
+						byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+						MemoryStream str = new MemoryStream(dds);
+						newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+					}
 				}
 			}
 			else
@@ -643,7 +649,7 @@ namespace TextureEditor
 						PAKFile pak = new PAKFile();
 						string filenoext = Path.GetFileNameWithoutExtension(archiveFilename).ToLowerInvariant();
 						pak.FolderName = filenoext;
-						string longdir = "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
+						string longdir = nonIndexedPAK ? "..\\..\\..\\sonic2\\resource\\gd_pc\\soc\\" + filenoext : "..\\..\\..\\sonic2\\resource\\gd_pc\\prs\\" + filenoext;
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						foreach (PakTextureInfo item in textures)
 						{
@@ -672,7 +678,8 @@ namespace TextureEditor
 								inf.AddRange(entry.GetBytes());
 							}
 						}
-						pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
+						if (!nonIndexedPAK)
+							pak.Entries.Insert(0, new PAKFile.PAKEntry(filenoext + ".inf", longdir + '\\' + filenoext + ".inf", inf.ToArray()));
 						pak.Save(archiveFilename);
 						unsaved = false;
 						return;
