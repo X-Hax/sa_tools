@@ -1497,7 +1497,7 @@ namespace TextureEditor
 			}
 			XvrTextureEncoder encoder = new XvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
 			encoder.GlobalIndex = tex.GlobalIndex;
-			encoder.HasAlpha = tex.useAlpha;
+			encoder.HasAlpha = tex.useAlpha = TextureFunctions.GetAlphaLevelFromBitmap(tex.Image) != 0;
 			encoder.HasMipmaps = tex.Mipmap;
 			MemoryStream xvr = new MemoryStream();
 			encoder.Save(xvr);
