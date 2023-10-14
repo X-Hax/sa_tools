@@ -81,6 +81,7 @@ namespace ArchiveTool
                         case ".dat":
                         case ".pvmx":
                         case ".pb":
+                        case ".nb":
                         case ".prs":
                         case ".pvm":
                         case ".gvm":

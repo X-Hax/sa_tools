@@ -21,7 +21,11 @@ namespace ArchiveTool
             outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
             switch (extension.ToLowerInvariant())
             {
-                case (".rel"):
+				case (".nb"):
+					Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
+					SplitTools.Split.SplitNB.SplitNBFile(filePath, false, outputPath, 2);
+					return;
+				case (".rel"):
                     outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_dec.rel");
                     Console.WriteLine("Output file: {0}", outputPath);
                     byte[] inputData = File.ReadAllBytes(args[0]);
