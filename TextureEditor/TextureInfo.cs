@@ -95,8 +95,18 @@ namespace TextureEditor
 
         public override bool CheckMipmap()
         {
-            return DataFormat != PvrDataFormat.Index4 && DataFormat != PvrDataFormat.Index8 && Image.Width == Image.Height;
-        }
+			// Puyo Tools doesn't allow encoding to Indexed formats with a custom palette so mipmap toggle is disabled for now.
+			switch (DataFormat)
+			{
+				case PvrDataFormat.Index4:
+				case PvrDataFormat.Index4Mipmaps:
+				case PvrDataFormat.Index8:
+				case PvrDataFormat.Index8Mipmaps:
+					return false;
+				default:
+					return Image.Width == Image.Height;
+			}
+		}
     }
 
     class GvrTextureInfo : TextureInfo

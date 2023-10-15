@@ -117,6 +117,7 @@ namespace TextureEditor
 		private void UpdateTextureInformation()
 		{
 			indexTextBox.Text = hexIndexCheckBox.Checked ? listBox1.SelectedIndex.ToString("X") : listBox1.SelectedIndex.ToString();
+			int actualPaletteColors = 0;
 			bool en = listBox1.SelectedIndex != -1;
 			removeTextureButton.Enabled = textureName.Enabled = importButton.Enabled = exportButton.Enabled = saveTextureButton.Enabled = en;
 			globalIndex.Enabled = (en && !nonIndexedPAK);
@@ -165,6 +166,7 @@ namespace TextureEditor
 								}
 								if (!paletteApplied)
 								{
+									// Re-encode texture if data is missing
 									if (pvr.TextureData == null)
 									{
 										pvr.PixelFormat = PvrPixelFormat.Rgb565; // Same as default palette
@@ -177,11 +179,10 @@ namespace TextureEditor
 									currentPalette.IsGVP = false;
 									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
 									int neededcolors = (pvr.DataFormat == PvrDataFormat.Index4 | pvr.DataFormat == PvrDataFormat.Index4Mipmaps) ? 16 : 256;
-									int colorcount = currentPalette.Colors.Count();
-									if (neededcolors - colorcount > 0)
+									actualPaletteColors = currentPalette.Colors.Count();
+									if (neededcolors - actualPaletteColors > 0)
 									{
-										MessageBox.Show(this, "The current palette contains " + colorcount.ToString() + " colors, while the indexed texture requires " + neededcolors.ToString() + ".\nMissing color slots were filled with Black.", "Palette application warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-										for (int i = 0; i < neededcolors - colorcount; i++)
+										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
 											currentPalette.Colors.Add(Color.Black);
 									}
 									try
@@ -194,6 +195,7 @@ namespace TextureEditor
 										currentPalette = new TexturePalette(defaultPalette.GetBytes());
 										pt.SetPalette(new PvpPalette(currentPalette.GetBytes()), 0);
 									}
+									paletteApplied = true;
 									pvr.Image = pt.ToBitmap();
 								}
 								break;
@@ -235,6 +237,14 @@ namespace TextureEditor
 									}
 									GvrTexture gt = new GvrTexture(gvr.TextureData.ToArray());
 									currentPalette.IsGVP = true;
+									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
+									int neededcolors = (gvr.DataFormat == GvrDataFormat.Index4) ? 16 : 256;
+									actualPaletteColors = currentPalette.Colors.Count();
+									if (neededcolors - actualPaletteColors > 0)
+									{
+										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
+											currentPalette.Colors.Add(Color.Black);
+									}
 									try
 									{
 										gt.SetPalette(new GvpPalette(currentPalette.GetBytes()), paletteSet);
@@ -245,6 +255,7 @@ namespace TextureEditor
 										currentPalette = new TexturePalette(defaultPalette.GetBytes());
 										gt.SetPalette(new GvpPalette(currentPalette.GetBytes()), 0);
 									}
+									paletteApplied = true;
 									gvr.Image = gt.ToBitmap();
 								}
 								break;
@@ -307,7 +318,7 @@ namespace TextureEditor
 				}
 				suppress = false;
 				UpdateTextureView();
-				ShowHidePaletteInfo();
+				ShowHidePaletteInfo(actualPaletteColors);
 			}
 			else
 			{
@@ -320,7 +331,7 @@ namespace TextureEditor
 				indexTextBox.Text = "-1";
 				textureImage.Image = new Bitmap(64, 64);
 				UpdateTextureView();
-				ShowHidePaletteInfo();
+				ShowHidePaletteInfo(actualPaletteColors);
 			}
 		}
 
@@ -1175,17 +1186,13 @@ namespace TextureEditor
 			}
 		}
 
-		private void mipmapCheckBox_Clicked(object sender, EventArgs e)
-		{
-			// Erase cached texture data
-			if (mipmapCheckBox.Enabled)
-				textures[listBox1.SelectedIndex].TextureData = null;
-		}
-
 		private void mipmapCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
 			if (textures[listBox1.SelectedIndex].Mipmap != mipmapCheckBox.Checked)
 			{
+				// Erase cached texture data
+				if (mipmapCheckBox.Enabled)
+					textures[listBox1.SelectedIndex].TextureData = null;
 				textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
 				// Update surface flags for PAK textures
 				if (textures[listBox1.SelectedIndex] is PakTextureInfo pk)
@@ -1194,6 +1201,59 @@ namespace TextureEditor
 						pk.SurfaceFlags &= ~NinjaSurfaceFlags.Mipmapped;
 					else
 						pk.SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+				}
+				// Set PVR data format
+				else if (textures[listBox1.SelectedIndex] is PvrTextureInfo pv)
+				{
+					if (!mipmapCheckBox.Checked)
+					{
+						switch (pv.DataFormat)
+						{
+							case PvrDataFormat.VqMipmaps:
+								pv.DataFormat = PvrDataFormat.Vq;
+								break;
+							case PvrDataFormat.SmallVqMipmaps:
+								pv.DataFormat = PvrDataFormat.SmallVq;
+								break;
+							case PvrDataFormat.Index4Mipmaps:
+								pv.DataFormat = PvrDataFormat.Index4;
+								paletteApplied = false;
+								break;
+							case PvrDataFormat.Index8Mipmaps:
+								pv.DataFormat = PvrDataFormat.Index8;
+								paletteApplied = false;
+								break;
+							case PvrDataFormat.SquareTwiddledMipmaps:
+								pv.DataFormat = PvrDataFormat.SquareTwiddled;
+								break;
+							case PvrDataFormat.SquareTwiddledMipmapsAlt:
+								pv.DataFormat = PvrDataFormat.SquareTwiddled;
+								break;
+						}
+					}
+					else
+					{
+						switch (pv.DataFormat)
+						{
+							case PvrDataFormat.Vq:
+								pv.DataFormat = PvrDataFormat.VqMipmaps;
+								break;
+							case PvrDataFormat.SmallVq:
+								pv.DataFormat = PvrDataFormat.SmallVqMipmaps;
+								break;
+							case PvrDataFormat.Index4:
+								pv.DataFormat = PvrDataFormat.Index4Mipmaps;
+								paletteApplied = false;
+								break;
+							case PvrDataFormat.Index8:
+								pv.DataFormat = PvrDataFormat.Index8Mipmaps;
+								paletteApplied = false;
+								break;
+							case PvrDataFormat.SquareTwiddled:
+								pv.DataFormat = PvrDataFormat.SquareTwiddledMipmaps;
+								break;
+						}
+					}
 				}
 				UpdateTextureInformation();
 				unsaved = true;
@@ -1603,7 +1663,7 @@ namespace TextureEditor
 
 		#region Palette related functions
 
-		private void ShowHidePaletteInfo()
+		private void ShowHidePaletteInfo(int palcolors)
 		{
 			if (listBox1.SelectedIndex == -1)
 			{
@@ -1624,18 +1684,18 @@ namespace TextureEditor
 					int rowsize_stored = rowsize - currentPalette.StartColor;
 					int numrows = currentPalette.Colors.Count / rowsize_stored;
 					comboBoxCurrentPaletteBank.Items.Clear();
-					int maxbanks = currentPalette.Colors.Count / rowsize;
+					int maxbanks = Math.Max(1, currentPalette.Colors.Count / rowsize);
 					numericUpDownStartBank.Maximum = maxbanks - 1;
-					numericUpDownStartBank.Value = Math.Min(currentPalette.StartBank, numericUpDownStartBank.Maximum);
+					numericUpDownStartBank.Value = Math.Max(0, Math.Min(currentPalette.StartBank, numericUpDownStartBank.Maximum));
 					numericUpDownStartColor.Maximum = rowsize - 1;
-					numericUpDownStartColor.Value = Math.Min(currentPalette.StartColor, numericUpDownStartColor.Maximum);
-					currentPalette.StartBank = Math.Min((short)(maxbanks - 1), currentPalette.StartBank); // Apparently some PVP files in PSO have broken bank IDs
+					numericUpDownStartColor.Value = Math.Max(0, Math.Min(currentPalette.StartColor, numericUpDownStartColor.Maximum));
+					currentPalette.StartBank = Math.Max((short)0, Math.Min((short)(maxbanks - 1), currentPalette.StartBank)); // Apparently some PVP files in PSO have broken bank IDs
 					for (int i = 0; i < numrows; i++)
 						if (currentPalette.StartBank + i < maxbanks)
 							comboBoxCurrentPaletteBank.Items.Add((currentPalette.StartBank + i).ToString());
 					paletteSet = comboBoxCurrentPaletteBank.SelectedIndex = Math.Min(comboBoxCurrentPaletteBank.Items.Count - 1, paletteSet);
 					palettePreview.Image = GeneratePalettePreview();
-					labelPaletteFormat.Text = currentPalette.PixelCodec.ToString() + " / " + currentPalette.Colors.Count.ToString() + " colors";
+					labelPaletteFormat.Text = currentPalette.PixelCodec.ToString() + " : " + palcolors.ToString() + "/" + currentPalette.Colors.Count.ToString() + " colors";
 					labelPaletteFormat.Show();
 					palettePreview.Show();
 					panelPaletteInfo.Show();
@@ -2128,8 +2188,9 @@ namespace TextureEditor
 
 		private void SplitContainer1_Panel2_SizeChanged(object sender, EventArgs e)
 		{
+			// Maybe not necessary?
 			if (listBox1.SelectedIndex > -1)
-				UpdateTextureInformation();
+				UpdateTextureView();
 		}
 
 		private void newPVMToolStripMenuItem_Click(object sender, EventArgs e)

@@ -680,7 +680,6 @@
 			mipmapCheckBox.Text = "Mipmap";
 			mipmapCheckBox.UseVisualStyleBackColor = true;
 			mipmapCheckBox.CheckedChanged += mipmapCheckBox_CheckedChanged;
-			mipmapCheckBox.Click += mipmapCheckBox_Clicked;
 			// 
 			// tableLayoutPanel1
 			// 
