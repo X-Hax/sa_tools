@@ -196,16 +196,20 @@ namespace ArchiveLib
         {
             List<byte> result = new List<byte>();
             int chunksize_file = data.Length;
-            // Make chunk size divisible by 16 because it crashes otherwise
-            if (chunksize_file % 16 != 0)
+			// The PVM reader in Puyo Tools crashed when chunk size and file size weren't divisible by 16.
+			// The code below was used to circumvent the crash by adding extra bytes to texture data.
+			// However, this caused rebuilt PB files to not be byte identical to originals.
+			// Since ArchiveLib has its own PVM reader that doesn't crash, this code is now disabled.
+			// Make chunk size divisible by 16
+			/*if (chunksize_file % 16 != 0)
             {
                 do
                 {
                     chunksize_file++;
                 }
                 while (chunksize_file % 16 != 0);
-            }
-            byte[] gbixheader = { 0x47, 0x42, 0x49, 0x58 };
+            }*/
+			byte[] gbixheader = { 0x47, 0x42, 0x49, 0x58 };
             byte[] pvrtheader = { 0x50, 0x56, 0x52, 0x54 };
             byte[] padding = { 0x20, 0x20, 0x20, 0x20 };
             result.AddRange(gbixheader);
@@ -222,8 +226,8 @@ namespace ArchiveLib
             result.AddRange(BitConverter.GetBytes(Height));
             result.AddRange(data);
             int pd = 0;
-            // Make file size divisible by 16 because it crashes otherwise
-            if (result.Count % 16 != 0)
+            // Make file size divisible by 16
+            /*if (result.Count % 16 != 0)
             {
                 do
                 {
@@ -231,7 +235,7 @@ namespace ArchiveLib
                     pd++;
                 }
                 while (result.Count % 16 != 0);
-            }
+            }*/
             return result.ToArray();
         }
     }
