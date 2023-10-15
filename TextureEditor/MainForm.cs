@@ -502,33 +502,41 @@ namespace TextureEditor
 				int selIndex = 0;
 				for (int i = 0; i < otherfiles.Length; i++)
 				{
-					datafile = File.ReadAllBytes(otherfiles[i]);
-					if (Path.GetFileName(otherfiles[i]) == Path.GetFileName(filename))
-						selIndex = i;
-					switch (puyotype)
+					try
 					{
-						case PuyoArchiveType.PVMFile:
-							arc.Entries.Add(new PVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
-							MemoryStream strp = new MemoryStream(arc.Entries[i].Data);
-							textures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strp));
-							break;
-						case PuyoArchiveType.GVMFile:
-							arc.Entries.Add(new GVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
-							MemoryStream strg = new MemoryStream(arc.Entries[i].Data);
-							textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strg));
-							break;
-						case PuyoArchiveType.XVMFile:
-							arc.Entries.Add(new XVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
-							MemoryStream strx = new MemoryStream(arc.Entries[i].Data);
-							textures.Add(new XvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strx));
-							break;
+						datafile = File.ReadAllBytes(otherfiles[i]);
+						if (Path.GetFileName(otherfiles[i]) == Path.GetFileName(filename))
+							selIndex = i;
+						switch (puyotype)
+						{
+							case PuyoArchiveType.PVMFile:
+								arc.Entries.Add(new PVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
+								MemoryStream strp = new MemoryStream(arc.Entries[i].Data);
+								textures.Add(new PvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strp));
+								break;
+							case PuyoArchiveType.GVMFile:
+								arc.Entries.Add(new GVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
+								MemoryStream strg = new MemoryStream(arc.Entries[i].Data);
+								textures.Add(new GvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strg));
+								break;
+							case PuyoArchiveType.XVMFile:
+								arc.Entries.Add(new XVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
+								MemoryStream strx = new MemoryStream(arc.Entries[i].Data);
+								textures.Add(new XvrTextureInfo(Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0], strx));
+								break;
+						}
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show(this, "Folder loading cancelled. Could not add texture " + otherfiles[i] + ": " + ex.ToString(), "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						break;
 					}
 				}
 				listBox1.Items.Clear();
 				listBox1.Items.AddRange(textures.Select((item) => item.Name).ToArray());
 				UpdateTextureCount();
 				UpdateMRUList(Path.GetFullPath(filename));
-				listBox1.SelectedIndex = selIndex;
+				listBox1.SelectedIndex = listBox1.Items.Count == 0 ? -1 : selIndex;
 				return true;
 			}
 			// Otherwise load the file as an archive
@@ -814,7 +822,7 @@ namespace TextureEditor
 			}
 			using (SaveFileDialog dlg = new SaveFileDialog() { FilterIndex = (int)savefmt + 1, DefaultExt = ext, Filter = "PVM Files|*.pvm;*.prs;*.pb|GVM Files|*.gvm;*.prs|PVMX Files|*.pvmx|PAK Files|*.pak|XVM Files|*.xvm;*.prs" })
 			{
-				if (archiveFilename != null)
+				if (!string.IsNullOrEmpty(archiveFilename))
 				{
 					dlg.InitialDirectory = Path.GetDirectoryName(archiveFilename);
 					dlg.FileName = Path.ChangeExtension(Path.GetFileName(archiveFilename), ext);
@@ -2090,7 +2098,10 @@ namespace TextureEditor
 				switch (res)
 				{
 					case DialogResult.Yes:
-						SaveTextures();
+						if (!string.IsNullOrEmpty(archiveFilename))
+							SaveTextures();
+						else
+							SaveAs(currentFormat);
 						break;
 					case DialogResult.Cancel:
 						e.Cancel = true;
