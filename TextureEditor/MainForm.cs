@@ -156,7 +156,8 @@ namespace TextureEditor
 							case PvrDataFormat.Index4Mipmaps:
 							case PvrDataFormat.Index8:
 							case PvrDataFormat.Index8Mipmaps:
-								string pvppath = Path.GetDirectoryName(archiveFilename) + "\\" + pvr.Name + ".pvp";
+								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+								string pvppath = folder + pvr.Name + ".pvp";
 								if (!customPaletteLoaded && File.Exists(pvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
@@ -215,7 +216,8 @@ namespace TextureEditor
 						{
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
-								string gvppath = Path.GetDirectoryName(archiveFilename) + "\\" + gvr.Name + ".gvp";
+								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
+								string gvppath = folder + gvr.Name + ".gvp";
 								if (!customPaletteLoaded && File.Exists(gvppath))
 								{
 									currentPalette = new TexturePalette(File.ReadAllBytes(gvppath), settingsfile.SACompatiblePalettes);
