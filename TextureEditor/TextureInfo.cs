@@ -85,7 +85,7 @@ namespace TextureEditor
             Name = name;
             GlobalIndex = texture.GlobalIndex;
             DataFormat = texture.DataFormat;
-            Mipmap = DataFormat == PvrDataFormat.SquareTwiddledMipmaps || DataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt;
+			Mipmap = texture.HasMipmaps;
             PixelFormat = texture.PixelFormat;
 			if (texture.NeedsExternalPalette)
 				Image = new Bitmap(Properties.Resources.error);
