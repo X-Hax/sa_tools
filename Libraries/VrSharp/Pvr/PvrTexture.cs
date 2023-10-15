@@ -241,13 +241,13 @@ namespace VrSharp.Pvr
                     // A 1x1 mipmap takes up as much space as a 2x1 mipmap
                     mipmapOffset = (dataCodec.Bpp) >> 3;
                 }
-                else if (dataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt)
+                else if (dataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt || dataFormat == PvrDataFormat.Index8Mipmaps || dataFormat == PvrDataFormat.Index4Mipmaps)
                 {
                     // A 1x1 mipmap takes up as much space as a 2x2 mipmap
                     mipmapOffset = (3 * dataCodec.Bpp) >> 3;
                 }
 
-                for (int i = mipmapOffsets.Length - 1, size = 1; i >= 0; i--, size <<= 1)
+				for (int i = mipmapOffsets.Length - 1, size = 1; i >= 0; i--, size <<= 1)
                 {
                     mipmapOffsets[i] = mipmapOffset;
 
