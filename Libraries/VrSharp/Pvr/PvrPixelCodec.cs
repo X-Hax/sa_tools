@@ -69,7 +69,10 @@ namespace VrSharp.Pvr
 
             public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
             {
-                ushort pixel = BitConverter.ToUInt16(source, sourceIndex);
+				// In some textures (sky2.pvr in KATANA SDK 2.00J) the PVRT chunk size is incorrect
+				//if (sourceIndex > source.Length - 4)
+					//sourceIndex -= 4;
+				ushort pixel = BitConverter.ToUInt16(source, sourceIndex);
 
                 destination[destinationIndex + 3] = 0xFF;
                 destination[destinationIndex + 2] = (byte)(((pixel >> 11) & 0x1F) * 0xFF / 0x1F);
@@ -111,6 +114,9 @@ namespace VrSharp.Pvr
 
 			public override void DecodePixel(byte[] source, int sourceIndex, byte[] destination, int destinationIndex)
             {
+				// In some textures (yhappa.pvr in KATANA SDK 2.00J) the PVRT chunk size is incorrect
+				//if (sourceIndex > source.Length - 4)
+					//sourceIndex -= 4;
                 ushort pixel = BitConverter.ToUInt16(source, sourceIndex);
 
                 destination[destinationIndex + 3] = (byte)(((pixel >> 12) & 0x0F) * 0xFF / 0x0F);

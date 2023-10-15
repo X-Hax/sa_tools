@@ -294,10 +294,11 @@ namespace VrSharp.Pvr
         /// <returns>True if the header is PVRT and it passes validation, false otherwise.</returns>
         private static bool IsValidPvrt(byte[] source, int offset, int length)
         {
-            return PTMethods.Contains(source, offset, pvrtFourCC)
-                && source[offset + 0x09] < 0x60
-                && BitConverter.ToUInt32(source, offset + 0x04) == length - 8;
-        }
+			return PTMethods.Contains(source, offset, pvrtFourCC)
+				&& source[offset + 0x09] < 0x60
+				// Some textures (Imagination.pvr in SDK R11b) have invalid PVRT chunk size so they don't pass the check below.
+				&& BitConverter.ToUInt32(source, offset + 0x04) == length - 8;
+		}
 
         /// <summary>
         /// Checks for and validates GBIX headers as well as PVRT.
