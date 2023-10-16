@@ -1086,7 +1086,7 @@
 			Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			Name = "MainForm";
 			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			Text = "PVM Editor";
+			Text = "Texture Editor";
 			FormClosing += MainForm_FormClosing;
 			Shown += MainForm_Shown;
 			menuStrip1.ResumeLayout(false);
