@@ -2381,6 +2381,7 @@ namespace TextureEditor
 
 			listBox1.SelectedIndex = -1;
 			listBox1.SelectedItem = null;
+			unsaved = true;
 		}
 	}
 }
