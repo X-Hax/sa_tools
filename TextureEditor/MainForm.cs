@@ -29,6 +29,7 @@ using Image = System.Drawing.Image;
 using BCnEncoder.Decoder;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
+using SharpDX.Direct3D9;
 
 namespace TextureEditor
 {
@@ -2357,5 +2358,29 @@ namespace TextureEditor
 		}
 		#endregion
 
+		private void generateNewGbixToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (textures.Count < 1)
+				return;
+
+			DialogResult res = MessageBox.Show(this, "This will generate new GBIX for every texture, are you sure you wish to continue?", "Warning Gbix Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+			
+			if (res != DialogResult.Yes)
+			{
+				return; 
+			}
+
+			Random random = new();
+			uint randomNumber = (uint)random.Next(100000, 9999999);
+
+			foreach (var texture in textures)
+			{
+				texture.GlobalIndex = randomNumber;
+				randomNumber++;
+			}
+
+			listBox1.SelectedIndex = -1;
+			listBox1.SelectedItem = null;
+		}
 	}
 }

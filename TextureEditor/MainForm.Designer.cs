@@ -72,6 +72,7 @@
 			exportPalettedFullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureFilteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			usePNGInsteadOfDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			generateNewGbixToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			splitContainer1 = new System.Windows.Forms.SplitContainer();
 			listBox1 = new System.Windows.Forms.ListBox();
 			panel1 = new System.Windows.Forms.Panel();
@@ -374,7 +375,7 @@
 			// 
 			// editToolStripMenuItem
 			// 
-			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, highQualityGVMsToolStripMenuItem, alphaSortingToolStripMenuItem, palettedTexturesToolStripMenuItem, textureFilteringToolStripMenuItem, usePNGInsteadOfDDSToolStripMenuItem });
+			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, highQualityGVMsToolStripMenuItem, alphaSortingToolStripMenuItem, palettedTexturesToolStripMenuItem, textureFilteringToolStripMenuItem, usePNGInsteadOfDDSToolStripMenuItem, generateNewGbixToolStripMenuItem });
 			editToolStripMenuItem.Name = "editToolStripMenuItem";
 			editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
 			editToolStripMenuItem.Text = "&Edit";
@@ -1071,6 +1072,12 @@
 			saveTextureButton.Text = "Save...";
 			saveTextureButton.UseVisualStyleBackColor = true;
 			saveTextureButton.Click += saveTextureButton_Click;
+			// generateNewGbixToolStripMenuItem
+			// 
+			generateNewGbixToolStripMenuItem.Name = "generateNewGbixToolStripMenuItem";
+			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			generateNewGbixToolStripMenuItem.Text = "Generate New Gbix";
+			generateNewGbixToolStripMenuItem.Click += generateNewGbixToolStripMenuItem_Click;
 			// 
 			// MainForm
 			// 
@@ -1209,6 +1216,6 @@
 		private System.Windows.Forms.ToolStripMenuItem saveXVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem usePNGInsteadOfDDSToolStripMenuItem;
 		private System.Windows.Forms.Button saveTextureButton;
+		private System.Windows.Forms.ToolStripMenuItem generateNewGbixToolStripMenuItem;
 	}
 }
-
