@@ -94,7 +94,6 @@ namespace ArchiveLib
         const uint Magic_SFOB = 0x424F4653; // SFOB
         const uint Magic_SMLT = 0x544C4D53; // SMLT
         const uint Magic_SOSB = 0x42534F53; // SOSB
-        const ulong Magic_CRI = 0x4952432963280000; // 0000(c)CRI at 0x20
 
         public override void CreateIndexFile(string path)
         {
@@ -137,10 +136,10 @@ namespace ArchiveLib
                 case Magic_SOSB:
                     return ".osb";
                 default:
-                    if (data.Length < 40)
+                    if (data.Length < 20)
                         return ".bin";
-                    if (BitConverter.ToUInt64(data, 0x20) == Magic_CRI)
-                        return ".adx";
+					if (BitConverter.ToUInt16(data, 0) == 0x0080 && data[4] == 0x03 && (data[18] == 0x03 || data[18] == 0x04))
+						return ".adx";
                     else return ".bin";
             }
         }
@@ -160,12 +159,13 @@ namespace ArchiveLib
         {
             if (file[0] == 0)
                 return MDTArchiveType.CRIBigEndian;
-            // Check if there is ADX
-            for (int i = 0; i < file.Length; i += 8)
-            {
-                if (BitConverter.ToUInt64(file, i) == Magic_CRI)
-                    return MDTArchiveType.CRI;
-            }
+			// Check if there is ADX
+			if (file.Length > 20)
+				for (int i = 0; i < file.Length; i += 8)
+				{
+					if (BitConverter.ToUInt16(file, 0) == 0x0080 && file[4] == 0x03 && (file[18] == 0x03 || file[18] == 0x04))
+						return MDTArchiveType.CRI;
+				}
             return MDTArchiveType.Manatee;
         }
 

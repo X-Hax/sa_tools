@@ -11,6 +11,7 @@ using static ArchiveLib.PVMXFile;
 using static ArchiveLib.ARCXFile;
 using static ArchiveLib.MLTFile;
 using static ArchiveLib.gcaxMLTFile;
+using static ArchiveLib.AFSFile;
 
 namespace ArchiveTool
 {
@@ -38,6 +39,8 @@ namespace ArchiveTool
         {
             bool createPB = false;
 			bool createARCX = false;
+			bool createAFS = false;
+			AFSMetaMode afsmetamode = AFSMetaMode.OffsetEndTable;
             filePath = args[0];
             compressPRS = false;
             for (int a = 0; a < args.Length; a++)
@@ -45,6 +48,9 @@ namespace ArchiveTool
                 if (args[a] == "-prs") compressPRS = true;
                 if (args[a] == "-pb") createPB = true;
 				if (args[a] == "-arcx") createARCX = true;
+				if (args[a] == "-afs") createAFS = true;
+				if (args[a] == "-nometa") afsmetamode = AFSMetaMode.NoMeta;
+				if (args[a] == "-metafirst") afsmetamode = AFSMetaMode.OffsetBeforeFirstEntry;
 			}
             // Folder mode
             if (Directory.Exists(filePath))
@@ -68,59 +74,67 @@ namespace ArchiveTool
                     string[] checkf = filenames[0].Split(',');
                     ext = Path.GetExtension(checkf[0].ToLowerInvariant());
                 }
-                switch (ext)
-                {
-                    case ".pvr":
-                        if (createPB)
-                        {
-                            folderMode = ArchiveFromFolderMode.PB;
-                            arc = new PBFile();
-                        }
-                        else
-                        {
-                            folderMode = ArchiveFromFolderMode.PVM;
-                            arc = new PuyoFile();
-                        }
-                        break;
-                    case ".gvr":
-                        arc = new PuyoFile(PuyoArchiveType.GVMFile);
-                        folderMode = ArchiveFromFolderMode.GVM;
-                        break;
-					case ".xvr":
-						arc = new PuyoFile(PuyoArchiveType.XVMFile);
-						folderMode = ArchiveFromFolderMode.XVM;
-						break;
-                    case ".wav":
-                    case ".adx":
-                        folderMode = ArchiveFromFolderMode.DAT;
-                        arc = new DATFile();
-                        break;
-                    case ".mpb":
-                    case ".mdb":
-                    case ".msb":
-                    case ".osb":
-                    case ".fpb":
-                    case ".fob":
-                    case ".fpw":
-                    case ".psr":
-                        folderMode = ArchiveFromFolderMode.MLT;
-                        arc = new MLTFile();
-                        break;
-                    case ".gcaxmpb":
-                    case ".gcaxmsb":
-                        folderMode = ArchiveFromFolderMode.gcaxMLT;
-                        arc = new gcaxMLTFile();
-                        break;
-                    case ".png":
-                    case ".jpg":
-                    case ".bmp":
-                    case ".dds":
-                    case ".gif":
-                    default:
-                        folderMode = ArchiveFromFolderMode.PVMX;
-                        arc = new PVMXFile();
-                        break;
-                }
+				if (createAFS)
+				{
+					folderMode = ArchiveFromFolderMode.AFS;
+					arc = new AFSFile(afsmetamode);
+				}
+				else
+				{
+					switch (ext)
+					{
+						case ".pvr":
+							if (createPB)
+							{
+								folderMode = ArchiveFromFolderMode.PB;
+								arc = new PBFile();
+							}
+							else
+							{
+								folderMode = ArchiveFromFolderMode.PVM;
+								arc = new PuyoFile();
+							}
+							break;
+						case ".gvr":
+							arc = new PuyoFile(PuyoArchiveType.GVMFile);
+							folderMode = ArchiveFromFolderMode.GVM;
+							break;
+						case ".xvr":
+							arc = new PuyoFile(PuyoArchiveType.XVMFile);
+							folderMode = ArchiveFromFolderMode.XVM;
+							break;
+						case ".wav":
+						case ".adx":
+							folderMode = ArchiveFromFolderMode.DAT;
+							arc = new DATFile();
+							break;
+						case ".mpb":
+						case ".mdb":
+						case ".msb":
+						case ".osb":
+						case ".fpb":
+						case ".fob":
+						case ".fpw":
+						case ".psr":
+							folderMode = ArchiveFromFolderMode.MLT;
+							arc = new MLTFile();
+							break;
+						case ".gcaxmpb":
+						case ".gcaxmsb":
+							folderMode = ArchiveFromFolderMode.gcaxMLT;
+							arc = new gcaxMLTFile();
+							break;
+						case ".png":
+						case ".jpg":
+						case ".bmp":
+						case ".dds":
+						case ".gif":
+						default:
+							folderMode = ArchiveFromFolderMode.PVMX;
+							arc = new PVMXFile();
+							break;
+					}
+				}
                 Console.WriteLine("Creating {0} archive from folder: {1}", folderMode.ToString(), filePath);
                 int id = 0;
                 foreach (string line in filenames)
@@ -129,7 +143,14 @@ namespace ArchiveTool
                     string filename = split[0];
                     switch (folderMode)
                     {
-                        case ArchiveFromFolderMode.gcaxMLT:
+						case ArchiveFromFolderMode.AFS:
+							uint customData = 0;
+							if (split.Length > 1)
+								customData = uint.Parse(split[1]);
+							arc.Entries.Add(new AFSEntry(Path.Combine(filePath, filename), File.GetLastWriteTime(Path.Combine(filePath, filename)), customData));
+							extension = ".afs";
+							break;
+						case ArchiveFromFolderMode.gcaxMLT:
                             int bIDgc = int.Parse(split[1]);
                             arc.Entries.Add(new gcaxMLTEntry(Path.Combine(filePath, filename), bIDgc));
                             extension = ".mlt";
@@ -374,7 +395,8 @@ namespace ArchiveTool
             PB,
             MLT,
             gcaxMLT,
-			XVM
+			XVM,
+			AFS
         }
     }
 }

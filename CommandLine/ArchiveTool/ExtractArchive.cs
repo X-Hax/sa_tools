@@ -33,7 +33,10 @@ namespace ArchiveTool
                     File.WriteAllBytes(outputPath, outputData);
                     Console.WriteLine("File extracted!");
                     return;
-                case (".pvmx"):
+                case (".afs"):
+					arc = new AFSFile(arcdata);
+					break;
+				case (".pvmx"):
                     arc = new PVMXFile(arcdata);
                     break;
 				case (".arcx"):
@@ -107,6 +110,12 @@ namespace ArchiveTool
 				}
 				else
 					File.WriteAllBytes(Path.Combine(outputPath, entry.Name), entry.Data);
+				if (arc is AFSFile)
+				{
+					AFSEntry afsEntry = (AFSEntry)entry;
+					File.SetLastWriteTime(Path.Combine(outputPath, entry.Name), afsEntry.Timestamp);
+					File.SetCreationTime(Path.Combine(outputPath, entry.Name), afsEntry.Timestamp);
+				}
             }
             arc.CreateIndexFile(outputPath);
             Console.WriteLine("Archive extracted!");
