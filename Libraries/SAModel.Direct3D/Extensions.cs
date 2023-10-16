@@ -570,7 +570,7 @@ namespace SAModel.Direct3D
 						for (int i = 0; i < chunk.VertexCount; i++)
 						{
 							var weightByte = chunk.NinjaFlags[i] >> 16;
-							var weight = weightByte / 255f;
+							var weight = weightByte / (weightByte > 255 ? 65535f : 255f);
 							var origpos = chunk.Vertices[i].ToVector3();
 							var position = (Vector3.TransformCoordinate(origpos, transform.Top) * weight).ToVertex();
 							var orignor = Vector3.Up;

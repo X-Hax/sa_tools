@@ -10,17 +10,23 @@ namespace SAModel
 		Strips
 	}
 
-	[Flags()]
+	[Flags]
 	public enum ObjectFlags : int
 	{
-		NoPosition = 0x01,
-		NoRotate   = 0x02,
-		NoScale    = 0x04,
-		NoDisplay  = 0x08,
-		NoChildren = 0x10,
-		RotateZYX  = 0x20,
-		NoAnimate  = 0x40,
-		NoMorph    = 0x80
+		NoPosition = 0x0001,
+		NoRotate   = 0x0002,
+		NoScale    = 0x0004,
+		NoDisplay  = 0x0008,
+		NoChildren = 0x0010,
+		RotateZYX  = 0x0020,
+		NoAnimate  = 0x0040,
+		NoMorph    = 0x0080,
+		Clip       = 0x0100,
+		Modifier   = 0x0200,
+		Quaternion = 0x0400,
+		RotateBase = 0x0800,
+		RotateSet  = 0x1000,
+		Envelope   = 0x2000
 	}
 
 	public enum FilterMode
