@@ -440,24 +440,24 @@ namespace SAModel.Direct3D
 			List<WeightData>[] weightBuf = new List<WeightData>[newVerts.Length];
 			for (int i = 0; i < newVerts.Length; i++)
 			{
-				Vertex newpos, newnor;
+				Vector3 newpos, newnor;
 				if (attach.VertexWeights != null && attach.VertexWeights.TryGetValue(i, out var vw))
 				{
 					List<WeightData> wd = new List<WeightData>(vw.Count);
-					newpos = new Vertex();
-					newnor = new Vertex();
+					newpos = new Vector3();
+					newnor = new Vector3();
 					foreach (var v in vw)
 					{
 						int ni = Array.IndexOf(nodes, v.Node);
 						var va = (BasicAttach)v.Node.Attach;
 						var origpos = va.Vertex[v.Vertex].ToVector3();
-						newpos += (Vector3.TransformCoordinate(origpos, matrices[ni]) * v.Weight).ToVertex();
+						newpos += Vector3.TransformCoordinate(origpos, matrices[ni]) * v.Weight;
 						Vector3 orignor = va.Normal[v.Vertex].ToVector3();
-						newnor += (Vector3.TransformNormal(orignor, matrices[ni]) * v.Weight).ToVertex();
+						newnor += Vector3.TransformNormal(orignor, matrices[ni]) * v.Weight;
 						wd.Add(new WeightData(ni, origpos, orignor, v.Weight));
 					}
-					newVerts[i] = newpos;
-					newNorms[i] = newnor;
+					newVerts[i] = newpos.ToVertex();
+					newNorms[i] = Vector3.Normalize(newnor).ToVertex();
 					weightBuf[i] = wd;
 				}
 				else
@@ -602,6 +602,8 @@ namespace SAModel.Direct3D
 								var cacheVertex = VertexBuffer[vertexCacheId];
 								cacheVertex.Position += position;
 								cacheVertex.Normal += normal;
+								if (chunk.WeightStatus == WeightStatus.End)
+									cacheVertex.Normal = Vector3.Normalize(cacheVertex.Normal.ToVector3()).ToVertex();
 								if (chunk.Diffuse.Count > 0)
 									cacheVertex.Color = chunk.Diffuse[i];
 								VertexBuffer[vertexCacheId] = cacheVertex;

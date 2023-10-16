@@ -403,7 +403,7 @@ namespace SAModel.Direct3D
 						nor += Vector3.TransformNormal(weight.Normal, matrices[weight.Index]) * weight.Weight;
 					}
 					vertexBuffer[i].SetPosition(pos);
-					vertexBuffer[i].SetNormal(nor);
+					vertexBuffer[i].SetNormal(Vector3.Normalize(nor));
 				}
 		}
 
