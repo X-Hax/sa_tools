@@ -1076,6 +1076,7 @@
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			AllowDrop = true;
 			ClientSize = new System.Drawing.Size(705, 647);
 			Controls.Add(splitContainer1);
 			Controls.Add(menuStrip1);
@@ -1089,6 +1090,8 @@
 			Text = "Texture Editor";
 			FormClosing += MainForm_FormClosing;
 			Shown += MainForm_Shown;
+			DragDrop += Textures_DragDrop;
+			DragEnter += Textures_DragEnter;
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			splitContainer1.Panel1.ResumeLayout(false);

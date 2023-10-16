@@ -607,6 +607,67 @@ namespace TextureEditor
 				Close();
 		}
 
+		private void Textures_DragEnter(object sender, DragEventArgs e)
+		{
+			Console.WriteLine("DragEnter");
+
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+			if (files.Length == 1)
+			{
+				foreach (string file in files)
+				{
+					switch (Path.GetExtension(file).ToLowerInvariant())
+					{
+						// Add textures from archives
+						case ".prs":
+						case ".pvm":
+						case ".pb":
+						case ".gvm":
+						case ".xvm":
+						case ".pak":
+						case ".pvmx":
+							e.Effect = DragDropEffects.Copy;
+							return;
+					}
+				}
+			}
+
+			e.Effect = DragDropEffects.None;
+		}
+
+		private void Textures_DragDrop(object sender, DragEventArgs e)
+		{
+			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			{
+				if (unsaved)
+				{
+					DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+					switch (res)
+					{
+						case DialogResult.Yes:
+							SaveTextures();
+							break;
+						case DialogResult.Cancel:
+							return;
+						case DialogResult.No:
+							break;
+					}
+				}
+
+				textures.Clear();
+				listBox1.Items.Clear();
+				archiveFilename = null;
+
+				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+				LoadArchive(files[0]);
+				listBox1_SelectedIndexChanged(sender, e);
+				unsaved = false;
+			}
+
+		}
+
 		private void NewFile(TextureFormat newfilefmt)
 		{
 			if (unsaved)
@@ -724,7 +785,7 @@ namespace TextureEditor
 						return;
 				}
 			}
-				if (Path.GetExtension(archiveFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+			if (Path.GetExtension(archiveFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				FraGag.Compression.Prs.Compress(data, archiveFilename);
 			else
 				File.WriteAllBytes(archiveFilename, data);
