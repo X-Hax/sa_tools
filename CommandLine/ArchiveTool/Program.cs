@@ -16,7 +16,7 @@ namespace ArchiveTool
             {
                 Console.WriteLine("ArchiveTool is a command line tool to extract and create archives in various formats used in SA1/2.");
                 Console.WriteLine("Usage:\n");
-                Console.WriteLine("Extracting a PVM/GVM/XVM/PRS/PB/PVMX/DAT/PAK/REL/ARCX file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create index file(s).\n");
+                Console.WriteLine("Extracting a PVM/GVM/XVM/PRS/PB/PVMX/DAT/PAK/REL/ARCX/AFS file:\nArchiveTool <archivefile>\nIf the archive is PRS compressed, it will be decompressed first.\nIf the archive contains textures/sounds, the program will extract them and create index file(s).\n");
                 Console.WriteLine("Extracting an NjUtil archive: ArchiveTool -nju <archivefile>\n");
 				Console.WriteLine("Creating an ARCX archive: ArchiveTool <path> -arcx\n");
 				Console.WriteLine("Converting a PVM/GVM to a folder texture pack (PVM2TexPack mode): ArchiveTool -png <archivefile>\n");
@@ -24,6 +24,7 @@ namespace ArchiveTool
                 Console.WriteLine("Creating a PVM from a folder texture pack (CompilePVM mode): ArchiveTool -pvm <folder> [-prs]\nThe texture list 'index.txt' must contain global indices listed before each texture filename for this option to work.\n");
                 Console.WriteLine("Creating a PVM/GVM/XVM/DAT/PB/PVMX/PAK from a folder with textures/sounds: ArchiveTool <foldername> [-pb] [-prs]\nOnly PVR/GVR/XVR textures can be used for PVMs/GVMs/XVMs in this mode.\nThe program will create an archive from files listed in 'index.txt' (or INI file for PAK) in the folder.\nThe -prs option will make the program output a PRS compressed archive.\nThe -pb option will make it output a PB archive instead of PVM.\n");
                 Console.WriteLine("Creating a PRS compressed binary: ArchiveTool -prs <file>\n");
+                Console.WriteLine("Creating an AFS archive: ArchiveTool <file> -afs [-nometa] [-metafirst]\n-nometa: Don't store filenames and timestamps\n-metafirst: Store metadata pointer before the first file entry instead of the end of the entry table.");
                 Console.WriteLine("Press ENTER to exit.");
                 Console.ReadLine();
                 return;
@@ -76,6 +77,7 @@ namespace ArchiveTool
                     }
                     switch (extension)
                     {
+                        case ".afs":  
                         case ".pak":  
                         case ".rel":
                         case ".dat":
