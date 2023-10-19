@@ -100,12 +100,18 @@ namespace SAModel
 				{
 					case NinjaBinaryChunkType.BasicModel:
 						//MessageBox.Show("Basic model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
-						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Basic, new Dictionary<int, Attach>()));
+						// Add a label so that all models aren't called "object_00000000"
+						Dictionary<int, string> labelb = new Dictionary<int, string>();
+						labelb.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
+						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Basic, labelb, new Dictionary<int, Attach>()));
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.ChunkModel:
 						//MessageBox.Show("Chunk model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
-						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Chunk, new Dictionary<int, Attach>()));
+						// Add a label so that all models aren't called "object_00000000"
+						Dictionary<int, string> labelc = new Dictionary<int, string>();
+						labelc.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
+						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Chunk, labelc, new Dictionary<int, Attach>()));
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.Texlist:
@@ -134,9 +140,9 @@ namespace SAModel
 					case NinjaBinaryChunkType.Motion:
 						//MessageBox.Show("Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all motions aren't called "motion_00000000"
-						Dictionary<int, string> label = new Dictionary<int, string>();
-						label.Add(0, "motion_" + chunk.ImageBase.ToString("X8"));
-						Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, label));
+						Dictionary<int, string> labelm = new Dictionary<int, string>();
+						labelm.Add(0, "motion_" + chunk.ImageBase.ToString("X8"));
+						Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm));
 						break;
 					case NinjaBinaryChunkType.SimpleShapeMotion:
 						MessageBox.Show("Shape Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
