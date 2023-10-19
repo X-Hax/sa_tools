@@ -559,6 +559,9 @@ namespace SAModel.SAMDL
 							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
+						string actionFile = Path.ChangeExtension(filename, ".action");						
+						if (File.Exists(actionFile))
+							LoadAnimation((new List<string> { actionFile }).ToArray());
 						break;
 					// Project file
 					case ".sap":
