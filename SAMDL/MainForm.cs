@@ -176,6 +176,11 @@ namespace SAModel.SAMDL
 					case ".njm":
 						animFiles.Add(file);
 						break;
+					case ".pvr":
+					case ".gvr":
+					case ".xvr":
+						AddSingleTexture(file);
+						break;
 					case ".pvm":
 					case ".gvm":
 					case ".xvm":
@@ -183,11 +188,6 @@ namespace SAModel.SAMDL
 					case ".pvmx":
 					case ".pak":
 					case ".prs":
-					case ".pvr":
-					case ".gvr":
-					case ".xvr":
-						AddSingleTexture(file);
-						break;
 					case ".txt":
 						LoadTextures(file);
 						break;
