@@ -184,6 +184,7 @@ namespace SAModel.SAMDL
 					case ".pak":
 					case ".prs":
 					case ".pvr":
+					case ".gvr":
 					case ".xvr":
 						AddSingleTexture(file);
 						break;
