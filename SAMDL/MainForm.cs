@@ -188,7 +188,6 @@ namespace SAModel.SAMDL
 					case ".xvr":
 						AddSingleTexture(file);
 						break;
-					case ".gvr":
 					case ".txt":
 						LoadTextures(file);
 						break;
