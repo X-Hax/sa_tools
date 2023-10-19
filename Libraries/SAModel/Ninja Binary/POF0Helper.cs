@@ -73,10 +73,10 @@ namespace SAModel
 			foreach (int pointer in pointerList)
 			{
 				currentPos += pointer;
-				int oldPointer = BitConverter.ToInt32(data, currentPos);
+				int oldPointer = ByteConverter.ToInt32(data, currentPos);
 				if (oldPointer != 0)
 					oldPointer += imgBase;
-				byte[] newPointerBytes = BitConverter.GetBytes(oldPointer);
+				byte[] newPointerBytes = ByteConverter.GetBytes(oldPointer);
                 //System.Windows.Forms.MessageBox.Show("Fixing pointer at " + (currentPos).ToString("X") + ": " + oldPointer.ToString("X"));
 				Array.Copy(newPointerBytes, 0, data, currentPos, 4);
 			}
@@ -127,6 +127,7 @@ namespace SAModel
 						break;
 				}
 			}
+			/*
 			StringBuilder sb = new StringBuilder();
 			int currentPos = 0;
 			for (int i = 0; i < offsets.Count; i++)
@@ -134,9 +135,10 @@ namespace SAModel
 				currentPos += offsets[i];
 				sb.Append(", " + currentPos.ToString("X"));	
 			}
-			//sb.AppendJoin(',', offsets.ToArray());
-			//System.Windows.Forms.MessageBox.Show("offsets in POF: " + offsets.Count.ToString() + ", pads " + pads.ToString() + ", chars " + chars.ToString() + ", shorts " + shorts.ToString());
+			sb.AppendJoin(',', offsets.ToArray());
+			System.Windows.Forms.MessageBox.Show("offsets in POF: " + offsets.Count.ToString() + ", pads " + pads.ToString() + ", chars " + chars.ToString() + ", shorts " + shorts.ToString());
 			System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb.txt", sb.ToString());
+			*/
 			return offsets;
 		}
 	}

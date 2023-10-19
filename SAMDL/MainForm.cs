@@ -545,78 +545,15 @@ namespace SAModel.SAMDL
 					case ".nj":
 					case ".gj":
 					case ".xj":
-						bool basicModel = false;
-						NinjaBinaryFile ninjaBinary = new NinjaBinaryFile(file);
+						bool bigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
+						ModelFormat mdformat = ModelFormat.Chunk; // Default model format (not used for Basic models)
+						if (extension == ".gj")
+							mdformat = ModelFormat.GC;
+						else if (extension == ".xj")
+							mdformat = ModelFormat.XJ;
+						NinjaBinaryFile ninjaBinary = new NinjaBinaryFile(file, bigEndian, mdformat);
 						if (ninjaBinary.Models.Count > 0)
 							model = ninjaBinary.Models[0];
-						/*
-						int ninjaDataOffset;
-
-						string magic = System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
-
-						switch (magic)
-						{
-							case "GJTL":
-							case "NJTL":
-								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-								modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
-								ninjaDataOffset = ReadNJTL(file, ref basicModel, ref TempTexList);
-								break;
-							case "GJCM":
-							case "NJCM":
-								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-								modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
-								ninjaDataOffset = 0x8;
-								break;
-							case "NJBM":
-								ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
-								modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
-								ninjaDataOffset = 0x8;
-								basicModel = true;
-								break;
-							default:
-								MessageBox.Show("Incorrect format!");
-								return;
-						}
-						*/
-						// Set modelinfo parameters
-						modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
-						modelinfo.radioButtonObject.Checked = true;
-						modelinfo.numericUpDownModelAddress.Value = 0;
-						if (basicModel)
-						{
-							modelinfo.comboBoxModelFormat.SelectedIndex = 0;
-						}
-						else
-						{
-							switch (extension)
-							{
-								case ".gj":
-									modelinfo.comboBoxModelFormat.SelectedIndex = 3;
-									break;
-								case ".nj":
-									modelinfo.comboBoxModelFormat.SelectedIndex = 2;
-									break;
-								case ".xj":
-									modelinfo.comboBoxModelFormat.SelectedIndex = 4;
-									break;
-							}
-
-						}
-
-						modelinfo.numericUpDownMotionAddress.Value = 0;
-						modelinfo.checkBoxMemoryObject.Checked = false;
-						modelinfo.checkBoxMemoryMotion.Checked = false;
-
-						modelinfo.numericUpDownKey.Value = 0;
-						modelinfo.numericUpDownKey.Value = 0;
-
-						/*
-						// Get rid of the junk so that we can treat it like what SAMDL expects
-						byte[] newFile = new byte[file.Length - ninjaDataOffset];
-						Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
-						LoadBinFile(newFile);
-						*/
 						animationList = ninjaBinary.Motions;
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
@@ -4359,48 +4296,6 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sfd = new SaveFileDialog() { Title = "Export Labels", DefaultExt = ".salabel", FileName = Path.GetFileName(fn), Filter = "Label Files|*.salabel|All Files|*.*" })
 				if (sfd.ShowDialog() == DialogResult.OK)
 					LabelOBJECT.Save(LabelOBJECT.ExportLabels(model), sfd.FileName);
-		}
-
-		private int ReadNJTL(byte[] file, ref bool basicModel, ref NJS_TEXLIST texList)
-		{
-			int ninjaDataOffset;
-
-			//FUCK YOU Skys of Arcadia GC
-			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x4);
-			int POF0Offset = ByteConverter.ToInt32(file, 0x4) + 0x8;
-
-			//POF0Size will use same endianness
-			//Checking again because SOA compatibility requires it
-			int POF0Size = ByteConverter.ToInt32(file, POF0Offset + 0x4);
-
-			//Set to main endianness for general reading
-			ByteConverter.BigEndian = HelperFunctions.CheckBigEndianInt32(file, 0x8);
-			int texListOffset = POF0Offset + POF0Size + 0x8;
-			ninjaDataOffset = texListOffset + 0x8;
-			int texCount = ByteConverter.ToInt32(file, 0xC);
-			int texOffset = 0;
-			List<string> texNames = new List<string>();
-			// Check if it's a basic model
-			if (System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, texListOffset))) == "NJBM")
-				basicModel = true;
-			for (int i = 0; i < texCount; i++)
-			{
-				int textAddress = ByteConverter.ToInt32(file, texOffset + 0x10) + 0x8;
-				// Read null terminated string
-				List<byte> namestring = new List<byte>();
-				byte namechar = (file[textAddress]);
-				int j = 0;
-				while (namechar != 0)
-				{
-					namestring.Add(namechar);
-					j++;
-					namechar = (file[textAddress + j]);
-				}
-				texNames.Add(Encoding.ASCII.GetString(namestring.ToArray()));
-				texOffset += 0xC;
-			}
-			texList = new NJS_TEXLIST(texNames.ToArray());
-			return ninjaDataOffset;
 		}
 
 		private bool AddAnimationToList(NJS_MOTION anim, bool first)

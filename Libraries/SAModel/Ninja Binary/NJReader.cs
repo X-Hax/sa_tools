@@ -40,7 +40,7 @@ namespace SAModel
 			}
 		}
 
-		public NinjaBinaryFile(byte[] data)
+		public NinjaBinaryFile(byte[] data, bool bigEndian, ModelFormat format)
 		{
 			Models = new List<NJS_OBJECT>();
 			Motions = new List<NJS_MOTION>();
@@ -51,6 +51,9 @@ namespace SAModel
 			int currentchunk = 0; // Keep track of current data chunk in case a POF0 chunk is found.
 			int imgBase = 0; // Key added to pointers.
 			List<NinjaDataChunk> chunks = new List<NinjaDataChunk>();
+			// Set Big Endian mode
+			bool bigEndianBk = ByteConverter.BigEndian;
+			ByteConverter.BigEndian = bigEndian;
 			// Read the file until the end
 			while (startoffset < data.Length - 8) // 8 is the size of chunk ID + chunk size
 			{
@@ -70,9 +73,9 @@ namespace SAModel
 					break;
 				// Get Ninja data chunk type
 				NinjaBinaryChunkType idtype = IdentifyChunk(data, startoffset);
-				//MessageBox.Show("Chunk at " + (startoffset + 8).ToString("X8") + " size " + BitConverter.ToInt32(data, startoffset + 4).ToString());
+				//MessageBox.Show(idtype.ToString() + " chunk at " + (startoffset + 8).ToString("X8") + " size " + ByteConverter.ToInt32(data, startoffset + 4).ToString());
 				// Add the chunk to the list to process
-				chunks.Add(new NinjaDataChunk(idtype, new byte[BitConverter.ToInt32(data, startoffset + 4)]));
+				chunks.Add(new NinjaDataChunk(idtype, new byte[ByteConverter.ToInt32(data, startoffset + 4)]));
 				Array.Copy(data, startoffset + 8, chunks[currentchunk].Data, 0, chunks[currentchunk].Data.Length);
 				// If a POF0 chunk is reached, fix up the previous chunk's pointers
 				if (idtype == NinjaBinaryChunkType.POF0)
@@ -103,15 +106,16 @@ namespace SAModel
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelb = new Dictionary<int, string>();
 						labelb.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
-						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Basic, labelb, new Dictionary<int, Attach>()));
+						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase,ModelFormat.Basic, labelb, new Dictionary<int, Attach>()));
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.ChunkModel:
-						//MessageBox.Show("Chunk model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//MessageBox.Show(format.ToString() + " model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelc = new Dictionary<int, string>();
 						labelc.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
-						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Chunk, labelc, new Dictionary<int, Attach>()));
+						// NJCM can be Chunk (NJ file, Big or Little Endian), Ginja (GJ file) or XJ (XJ file)
+						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, format, labelc, new Dictionary<int, Attach>()));
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.Texlist:
@@ -123,7 +127,7 @@ namespace SAModel
 						for (int i = 0; i < numTextures; i++)
 						{
 							int textAddress = ByteConverter.ToInt32(chunk.Data, firstEntry + i * 0xC) - chunk.ImageBase; // 0xC is the size of NJS_TEXNAME
-							// Read the null terminated string
+																														 // Read the null terminated string
 							List<byte> namestring = new List<byte>();
 							byte namechar = (chunk.Data[textAddress]);
 							int j = 0;
@@ -182,11 +186,12 @@ namespace SAModel
 				}
 			}
 			MessageBox.Show("Models: " + Models.Count.ToString() + " Animations: " + Motions.Count.ToString() + " Texlists: " + Texnames.Count.ToString() + ", Texture arrays: " + Textures.Count.ToString());
+			ByteConverter.BigEndian = bigEndianBk;
 		}
 
 		private NinjaBinaryChunkType IdentifyChunk(byte[] data, int offset)
 		{
-			if (offset >= data.Length - 4)
+			if (offset >= data.Length - 8)
 				return NinjaBinaryChunkType.Invalid;
 			if (BitConverter.ToUInt32(data, offset + 4) == 0)
 				return NinjaBinaryChunkType.Invalid;
