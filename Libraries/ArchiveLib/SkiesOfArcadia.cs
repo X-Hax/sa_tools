@@ -292,7 +292,7 @@ namespace ArchiveLib
 
 				for (int t = 0; t < numtex; t++)
 				{
-					texList += t.ToString() + "," + texnames[t] + ".png\n";
+					texList += t.ToString() + "," + texnames[t] + ext + "\n";
 				}
 
 				Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(texList), "index.txt"));
