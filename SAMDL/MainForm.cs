@@ -555,6 +555,8 @@ namespace SAModel.SAMDL
 						if (ninjaBinary.Models.Count > 0)
 							model = ninjaBinary.Models[0];
 						animationList = ninjaBinary.Motions;
+						if (ninjaBinary.Texnames.Count > 0)
+							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 						break;
