@@ -64,9 +64,9 @@ namespace SAModel.XJ
 			flags = ByteConverter.ToUInt32(file, address);
 			uint vertexSetOffset = ByteConverter.ToUInt32(file, address + 0x4) - imageBase;
 			uint vertexSetCount = ByteConverter.ToUInt32(file, address + 0x8); //Should always be 1?
-			uint opaqueMeshesOffset = ByteConverter.ToUInt32(file, address + 0xC);
+			uint opaqueMeshesOffset = ByteConverter.ToUInt32(file, address + 0xC) - imageBase;
 			uint opaqueMeshesCount = ByteConverter.ToUInt32(file, address + 0x10);
-			uint translucentMeshesOffset = ByteConverter.ToUInt32(file, address + 0x14);
+			uint translucentMeshesOffset = ByteConverter.ToUInt32(file, address + 0x14) - imageBase;
 			uint translucentMeshesCount = ByteConverter.ToUInt32(file, address + 0x18);
 			Bounds = new BoundingSphere(file, address + 0x1C);
 
