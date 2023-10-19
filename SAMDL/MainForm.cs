@@ -545,8 +545,12 @@ namespace SAModel.SAMDL
 					case ".nj":
 					case ".gj":
 					case ".xj":
-						int ninjaDataOffset;
 						bool basicModel = false;
+						NinjaBinaryFile ninjaBinary = new NinjaBinaryFile(file);
+						if (ninjaBinary.Models.Count > 0)
+							model = ninjaBinary.Models[0];
+						/*
+						int ninjaDataOffset;
 
 						string magic = System.Text.Encoding.ASCII.GetString(BitConverter.GetBytes(BitConverter.ToInt32(file, 0)));
 
@@ -574,7 +578,7 @@ namespace SAModel.SAMDL
 								MessageBox.Show("Incorrect format!");
 								return;
 						}
-
+						*/
 						// Set modelinfo parameters
 						modelinfo.checkBoxBigEndian.Checked = ByteConverter.BigEndian;
 						modelinfo.radioButtonObject.Checked = true;
@@ -607,11 +611,13 @@ namespace SAModel.SAMDL
 						modelinfo.numericUpDownKey.Value = 0;
 						modelinfo.numericUpDownKey.Value = 0;
 
+						/*
 						// Get rid of the junk so that we can treat it like what SAMDL expects
 						byte[] newFile = new byte[file.Length - ninjaDataOffset];
 						Array.Copy(file, ninjaDataOffset, newFile, 0, newFile.Length);
 						LoadBinFile(newFile);
-						animationList = new List<NJS_MOTION>();
+						*/
+						animationList = ninjaBinary.Motions;
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 						break;
