@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -73,9 +72,12 @@ namespace SAModel
 					break;
 				// Get Ninja data chunk type
 				NinjaBinaryChunkType idtype = IdentifyChunk(data, startoffset);
-				//MessageBox.Show(idtype.ToString() + " chunk at " + (startoffset + 8).ToString("X8") + " size " + ByteConverter.ToInt32(data, startoffset + 4).ToString());
+				// This check is done because in PSO Gamecube chunk size is in Little Endian despite the rest of the data being Big Endian.
+				bool isLittleEndian = BitConverter.ToUInt32(data, startoffset + 4) < ByteConverter.ToUInt32(data, startoffset + 4);
+				int size = isLittleEndian ? BitConverter.ToInt32(data, startoffset + 4) : ByteConverter.ToInt32(data, startoffset + 4);
+				//MessageBox.Show(idtype.ToString() + " chunk at " + (startoffset + 8).ToString("X8") + " size " + size.ToString());
 				// Add the chunk to the list to process
-				chunks.Add(new NinjaDataChunk(idtype, new byte[ByteConverter.ToInt32(data, startoffset + 4)]));
+				chunks.Add(new NinjaDataChunk(idtype, new byte[size]));
 				Array.Copy(data, startoffset + 8, chunks[currentchunk].Data, 0, chunks[currentchunk].Data.Length);
 				// If a POF0 chunk is reached, fix up the previous chunk's pointers
 				if (idtype == NinjaBinaryChunkType.POF0)
