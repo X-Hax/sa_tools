@@ -151,7 +151,7 @@ namespace SAModel
 						Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm));
 						break;
 					case NinjaBinaryChunkType.SimpleShapeMotion:
-						MessageBox.Show("Shape Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//MessageBox.Show("Shape Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all motions aren't called "motion_00000000"
 						Dictionary<int, string> labels = new Dictionary<int, string>();
 						labels.Add(0, "shape_" + chunk.ImageBase.ToString("X8"));
@@ -187,7 +187,7 @@ namespace SAModel
 
 				}
 			}
-			MessageBox.Show("Models: " + Models.Count.ToString() + " Animations: " + Motions.Count.ToString() + " Texlists: " + Texnames.Count.ToString() + ", Texture arrays: " + Textures.Count.ToString());
+			//MessageBox.Show("Models: " + Models.Count.ToString() + " Animations: " + Motions.Count.ToString() + " Texlists: " + Texnames.Count.ToString() + ", Texture arrays: " + Textures.Count.ToString());
 			ByteConverter.BigEndian = bigEndianBk;
 		}
 
@@ -231,13 +231,17 @@ namespace SAModel
 				case "CGCL": // Illbleed
 				case "CGLC": // Illbleed
 				case "CGMP": // Illbleed
+				case "CGSP": // Illbleed
 				case "CGAL": // Illbleed
+				case "CGAM": // Illbleed
+				case "NCAM": // Illbleed
 					return NinjaBinaryChunkType.Unimplemented;
 				// Invalid/unknown chunks. These can be ignored as they aren't followed by POF0.
 				case "POF1": // Pointer Offset List (absolute)
 				case "POF2": // Pointer Offset List (unknown)
 				case "GRND": // Skies of Arcadia
 				case "GOBJ": // Skies of Arcadia
+				case "GLKH": // Skies of Arcadia (stores filenames)
 				default:
 					return NinjaBinaryChunkType.Invalid;
 			}
