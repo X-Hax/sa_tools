@@ -187,74 +187,77 @@ namespace ArchiveTool
             Console.WriteLine("Extracting Ninja archive: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));
             Directory.CreateDirectory(outputPath);
-            for (int i = 0; i < njarc.Entries.Count; i++)
-            {
-                byte[] data = njarc.Entries[i].Data;
-                extension = ".bin";
-                string desc = "Unknown";
-                switch (System.Text.Encoding.ASCII.GetString(data, 0, 4))
-                {
-                    case "NJIN":
-                        desc = "Ninja Information";
-                        extension = ".nji";
-                        break;
-                    case "NJCM":
-                        desc = "Ninja Chunk model";
-                        extension = ".nj";
-                        break;
-                    case "GJCM":
-                        desc = "Ninja Chunk model (GC)";
-                        extension = ".gj";
-                        break;
-                    case "NJBM":
-                        desc = "Ninja Basic model";
-                        extension = ".nj";
-                        break;
-                    case "NMDM":
-                        desc = "Ninja Motion";
-                        extension = ".njm";
-                        break;
-                    case "NJLI":
-                        desc = "Ninja Light";
-                        extension = ".njl";
-                        break;
-                    case "NLIM":
-                        desc = "Ninja Light Motion";
-                        extension = ".njlm";
-                        break;
-                    case "NSSM":
-                        desc = "Ninja Simple Shape Motion";
-                        extension = ".njsm";
-                        break;
-                    case "NCAM":
-                        desc = "Ninja Camera Motion";
-                        extension = ".ncm";
-                        break;
-                    case "NJTL":
-                        desc = "Ninja Texlist";
-                        extension = ".nj";
-                        break;
-                    case "GJTL":
-                        desc = "Ninja Texlist (GC)";
-                        extension = ".gj";
-                        break;
-                    case "PVMH":
-                        desc = "PVM";
-                        extension = ".pvm";
-                        break;
-                    case "GVMH":
-                        desc = "GVM";
-                        extension = ".gvm";
-                        break;
-					case "XVMH":
-						desc = "XVM";
-						extension = ".xvm";
-						break;
-                }
-                Console.WriteLine("Entry {0} is {1}", i, desc);
-                string outpath = Path.Combine(outputPath, i.ToString("D3") + extension);
-                File.WriteAllBytes(outpath, njarc.Entries[i].Data);
-            }
+			for (int i = 0; i < njarc.Entries.Count; i++)
+			{
+				byte[] data = njarc.Entries[i].Data;
+				extension = ".bin";
+				string desc = "Unknown";
+				if (data.Length < 4)
+					desc = "Empty";
+				else
+					switch (System.Text.Encoding.ASCII.GetString(data, 0, 4))
+					{
+						case "NJIN":
+							desc = "Ninja Information";
+							extension = ".nji";
+							break;
+						case "NJCM":
+							desc = "Ninja Chunk model";
+							extension = ".nj";
+							break;
+						case "GJCM":
+							desc = "Ninja Chunk model (GC)";
+							extension = ".gj";
+							break;
+						case "NJBM":
+							desc = "Ninja Basic model";
+							extension = ".nj";
+							break;
+						case "NMDM":
+							desc = "Ninja Motion";
+							extension = ".njm";
+							break;
+						case "NJLI":
+							desc = "Ninja Light";
+							extension = ".njl";
+							break;
+						case "NLIM":
+							desc = "Ninja Light Motion";
+							extension = ".njlm";
+							break;
+						case "NSSM":
+							desc = "Ninja Simple Shape Motion";
+							extension = ".njsm";
+							break;
+						case "NCAM":
+							desc = "Ninja Camera Motion";
+							extension = ".ncm";
+							break;
+						case "NJTL":
+							desc = "Ninja Texlist";
+							extension = ".nj";
+							break;
+						case "GJTL":
+							desc = "Ninja Texlist (GC)";
+							extension = ".gj";
+							break;
+						case "PVMH":
+							desc = "PVM";
+							extension = ".pvm";
+							break;
+						case "GVMH":
+							desc = "GVM";
+							extension = ".gvm";
+							break;
+						case "XVMH":
+							desc = "XVM";
+							extension = ".xvm";
+							break;
+					}
+				Console.WriteLine("Entry {0} is {1}", i, desc);
+				string outpath = Path.Combine(outputPath, i.ToString("D3") + extension);
+				File.WriteAllBytes(outpath, njarc.Entries[i].Data);
+			}
             Console.WriteLine("Output folder: {0}", Path.GetFullPath(outputPath));
             Console.WriteLine("Archive extracted!");
         }
