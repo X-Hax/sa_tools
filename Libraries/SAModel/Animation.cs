@@ -368,6 +368,26 @@ namespace SAModel
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.RotationName = labels[tmpaddr];
 						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot_" + tmpaddr.ToString("X8");
+						// Check if the animation uses short rotation or not
+						for (int j = 0; j < frames; j++)
+						{
+							// If any of the rotation frames go outside the file, assume it uses shorts
+							if (tmpaddr + 4 + 12 > file.Length)
+							{
+								ShortRot = true;
+								break;
+							}
+							// If any of the rotation frames isn't in the range from -32767 to 32677, assume it uses shorts
+							Rotation rot = new Rotation(file, tmpaddr + 4);
+							if (rot.X > 32767 || rot.X < -32767 ||
+								rot.Y > 32767 || rot.Y < -32767 ||
+								rot.Z > 32767 || rot.Z < -32767)
+							{
+								ShortRot = true;
+								break;
+							}
+						}
+						// Read rotation values
 						for (int j = 0; j < frames; j++)
 						{
 							if (ShortRot)
