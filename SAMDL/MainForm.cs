@@ -559,9 +559,43 @@ namespace SAModel.SAMDL
 							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
 							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
+						try
+						{
+							// Auto load action file
 						string actionFile = Path.ChangeExtension(filename, ".action");						
 						if (File.Exists(actionFile))
 							LoadAnimation((new List<string> { actionFile }).ToArray());
+							// Auto load motion file
+							string motionFile = Path.ChangeExtension(filename, ".njm");
+							if (File.Exists(motionFile))
+								LoadAnimation((new List<string> { motionFile }).ToArray());
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show("Loading animation failed: " + ex.Message.ToString());
+						}
+						// Attempt to auto load textures.
+						// In PSO GC, NJ+GVM is possible so using just the model format to determine texture archive extension isn't reliable.
+						string[] textureTryNames =
+						{
+							// Pattern 1: njname.pvm
+							Path.ChangeExtension(filename, ".pvm"),
+							Path.ChangeExtension(filename, ".gvm"),
+							Path.ChangeExtension(filename, ".xvm"),
+							// Pattern 1: njname.nj.pvm (PSO GC in BML files)
+							filename + ".pvm",
+							filename + ".gvm",
+							filename + ".xvm"
+						};
+						// Try loading textures
+						foreach (string tryTexture in textureTryNames)
+						{
+							if (File.Exists(tryTexture))
+							{
+								LoadTextures(tryTexture);
+								break;
+							}
+						}
 						break;
 					// Project file
 					case ".sap":
