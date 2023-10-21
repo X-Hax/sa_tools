@@ -108,7 +108,7 @@ namespace SAModel
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelb = new Dictionary<int, string>();
 						labelb.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
-						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase,ModelFormat.Basic, labelb, new Dictionary<int, Attach>()));
+						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Basic, labelb, new Dictionary<int, Attach>()));
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.ChunkModel:
@@ -145,17 +145,31 @@ namespace SAModel
 						break;
 					case NinjaBinaryChunkType.Motion:
 						//MessageBox.Show("Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
-						// Add a label so that all motions aren't called "motion_00000000"
-						Dictionary<int, string> labelm = new Dictionary<int, string>();
-						labelm.Add(0, "motion_" + chunk.ImageBase.ToString("X8"));
-						Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm));
+						try
+						{
+							// Add a label so that all motions aren't called "motion_00000000"
+							Dictionary<int, string> labelm = new Dictionary<int, string>();
+							labelm.Add(0, "motion_" + chunk.ImageBase.ToString("X8"));
+							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm));
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show("Error adding motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message.ToString());
+						}
 						break;
 					case NinjaBinaryChunkType.SimpleShapeMotion:
 						//MessageBox.Show("Shape Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
-						// Add a label so that all motions aren't called "motion_00000000"
-						Dictionary<int, string> labels = new Dictionary<int, string>();
-						labels.Add(0, "shape_" + chunk.ImageBase.ToString("X8"));
-						Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labels, numverts: Models[modelcount].GetVertexCounts()));
+						try
+						{
+							// Add a label so that all motions aren't called "motion_00000000"
+							Dictionary<int, string> labels = new Dictionary<int, string>();
+							labels.Add(0, "shape_" + chunk.ImageBase.ToString("X8"));
+							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labels, numverts: Models[modelcount].GetVertexCounts()));
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show("Error adding shape motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message.ToString());
+						}
 						break;
 					case NinjaBinaryChunkType.CustomTexture:
 						// ImageBase set to 0 usually means it's not texture data, so there's no need to process it.
