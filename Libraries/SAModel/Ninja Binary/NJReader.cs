@@ -150,7 +150,7 @@ namespace SAModel
 							// Add a label so that all motions aren't called "motion_00000000"
 							Dictionary<int, string> labelm = new Dictionary<int, string>();
 							labelm.Add(0, "motion_" + chunk.ImageBase.ToString("X8"));
-							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm));
+							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm, objectName: Models.Count > 0 ? Models[modelcount - 1].Name : ""));
 						}
 						catch (Exception ex)
 						{
