@@ -552,9 +552,49 @@ namespace SAModel.SAMDL
 						else if (extension == ".xj")
 							mdformat = ModelFormat.XJ;
 						NinjaBinaryFile ninjaBinary = new NinjaBinaryFile(file, bigEndian, mdformat);
-						if (ninjaBinary.Models.Count > 0)
+						// Add models
+						if (ninjaBinary.Models.Count == 0)
+						{
+							MessageBox.Show(this, "This Ninja Binary file does not have any models.", "SAMDL", MessageBoxButtons.OK, MessageBoxIcon.Information);
+							return;
+						}
+						else if (ninjaBinary.Models.Count == 1)
 							model = ninjaBinary.Models[0];
-						animationList = ninjaBinary.Motions;
+						else
+						{
+							using (PickModelDialog dlg = new PickModelDialog())
+							{
+								dlg.checkBox1.Enabled = false;
+								SortedDictionary<int, NJS_OBJECT> njmodels = new SortedDictionary<int, NJS_OBJECT>();
+								for (int i = 0; i < ninjaBinary.Models.Count; i++)
+								{
+									njmodels.Add(i, ninjaBinary.Models[i]);
+								}
+								foreach (KeyValuePair<int, NJS_OBJECT> item in njmodels)
+									dlg.modelChoice.Items.Add(item.Key + ": " + item.Value.Name);
+								dlg.ShowDialog(this);
+								foreach (KeyValuePair<int, NJS_OBJECT> item in njmodels)
+								{
+									if (item.Key == dlg.modelChoice.SelectedIndex)
+									{
+										model = item.Value;
+										break;
+									}
+								}
+							}
+						}
+						// Add built-in motions
+						if (ninjaBinary.Motions.Count > 0)
+						{
+							List<NJS_MOTION> motions = new List<NJS_MOTION>();
+							foreach (NJS_MOTION mot in ninjaBinary.Motions)
+								if (mot.ObjectName == model.Name)
+									motions.Add(mot);
+							animationList = motions;
+						}
+						// Set default format
+						outfmt = mdformat;
+						// Load texlist
 						if (ninjaBinary.Texnames.Count > 0)
 							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
@@ -562,9 +602,9 @@ namespace SAModel.SAMDL
 						try
 						{
 							// Auto load action file
-						string actionFile = Path.ChangeExtension(filename, ".action");						
-						if (File.Exists(actionFile))
-							LoadAnimation((new List<string> { actionFile }).ToArray());
+							string actionFile = Path.ChangeExtension(filename, ".action");
+							if (File.Exists(actionFile))
+								LoadAnimation((new List<string> { actionFile }).ToArray());
 							// Auto load motion file
 							string motionFile = Path.ChangeExtension(filename, ".njm");
 							if (File.Exists(motionFile))
@@ -642,7 +682,7 @@ namespace SAModel.SAMDL
 							{
 								ModelFormat fmt = outfmt = ModelFormat.Chunk;
 								ByteConverter.BigEndian = modelinfo.radioButtonSA2BMDL.Checked;
-								using (SA2MDLDialog dlg = new SA2MDLDialog())
+								using (PickModelDialog dlg = new PickModelDialog())
 								{
 									int address = 0;
 									SortedDictionary<int, NJS_OBJECT> sa2models = new SortedDictionary<int, NJS_OBJECT>();
@@ -1717,7 +1757,7 @@ namespace SAModel.SAMDL
 		{
 			TextureInfo = TextureArchive.GetTextures(filename, out bool hasNames);
 
-			//Use names loaded from model, ex NJTL, if the archive didn't have texture names
+			// Use names loaded from model, ex NJTL, if the archive didn't have texture names
 			if (hasNames == false && TempTexList?.TextureNames?.Length > 0)
 			{
 				int tempLen = TempTexList.TextureNames.Length;

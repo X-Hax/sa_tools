@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace SAModel.SAMDL
 {
-	public partial class SA2MDLDialog : Form
+	public partial class PickModelDialog : Form
 	{
-		public SA2MDLDialog()
+		public PickModelDialog()
 		{
 			InitializeComponent();
 		}
