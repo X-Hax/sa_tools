@@ -546,7 +546,7 @@ namespace SAModel.SAMDL
 					case ".gj":
 					case ".xj":
 						animationList = new List<NJS_MOTION>();
-						ModelFormat mdformat = ModelFormat.Chunk; // Default model format (not used for Basic models)
+						ModelFormat mdformat = ModelFormat.Chunk; // Default model format (not used for Basic models since those have a separate chunk name)
 						if (extension == ".gj")
 							mdformat = ModelFormat.GC;
 						else if (extension == ".xj")
@@ -593,7 +593,7 @@ namespace SAModel.SAMDL
 							animationList = motions;
 						}
 						// Set default format
-						outfmt = mdformat;
+						outfmt = ninjaBinary.Models[0].GetModelFormat();
 						// Load texlist
 						if (ninjaBinary.Texnames.Count > 0)
 							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
