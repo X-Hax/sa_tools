@@ -16,7 +16,6 @@ namespace SAModel
 			Motion,
 			SimpleShapeMotion,
 			POF0,
-			CustomTexture, // CMCK from Illbleed
 			Unimplemented,
 			Invalid
 		}
@@ -24,7 +23,6 @@ namespace SAModel
 		public List<NJS_OBJECT> Models; // In NJBM or NJCM
 		public List<NJS_MOTION> Motions; // In NMDM
 		public List<string[]> Texnames; // In NJTL
-		public List<byte[]> Textures; // In CNCK (Illbleed)
 
 		private class NinjaDataChunk
 		{
@@ -44,7 +42,6 @@ namespace SAModel
 			Models = new List<NJS_OBJECT>();
 			Motions = new List<NJS_MOTION>();
 			Texnames = new List<string[]>();
-			Textures = new List<byte[]>();
 			int startoffset = 0; // Current reading position.
 			int modelcount = 0; // This is used to keep track of the model added last to get data for motions.
 			int currentchunk = 0; // Keep track of current data chunk in case a POF0 chunk is found.
@@ -86,8 +83,8 @@ namespace SAModel
 					//MessageBox.Show("POF at " + (startoffset + 8).ToString("X") + " imgBase: " + imgBase.ToString("X") + " size " + chunks[currentchunk].Data.Length.ToString());
 					POF0Helper.FixPointersWithPOF(chunks[currentchunk - 1].Data, offs, imgBase);
 					chunks[currentchunk - 1].ImageBase = imgBase;
-					//File.WriteAllBytes("C:\\Users\\PkR\\Desktop\\chunk\\" + currentchunk.ToString("D3") + "_pof.bin", chunks[currentchunk].Data);
-					//File.WriteAllBytes("C:\\Users\\PkR\\Desktop\\chunk\\" + currentchunk.ToString("D3") + ".bin", chunks[currentchunk - 1].Data);
+					//System.IO.File.WriteAllBytes("C:\\Users\\PkR\\Desktop\\chunk\\" + currentchunk.ToString("D3") + "_pof.bin", chunks[currentchunk].Data);
+					//System.IO.File.WriteAllBytes("C:\\Users\\PkR\\Desktop\\chunk\\" + currentchunk.ToString("D3") + ".bin", chunks[currentchunk - 1].Data);
 					startoffset += chunks[currentchunk].Data.Length + 8;
 				}
 				// Otherwise advance the reading position and pointer image base
@@ -129,7 +126,7 @@ namespace SAModel
 						for (int i = 0; i < numTextures; i++)
 						{
 							int textAddress = ByteConverter.ToInt32(chunk.Data, firstEntry + i * 0xC) - chunk.ImageBase; // 0xC is the size of NJS_TEXNAME
-																														 // Read the null terminated string
+							// Read the null terminated string
 							List<byte> namestring = new List<byte>();
 							byte namechar = (chunk.Data[textAddress]);
 							int j = 0;
@@ -171,33 +168,6 @@ namespace SAModel
 							MessageBox.Show("Error adding shape motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message.ToString());
 						}
 						break;
-					case NinjaBinaryChunkType.CustomTexture:
-						// ImageBase set to 0 usually means it's not texture data, so there's no need to process it.
-						if (chunk.ImageBase == 0)
-							break;
-						//MessageBox.Show("Textures at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
-						int numPvr = ByteConverter.ToInt32(chunk.Data, 0);
-						for (int i = 0; i < numPvr; i++)
-						{
-							int currentPos = 4 + i * 4; // Pointer to current entry
-							if (currentPos >= chunk.Data.Length)
-								break;
-							//MessageBox.Show("Item " + i.ToString());
-							int texOffset = ByteConverter.ToInt32(chunk.Data, currentPos); // Offset of the current entry
-							if (texOffset >= chunk.Data.Length - 0x14) // Texture start + 0x14 should be after GBIX header and PVRT magic
-								break;
-							// Total size = size specified in PVR header + GBIX header + PVRT header
-							int texSize = ByteConverter.ToInt32(chunk.Data, texOffset + 0x14) + 0x18;
-							// Check if this is actually a texture
-							string magic = System.Text.Encoding.ASCII.GetString(chunk.Data, texOffset, 4);
-							if (magic == "GBIX" || magic == "PVRT" || magic == "GVRT")
-							{
-								byte[] texture = new byte[texSize];
-								Array.Copy(chunk.Data, texOffset, texture, 0, texSize);
-								Textures.Add(texture);
-							}
-						}
-						break;
 
 				}
 			}
@@ -229,8 +199,6 @@ namespace SAModel
 					return NinjaBinaryChunkType.Texlist;
 				case "POF0":
 					return NinjaBinaryChunkType.POF0;
-				case "CMCK":
-					return NinjaBinaryChunkType.CustomTexture; // Illbleed
 				// Unimplemented types. These have to be accounted for because they are followed by POF0.
 				case "NJLI": // Ninja Light
 				case "NJCA": // Ninja Camera
@@ -249,13 +217,13 @@ namespace SAModel
 				case "CGAL": // Illbleed
 				case "CGAM": // Illbleed
 				case "NCAM": // Illbleed
+				case "CMCK": // Illbleed
 					return NinjaBinaryChunkType.Unimplemented;
 				// Invalid/unknown chunks. These can be ignored as they aren't followed by POF0.
 				case "POF1": // Pointer Offset List (absolute)
 				case "POF2": // Pointer Offset List (unknown)
 				case "GRND": // Skies of Arcadia
 				case "GOBJ": // Skies of Arcadia
-				case "GLKH": // Skies of Arcadia (stores filenames)
 				default:
 					return NinjaBinaryChunkType.Invalid;
 			}
