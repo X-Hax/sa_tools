@@ -37,7 +37,7 @@ namespace SAModel
 			}
 		}
 
-		public NinjaBinaryFile(byte[] data, bool bigEndian, ModelFormat format)
+		public NinjaBinaryFile(byte[] data, ModelFormat format)
 		{
 			Models = new List<NJS_OBJECT>();
 			Motions = new List<NJS_MOTION>();
@@ -46,10 +46,10 @@ namespace SAModel
 			int modelcount = 0; // This is used to keep track of the model added last to get data for motions.
 			int currentchunk = 0; // Keep track of current data chunk in case a POF0 chunk is found.
 			int imgBase = 0; // Key added to pointers.
+			bool sizeIsLittleEndian = true; // In Gamecube games, size can be either Big or Little Endian.
 			List<NinjaDataChunk> chunks = new List<NinjaDataChunk>();
 			// Set Big Endian mode
 			bool bigEndianBk = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = bigEndian;
 			// Read the file until the end
 			while (startoffset < data.Length - 8) // 8 is the size of chunk ID + chunk size
 			{
@@ -69,9 +69,18 @@ namespace SAModel
 					break;
 				// Get Ninja data chunk type
 				NinjaBinaryChunkType idtype = IdentifyChunk(data, startoffset);
-				// This check is done because in PSO Gamecube chunk size is in Little Endian despite the rest of the data being Big Endian.
-				bool isLittleEndian = BitConverter.ToUInt32(data, startoffset + 4) < ByteConverter.ToUInt32(data, startoffset + 4);
-				int size = isLittleEndian ? BitConverter.ToInt32(data, startoffset + 4) : ByteConverter.ToInt32(data, startoffset + 4);
+				// Endianness checks for the first chunk
+				if (currentchunk == 0)
+				{
+					// This check is done because in PSO GC chunk size is in Little Endian despite the rest of the data being Big Endian.
+					// First, determine whether size is Big Endian or not.
+					ByteConverter.BigEndian = true;
+					sizeIsLittleEndian = BitConverter.ToUInt32(data, startoffset + 4) < ByteConverter.ToUInt32(data, startoffset + 4);
+					// Then, check if the actual data is Big Endian. Works in NJBM, NJCM and NJTL.
+					ByteConverter.BigEndian = BitConverter.ToUInt32(data, startoffset + 8) > ByteConverter.ToUInt32(data, startoffset + 8);
+					//MessageBox.Show(ByteConverter.BigEndian.ToString());
+				}
+				int size = sizeIsLittleEndian ? BitConverter.ToInt32(data, startoffset + 4) : ByteConverter.ToInt32(data, startoffset + 4);
 				//MessageBox.Show(idtype.ToString() + " chunk at " + (startoffset + 8).ToString("X8") + " size " + size.ToString());
 				// Add the chunk to the list to process
 				chunks.Add(new NinjaDataChunk(idtype, new byte[size]));

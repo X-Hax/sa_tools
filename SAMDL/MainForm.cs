@@ -546,13 +546,12 @@ namespace SAModel.SAMDL
 					case ".gj":
 					case ".xj":
 						animationList = new List<NJS_MOTION>();
-						bool bigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
 						ModelFormat mdformat = ModelFormat.Chunk; // Default model format (not used for Basic models)
 						if (extension == ".gj")
 							mdformat = ModelFormat.GC;
 						else if (extension == ".xj")
 							mdformat = ModelFormat.XJ;
-						NinjaBinaryFile ninjaBinary = new NinjaBinaryFile(file, bigEndian, mdformat);
+						NinjaBinaryFile ninjaBinary = new NinjaBinaryFile(file, mdformat);
 						// Add models
 						if (ninjaBinary.Models.Count == 0)
 						{
