@@ -597,8 +597,6 @@ namespace SAModel.SAMDL
 						// Load texlist
 						if (ninjaBinary.Texnames.Count > 0)
 							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
-						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
-							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 						try
 						{
 							// Auto load action file
@@ -636,6 +634,9 @@ namespace SAModel.SAMDL
 								break;
 							}
 						}
+						// Set buttons
+						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
+							buttonPrevAnimation.Enabled = buttonResetFrame.Enabled = animationList.Count > 0;
 						break;
 					// Project file
 					case ".sap":
