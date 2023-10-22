@@ -379,9 +379,9 @@ namespace SAModel
 							}
 							// If any of the rotation frames isn't in the range from -32767 to 32677, assume it uses shorts
 							Rotation rot = new Rotation(file, tmpaddr + 4);
-							if (rot.X > 32767 || rot.X < -32767 ||
-								rot.Y > 32767 || rot.Y < -32767 ||
-								rot.Z > 32767 || rot.Z < -32767)
+							if (rot.X > 65535 || rot.X < -65535 ||
+								rot.Y > 65535 || rot.Y < -65535 ||
+								rot.Z > 65535 || rot.Z < -65535)
 							{
 								ShortRot = true;
 								break;
