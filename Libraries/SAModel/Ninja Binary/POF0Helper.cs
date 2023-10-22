@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Services.Description;
-using System.Windows.Forms;
 
 namespace SAModel
 {
@@ -27,14 +22,15 @@ namespace SAModel
 			int offsetDiv = offsetDiff / 4;
 			bool storedBE = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = true;
-
 			if (offsetDiff > 0xFF)
 			{
+				// Short
 				if (offsetDiff > 0xFFFF)
 				{
 					finalPOF = ByteConverter.GetBytes(offsetDiv);
 					finalPOF[0] += 0xC0;
 				}
+				// Long
 				else
 				{
 					short shortCalc = (short)(offsetDiv);
@@ -42,6 +38,7 @@ namespace SAModel
 					finalPOF[0] += 0x80;
 				}
 			}
+			// Char
 			else
 			{
 				byte byteCalc = (byte)(offsetDiv);

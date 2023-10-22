@@ -48,7 +48,7 @@ namespace SAModel
 			int imgBase = 0; // Key added to pointers.
 			bool sizeIsLittleEndian = true; // In Gamecube games, size can be either Big or Little Endian.
 			List<NinjaDataChunk> chunks = new List<NinjaDataChunk>();
-			// Set Big Endian mode
+			// Back up Big Endian mode
 			bool bigEndianBk = ByteConverter.BigEndian;
 			// Read the file until the end
 			while (startoffset < data.Length - 8) // 8 is the size of chunk ID + chunk size
@@ -181,6 +181,7 @@ namespace SAModel
 				}
 			}
 			//MessageBox.Show("Models: " + Models.Count.ToString() + " Animations: " + Motions.Count.ToString() + " Texlists: " + Texnames.Count.ToString() + ", Texture arrays: " + Textures.Count.ToString());
+			// Restore Big Endian mode
 			ByteConverter.BigEndian = bigEndianBk;
 		}
 
