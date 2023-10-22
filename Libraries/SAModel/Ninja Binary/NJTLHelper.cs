@@ -28,7 +28,7 @@ namespace SAModel
 			{
 				if (i > 0)
 				{
-					offset += texList[i].Length + 1;
+					offset += texList[i - 1].Length + 1;
 				}
 				njTexList.AddRange(ByteConverter.GetBytes(offset));
 				njTexList.AddRange(ByteConverter.GetBytes(0));
