@@ -545,6 +545,7 @@ namespace SAModel.SAMDL
 					case ".nj":
 					case ".gj":
 					case ".xj":
+						animationList = new List<NJS_MOTION>();
 						bool bigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0x8);
 						ModelFormat mdformat = ModelFormat.Chunk; // Default model format (not used for Basic models)
 						if (extension == ".gj")
