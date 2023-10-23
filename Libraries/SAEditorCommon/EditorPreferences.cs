@@ -159,6 +159,9 @@ namespace SAModel.SAEditorCommon
 			[DefaultValue(1.0f)]
 			public float AnimSpeed { get; set; }
 
+			[DefaultValue(false)]
+			public bool NjbSizeLittleEndian { get; set; }
+
 			public Settings_SAMDL()
 			{
 				ShowWelcomeScreen = true;
@@ -169,7 +172,7 @@ namespace SAModel.SAEditorCommon
 				AlternativeCamera = false;
 				BackgroundColor = Color.Black;
 				EnableSpecular = false;
-
+				NjbSizeLittleEndian = false;
 				KeyLightDiffuse = Color.FromArgb(255, 180, 172, 172);
 				KeyLightAmbient = Color.Black;
 				KeyLightSpecular = Color.White;
