@@ -545,6 +545,7 @@ namespace SAModel.SAMDL
 					case ".nj":
 					case ".gj":
 					case ".xj":
+						int modelIndex = 0;
 						animationList = new List<NJS_MOTION>();
 						ModelFormat mdformat = ModelFormat.Chunk; // Default model format (not used for Basic models since those have a separate chunk name)
 						if (extension == ".gj")
@@ -577,6 +578,7 @@ namespace SAModel.SAMDL
 								{
 									if (item.Key == dlg.modelChoice.SelectedIndex)
 									{
+										modelIndex = item.Key;
 										model = item.Value;
 										break;
 									}
@@ -593,26 +595,16 @@ namespace SAModel.SAMDL
 							animationList = motions;
 						}
 						// Set default format
-						outfmt = ninjaBinary.Models[0].GetModelFormat();
+						outfmt = model.GetModelFormat();
 						// Load texlist
 						if (ninjaBinary.Texnames.Count > 0)
-							TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
-						try
 						{
-							// Auto load action file
-							string actionFile = Path.ChangeExtension(filename, ".action");
-							if (File.Exists(actionFile))
-								LoadAnimation((new List<string> { actionFile }).ToArray());
-							// Auto load motion file
-							string motionFile = Path.ChangeExtension(filename, ".njm");
-							if (File.Exists(motionFile))
-								LoadAnimation((new List<string> { motionFile }).ToArray());
+							if (ninjaBinary.Texnames.Count < modelIndex)
+								TexList = new NJS_TEXLIST(ninjaBinary.Texnames[modelIndex]);
+							else
+								TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
 						}
-						catch (Exception ex)
-						{
-							MessageBox.Show("Loading animation failed: " + ex.Message.ToString());
-						}
-						// Attempt to auto load textures.
+						// Attempt to auto load textures from PVM or GVM.
 						// In PSO GC, NJ+GVM is possible so using just the model format to determine texture archive extension isn't reliable.
 						string[] textureTryNames =
 						{
@@ -633,6 +625,35 @@ namespace SAModel.SAMDL
 								LoadTextures(tryTexture);
 								break;
 							}
+						}
+						// Attempt to auto load textures from individual PVR or GVR files.
+						if (TexList != null)
+						{
+							foreach (string texname in TexList.TextureNames)
+							{
+								string pvr = Path.Combine(Path.GetDirectoryName(filename), texname + ".pvr");
+								string gvr = Path.Combine(Path.GetDirectoryName(filename), texname + ".gvr");
+								if (File.Exists(pvr))
+									AddSingleTexture(pvr);
+								else if (File.Exists(gvr))
+									AddSingleTexture(gvr);
+							}
+						}
+						// Attempt to load animations
+						try
+						{
+							// Auto load action file
+							string actionFile = Path.ChangeExtension(filename, ".action");
+							if (File.Exists(actionFile))
+								LoadAnimation((new List<string> { actionFile }).ToArray());
+							// Auto load motion file
+							string motionFile = Path.ChangeExtension(filename, ".njm");
+							if (File.Exists(motionFile))
+								LoadAnimation((new List<string> { motionFile }).ToArray());
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show("Loading animation failed: " + ex.Message.ToString());
 						}
 						// Set buttons
 						setDefaultAnimationOrientationToolStripMenuItem.Enabled = buttonNextFrame.Enabled = buttonPrevFrame.Enabled = buttonNextAnimation.Enabled =
@@ -990,9 +1011,9 @@ namespace SAModel.SAMDL
 					}
 					if (texList.Count != 0)
 					{
-						texDict.Add(uint.MaxValue, NJTLHelper.GenerateNJTexList(texList.ToArray(), isGC));
+						texDict.Add(uint.MaxValue, NJTLHelper.GenerateNJTexList(texList.ToArray(), isGC, settingsfile.NjbSizeLittleEndian));
 					}
-					ModelFile.CreateFile(fileName, rootSiblingMode ? model.Children[0] : model, new string[0], modelAuthor, modelDescription, texDict, outfmt, true, true);
+					ModelFile.CreateFile(fileName, rootSiblingMode ? model.Children[0] : model, new string[0], modelAuthor, modelDescription, texDict, outfmt, true, true, settingsfile.NjbSizeLittleEndian);
 					break;
 				default:
 					string[] animfiles;
@@ -4436,6 +4457,11 @@ namespace SAModel.SAMDL
 			}
 			NeedRedraw = true;
 			UpdateAnimationStatus();
+		}
+
+		private void nJChunkSizeInLittleEndianToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.NjbSizeLittleEndian = nJChunkSizeInLittleEndianToolStripMenuItem.Checked;
 		}
 	}
 }
