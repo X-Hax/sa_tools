@@ -816,10 +816,8 @@ namespace SAModel
 		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address, bool useNMDM = false)
 		{
 			List<byte> result = new List<byte>();
-			List<byte> pof0 = new List<byte>();
-			List<int> pof0Real = new List<int>();
 			List<byte> parameterData = new List<byte>();
-
+			List<uint> pofOffsets = new List<uint>();
 			uint[] posoffs = new uint[ModelParts];
 			int[] posframes = new int[ModelParts];
 			bool hasPos = false;
@@ -863,8 +861,7 @@ namespace SAModel
 			int[] quatframes = new int[ModelParts];
 			bool hasQuat = false;
 
-			pof0.Add(0x40); //NJ Motions all start with 0x40, ie address 0 after unmasking
-			pof0Real.Add(0);
+			pofOffsets.Add(0); // First offset in the motion
 
 			foreach (KeyValuePair<int, AnimModelData> model in Models)
 			{
@@ -1460,33 +1457,33 @@ namespace SAModel
 			{
 				//Offsets
 				if (hasPos)
-					AddOffsets(result, imageBase, pof0Real, pof0, posoffs[i]);
+					pofOffsets.Add(posoffs[i]);
 				if (hasRot)
-					AddOffsets(result, imageBase, pof0Real, pof0, rotoffs[i]);
+					pofOffsets.Add(rotoffs[i]);
 				if (hasScl)
-					AddOffsets(result, imageBase, pof0Real, pof0, scloffs[i]);
+					pofOffsets.Add(scloffs[i]);
 				if (hasVec)
-					AddOffsets(result, imageBase, pof0Real, pof0, vecoffs[i]);
+					pofOffsets.Add(vecoffs[i]);
 				if (hasVert)
-					AddOffsets(result, imageBase, pof0Real, pof0, vertoffs[i]);
+					pofOffsets.Add(vertoffs[i]);
 				if (hasNorm)
-					AddOffsets(result, imageBase, pof0Real, pof0, normoffs[i]);
+					pofOffsets.Add(normoffs[i]);
 				if (hasTarg)
-					AddOffsets(result, imageBase, pof0Real, pof0, targoffs[i]);
+					pofOffsets.Add(targoffs[i]);
 				if (hasRoll)
-					AddOffsets(result, imageBase, pof0Real, pof0, rolloffs[i]);
+					pofOffsets.Add(rolloffs[i]);
 				if (hasAng)
-					AddOffsets(result, imageBase, pof0Real, pof0, angoffs[i]);
+					pofOffsets.Add(angoffs[i]);
 				if (hasCol)
-					AddOffsets(result, imageBase, pof0Real, pof0, coloffs[i]);
+					pofOffsets.Add(coloffs[i]);
 				if (hasInt)
-					AddOffsets(result, imageBase, pof0Real, pof0, intoffs[i]);
+					pofOffsets.Add(intoffs[i]);
 				if (hasSpot)
-					AddOffsets(result, imageBase, pof0Real, pof0, spotoffs[i]);
+					pofOffsets.Add(spotoffs[i]);
 				if (hasPnt)
-					AddOffsets(result, imageBase, pof0Real, pof0, pntoffs[i]);
+					pofOffsets.Add(pntoffs[i]);
 				if (hasQuat)
-					AddOffsets(result, imageBase, pof0Real, pof0, quatoffs[i]);
+					pofOffsets.Add(quatoffs[i]);
 
 				//Frame count
 				if (hasPos)
@@ -1550,14 +1547,13 @@ namespace SAModel
 					labels.Add(newname, address + imageBase);
 				}
 			}
-			POF0Helper.finalizePOF0(pof0);
 
 			if (useNMDM)
 			{
 				result.InsertRange(0, parameterData.ToArray());
 				result.InsertRange(0, BitConverter.GetBytes(result.Count())); //This int is always little endian!
 				result.InsertRange(0, new byte[] { 0x4E, 0x4D, 0x44, 0x4D }); //NMDM Magic
-				result.AddRange(pof0);
+				result.AddRange(POF0Helper.GetPOFData(pofOffsets));
 			}
 			else
 			{
@@ -1565,17 +1561,6 @@ namespace SAModel
 			}
 
 			return result.ToArray();
-		}
-
-		private void AddOffsets(List<byte> result, uint imageBase, List<int> pof0Real, List<byte> pof0, uint offset)
-		{
-			int pointerOffset = (int)(result.Count + imageBase);
-			result.AddRange(ByteConverter.GetBytes(offset));
-			if (offset != 0)
-			{
-				pof0.AddRange(POF0Helper.calcPOF0Pointer(pof0Real.Last(), pointerOffset));
-				pof0Real.Add(pointerOffset);
-			}
 		}
 
 		public byte[] GetBytes(uint imageBase, out uint address)

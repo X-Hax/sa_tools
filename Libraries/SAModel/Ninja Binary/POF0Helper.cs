@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SAModel
 {
+	// Class to work with pointer offset lists (POF) in Ninja Binary files
 	class POF0Helper
 	{
 		enum POFOffsetType: byte
@@ -15,70 +16,76 @@ namespace SAModel
 			DataMask = 0x3F,
 		}
 
-		public static byte[] calcPOF0Pointer(int lastPOF, int currentAddress)
+		// Creates a POF chunk out of a list of absolute offsets
+		public static byte[] GetPOFData(List<uint> offsets)
 		{
-			byte[] finalPOF;
-			int offsetDiff = currentAddress - lastPOF;
-			int offsetDiv = offsetDiff / 4;
-			bool storedBE = ByteConverter.BigEndian;
-			ByteConverter.BigEndian = true;
-			if (offsetDiff > 0xFF)
+			List<byte> result = new List<byte>();
+			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 }; // POF0
+			result.AddRange(magic);
+			for (int i = 0; i < offsets.Count; i++)
 			{
-				// Short
-				if (offsetDiff > 0xFFFF)
+				uint offsetDiff = (i == 0) ? offsets[i] : offsets[i] - offsets[i - 1];
+				uint offsetDiv = offsetDiff / 4;
+				byte[] offsetBytes;
+				// Write offset with mask
+				if (offsetDiff > 0xFF)
 				{
-					finalPOF = ByteConverter.GetBytes(offsetDiv);
-					finalPOF[0] += 0xC0;
+					// Long
+					if (offsetDiff > 0xFFFF)
+					{
+						byte[] converted = BitConverter.GetBytes(offsetDiv); // Same Endianness
+						offsetBytes = new byte[4];
+						offsetBytes[0] = (byte)(converted[3] | (byte)POFOffsetType.Long);
+						offsetBytes[1] = converted[2];
+						offsetBytes[2] = converted[1];
+						offsetBytes[3] = converted[0];
+					}
+					// Short
+					else
+					{
+						ushort shortCalc = (ushort)offsetDiv;
+						byte[] converted = BitConverter.GetBytes(shortCalc); // Same Endianness
+						offsetBytes = new byte[2];
+						offsetBytes[0] = (byte)(converted[1] | (byte)POFOffsetType.Short);
+						offsetBytes[1] = converted[0];
+					}
 				}
-				// Long
+				// Char
 				else
 				{
-					short shortCalc = (short)(offsetDiv);
-					finalPOF = ByteConverter.GetBytes(shortCalc);
-					finalPOF[0] += 0x80;
+					byte byteCalc = (byte)(offsetDiv | (byte)POFOffsetType.Char);
+					offsetBytes = new byte[] { byteCalc };
 				}
+				result.AddRange(offsetBytes);
 			}
-			// Char
-			else
-			{
-				byte byteCalc = (byte)(offsetDiv);
-				byteCalc += 0x40;
-				finalPOF = new byte[] { byteCalc };
-			}
-
-			ByteConverter.BigEndian = storedBE;
-			return finalPOF;
+			result.Align(4);
+			// Add length
+			result.InsertRange(4, ByteConverter.GetBytes(result.Count - 4)); // Variable Endianness
+			return result.ToArray();
 		}
 
-		public static byte[] calcPOF0Pointer(uint lastPOF, uint currentAddress)
-		{
-			return calcPOF0Pointer((int)lastPOF, (int)currentAddress);
-		}
-
-		public static void finalizePOF0(List<byte> pof0)
-		{
-			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
-			pof0.Align(4);
-			pof0.InsertRange(0, BitConverter.GetBytes(pof0.Count));
-			pof0.InsertRange(0, magic);
-		}
-
+		// Adjusts pointers in a data chunk using a pointer list
 		public static void FixPointersWithPOF(byte[] data, List<int> pointerList, int imgBase)
 		{
-            //System.Windows.Forms.MessageBox.Show(data.Length.ToString());
+			//System.Text.StringBuilder sb = new StringBuilder();
+			//System.Windows.Forms.MessageBox.Show(data.Length.ToString());
 			int currentPos = 0;
 			foreach (int pointer in pointerList)
 			{
 				currentPos += pointer;
+				//System.Windows.Forms.MessageBox.Show("Pointer: " + pointer.ToString("X") + " currentPos: " + currentPos.ToString("X"));
 				int oldPointer = ByteConverter.ToInt32(data, currentPos);
 				if (oldPointer != 0)
 					oldPointer += imgBase;
 				byte[] newPointerBytes = ByteConverter.GetBytes(oldPointer);
-                //System.Windows.Forms.MessageBox.Show("Fixing pointer at " + (currentPos).ToString("X") + ": " + oldPointer.ToString("X"));
+				//sb.Append("\n" + "Fixing pointer at " + (currentPos).ToString("X") + ": " + (oldPointer < imgBase ? "0" : ((uint)oldPointer - (uint)imgBase).ToString("X")) + " to " + oldPointer.ToString("X"));
+				//System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb" + imgBase.ToString("X") + ".txt", sb.ToString());
+				//System.Windows.Forms.MessageBox.Show("Fixing pointer at " + (currentPos).ToString("X") + ": " + oldPointer.ToString("X"));
 				Array.Copy(newPointerBytes, 0, data, currentPos, 4);
 			}
 		}
 
+		// Gets a pointer list out of a POF data chunk
 		public static List<int> GetPointerListFromPOF(byte[] pofdata)
 		{
 			int chars = 0;
@@ -133,8 +140,9 @@ namespace SAModel
 				sb.Append(", " + currentPos.ToString("X"));	
 			}
 			sb.AppendJoin(',', offsets.ToArray());
+			
 			System.Windows.Forms.MessageBox.Show("offsets in POF: " + offsets.Count.ToString() + ", pads " + pads.ToString() + ", chars " + chars.ToString() + ", shorts " + shorts.ToString());
-			System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb.txt", sb.ToString());
+			System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb_.txt", sb.ToString());
 			*/
 			return offsets;
 		}

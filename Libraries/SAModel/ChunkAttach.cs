@@ -177,9 +177,9 @@ namespace SAModel
 			address = (uint)result.Count;
 
 			//POF0 offsets
-			if(vertexAddress != 0)
+			//if(vertexAddress != 0)
 				njOffsets.Add((uint)(imageBase + result.Count));
-			if (polyAddress != 0)
+			//if (polyAddress != 0)
 				njOffsets.Add((uint)(imageBase + result.Count + 4));
 
 			result.AddRange(ByteConverter.GetBytes(vertexAddress));

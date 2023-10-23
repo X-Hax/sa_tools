@@ -6,7 +6,7 @@ namespace SAModel
 {
 	public class NJTLHelper
 	{
-		public static byte[] GenerateNJTexList(string[] texList, bool isGC)
+		public static byte[] GenerateNJTexList(string[] texList, bool isGC, bool sizeLittleEndian)
 		{
 			List<byte> njTexList = new List<byte>();
 			List<byte> njTLHeader = new List<byte>();
@@ -54,7 +54,7 @@ namespace SAModel
 			int pofLength = pof0List.Count;
 			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
 
-			pof0List.InsertRange(0, BitConverter.GetBytes(pofLength));
+			pof0List.InsertRange(0, sizeLittleEndian ? BitConverter.GetBytes(pofLength) : ByteConverter.GetBytes(pofLength));
 			pof0List.InsertRange(0, magic);
 
 			njTexList.InsertRange(0, njTLHeader.ToArray());

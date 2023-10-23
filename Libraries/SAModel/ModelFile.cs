@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -368,7 +366,7 @@ namespace SAModel
 			}
 		}
 
-		public void SaveToFile(string filename, bool nometa = false, bool useNinjaMetaData = false)
+		public void SaveToFile(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
 		{
 			uint ninjaMagic;
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
@@ -406,10 +404,8 @@ namespace SAModel
 			if (useNinjaMetaData)
 			{
 				mdl = Model.NJGetBytes(imageBase, false, labels, njOffsets, out addr);
-				//***Ninja metadata should always be little endian!***
 				file.AddRange(BitConverter.GetBytes(ninjaMagic));
-				file.AddRange(BitConverter.GetBytes(mdl.Length));
-				//***Ninja metadata should always be little endian!***
+				file.AddRange(njbLittleEndian ? BitConverter.GetBytes(mdl.Length) : ByteConverter.GetBytes(mdl.Length));
 			}
 			else
 			{
@@ -538,17 +534,12 @@ namespace SAModel
 				addresses.Sort();*/
 				njOffsets = njOffsets.Distinct().ToList();
 				njOffsets.Sort();
-				List<byte> pof0 = new List<byte>
-				{
-					0x41
-				};
-				for (int i = 1; i < njOffsets.Count; i++)
-				{
-					pof0.AddRange(POF0Helper.calcPOF0Pointer(njOffsets[i - 1], njOffsets[i]));
-				}
-				POF0Helper.finalizePOF0(pof0);
-				file.AddRange(pof0);
-
+				StringBuilder sb = new StringBuilder();
+				foreach (uint off in njOffsets)
+					sb.AppendLine(off.ToString("X"));
+				File.WriteAllText("C:\\Users\\PkR\\Desktop\\offsets.txt", sb.ToString());
+				file.AddRange(POF0Helper.GetPOFData(njOffsets));
+				// Write out the NJTL chunk if it exists
 				if (Metadata.Count != 0 && Metadata.ContainsKey(uint.MaxValue))
 				{
 					file.InsertRange(0, Metadata[uint.MaxValue]);
@@ -564,14 +555,14 @@ namespace SAModel
 		}
 
 		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,
-			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false)
+			string description, Dictionary<uint, byte[]> metadata, ModelFormat format, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
 		{
 			new ModelFile(format, model, Path.GetDirectoryName(Path.GetFullPath(filename)), animationFiles)
 			{
 				Author = author,
 				Description = description,
 				Metadata = metadata ?? new Dictionary<uint, byte[]>()
-			}.SaveToFile(filename, nometa, useNinjaMetaData);
+			}.SaveToFile(filename, nometa, useNinjaMetaData, njbLittleEndian);
 		}
 
 		public enum ChunkTypes : uint

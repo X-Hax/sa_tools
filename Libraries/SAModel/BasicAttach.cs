@@ -217,13 +217,13 @@ namespace SAModel
 					for (int i = 0; i < Mesh.Count; i++)
 					{
 						//POF0
-						if (polyAddrs[i] != 0)
+						//if (polyAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0x4));
-						if (polyNormalAddrs[i] != 0)
+						//if (polyNormalAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0xC));
-						if (vColorAddrs[i] != 0)
+						//if (vColorAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0x10));
-						if (uVAddrs[i] != 0)
+						//if (uVAddrs[i] != 0)
 							njOffsets.Add((uint)(result.Count + imageBase + 0x14));
 
 						result.AddRange(Mesh[i].GetBytes(polyAddrs[i], polyNormalAddrs[i], vColorAddrs[i], uVAddrs[i], DX));
@@ -272,13 +272,13 @@ namespace SAModel
 			address = (uint)result.Count;
 
 			//POF0
-			if (vertexAddress != 0)
+			//if (vertexAddress != 0)
 				njOffsets.Add((uint)(result.Count + imageBase));
-			if (normalAddress != 0)
+			//if (normalAddress != 0)
 				njOffsets.Add((uint)(result.Count + imageBase + 0x4));
-			if (meshAddress != 0)
+			//if (meshAddress != 0)
 				njOffsets.Add((uint)(result.Count + imageBase + 0xC));
-			if (materialAddress != 0)
+			//if (materialAddress != 0)
 				njOffsets.Add((uint)(result.Count + imageBase + 0x10));
 
 			result.AddRange(ByteConverter.GetBytes(vertexAddress));
