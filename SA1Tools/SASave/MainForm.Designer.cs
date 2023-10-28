@@ -1153,7 +1153,7 @@
             this.adventure_character.FormattingEnabled = true;
             this.adventure_character.Items.AddRange(new object[] {
             "Sonic",
-            "Unused",
+            "Unknown",
             "Tails",
             "Knuckles",
             "Super Sonic",
@@ -2791,7 +2791,7 @@
             this.tabPage31.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage31.Size = new System.Drawing.Size(649, 537);
             this.tabPage31.TabIndex = 0;
-            this.tabPage31.Text = "Unused";
+            this.tabPage31.Text = "Unknown";
             this.tabPage31.UseVisualStyleBackColor = true;
             // 
             // listViewEventsUnused
