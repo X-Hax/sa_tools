@@ -35,10 +35,10 @@ namespace SAModel
 
 		public float MipmapDAdjust
 		{
-			get { return ((Flags & 0xF0) >> 4) * 0.25f; }
+			get { return ((Flags & 0xF00) >> 8) * 0.25f; }
 			set
 			{
-				Flags = (uint)(Flags & ~0xF0) | ((uint)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))) << 4);
+				Flags = (uint)(Flags & ~0xF00) | ((uint)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))) << 8);
 			}
 		}
 
