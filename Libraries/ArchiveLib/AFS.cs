@@ -1,9 +1,7 @@
-﻿using SixLabors.ImageSharp.Formats.Jpeg;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Xml.XPath;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 using VrSharp.Xvr;
