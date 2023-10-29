@@ -124,6 +124,13 @@ namespace ArchiveTool
 							folderMode = ArchiveFromFolderMode.gcaxMLT;
 							arc = new gcaxMLTFile();
 							break;
+						case ".nj":
+						case ".gj":
+						case "njm":
+						case "njtl":
+							folderMode = ArchiveFromFolderMode.NJ;
+							arc = new NinjaBinaryFile();
+							break;
 						case ".png":
 						case ".jpg":
 						case ".bmp":
@@ -137,12 +144,19 @@ namespace ArchiveTool
 				}
                 Console.WriteLine("Creating {0} archive from folder: {1}", folderMode.ToString(), filePath);
                 int id = 0;
+				bool gj = false;
                 foreach (string line in filenames)
                 {
                     string[] split = line.Split(',');
                     string filename = split[0];
                     switch (folderMode)
                     {
+						case ArchiveFromFolderMode.NJ:
+							arc.Entries.Add(new NinjaBinaryEntry(Path.Combine(filePath, filename)));
+							if (Path.GetExtension(filename).ToUpperInvariant().Contains("GJ"))
+								gj = true;
+							extension = gj ? ".gj" : ".nj";
+							break;
 						case ArchiveFromFolderMode.AFS:
 							uint customData = 0;
 							if (split.Length > 1)
@@ -396,7 +410,8 @@ namespace ArchiveTool
             MLT,
             gcaxMLT,
 			XVM,
-			AFS
+			AFS,
+			NJ
         }
     }
 }

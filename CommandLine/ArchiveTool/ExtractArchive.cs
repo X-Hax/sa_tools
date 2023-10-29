@@ -42,6 +42,11 @@ namespace ArchiveTool
 				case (".arcx"):
 					arc = new ARCXFile(arcdata);
 					break;
+				case (".nj"):
+				case (".gj"):
+				case (".xj"):
+					arc = new NinjaBinaryFile(arcdata);
+					break;
 				case (".prs"):
                     arcdata = FraGag.Compression.Prs.Decompress(arcdata);
 					if (ARCXFile.Identify(arcdata))
