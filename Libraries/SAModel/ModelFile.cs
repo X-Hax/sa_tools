@@ -326,6 +326,8 @@ namespace SAModel
 				{
 					foreach (string item in animationFiles)
 					{
+						if (!File.Exists(item))
+							continue;
 						if (Path.GetExtension(item).ToLowerInvariant() == ".json")
 						{
 							JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
