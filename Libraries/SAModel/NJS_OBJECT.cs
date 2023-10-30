@@ -307,6 +307,7 @@ namespace SAModel
 			// Ginja NJS_OBJECT has an extra 4 bytes at the end
 			if (GetModelFormat() == ModelFormat.GC)
 			objBytes.AddRange(new byte[4]);
+			result.AddRange(objBytes);
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
 		}
