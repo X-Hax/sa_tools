@@ -1457,33 +1457,75 @@ namespace SAModel
 			{
 				//Offsets
 				if (hasPos)
+				{
+					result.AddRange(ByteConverter.GetBytes(posoffs[i]));
 					pofOffsets.Add(posoffs[i]);
+				}
 				if (hasRot)
+				{
+					result.AddRange(ByteConverter.GetBytes(rotoffs[i]));
 					pofOffsets.Add(rotoffs[i]);
+				}
 				if (hasScl)
+				{
+					result.AddRange(ByteConverter.GetBytes(scloffs[i]));
 					pofOffsets.Add(scloffs[i]);
+				}
 				if (hasVec)
+				{
+					result.AddRange(ByteConverter.GetBytes(vecoffs[i]));
 					pofOffsets.Add(vecoffs[i]);
+				}
 				if (hasVert)
+				{
+					result.AddRange(ByteConverter.GetBytes(vertoffs[i]));
 					pofOffsets.Add(vertoffs[i]);
+				}
 				if (hasNorm)
+				{
+					result.AddRange(ByteConverter.GetBytes(normoffs[i]));
 					pofOffsets.Add(normoffs[i]);
+				}
 				if (hasTarg)
+				{
+					result.AddRange(ByteConverter.GetBytes(targoffs[i]));
 					pofOffsets.Add(targoffs[i]);
+				}
 				if (hasRoll)
+				{
+					result.AddRange(ByteConverter.GetBytes(rolloffs[i]));
 					pofOffsets.Add(rolloffs[i]);
+				}
 				if (hasAng)
+				{
+					result.AddRange(ByteConverter.GetBytes(angoffs[i]));
 					pofOffsets.Add(angoffs[i]);
+				}
 				if (hasCol)
+				{
+					result.AddRange(ByteConverter.GetBytes(coloffs[i]));
 					pofOffsets.Add(coloffs[i]);
+				}
 				if (hasInt)
+				{
+					result.AddRange(ByteConverter.GetBytes(intoffs[i]));
 					pofOffsets.Add(intoffs[i]);
+				}
 				if (hasSpot)
+				{
+					result.AddRange(ByteConverter.GetBytes(spotoffs[i]));
 					pofOffsets.Add(spotoffs[i]);
+				}
 				if (hasPnt)
+				{
+					result.AddRange(ByteConverter.GetBytes(pntoffs[i]));
 					pofOffsets.Add(pntoffs[i]);
+				}
 				if (hasQuat)
+				{
+					result.AddRange(ByteConverter.GetBytes(quatoffs[i]));
 					pofOffsets.Add(quatoffs[i]);
+				}
 
 				//Frame count
 				if (hasPos)
