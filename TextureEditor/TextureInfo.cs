@@ -66,18 +66,26 @@ namespace TextureEditor
             }
         }
 
-        public PvrTextureInfo(string name, uint gbix, Bitmap bitmap)
-        {
-            Name = name;
-            GlobalIndex = gbix;
-            DataFormat = PvrDataFormat.Unknown;
-            PixelFormat = PvrPixelFormat.Unknown;
-            if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
-                Image = new Bitmap(TextureEditor.Properties.Resources.error);
-            else
-                Image = bitmap;
-        }
-
+		public PvrTextureInfo(string name, uint gbix, Bitmap bitmap)
+		{
+			Name = name;
+			GlobalIndex = gbix;
+			DataFormat = PvrDataFormat.Unknown;
+			PixelFormat = PvrPixelFormat.Unknown;
+			if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
+				Image = new Bitmap(TextureEditor.Properties.Resources.error);
+			else
+			{
+				Bitmap clone = new Bitmap(bitmap.Width, bitmap.Height,
+											 System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+				using (Graphics gr = Graphics.FromImage(clone))
+				{
+					gr.DrawImage(bitmap, new Rectangle(0, 0, clone.Width, clone.Height));
+				}
+				Image = clone;
+			}
+		}
+	
         public PvrTextureInfo(string name, MemoryStream str)
         {
             TextureData = str;
@@ -149,17 +157,25 @@ namespace TextureEditor
                 DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false, true);
         }
 
-        public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
-        {
-            Name = name;
-            GlobalIndex = gbix;
-            DataFormat = GvrDataFormat.Unknown;
-            PixelFormat = GvrPixelFormat.NonIndexed;
-            if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
-                Image = new Bitmap(TextureEditor.Properties.Resources.error);
-            else
-                Image = bitmap;
-        }
+		public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
+		{
+			Name = name;
+			GlobalIndex = gbix;
+			DataFormat = GvrDataFormat.Unknown;
+			PixelFormat = GvrPixelFormat.NonIndexed;
+			if (!TextureFunctions.CheckTextureDimensions(bitmap.Width, bitmap.Height))
+				Image = new Bitmap(TextureEditor.Properties.Resources.error);
+			else
+			{
+				Bitmap clone = new Bitmap(bitmap.Width, bitmap.Height,
+											System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+				using (Graphics gr = Graphics.FromImage(clone))
+				{
+					gr.DrawImage(bitmap, new Rectangle(0, 0, clone.Width, clone.Height));
+				}
+				Image = clone;
+			}
+		}
 
         public GvrTextureInfo(string name, MemoryStream str)
         {
