@@ -1486,6 +1486,12 @@ namespace TextureEditor
 									if (idximp.outFormat == PalettedTextureFormat.NotIndexed)
 									{
 										pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false, false);
+										Bitmap clone = new Bitmap(bmp.Width, bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+										using (Graphics gr = Graphics.FromImage(clone))
+										{
+											gr.DrawImage(bmp, new Rectangle(0, 0, clone.Width, clone.Height));
+										}
+										bmp = clone;
 									}
 									else
 									{
@@ -1527,6 +1533,12 @@ namespace TextureEditor
 									if (idximp.outFormat == PalettedTextureFormat.NotIndexed)
 									{
 										gvrDataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(bmp, highQualityGVMsToolStripMenuItem.Checked, false);
+										Bitmap clone = new Bitmap(bmp.Width, bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+										using (Graphics gr = Graphics.FromImage(clone))
+										{
+											gr.DrawImage(bmp, new Rectangle(0, 0, clone.Width, clone.Height));
+										}
+										bmp = clone;
 									}
 									else
 									{
