@@ -536,10 +536,12 @@ namespace SAModel
 				addresses.Sort();*/
 				njOffsets = njOffsets.Distinct().ToList();
 				njOffsets.Sort();
+				/*
 				StringBuilder sb = new StringBuilder();
 				foreach (uint off in njOffsets)
 					sb.AppendLine(off.ToString("X"));
 				File.WriteAllText("C:\\Users\\PkR\\Desktop\\offsets.txt", sb.ToString());
+				*/
 				file.AddRange(POF0Helper.GetPOFData(njOffsets));
 				// Write out the NJTL chunk if it exists
 				if (Metadata.Count != 0 && Metadata.ContainsKey(uint.MaxValue))

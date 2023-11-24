@@ -225,18 +225,17 @@ namespace ArchiveLib
             result.AddRange(BitConverter.GetBytes(Width));
             result.AddRange(BitConverter.GetBytes(Height));
             result.AddRange(data);
-            int pd = 0;
-            // Make file size divisible by 16
-            /*if (result.Count % 16 != 0)
+			// Make file size divisible by 16
+			/*
+			if (result.Count % 16 != 0)
             {
                 do
                 {
                     result.Add(0);
-                    pd++;
                 }
                 while (result.Count % 16 != 0);
             }*/
-            return result.ToArray();
+			return result.ToArray();
         }
     }
 }
