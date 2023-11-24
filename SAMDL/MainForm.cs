@@ -928,15 +928,15 @@ namespace SAModel.SAMDL
 					filterString = "Sega Xbox Ninja .xj|*.xj";
 					break;
 				case ModelFormat.GC:
-					filterString = "SA2B MDL Files|*.sa2bmdl|Sega GCNinja .gj|*.gj|Sega GCNinja Big Endian (Gamecube) .gj|*.gj";
+					filterString = "SA2B MDL Files|*.sa2bmdl|Ginja|*.gj|Ginja (Big Endian)|*.gj";
 					break;
 				case ModelFormat.Chunk:
-					filterString = "SA2 MDL Files|*.sa2mdl|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
+					filterString = "SA2 MDL Files|*.sa2mdl|Ninja Binary|*.nj|Ninja Binary (Big Endian)|*.nj";
 					break;
 				case ModelFormat.BasicDX:
 				case ModelFormat.Basic:
 				default:
-					filterString = "SA1 MDL Files|*.sa1mdl|Sega Ninja .nj|*.nj|Sega Ninja Big Endian (Gamecube) .nj|*.nj";
+					filterString = "SA1 MDL Files|*.sa1mdl|Ninja Binary|*.nj|Ninja Binary (Big Endian)|*.nj";
 					break;
 			}
 			filterString += "|All files *.*|*.*";
@@ -987,8 +987,7 @@ namespace SAModel.SAMDL
 						for (int u = 0; u < animationList.Count; u++)
 						{
 							string filePath = Path.GetDirectoryName(fileName) + @"\" + Path.GetFileNameWithoutExtension(fileName) + "_anim" + u.ToString() + "_" + animationList[u].Name + ".njm";
-							byte[] rawAnim = animationList[u].GetBytes(0, new Dictionary<string, uint>(), out uint address, true);
-
+							byte[] rawAnim = animationList[u].GetBytes(0xC, new Dictionary<string, uint>(), out uint address, true);
 							File.WriteAllBytes(filePath, rawAnim);
 						}
 					}
