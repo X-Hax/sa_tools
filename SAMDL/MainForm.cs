@@ -297,6 +297,8 @@ namespace SAModel.SAMDL
 			cam.ModifierKey = settingsfile.CameraModifier;
 			animspeed = settingsfile.AnimSpeed;
 			alternativeCameraModeToolStripMenuItem.Checked = settingsfile.AlternativeCamera;
+			nJChunkSizeInLittleEndianToolStripMenuItem.Checked = settingsfile.NjbSizeLittleEndian;
+			exportNJTLChunkToolStripMenuItem.Checked = settingsfile.ExportNJTL;
 			EditorOptions.EnableSpecular = settingsfile.EnableSpecular;
 			EditorOptions.KeyLight = new Light()
 			{
@@ -1008,7 +1010,7 @@ namespace SAModel.SAMDL
 							}
 						}
 					}
-					if (texList.Count != 0)
+					if (texList.Count != 0 && settingsfile.ExportNJTL)
 					{
 						texDict.Add(uint.MaxValue, NJTLHelper.GenerateNJTexList(texList.ToArray(), isGC, settingsfile.NjbSizeLittleEndian));
 					}
@@ -4461,6 +4463,11 @@ namespace SAModel.SAMDL
 		private void nJChunkSizeInLittleEndianToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			settingsfile.NjbSizeLittleEndian = nJChunkSizeInLittleEndianToolStripMenuItem.Checked;
+		}
+
+		private void exportNJTLChunkToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			settingsfile.ExportNJTL = exportNJTLChunkToolStripMenuItem.Checked;
 		}
 	}
 }
