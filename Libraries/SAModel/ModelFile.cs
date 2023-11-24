@@ -326,9 +326,9 @@ namespace SAModel
 				{
 					foreach (string item in animationFiles)
 					{
-						if (!File.Exists(item))
+						if (!File.Exists(Path.Combine(basePath, item)))
 							continue;
-						if (Path.GetExtension(item).ToLowerInvariant() == ".json")
+						else if (Path.GetExtension(item).ToLowerInvariant() == ".json")
 						{
 							JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
 							using (TextReader tr = File.OpenText(Path.Combine(basePath, item)))
@@ -338,7 +338,9 @@ namespace SAModel
 							}
 						}
 						else
+						{
 							anims.Add(NJS_MOTION.Load(Path.Combine(basePath, item), Model.CountAnimated()));
+						}
 					}
 				}
 				catch
