@@ -126,7 +126,22 @@ namespace SplitTools.Split
 							break;
 						// Single split mode for everything else
 						default:
-							itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, masterobjlist, nometa, nolabel, overwrite, inifile.StartOffset);
+							try
+							{
+								itemcount += SplitSingle(item.Key, item.Value, fileOutputPath, datafile, imageBase, labels, inifile.Game, masterobjlist, nometa, nolabel, overwrite, inifile.StartOffset);
+							}
+							catch (Exception ex)
+							{
+								if (logWriter)
+								{
+									TextWriter log = File.CreateText(Path.Combine(projectFolderName, "SplitLog.log"));
+									log.WriteLine("Failed to split {0} in {1}.\n", errname, Path.GetFileName(inifilename));
+									log.WriteLine(ex.Message);
+									log.WriteLine(ex.StackTrace);
+									log.Close();
+								}
+								return (int)SplitERRORVALUE.UnhandledException;
+							}
 							break;
 					}
 				}
