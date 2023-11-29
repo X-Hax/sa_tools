@@ -18,6 +18,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using System.Globalization;
+using System.Linq;
 
 namespace SAModel.SALVL
 {
@@ -678,7 +679,7 @@ namespace SAModel.SALVL
 				if (File.Exists(fogFilePath))
 				{
 					stageFogList = IniSerializer.Deserialize<FogDataTable>(fogFilePath);
-					if (stageFogList.Act[levelact.Act] != null)
+					if (levelact.Act < stageFogList.Act.Length && stageFogList.Act[levelact.Act] != null)
 					{
 						UpdateStageFog();
 					}
