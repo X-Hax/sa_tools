@@ -89,7 +89,7 @@ namespace SAModel.SALVL
 		}
 
 		// Export models from stage (Assimp)
-		private void ExportLevelObj(string fileName, bool selectedOnly)
+		private void ExportLevelObj(string fileName, bool selectedOnly, bool exportOnlySolid, bool exportOnlyNonSolid)
 		{
 			int stepCount = 0;
 			int numSteps = 0;
@@ -98,13 +98,33 @@ namespace SAModel.SALVL
 				stepCount = LevelData.TextureBitmaps[LevelData.leveltexs].Length;
 				numSteps = stepCount;
 			}
-			List<COL> cols = LevelData.geo.COL;
-			List<GeoAnimData> anims = LevelData.geo.Anim;
+
+			//Sort out level data
+			List<LevelItem> items;
+			List<GeoAnimData> anims;
 			if (selectedOnly)
 			{
-				cols = selectedItems.Items.OfType<LevelItem>().Select(a => a.CollisionData).ToList();
+				items = selectedItems.Items.OfType<LevelItem>().ToList();
 				anims = selectedItems.Items.OfType<LevelAnim>().Select(a => a.GeoAnimationData).ToList();
 			}
+			else
+			{
+				items = LevelData.LevelItems.ToList();
+				anims = LevelData.geo.Anim;
+			}
+
+			//Sort out collision and regular models
+			if (exportOnlySolid)
+			{
+				items = items.Where(a => a.Solid == true).ToList();
+			}
+			else if (exportOnlyNonSolid)
+			{
+				items = items.Where(a => a.Solid == false).ToList();
+			}
+
+			List<COL> cols = items.Select(a => a.CollisionData).ToList();
+
 			stepCount += cols.Count;
 			stepCount += anims.Count;
 
@@ -172,7 +192,7 @@ namespace SAModel.SALVL
 		}
 
 		// Export C structs
-		private void exportStructs(string filename, bool selectedOnly)
+		private void exportStructs(string filename, bool selectedOnly, bool exportOnlySolid, bool exportOnlyNonSolid)
 		{
 			LandTableFormat fmt = LevelData.geo.Format;
 			switch (fmt)
@@ -209,11 +229,31 @@ namespace SAModel.SALVL
 					if (selectedItem is LevelItem)
 					{
 						LevelItem levelItem = selectedItem as LevelItem;
-						string path = Path.Combine(filename, levelItem.CollisionData.Model.Name + ".c");
-						using (StreamWriter sw = File.CreateText(path))
+
+						//Only export based on collision flag
+						bool export = true;
+						if (exportOnlySolid)
 						{
-							WriteStructMetadata(sw, false, fmt, texnames);
-							levelItem.CollisionData.Model.ToStructVariables(sw, usetBasicDXFormatToolStripMenuItem.Checked, labels, texnames);
+							if(levelItem.Solid == false)
+							{
+								export = false;
+							}
+						} else if(exportOnlyNonSolid)
+						{
+							if (levelItem.Solid == true)
+							{
+								export = false;
+							}
+						}
+
+						if (export)
+						{
+							string path = Path.Combine(filename, levelItem.CollisionData.Model.Name + ".c");
+							using (StreamWriter sw = File.CreateText(path))
+							{
+								WriteStructMetadata(sw, false, fmt, texnames);
+								levelItem.CollisionData.Model.ToStructVariables(sw, usetBasicDXFormatToolStripMenuItem.Checked, labels, texnames);
+							}
 						}
 					}
 					else if (selectedItem is LevelAnim)
