@@ -470,8 +470,14 @@ namespace SAToolsHub
 			if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
 			{
 				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory();
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+				string objdefsinifolder = objdefsinifolder = Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
+				// objdefs INI folder
+				if (!Directory.Exists(objdefsinifolder))
+					objdefsinifolder = Path.Combine(appPath, "..\\GameConfig", dataFolder, "objdefs");
+				CopyFolder(objdefsinifolder, outputObjdefsPath);
+				// objdefs CS folder
+				string objdefsPath = GetObjDefsDirectory();
 				if (Directory.Exists(objdefsPath))
 					CopyFolder(objdefsPath, outputObjdefsPath);
 				progress.SetTask("Finalizing SALVL Supported Setup");
