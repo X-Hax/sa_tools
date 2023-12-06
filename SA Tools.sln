@@ -843,10 +843,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		GameConfig\GC - SADX Preview.xml = GameConfig\GC - SADX Preview.xml
 		GameConfig\GC - SADX Review.xml = GameConfig\GC - SADX Review.xml
 		GameConfig\GC - SADX.xml = GameConfig\GC - SADX.xml
-		GameConfig\PC - DX Landtable Models - DLL.xml = GameConfig\PC - DX Landtable Models - DLL.xml
-		GameConfig\PC - DX Landtable Models.xml = GameConfig\PC - DX Landtable Models.xml
 		GameConfig\PC - SA2 Cutscenes.xml = GameConfig\PC - SA2 Cutscenes.xml
 		GameConfig\PC - SA2.xml = GameConfig\PC - SA2.xml
+		GameConfig\PC - SADX Decomp Resources.xml = GameConfig\PC - SADX Decomp Resources.xml
 		GameConfig\PC - SADX.xml = GameConfig\PC - SADX.xml
 		GameConfig\X360 - SADX Debug Prototype.xml = GameConfig\X360 - SADX Debug Prototype.xml
 	EndProjectSection

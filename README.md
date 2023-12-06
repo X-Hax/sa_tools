@@ -27,6 +27,11 @@ The toolkit developers (and other community members familiar with it) are freque
 - [The official x-hax Discord server](https://discord.gg/gqJCF47)
 - The official x-hax IRC server: irc://irc.badnik.zone/x-hax
 
+## Building SA Tools from source
+After cloning the repository, build in either Debug or Release mode for x86 or x64. After the build has completed, run the program `buildSATools.exe` in the solution's root folder. The files will be located in the `output` folder. You could specify a different location as a command line argument for `buildSATools.exe`, e.g. `buildSATools D:\SATools`.
+
+Alternatively, you could open individual tools from Visual Studio by starting a new Debug instance. Only Debug builds are supported in this mode.
+
 ## External Resources
 Below are two wikis that were created to help in both mod creation and documenting assets in the PC titles.
  - [SADX Modding Guide](https://github.com/X-Hax/SADXModdingGuide/wiki)

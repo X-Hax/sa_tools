@@ -1256,7 +1256,7 @@ namespace SAToolsHub
 					string filename = ((itemTags)selItem.Tag).Path;
 					string outName = Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path))) + ".c";
 
-					SAModel.SAEditorCommon.StructConversion.ConvertFileToText(filename, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outName);
+					StructConversion.ConvertFileToText(filename, StructConversion.TextType.CStructs, outName);
 				}
 			}
 		}
@@ -1269,9 +1269,9 @@ namespace SAToolsHub
 				{
 					if (Path.GetExtension(((itemTags)selItem.Tag).Path) == ".saanim")
 					{
-						SAModel.SAEditorCommon.StructConversion.ConvertFileToText(
+						StructConversion.ConvertFileToText(
 							((itemTags)selItem.Tag).Path,
-							SAModel.SAEditorCommon.StructConversion.TextType.JSON);
+							StructConversion.TextType.JSON);
 					}
 
 				}
@@ -1489,7 +1489,6 @@ namespace SAToolsHub
 		#endregion
 
 		#region Update Code
-		private bool checkedForUpdates; // Unused?
 		const string updatePath = ".updates";
 
 		private static bool UpdateTimeElapsed(SAToolsHubSettings.UpdateUnits unit, int amount, DateTime start)
@@ -1529,7 +1528,6 @@ namespace SAToolsHub
 				return false;
 			}
 
-			checkedForUpdates = true;
 			hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
 
 			string stringdl = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";

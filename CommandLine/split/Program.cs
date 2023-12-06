@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using SAModel.SAEditorCommon.ProjectManagement;
+using SplitTools.Split;
 
 namespace Split
 {
@@ -11,13 +12,11 @@ namespace Split
 	{
         static void Main(string[] args)
 		{
-			bool nometa = false;
-			bool nolabel = false;
+			SplitFlags splitFlags = SplitFlags.Log | SplitFlags.Overwrite;
 			string mode;
 			string fullpath_out;
-			bool bigendian = false;
 			List<string> mdlanimfiles;
-            if (args.Length == 0)
+			if (args.Length == 0)
             {
                 Console.WriteLine("Split any binary files supported by SA Tools.\n");
                 Console.WriteLine("-Splitting using an XML template-");
@@ -41,8 +40,17 @@ namespace Split
             }
 			for (int u = 2; u < args.Length; u++)
 			{
-				if (args[u] == "-nometa") nometa = true;
-				if (args[u] == "-nolabel") nolabel = true;
+				if (args[u] == "-nometa")
+				{
+					Console.WriteLine("SAModel metadata is disabled");
+					splitFlags |= SplitFlags.NoMeta;
+				}
+				if (args[u] == "-nolabel")
+				{
+					splitFlags |= SplitFlags.NoLabels;
+					Console.WriteLine("Labels are disabled");
+				}
+
 			}
 			mode = args[0];
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -71,10 +79,10 @@ namespace Split
                         fullpath_out = Path.GetFullPath(fullpath_out);
                     }
                     Console.WriteLine("Output folder: {0}", fullpath_out);
-                    if (nometa) Console.WriteLine("Labels are disabled");
-                    if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll")
-                        SplitTools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, nometa, nolabel);
-                    else SplitTools.Split.SplitBinary.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, nometa, nolabel);
+					if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll")
+                        SplitTools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, splitFlags);
+                    else
+						SplitTools.Split.SplitBinary.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, splitFlags);
                     break;
                 case "template":
                     string dataFolder = "";
@@ -91,11 +99,7 @@ namespace Split
                     }
                     for (int i = 2; i < args.Length; i++)
                     {
-						if (args[i] == "-nolabel")
-							nolabel = true;
-						else if (args[i] == "-nometa")
-							nometa = true;
-						else if (args[i] == "-data")
+						if (args[i] == "-data")
 						{
 							dataFolder = args[i + 1];
 							i++;
@@ -133,7 +137,7 @@ namespace Split
                             continue;
                         }
                         Console.WriteLine("\n{0}: {1}: {2}", splitEntry.CmnName == null ? "No description" : splitEntry.CmnName, splitEntry.SourceFile, splitEntry.IniFile+".ini");
-                        ProjectFunctions.SplitTemplateEntry(splitEntry, null, dataFolder, iniFolder, fullpath_out, true, nometa, nolabel);
+                        ProjectFunctions.SplitTemplateEntry(splitEntry, null, dataFolder, iniFolder, fullpath_out, splitFlags);
                     }
                     if (template.SplitMDLEntries != null)
                         foreach (Templates.SplitEntryMDL splitEntryMDL in template.SplitMDLEntries)
@@ -201,7 +205,7 @@ namespace Split
                         outPath = Path.Combine(outPath, eaddress.ToString("X8"));
                     Console.WriteLine("Splitting from {0} (key: {1}) in {2}: {3} at {4}, offset: {5}", Path.GetFileName(filepath), key.ToString("X"), game.ToUpperInvariant(), etype, eaddress.ToString("X"), startoffset.ToString("X"));
                     Console.WriteLine("Output path: {0}", Path.GetFullPath(outPath));
-                    SplitTools.Split.SplitBinary.SplitManual(game, filepath, key, eaddress, etype, outPath, props, entryName, nometa, nolabel, startoffset);
+                    SplitTools.Split.SplitBinary.SplitManual(game, filepath, key, eaddress, etype, outPath, props, splitFlags, entryName, startoffset);
                     break;
 				case "nb":
 				case "nb_b":
@@ -238,7 +242,6 @@ namespace Split
 					Console.Write("File: {0}", fullpath_mdl);
 					if (mode == "mdl_b")
 					{
-						bigendian = true;
 						Console.Write(" (Big Endian)\n");
 					}
 					else
@@ -373,7 +376,7 @@ namespace Split
                             fileOutputPath = MakePathThatExists(fileOutputPath, land.Name + landext);
                             if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
                                 Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-                            land.SaveToFile(fileOutputPath, landfmt_cur, nometa);
+                            land.SaveToFile(fileOutputPath, landfmt_cur, splitFlags.HasFlag(SplitFlags.NoMeta));
                             break;
                         // NJS_OBJECT
                         case "model":
@@ -412,7 +415,7 @@ namespace Split
                                 fileOutputPath = MakePathThatExists(fileOutputPath, mdl.Name + modelext);
                                 if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
                                     Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-                                ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_obj, nometa);
+                                ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_obj, splitFlags.HasFlag(SplitFlags.NoMeta));
                             }
                             break;
                         // NJS_MOTION
@@ -430,7 +433,7 @@ namespace Split
                             Console.WriteLine("Output file: {0}", Path.GetFullPath(fileOutputPath));
                             if (!Directory.Exists(outpath))
                                 Directory.CreateDirectory(outpath);
-                            ani.Save(fileOutputPath, nometa);
+                            ani.Save(fileOutputPath, splitFlags.HasFlag(SplitFlags.NoMeta));
                             break;
 						// Attach
 						case "attach":
@@ -477,7 +480,7 @@ namespace Split
 								fileOutputPath = MakePathThatExists(fileOutputPath, mdl.Name + modelext);
 								if (!Directory.Exists(Path.GetDirectoryName(fileOutputPath)))
 									Directory.CreateDirectory(Path.GetDirectoryName(fileOutputPath));
-								ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_att, nometa);
+								ModelFile.CreateFile(fileOutputPath, mdl, null, null, null, null, modelfmt_att, splitFlags.HasFlag(SplitFlags.NoMeta));
 							}
 							break;
 						default:
