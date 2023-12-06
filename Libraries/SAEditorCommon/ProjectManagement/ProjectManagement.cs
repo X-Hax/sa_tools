@@ -118,6 +118,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("projectType")]
 			public string ProjectType { get; set; }
+			/// <summary>
+			/// Boolean to tell whether the template only outputs NJA.
+			/// </summary>
+			[XmlAttribute("NJA")]
+			public bool NJA { get; set; }
 		}
 
 		/// <summary>

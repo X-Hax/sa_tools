@@ -17,7 +17,7 @@ namespace SplitTools.Split
 		NoLabels = 0x2, // Disable label loading from the txt file
 		Overwrite = 0x4, // Overwrite existing files
 		Log = 0x8, // Enable output log
-		NJA = 0x16, // Output NJA instead of SAModel
+		NJA = 0x10, // Output NJA instead of SAModel
 	}
 
 	public static class SplitBinary
@@ -106,6 +106,8 @@ namespace SplitTools.Split
 						// This is the only thing that couldn't be moved out to SplitSingle because it retroactively writes to inifile
 						case "masterstringlist":
 							{
+								if (splitFlags.HasFlag(SplitFlags.NJA))
+									continue;
 								Console.WriteLine(item.Key + ": " + data.Address.ToString("X") + " -> " + fileOutputPath);
 								int lngcnt = 5;
 								if (inifile.Game == Game.SA2B && !inifile.BigEndian)
@@ -156,13 +158,14 @@ namespace SplitTools.Split
 					}
 				}
 				// Deal with the master object list
-				if (inifile.MasterObjectList != null)
+				if (!splitFlags.HasFlag(SplitFlags.NJA) && inifile.MasterObjectList != null)
 				{
 					Directory.CreateDirectory(Path.GetDirectoryName(molpath));
 					IniSerializer.Serialize(masterobjlist, molpath);
 				}
 				// Save _data INI file
-				IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename) + "_data.ini"));
+				if (!splitFlags.HasFlag(SplitFlags.NJA))
+					IniSerializer.Serialize(inifile, Path.Combine(projectFolderName, Path.GetFileNameWithoutExtension(inifilename) + "_data.ini"));
 				timer.Stop();
 				Console.WriteLine("Split " + itemcount + " items in " + timer.Elapsed.TotalSeconds + " seconds.");
 				Console.WriteLine();
@@ -1472,7 +1475,7 @@ namespace SplitTools.Split
 					}
 					break;
 			}
-			if (!nohash)
+			if (!nohash && !splitFlags.HasFlag(SplitFlags.NJA))
 				data.MD5Hash = HelperFunctions.FileHash(fileOutputPath);
 			return 1;
 		}
