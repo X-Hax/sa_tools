@@ -8,6 +8,7 @@ using System.ComponentModel;
 using SAModel.SAEditorCommon.ModManagement;
 using SAModel.SAEditorCommon.ProjectManagement;
 using System.Xml;
+using SplitTools.Split;
 
 namespace SAToolsHub
 {
@@ -441,9 +442,13 @@ namespace SAToolsHub
 
 		ProjectSplitResult splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress, DoWorkEventArgs e)
 		{
+			SplitFlags splitFlags = SplitFlags.Log | SplitFlags.Overwrite;
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
-
+			if (comboBoxLabels.SelectedIndex == 2)
+				splitFlags |= SplitFlags.NoMeta;
+			if (comboBoxLabels.SelectedIndex != 1)
+				splitFlags |= SplitFlags.NoLabels;
 			progress.SetMaxSteps(setProgressMaxStep());
 
 			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder)))
@@ -462,7 +467,7 @@ namespace SAToolsHub
 					e.Cancel = true;
 					return ProjectSplitResult.Cancelled;
 				}
-				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, nometa: comboBoxLabels.SelectedIndex == 2, nolabel: comboBoxLabels.SelectedIndex != 1);
+				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, splitFlags);
 				if (File.Exists(Path.Combine(projFolder, "SplitLog.log")))
 					return ProjectSplitResult.ItemFailure;
 			}
