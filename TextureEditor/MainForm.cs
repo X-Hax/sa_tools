@@ -391,7 +391,7 @@ namespace TextureEditor
 						{
 							bmp = fl.GetBitmap();
 						}
-						catch (Exception ex)
+						catch (Exception)
 						{
 							bmp = new Bitmap(TextureEditor.Properties.Resources.error);
 						}
