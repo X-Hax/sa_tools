@@ -2334,7 +2334,6 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					bool dx = false;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
