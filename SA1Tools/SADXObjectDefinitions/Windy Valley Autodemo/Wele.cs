@@ -80,9 +80,6 @@ namespace SADXObjectDefinitions.WindyValleyAutodemo
 				
 				return result;
 			}
-
-			
-			return result;
 		}
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
@@ -136,9 +133,6 @@ namespace SADXObjectDefinitions.WindyValleyAutodemo
 				
 				return result;
 			}
-
-			
-			return result;
 		}
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
@@ -183,9 +177,6 @@ namespace SADXObjectDefinitions.WindyValleyAutodemo
 				transform.Pop();
 				return result;
 			}
-
-			
-			return result;
 		}
 
 		public override BoundingSphere GetBounds(SETItem item)
