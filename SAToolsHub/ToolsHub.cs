@@ -1489,7 +1489,6 @@ namespace SAToolsHub
 		#endregion
 
 		#region Update Code
-		private bool checkedForUpdates; // Unused?
 		const string updatePath = ".updates";
 
 		private static bool UpdateTimeElapsed(SAToolsHubSettings.UpdateUnits unit, int amount, DateTime start)
@@ -1529,7 +1528,6 @@ namespace SAToolsHub
 				return false;
 			}
 
-			checkedForUpdates = true;
 			hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
 
 			string stringdl = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
