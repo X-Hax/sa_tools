@@ -9,6 +9,8 @@ using SAModel.SAEditorCommon.ModManagement;
 using SAModel.SAEditorCommon.ProjectManagement;
 using System.Xml;
 using SplitTools.Split;
+using SAModel;
+using SplitTools;
 
 namespace SAToolsHub
 {
@@ -24,6 +26,7 @@ namespace SAToolsHub
 		string gameDataFolder;
 		string checkFile;
 		string projName;
+		bool isNJA;
 
 		// Variables (split)
 		Stream projFileStream;
@@ -293,6 +296,7 @@ namespace SAToolsHub
 				gameName = template.GameInfo.GameName;
 				projectType = template.GameInfo.ProjectType;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
+				isNJA = template.GameInfo.NJA;
 				// This should never happen under normal circumstances
 				if (gamePath == "")
 					throw new Exception("Game path not set");
@@ -405,7 +409,7 @@ namespace SAToolsHub
 
 			foreach (string objdef in files)
 			{
-				FileInfo objdefFileInfo = new FileInfo(objdef);
+				System.IO.FileInfo objdefFileInfo = new System.IO.FileInfo(objdef);
 				if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj")) continue;
 
 				// copy
@@ -440,14 +444,29 @@ namespace SAToolsHub
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
+		private static void RemoveEmptyFolders(string startLocation)
+		{
+			foreach (var directory in Directory.GetDirectories(startLocation))
+			{
+				RemoveEmptyFolders(directory);
+				if (Directory.GetFiles(directory).Length == 0 &&
+					Directory.GetDirectories(directory).Length == 0)
+				{
+					Directory.Delete(directory, false);
+				}
+			}
+		}
+
 		ProjectSplitResult splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress, DoWorkEventArgs e)
 		{
 			SplitFlags splitFlags = SplitFlags.Log | SplitFlags.Overwrite;
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
-			if (comboBoxLabels.SelectedIndex == 2)
+			if (isNJA)
+				splitFlags |= SplitFlags.NJA;
+			if (comboBoxLabels.SelectedIndex == 2 && !isNJA)
 				splitFlags |= SplitFlags.NoMeta;
-			if (comboBoxLabels.SelectedIndex != 1)
+			if (comboBoxLabels.SelectedIndex != 1 && !isNJA)
 				splitFlags |= SplitFlags.NoLabels;
 			progress.SetMaxSteps(setProgressMaxStep());
 
@@ -528,6 +547,47 @@ namespace SAToolsHub
 					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, iniFolder);
 				}
 			}
+			// Process and clean up non-NJA stuff
+			if (isNJA)
+			{
+				progress.SetTask("Processing and cleaning decomp files");
+				string[] files = Directory.GetFiles(projFolder, "*.*", SearchOption.AllDirectories);
+				foreach (string file in files)
+				{
+					progress.SetStep("Processing " + file);
+					switch (Path.GetExtension(file).ToLowerInvariant())
+					{
+						case ".sa1lvl":
+							StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
+							GenerateDup(file);
+							File.Delete(file);
+							break;
+						case ".sa1mdl":
+						case ".sa2mdl":
+						case ".sa2bmdl":
+						case ".saanim":
+						case ".satex":
+							StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
+							File.Delete(file);
+							break;
+						case ".nja":
+						case ".nam":
+						case ".nad":
+						case ".nas":
+						case ".dup":
+						case ".dum":
+						case ".tls":
+						case ".cut":
+						case ".sap":
+							break;
+						default:
+							File.Delete(file);
+							break;
+					}
+				}
+				RemoveEmptyFolders(projFolder);
+				return ProjectSplitResult.Success;
+			}
 			// Project folders for buildable PC games
 			if (game == "SADXPC" || game == "SA2PC")
 			{
@@ -536,8 +596,107 @@ namespace SAToolsHub
 				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
 				progress.StepProgress();
 			}
-
 			return ProjectSplitResult.Success;
+		}
+		#endregion
+
+		#region dupmodel.dup generation for lantables (NJA)
+		static void GenerateDup(string filename)
+		{
+			string outname = Path.GetFileNameWithoutExtension(filename);
+			string outpath = Path.GetDirectoryName(filename);
+			LandTable land = LandTable.LoadFromFile(filename);
+			List<Attach> atts = new List<Attach>();
+			List<NJS_OBJECT> dupmodels = new List<NJS_OBJECT>();
+			foreach (COL col in land.COL)
+			{
+				if (CheckDuplicateObject(col.Model) && !dupmodels.Contains(col.Model))
+				{
+					dupmodels.Add(col.Model);
+					Console.WriteLine(col.Model.Name);
+				}
+			}
+			// Make a list of duplicate models
+			TextWriter tw = File.CreateText(Path.Combine(outpath, outname + "_dupmodel_c.dup"));
+			TextWriter tw_nja = File.CreateText(Path.Combine(outpath, outname + "_dupmodel.dup"));
+			foreach (NJS_OBJECT obj in dupmodels)
+			{
+				ObjectToC(obj, tw);
+				ObjectToNJA(obj, tw_nja);
+			}
+			tw.Flush();
+			tw.Close();
+			tw_nja.Flush();
+			tw_nja.Close();
+			Console.WriteLine("Finished!");
+		}
+
+		static bool CheckDuplicateObject(NJS_OBJECT obj)
+		{
+			// This relies on the label of the OBJECT being different from that of the MODEL.
+			// If the MODEL is being reused, usually the OBJECT label has a number at the end.
+			// If the OBJECT has the number and the MODEL doesn't, it's most likely a duplicate.
+			return obj.Name.Substring(obj.Name.Length - 3, 3) != obj.Attach.Name.Substring(obj.Attach.Name.Length - 3, 3);
+		}
+
+		static void ObjectToNJA(NJS_OBJECT obj, TextWriter writer)
+		{
+			writer.Write("OBJECT      ");
+			writer.Write(obj.Name);
+			writer.WriteLine("[]");
+			writer.WriteLine("START");
+			writer.WriteLine("EvalFlags ( 0x" + ((int)obj.GetFlags()).ToString("x8") + " ),");
+			writer.WriteLine("Model       " + (obj.Attach != null ? obj.Attach.Name : "NULL") + ",");
+			writer.WriteLine("OPosition  {0},", obj.Position.ToNJA());
+			writer.WriteLine("OAngle     ( " + ((float)obj.Rotation.X / 182.044f).ToNJA() + ", " + ((float)obj.Rotation.Y / 182.044f).ToNJA() + ", " + ((float)obj.Rotation.Z / 182.044f).ToNJA() + " ),");
+			writer.WriteLine("OScale     {0},", obj.Scale.ToNJA());
+			writer.WriteLine("Child       " + (obj.Children.Count > 0 ? obj.Children[0].Name : "NULL") + ",");
+			writer.WriteLine("Sibling     " + (obj.Sibling != null ? obj.Sibling.Name : "NULL") + ",");
+			writer.WriteLine("END" + Environment.NewLine);
+			writer.WriteLine("OBJECT_END");
+			// Probably not necessary for LandTable
+			/* 
+			if (obj.Parent == null)
+			{
+				writer.WriteLine(Environment.NewLine + "DEFAULT_START");
+				writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
+				writer.WriteLine("#define DEFAULT_OBJECT_NAME " + obj.Name);
+				writer.WriteLine("#endif");
+				writer.WriteLine(Environment.NewLine + "DEFAULT_END");
+			}
+			*/
+		}
+
+		static void ObjectToC(NJS_OBJECT obj, TextWriter writer)
+		{
+			// ToStruct modified for array-like export
+			writer.Write("NJS_OBJECT ");
+			writer.Write(obj.Name);
+			writer.Write("[1] = { { ");
+			writer.Write(((StructEnums.NJD_EVAL)obj.GetFlags()).ToString().Replace(", ", " | "));
+			writer.Write(", ");
+			writer.Write(obj.Attach != null ? obj.Attach.Name : "NULL");
+			foreach (float value in obj.Position.ToArray())
+			{
+				writer.Write(", ");
+				writer.Write(value.ToC());
+			}
+			foreach (int value in obj.Rotation.ToArray())
+			{
+				writer.Write(", ");
+				writer.Write(value.ToCHex());
+			}
+			foreach (float value in obj.Scale.ToArray())
+			{
+				writer.Write(", ");
+				writer.Write(value.ToC());
+			}
+			writer.Write(", ");
+			writer.Write(obj.Children.Count > 0 ? "&" + obj.Children[0].Name : "NULL");
+			writer.Write(", ");
+			writer.Write(obj.Sibling != null ? "&" + obj.Sibling.Name : "NULL");
+			writer.Write(" }");
+			writer.WriteLine(" };");
 		}
 		#endregion
 
@@ -564,7 +723,7 @@ namespace SAToolsHub
 					MessageBox.Show(this, "Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					break;
 				case ProjectSplitResult.ItemFailure:
-					if (MessageBox.Show(this, "Item failed to split properly. The log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+					if (MessageBox.Show(this, "Item failed to split properly: " + e.Error.Message + ". The log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 						System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + Path.Combine(projFolder, "SplitLog.log") + "\"") { CreateNoWindow = false });
 					break;
 				case ProjectSplitResult.Success:
