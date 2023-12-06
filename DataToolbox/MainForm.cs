@@ -448,7 +448,7 @@ namespace SAModel.DataToolbox
 			if (CStruct)
 			{
 				outext = ".c";
-                SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outpath + outext, dx, false);
+                StructConversion.ConvertFileToText(FileName, StructConversion.TextType.CStructs, outpath + outext, dx, false);
             }
 			if (NJA)
 			{
@@ -474,12 +474,12 @@ namespace SAModel.DataToolbox
 							outext = ".dup";
 						break;
 				}
-				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.NJA, outpath + outext, dx, false);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.NJA, outpath + outext, dx, false);
 			}
 			if (JSON)
 			{
 				outext = ".json";
-				SAModel.SAEditorCommon.StructConversion.ConvertFileToText(FileName, SAModel.SAEditorCommon.StructConversion.TextType.JSON, outpath + outext, dx, false);
+				StructConversion.ConvertFileToText(FileName, StructConversion.TextType.JSON, outpath + outext, dx, false);
 			}
 		}
 

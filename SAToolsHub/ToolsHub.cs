@@ -1256,7 +1256,7 @@ namespace SAToolsHub
 					string filename = ((itemTags)selItem.Tag).Path;
 					string outName = Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path))) + ".c";
 
-					SAModel.SAEditorCommon.StructConversion.ConvertFileToText(filename, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outName);
+					StructConversion.ConvertFileToText(filename, StructConversion.TextType.CStructs, outName);
 				}
 			}
 		}
@@ -1269,9 +1269,9 @@ namespace SAToolsHub
 				{
 					if (Path.GetExtension(((itemTags)selItem.Tag).Path) == ".saanim")
 					{
-						SAModel.SAEditorCommon.StructConversion.ConvertFileToText(
+						StructConversion.ConvertFileToText(
 							((itemTags)selItem.Tag).Path,
-							SAModel.SAEditorCommon.StructConversion.TextType.JSON);
+							StructConversion.TextType.JSON);
 					}
 
 				}

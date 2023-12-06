@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using SAModel;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SAModel.SAEditorCommon
+namespace SplitTools
 {
 	public static class StructConversion
 	{
