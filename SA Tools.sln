@@ -850,6 +850,44 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		GameConfig\X360 - SADX Debug Prototype.xml = GameConfig\X360 - SADX Debug Prototype.xml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Landtable models", "Landtable models", "{EA38D1F1-FB08-477C-B5C9-C8570577552C}"
+	ProjectSection(SolutionItems) = preProject
+		GameConfig\PC_SADX\ADV00_DLL_land.ini = GameConfig\PC_SADX\ADV00_DLL_land.ini
+		GameConfig\PC_SADX\ADV0100_DLL_land.ini = GameConfig\PC_SADX\ADV0100_DLL_land.ini
+		GameConfig\PC_SADX\ADV0130_DLL_land.ini = GameConfig\PC_SADX\ADV0130_DLL_land.ini
+		GameConfig\PC_SADX\ADV02_DLL_land.ini = GameConfig\PC_SADX\ADV02_DLL_land.ini
+		GameConfig\PC_SADX\ADV03_DLL_land.ini = GameConfig\PC_SADX\ADV03_DLL_land.ini
+		GameConfig\PC_SADX\B_CHAOS0_DLL_land.ini = GameConfig\PC_SADX\B_CHAOS0_DLL_land.ini
+		GameConfig\PC_SADX\B_CHAOS2_land.ini = GameConfig\PC_SADX\B_CHAOS2_land.ini
+		GameConfig\PC_SADX\B_CHAOS4_land.ini = GameConfig\PC_SADX\B_CHAOS4_land.ini
+		GameConfig\PC_SADX\B_CHAOS6_land.ini = GameConfig\PC_SADX\B_CHAOS6_land.ini
+		GameConfig\PC_SADX\B_CHAOS7_land.ini = GameConfig\PC_SADX\B_CHAOS7_land.ini
+		GameConfig\PC_SADX\B_E101_land.ini = GameConfig\PC_SADX\B_E101_land.ini
+		GameConfig\PC_SADX\B_E101_R_land.ini = GameConfig\PC_SADX\B_E101_R_land.ini
+		GameConfig\PC_SADX\B_EGM1_land.ini = GameConfig\PC_SADX\B_EGM1_land.ini
+		GameConfig\PC_SADX\B_EGM2_land.ini = GameConfig\PC_SADX\B_EGM2_land.ini
+		GameConfig\PC_SADX\B_EGM3_land.ini = GameConfig\PC_SADX\B_EGM3_land.ini
+		GameConfig\PC_SADX\B_ROBO_land.ini = GameConfig\PC_SADX\B_ROBO_land.ini
+		GameConfig\PC_SADX\chaostggarden02mr_daytime_land.ini = GameConfig\PC_SADX\chaostggarden02mr_daytime_land.ini
+		GameConfig\PC_SADX\chaostggarden02mr_evening_land.ini = GameConfig\PC_SADX\chaostggarden02mr_evening_land.ini
+		GameConfig\PC_SADX\chaostggarden02mr_night_land.ini = GameConfig\PC_SADX\chaostggarden02mr_night_land.ini
+		GameConfig\PC_SADX\Chao_land.ini = GameConfig\PC_SADX\Chao_land.ini
+		GameConfig\PC_SADX\MINICART_land.ini = GameConfig\PC_SADX\MINICART_land.ini
+		GameConfig\PC_SADX\SBOARD_land.ini = GameConfig\PC_SADX\SBOARD_land.ini
+		GameConfig\PC_SADX\STG00_land.ini = GameConfig\PC_SADX\STG00_land.ini
+		GameConfig\PC_SADX\STG01_land.ini = GameConfig\PC_SADX\STG01_land.ini
+		GameConfig\PC_SADX\STG02_land.ini = GameConfig\PC_SADX\STG02_land.ini
+		GameConfig\PC_SADX\STG03_land.ini = GameConfig\PC_SADX\STG03_land.ini
+		GameConfig\PC_SADX\STG04_land.ini = GameConfig\PC_SADX\STG04_land.ini
+		GameConfig\PC_SADX\STG05_land.ini = GameConfig\PC_SADX\STG05_land.ini
+		GameConfig\PC_SADX\STG06_land.ini = GameConfig\PC_SADX\STG06_land.ini
+		GameConfig\PC_SADX\STG07_land.ini = GameConfig\PC_SADX\STG07_land.ini
+		GameConfig\PC_SADX\STG08_land.ini = GameConfig\PC_SADX\STG08_land.ini
+		GameConfig\PC_SADX\STG09_land.ini = GameConfig\PC_SADX\STG09_land.ini
+		GameConfig\PC_SADX\STG10_land.ini = GameConfig\PC_SADX\STG10_land.ini
+		GameConfig\PC_SADX\STG12_land.ini = GameConfig\PC_SADX\STG12_land.ini
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1457,6 +1495,7 @@ Global
 		{4B7C9D53-7337-4EA1-82E0-80619E7C37B7} = {2862E380-E258-459F-B522-A3A2BF98733D}
 		{F7F48AB7-7590-4492-BA42-A5532A44B0B2} = {CFE0A4B7-4D42-47A2-9749-6E2A622A8DE5}
 		{21F9C8B2-DCC2-43FA-8823-553EB0335DEC} = {CFE0A4B7-4D42-47A2-9749-6E2A622A8DE5}
+		{EA38D1F1-FB08-477C-B5C9-C8570577552C} = {E0F2E50F-55D2-4256-844F-BD4218F1B56E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A67C9CC3-1711-423D-BF49-9228EB5E90B0}
