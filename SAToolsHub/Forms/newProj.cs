@@ -558,15 +558,14 @@ namespace SAToolsHub
 				string[] files = Directory.GetFiles(projFolder, "*.*", SearchOption.AllDirectories);
 				foreach (string file in files)
 				{
-
 					switch (Path.GetExtension(file).ToLowerInvariant())
 					{
 						case ".sa1lvl":
-							string duppath = Path.Combine(Path.GetDirectoryName(file));
+							// .c file export disabled for now
+							//StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
+							// Generate dupmodel and dupmotion files
 							if (duplist.ContainsKey(Path.GetFileName(file)))
-								duppath = Path.Combine(Path.GetDirectoryName(file), duplist[Path.GetFileName(file)]);
-							StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
-                            SAModel.SAEditorCommon.ProjectManagement.NJAExporter.GenerateDup(file, duppath);
+								SAModel.SAEditorCommon.ProjectManagement.NJAExporter.GenerateDup(file, Path.Combine(Path.GetDirectoryName(file), duplist[Path.GetFileName(file)]));
 							File.Delete(file);
 							break;
 						case ".sa1mdl":

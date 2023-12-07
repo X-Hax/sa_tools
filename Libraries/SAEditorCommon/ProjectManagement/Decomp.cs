@@ -22,6 +22,18 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 					dupmodels.Add(col.Model);
 				}
 			}
+			// Ice Cap Act 4 reuses Act 2 models but has some additional dup models, so the counting has to be done for both
+			if (Path.GetFileName(filename).ToLowerInvariant() == "landtable0801.c.sa1lvl")
+			{
+				LandTable act4 = LandTable.LoadFromFile(Path.Combine(Path.GetDirectoryName(filename), "landtable0803.c.sa1lvl"));
+				foreach (COL col in act4.COL)
+				{
+					if (CheckDuplicateObject(col.Model) && !dupmodels.Contains(col.Model))
+					{
+						dupmodels.Add(col.Model);
+					}
+				}
+			}
 			// Make a list of duplicate models
 			if (dupmodels.Count > 0)
 			{
