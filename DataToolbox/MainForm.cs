@@ -1176,6 +1176,7 @@ namespace SAModel.DataToolbox
 						case ".sa1lvl":
 						case ".sa2lvl":
 						case ".saanim":
+						case ".satex":
 							if (!listBoxLabelTool.Items.Contains(files[i]))
 								listBoxLabelTool.Items.Add(files[i]);
 							break;
@@ -1185,7 +1186,7 @@ namespace SAModel.DataToolbox
 				}
 		}
 
-		private void ImportLabels(string filename, bool eraseExternal)
+		private void ImportLabels(string filename, bool eraseExternal, Dictionary<int, string> labelList)
 		{
 			string labelfile = Path.ChangeExtension(filename, ".salabel");
 			if (!File.Exists(labelfile))
@@ -1205,10 +1206,18 @@ namespace SAModel.DataToolbox
 					for (int i = 0; i < objs.Length; i++)
 						labels_m[i].Apply(objs[i]);
 					ModelFile.CreateFile(filename, ob, null, mf.Author, mf.Description, mf.Metadata, mf.Format);
+					if (labelList != null)
+					{
+						LabelOBJECT.OutputLabelList(ob, labels_m, labelList);
+					}
 					break;
 				case ".saanim":
 					NJS_MOTION mot = NJS_MOTION.Load(filename);
 					LabelMOTION resultm = js.Deserialize<LabelMOTION>(jtr);
+					if (labelList != null)
+					{
+						LabelMOTION.OutputLabelList(mot, resultm, labelList);
+					}
 					resultm.Apply(mot);
 					mot.Save(filename);
 					break;
@@ -1216,8 +1225,22 @@ namespace SAModel.DataToolbox
 				case ".sa2lvl":
 					LandTable lnd = LandTable.LoadFromFile(filename);
 					LabelLANDTABLE resultlt = js.Deserialize<LabelLANDTABLE>(jtr);
+					if (labelList != null)
+					{
+						LabelLANDTABLE.OutputLabelList(lnd, resultlt, labelList);
+					}
 					resultlt.Apply(lnd);
 					lnd.SaveToFile(filename, lnd.Format);
+					break;
+				case ".satex":
+					NJS_TEXLIST tex = NJS_TEXLIST.Load(filename);
+					LabelTEXLIST texlabel = js.Deserialize<LabelTEXLIST>(jtr);
+					if (labelList != null)
+					{
+						LabelTEXLIST.OutputLabelList(tex, texlabel, labelList);
+					}
+					texlabel.Apply(tex);
+					tex.Save(filename);
 					break;
 			}
 			tr.Close();
@@ -1262,6 +1285,11 @@ namespace SAModel.DataToolbox
 					if (eraseInternal)
 						mot.Save(filename, true);
 					break;
+				case ".satex":
+					NJS_TEXLIST tex = NJS_TEXLIST.Load(filename);
+					LabelTEXLIST labeltex = new LabelTEXLIST(tex);
+					labeltex.Save(labelfile);
+					break;
 			}
 		}
 
@@ -1291,13 +1319,28 @@ namespace SAModel.DataToolbox
 
 		private void buttonLabelStart_Click(object sender, EventArgs e)
 		{
+			Dictionary<int, string> labelList = null;
+			string labelListFilename = string.Empty;
+			if (radioButtonLabelImport.Checked && checkBoxCreateLabelList.Checked)
+			{
+				using (SaveFileDialog saveFileDialog = new SaveFileDialog() { Filter = "Label List (*.txt)|*.txt", Title = "Save Label List" })
+				{
+					if (saveFileDialog.ShowDialog() == DialogResult.OK)
+					{
+						labelList = new Dictionary<int, string>();
+						labelListFilename=saveFileDialog.FileName;
+					}
+				}
+			}
 			foreach (string item in listBoxLabelTool.Items)
 			{
 				if (radioButtonLabelExport.Checked)
 					ExportLabels(item, checkBoxLabelClearInternal.Checked);
 				else if (radioButtonLabelImport.Checked)
-					ImportLabels(item, checkBoxLabelDeleteFiles.Checked);				
+					ImportLabels(item, checkBoxLabelDeleteFiles.Checked, labelList);				
 			}
+			if (labelList != null)
+				IniSerializer.Serialize(labelList, labelListFilename);
 			MessageBox.Show("Finished!", "Label Tool", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
@@ -1324,7 +1367,7 @@ namespace SAModel.DataToolbox
 
 		private void radioButtonLabelImport_CheckedChanged(object sender, EventArgs e)
 		{
-			checkBoxLabelDeleteFiles.Enabled = radioButtonLabelImport.Checked;
+			checkBoxLabelDeleteFiles.Enabled = checkBoxCreateLabelList.Enabled = radioButtonLabelImport.Checked;
 		}
 
 		private void radioButtonLabelExport_CheckedChanged(object sender, EventArgs e)
