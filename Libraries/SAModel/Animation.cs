@@ -371,23 +371,23 @@ namespace SAModel
 						if (shortcheck)
 						{
 							// Check if the animation uses short rotation or not
-						}
-						for (int j = 0; j < frames; j++)
-						{
-							// If any of the rotation frames go outside the file, assume it uses shorts
-							if (tmpaddr + 4 + 12 > file.Length)
+							for (int j = 0; j < frames; j++)
 							{
-								ShortRot = true;
-								break;
-							}
-							// If any of the rotation frames isn't in the range from -32767 to 32677, assume it uses shorts
-							Rotation rot = new Rotation(file, tmpaddr + 4);
-							if (rot.X > 65535 || rot.X < -65535 ||
-								rot.Y > 65535 || rot.Y < -65535 ||
-								rot.Z > 65535 || rot.Z < -65535)
-							{
-								ShortRot = true;
-								break;
+								// If any of the rotation frames go outside the file, assume it uses shorts
+								if (tmpaddr + 4 + 12 > file.Length)
+								{
+									ShortRot = true;
+									break;
+								}
+								// If any of the rotation frames isn't in the range from -65535 to 65535, assume it uses shorts
+								Rotation rot = new Rotation(file, tmpaddr + 4);
+								if (rot.X > 65535 || rot.X < -65535 ||
+									rot.Y > 65535 || rot.Y < -65535 ||
+									rot.Z > 65535 || rot.Z < -65535)
+								{
+									ShortRot = true;
+									break;
+								}
 							}
 						}
 						// Read rotation values
