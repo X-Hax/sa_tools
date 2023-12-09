@@ -185,7 +185,7 @@ namespace SAModel
 			return optimizeMotions = true;
 		}
 
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null, string actionName = null, string objectName = null)
+		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null, string actionName = null, string objectName = null, bool shortcheck = true)
 		{
 			if (nummodels == 0) 
 				nummodels = CalculateModelParts(file, address, imageBase);
@@ -368,7 +368,10 @@ namespace SAModel
 						if (labels != null && labels.ContainsKey(tmpaddr))
 							data.RotationName = labels[tmpaddr];
 						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot_" + tmpaddr.ToString("X8");
-						// Check if the animation uses short rotation or not
+						if (shortcheck)
+						{
+							// Check if the animation uses short rotation or not
+						}
 						for (int j = 0; j < frames; j++)
 						{
 							// If any of the rotation frames go outside the file, assume it uses shorts
@@ -793,7 +796,7 @@ namespace SAModel
 					ByteConverter.BigEndian = be;
 					throw new NotImplementedException("Cannot open version 0 animations without a model!");
 				}
-				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0) { Description = description, ActionName = actionName, ObjectName = objectName };
+				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0, shortcheck: false) { Description = description, ActionName = actionName, ObjectName = objectName };
 				ByteConverter.BigEndian = be;
 				return anim;
 			}
