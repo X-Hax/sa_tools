@@ -64,6 +64,9 @@ namespace SAToolsHub
 		#region Form Functions
 		private void resplitMenu_Shown(object sender, EventArgs e)
 		{
+			splitEventEntries.Clear();
+			splitMDLEntries.Clear();
+			splitEntries.Clear();
 			chkBoxEntries.Clear();
 			checkedListBox1.Items.Clear();
 			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplateFileForResplit(SAToolsHub.projType));
@@ -82,7 +85,11 @@ namespace SAToolsHub
 
 			foreach (Templates.SplitEntryMDL mdlEntry in template.SplitMDLEntries)
 			{
-				string mdlFile = Path.GetFileNameWithoutExtension(mdlEntry.ModelFile);
+				string mdlFile;
+				if (mdlEntry.CmnName != null)
+					mdlFile = mdlEntry.CmnName;
+				else
+					mdlFile	= Path.GetFileNameWithoutExtension(mdlEntry.ModelFile);
 				chkBoxData item = new chkBoxData("mdl", mdlFile, null, mdlEntry);
 				chkBoxEntries.Add(item);
 			}
