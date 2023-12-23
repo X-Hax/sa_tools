@@ -1770,7 +1770,7 @@ namespace SAModel.SALVL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportLevelObj(a.FileName, true);
+					ExportLevelObj(a.FileName, true, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
 				}
 			}
 		}
@@ -1814,7 +1814,7 @@ namespace SAModel.SALVL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportLevelObj(a.FileName, false);
+					ExportLevelObj(a.FileName, false, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
 				}
 			}
 		}
@@ -1824,7 +1824,7 @@ namespace SAModel.SALVL
 			using (FolderBrowserDialog folderBrowser = new FolderBrowserDialog() { })
 				if (folderBrowser.ShowDialog() == DialogResult.OK)
 				{
-					exportStructs(folderBrowser.SelectedPath, true);
+					exportStructs(folderBrowser.SelectedPath, true, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
 				}
 		}
 
@@ -1833,7 +1833,7 @@ namespace SAModel.SALVL
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C file|*.c" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					exportStructs(sd.FileName, false);
+					exportStructs(sd.FileName, false, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
 				}
 		}
 
@@ -2430,6 +2430,24 @@ namespace SAModel.SALVL
 		private void addLevelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ImportLevelAnimation();
+		}
+
+		private void exportOnlyNonCollideableToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			exportOnlyNonCollideableToolStripMenuItem.Checked = exportOnlyNonCollideableToolStripMenuItem.Checked;
+			if(exportOnlyNonCollideableToolStripMenuItem.Checked == true)
+			{
+				exportOnlyCollideableToolStripMenuItem.Checked = false;
+			}
+		}
+
+		private void exportOnlyCollideableToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			exportOnlyCollideableToolStripMenuItem.Checked = exportOnlyCollideableToolStripMenuItem.Checked;
+			if (exportOnlyCollideableToolStripMenuItem.Checked == true)
+			{
+				exportOnlyNonCollideableToolStripMenuItem.Checked = false;
+			}
 		}
 	}
 }
