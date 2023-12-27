@@ -395,6 +395,7 @@ namespace SAModel.SALVL
 			addMissionItemToolStripMenuItem.Enabled = LevelData.MissionSETItems != null;
 			addDeathZoneToolStripMenuItem.Enabled = LevelData.DeathZones != null;
 			saveAdvancedToolStripMenuItem.Enabled = true;
+			cameraToolStripMenuItem.Enabled = land is not null && land.Format <= LandTableFormat.SADX;
 			timeOfDayToolStripMenuItem.Enabled = stageLightList != null;
 			upgradeObjDefsToolStripMenuItem.Enabled = salvlini != null;
 			currentLandtableFilename = filename;
@@ -448,7 +449,7 @@ namespace SAModel.SALVL
 
 			// Advanced Save menu
 			saveAdvancedToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = true;
-
+			cAMFileToolStripMenuItem.Enabled = isGeometryPresent && LevelData.geo.Format <= LandTableFormat.SADX && !LevelData.CAMItemsIsNull();
 			// Calculate All Bounds
 			calculateAllBoundsToolStripMenuItem.Enabled = isGeometryPresent;
 

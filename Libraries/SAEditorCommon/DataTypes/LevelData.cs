@@ -112,6 +112,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 			return setItems == null;
 		}
 
+		public static bool CAMItemsIsNull()
+		{
+			return CAMItems == null;
+		}
+
 		public static void AssignSetList(int characterID, List<SETItem> list)
 		{
 			setItems[characterID] = list;
@@ -138,6 +143,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public static IEnumerable<SETItem> SETItems(int characterID)
 		{
 			return setItems[characterID];
+		}
+
+		public static IEnumerable<CAMItem> camItems(int characterID)
+		{
+			return CAMItems[characterID];
 		}
 
 		public static int GetIndexOfSETItem(int characterID, SETItem item)
