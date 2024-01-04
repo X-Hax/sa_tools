@@ -72,6 +72,7 @@ namespace SA2MessageFileEditor
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			filename = null;
 			messages.Clear();
 			messageNum.Items.Clear();
 			findNextToolStripMenuItem.Enabled = false;

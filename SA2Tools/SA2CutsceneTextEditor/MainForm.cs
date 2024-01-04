@@ -72,6 +72,7 @@ namespace SA2CutsceneTextEditor
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			filename = null;
 			scenes.Clear();
 			sceneNum.Items.Clear();
 			findNextToolStripMenuItem.Enabled = false;
