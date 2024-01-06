@@ -402,6 +402,9 @@ namespace SAToolsHub
 
 		private void CopyFolder(string sourceFolder, string destinationFolder)
 		{
+			if (!Directory.Exists(sourceFolder))
+				return;
+
 			string[] files = Directory.GetFiles(sourceFolder);
 
 			Directory.CreateDirectory(destinationFolder);
@@ -494,7 +497,7 @@ namespace SAToolsHub
 			{
 				progress.SetStep("Copying Object Definitions");
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
-				string objdefsinifolder = objdefsinifolder = Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
+				string objdefsinifolder = Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
 				// objdefs INI folder
 				if (!Directory.Exists(objdefsinifolder))
 					objdefsinifolder = Path.Combine(appPath, "..\\GameConfig", dataFolder, "objdefs");
