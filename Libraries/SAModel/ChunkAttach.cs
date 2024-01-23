@@ -192,9 +192,9 @@ namespace SAModel
 		public override string ToStruct(bool DX)
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(Vertex != null ? VertexName : "NULL");
+			result.Append(Vertex != null ? VertexName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(Poly != null ? PolyName : "NULL");
+			result.Append(Poly != null ? PolyName.MakeIdentifier() : "NULL");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			result.Append(" }");
@@ -207,7 +207,7 @@ namespace SAModel
 			{
 				labels.Add(VertexName);
 				writer.Write("Sint32 ");
-				writer.Write(VertexName);
+				writer.Write(VertexName.MakeIdentifier());
 				writer.Write("[] = { ");
 				List<byte> chunks = new List<byte>();
 				foreach (VertexChunk item in Vertex)
@@ -228,7 +228,7 @@ namespace SAModel
 			{
 				labels.Add(PolyName);
 				writer.Write("Sint16 ");
-				writer.Write(PolyName);
+				writer.Write(PolyName.MakeIdentifier());
 				writer.Write("[] = { ");
 				List<byte> chunks = new List<byte>();
 				foreach (PolyChunk item in Poly)
@@ -246,7 +246,7 @@ namespace SAModel
 				writer.WriteLine();
 			}
 			writer.Write("NJS_CNK_MODEL ");
-			writer.Write(Name);
+			writer.Write(Name.MakeIdentifier());
 			writer.Write(" = ");
 			writer.Write(ToStruct(DX));
 			writer.WriteLine(";");
@@ -256,7 +256,7 @@ namespace SAModel
 		{
 			if (Poly != null && !labels.Contains(PolyName))
 			{
-				writer.WriteLine("PLIST      " + PolyName + "[]");
+				writer.WriteLine("PLIST      " + PolyName.MakeIdentifier() + "[]");
 				writer.WriteLine("START");
 
 				foreach (PolyChunk item in Poly)
@@ -270,7 +270,7 @@ namespace SAModel
 
 			if (Vertex != null && !labels.Contains(VertexName))
 			{
-				writer.WriteLine("VLIST      " + VertexName + "[]");
+				writer.WriteLine("VLIST      " + VertexName.MakeIdentifier() + "[]");
 				writer.WriteLine("START");
 
 				foreach (VertexChunk item in Vertex)
@@ -282,14 +282,14 @@ namespace SAModel
 				writer.Write("END" + Environment.NewLine + Environment.NewLine);
 			}
 
-			writer.WriteLine("CNKMODEL   " + Name + "[]");
+			writer.WriteLine("CNKMODEL   " + Name.MakeIdentifier() + "[]");
 			writer.WriteLine("START");
 			if (Vertex != null && !labels.Contains(VertexName))
-				writer.WriteLine("VList      " + VertexName + ",");
+				writer.WriteLine("VList      " + VertexName.MakeIdentifier() + ",");
 			else
 				writer.WriteLine("VList      NULL,");
 			if (Poly != null && !labels.Contains(PolyName))
-				writer.WriteLine("PList      " + PolyName + ",");
+				writer.WriteLine("PList      " + PolyName.MakeIdentifier() + ",");
 			else
 				writer.WriteLine("PList      NULL,");
 			writer.WriteLine("Center    " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");

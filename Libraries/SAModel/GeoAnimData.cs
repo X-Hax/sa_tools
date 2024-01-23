@@ -85,9 +85,9 @@ namespace SAModel
 			result.Append(", ");
 			result.Append(MaxFrame.ToC());
 			result.Append(", ");
-			result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
+			result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name.MakeIdentifier()) : "NULL");
 			result.Append(", ");
-			result.Append(Animation != null ? ((decomp ? "" : "&") + Animation.ActionName) : "NULL");
+			result.Append(Animation != null ? ((decomp ? "" : "&") + Animation.ActionName.MakeIdentifier()) : "NULL");
 			result.Append(", (NJS_TEXLIST *)");
 			result.Append(TexlistPointer.ToCHex());
 			result.Append(" }");
