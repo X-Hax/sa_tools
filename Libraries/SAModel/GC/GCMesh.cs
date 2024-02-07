@@ -295,6 +295,7 @@ public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx
 
 			// creating the vertex data
 			VertexData[] vertData = new VertexData[corners.Count];
+			bool hasPositions = positions != null;
 			bool hasNormals = normals != null;
 			bool hasColors = colors != null;
 			bool hasUVs = uvs != null;
@@ -303,7 +304,7 @@ public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx
 			{
 				Loop l = corners[i];
 				vertData[i] = new VertexData(
-						(Vector3)positions[l.PositionIndex],
+						hasPositions ? (Vector3)positions[l.PositionIndex] : new Vector3(0, 0, 0),
 						hasNormals ? (Vector3)normals[l.NormalIndex] : new Vector3(0, 1, 0),
 						hasColors ? (Color)colors[l.Color0Index] : new Color(255, 255, 255, 255),
 						hasUVs ? (UV)uvs[l.UV0Index] : new UV(0, 0)
