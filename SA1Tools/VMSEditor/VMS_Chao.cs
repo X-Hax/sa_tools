@@ -442,8 +442,8 @@ namespace VMSEditor
             result.Add(Key1);
             result.AddRange(GetChaoNameBytes(Name));
             result.AddRange(BitConverter.GetBytes(Swim));
-            result.AddRange(BitConverter.GetBytes(Run));
-            result.AddRange(BitConverter.GetBytes(Fly));
+			result.AddRange(BitConverter.GetBytes(Fly));
+			result.AddRange(BitConverter.GetBytes(Run));
             result.AddRange(BitConverter.GetBytes(Power));
             result.AddRange(BitConverter.GetBytes(HP));
             result.AddRange(BitConverter.GetBytes(HP_Max));
