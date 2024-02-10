@@ -1643,7 +1643,7 @@ namespace SAModel
 				{
 					hasPos = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(model.Value.PositionName);
+					writer.Write(model.Value.PositionName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Position.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
@@ -1660,7 +1660,7 @@ namespace SAModel
 						writer.Write("NJS_MKEY_SA ");
 					else
 						writer.Write("NJS_MKEY_A ");
-					writer.Write(model.Value.RotationName);
+					writer.Write(model.Value.RotationName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Rotation.Count);
 					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
@@ -1679,7 +1679,7 @@ namespace SAModel
 				{
 					hasScl = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(model.Value.ScaleName);
+					writer.Write(model.Value.ScaleName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Scale.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
@@ -1693,7 +1693,7 @@ namespace SAModel
 				{
 					hasVec = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(model.Value.VectorName);
+					writer.Write(model.Value.VectorName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Vector.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
@@ -1712,7 +1712,7 @@ namespace SAModel
 						if (!labels.Contains(model.Value.VertexItemName[z]))
 						{
 							writer.Write("NJS_VECTOR ");
-							writer.Write(model.Value.VertexItemName[z]);
+							writer.Write(model.Value.VertexItemName[z].MakeIdentifier());
 							writer.WriteLine("[] = {");
 							List<string> l2 = new List<string>(item.Value.Length);
 							foreach (Vertex v in item.Value)
@@ -1725,12 +1725,12 @@ namespace SAModel
 						z++;					
 					}
 					writer.Write("NJS_MKEY_P ");
-					writer.Write(model.Value.VertexName);
+					writer.Write(model.Value.VertexName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Vertex.Count);
 					int v_c = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						lines.Add("\t{ " + item.Key + ", " + model.Value.VertexItemName[v_c++] + " }");
+						lines.Add("\t{ " + item.Key + ", " + model.Value.VertexItemName[v_c++].MakeIdentifier() + " }");
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
@@ -1745,7 +1745,7 @@ namespace SAModel
 						if (!labels.Contains(model.Value.NormalItemName[z]))
 						{
 							writer.Write("NJS_VECTOR ");
-							writer.Write(model.Value.NormalItemName[z]);
+							writer.Write(model.Value.NormalItemName[z].MakeIdentifier());
 							writer.WriteLine("[] = {");
 							List<string> l2 = new List<string>(item.Value.Length);
 							foreach (Vertex v in item.Value)
@@ -1758,12 +1758,12 @@ namespace SAModel
 						z++;			
 					}
 					writer.Write("NJS_MKEY_P ");
-					writer.Write(model.Value.NormalName);
+					writer.Write(model.Value.NormalName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Vertex.Count);
 					int v_c = 0;
 					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						lines.Add("\t{ " + item.Key + ", " + model.Value.NormalItemName[v_c++] + " }");
+						lines.Add("\t{ " + item.Key + ", " + model.Value.NormalItemName[v_c++].MakeIdentifier() + " }");
 					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
@@ -1773,7 +1773,7 @@ namespace SAModel
 				{
 					hasTarg = true;
 					writer.Write("NJS_MKEY_F ");
-					writer.Write(model.Value.TargetName);
+					writer.Write(model.Value.TargetName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Target.Count);
 					foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
@@ -1787,7 +1787,7 @@ namespace SAModel
 				{
 					hasRoll = true;
 					writer.Write("NJS_MKEY_A1 ");
-					writer.Write(model.Value.RollName);
+					writer.Write(model.Value.RollName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Roll.Count);
 					foreach (KeyValuePair<int, int> item in model.Value.Roll)
@@ -1801,7 +1801,7 @@ namespace SAModel
 				{
 					hasAng = true;
 					writer.Write("NJS_MKEY_A1 ");
-					writer.Write(model.Value.AngleName);
+					writer.Write(model.Value.AngleName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Angle.Count);
 					foreach (KeyValuePair<int, int> item in model.Value.Angle)
@@ -1815,7 +1815,7 @@ namespace SAModel
 				{
 					hasCol = true;
 					writer.Write("NJS_MKEY_UI32 ");
-					writer.Write(model.Value.ColorName);
+					writer.Write(model.Value.ColorName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Color.Count);
 					foreach (KeyValuePair<int, uint> item in model.Value.Color)
@@ -1829,7 +1829,7 @@ namespace SAModel
 				{
 					hasInt = true;
 					writer.Write("NJS_MKEY_F1 ");
-					writer.Write(model.Value.IntensityName);
+					writer.Write(model.Value.IntensityName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Intensity.Count);
 					foreach (KeyValuePair<int, float> item in model.Value.Intensity)
@@ -1843,7 +1843,7 @@ namespace SAModel
 				{
 					hasSpot = true;
 					writer.Write("NJS_MKEY_SPOT ");
-					writer.Write(model.Value.SpotName);
+					writer.Write(model.Value.SpotName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Spot.Count);
 					foreach (KeyValuePair<int, Spotlight> item in model.Value.Spot)
@@ -1857,7 +1857,7 @@ namespace SAModel
 				{
 					hasPnt = true;
 					writer.Write("NJS_MKEY_F2 ");
-					writer.Write(model.Value.PointName);
+					writer.Write(model.Value.PointName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Point.Count);
 					foreach (KeyValuePair<int, float[]> item in model.Value.Point)
@@ -1871,7 +1871,7 @@ namespace SAModel
 				{
 					hasPnt = true;
 					writer.Write("NJS_MKEY_QUAT ");
-					writer.Write(model.Value.QuaternionName);
+					writer.Write(model.Value.QuaternionName.MakeIdentifier());
 					writer.WriteLine("[] = {");
 					List<string> lines = new List<string>(model.Value.Quaternion.Count);
 					foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
@@ -1982,7 +1982,7 @@ namespace SAModel
 				if (numpairs == 0) writer.Write(2);
 				else writer.Write(numpairs);
 				writer.Write(" ");
-				writer.Write(MdataName);
+				writer.Write(MdataName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> mdats = new List<string>(ModelParts);
 				for (int i = 0; i < ModelParts; i++)
@@ -1991,196 +1991,196 @@ namespace SAModel
 					if (hasPos)
 					{
 						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-							elems.Add(Models[i].PositionName);
+							elems.Add(Models[i].PositionName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasRot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-							elems.Add(Models[i].RotationName);
+							elems.Add(Models[i].RotationName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasScl)
 					{
 						if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-							elems.Add(Models[i].ScaleName);
+							elems.Add(Models[i].ScaleName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasVec)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-							elems.Add(Models[i].VectorName);
+							elems.Add(Models[i].VectorName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasVert)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-							elems.Add(Models[i].VertexName);
+							elems.Add(Models[i].VertexName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasNorm)
 					{
 						if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-							elems.Add(Models[i].NormalName);
+							elems.Add(Models[i].NormalName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasTarg)
 					{
 						if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-							elems.Add(Models[i].TargetName);
+							elems.Add(Models[i].TargetName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasRoll)
 					{
 						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-							elems.Add(Models[i].PointName);
+							elems.Add(Models[i].PointName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasAng)
 					{
 						if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-							elems.Add(Models[i].AngleName);
+							elems.Add(Models[i].AngleName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasCol)
 					{
 						if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-							elems.Add(Models[i].ColorName);
+							elems.Add(Models[i].ColorName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasInt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-							elems.Add(Models[i].IntensityName);
+							elems.Add(Models[i].IntensityName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasSpot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-							elems.Add(Models[i].SpotName);
+							elems.Add(Models[i].SpotName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasPnt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-							elems.Add(Models[i].PointName);
+							elems.Add(Models[i].PointName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasQuat)
 					{
 						if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
-							elems.Add(Models[i].QuaternionName);
+							elems.Add(Models[i].QuaternionName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}
 					if (hasPos)
 					{
 						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PositionName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PositionName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasRot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RotationName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RotationName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasScl)
 					{
 						if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ScaleName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ScaleName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasVec)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VectorName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VectorName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasVert)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VertexName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VertexName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasNorm)
 					{
 						if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].NormalName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].NormalName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasTarg)
 					{
 						if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].TargetName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].TargetName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasRoll)
 					{
 						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RollName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RollName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasAng)
 					{
 						if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].AngleName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].AngleName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasCol)
 					{
 						if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ColorName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ColorName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasInt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].IntensityName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].IntensityName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasSpot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].SpotName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].SpotName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasPnt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
 					if (hasQuat)
 					{
 						if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].QuaternionName));
+							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].QuaternionName.MakeIdentifier()));
 						else
 							elems.Add("0");
 					}
@@ -2194,9 +2194,9 @@ namespace SAModel
 			if (!labels.Contains(Name))
 			{
 				writer.Write("NJS_MOTION ");
-				writer.Write(Name);
+				writer.Write(Name.MakeIdentifier());
 				writer.Write(" = { ");
-				writer.Write("{0}, ", MdataName);
+				writer.Write("{0}, ", MdataName.MakeIdentifier());
 				writer.Write(Frames);
 				writer.Write(", ");
 				writer.Write(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
@@ -2221,11 +2221,11 @@ namespace SAModel
 			{
 				writer.WriteLine();
 				writer.Write("NJS_ACTION ");
-				writer.Write(ActionName);
+				writer.Write(ActionName.MakeIdentifier());
 				writer.Write(" = { &");
-				writer.Write(ObjectName);
+				writer.Write(ObjectName.MakeIdentifier());
 				writer.Write(", &");
-				writer.Write(Name);
+				writer.Write(Name.MakeIdentifier());
 				writer.WriteLine(" };");
 				labels.Add(ActionName);
 			}
@@ -2269,7 +2269,7 @@ namespace SAModel
 					if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 					{
 						hasPos = true;
-						writer.WriteLine("POSITION {0}[]", model.Value.PositionName);
+						writer.WriteLine("POSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 						writer.WriteLine("START");
 						foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 							writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2284,7 +2284,7 @@ namespace SAModel
 							writer.Write("SROTATION ");
 						else
 							writer.Write("ROTATION ");
-						writer.Write(model.Value.RotationName);
+						writer.Write(model.Value.RotationName.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 						foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
@@ -2302,7 +2302,7 @@ namespace SAModel
 					if (model.Value.Scale.Count > 0 && !labels.Contains(model.Value.ScaleName))
 					{
 						hasScl = true;
-						writer.WriteLine("SCALE {0}[]", model.Value.ScaleName);
+						writer.WriteLine("SCALE {0}[]", model.Value.ScaleName.MakeIdentifier());
 						writer.WriteLine("START");
 						foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 							writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2313,7 +2313,7 @@ namespace SAModel
 					if (model.Value.Vector.Count > 0 && !labels.Contains(model.Value.VectorName))
 					{
 						hasVec = true;
-						writer.WriteLine("VECTOR {0}[]", model.Value.VectorName);
+						writer.WriteLine("VECTOR {0}[]", model.Value.VectorName.MakeIdentifier());
 						writer.WriteLine("START");
 						foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
 							writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2329,7 +2329,7 @@ namespace SAModel
 						{
 							if (!labels.Contains(model.Value.VertexItemName[z]))
 							{
-								writer.WriteLine("POINT    {0}[]", model.Value.VertexItemName[z]);
+								writer.WriteLine("POINT    {0}[]", model.Value.VertexItemName[z].MakeIdentifier());
 								writer.WriteLine("START");
 								List<string> l2 = new List<string>(item.Value.Length);
 								foreach (Vertex v in item.Value)
@@ -2341,12 +2341,12 @@ namespace SAModel
 							z++;
 						}
 						writer.WriteLine();
-						writer.WriteLine("POINTER    {0}[]", model.Value.VertexName);
+						writer.WriteLine("POINTER    {0}[]", model.Value.VertexName.MakeIdentifier());
 						writer.WriteLine("START");
 						List<string> lines = new List<string>(model.Value.Vertex.Count);
 						int v_c = 0;
 						foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-							writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.VertexItemName[v_c++] + "),");
+							writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.VertexItemName[v_c++].MakeIdentifier() + "),");
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.VertexName);
@@ -2359,7 +2359,7 @@ namespace SAModel
 						{
 							if (!labels.Contains(model.Value.NormalItemName[z]))
 							{
-								writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z]);
+								writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z].MakeIdentifier());
 								writer.WriteLine("START");
 								foreach (Vertex v in item.Value)
 									writer.WriteLine("         NORM{0},", v.ToNJA());
@@ -2370,11 +2370,11 @@ namespace SAModel
 							z++;
 						}
 						writer.WriteLine();
-						writer.WriteLine("POINTER    {0}[]", model.Value.NormalName);
+						writer.WriteLine("POINTER    {0}[]", model.Value.NormalName.MakeIdentifier());
 						writer.WriteLine("START");
 						int v_c = 0;
 						foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
-							writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.NormalItemName[v_c++] + "),");
+							writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.NormalItemName[v_c++].MakeIdentifier() + "),");
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.NormalName);
@@ -2382,7 +2382,7 @@ namespace SAModel
 					if (model.Value.Quaternion.Count > 0 && !labels.Contains(model.Value.QuaternionName))
 					{
 						hasPnt = true;
-						writer.Write("QROTATION {0}[]", model.Value.QuaternionName);
+						writer.Write("QROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
 						writer.WriteLine("START");
 						foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
 							writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + item.Value[2].ToC() + item.Value[3].ToNJA() + " ),");
@@ -2493,7 +2493,7 @@ namespace SAModel
 					else
 						writer.Write(numpairs);
 					writer.Write(" ");
-					writer.Write(MdataName);
+					writer.Write(MdataName.MakeIdentifier());
 					writer.WriteLine("[]");
 					writer.WriteLine("START");
 					List<string> mdats = new List<string>(ModelParts);
@@ -2503,98 +2503,98 @@ namespace SAModel
 						if (hasPos)
 						{
 							if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-								elems.Add(Models[i].PositionName);
+								elems.Add(Models[i].PositionName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasRot)
 						{
 							if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-								elems.Add(Models[i].RotationName);
+								elems.Add(Models[i].RotationName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasScl)
 						{
 							if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-								elems.Add(Models[i].ScaleName);
+								elems.Add(Models[i].ScaleName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasVec)
 						{
 							if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-								elems.Add(Models[i].VectorName);
+								elems.Add(Models[i].VectorName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasVert)
 						{
 							if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-								elems.Add(Models[i].VertexName);
+								elems.Add(Models[i].VertexName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasNorm)
 						{
 							if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-								elems.Add(Models[i].NormalName);
+								elems.Add(Models[i].NormalName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasTarg)
 						{
 							if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-								elems.Add(Models[i].TargetName);
+								elems.Add(Models[i].TargetName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasRoll)
 						{
 							if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-								elems.Add(Models[i].PointName);
+								elems.Add(Models[i].PointName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasAng)
 						{
 							if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-								elems.Add(Models[i].AngleName);
+								elems.Add(Models[i].AngleName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasCol)
 						{
 							if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-								elems.Add(Models[i].ColorName);
+								elems.Add(Models[i].ColorName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasInt)
 						{
 							if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-								elems.Add(Models[i].IntensityName);
+								elems.Add(Models[i].IntensityName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasSpot)
 						{
 							if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-								elems.Add(Models[i].SpotName);
+								elems.Add(Models[i].SpotName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasPnt)
 						{
 							if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-								elems.Add(Models[i].PointName);
+								elems.Add(Models[i].PointName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
 						if (hasQuat)
 						{
 							if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
-								elems.Add(Models[i].QuaternionName);
+								elems.Add(Models[i].QuaternionName.MakeIdentifier());
 							else
 								elems.Add("NULL");
 						}
@@ -2709,10 +2709,10 @@ namespace SAModel
 				if (!labels.Contains(Name))
 				{
 					writer.Write("MOTION ");
-					writer.Write(Name);
+					writer.Write(Name.MakeIdentifier());
 					writer.WriteLine("[]");
 					writer.WriteLine("START");
-					writer.WriteLine("MdataArray     {0}, ", MdataName);
+					writer.WriteLine("MdataArray     {0}, ", MdataName.MakeIdentifier());
 					writer.WriteLine("MFrameNum      {0},", Frames);
 					writer.WriteLine("MotionBit      0x{0},", ((int)flags).ToString("X"));
 					int interpol = numpairs > 0 ? numpairs : 2;
@@ -2737,10 +2737,10 @@ namespace SAModel
 			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
 			{
 				writer.WriteLine();
-				writer.WriteLine("ACTION {0}[]", ActionName);
+				writer.WriteLine("ACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
-				writer.WriteLine("ObjectHead      {0},", ObjectName);
-				writer.WriteLine("Motion          " + Name);
+				writer.WriteLine("ObjectHead      {0},", ObjectName.MakeIdentifier());
+				writer.WriteLine("Motion          " + Name.MakeIdentifier());
 				writer.WriteLine("END");
 			}
 			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END");
@@ -2748,12 +2748,12 @@ namespace SAModel
 			writer.WriteLine("DEFAULT_START");
 			writer.WriteLine();
 			writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
-			writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name);
+			writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
 			writer.WriteLine("#endif");
 			if (!string.IsNullOrEmpty(ActionName))
 			{
 				writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
-				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName);
+				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName.MakeIdentifier());
 				writer.WriteLine("#endif");
 			}
 			writer.WriteLine();

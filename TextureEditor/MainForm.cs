@@ -26,10 +26,8 @@ using Application = System.Windows.Forms.Application;
 using Color = System.Drawing.Color;
 using Size = System.Drawing.Size;
 using Image = System.Drawing.Image;
-using BCnEncoder.Decoder;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
-using SharpDX.Direct3D9;
 
 namespace TextureEditor
 {
@@ -604,6 +602,11 @@ namespace TextureEditor
 			compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
 			usePNGInsteadOfDDSToolStripMenuItem.Checked = settingsfile.UsePNGforPAK;
 
+            System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
+			toolTip.AutoPopDelay = 5000;
+			toolTip.InitialDelay = 1000;
+			toolTip.ReshowDelay = 500;
+			toolTip.SetToolTip(checkBoxPAKUseAlpha, "Disables Alpha Test and Z Write for the selected texture.\nThis can make some transparent textures blend better or worse. Use with caution.");
 			if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
 				Close();
 		}

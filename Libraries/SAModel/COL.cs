@@ -136,12 +136,12 @@ namespace SAModel
 					result.Append(", ");
 					result.Append(WidthZ.ToC());
 					result.Append(", ");
-					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
+					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name.MakeIdentifier()) : "NULL");
 					result.Append(", ");
 					result.AppendFormat(BlockBits.ToCHex());
 					break;
 				case LandTableFormat.SA2:
-					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
+					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name.MakeIdentifier()) : "NULL");
 					result.Append(", ");
 					result.Append(WidthZ.ToC());
 					result.Append(", ");

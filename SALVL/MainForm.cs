@@ -280,6 +280,7 @@ namespace SAModel.SALVL
 			editLevelInfoToolStripMenuItem.Enabled = false;
 			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
+			cAMFileToolStripMenuItem.Enabled = false;
 
 			// Labels import/export
 			importLabelsToolStripMenuItem.Enabled = false;
@@ -1889,6 +1890,11 @@ namespace SAModel.SALVL
 		private void advancedSaveSETFileBigEndianToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveSETFile(true);
+		}
+
+		private void cAMFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveCamFile(false);
 		}
 
 		private void MainForm_ResizeEnd(object sender, EventArgs e)

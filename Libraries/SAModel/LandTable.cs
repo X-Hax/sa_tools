@@ -482,7 +482,7 @@ namespace SAModel
 					if (!decomp)
 						COL[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
 					else 
-						writer.WriteLine("extern NJS_OBJECT " + COL[i].Model.Name + "[1];");
+						writer.WriteLine("extern NJS_OBJECT " + COL[i].Model.Name.MakeIdentifier() + "[1];");
 				}
 			}
 			for (int i = 0; i < Anim.Count; i++)
@@ -493,7 +493,7 @@ namespace SAModel
 					if (!decomp)
 						Anim[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
 					else
-						writer.WriteLine("extern NJS_OBJECT " + Anim[i].Model.Name + "[1];");
+						writer.WriteLine("extern NJS_OBJECT " + Anim[i].Model.Name.MakeIdentifier() + "[1];");
 					if (!decomp)
 						writer.WriteLine();
 				}
@@ -502,7 +502,7 @@ namespace SAModel
 					if (!decomp)
 						Anim[i].Animation.ToStructVariables(writer, labels);
 					else
-						writer.WriteLine("extern NJS_ACTION " + Anim[i].Animation.ActionName + "[1];");
+						writer.WriteLine("extern NJS_ACTION " + Anim[i].Animation.ActionName.MakeIdentifier() + "[1];");
 					labels.Add(Anim[i].Animation.Name);
 					if (!decomp)
 						writer.WriteLine();
@@ -513,7 +513,7 @@ namespace SAModel
 			{
 				labels.Add(COLName);
 				writer.Write("_OBJ_LANDENTRY ");
-				writer.Write(COLName);
+				writer.Write(COLName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(COL.Count);
 				foreach (COL item in COL)
@@ -526,7 +526,7 @@ namespace SAModel
 			{
 				labels.Add(AnimName);
 				writer.Write("_OBJ_MOTLANDENTRY ");
-				writer.Write(AnimName);
+				writer.Write(AnimName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> lines = new List<string>(Anim.Count);
 				foreach (GeoAnimData item in Anim)
@@ -536,12 +536,12 @@ namespace SAModel
 				writer.WriteLine();
 			}
 			writer.Write("_OBJ_LANDTABLE ");
-			writer.Write(Name);
+			writer.Write(Name.MakeIdentifier());
 			writer.Write(" = { ");
 			if (decomp)
 				writer.Write(COL.Count.ToString() + ", ");
 			else
-				writer.Write("LengthOfArray<int16_t>(" + COLName + "), ");
+				writer.Write("LengthOfArray<int16_t>(" + COLName.MakeIdentifier() + "), ");
 			switch (format)
 			{
 				case LandTableFormat.SA1:
@@ -549,7 +549,7 @@ namespace SAModel
 					if (decomp)
 						writer.Write(Anim.Count);
 					else
-						writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName + ")" : "0");
+						writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName.MakeIdentifier() + ")" : "0");
 					writer.Write(", ");
 					writer.Write("0x" + Attributes.ToString("X"));
 					writer.Write(", ");
@@ -557,9 +557,9 @@ namespace SAModel
 					writer.Write(", ");
 					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
-					writer.Write(COLName);
+					writer.Write(COLName.MakeIdentifier());
 					writer.Write(", ");
-					writer.Write(Anim.Count > 0 ? AnimName : "NULL");
+					writer.Write(Anim.Count > 0 ? AnimName.MakeIdentifier() : "NULL");
 					writer.Write(", ");
 					writer.Write(TextureFileName.ToC());
 					writer.Write(", (NJS_TEXLIST *)");
@@ -574,9 +574,9 @@ namespace SAModel
 					writer.Write(", 0, 0, 0, 0, ");
 					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
-					writer.Write(COLName);
+					writer.Write(COLName.MakeIdentifier());
 					writer.Write(", ");
-					writer.Write(Anim.Count > 0 ? AnimName : "NULL");
+					writer.Write(Anim.Count > 0 ? AnimName.MakeIdentifier() : "NULL");
 					writer.Write(", ");
 					writer.Write(TextureFileName.ToC());
 					writer.Write(", (NJS_TEXLIST *)");

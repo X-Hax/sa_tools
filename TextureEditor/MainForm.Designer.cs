@@ -403,7 +403,7 @@
 			alphaSortingToolStripMenuItem.Enabled = false;
 			alphaSortingToolStripMenuItem.Name = "alphaSortingToolStripMenuItem";
 			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			alphaSortingToolStripMenuItem.Text = "Alpha Sorting Flag";
+			alphaSortingToolStripMenuItem.Text = "PAK alpha flags";
 			alphaSortingToolStripMenuItem.ToolTipText = "Transparency flags for SA2 PC PAKs.";
 			// 
 			// enablePAKAlphaForAllToolStripMenuItem
@@ -411,7 +411,7 @@
 			enablePAKAlphaForAllToolStripMenuItem.Name = "enablePAKAlphaForAllToolStripMenuItem";
 			enablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
 			enablePAKAlphaForAllToolStripMenuItem.Text = "Enable for All";
-			enablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Set the RGB5A3 pixel format for all PAK items.";
+			enablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Set the RGB5A3 pixel format and disable Z Write/Alpha Test for all textures in this PAK.";
 			enablePAKAlphaForAllToolStripMenuItem.Click += enablePAKAlphaForAllToolStripMenuItem_Click;
 			// 
 			// disablePAKAlphaForAllToolStripMenuItem
@@ -419,7 +419,7 @@
 			disablePAKAlphaForAllToolStripMenuItem.Name = "disablePAKAlphaForAllToolStripMenuItem";
 			disablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
 			disablePAKAlphaForAllToolStripMenuItem.Text = "Disable for All";
-			disablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Remove the RGB5A3 format flag in all PAK items.";
+			disablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Remove the RGB5A3 format and unset the flag that disables Z Write/Alpha Test for all textures in this PAK.";
 			disablePAKAlphaForAllToolStripMenuItem.Click += disablePAKAlphaForAllToolStripMenuItem_Click;
 			// 
 			// palettedTexturesToolStripMenuItem
@@ -620,7 +620,7 @@
 			checkBoxPAKUseAlpha.Name = "checkBoxPAKUseAlpha";
 			checkBoxPAKUseAlpha.Size = new System.Drawing.Size(98, 19);
 			checkBoxPAKUseAlpha.TabIndex = 15;
-			checkBoxPAKUseAlpha.Text = "Alpha Sorting";
+			checkBoxPAKUseAlpha.Text = "No Alpha Test";
 			checkBoxPAKUseAlpha.UseVisualStyleBackColor = true;
 			checkBoxPAKUseAlpha.CheckedChanged += checkBoxPAKUseAlpha_CheckedChanged;
 			checkBoxPAKUseAlpha.Click += checkBoxPAKUseAlpha_Click;

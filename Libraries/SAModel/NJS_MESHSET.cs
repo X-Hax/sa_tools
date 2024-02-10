@@ -187,13 +187,13 @@ namespace SAModel
 			result.Append(", ");
 			result.Append(Poly != null ? (ushort)Poly.Count : 0);
 			result.Append(", ");
-			result.Append(Poly != null ? PolyName : "NULL");
+			result.Append(Poly != null ? PolyName.MakeIdentifier() : "NULL");
 			result.Append(", NULL, ");
-			result.Append(PolyNormal != null ? PolyNormalName : "NULL");
+			result.Append(PolyNormal != null ? PolyNormalName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(VColor != null ? VColorName : "NULL");
+			result.Append(VColor != null ? VColorName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(UV != null ? UVName : "NULL");
+			result.Append(UV != null ? UVName.MakeIdentifier() : "NULL");
 			if (DX)
 				result.Append(", NULL");
 			result.Append(" }");
@@ -210,17 +210,17 @@ namespace SAModel
 			result.Append(Poly != null ? (ushort)Poly.Count : 0);
 			result.Append("," + Environment.NewLine);
 			result.Append("Meshes      ");
-			result.Append(Poly != null ? PolyName : "NULL");
+			result.Append(Poly != null ? PolyName.MakeIdentifier() : "NULL");
 			result.Append("," + Environment.NewLine);
 			result.Append("PolyAttrs   NULL," + Environment.NewLine);
 			result.Append("PolyNormal  ");
-			result.Append(PolyNormal != null ? PolyNormalName : "NULL");
+			result.Append(PolyNormal != null ? PolyNormalName.MakeIdentifier() : "NULL");
 			result.Append("," + Environment.NewLine);
 			result.Append("VertColor   ");
-			result.Append(VColor != null ? VColorName : "NULL");
+			result.Append(VColor != null ? VColorName.MakeIdentifier() : "NULL");
 			result.Append("," + Environment.NewLine);
 			result.Append("VertUV      ");
-			result.Append((UV != null ? UVName : "NULL") + ",");
+			result.Append((UV != null ? UVName.MakeIdentifier() : "NULL") + ",");
 			result.Append(Environment.NewLine + "MESHEND" + Environment.NewLine);
 			return result.ToString();
 		}
