@@ -2274,22 +2274,22 @@ namespace VMSEditor
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(286, 106);
+            this.label20.Location = new System.Drawing.Point(286, 108);
             this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(40, 15);
             this.label20.TabIndex = 44;
-            this.label20.Text = "Power";
+            this.label20.Text = "Run";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(184, 14);
+            this.label17.Location = new System.Drawing.Point(176, 14);
             this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(22, 15);
             this.label17.TabIndex = 43;
-            this.label17.Text = "Fly";
+            this.label17.Text = "Swim";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pictureBoxEvolution
@@ -2336,12 +2336,12 @@ namespace VMSEditor
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(68, 106);
+            this.label11.Location = new System.Drawing.Point(62, 108);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(28, 15);
             this.label11.TabIndex = 24;
-            this.label11.Text = "Run";
+            this.label11.Text = "Power";
             // 
             // trackBarMagnitude
             // 
@@ -2391,12 +2391,12 @@ namespace VMSEditor
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(175, 208);
+            this.label12.Location = new System.Drawing.Point(181, 206);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(36, 15);
             this.label12.TabIndex = 26;
-            this.label12.Text = "Swim";
+            this.label12.Text = "Fly";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tabPagePersonality
