@@ -71,7 +71,7 @@ namespace VMSEditor
 		public uint Value1 { get; set; } // 4 bytes 0x0001A000
 		public uint Pointer2 { get; set; } // 4 bytes 0x8C00F250
 		public uint Value2 { get; set; } // 4 bytes 0x0001A05E or 00000D3E
-		public uint Pointer3 { get; set; } // 4 bytes 0x8C003CD0 or 8C7A7DF0
+		public uint Pointer3 { get; set; } // 4 bytes 0x8C003CD0 or 8C7A7DF0 - pointer to a pointer to the HTML page start in memory
 		public uint Pointer4 { get; set; } // 4 bytes 0x8C00F250 (same as 2?)
 
 		public PDATA_US(byte[] file, int startindex) : base(file, startindex)
