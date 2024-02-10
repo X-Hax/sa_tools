@@ -242,6 +242,7 @@ namespace VMSEditor
 			chaoData.Key4 = (byte)numericUpDownKey4.Value;
 			chaoData.Fly = (ushort)numericUpDownFly.Value;
 			chaoData.Run = (ushort)numericUpDownRun.Value;
+			chaoData.Swim = (ushort)numericUpDownSwim.Value;
 			chaoData.Power = (ushort)numericUpDownPower.Value;
 			chaoData.HP = (ushort)numericUpDownHP.Value;
 			chaoData.HP_Max = (ushort)numericUpDownMaxHP.Value;
