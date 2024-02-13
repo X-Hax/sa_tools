@@ -68,35 +68,39 @@ namespace SAModel.GC
 		{
 			//Both the data and the mesh struct here are 0x20 aligned
 			public ushort elementType;
-			public ushort dataType; //?
+			/// <summary>
+			/// 3 * indexCount if elementType 0, 4 * indexCount if 1 or 2.
+			/// Data assumedly vert positions, normals, and uvs. Weights would optionally be the 4th.
+			/// </summary>
+			public ushort totalVertIndices;
 			public ushort startingIndex;
 			public ushort indexCount;
 			public int offset0;
 			public int offset1;
 
 			public List<GCSkinMeshVertPosNrm> posNrms = new List<GCSkinMeshVertPosNrm>();
-			public List<GCSkinMeshVertUnk> unkData = new List<GCSkinMeshVertUnk>();
+			public List<GCSkinMeshWeight> weightData = new List<GCSkinMeshWeight>();
 
 			//Testing
 			public List<Vector3> posList = new List<Vector3>();
 			public List<Vector3> nrmList = new List<Vector3>();
-			public List<System.Numerics.Vector2> unkList = new List<System.Numerics.Vector2>();
+			public List<System.Numerics.Vector2> weightList = new List<System.Numerics.Vector2>();
 
 			public GCSKinMeshElement() { }
 
 			public GCSKinMeshElement(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 			{
 				elementType = ByteConverter.ToUInt16(file, (int)address + 0x0);
-				dataType = ByteConverter.ToUInt16(file, (int)address + 0x2);
+				totalVertIndices = ByteConverter.ToUInt16(file, (int)address + 0x2);
 				startingIndex = ByteConverter.ToUInt16(file, (int)address + 0x4);
 				indexCount = ByteConverter.ToUInt16(file, (int)address + 0x6);
 				offset0 = (int)(ByteConverter.ToInt32(file, (int)address + 0x8) - imageBase);
 				offset1 = (int)(ByteConverter.ToInt32(file, (int)address + 0xC) - imageBase);
 
 				//DEBUG
-				if(!dataTypeValues.Contains(dataType))
+				if(!dataTypeValues.Contains(totalVertIndices))
 				{
-					dataTypeValues.Add(dataType);
+					dataTypeValues.Add(totalVertIndices);
 				}
 				testCounterDifference = -(testCounter - startingIndex);
 				testCounterPrev = testCounter;
@@ -133,10 +137,10 @@ namespace SAModel.GC
 						}
 						for (int i = 0; i < indexCount; i++)
 						{
-							unkData.Add(new GCSkinMeshVertUnk()
+							weightData.Add(new GCSkinMeshWeight()
 							{
-								sht0 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x0),
-								sht1 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x2),
+								vertIndex = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x0),
+								weight = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x2),
 							});
 						}
 						break;
@@ -155,10 +159,10 @@ namespace SAModel.GC
 						}
 						for (int i = 0; i < indexCount; i++)
 						{
-							unkData.Add(new GCSkinMeshVertUnk()
+							weightData.Add(new GCSkinMeshWeight()
 							{
-								sht0 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x0),
-								sht1 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x2),
+								vertIndex = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x0),
+								weight = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x2),
 							});
 						}
 						break;
@@ -171,16 +175,9 @@ namespace SAModel.GC
 					posList.Add(new Vector3((float)(posNrm.posX / 255.0), (float)(posNrm.posY / 255.0), (float)(posNrm.posZ / 255.0)));
 					nrmList.Add(new Vector3((float)(posNrm.nrmX / 255.0), (float)(posNrm.nrmY / 255.0), (float)(posNrm.nrmZ / 255.0)));
 				}
-				foreach(var unk in unkData)
+				foreach(var weight in weightData)
 				{
-					unkList.Add(new System.Numerics.Vector2((float)(unk.sht0 / 255.0), (float)(unk.sht1 / 255.0)));
-				}
-				foreach(var unk in unkList)
-				{
-					if(unk.X < 0 || unk.Y < 0)
-					{
-						throw new Exception();
-					}
+					weightList.Add(new System.Numerics.Vector2((float)(weight.vertIndex / 255.0), (float)(weight.weight / 255.0)));
 				}
 			}
 		}
@@ -195,10 +192,13 @@ namespace SAModel.GC
 			public short nrmZ;
 		}
 
-		public struct GCSkinMeshVertUnk
+		public struct GCSkinMeshWeight
 		{
-			public short sht0;
-			public short sht1;
+			/// <summary>
+			/// Only used if the element is 2. 
+			/// </summary>
+			public short vertIndex;
+			public short weight;
 		}
 
 		public static List<int> dataTypeValues = new List<int>();
