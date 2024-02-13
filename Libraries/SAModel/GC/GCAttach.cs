@@ -80,6 +80,7 @@ namespace SAModel.GC
 			//Testing
 			public List<Vector3> posList = new List<Vector3>();
 			public List<Vector3> nrmList = new List<Vector3>();
+			public List<System.Numerics.Vector2> unkList = new List<System.Numerics.Vector2>();
 
 			public GCSKinMeshElement() { }
 
@@ -93,6 +94,10 @@ namespace SAModel.GC
 				offset1 = (int)(ByteConverter.ToInt32(file, (int)address + 0xC) - imageBase);
 
 				//DEBUG
+				if(!dataTypeValues.Contains(dataType))
+				{
+					dataTypeValues.Add(dataType);
+				}
 				testCounterDifference = -(testCounter - startingIndex);
 				testCounterPrev = testCounter;
 				testCounter = startingIndex;
@@ -130,8 +135,8 @@ namespace SAModel.GC
 						{
 							unkData.Add(new GCSkinMeshVertUnk()
 							{
-								sht0 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x0),
-								sht1 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x2),
+								sht0 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x0),
+								sht1 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x2),
 							});
 						}
 						break;
@@ -152,8 +157,8 @@ namespace SAModel.GC
 						{
 							unkData.Add(new GCSkinMeshVertUnk()
 							{
-								sht0 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x0),
-								sht1 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x2),
+								sht0 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x0),
+								sht1 = ByteConverter.ToInt16(file, (int)offset1 + (i * 0x4) + 0x2),
 							});
 						}
 						break;
@@ -165,6 +170,17 @@ namespace SAModel.GC
 				{
 					posList.Add(new Vector3((float)(posNrm.posX / 255.0), (float)(posNrm.posY / 255.0), (float)(posNrm.posZ / 255.0)));
 					nrmList.Add(new Vector3((float)(posNrm.nrmX / 255.0), (float)(posNrm.nrmY / 255.0), (float)(posNrm.nrmZ / 255.0)));
+				}
+				foreach(var unk in unkData)
+				{
+					unkList.Add(new System.Numerics.Vector2((float)(unk.sht0 / 255.0), (float)(unk.sht1 / 255.0)));
+				}
+				foreach(var unk in unkList)
+				{
+					if(unk.X < 0 || unk.Y < 0)
+					{
+						throw new Exception();
+					}
 				}
 			}
 		}
@@ -184,6 +200,8 @@ namespace SAModel.GC
 			public short sht0;
 			public short sht1;
 		}
+
+		public static List<int> dataTypeValues = new List<int>();
 
 		/// <summary>
 		/// Reads a GC attach from a file
