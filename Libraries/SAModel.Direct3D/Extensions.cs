@@ -410,6 +410,8 @@ namespace SAModel.Direct3D
 					return obj.ProcessWeightedBasicModel();
 				case ChunkAttach:
 					return obj.ProcessWeightedChunkModel();
+				case GC.GCAttach:
+					return obj.ProcessWeightedGCModel();
 				default:
 					return Enumerable.Repeat<Mesh>(null, obj.EnumerateObjects().Count()).ToList();
 			}
@@ -525,6 +527,128 @@ namespace SAModel.Direct3D
 				return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
 			else
 				return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
+		}
+
+		public static List<Mesh> ProcessWeightedGCModel(this NJS_OBJECT obj)
+		{
+			List<Mesh> meshes = new List<Mesh>();
+			int mdlindex = -1;
+			do
+			{
+				ProcessWeightedGCModel(obj, new MatrixStack(), meshes, ref mdlindex);
+				obj = obj.Sibling;
+			} while (obj != null);
+			return meshes;
+		}
+
+		private static void ProcessWeightedGCModel(NJS_OBJECT obj, MatrixStack transform, List<Mesh> meshes, ref int mdlindex)
+		{
+			mdlindex++;
+			transform.Push();
+			obj.ProcessTransforms(transform);
+			if (obj.Attach is GC.GCAttach cnkatt)
+				meshes.Add(ProcessWeightedGCAttach(cnkatt, transform, mdlindex));
+			else
+				meshes.Add(null);
+			foreach (NJS_OBJECT child in obj.Children)
+				ProcessWeightedGCModel(child, transform, meshes, ref mdlindex);
+			transform.Pop();
+		}
+
+		private static Mesh ProcessWeightedGCAttach(GC.GCAttach attach, MatrixStack transform, int mdlindex)
+		{
+			return null;
+			/*
+			if (attach.vertexSkinData != null)
+			{
+				foreach (VertexChunk chunk in attach.Vertex)
+				{
+					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+					{
+						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+						Array.Resize(ref WeightBuffer, chunk.IndexOffset + chunk.VertexCount);
+					}
+					if (chunk.HasWeight)
+					{
+						for (int i = 0; i < chunk.VertexCount; i++)
+						{
+							var weightByte = chunk.NinjaFlags[i] >> 16;
+							var weight = weightByte / (weightByte > 255 ? 65535f : 255f);
+							var origpos = chunk.Vertices[i].ToVector3();
+							var position = (Vector3.TransformCoordinate(origpos, transform.Top) * weight).ToVertex();
+							var orignor = Vector3.Up;
+							Vertex normal = null;
+							if (chunk.Normals.Count > 0)
+							{
+								orignor = chunk.Normals[i].ToVector3();
+								normal = (Vector3.TransformNormal(orignor, transform.Top) * weight).ToVertex();
+							}
+
+							// Store vertex in cache
+							var vertexId = chunk.NinjaFlags[i] & 0x0000FFFF;
+							var vertexCacheId = (int)(chunk.IndexOffset + vertexId);
+
+							if (chunk.WeightStatus == WeightStatus.Start)
+							{
+								// Add new vertex to cache
+								VertexBuffer[vertexCacheId] = new VertexData(position, normal);
+								WeightBuffer[vertexCacheId] = new List<WeightData>
+								{
+									new WeightData(mdlindex, origpos, orignor, weight)
+								};
+								if (chunk.Diffuse.Count > 0)
+									VertexBuffer[vertexCacheId].Color = chunk.Diffuse[i];
+							}
+							else
+							{
+								// Update cached vertex
+								var cacheVertex = VertexBuffer[vertexCacheId];
+								cacheVertex.Position += position;
+								cacheVertex.Normal += normal;
+								if (chunk.WeightStatus == WeightStatus.End)
+									cacheVertex.Normal = Vector3.Normalize(cacheVertex.Normal.ToVector3()).ToVertex();
+								if (chunk.Diffuse.Count > 0)
+									cacheVertex.Color = chunk.Diffuse[i];
+								VertexBuffer[vertexCacheId] = cacheVertex;
+								WeightBuffer[vertexCacheId].Add(new WeightData(mdlindex, origpos, orignor, weight));
+							}
+						}
+					}
+					else
+						for (int i = 0; i < chunk.VertexCount; i++)
+						{
+							var origpos = chunk.Vertices[i].ToVector3();
+							var position = Vector3.TransformCoordinate(origpos, transform.Top).ToVertex();
+							var orignor = Vector3.Up;
+							Vertex normal = null;
+							if (chunk.Normals.Count > 0)
+							{
+								orignor = chunk.Normals[i].ToVector3();
+								normal = Vector3.TransformNormal(orignor, transform.Top).ToVertex();
+							}
+							VertexBuffer[i + chunk.IndexOffset] = new VertexData(position, normal);
+							if (chunk.Diffuse.Count > 0)
+								VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+							WeightBuffer[i + chunk.IndexOffset] = new List<WeightData>
+							{
+								new WeightData(mdlindex, origpos, orignor, 1)
+							};
+						}
+				}
+			}
+			List<MeshInfo> result = new List<MeshInfo>();
+			List<List<WeightData>> weights = new List<List<WeightData>>();
+			if (attach.Poly != null)
+				result = ProcessPolyList(attach.Poly, 0, weights);
+			attach.MeshInfo = result.ToArray();
+			if (attach.MeshInfo.All(a => a.Vertices.Length == 0))
+				return null;
+			if (attach.MeshInfo.Any(a => a.HasUV))
+				return new WeightedMesh<FVF_PositionNormalTexturedColored>(attach, weights);
+			else
+				return new WeightedMesh<FVF_PositionNormalColored>(attach, weights);
+
+			*/
 		}
 
 		public static List<Mesh> ProcessWeightedChunkModel(this NJS_OBJECT obj)

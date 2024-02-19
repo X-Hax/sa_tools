@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -18,7 +19,13 @@ namespace SAModel.GC
 		/// </summary>
 		public List<GCVertexSet> vertexData;
 		public string VertexName { get; set; }
-		public uint gap { get; set; }
+
+		/// <summary>
+		/// For some reason, skinned GC meshes have a separate type of vertex data.
+		/// </summary>
+		public List<GCSkinVertexSetElement> vertexSkinData;
+		public string VertexSkinName { get; set; }
+
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
@@ -30,6 +37,28 @@ namespace SAModel.GC
 		/// </summary>
 		public List<GCMesh> translucentMeshes;
 		public string TranslucentMeshName { get; set; }
+
+		public override bool HasWeight
+		{
+			get
+			{
+				if(vertexData?.Count > 0)
+				{
+					foreach(var set in vertexData)
+					{
+						if(set.attribute == GCVertexAttribute.Position)
+						{
+							return false;
+						}
+					}
+
+					return true;
+				} else
+				{
+					return vertexSkinData?.Count > 0;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Create a new empty GC attach
@@ -58,133 +87,6 @@ namespace SAModel.GC
 			}
 		}
 
-		public static int testCounter = 0;
-		public static int testCounterPrev = 0;
-		public static int testCounterDifference = 0;
-
-		public List<GCSKinMeshElement> gcSkinMeshElements = new List<GCSKinMeshElement>();
-
-		public class GCSKinMeshElement
-		{
-			//Both the data and the mesh struct here are 0x20 aligned
-			public ushort elementType;
-			public ushort dataType; //?
-			public ushort startingIndex;
-			public ushort indexCount;
-			public int offset0;
-			public int offset1;
-
-			public List<GCSkinMeshVertPosNrm> posNrms = new List<GCSkinMeshVertPosNrm>();
-			public List<GCSkinMeshVertUnk> unkData = new List<GCSkinMeshVertUnk>();
-
-			//Testing
-			public List<Vector3> posList = new List<Vector3>();
-			public List<Vector3> nrmList = new List<Vector3>();
-
-			public GCSKinMeshElement() { }
-
-			public GCSKinMeshElement(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
-			{
-				elementType = ByteConverter.ToUInt16(file, (int)address + 0x0);
-				dataType = ByteConverter.ToUInt16(file, (int)address + 0x2);
-				startingIndex = ByteConverter.ToUInt16(file, (int)address + 0x4);
-				indexCount = ByteConverter.ToUInt16(file, (int)address + 0x6);
-				offset0 = (int)(ByteConverter.ToInt32(file, (int)address + 0x8) - imageBase);
-				offset1 = (int)(ByteConverter.ToInt32(file, (int)address + 0xC) - imageBase);
-
-				//DEBUG
-				testCounterDifference = -(testCounter - startingIndex);
-				testCounterPrev = testCounter;
-				testCounter = startingIndex;
-				//DEBUG
-
-				switch (elementType)
-				{
-					case 0:
-						for(int i = 0; i < indexCount; i++)
-						{
-							posNrms.Add(new GCSkinMeshVertPosNrm() { 
-								posX = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x0), 
-								posY = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x2),
-								posZ = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x4),
-								nrmX = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x6),
-								nrmY = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x8),
-								nrmZ = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0xA),
-							});
-						}
-						break;
-					case 1:
-						for (int i = 0; i < indexCount; i++)
-						{
-							posNrms.Add(new GCSkinMeshVertPosNrm()
-							{
-								posX = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x0),
-								posY = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x2),
-								posZ = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x4),
-								nrmX = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x6),
-								nrmY = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x8),
-								nrmZ = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0xA),
-							});
-						}
-						for (int i = 0; i < indexCount; i++)
-						{
-							unkData.Add(new GCSkinMeshVertUnk()
-							{
-								sht0 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x0),
-								sht1 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x2),
-							});
-						}
-						break;
-					case 2:
-						for (int i = 0; i < indexCount; i++)
-						{
-							posNrms.Add(new GCSkinMeshVertPosNrm()
-							{
-								posX = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x0),
-								posY = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x2),
-								posZ = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x4),
-								nrmX = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x6),
-								nrmY = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0x8),
-								nrmZ = ByteConverter.ToInt16(file, (int)offset0 + (i * 0xC) + 0xA),
-							});
-						}
-						for (int i = 0; i < indexCount; i++)
-						{
-							unkData.Add(new GCSkinMeshVertUnk()
-							{
-								sht0 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x0),
-								sht1 = ByteConverter.ToInt16(file, (int)offset0 + (i * 0x4) + 0x2),
-							});
-						}
-						break;
-					case 3:
-					default:
-						break;
-				}
-				foreach(var posNrm in posNrms)
-				{
-					posList.Add(new Vector3((float)(posNrm.posX / 255.0), (float)(posNrm.posY / 255.0), (float)(posNrm.posZ / 255.0)));
-					nrmList.Add(new Vector3((float)(posNrm.nrmX / 255.0), (float)(posNrm.nrmY / 255.0), (float)(posNrm.nrmZ / 255.0)));
-				}
-			}
-		}
-
-		public struct GCSkinMeshVertPosNrm
-		{
-			public short posX;
-			public short posY;
-			public short posZ;
-			public short nrmX;
-			public short nrmY;
-			public short nrmZ;
-		}
-
-		public struct GCSkinMeshVertUnk
-		{
-			public short sht0;
-			public short sht1;
-		}
-
 		/// <summary>
 		/// Reads a GC attach from a file
 		/// </summary>
@@ -207,7 +109,7 @@ namespace SAModel.GC
 			// The struct is 36/0x24 bytes long
 
 			uint vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
-			uint gcSkinnedMeshAddress = ByteConverter.ToUInt32(file, address + 4) - imageBase;
+			uint gcSkinnedVertexAddress = ByteConverter.ToUInt32(file, address + 4) - imageBase;
 			int opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
 			int translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
 
@@ -216,42 +118,22 @@ namespace SAModel.GC
 
 			Bounds = new BoundingSphere(file, address + 20);
 
-			if(gcSkinnedMeshAddress > 0)
+			if(gcSkinnedVertexAddress > 0)
 			{
-				GCSKinMeshElement skinMesh = new GCSKinMeshElement();
+				vertexSkinData = new List<GCSkinVertexSetElement>();
+				GCSkinVertexSetElement skinMesh;
 				int i = 0;
 				do
 				{
-					skinMesh = new GCSKinMeshElement(file, (int)gcSkinnedMeshAddress + (0x10 * i) , imageBase, labels);
-					gcSkinMeshElements.Add(skinMesh);
+					skinMesh = new GCSkinVertexSetElement(file, (int)gcSkinnedVertexAddress + (0x10 * i) , imageBase, labels);
+					vertexSkinData.Add(skinMesh);
 					i++;
 				} while (skinMesh.elementType < 3);
 
-				if (labels.ContainsKey((int)gcSkinnedMeshAddress))
-					VertexName = labels[(int)gcSkinnedMeshAddress];
+				if (labels.ContainsKey((int)gcSkinnedVertexAddress))
+					VertexSkinName = labels[(int)gcSkinnedVertexAddress];
 				else
-					VertexName = "vertex_" + gcSkinnedMeshAddress.ToString("X8");
-
-				var pos = new GCVertexSet(GCVertexAttribute.Position, GCDataType.Float32, GCStructType.Position_XYZ);
-				foreach(var posData in gcSkinMeshElements[0].posList)
-				{
-					pos.data.Add(new Vector3(posData.x, posData.y, posData.z));
-				}
-				vertexData = new List<GCVertexSet>();
-				vertexData.Add(pos);
-
-				if (labels.ContainsKey((int)gcSkinnedMeshAddress * 2))
-					OpaqueMeshName = labels[((int)gcSkinnedMeshAddress * 2)];
-				else
-					OpaqueMeshName = "opoly_" + ((int)gcSkinnedMeshAddress * 2).ToString("X8");
-
-				opaqueMeshes = new List<GCMesh>();
-				var primitives = new List<GCPrimitive>
-				{
-					new GCPrimitive(GCPrimitiveType.Triangles) { loops = new List<Loop>() { new Loop() { PositionIndex = 0 } } }
-				};
-				opaqueMeshes.Add(new GCMesh(new List<GCParameter>(), primitives));
-
+					VertexSkinName = "vertexskin_" + gcSkinnedVertexAddress.ToString("X8");
 			}
 
 			// reading vertex data
@@ -323,7 +205,7 @@ namespace SAModel.GC
 			List<byte> result = new List<byte>();
 
 			uint vertexAddress = 0;
-			if (vertexData != null && vertexData.Count > 0)
+			if (vertexData?.Count > 0)
 			{
 				if (labels.ContainsKey(VertexName))
 					vertexAddress = labels[VertexName];
@@ -359,10 +241,68 @@ namespace SAModel.GC
 					result.AddRange(new byte[15]);
 				}
 			}
+
+			uint vertexSkinAddress = 0;
+			if (vertexSkinData?.Count > 0)
+			{
+				if (labels.ContainsKey(VertexSkinName))
+					vertexSkinAddress = labels[VertexSkinName];
+				else
+				{
+					uint[] vdataAddrs = new uint[vertexSkinData.Count];
+					uint[] wdataAddrs = new uint[vertexSkinData.Count];
+					for (int i = 0; i < vertexSkinData.Count; i++)
+					{
+						if (labels.ContainsKey(vertexSkinData[i].DataName))
+							vdataAddrs[i] = labels[vertexSkinData[i].DataName];
+						else
+						{
+							result.Align(4);
+							vdataAddrs[i] = (uint)result.Count + imageBase;
+							labels.Add(vertexSkinData[i].DataName, vdataAddrs[i]);
+							for (int j = 0; j < vertexSkinData[i].posNrms.Count; j++)
+							{
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].posNrms[j].posX));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].posNrms[j].posY));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].posNrms[j].posZ));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].posNrms[j].nrmX));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].posNrms[j].nrmY));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].posNrms[j].nrmZ));
+							}
+
+							wdataAddrs[i] = (uint)result.Count + imageBase;
+							for (int j = 0; j < vertexSkinData[i].weightData.Count; j++)
+							{
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].weightData[j].vertIndex));
+								result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].weightData[j].weight));
+							}
+						}
+					}
+
+					vertexSkinAddress = (uint)result.Count + imageBase;
+					labels.Add(VertexSkinName, vertexSkinAddress);
+					for (int i = 0; i < vertexSkinData.Count; i++)
+					{
+						//POF0
+						if (vdataAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						if (wdataAddrs[i] != 0)
+							njOffsets.Add((uint)(result.Count + imageBase + 0xC));
+
+						result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].elementType));
+						result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].elementType > 0 ? (ushort)(4 * vertexSkinData[i].posNrms.Count) : (ushort)(3 * vertexSkinData[i].posNrms.Count)));
+						result.AddRange(ByteConverter.GetBytes(vertexSkinData[i].startingIndex));
+						result.AddRange(ByteConverter.GetBytes((ushort)vertexSkinData[i].posNrms.Count));
+						result.AddRange(ByteConverter.GetBytes(vdataAddrs[i]));
+						result.AddRange(ByteConverter.GetBytes(wdataAddrs[i]));
+					}
+				}
+			}
+
 			uint opolyAddress = 0;
 			// writing geometry data
 			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
-			if (opaqueMeshes != null && opaqueMeshes.Count > 0)
+			if (opaqueMeshes?.Count > 0)
 			{
 				if (labels.ContainsKey(OpaqueMeshName))
 					opolyAddress = labels[OpaqueMeshName];
@@ -421,7 +361,7 @@ namespace SAModel.GC
 			}
 			result.Align(4);
 			uint tpolyAddress = 0;
-			if (translucentMeshes != null && translucentMeshes.Count > 0)
+			if (translucentMeshes?.Count > 0)
 			{
 				if (labels.ContainsKey(TranslucentMeshName))
 					tpolyAddress = labels[TranslucentMeshName];
@@ -485,13 +425,15 @@ namespace SAModel.GC
 				//POF0
 				if (vertexAddress != 0)
 					njOffsets.Add((uint)(result.Count + imageBase));
+				if (vertexSkinAddress != 0)
+					njOffsets.Add((uint)(result.Count + imageBase + 0x4));
 				if (opolyAddress != 0)
 					njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 				if (tpolyAddress != 0)
 					njOffsets.Add((uint)(result.Count + imageBase + 0xC));
 
 				result.AddRange(ByteConverter.GetBytes(vertexAddress));
-				result.AddRange(new byte[4]);
+				result.AddRange(ByteConverter.GetBytes(vertexSkinAddress));
 				result.AddRange(ByteConverter.GetBytes(opolyAddress));
 				result.AddRange(ByteConverter.GetBytes(tpolyAddress));
 				result.AddRange(ByteConverter.GetBytes((ushort)opaqueMeshes.Count));
@@ -536,7 +478,7 @@ namespace SAModel.GC
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(vertexData != null ? VertexName : "NULL");
 			result.Append(", ");
-			result.Append(gap);
+			result.Append(vertexSkinData.Count != 0 ? VertexSkinName : "NULL");
 			result.Append(", ");
 			result.Append(opaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
