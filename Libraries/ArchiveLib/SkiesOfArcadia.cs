@@ -1,98 +1,359 @@
-﻿using SAModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
+using AuroraLib.Compression;
+using AuroraLib.Compression.Algorithms;
+using AuroraLib.Core.IO;
+using SplitTools;
+using SAModel;
 
-// Skies of Arcadia (Dreamcast) MLD archives.
+// Skies of Arcadia MLD archives.
 namespace ArchiveLib
 {
-	public class nmldObjectInfo
+	public class nmldObject
 	{
-		public int ObjectPointer;
-		public int MotionPointer;
-		public int TexlistPointer;
-		public int Unknown;
-		public byte[] Data;
+		public string Name;
+		public byte[] File;
 
-		public nmldObjectInfo(byte[] srcdata, int start, int end)
+		public nmldObject(byte[] file, int offset, string name)
 		{
-			int size = end - start;
-			Data = new byte[size - 16];
-			Array.Copy(srcdata, start + 16, Data, 0, size - 16);
-			ObjectPointer = ByteConverter.ToInt32(Data, 0);
-			MotionPointer = ByteConverter.ToInt32(Data, 4);
-			TexlistPointer = ByteConverter.ToInt32(Data, 8);
-			Unknown = ByteConverter.ToInt32(Data, 12);
-			Console.WriteLine("NMLD Entry Info at {0}: NJCM at {1}, NMDM at {2}, NJTL at {3}, Unknown: {4}", start.ToString("X"), ObjectPointer.ToString("X"), MotionPointer.ToString("X"), TexlistPointer.ToString("X"), Unknown.ToString("X"));
+			int ptrNJCM = ByteConverter.ToInt32(file, offset);
+			uint chunksize = ByteConverter.ToUInt32(file, offset + 4) - 16;
+			int ptrNJTL = ByteConverter.ToInt32(file, offset + 8);
+			uint unknown = ByteConverter.ToUInt32(file, offset + 12);
+
+			if (unknown != 0)
+				Console.WriteLine("Unknown Pointer in Object is populated: %s", unknown.ToString());
+
+			int start = (ptrNJTL != 0) ? ptrNJTL : ptrNJCM;
+
+			if (start == 0)
+			{
+				Console.WriteLine("Objects have no data pointers.");
+				return;
+			}
+
+			File = new byte[chunksize];
+			Array.Copy(file, start + offset, File, 0, chunksize);
+
+			Name = name;
 		}
 	}
 
-	public class nmldObjectTable
+	public class nmldGround
 	{
-		public int PointerInfo;
-		public string Name;
-
-		public nmldObjectTable(byte[] data, int start, int index, string name)
+		public enum GroundType
 		{
-			Name = name;
-			int Count = ByteConverter.ToInt32(data, start);
-			PointerInfo = ByteConverter.ToInt32(data, start + 4);
-			int EndPointer = ByteConverter.ToInt32(data, start + 24);
-			Console.WriteLine("NMLD Entry at {0}, End at {1}, Count {2}, Data at {3}", start.ToString("X"), EndPointer.ToString("X"), Count, PointerInfo.ToString("X"));
+			Ground = 0,
+			GroundObject = 1,
+			Unknown
 		}
 
-		public byte[] GetBytes(byte[] src, int nextEntry)
+		public string Name;
+		public GroundType Type;
+		public byte[] File;
+
+		public nmldGround(byte[] file, int address, string name)
 		{
-			nmldObjectInfo info = new nmldObjectInfo(src, (int)PointerInfo, nextEntry);
-			return info.Data;
+			string magic = Encoding.ASCII.GetString(file, address, 4);
+
+			switch (magic)
+			{
+				case "GRND":
+					Type = GroundType.Ground;
+					break;
+				case "GOBJ":
+					Type = GroundType.GroundObject;
+					break;
+				default:
+					Console.WriteLine("Unknown Ground Format Found: %s", magic);
+					Type = GroundType.Unknown;
+					break;
+			}
+
+			int filesize = ByteConverter.ToInt32(file, address + 4) + 8;
+
+			File = new byte[filesize];
+			Array.Copy(file, address, File, 0, filesize);
+
+			Name = name + "_ground";
+		}
+	}
+
+	public class nmldMotion
+	{
+		public enum MotionType
+		{
+			Node = 0,
+			Shape = 1,
+			Unknown
+		}
+
+		public string Name;
+		public MotionType Type;
+		public byte[] File;
+
+		public nmldMotion(byte[] file, int address, string name)
+		{
+			string magic = Encoding.ASCII.GetString(file, address, 4);
+
+			switch (magic)
+			{
+				case "NMDM":
+					Type = MotionType.Node;
+					Name = name + "_motion";
+					break;
+				case "NSSM":
+					Type = MotionType.Shape;
+					Name = name + "_shape";
+					break;
+				default:
+					Console.WriteLine("Unidentified Motion Type: %s", magic);
+					Type = MotionType.Unknown;
+					break;
+			}
+
+			int njmsize = ByteConverter.ToInt32(file, address + 4) + 8;
+			int pofsize = ByteConverter.ToInt32(file, address + njmsize + 4) + 8;
+
+			File = new byte[njmsize + pofsize];
+			Array.Copy(file, address, File, 0, njmsize + pofsize);
+		}
+	}
+
+	public class nmldTextureList
+	{
+		public string Name;
+		public NJS_TEXLIST TexList;
+
+		public nmldTextureList()
+		{
+			Name = string.Empty;
+			TexList = new NJS_TEXLIST();
+		}
+
+		public nmldTextureList(byte[] file, int address, string name)
+		{
+			TexList = NJS_TEXLIST.Load(file, address, 0);
+
+			Name = name + ".tls";
 		}
 	}
 
 	public class nmldEntry
 	{
-		public int idx; // 0x00
-		public int unk; // 0x04
-		public int ptr_unk1; // 0x08
-		public int ptr_unk2; // 0x0C
-		public int ptr_unk3; // 0x10
-		public int ptr_objTable; // 0x14
-		public int ptr_grndTable; // 0x18
-		public int ptr_motTable; // 0x1C
-		public int ptr_texTable; // 0x20
-		public string name; // 0x24 (32 bytes)
-		public Vertex pos; // 0x44
-		public Vertex rot; // 0x50
-		public Vertex scl; // 0x5C
+		public int Index { get; set; } = 0;
+		public List<nmldObject> Objects { get; set; } = new();
+		public List<nmldMotion> Motions { get; set; } = new();
+		public List<nmldGround> Grounds { get; set; } = new();
+		public nmldTextureList Texlist { get; set; } = new();
+		public string Name { get; set; } = string.Empty;
+		public Vertex Position { get; set; } = new();
+		public Vertex Rotation { get; set; } = new();
+		public Vertex Scale { get; set; } = new();
 
-		public nmldEntry(byte[] data, int start)
+		private string GetNameAndIndex(int index)
 		{
-			idx = ByteConverter.ToInt32(data, start);
-			unk = ByteConverter.ToInt32(data, start + 0x04);
-			ptr_unk1 = ByteConverter.ToInt32(data, start + 0x08);
-			ptr_unk2 = ByteConverter.ToInt32(data, start + 0x0C);
-			ptr_unk3 = ByteConverter.ToInt32(data, start + 0x10);
-			ptr_objTable = ByteConverter.ToInt32(data, start + 0x14);
-			ptr_grndTable = ByteConverter.ToInt32(data, start + 0x18);
-			ptr_motTable = ByteConverter.ToInt32(data, start + 0x1C);
-			ptr_texTable = ByteConverter.ToInt32(data, start + 0x20);
+			return Index.ToString("D3") + "_" + index.ToString("D2") + "_" + Name;
+		}
+
+		private void GetObjects(byte[] file, int offset)
+		{
+			int count = ByteConverter.ToInt32(file, offset);
+
+			for (int i = 0; i < count; i++)
+			{
+				int address = ByteConverter.ToInt32(file, offset + (4 * (i + 1)));
+				
+				if (address != 0)
+				{
+					Objects.Add(new nmldObject(file, address, GetNameAndIndex(i)));
+				}
+			}
+		}
+
+		private void GetMotions(byte[] file, int offset)
+		{
+			int count = ByteConverter.ToInt32(file, offset);
+
+			for (int i = 0; i < count; i++)
+			{
+				int address = ByteConverter.ToInt32(file, offset + (4 * (i + 1)));
+
+				if (address != 0)
+				{
+					Motions.Add(new nmldMotion(file, address, GetNameAndIndex(i)));
+				}
+			}
+		}
+
+		private void GetGrounds(byte[] file, int offset)
+		{
+			int count = ByteConverter.ToInt32(file, offset);
+
+			for (int i = 0; i < count; i++)
+			{
+				int address = ByteConverter.ToInt32(file, offset + (4 * (i + 1)));
+
+				if (address != 0)
+				{
+					Grounds.Add(new nmldGround(file, address, GetNameAndIndex(i)));
+				}
+			}
+		}
+
+		private void GetTextures(byte[] file, int offset)
+		{
+			Texlist = new nmldTextureList(file, offset, GetNameAndIndex(0));
+		}
+
+		public string WriteEntryInfo()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			for (int i = 0; i < Objects.Count; i++)
+			{
+				sb.AppendLine(
+					Index.ToString("D3") + "_" + i.ToString("D2") + "_" + Name + ", " + 
+					Position.ToString() + ", " + Rotation.ToString() + ", " + Scale.ToString());
+			}
+
+			return sb.ToString();
+		}
+
+		public nmldEntry(int offset, byte[] file)
+		{
+			Index = ByteConverter.ToInt32(file, offset);
+
+			// Get Entry Name
 			int namesize = 0;
 			for (int s = 0; s < 32; s++)
 			{
-				if (data[start + 0x24 + s] != 0)
+				if (file[offset + 0x24 + s] != 0)
 					namesize++;
 				else
 					break;
 			}
 			byte[] namechunk = new byte[namesize];
-			Array.Copy(data, start + 0x24, namechunk, 0, namesize);
-			name = System.Text.Encoding.ASCII.GetString(namechunk);
-			pos = new Vertex(ByteConverter.ToSingle(data, start + 0x44), ByteConverter.ToSingle(data, start + 0x48), ByteConverter.ToSingle(data, start + 0x4C));
-			rot = new Vertex(ByteConverter.ToSingle(data, start + 0x50), ByteConverter.ToSingle(data, start + 0x54), ByteConverter.ToSingle(data, start + 0x58));
-			scl = new Vertex(ByteConverter.ToSingle(data, start + 0x5C), ByteConverter.ToSingle(data, start + 0x60), ByteConverter.ToSingle(data, start + 0x64));
-			Console.WriteLine("NMLD at {0}, ID: {1}, Name: {2}, Entry at: {3}, GRND at: {4}, Motion at: {5}, Texlist at: {6}", start.ToString("X"), idx.ToString(), name, ptr_objTable.ToString("X"), ptr_grndTable.ToString("X"), ptr_motTable.ToString("X"), ptr_texTable.ToString("X"));
+			Array.Copy(file, offset + 0x24, namechunk, 0, namesize);
+			Name = Encoding.ASCII.GetString(namechunk);
+
+			Position	= new Vertex(ByteConverter.ToSingle(file, offset + 0x44), ByteConverter.ToSingle(file, offset + 0x48), ByteConverter.ToSingle(file, offset + 0x4C));
+			Rotation	= new Vertex(ByteConverter.ToSingle(file, offset + 0x50), ByteConverter.ToSingle(file, offset + 0x54), ByteConverter.ToSingle(file, offset + 0x58));
+			Scale		= new Vertex(ByteConverter.ToSingle(file, offset + 0x5C), ByteConverter.ToSingle(file, offset + 0x60), ByteConverter.ToSingle(file, offset + 0x64));
+
+			// Get Entry Objects
+			int ptrObjects = ByteConverter.ToInt32(file, offset + 0x14);
+			if (ByteConverter.ToInt32(file, ptrObjects + 4) != 0)
+				GetObjects(file, ptrObjects);
+
+			// Get Entry Motions
+			int ptrMotions = ByteConverter.ToInt32(file, offset + 0x1C);
+			if (ByteConverter.ToInt32(file, ptrMotions + 4) != 0)
+				GetMotions(file, ptrMotions);
+
+			// Get Entry Grounds
+			int ptrGrounds = ByteConverter.ToInt32(file, offset + 0x18);
+			if (ByteConverter.ToInt32(file, ptrGrounds + 4) != 0)
+				GetGrounds(file, ptrGrounds);
+
+			// Get Entry Textures
+			int ptrTextures = ByteConverter.ToInt32(file, offset + 0x20);
+			if (ByteConverter.ToInt32(file, ptrTextures + 4) != 0)
+				GetTextures(file, ptrTextures);
+		}
+	}
+
+	public class nmldArchiveFile
+	{
+		public string Name { get; set; } = string.Empty;
+		public List<nmldEntry> Entries { get; set; } = new();
+		public PuyoFile TextureFile { get; set; }
+
+		private void GetTextureArchive(byte[] file, int offset)
+		{
+			Console.WriteLine("Getting Textures...");
+			if (ByteConverter.BigEndian == true)
+				TextureFile = new PuyoFile(PuyoArchiveType.GVMFile);
+			else
+				TextureFile = new PuyoFile();
+
+			int numtex = ByteConverter.ToInt32(file, (int)offset);
+			List<string> texnames = new List<string>();
+
+			if (numtex > 0)
+			{
+				Console.WriteLine("Textures Found! Creating Archive.");
+				int texdataoffset = (int)offset + 4 + numtex * 44;
+
+				// Get through the padding
+				if (file[texdataoffset] == 0)
+				{
+					do
+					{
+						texdataoffset += 1;
+					}
+					while (file[texdataoffset] == 0);
+				}
+				int currenttextureoffset = texdataoffset;
+
+				for (int i = 0; i < numtex; i++)
+				{
+					byte[] namestring = new byte[36];
+					Array.Copy(file, offset + 4 + i * 44, namestring, 0, 36);
+					string entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
+					int size = ByteConverter.ToInt32(file, (int)offset + 4 + i * 44 + 40);
+					byte[] texture = new byte[size];
+					Array.Copy(file, currenttextureoffset, texture, 0, size);
+					currenttextureoffset += size;
+
+					switch (TextureFile.Type)
+					{
+						case PuyoArchiveType.PVMFile:
+							TextureFile.Entries.Add(new PVMEntry(texture, entryfn));
+							break;
+						case PuyoArchiveType.GVMFile:
+							TextureFile.Entries.Add(new GVMEntry(texture, entryfn));
+							break;
+					}
+				}
+			}
+		}
+
+		private void GetEntries(byte[] file, int offset, int count)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				Entries.Add(new nmldEntry(offset + (i * 104), file));
+			}
+		}
+
+		public nmldArchiveFile()
+		{
+			Name = string.Empty;
+			Entries = new List<nmldEntry>();
+			TextureFile = new();
+		}
+
+		public nmldArchiveFile(byte[] file, string name)
+		{
+			Name = name;
+
+			int nmldCount		= ByteConverter.ToInt32(file, 0);
+			int ptr_nmldTable	= ByteConverter.ToInt32(file, 0x04);
+			int eof_nmldTable	= ByteConverter.ToInt32(file, 0x08);
+			int realdatapointer = ByteConverter.ToInt32(file, 0x0C);
+			int textablepointer = ByteConverter.ToInt32(file, 0x10);
+			Console.WriteLine("Number of NMLD entries: {0}, NMLD data starts at {1}, real data starts at {2}", nmldCount, ptr_nmldTable.ToString("X"), realdatapointer.ToString("X"));
+
+			// Go ahead and extract the texture archive.
+			GetTextureArchive(file, textablepointer);
+
+			// Collect Entries and their contents
+			GetEntries(file, ptr_nmldTable, nmldCount);
 		}
 	}
 
@@ -118,185 +379,140 @@ namespace ArchiveLib
 			}
 		}
 
-		public MLDArchive(byte[] file)
+		private void ExtractEntries(nmldArchiveFile archive, string directory)
 		{
-			List<nmldEntry> nmldEntries = new List<nmldEntry>();
-			List<nmldObjectTable> nmldObjectEntries = new List<nmldObjectTable>();
-			ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0);
-			string nmldInfo = "";
+			StringBuilder sb = new StringBuilder();
 
-			// Read MLD Header
-			int nmldCount = ByteConverter.ToInt32(file, 0);
-			int ptr_nmldTable = ByteConverter.ToInt32(file, 0x04);
-			int eof_nmldTable = ByteConverter.ToInt32(file, 0x08);
-			int realdatapointer = ByteConverter.ToInt32(file, 0x0C);
-			int textablepointer = ByteConverter.ToInt32(file, 0x10);
-			Console.WriteLine("Number of NMLD entries: {0}, NMLD data starts at {1}, real data starts at {2}", nmldCount, ptr_nmldTable.ToString("X"), realdatapointer.ToString("X"));
-			int sizereal = textablepointer - realdatapointer;
-			int sizenmld = realdatapointer - ptr_nmldTable;
-			Console.WriteLine("First entry: {0} size {1}", realdatapointer.ToString("X"), sizereal);
-
-			// Extract NMLD stuff
-			for (int m = 0; m < nmldCount; m++)
+			// Add Entries
+			foreach (nmldEntry entry in archive.Entries)
 			{
-				nmldEntry nmld = new nmldEntry(file, (int)ptr_nmldTable + 104 * m);
-				nmldEntries.Add(nmld);
-
-				/*
-				if (nmld.ptr_objTable != 0)
+				// Add Objects
+				foreach (nmldObject model in entry.Objects)
 				{
-					nmldObjectEntries.Add(new nmldObjectTable(file, nmld.ptr_objTable, nmld.idx, nmld.name));
-					Console.WriteLine("Create nmldEntry {0} at {1}", m, nmld.ptr_objTable.ToString("X"));
+					Entries.Add(new MLDArchiveEntry(model.File, model.Name + ".nj"));
 				}
-				*/
-			}
 
-			for (int e = 0; e < nmldEntries.Count; e++)
-			{
-				List<int> objTablePointers = new List<int>();
-				List<string> motTablePointers = new List<string>();
-
-				//Object Table
-				int objTableCount = ByteConverter.ToInt32(file, nmldEntries[e].ptr_objTable);
-				int objTableCheck = ByteConverter.ToInt32(file, nmldEntries[e].ptr_objTable + 0x04);
-				if (objTableCheck != 0 || objTableCount > 1)
+				// Add Ground/Ground Object Files
+				foreach (nmldGround ground in entry.Grounds)
 				{
-					int objTableStart = nmldEntries[e].ptr_objTable + 0x04;
-					Console.WriteLine("Object Table Count: {0}", objTableCount.ToString());
-					for (int obj = 0; obj < objTableCount; obj++)
+					switch (ground.Type)
 					{
-						int objTablePointer = ByteConverter.ToInt32(file, objTableStart + 4 * obj);
-						objTablePointers.Add(objTablePointer);
-						Console.WriteLine("Object Table at {0}", objTablePointer.ToString("X"));
+						case nmldGround.GroundType.Ground:
+							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".grnd"));
+							break;
+						case nmldGround.GroundType.GroundObject:
+							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
+							break;
+						case nmldGround.GroundType.Unknown:
+							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gunk"));
+							break;
 					}
 				}
 
-				//Motion Table
-				int motTableCount = ByteConverter.ToInt32(file, nmldEntries[e].ptr_motTable);
-				int motTableCheck = ByteConverter.ToInt32(file, nmldEntries[e].ptr_motTable + 0x04);
-				if (motTableCheck != 0 || motTableCount > 1)
+				// Add Motions
+				foreach (nmldMotion motion in entry.Motions)
 				{
-					int motTableStart = nmldEntries[e].ptr_motTable + 4;
-					Console.WriteLine("Object {0} has {1} motions.", nmldEntries[e].name, motTableCount);
-					for (int mot = 0; mot < motTableCount; mot++)
+					switch (motion.Type)
 					{
-						int motTablePointer = ByteConverter.ToInt32(file, motTableStart + 4 * mot);
-						if (motTablePointer != 0 && !motTablePointers.Contains("motion_" + motTablePointer.ToString("X") + ".njm\n"))
-							motTablePointers.Add("motion_" + motTablePointer.ToString("X") + ".njm\n");
+						case nmldMotion.MotionType.Node:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njm"));
+							break;
+						case nmldMotion.MotionType.Shape:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njs"));
+							break;
+						case nmldMotion.MotionType.Unknown:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".num"));
+							break;
 					}
 				}
 
-				//Add NJCM Entries to Entries List.
-				for (int mdl = 0; mdl < objTablePointers.Count; mdl++)
+				// Save Texlist
+				if (entry.Texlist.TexList.NumTextures > 0)
 				{
-					string mdlName = Path.ChangeExtension(e.ToString("D3") + "_" + mdl.ToString("D2") + "_" + nmldEntries[e].name, ".nj");
+					if (!Directory.Exists(directory))
+						Directory.CreateDirectory(directory);
 
-					int ptr_njcmChunk = ByteConverter.ToInt32(file, objTablePointers[mdl]) + objTablePointers[mdl];
-					int ptr_eofChunk = ByteConverter.ToInt32(file, objTablePointers[mdl] + 4) + objTablePointers[mdl];
-					int ptr_njtlChunk = ByteConverter.ToInt32(file, objTablePointers[mdl] + 8) + objTablePointers[mdl];
-
-					Console.WriteLine("NJCM file starts at {0} and ends at {1}", ptr_njtlChunk.ToString("X"), ptr_eofChunk.ToString("X"));
-
-					byte[] njcmFile = new byte[ptr_eofChunk - ptr_njtlChunk];
-					Array.Copy(file, ptr_njtlChunk, njcmFile, 0, njcmFile.Length);
-					Entries.Add(new MLDArchiveEntry(njcmFile, mdlName));
-
-					if (motTablePointers.Count != 0)
-					{
-						string mdlAction = "";
-						foreach (string motion in motTablePointers)
-						{
-							mdlAction += (motion);
-						}
-						Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(mdlAction), (Path.GetFileNameWithoutExtension(mdlName) + ".action")));
-					}
-
-					//Write NMLD Entry output
-					Console.WriteLine("Generate NMLD Entry List");
-					nmldInfo += mdlName + ", " + nmldEntries[e].pos.ToString() + ", " + nmldEntries[e].rot.ToString() + ", " + nmldEntries[e].scl.ToString() + "\n";
+					entry.Texlist.TexList.Save(Path.Combine(directory, entry.Texlist.Name));
 				}
+
+				sb.Append(entry.WriteEntryInfo());
 			}
 
-			Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(nmldInfo), "nmldInfo.amld"));
+			// Add Info File
+			Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(sb.ToString()), "FileInfo.amld"));
 
-			//Scan file for all NMDM Chunks
-			Console.WriteLine("Scanning for NMDM Chunks");
-			byte[] nmdmByte = new byte[] { 0x4E, 0x4D, 0x44, 0x4D };
-			List<int> nmdmAddr = SearchBytePattern(nmdmByte, file);
-			//Add NMDM Entries to Entries List.
-			for (int anm = 0; anm < nmdmAddr.Count; anm++)
+			// Add Texture Archive
+			if (archive.TextureFile != new PuyoFile())
 			{
-				int nmdmLength = ByteConverter.ToInt32(file, nmdmAddr[anm] + 4) + 8 + nmdmAddr[anm];
-				int nmdmEOF = ByteConverter.ToInt32(file, nmdmLength + 4) + 8 + nmdmLength;
-				byte[] nmdmFile = new byte[nmdmEOF - nmdmAddr[anm]];
-				Array.Copy(file, (nmdmAddr[anm]), nmdmFile, 0, nmdmFile.Length);
-				string njmName = ("motion_" + nmdmAddr[anm].ToString("X") + ".njm");
-				Console.WriteLine("Adding {0} to Archive Entries", njmName);
-				Entries.Add(new MLDArchiveEntry(nmdmFile, njmName));
-			}
-
-			//Scan file for all NSSM Chunks
-			Console.WriteLine("Scanning for NSSM Chunks");
-			byte[] nssmByte = new byte[] { 0x4E, 0x53, 0x53, 0x4D };
-			List<int> nssmAddr = SearchBytePattern(nssmByte, file);
-			//Add NMDM Entries to Entries List.
-			for (int anm = 0; anm < nssmAddr.Count; anm++)
-			{
-				int nssmLength = ByteConverter.ToInt32(file, nssmAddr[anm] + 4) + 8 + nssmAddr[anm];
-				int nssmEOF = ByteConverter.ToInt32(file, nssmLength + 4) + 8 + nssmLength;
-				byte[] nssmFile = new byte[nssmEOF - nssmAddr[anm]];
-				Array.Copy(file, (nssmAddr[anm]), nssmFile, 0, nssmFile.Length);
-				string njsName = ("shape_" + nssmAddr[anm].ToString("X") + ".njm");
-				Console.WriteLine("Adding {0} to Archive Entries", njsName);
-				Entries.Add(new MLDArchiveEntry(nssmFile, njsName));
-			}
-
-			int numtex = ByteConverter.ToInt32(file, (int)textablepointer);
-			List<string> texnames = new List<string>();
-			string texList = "";
-			// Extract textures
-			Console.WriteLine("Number of textures: {0}, pointer: {1}", numtex, textablepointer.ToString("X"));
-			if (numtex > 0)
-			{
-				int texdataoffset = (int)textablepointer + 4 + numtex * 44;
-				Console.WriteLine("Texture offset original: {0}", texdataoffset.ToString("X"));
-				// Get through the padding
-				if (file[texdataoffset] == 0)
-				{
-					do
-					{
-						texdataoffset += 1;
-					}
-					while (file[texdataoffset] == 0);
-				}
-				Console.WriteLine("Textures from {0}", texdataoffset.ToString("X"));
-				int currenttextureoffset = texdataoffset;
 				string ext = "";
-				if (ByteConverter.BigEndian == true)
-					ext = ".gvr";
-				else
-					ext = ".pvr";
-				for (int i = 0; i < numtex; i++)
+				switch (archive.TextureFile.Type)
 				{
-					byte[] namestring = new byte[36];
-					Array.Copy(file, textablepointer + 4 + i * 44, namestring, 0, 36);
-					string entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
-					int size = ByteConverter.ToInt32(file, (int)textablepointer + 4 + i * 44 + 40);
-					Console.WriteLine("Entry {0} name {1} size {2}", i, entryfn, size);
-					byte[] texture = new byte[size];
-					Array.Copy(file, currenttextureoffset, texture, 0, size);
-					Entries.Add(new MLDArchiveEntry(texture, entryfn + ext));
-					texnames.Add(entryfn);
-					currenttextureoffset += size;
+					case PuyoArchiveType.PVMFile:
+						ext = ".pvm";
+						break;
+					case PuyoArchiveType.GVMFile:
+						ext = ".gvm";
+						break;
 				}
-
-				for (int t = 0; t < numtex; t++)
-				{
-					texList += t.ToString() + "," + texnames[t] + ext + "\n";
-				}
-
-				Entries.Add(new MLDArchiveEntry(Encoding.ASCII.GetBytes(texList), "index.txt"));
+				Entries.Add(new MLDArchiveEntry(archive.TextureFile.GetBytes(), archive.Name + ext));
 			}
+		}
+
+		public MLDArchive(string filepath, byte[] file)
+		{
+			string directory = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath));
+			string filename = Path.GetFileNameWithoutExtension(filepath);
+			ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0xC);
+
+			nmldArchiveFile archive;
+
+			if (ByteConverter.BigEndian)
+			{
+				Console.WriteLine("Skies of Arcadia: Legends MLD File");
+				string aklzcheck = Encoding.ASCII.GetString(file, 0, 4);
+
+				if (aklzcheck == "AKLZ")
+				{
+					Console.WriteLine("MLD Archive is Compressed. Decompressing...");
+					byte[] dfile = new byte[0];
+
+					// Decompress File Here
+					using (Stream stream = new MemoryStream(file))
+					{
+						using (MemoryPoolStream pool = new AKLZ().Decompress(stream))
+						{
+							dfile = new byte[pool.ToArray().Length];
+							Array.Copy(pool.ToArray(), dfile, pool.ToArray().Length);
+						}
+					}
+
+					if (dfile.Length > 0)
+					{
+						Console.WriteLine("File Decompressed, saving and reading decompressed archive.");
+						Entries.Add(new MLDArchiveEntry(dfile, (filename + "_dec.mld")));
+						archive = new nmldArchiveFile(dfile, filename);
+					}
+					else
+					{
+						Console.WriteLine("Decompression Failed.");
+						archive = new();
+					}
+				}
+				else
+					archive = new nmldArchiveFile(file, filename);
+			}
+			else
+			{
+				Console.WriteLine("Skies of Arcadia MLD File");
+				archive = new nmldArchiveFile(file, filename);
+			}
+
+			if (archive != new nmldArchiveFile())
+			{
+				ExtractEntries(archive, directory);
+			}
+			else
+				Console.WriteLine("Unable to read archive.");
 		}
 
 		static public List<int> SearchBytePattern(byte[] pattern, byte[] bytes)

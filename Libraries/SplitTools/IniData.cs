@@ -825,6 +825,43 @@ namespace SplitTools
 			}
 		}
 
+		public static NJS_TEXLIST Load(byte[] file, int address, int imageBase)
+		{
+			NJS_TEXLIST texlist = new();
+
+			texlist.Name = "texlist_" + address.ToString("X8");
+			uint TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
+			int TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
+			texlist.NumTextures = ByteConverter.ToUInt32(file, address + 4);
+			texlist.TexnameArrayName = "textures_" + TexnameArrayAddr.ToString("X8");
+			texlist.TextureNames = new string[texlist.NumTextures];
+			if (TexnameArrayAddr == 0)
+				return new();
+			if (texlist.NumTextures <= 300 && texlist.NumTextures > 0)
+			{
+				texlist.TextureNames = new string[texlist.NumTextures];
+				for (int u = 0; u < texlist.NumTextures; u++)
+				{
+					// Hack for uninitialized data
+					if (TexnameArrayAddr > file.Length)
+					{
+						texlist.TextureNames[u] = null;
+						continue;
+					}
+					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
+					if (TexnamePointer != 0)
+					{
+						int TexnameAddress = (int)(TexnamePointer - imageBase);
+						texlist.TextureNames[u] = file.GetCString(TexnameAddress, Encoding.UTF8).TrimEnd();
+					}
+					else
+						texlist.TextureNames[u] = null;
+				}
+			}
+
+			return texlist;
+		}
+
 		public void SaveAsList(string fileOutputPath, string extension = "pvr")
 		{
 			StreamWriter sw = File.CreateText(fileOutputPath);

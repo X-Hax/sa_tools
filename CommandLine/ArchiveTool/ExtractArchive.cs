@@ -83,7 +83,7 @@ namespace ArchiveTool
                     arc = new MDTArchive(arcdata);
                     break;
                 case (".mld"):
-                    arc = new MLDArchive(arcdata);
+                    arc = new MLDArchive(filePath, arcdata);
                     break;
                 case (".mlt"):
                 case (".gcaxmlt"):
