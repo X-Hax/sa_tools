@@ -17,6 +17,7 @@ using Point = System.Drawing.Point;
 using SplitTools;
 using SAModel.SAEditorCommon.ProjectManagement;
 using static SAModel.SAEditorCommon.SettingsFile;
+using System.Net.NetworkInformation;
 
 namespace SAModel.SAMDL
 {
@@ -562,7 +563,9 @@ namespace SAModel.SAMDL
 							return;
 						}
 						else if (ninjaBinary.Models.Count == 1)
+						{
 							model = ninjaBinary.Models[0];
+						}
 						else
 						{
 							using (PickModelDialog dlg = new PickModelDialog())
@@ -605,6 +608,8 @@ namespace SAModel.SAMDL
 								TexList = new NJS_TEXLIST(ninjaBinary.Texnames[modelIndex]);
 							else
 								TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
+
+							UpdateTexlist();
 						}
 						// Attempt to auto load textures from PVM or GVM.
 						// In PSO GC, NJ+GVM is possible so using just the model format to determine texture archive extension isn't reliable.
