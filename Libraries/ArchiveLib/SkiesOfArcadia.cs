@@ -80,7 +80,7 @@ namespace ArchiveLib
 			File = new byte[filesize];
 			Array.Copy(file, address, File, 0, filesize);
 
-			Name = name + "_ground";
+			Name = name;
 		}
 	}
 
@@ -97,7 +97,7 @@ namespace ArchiveLib
 		public MotionType Type;
 		public byte[] File;
 
-		public nmldMotion(byte[] file, int address, string name)
+		public nmldMotion(byte[] file, int address, string name, string idx)
 		{
 			string magic = Encoding.ASCII.GetString(file, address, 4);
 
@@ -105,11 +105,11 @@ namespace ArchiveLib
 			{
 				case "NMDM":
 					Type = MotionType.Node;
-					Name = name + "_motion";
+					Name = name + "_motion" + idx;
 					break;
 				case "NSSM":
 					Type = MotionType.Shape;
-					Name = name + "_shape";
+					Name = name + "_shape" + idx;
 					break;
 				default:
 					Console.WriteLine("Unidentified Motion Type: %s", magic);
@@ -156,9 +156,14 @@ namespace ArchiveLib
 		public Vertex Rotation { get; set; } = new();
 		public Vertex Scale { get; set; } = new();
 
+		private string GetNameWithIndex()
+		{
+			return Index.ToString("D3") + "_" + Name;
+		}
+
 		private string GetNameAndIndex(int index)
 		{
-			return Index.ToString("D3") + "_" + index.ToString("D2") + "_" + Name;
+			return Index.ToString("D3") + "_" + Name + "_" + index.ToString("D2");
 		}
 
 		private void GetObjects(byte[] file, int offset)
@@ -186,7 +191,7 @@ namespace ArchiveLib
 
 				if (address != 0)
 				{
-					Motions.Add(new nmldMotion(file, address, GetNameAndIndex(i)));
+					Motions.Add(new nmldMotion(file, address, GetNameWithIndex(), i.ToString()));
 				}
 			}
 		}
@@ -208,7 +213,7 @@ namespace ArchiveLib
 
 		private void GetTextures(byte[] file, int offset)
 		{
-			Texlist = new nmldTextureList(file, offset, GetNameAndIndex(0));
+			Texlist = new nmldTextureList(file, offset, GetNameWithIndex());
 		}
 
 		public string WriteEntryInfo()
@@ -253,7 +258,7 @@ namespace ArchiveLib
 
 			// Get Entry Motions
 			int ptrMotions = ByteConverter.ToInt32(file, offset + 0x1C);
-			if (ByteConverter.ToInt32(file, ptrMotions + 4) != 0)
+			if (ByteConverter.ToInt32(file, ptrMotions) != 0)
 				GetMotions(file, ptrMotions);
 
 			// Get Entry Grounds
@@ -308,8 +313,11 @@ namespace ArchiveLib
 				}
 				int texdataptr = texdataoffset;
 
+				bool isBig = ByteConverter.BigEndian;
+
 				foreach (KeyValuePair<string, int> tex in texnames)
 				{
+					ByteConverter.BigEndian = false;
 					int texdataptr2 = texdataptr;
 					string magic = Encoding.ASCII.GetString(file, texdataptr2, 4);
 					int size = 0;
@@ -339,6 +347,8 @@ namespace ArchiveLib
 
 					texdataptr += tex.Value;
 				}
+
+				ByteConverter.BigEndian = isBig;
 			}
 		}
 
