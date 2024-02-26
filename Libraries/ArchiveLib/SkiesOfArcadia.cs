@@ -75,7 +75,7 @@ namespace ArchiveLib
 					break;
 			}
 
-			int filesize = ByteConverter.ToInt32(file, address + 4) + 8;
+			int filesize = ByteConverter.ToInt32(file, address + 4);
 
 			File = new byte[filesize];
 			Array.Copy(file, address, File, 0, filesize);
@@ -518,7 +518,7 @@ namespace ArchiveLib
 					if (dfile.Length > 0)
 					{
 						Console.WriteLine("File Decompressed, saving and reading decompressed archive.");
-						Entries.Add(new MLDArchiveEntry(dfile, (filename + "_dec.mld")));
+						Entries.Add(new MLDArchiveEntry(dfile, ("..\\" + filename + "_dec.mld")));
 						archive = new nmldArchiveFile(dfile, filename);
 					}
 					else
