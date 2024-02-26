@@ -9,6 +9,7 @@ using AuroraLib.Compression.Algorithms;
 using AuroraLib.Core.IO;
 using SplitTools;
 using SAModel;
+using System.Net;
 
 // Skies of Arcadia MLD archives.
 namespace ArchiveLib
@@ -281,15 +282,22 @@ namespace ArchiveLib
 			else
 				TextureFile = new PuyoFile();
 
-			int numtex = ByteConverter.ToInt32(file, (int)offset);
-			List<string> texnames = new List<string>();
+			int numtex = ByteConverter.ToInt32(file, offset);
+			int texnamearray = offset + 4;
+			Dictionary<string, int> texnames = new();
 
 			if (numtex > 0)
 			{
 				Console.WriteLine("Textures Found! Creating Archive.");
-				int texdataoffset = (int)offset + 4 + numtex * 44;
+				for (int i = 0; i < numtex; i++)
+				{
+					int element = texnamearray + (i * 44);
+					texnames.Add(file.GetCString(element, Encoding.UTF8), ByteConverter.ToInt32(file, element + 40));
+				}
 
-				// Get through the padding
+				// Texture Embeds have an unspecified spacing between the end of the names and the start of the texture data.
+				// So we do this to get through the padding
+				int texdataoffset = offset + 4 + numtex * 44;
 				if (file[texdataoffset] == 0)
 				{
 					do
@@ -298,27 +306,38 @@ namespace ArchiveLib
 					}
 					while (file[texdataoffset] == 0);
 				}
-				int currenttextureoffset = texdataoffset;
+				int texdataptr = texdataoffset;
 
-				for (int i = 0; i < numtex; i++)
+				foreach (KeyValuePair<string, int> tex in texnames)
 				{
-					byte[] namestring = new byte[36];
-					Array.Copy(file, offset + 4 + i * 44, namestring, 0, 36);
-					string entryfn = Encoding.ASCII.GetString(namestring).TrimEnd((char)0);
-					int size = ByteConverter.ToInt32(file, (int)offset + 4 + i * 44 + 40);
+					int texdataptr2 = texdataptr;
+					string magic = Encoding.ASCII.GetString(file, texdataptr2, 4);
+					int size = 0;
+
+					switch (magic)
+					{
+						case "GBIX":
+						case "GCIX":
+							size += ByteConverter.ToInt32(file, texdataptr2 + 4) + 8;
+							texdataptr2 += 16;
+							break;
+					}
+
+					size += ByteConverter.ToInt32(file, texdataptr2 + 4) + 8;
 					byte[] texture = new byte[size];
-					Array.Copy(file, currenttextureoffset, texture, 0, size);
-					currenttextureoffset += size;
+					Array.Copy(file, texdataptr, texture, 0, size);
 
 					switch (TextureFile.Type)
 					{
 						case PuyoArchiveType.PVMFile:
-							TextureFile.Entries.Add(new PVMEntry(texture, entryfn));
+							TextureFile.Entries.Add(new PVMEntry(texture, tex.Key));
 							break;
 						case PuyoArchiveType.GVMFile:
-							TextureFile.Entries.Add(new GVMEntry(texture, entryfn));
+							TextureFile.Entries.Add(new GVMEntry(texture, tex.Key));
 							break;
 					}
+
+					texdataptr += tex.Value;
 				}
 			}
 		}
