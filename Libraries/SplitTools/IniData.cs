@@ -26,6 +26,8 @@ namespace SplitTools
 		public bool BigEndian { get; set; }
 		[IniName("reverse")]
 		public bool Reverse { get; set; }
+		[IniName("korean")]
+		public bool KoreanMode { get; set; }
 		[IniName("nometa")]
 		public bool NoMeta { get; set; }
 		[IniName("offset")]

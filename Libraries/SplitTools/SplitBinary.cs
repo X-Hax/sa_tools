@@ -34,6 +34,7 @@ namespace SplitTools.Split
 				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				// Load split INI
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				HelperFunctions.KoreanMode = inifile.KoreanMode;
 				// Load labels list
 				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(datafilename) + "_labels.txt");
 				Dictionary<int, string> labels = new Dictionary<int, string>();

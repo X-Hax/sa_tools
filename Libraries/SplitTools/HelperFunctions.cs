@@ -212,9 +212,12 @@ namespace SplitTools
 		}
 
 		private static readonly Encoding jpenc = Encoding.GetEncoding(932);
+		private static readonly Encoding krenc = Encoding.GetEncoding(949);
 		private static readonly Encoding euenc = Encoding.GetEncoding(1252);
 
-		public static Encoding GetEncoding() { return jpenc; }
+		public static bool KoreanMode = false;
+
+		public static Encoding GetEncoding() { return KoreanMode? krenc : jpenc; }
 
 		public static Encoding GetEncoding(Languages language) => GetEncoding(Game.SA1, language);
 
@@ -223,13 +226,13 @@ namespace SplitTools
 			switch (language)
 			{
 				case Languages.Japanese:
-					return jpenc;
+					return KoreanMode ? krenc : jpenc;
 				case Languages.English:
 					switch (game)
 					{
 						case Game.SA1:
 						case Game.SADX:
-							return jpenc;
+							return KoreanMode ? krenc : jpenc;
 						case Game.SA2:
 						case Game.SA2B:
 							return euenc;

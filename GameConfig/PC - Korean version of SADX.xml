@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <GameInfo gameName="SADXPCKR" projectType="SADXPCKR" dataFolder="PC_SADX/korean" gameDataFolderName="system" checkFile="sonic.exe"/>
+  <SplitEntry SourceFile="sonic.exe" IniFile="npctext" CmnName="NPC Text" />
+  <SplitEntry SourceFile="sonic.exe" IniFile="multistring" CmnName="Multi-language strings" />
+  <SplitEntry SourceFile="sonic.exe" IniFile="cutscene" CmnName="Cutscene text" />
+</SplitTemplate>
