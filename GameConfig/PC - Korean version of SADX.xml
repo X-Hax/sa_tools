@@ -5,4 +5,5 @@
   <SplitEntry SourceFile="sonic.exe" IniFile="multistring" CmnName="Multi-language strings" />
   <SplitEntry SourceFile="sonic.exe" IniFile="cutscene" CmnName="Cutscene text" />
   <SplitEntry SourceFile="sonic.exe" IniFile="singlestring" CmnName="Single strings" />
+  <SplitEntry SourceFile="sonic.exe" IniFile="recaps" CmnName="Recaps screens" />
 </SplitTemplate>
