@@ -380,7 +380,10 @@ namespace SAModel.SAEditorCommon.StructConverter
 						modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
 					break;
 			}
-			defaultExportState.Add(item.Key, modified ?? true);
+			if (defaultExportState.ContainsKey(item.Key))
+				System.Windows.Forms.MessageBox.Show("The following item already exists in the export table: " + item.Key);
+			else
+				defaultExportState.Add(item.Key, modified ?? true);
 		}
 
 		public static SplitTools.IniData LoadINI(string filename,
@@ -421,7 +424,8 @@ namespace SAModel.SAEditorCommon.StructConverter
                     else
                     {
                         CheckItems(item, iniData, ref defaultExportState);
-                        curItems.Add(item.Key, item.Value);
+                        if (!curItems.ContainsKey(item.Key))
+							curItems.Add(item.Key, item.Value);
                     }
 				}
 			}
