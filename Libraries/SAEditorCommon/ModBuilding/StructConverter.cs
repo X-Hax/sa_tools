@@ -94,7 +94,8 @@ namespace SAModel.SAEditorCommon.StructConverter
             { "palettelightlist", "LS Palette Data" },
             { "camera", "Ninja Camera Data" },
 			{ "singlestring", "Single Language String" },
-			{ "multistring", "Multi Language String" }
+			{ "multistring", "Multi Language String" },
+			{ "missiontutorial", "Mission Mode Tutorial Page" }
 		};
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)

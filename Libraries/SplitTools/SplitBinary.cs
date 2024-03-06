@@ -707,10 +707,10 @@ namespace SplitTools.Split
 					break;
 				case "stringarray":
 					{
-						Languages lang = Languages.Japanese;
+						Languages lang2 = Languages.Japanese;
 						if (data.CustomProperties.ContainsKey("language"))
-							lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
-						StringArray.Load(datafile, address, imageBase, data.Length, lang).Save(fileOutputPath);
+							lang2 = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+						StringArray.Load(datafile, address, imageBase, data.Length, lang2).Save(fileOutputPath);
 					}
 					break;
 				case "nextlevellist":
@@ -1434,6 +1434,13 @@ namespace SplitTools.Split
 				case "camera":
 					NinjaCamera cam = new NinjaCamera(datafile, address);
 					cam.Save(fileOutputPath);
+					break;
+				case "missiontutorial":
+					Languages lang = Languages.Japanese;
+					if (data.CustomProperties.ContainsKey("language"))
+						lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+					MissionTutorialMessage missionTutorialTable = new MissionTutorialMessage(datafile, address, imageBase, lang);
+					missionTutorialTable.Save(fileOutputPath);
 					break;
 				case "fogdatatable":
 					int fcnt = 3;

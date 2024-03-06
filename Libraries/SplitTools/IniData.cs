@@ -743,7 +743,7 @@ namespace SplitTools
 			TextureNames = new string[NumTextures];
 		}
 
-		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset=0)
+		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
 		{
 			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
@@ -2071,7 +2071,7 @@ namespace SplitTools
 	}
 	public class SA2RecapScreen
 	{
-		public SA2RecapScreen(){}
+		public SA2RecapScreen() { }
 
 		[IniAlwaysInclude]
 		public int StoryType { get; set; }
@@ -2115,7 +2115,7 @@ namespace SplitTools
 			SummaryCount = ByteConverter.ToInt32(file, address + 0x10);
 		}
 
-			public string ToStruct(string label)
+		public string ToStruct(string label)
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(StoryType);
@@ -2133,10 +2133,10 @@ namespace SplitTools
 		}
 	}
 	[Serializable]
-	public abstract class SA2SummaryData {}
+	public abstract class SA2SummaryData { }
 
 	[Serializable]
-	public class SA2PCSummaryData : SA2SummaryData 
+	public class SA2PCSummaryData : SA2SummaryData
 	{
 		[IniAlwaysInclude]
 		public int StringID { get; set; }
@@ -2818,7 +2818,7 @@ namespace SplitTools
 					defaultScaleList.Add(new SkyboxScale { Far = new Vertex(1.0f, 1.0f, 1.0f), Near = new Vertex(1.0f, 1.0f, 1.0f), Normal = new Vertex(1.0f, 1.0f, 1.0f) });
 				}
 				return defaultScaleList.ToArray();
-			}	
+			}
 		}
 
 		public static SkyboxScale[] Load(byte[] file, int address, uint imageBase, int count)
@@ -4738,7 +4738,7 @@ namespace SplitTools
 	[Serializable]
 	public class ChaoItemStatsEntry
 	{
-		public ChaoItemStatsEntry() {}
+		public ChaoItemStatsEntry() { }
 		public ChaoItemStatsEntry(byte[] file, int address)
 		{
 			Mood = ByteConverter.ToInt16(file, address);
@@ -4875,7 +4875,7 @@ namespace SplitTools
 			return sb.ToString();
 		}
 	}
-	
+
 	public class CharaObjectData
 	{
 		public string MainModel { get; set; }
@@ -5190,7 +5190,7 @@ namespace SplitTools
 		public string[][] Text { get; private set; }
 		private SingleString() { Text = new string[1][]; }
 
-		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang): this()
+		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang) : this()
 		{
 			Text[0] = StringArray.Load(file, address, imageBase, count, lang);
 			Language = lang;
@@ -5215,7 +5215,7 @@ namespace SplitTools
 	public class MultilingualString
 	{
 		public string[][] Text { get; private set; }
-		
+
 		private MultilingualString() { Text = new string[5][]; }
 
 		public MultilingualString(byte[] file, int address, uint imageBase, int count, bool doublePointer = false) : this()
@@ -5226,7 +5226,7 @@ namespace SplitTools
 				for (int c = 0; c < count; c++)
 				{
 					if (doublePointer)
-						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4*c, imageBase, 1, (Languages)i)[0];
+						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4 * c, imageBase, 1, (Languages)i)[0];
 					else
 						Text[i][c] = StringArray.Load(file, address, imageBase, 1, (Languages)i)[0];
 				}
@@ -5285,7 +5285,7 @@ namespace SplitTools
 		{
 			return IniSerializer.Deserialize<NinjaCamera>(filename);
 		}
-		public NinjaCamera(){ }
+		public NinjaCamera() { }
 
 		public static int Size { get { return 0x40; } }
 
@@ -5393,7 +5393,7 @@ namespace SplitTools
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
 
-		public FogDataArray() 
+		public FogDataArray()
 		{
 			High = new FogData();
 			Medium = new FogData();
@@ -5679,7 +5679,7 @@ namespace SplitTools
 			DriftHandling = ByteConverter.ToSingle(file, address + 24);
 			DriftSpeedThreshold = ByteConverter.ToSingle(file, address + 28);
 			Unk2 = ByteConverter.ToSingle(file, address + 32);
-			TopSpeed = ByteConverter.ToSingle(file, address + 36);	
+			TopSpeed = ByteConverter.ToSingle(file, address + 36);
 		}
 
 		public static KartPhysics Load(string filename) => IniSerializer.Deserialize<KartPhysics>(filename);
@@ -5704,6 +5704,55 @@ namespace SplitTools
 		}
 
 		public KartPhysics()
+		{ }
+	}
+
+	public class MissionTutorialPage
+	{
+		public int NumLines;
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public string[] Lines;
+
+		public MissionTutorialPage(byte[] file, int address, uint imageBase, Languages language)
+		{
+			NumLines = ByteConverter.ToInt32(file, address);
+			int StringsPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			List<string> linesList = new();
+			for (int i = 0; i < NumLines; i++)
+			{
+				int LinePointer = ByteConverter.ToInt32(file, StringsPointer) - (int)imageBase;
+				linesList.Add(file.GetCString(LinePointer, HelperFunctions.GetEncoding(language)));
+				StringsPointer += 4;
+			}
+			Lines = linesList.ToArray();
+		}
+
+		public MissionTutorialPage()
+		{ }
+	}
+
+	public class MissionTutorialMessage
+	{
+		public int NumPages;
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public MissionTutorialPage[] Pages;
+
+		public MissionTutorialMessage(byte[] file, int address, uint imageBase, Languages language)
+		{
+			NumPages = ByteConverter.ToInt32(file, address);
+			int PagesPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			List<MissionTutorialPage> pagesList = new();
+			for (int i = 0; i < NumPages; i++)
+			{
+				pagesList.Add(new MissionTutorialPage(file, PagesPointer, imageBase, language));
+				PagesPointer += 8;
+			}
+			Pages = pagesList.ToArray();
+		}
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath); 
+		
+		public MissionTutorialMessage()
 		{ }
 	}
 
