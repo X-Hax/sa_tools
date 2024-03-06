@@ -1442,6 +1442,13 @@ namespace SplitTools.Split
 					MissionTutorialMessage missionTutorialTable = new MissionTutorialMessage(datafile, address, imageBase, lang);
 					missionTutorialTable.Save(fileOutputPath);
 					break;
+				case "missiondescription":
+					Languages lang3 = Languages.Japanese;
+					if (data.CustomProperties.ContainsKey("language"))
+						lang3 = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+					MissionDescriptionList missionDescriptionList = new MissionDescriptionList(datafile, address, lang3);
+					missionDescriptionList.Save(fileOutputPath);
+					break;
 				case "fogdatatable":
 					int fcnt = 3;
 					if (customProperties.ContainsKey("count"))

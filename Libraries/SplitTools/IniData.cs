@@ -5756,6 +5756,32 @@ namespace SplitTools
 		{ }
 	}
 
+	public class MissionDescriptionList
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public string[] Descriptions;
+
+		public MissionDescriptionList(byte[] file, int address, Languages language)
+		{
+			int maxlength = language == Languages.Japanese ? 104 : 208;
+			List<string> strings = new();
+			for (int i = 0; i < 70; i++)
+			{
+				string desc = file.GetCString(address, HelperFunctions.GetEncoding(language));
+				if (desc.Length > maxlength)
+					desc = desc.Substring(0, maxlength);
+				strings.Add(desc);
+				Console.WriteLine(desc);
+				address += 208;
+			}
+			Descriptions = strings.ToArray();
+		}
+
+		public MissionDescriptionList() { }
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
+	}
+
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>
