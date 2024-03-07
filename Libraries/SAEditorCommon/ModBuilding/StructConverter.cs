@@ -96,7 +96,9 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "singlestring", "Single Language String" },
 			{ "multistring", "Multi Language String" },
 			{ "missiontutorial", "Mission Mode Tutorial Page" },
-			{ "missiondescription", "Mission Description List" }
+			{ "missiondescription", "Mission Description List" },
+			{ "tikalhintmulti", "Tikal Hint (Multi-Language)" },
+			{ "tikalhintsingle", "Tikal Hint" }
 		};
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
@@ -104,6 +106,21 @@ namespace SAModel.SAEditorCommon.StructConverter
 			bool? modified = null;
 			switch (item.Value.Type)
 			{
+				case "tikalhintmulti":
+					{
+						modified = false;
+						string[] hashes = item.Value.MD5Hash.Split(',');
+						for (int i = 0; i < 5; i++)
+						{
+							string textname = Path.Combine(item.Value.Filename, ((Languages)i).ToString() + ".ini");
+							if (HelperFunctions.FileHash(textname) != hashes[i])
+							{
+								modified = true;
+								break;
+							}
+						}
+					}
+					break;
 				case "singlestring":
 					{
 						modified = false;

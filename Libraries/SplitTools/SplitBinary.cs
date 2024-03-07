@@ -764,6 +764,23 @@ namespace SplitTools.Split
 						nohash = true;
 					}
 					break;
+				case "tikalhintmulti":
+					{
+						bool dpointer2 = customProperties.ContainsKey("doublepointer");
+						TikalHintMultiLanguage hints = new TikalHintMultiLanguage(datafile, address, imageBase, data.Length, dpointer2);
+						hints.Save(fileOutputPath, out string[] hasheds);
+						data.MD5Hash = string.Join(",", hasheds);
+						nohash = true;
+					}
+					break;
+				case "tikalhintsingle":
+					{
+						Languages lang4 = Languages.Japanese;
+						lang4 = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+						TikalHintSingleLanguage hint = new TikalHintSingleLanguage(datafile, address, imageBase, data.Length, lang4);
+						hint.Save(fileOutputPath);
+					}
+					break;
 				case "levelclearflags":
 					LevelClearFlagList.Save(LevelClearFlagList.Load(datafile, address), fileOutputPath);
 					break;

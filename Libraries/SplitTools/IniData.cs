@@ -5782,6 +5782,75 @@ namespace SplitTools
 		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
 	}
 
+	public class TikalHintMultiLanguage
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public NPCTextLine[][] Lines;
+
+		public TikalHintMultiLanguage(byte[] file, int address, uint imageBase, int length, bool doublePointer)
+		{
+			int startaddr = address;
+			List<NPCTextLine[]> list = new();
+			for (int l = 0; l < 5; l++)
+			{
+				List<NPCTextLine> lines = new();
+				int pointer = ByteConverter.ToInt32(file, startaddr);
+				for (int i = 0; i < length; i++)
+				{
+					if (doublePointer)
+					{
+						pointer = file.GetPointer(ByteConverter.ToInt32(file, startaddr) + i * 4 - (int)imageBase, imageBase) + (int)imageBase;
+					}
+					else
+						pointer += i * 8;
+					lines.Add(new NPCTextLine(file, pointer - (int)imageBase, imageBase, (Languages)l, true));
+				}
+				list.Add(lines.ToArray());
+				startaddr += 4;
+			}
+			Lines = list.ToArray();
+		}
+
+		public TikalHintMultiLanguage() { }
+
+		public void Save(string fileOutputPath, out string[] hashes)
+		{
+			hashes = new string[5];
+			if (!Directory.Exists(fileOutputPath))
+				Directory.CreateDirectory(fileOutputPath);
+			for (int id = 0; id < Lines.Length; id++)
+			{
+				for (int lang = 0; lang < 5; lang++)
+				{
+					string textname = Path.Combine(fileOutputPath, ((Languages)lang).ToString() + ".ini");
+					IniSerializer.Serialize(Lines[lang], textname);
+					hashes[lang] = HelperFunctions.FileHash(textname);
+				}
+			}
+		}
+	}
+
+	public class TikalHintSingleLanguage
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public NPCTextLine[] Lines;
+
+		public TikalHintSingleLanguage(byte[] file, int address, uint imageBase, int length, Languages lang)
+		{
+			List<NPCTextLine> lines = new();
+			for (int i = 0; i < length; i++)
+			{
+				address += i * 8;
+				lines.Add(new NPCTextLine(file, address, imageBase, lang, true));
+			}
+			Lines = lines.ToArray();
+		}
+
+		public TikalHintSingleLanguage() { }
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
+	}
+
 	/// <summary>
 	/// Converts between <see cref="string"/> and <typeparamref name="T"/>
 	/// </summary>

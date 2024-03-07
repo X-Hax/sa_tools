@@ -7,4 +7,5 @@
   <SplitEntry SourceFile="sonic.exe" IniFile="singlestring" CmnName="Single strings" />
   <SplitEntry SourceFile="sonic.exe" IniFile="recaps" CmnName="Recaps screens" />
   <SplitEntry SourceFile="sonic.exe" IniFile="mission" CmnName="Mission descriptions and tutorials" />
+  <SplitEntry SourceFile="sonic.exe" IniFile="bosshint" CmnName="Boss Tikal hints" />
 </SplitTemplate>
