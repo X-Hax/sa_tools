@@ -5771,7 +5771,6 @@ namespace SplitTools
 				if (desc.Length > maxlength)
 					desc = desc.Substring(0, maxlength);
 				strings.Add(desc);
-				Console.WriteLine(desc);
 				address += 208;
 			}
 			Descriptions = strings.ToArray();
