@@ -264,24 +264,10 @@ namespace SAModel.SAEditorCommon
 
 		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
 		{
-			// Select the items by iterating through each assembly and item list
-			// Otherwise it will add empty checked items from all tabs to the first assembly
 			string name = assemblyItemTabs.SelectedTab.Text;
-			foreach (var ass in assemblyItemsToExport)
-			{
-				if (ass.Key == name)
-				{
-					foreach (var item in ass.Value)
-					{
-						if (item.Key == e.Item.Text)
-						{
-							assemblyItemsToExport[ass.Key][e.Item.Text] = e.Item.Checked;
-							break;
-						}
-					}
-					break;
-				}
-			}
+			string item = e.Item.Text;
+			if (assemblyItemsToExport[name].ContainsKey(item))
+				assemblyItemsToExport[name][item] = e.Item.Checked;
 		}
 
 		private void CheckAllButton_Click(object sender, EventArgs e)
