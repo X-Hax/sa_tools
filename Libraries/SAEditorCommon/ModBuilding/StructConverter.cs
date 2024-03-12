@@ -129,7 +129,6 @@ namespace SAModel.SAEditorCommon.StructConverter
 						if (HelperFunctions.FileHash(textname) != hashes[0])
 						{
 							modified = true;
-							break;
 						}
 					}
 					break;
