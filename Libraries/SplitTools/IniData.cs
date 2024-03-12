@@ -5196,11 +5196,6 @@ namespace SplitTools
 			Language = lang;
 		}
 
-		public void Save(string directory)
-		{
-			Save(directory, out string[] hashes);
-		}
-
 		public void Save(string directory, out string[] hashes)
 		{
 			hashes = new string[1];
