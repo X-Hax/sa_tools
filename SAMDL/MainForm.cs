@@ -2089,8 +2089,10 @@ namespace SAModel.SAMDL
 					OpenGCMaterialEditor();
 					break;
 				case BasicAttach:
-				case ChunkAttach:
 					OpenMaterialEditor();
+					break;
+				case ChunkAttach:
+					OpenChunkMaterialEditor();
 					break;
 			}
 		}
@@ -2111,7 +2113,8 @@ namespace SAModel.SAMDL
 								break;
 							case PolyChunkStrip pcs:
 								chunks.Add(new PolyChunkMaterial(mats[matind]));
-								chunks.Add(new PolyChunkTinyTextureID(mats[matind]));
+								if (mats[matind].UseTexture)
+									chunks.Add(new PolyChunkTinyTextureID(mats[matind]));
 								pcs.UpdateFlags(mats[matind++]);
 								chunks.Add(pcs);
 								break;
@@ -2138,7 +2141,21 @@ namespace SAModel.SAMDL
 					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 					break;
 			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname, selectedObject.Attach is ChunkAttach))
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
+			{
+				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
+				dlg.ShowDialog(this);
+			}
+			unsavedChanges = true;
+		}
+
+		private void OpenChunkMaterialEditor()
+		{
+			List<NJS_MATERIAL> mats;
+			string matname = null;
+
+			mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+			using (ChunkMaterialEditor dlg = new ChunkMaterialEditor(mats, TextureInfoCurrent, matname))
 			{
 				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
 				dlg.ShowDialog(this);
@@ -3076,8 +3093,10 @@ namespace SAModel.SAMDL
 					OpenGCMaterialEditor();
 					break;
 				case BasicAttach:
-				case ChunkAttach:
 					OpenMaterialEditor();
+					break;
+				case ChunkAttach:
+					OpenChunkMaterialEditor();
 					break;
 			}
 		}
@@ -4327,9 +4346,24 @@ namespace SAModel.SAMDL
 			switch (selectedObject.Attach)
 			{
 				case BasicAttach:
-				case ChunkAttach:
 					{
 						ModelDataEditor me = new ModelDataEditor(model, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							model.FixParents();
+							model.FixSiblings();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+							selectedObject = model.GetObjects()[idx];
+							SelectedItemChanged();
+						}
+					}
+					break;
+				case ChunkAttach:
+					{
+						ChunkModelDataEditor me = new ChunkModelDataEditor(model, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();
