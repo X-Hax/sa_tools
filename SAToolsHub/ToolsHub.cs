@@ -225,7 +225,7 @@ namespace SAToolsHub
 			if (!Directory.Exists(projectDirectory) || projectDirectory == "")
 			{
 			MissingProjectFolder:
-				DialogResult projDirMissing = MessageBox.Show(("Project Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult projDirMissing = MessageBox.Show(this, "Project Directory not found. Please locate the correct folder.", "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (projDirMissing == DialogResult.OK)
 				{
 					var fsd = new FolderBrowserDialog { Description = "Please select the correct project folder", UseDescriptionForTitle = true };
@@ -237,7 +237,7 @@ namespace SAToolsHub
 					}
 					else
 					{
-						DialogResult noProjFolder = MessageBox.Show(("No folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						DialogResult noProjFolder = MessageBox.Show(this, "No folder selected.", "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 						if (noProjFolder == DialogResult.Retry)
 							goto MissingProjectFolder;
 						else
@@ -249,7 +249,7 @@ namespace SAToolsHub
 			if (!Directory.Exists(gameDirectory) || gameDirectory == "")
 			{
 			MissingGameFolder:
-				DialogResult gameDirMissing = MessageBox.Show(("Game Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult gameDirMissing = MessageBox.Show(this, "Game Directory not found. Please locate the correct folder.", "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gameDirMissing == DialogResult.OK)
 				{
 					var fsd = new FolderBrowserDialog { Description = "Please select the correct game folder", UseDescriptionForTitle = true };
@@ -264,7 +264,7 @@ namespace SAToolsHub
 						}
 						else
 						{
-							DialogResult invalidGameFolder = MessageBox.Show(("Invalid folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							DialogResult invalidGameFolder = MessageBox.Show(this, "Invalid folder selected.", "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 							if (invalidGameFolder == DialogResult.Retry)
 								goto MissingGameFolder;
 							else
@@ -273,7 +273,7 @@ namespace SAToolsHub
 					}
 					else
 					{
-						DialogResult noGameFolder = MessageBox.Show(("No folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						DialogResult noGameFolder = MessageBox.Show(this, "No folder selected.", "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 						if (noGameFolder == DialogResult.Retry)
 							goto MissingGameFolder;
 						else
@@ -826,7 +826,7 @@ namespace SAToolsHub
 		{
 			if (treeView1.Nodes.Count > 0)
 			{
-				DialogResult newProjWarning = MessageBox.Show(("A project is currently open.\n\nAre you sure you wish to create a new project?"), "Project Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+				DialogResult newProjWarning = MessageBox.Show(this, "A project is currently open.\n\nAre you sure you wish to create a new project?", "Project Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 				if (newProjWarning == DialogResult.Yes)
 				{
 					resetOpenProject();
@@ -972,8 +972,8 @@ namespace SAToolsHub
 
 		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult convWarning = MessageBox.Show(("This feature will create an sap file for your projects.\n\nSome tools may not function properly with older projects., notably SALVL." +
-				"\n\nWould you like to continue with the project conversion?"), "Project Conversion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+			DialogResult convWarning = MessageBox.Show(this, "This feature will create an sap file for your projects.\n\nSome tools may not function properly with older projects, notably SALVL." +
+				"\n\nWould you like to continue with the project conversion?", "Project Conversion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (convWarning == DialogResult.Yes)
 				projectConverter.ShowDialog();
 		}
@@ -989,7 +989,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1001,7 +1001,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1013,7 +1013,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1025,7 +1025,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1038,7 +1038,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1050,7 +1050,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1063,7 +1063,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 		#endregion
@@ -1313,7 +1313,7 @@ namespace SAToolsHub
 		{
 			if (listView1.SelectedItems.Count > 0)
 			{
-				DialogResult delCheck = MessageBox.Show(("You are about to delete " + listView1.SelectedItems.Count.ToString() + " file(s).\n\nAre you sure you want to delete these file(s)?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				DialogResult delCheck = MessageBox.Show(this, "You are about to delete " + listView1.SelectedItems.Count.ToString() + " file(s).\n\nAre you sure you want to delete these file(s)?", "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (delCheck == DialogResult.Yes)
 				{
 					foreach (ListViewItem selItem in listView1.SelectedItems)
@@ -1645,7 +1645,7 @@ namespace SAToolsHub
 
 		private void updateMetadataToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult updateMData = MessageBox.Show(("This will update the metadata inside of your project's *_data.ini files.\n\nThis process may take a few moments.\n\nDo you wish to continue?"), "Update Metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+			DialogResult updateMData = MessageBox.Show(this, "This will update the metadata inside of your project's *_data.ini files.\n\nThis process may take a few moments.\n\nDo you wish to continue?", "Update Metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 			if (updateMData == DialogResult.Yes)
 			{
 				Dictionary<string, string> metadataList = new Dictionary<string, string>();

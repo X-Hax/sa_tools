@@ -44,7 +44,13 @@ namespace splitEvent
 		static void Main(string[] args)
 		{
 			string fullpath_out;
-			string fullpath_bin = Path.GetFullPath(args[0]);
+			string fullpath_bin;
+			if (args.Length == 0)
+			{
+				Console.Write("Filename: ");
+				args = new string[] { Console.ReadLine().Trim('"') };
+			}
+			fullpath_bin = Path.GetFullPath(args[0]);
 			string name = Path.GetFileName(fullpath_bin);
 			Wildcard evwcard = new Wildcard("e*", RegexOptions.IgnoreCase);
 			Wildcard mevwcard = new Wildcard("me*", RegexOptions.IgnoreCase);
@@ -99,11 +105,6 @@ namespace splitEvent
 			{
 				Console.WriteLine("File {0} doesn't exist.", fullpath_bin);
 				return;
-			}
-			if (args.Length == 0)
-			{
-				Console.Write("Filename: ");
-				args = new string[] { Console.ReadLine().Trim('"') };
 			}
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 			fullpath_out = Path.GetDirectoryName(fullpath_bin);

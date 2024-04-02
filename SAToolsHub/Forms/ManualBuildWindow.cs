@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
-using SplitTools;
 using SplitTools.SplitDLL;
 
 namespace SAModel.SAEditorCommon
@@ -267,12 +264,10 @@ namespace SAModel.SAEditorCommon
 
 		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
 		{
-			// first get reference to our list box
-			// then reference to assembly
-			// then reference to export-list
 			string name = assemblyItemTabs.SelectedTab.Text;
-
-			assemblyItemsToExport[name][e.Item.Text] = e.Item.Checked;
+			string item = e.Item.Text;
+			if (assemblyItemsToExport[name].ContainsKey(item))
+				assemblyItemsToExport[name][item] = e.Item.Checked;
 		}
 
 		private void CheckAllButton_Click(object sender, EventArgs e)

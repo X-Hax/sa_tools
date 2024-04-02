@@ -26,6 +26,8 @@ namespace SplitTools
 		public bool BigEndian { get; set; }
 		[IniName("reverse")]
 		public bool Reverse { get; set; }
+		[IniName("korean")]
+		public bool KoreanMode { get; set; }
 		[IniName("nometa")]
 		public bool NoMeta { get; set; }
 		[IniName("offset")]
@@ -741,7 +743,7 @@ namespace SplitTools
 			TextureNames = new string[NumTextures];
 		}
 
-		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset=0)
+		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
 		{
 			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
@@ -2106,7 +2108,7 @@ namespace SplitTools
 	}
 	public class SA2RecapScreen
 	{
-		public SA2RecapScreen(){}
+		public SA2RecapScreen() { }
 
 		[IniAlwaysInclude]
 		public int StoryType { get; set; }
@@ -2150,7 +2152,7 @@ namespace SplitTools
 			SummaryCount = ByteConverter.ToInt32(file, address + 0x10);
 		}
 
-			public string ToStruct(string label)
+		public string ToStruct(string label)
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(StoryType);
@@ -2168,10 +2170,10 @@ namespace SplitTools
 		}
 	}
 	[Serializable]
-	public abstract class SA2SummaryData {}
+	public abstract class SA2SummaryData { }
 
 	[Serializable]
-	public class SA2PCSummaryData : SA2SummaryData 
+	public class SA2PCSummaryData : SA2SummaryData
 	{
 		[IniAlwaysInclude]
 		public int StringID { get; set; }
@@ -2853,7 +2855,7 @@ namespace SplitTools
 					defaultScaleList.Add(new SkyboxScale { Far = new Vertex(1.0f, 1.0f, 1.0f), Near = new Vertex(1.0f, 1.0f, 1.0f), Normal = new Vertex(1.0f, 1.0f, 1.0f) });
 				}
 				return defaultScaleList.ToArray();
-			}	
+			}
 		}
 
 		public static SkyboxScale[] Load(byte[] file, int address, uint imageBase, int count)
@@ -4773,7 +4775,7 @@ namespace SplitTools
 	[Serializable]
 	public class ChaoItemStatsEntry
 	{
-		public ChaoItemStatsEntry() {}
+		public ChaoItemStatsEntry() { }
 		public ChaoItemStatsEntry(byte[] file, int address)
 		{
 			Mood = ByteConverter.ToInt16(file, address);
@@ -4910,7 +4912,7 @@ namespace SplitTools
 			return sb.ToString();
 		}
 	}
-	
+
 	public class CharaObjectData
 	{
 		public string MainModel { get; set; }
@@ -5225,15 +5227,10 @@ namespace SplitTools
 		public string[][] Text { get; private set; }
 		private SingleString() { Text = new string[1][]; }
 
-		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang): this()
+		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang) : this()
 		{
 			Text[0] = StringArray.Load(file, address, imageBase, count, lang);
 			Language = lang;
-		}
-
-		public void Save(string directory)
-		{
-			Save(directory, out string[] hashes);
 		}
 
 		public void Save(string directory, out string[] hashes)
@@ -5250,7 +5247,7 @@ namespace SplitTools
 	public class MultilingualString
 	{
 		public string[][] Text { get; private set; }
-		
+
 		private MultilingualString() { Text = new string[5][]; }
 
 		public MultilingualString(byte[] file, int address, uint imageBase, int count, bool doublePointer = false) : this()
@@ -5261,7 +5258,7 @@ namespace SplitTools
 				for (int c = 0; c < count; c++)
 				{
 					if (doublePointer)
-						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4*c, imageBase, 1, (Languages)i)[0];
+						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4 * c, imageBase, 1, (Languages)i)[0];
 					else
 						Text[i][c] = StringArray.Load(file, address, imageBase, 1, (Languages)i)[0];
 				}
@@ -5320,7 +5317,7 @@ namespace SplitTools
 		{
 			return IniSerializer.Deserialize<NinjaCamera>(filename);
 		}
-		public NinjaCamera(){ }
+		public NinjaCamera() { }
 
 		public static int Size { get { return 0x40; } }
 
@@ -5428,7 +5425,7 @@ namespace SplitTools
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
 
-		public FogDataArray() 
+		public FogDataArray()
 		{
 			High = new FogData();
 			Medium = new FogData();
@@ -5714,7 +5711,7 @@ namespace SplitTools
 			DriftHandling = ByteConverter.ToSingle(file, address + 24);
 			DriftSpeedThreshold = ByteConverter.ToSingle(file, address + 28);
 			Unk2 = ByteConverter.ToSingle(file, address + 32);
-			TopSpeed = ByteConverter.ToSingle(file, address + 36);	
+			TopSpeed = ByteConverter.ToSingle(file, address + 36);
 		}
 
 		public static KartPhysics Load(string filename) => IniSerializer.Deserialize<KartPhysics>(filename);
@@ -5740,6 +5737,149 @@ namespace SplitTools
 
 		public KartPhysics()
 		{ }
+	}
+
+	public class MissionTutorialPage
+	{
+		public int NumLines;
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public string[] Lines;
+
+		public MissionTutorialPage(byte[] file, int address, uint imageBase, Languages language)
+		{
+			NumLines = ByteConverter.ToInt32(file, address);
+			int StringsPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			List<string> linesList = new();
+			for (int i = 0; i < NumLines; i++)
+			{
+				int LinePointer = ByteConverter.ToInt32(file, StringsPointer) - (int)imageBase;
+				linesList.Add(file.GetCString(LinePointer, HelperFunctions.GetEncoding(language)));
+				StringsPointer += 4;
+			}
+			Lines = linesList.ToArray();
+		}
+
+		public MissionTutorialPage()
+		{ }
+	}
+
+	public class MissionTutorialMessage
+	{
+		public int NumPages;
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public MissionTutorialPage[] Pages;
+
+		public MissionTutorialMessage(byte[] file, int address, uint imageBase, Languages language)
+		{
+			NumPages = ByteConverter.ToInt32(file, address);
+			int PagesPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			List<MissionTutorialPage> pagesList = new();
+			for (int i = 0; i < NumPages; i++)
+			{
+				pagesList.Add(new MissionTutorialPage(file, PagesPointer, imageBase, language));
+				PagesPointer += 8;
+			}
+			Pages = pagesList.ToArray();
+		}
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath); 
+		
+		public MissionTutorialMessage()
+		{ }
+	}
+
+	public class MissionDescriptionList
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public string[] Descriptions;
+
+		public MissionDescriptionList(byte[] file, int address, Languages language)
+		{
+			int maxlength = language == Languages.Japanese ? 104 : 208;
+			List<string> strings = new();
+			for (int i = 0; i < 70; i++)
+			{
+				string desc = file.GetCString(address, HelperFunctions.GetEncoding(language));
+				if (desc.Length > maxlength)
+					desc = desc.Substring(0, maxlength);
+				strings.Add(desc);
+				address += 208;
+			}
+			Descriptions = strings.ToArray();
+		}
+
+		public MissionDescriptionList() { }
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
+	}
+
+	public class TikalHintMultiLanguage
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public NPCTextLine[][] Lines;
+
+		public TikalHintMultiLanguage(byte[] file, int address, uint imageBase, int length, bool doublePointer)
+		{
+			int startaddr = address;
+			List<NPCTextLine[]> list = new();
+			for (int l = 0; l < 5; l++)
+			{
+				List<NPCTextLine> lines = new();
+				int pointer = ByteConverter.ToInt32(file, startaddr);
+				for (int i = 0; i < length; i++)
+				{
+					if (doublePointer)
+					{
+						pointer = file.GetPointer(ByteConverter.ToInt32(file, startaddr) + i * 4 - (int)imageBase, imageBase) + (int)imageBase;
+					}
+					else
+						pointer += i * 8;
+					lines.Add(new NPCTextLine(file, pointer - (int)imageBase, imageBase, (Languages)l, true));
+				}
+				list.Add(lines.ToArray());
+				startaddr += 4;
+			}
+			Lines = list.ToArray();
+		}
+
+		public TikalHintMultiLanguage() { }
+
+		public void Save(string fileOutputPath, out string[] hashes)
+		{
+			hashes = new string[5];
+			if (!Directory.Exists(fileOutputPath))
+				Directory.CreateDirectory(fileOutputPath);
+			for (int id = 0; id < Lines.Length; id++)
+			{
+				for (int lang = 0; lang < 5; lang++)
+				{
+					string textname = Path.Combine(fileOutputPath, ((Languages)lang).ToString() + ".ini");
+					IniSerializer.Serialize(Lines[lang], textname);
+					hashes[lang] = HelperFunctions.FileHash(textname);
+				}
+			}
+		}
+	}
+
+	public class TikalHintSingleLanguage
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public NPCTextLine[] Lines;
+
+		public TikalHintSingleLanguage(byte[] file, int address, uint imageBase, int length, Languages lang)
+		{
+			List<NPCTextLine> lines = new();
+			for (int i = 0; i < length; i++)
+			{
+				address += i * 8;
+				lines.Add(new NPCTextLine(file, address, imageBase, lang, true));
+			}
+			Lines = lines.ToArray();
+		}
+
+		public TikalHintSingleLanguage() { }
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
 	}
 
 	/// <summary>

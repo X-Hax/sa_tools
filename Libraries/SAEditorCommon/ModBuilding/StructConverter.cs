@@ -94,7 +94,11 @@ namespace SAModel.SAEditorCommon.StructConverter
             { "palettelightlist", "LS Palette Data" },
             { "camera", "Ninja Camera Data" },
 			{ "singlestring", "Single Language String" },
-			{ "multistring", "Multi Language String" }
+			{ "multistring", "Multi Language String" },
+			{ "missiontutorial", "Mission Mode Tutorial Page" },
+			{ "missiondescription", "Mission Description List" },
+			{ "tikalhintmulti", "Tikal Hint (Multi-Language)" },
+			{ "tikalhintsingle", "Tikal Hint" }
 		};
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)
@@ -102,6 +106,21 @@ namespace SAModel.SAEditorCommon.StructConverter
 			bool? modified = null;
 			switch (item.Value.Type)
 			{
+				case "tikalhintmulti":
+					{
+						modified = false;
+						string[] hashes = item.Value.MD5Hash.Split(',');
+						for (int i = 0; i < 5; i++)
+						{
+							string textname = Path.Combine(item.Value.Filename, ((Languages)i).ToString() + ".ini");
+							if (HelperFunctions.FileHash(textname) != hashes[i])
+							{
+								modified = true;
+								break;
+							}
+						}
+					}
+					break;
 				case "singlestring":
 					{
 						modified = false;
@@ -110,7 +129,6 @@ namespace SAModel.SAEditorCommon.StructConverter
 						if (HelperFunctions.FileHash(textname) != hashes[0])
 						{
 							modified = true;
-							break;
 						}
 					}
 					break;
@@ -380,7 +398,10 @@ namespace SAModel.SAEditorCommon.StructConverter
 						modified = HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash;
 					break;
 			}
-			defaultExportState.Add(item.Key, modified ?? true);
+			if (defaultExportState.ContainsKey(item.Key))
+				System.Windows.Forms.MessageBox.Show("The following item already exists in the export table: " + item.Key);
+			else
+				defaultExportState.Add(item.Key, modified ?? true);
 		}
 
 		public static SplitTools.IniData LoadINI(string filename,
@@ -421,7 +442,8 @@ namespace SAModel.SAEditorCommon.StructConverter
                     else
                     {
                         CheckItems(item, iniData, ref defaultExportState);
-                        curItems.Add(item.Key, item.Value);
+                        if (!curItems.ContainsKey(item.Key))
+							curItems.Add(item.Key, item.Value);
                     }
 				}
 			}

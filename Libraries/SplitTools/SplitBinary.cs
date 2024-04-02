@@ -34,6 +34,7 @@ namespace SplitTools.Split
 				byte[] datafile_temp = File.ReadAllBytes(datafilename);
 				// Load split INI
 				IniData inifile = IniSerializer.Deserialize<IniData>(inifilename);
+				HelperFunctions.KoreanMode = inifile.KoreanMode;
 				// Load labels list
 				string listfile = Path.Combine(Path.GetDirectoryName(inifilename), Path.GetFileNameWithoutExtension(datafilename) + "_labels.txt");
 				Dictionary<int, string> labels = new Dictionary<int, string>();
@@ -706,10 +707,10 @@ namespace SplitTools.Split
 					break;
 				case "stringarray":
 					{
-						Languages lang = Languages.Japanese;
+						Languages lang2 = Languages.Japanese;
 						if (data.CustomProperties.ContainsKey("language"))
-							lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
-						StringArray.Load(datafile, address, imageBase, data.Length, lang).Save(fileOutputPath);
+							lang2 = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+						StringArray.Load(datafile, address, imageBase, data.Length, lang2).Save(fileOutputPath);
 					}
 					break;
 				case "nextlevellist":
@@ -761,6 +762,23 @@ namespace SplitTools.Split
 							hash2[i] = string.Join(",", hashes[i]);
 						data.MD5Hash = string.Join(":", hash2);
 						nohash = true;
+					}
+					break;
+				case "tikalhintmulti":
+					{
+						bool dpointer2 = customProperties.ContainsKey("doublepointer");
+						TikalHintMultiLanguage hints = new TikalHintMultiLanguage(datafile, address, imageBase, data.Length, dpointer2);
+						hints.Save(fileOutputPath, out string[] hasheds);
+						data.MD5Hash = string.Join(",", hasheds);
+						nohash = true;
+					}
+					break;
+				case "tikalhintsingle":
+					{
+						Languages lang4 = Languages.Japanese;
+						lang4 = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+						TikalHintSingleLanguage hint = new TikalHintSingleLanguage(datafile, address, imageBase, data.Length, lang4);
+						hint.Save(fileOutputPath);
 					}
 					break;
 				case "levelclearflags":
@@ -1433,6 +1451,20 @@ namespace SplitTools.Split
 				case "camera":
 					NinjaCamera cam = new NinjaCamera(datafile, address);
 					cam.Save(fileOutputPath);
+					break;
+				case "missiontutorial":
+					Languages lang = Languages.Japanese;
+					if (data.CustomProperties.ContainsKey("language"))
+						lang = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+					MissionTutorialMessage missionTutorialTable = new MissionTutorialMessage(datafile, address, imageBase, lang);
+					missionTutorialTable.Save(fileOutputPath);
+					break;
+				case "missiondescription":
+					Languages lang3 = Languages.Japanese;
+					if (data.CustomProperties.ContainsKey("language"))
+						lang3 = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+					MissionDescriptionList missionDescriptionList = new MissionDescriptionList(datafile, address, lang3);
+					missionDescriptionList.Save(fileOutputPath);
 					break;
 				case "fogdatatable":
 					int fcnt = 3;
