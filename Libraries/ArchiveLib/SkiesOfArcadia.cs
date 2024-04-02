@@ -53,27 +53,101 @@ namespace ArchiveLib
 			Unknown
 		}
 
+		public class GRND
+		{
+			public VertexChunk Vertices;
+			public PolyChunk Polys;
+			public Vertex Center;
+
+			public NJS_OBJECT ToObject()
+			{
+				NJS_OBJECT obj = new NJS_OBJECT();
+
+				ChunkAttach attach = new ChunkAttach(true, true);
+				attach.Vertex.Add(Vertices);
+				attach.Poly.Add(Polys);
+
+				obj.Attach = attach;
+
+				return obj;
+			}
+
+			public GRND(byte[] file, int address)
+			{
+				int addr = 16;
+				int mdldataptr = ByteConverter.ToInt32(file, addr) + addr;
+				addr += 4;
+				int grnddata = ByteConverter.ToInt32(file, addr) + addr;
+				Center = new Vertex(ByteConverter.ToSingle(file, addr + 4), 0.0f, ByteConverter.ToSingle(file, addr + 8));
+				int grnddatacount = ByteConverter.ToInt32(file, addr + 18);
+
+				int vertaddr = mdldataptr + 36;
+				Vertices = new VertexChunk(file, ByteConverter.ToInt32(file, vertaddr) + vertaddr);
+
+				int polyaddr = mdldataptr + 40;
+				Polys = PolyChunk.Load(file, ByteConverter.ToInt32(file, polyaddr) + polyaddr);
+			}
+		}
+
+		public class GOBJ
+		{
+			public NJS_OBJECT Object;
+			public BoundingSphere Bounds;
+
+			public NJS_OBJECT GroundObject;
+
+			public GOBJ(byte[] file, int address)
+			{
+				int addr = 16;
+				GroundObject = new NJS_OBJECT();
+				GroundObject.Position = new Vertex(file, addr + 8);
+				GroundObject.Rotation = new Rotation(file, addr + 20);
+				GroundObject.Scale = new Vertex(file, addr + 32);
+				addr += 44;
+
+				int childptr = ByteConverter.ToInt32(file, addr) + addr;
+				NJS_OBJECT child = new NJS_OBJECT();
+				child.Position = new Vertex(file, childptr + 8);
+				child.Rotation = new Rotation(file, childptr + 20);
+				child.Scale = new Vertex(file, childptr + 32);
+
+				int attachptr = childptr + 52;
+				ChunkAttach attach = new ChunkAttach(true, true);
+				attach.Bounds = new BoundingSphere(file, attachptr);
+
+				attachptr += 16;
+				int vertptr = ByteConverter.ToInt32(file, attachptr) + attachptr;
+				int polyptr = attachptr + 76;
+
+				VertexChunk vertexchunk = new VertexChunk(file, vertptr);
+				PolyChunk polychunk = PolyChunk.Load(file, polyptr);
+
+				attach.Vertex.Add(vertexchunk);
+				attach.Poly.Add(polychunk);
+
+				child.Attach = attach;
+
+				GroundObject.AddChild(child);
+			}
+		}
+
 		public string Name;
 		public GroundType Type;
 		public byte[] File;
+		public NJS_OBJECT ConvertedObject;
+
+		private GRND GRNDChunk;
+		private GOBJ GOBJChunk;
 
 		public nmldGround(byte[] file, int address, string name)
 		{
-			string magic = Encoding.ASCII.GetString(file, address, 4);
+			// These chunks are actually condensed chunk models.
+			// GOBJ has actual NJS_OBJECTs and a "flipped" ChunkAttach/NJS_MODEL_CNK.
+			// GRND does not, but does seem to have possible grid set bounds in the custom header.
+			// Both use pointers that are relative to the position of the pointer in the file. 
+			// Switch Case includes comments on the structures.
 
-			switch (magic)
-			{
-				case "GRND":
-					Type = GroundType.Ground;
-					break;
-				case "GOBJ":
-					Type = GroundType.GroundObject;
-					break;
-				default:
-					Console.WriteLine("Unknown Ground Format Found: %s", magic);
-					Type = GroundType.Unknown;
-					break;
-			}
+			string magic = Encoding.ASCII.GetString(file, address, 4);
 
 			int filesize = ByteConverter.ToInt32(file, address + 4);
 
@@ -81,6 +155,65 @@ namespace ArchiveLib
 			Array.Copy(file, address, File, 0, filesize);
 
 			Name = name;
+
+			switch (magic)
+			{
+				case "GRND":
+					// For Reference, the setup for a GRND is as follows:
+					// 0x00	- "GRND"
+					// 0x04	- Chunk Size (Includes first 16 bytes).
+					// 0x08	- Int; null[2]
+
+					// GRND Header begins at 0x10 in a GRND Chunk.
+					// 0x00	- Pointer to Vertex Chunk
+					// 0x04	- Pointer to Poly Chunk
+					// 0x08	- Float; X Pos?
+					// 0x0C	- Float; Z Pos?
+					// 0x10	- Short; Flags?
+					// 0x12	- Short; Flags?
+					// 0x14	- Short; X Dimension?
+					// 0x16 - Short; Z Dimension?
+					// 0x18	- Short; Unknown, seems to always be 2.
+					// 0x1A	- Short; Poly Count
+					Type = GroundType.Ground;
+					//GRNDChunk = new GRND(File, 0);
+					break;
+				case "GOBJ":
+					// For Reference, the setup for a GOBJ is as follows:
+					// 0x00	- "GOBJ"
+					// 0x04	- Chunk Size (Includes first 16 bytes),
+					// 0x08	- Int; null[2]
+
+					// GOBJ "Header" begins at 0x10 in a GOBJ Chunk.
+					// 0x00	- NJS_OBJECT
+					// NJS_OBJECT should have a child.
+					// Said child node will have a ChunkAttach/NJS_MODEL_CNK, the child pointer is set but it also seems to always follow the first NJS_OBJECT.
+					// As stated above, all pointers are relative to the location of the pointer EXCEPT for the ChunkAttach Pointer for the child.
+					// It has a 1 which does not correspond to the ChunkAttach/NJS_MODEL_CNK's location.
+					// Its location will be immediately after the child NJS_OBJECT.
+					// It's also in a flipped order. The Center/Radius comes first, then the VertexChunk pointer, and the PolyChunk pointer at the end.
+					Type = GroundType.GroundObject;
+					//GOBJChunk = new GOBJ(File, 0);
+					break;
+				default:
+					Console.WriteLine("Unknown Ground Format Found: %s", magic);
+					Type = GroundType.Unknown;
+					break;
+			}
+
+			// Currently non-function due to weird poly format.
+			// Can uncomment once conversion is fixed.
+			/*
+			if (Type == GroundType.Ground)
+			{
+				ConvertedObject = GRNDChunk.ToObject();
+			}
+
+			if (Type == GroundType.GroundObject)
+			{
+				ConvertedObject = GOBJChunk.GroundObject;
+			}
+			*/
 		}
 	}
 
@@ -223,8 +356,10 @@ namespace ArchiveLib
 			for (int i = 0; i < Objects.Count; i++)
 			{
 				sb.AppendLine(
-					Index.ToString("D3") + "_" + i.ToString("D2") + "_" + Name + ", " + 
-					Position.ToString() + ", " + Rotation.ToString() + ", " + Scale.ToString());
+					Index.ToString("D3") + "_" + Name + "_" + i.ToString("D2") + 
+					", " + Position.ToString() + 
+					", " + Rotation.ToString() + 
+					", " + Scale.ToString());
 			}
 
 			return sb.ToString();
@@ -424,13 +559,16 @@ namespace ArchiveLib
 				// Add Ground/Ground Object Files
 				foreach (nmldGround ground in entry.Grounds)
 				{
+					//ModelFile mfile = new ModelFile(ModelFormat.Chunk, ground.ConvertedObject, null, null);
 					switch (ground.Type)
 					{
 						case nmldGround.GroundType.Ground:
 							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".grnd"));
+							//mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
 							break;
 						case nmldGround.GroundType.GroundObject:
 							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
+							//mfile.SaveToFile(Path.Combine(directory, ground.Name + ".gobj.sa2mdl"));
 							break;
 						case nmldGround.GroundType.Unknown:
 							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gunk"));
@@ -444,10 +582,8 @@ namespace ArchiveLib
 					switch (motion.Type)
 					{
 						case nmldMotion.MotionType.Node:
-							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njm"));
-							break;
 						case nmldMotion.MotionType.Shape:
-							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njs"));
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njm"));
 							break;
 						case nmldMotion.MotionType.Unknown:
 							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".num"));
