@@ -318,14 +318,24 @@ namespace ArchiveLib
 		{
 			int count = ByteConverter.ToInt32(file, offset);
 
+			List<int> addrs = new List<int>();
+
 			for (int i = 0; i < count; i++)
 			{
 				int address = ByteConverter.ToInt32(file, offset + (4 * (i + 1)));
 
 				if (address != 0)
 				{
-					Motions.Add(new nmldMotion(file, address, GetNameWithIndex(), i.ToString()));
+					if (!addrs.Contains(address))
+						addrs.Add(address);
 				}
+			}
+
+			int idx = 0;
+			foreach (int addr in addrs)
+			{
+				Motions.Add(new nmldMotion(file, addr, GetNameWithIndex(), idx.ToString()));
+				idx++;
 			}
 		}
 
