@@ -6,7 +6,7 @@ using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.UI
 {
-	public partial class MaterialEditor : Form
+	public partial class ChunkMaterialEditor : Form
 	{
 		#region Events
 
@@ -18,9 +18,8 @@ namespace SAModel.SAEditorCommon.UI
 		private List<NJS_MATERIAL> materials; // Material list that is being edited
 		private readonly List<NJS_MATERIAL> materialsOriginal; // Original material list at the time of opening the dialog
 		private readonly BMPInfo[] textures;
-		private bool chunk = false;
 
-		public MaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
+		public ChunkMaterialEditor(List<NJS_MATERIAL> mats, BMPInfo[] textures, string matsName = null)
 		{
 			materials = mats;
 			materialsOriginal = new List<NJS_MATERIAL>();
@@ -80,6 +79,7 @@ namespace SAModel.SAEditorCommon.UI
 			// Setting general
 			diffuseColorBox.BackColor = materials[index].DiffuseColor;
 			alphaDiffuseNumeric.Value = materials[index].DiffuseColor.A;
+			ambientColorBox.BackColor = materials[index].AmbientColor;
 			specColorBox.BackColor = materials[index].SpecularColor;
 			alphaSpecularNumeric.Value = materials[index].SpecularColor.A;
 			if (textures != null && materials[index].TextureID < textures.Length) textureBox.Image = DrawPreviewImage(textures[materials[index].TextureID].Image);
@@ -150,7 +150,7 @@ namespace SAModel.SAEditorCommon.UI
 		private string GetMaterialDescription(NJS_MATERIAL material)
 		{
 			List<string> matdescs = new List<string>();
-			System.Text.StringBuilder sb = new ();
+			System.Text.StringBuilder sb = new();
 			matdescs.Add(material.UseTexture ? "Tex " + material.TextureID : "No Tex");
 			if (material.UseAlpha)
 			{
@@ -211,6 +211,17 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				materials[comboMaterial.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, colorDialog.Color);
 				diffuseColorBox.BackColor = materials[comboMaterial.SelectedIndex].DiffuseColor;
+				RaiseFormUpdated();
+			}
+		}
+
+		private void ambientColorBox_Click(object sender, EventArgs e)
+		{
+			colorDialog.Color = materials[comboMaterial.SelectedIndex].AmbientColor;
+			if (colorDialog.ShowDialog() == DialogResult.OK)
+			{
+				materials[comboMaterial.SelectedIndex].AmbientColor = Color.FromArgb(255, colorDialog.Color);
+				ambientColorBox.BackColor = materials[comboMaterial.SelectedIndex].AmbientColor;
 				RaiseFormUpdated();
 			}
 		}
@@ -372,7 +383,7 @@ namespace SAModel.SAEditorCommon.UI
 			materials[comboMaterial.SelectedIndex].DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
 			RaiseFormUpdated();
 		}
-		
+
 		#endregion
 
 		#region Material List Editing
@@ -383,6 +394,7 @@ namespace SAModel.SAEditorCommon.UI
 			materials.Insert(index - 1, selectedMaterial);
 			materials.RemoveAt(index + 1);
 			UpdateComboBox();
+			comboMaterial.SelectedIndex = index - 1;
 			RaiseFormUpdated();
 		}
 
@@ -401,7 +413,7 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			int index = comboMaterial.SelectedIndex;
 			materials.Insert(comboMaterial.SelectedIndex, materials[comboMaterial.SelectedIndex].Clone());
-			comboMaterial.SelectedIndex =0;
+			comboMaterial.SelectedIndex = 0;
 			UpdateComboBox();
 			comboMaterial.SelectedIndex = index + 1;
 			RaiseFormUpdated();
@@ -429,5 +441,15 @@ namespace SAModel.SAEditorCommon.UI
 			RaiseFormUpdated();
 		}
 		#endregion
+
+		private void generalSettingBox_Enter(object sender, EventArgs e)
+		{
+
+		}
+
+		private void label1_Click(object sender, EventArgs e)
+		{
+
+		}
 	}
 }

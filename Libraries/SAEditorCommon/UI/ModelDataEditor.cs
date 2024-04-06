@@ -283,8 +283,6 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				if (editedModel is BasicAttach batt)
 					batt.MeshName = textBoxMeshsetName.Text;
-				else if (editedModel is ChunkAttach catt)
-					catt.PolyName = textBoxMeshsetName.Text;
 			}
 		}
 
@@ -296,8 +294,6 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				if (editedModel is BasicAttach)
 					((BasicAttach)editedModel).VertexName = textBoxVertexName.Text;
-				else if (editedModel is ChunkAttach catt)
-					((ChunkAttach)editedModel).VertexName = textBoxVertexName.Text;
 			}
 		}
 
@@ -471,15 +467,6 @@ namespace SAModel.SAEditorCommon.UI
 					textBoxNormalName.Text = batt.NormalName;
 					groupBoxMeshList.Enabled = true;
 					BuildMeshsetList();
-				}
-				else if (objs[index].Attach is ChunkAttach catt)
-				{
-					textBoxMeshsetName.Enabled = true;
-					textBoxMeshsetName.Text = catt.PolyName;
-					textBoxVertexName.Enabled = true;
-					textBoxVertexName.Text = catt.VertexName;
-					groupBoxMeshList.Enabled = textBoxMaterialName.Enabled = textBoxNormalName.Enabled = false;
-					textBoxMaterialName.Text = textBoxNormalName.Text = "";
 				}
 			}
 			else
