@@ -2168,7 +2168,6 @@ namespace TextureEditor
 
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Settings.Save();
 			if (unsaved)
 			{
 				DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
@@ -2189,6 +2188,7 @@ namespace TextureEditor
 			}
 			try
 			{
+				Settings.Save();
 				settingsfile.Save();
 			}
 			catch { };

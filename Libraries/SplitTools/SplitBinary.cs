@@ -1492,6 +1492,15 @@ namespace SplitTools.Split
 					data.MD5Hash = string.Join(",", hashesz);
 					nohash = true;
 					break;
+				case "fixedstringarray":
+					Languages langfs = Languages.Japanese;
+					int countfs = 1;
+					int lengthfs = data.Length > 1 ? data.Length : 1;
+					if (customProperties.ContainsKey("count"))
+						countfs = int.Parse(customProperties["count"], NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+					langfs = (Languages)Enum.Parse(typeof(Languages), data.CustomProperties["language"], true);
+					new FixedStringArray(datafile, address, imageBase, lengthfs, countfs, langfs).Save(fileOutputPath);
+					break;
 				case "multistring":
 					bool dpointer = customProperties.ContainsKey("doublepointer");
 					int countz = data.Length > 1 ? data.Length : 1;

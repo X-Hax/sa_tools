@@ -98,7 +98,8 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "missiontutorial", "Mission Mode Tutorial Page" },
 			{ "missiondescription", "Mission Description List" },
 			{ "tikalhintmulti", "Tikal Hint (Multi-Language)" },
-			{ "tikalhintsingle", "Tikal Hint" }
+			{ "tikalhintsingle", "Tikal Hint" },
+			{ "fixedstringarray", "Fixed String Array" },
 		};
 
 		private static void CheckItems(KeyValuePair<string, SplitTools.FileInfo> item, SplitTools.IniData iniData, ref Dictionary<string, bool> defaultExportState)

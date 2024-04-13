@@ -5244,6 +5244,34 @@ namespace SplitTools
 	}
 
 	[Serializable]
+	public class FixedStringArray
+	{
+		[IniIgnore]
+		public string[] Text { get; private set; }
+		
+		private FixedStringArray() { Text = new string[1]; }
+
+		public FixedStringArray(byte[] file, int address, uint imageBase, int itemLength, int count, Languages lang) : this()
+		{
+			List<string> text = new();
+			for (int i = 0; i < count; i++)
+			{ 
+				text.Add(file.GetCString((int)(address + itemLength * i), HelperFunctions.GetEncoding(lang)));
+			}
+			Text = text.ToArray();
+		}
+
+		public void Save(string outputPath)
+		{
+			Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+			string[] result = (string[])Text.Clone();
+			for (int i = 0; i < result.Length; i++)
+				result[i] = result[i].EscapeNewlines();
+			File.WriteAllLines(outputPath, result);
+		}
+	}
+
+	[Serializable]
 	public class MultilingualString
 	{
 		public string[][] Text { get; private set; }
