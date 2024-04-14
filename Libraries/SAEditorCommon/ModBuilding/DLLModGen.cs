@@ -177,7 +177,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					break;
 			}
-			defaultExportState.Add(item.Filename, modified);
+			defaultExportState.Add(item.Metadata, modified);
 		}
 
 		public static DllIniData LoadINI(string fileName,
@@ -192,7 +192,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
 			{
 				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
-				defaultExportState.Add(item.Key, modified);
+				defaultExportState.Add(item.Value.Name, modified);
 			}
 
 			foreach (DllDataItemInfo item in IniData.DataItems)
@@ -265,7 +265,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			foreach (KeyValuePair<string, FileTypeHash> item in newIniData.Files)
 			{
 				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
-				defaultExportState.Add(item.Key, modified);
+				defaultExportState.Add(item.Value.Name, modified);
 			}
 
 			foreach (DllDataItemInfo item in newIniData.DataItems)
@@ -290,7 +290,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			}
 		}
 
-		public static void ExportINIAuto(DllIniData IniData,
+		public static void ExportINI(DllIniData IniData,
 			Dictionary<string, bool> itemsToExport, string fileName)
 		{
 			string dstfol = Path.GetDirectoryName(fileName);
@@ -306,7 +306,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 
 			List<string> labels = new List<string>();
 			foreach (KeyValuePair<string, FileTypeHash> item in
-				IniData.Files.Where(i => itemsToExport[i.Key]))
+				IniData.Files.Where(i => itemsToExport[i.Value.Name]))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dstfol, item.Key)));
 				File.Copy(item.Key, Path.Combine(dstfol, item.Key), true);
@@ -372,96 +372,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				}
 			}
 
-			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
-			{
-				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
-				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
-				output.DataItems.Add(item);
-			}
-			IniSerializer.Serialize(output, fileName);
-		}
-
-		public static void ExportINIManual(DllIniData IniData,
-			Dictionary<string, bool> itemsToExport, string fileName)
-		{
-			string dstfol = Path.GetDirectoryName(fileName);
-			DllIniData output = new DllIniData()
-			{
-				Name = IniData.Name,
-				Game = IniData.Game,
-				Exports = IniData.Exports,
-				TexLists = IniData.TexLists
-			};
-			List<DLLFileChk> replacedList = new List<DLLFileChk>();
-			List<string> labels = new List<string>();
-			foreach (KeyValuePair<string, FileTypeHash> item in
-				IniData.Files.Where(i => itemsToExport[i.Key]))
-			{
-				Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dstfol, item.Key)));
-				File.Copy(item.Key, Path.Combine(dstfol, item.Key), true);
-				DLLFileChk fileChk = new();
-				List<string> labelsChk = new();
-				switch (item.Value.Type)
-				{
-					case "landtable":
-						LandTable tbl = LandTable.LoadFromFile(item.Key);
-						labels.AddRange(tbl.GetLabels());
-						labelsChk.AddRange(tbl.GetLabels());
-						break;
-					case "model":
-					case "basicmodel":
-					case "chunkmodel":
-					case "gcmodel":
-					case "basicdxmodel":
-						NJS_OBJECT mdl = new ModelFile(item.Key).Model;
-						labels.AddRange(mdl.GetLabels());
-						labelsChk.AddRange(mdl.GetLabels());
-						break;
-					case "animation":
-						NJS_MOTION ani = NJS_MOTION.Load(item.Key);
-						labels.Add(ani.Name);
-						labelsChk.Add(ani.Name);
-						break;
-				}
-
-				output.Files.Add(item.Key, new FileTypeHash(item.Value.Type, null, item.Value.Name));
-				fileChk.Name = Path.GetFileName(item.Key);
-				fileChk.Label[0] = labelsChk.ElementAt(0);
-				if (labelsChk.Count > 1)
-					fileChk.Label[1] = labelsChk.ElementAt(1);
-				fileChk.Type = item.Value.Type;
-				fileChk.Replaced = false;
-				replacedList.Add(fileChk);
-				labelsChk.Clear();
-			}
-
-			//Assign the replaced item in the ini file
-			output.Items = new List<DllItemInfo>(IniData.Items.Where(a =>
-			{
-				for (int i = 0; i < replacedList.Count; i++)
-				{
-					if (replacedList[i].Label[0] == a.Label || replacedList[i].Label[1] == a.Label) //check if the label match
-					{
-						replacedList[i].Replaced = true;
-					}
-				}
-
-				return labels.Contains(a.Label);
-			}));
-
-			//check if some labels didn't match and if so, warn the user that replacement failed.
-			for (int i = 0; i < replacedList.Count; i++)
-			{
-				if (replacedList[i].Replaced == false && replacedList[i].Type != "landtable")
-				{
-					if (replacedList[i].Type == "animation")
-						MessageBox.Show("Failed to replace animation " + replacedList[i].Name + ". Please check that the label matches the vanilla one. Convert the file to json and edit the name at the bottom of the file. Convert it back and try again.", "Tools Hub - Label Error");
-					else
-						MessageBox.Show("Failed to replace item " + replacedList[i].Name + ". Please check that the label matches the vanilla one. Use SAMDL to check the original model data and edit your model label.", "Tools Hub - Label Error");
-				}
-			}
-
-			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
 			{
 				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
 				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
@@ -488,7 +399,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				List<string> labels = new List<string>();
 				Dictionary<string, uint> texlists = new Dictionary<string, uint>();
 				foreach (KeyValuePair<string, FileTypeHash> item in
-					IniData.Files.Where(i => itemsToExport[i.Key]))
+					IniData.Files.Where(i => itemsToExport[i.Value.Name]))
 				{
 					switch (item.Value.Type)
 					{
@@ -525,7 +436,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					writer.WriteLine();
 				}
-				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
+				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
 					switch (item.Type)
 					{
 						case "soundlist":
@@ -823,7 +734,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 						writer.WriteLine("\t{0} = &{1};", item.ToString(), item.Label);
 					else
 						writer.WriteLine("\t*{0} = {1};", item.ToString(), item.Label);
-				foreach (var item in IniData.DataItems.Where(item => itemsToExport[item.Filename]))
+				foreach (var item in IniData.DataItems.Where(item => itemsToExport[item.Metadata]))
 					switch (item.Type)
 					{
 						case "animindexlist":
