@@ -2040,7 +2040,7 @@ namespace SAModel
 					if (hasRoll)
 					{
 						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-							elems.Add(Models[i].PointName.MakeIdentifier());
+							elems.Add(Models[i].RollName.MakeIdentifier());
 						else
 							elems.Add("NULL");
 					}

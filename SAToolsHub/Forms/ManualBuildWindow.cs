@@ -288,12 +288,10 @@ namespace SAModel.SAEditorCommon
 			TabPage page = assemblyItemTabs.SelectedTab;
 			ListView listView = assemblyListViews[page.Text];
 
-			int modifiedIndex = (assemblies[page.Text] == AssemblyType.Exe) ? 2 : 1;
-
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
-				item.Checked = item.SubItems[modifiedIndex].Text != "No"; // we need to handle this differently depending on if we're exe or dll
+				item.Checked = item.SubItems[2].Text != "No";
 			}
 			listView.EndUpdate();
 		}

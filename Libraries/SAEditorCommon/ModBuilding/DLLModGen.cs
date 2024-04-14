@@ -46,7 +46,10 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			{ "texlist", "NJS_TEXLIST *" },
 			{ "texlistarray", "NJS_TEXLIST **" },
 			{ "animindexlist", "AnimationIndex *" },
-			{ "motiontable", "MotionTable *" }
+			{ "motiontable", "MotionTable *" },
+			{ "modeltexanim", "ModelTexanimInfo *" },
+			{ "modeltexanimarray", "ModelTexanimArrayData *" },
+			{ "modeltexanimarrayalt", "ModelTexanimArrayAltData *" }
 		};
 
 		private static void CheckItems(DllDataItemInfo item, DllIniData iniData, ref Dictionary<string, bool> defaultExportState)
@@ -389,12 +392,10 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				Exports = IniData.Exports,
 				TexLists = IniData.TexLists
 			};
-
 			List<DLLFileChk> replacedList = new List<DLLFileChk>();
-
 			List<string> labels = new List<string>();
 			foreach (KeyValuePair<string, FileTypeHash> item in
-				IniData.Files.Where(i => itemsToExport[i.Value.Name]))
+				IniData.Files.Where(i => itemsToExport[i.Key]))
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dstfol, item.Key)));
 				File.Copy(item.Key, Path.Combine(dstfol, item.Key), true);
@@ -460,7 +461,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				}
 			}
 
-			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
+			foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
 			{
 				Directory.CreateDirectory(Path.Combine(dstfol, item.Filename));
 				CopyDirectory(new DirectoryInfo(item.Filename), Path.Combine(dstfol, item.Filename));
@@ -487,7 +488,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 				List<string> labels = new List<string>();
 				Dictionary<string, uint> texlists = new Dictionary<string, uint>();
 				foreach (KeyValuePair<string, FileTypeHash> item in
-					IniData.Files.Where(i => itemsToExport[i.Value.Name]))
+					IniData.Files.Where(i => itemsToExport[i.Key]))
 				{
 					switch (item.Value.Type)
 					{
@@ -524,7 +525,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 					}
 					writer.WriteLine();
 				}
-				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Metadata]))
+				foreach (var item in IniData.DataItems.Where(i => itemsToExport[i.Filename]))
 					switch (item.Type)
 					{
 						case "soundlist":
@@ -532,7 +533,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								if (SA2)
 								{
 									var data = IniSerializer.Deserialize<SA2SoundListEntry[]>(Path.Combine(item.Filename, "*.ini"));
-									writer.WriteLine("MotionTableEntry {0}[] = {{", item.Export);
+									writer.WriteLine("SoundListEntry {0}[] = {{", item.Export);
 									List<string> objs = new List<string>(data.Length);
 									foreach (var obj in data)
 										objs.Add(obj.ToStruct());
@@ -542,7 +543,7 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								else
 								{
 									var data = IniSerializer.Deserialize<SoundListEntry[]>(Path.Combine(item.Filename, "*.ini"));
-									writer.WriteLine("MotionTableEntry {0}[] = {{", item.Export);
+									writer.WriteLine("SoundListEntry {0}[] = {{", item.Export);
 									List<string> objs = new List<string>(data.Length);
 									foreach (var obj in data)
 										objs.Add(obj.ToStruct());
@@ -720,6 +721,96 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 								writer.WriteLine("};");
 							}
 							break;
+						case "modeltexanimarray":
+							{
+								var data = IniSerializer.Deserialize<SA2ModelTexanimArrayA[]>(Path.Combine(item.Filename, "info.ini"));
+								for (int i = 0; i < data.Length; i++)
+									if (data[i].TexanimName != null)
+									{
+										SA2ModelTexanimInfo tanim = data[i].TexanimData;
+										List<string> labls = new List<string>();
+										if (tanim.UVEditData != null && tanim.UVEditData.Count > 0 && !labls.Contains(tanim.UVEditDataName))
+										{
+											writer.WriteLine("int16_t {0}[] = {{", tanim.UVEditDataName);
+											for (int u = 0; u < tanim.UVEditData.Count; u += 2)
+												writer.WriteLine("\t{0}, {1},", tanim.UVEditData[u], tanim.UVEditData[u + 1]);
+											writer.WriteLine("};");
+											labls.Add(tanim.UVEditDataName);
+										}
+										writer.WriteLine("ModelTexanimInfo {0}_texanim_{1}[] = {{", item.Export, i);
+										writer.WriteLine("\t{0}", string.Join("," + Environment.NewLine + "\t", data[i].TexanimData.ToStruct()));
+										writer.WriteLine("};");
+									}
+								writer.WriteLine("ModelTexanimArrayData {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								for (int i = 0; i < data.Length; i++)
+									objs.Add(data[i].ToStruct(item.Export + "_texanim_" + i));
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+								if (!string.IsNullOrEmpty(data[0].CountModule))
+									writer.WriteLine("\tint *{0} = (int *)GetProcAddress(handlecount, \"{0}\");", data[0].CountModule);
+							}
+							break;
+						case "modeltexanimarrayalt":
+							{
+								var data = IniSerializer.Deserialize<SA2ModelTexanimArrayB[]>(Path.Combine(item.Filename, "info.ini"));
+								for (int i = 0; i < data.Length; i++)
+									if (data[i].TexanimName != null)
+									{
+										SA2ModelTexanimInfo tanim = data[i].TexanimData;
+										List<string> labls = new List<string>();
+										if (tanim.UVEditData != null && tanim.UVEditData.Count > 0 && !labls.Contains(tanim.UVEditDataName))
+										{
+											writer.WriteLine("int16_t {0}[] = {{", tanim.UVEditDataName);
+											for (int u = 0; u < tanim.UVEditData.Count; u += 2)
+												writer.WriteLine("\t{0}, {1},", tanim.UVEditData[u], tanim.UVEditData[u + 1]);
+											writer.WriteLine("};");
+											labls.Add(tanim.UVEditDataName);
+										}
+										writer.WriteLine("ModelTexanimInfo {0}_texanim_{1}[] = {{", item.Export, i);
+										writer.WriteLine("\t{0}", string.Join("," + Environment.NewLine + "\t", data[i].TexanimData.ToStruct()));
+										writer.WriteLine("};");
+									}
+								writer.WriteLine("ModelTexanimArrayAltData {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								for (int i = 0; i < data.Length; i++)
+									objs.Add(data[i].ToStruct(item.Export + "_texanim_" + i));
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+								if (!string.IsNullOrEmpty(data[0].CountModule))
+									writer.WriteLine("\tint *{0} = (int *)GetProcAddress(handlecount, \"{0}\");", data[0].CountModule);
+							}
+							break;
+						case "modeltexanimarrayalt2":
+							{
+								var data = IniSerializer.Deserialize<SA2ModelTexanimArrayC[]>(Path.Combine(item.Filename, "info.ini"));
+								for (int i = 0; i < data.Length; i++)
+									if (data[i].TexanimName != null)
+									{
+										SA2ModelTexanimInfo tanim = data[i].TexanimData;
+										List<string> labls = new List<string>();
+										if (tanim.UVEditData != null && tanim.UVEditData.Count > 0 && !labls.Contains(tanim.UVEditDataName))
+										{
+											writer.WriteLine("int16_t {0}[] = {{", tanim.UVEditDataName);
+											for (int u = 0; u < tanim.UVEditData.Count; u += 2)
+												writer.WriteLine("\t{0}, {1},", tanim.UVEditData[u], tanim.UVEditData[u + 1]);
+											writer.WriteLine("};");
+											labls.Add(tanim.UVEditDataName);
+										}
+										writer.WriteLine("ModelTexanimInfo {0}_texanim_{1}[] = {{", item.Export, i);
+										writer.WriteLine("\t{0}", string.Join("," + Environment.NewLine + "\t", data[i].TexanimData.ToStruct()));
+										writer.WriteLine("};");
+									}
+								writer.WriteLine("ModelTexanimArrayAltData {0}[] = {{", item.Export);
+								List<string> objs = new List<string>(data.Length);
+								for (int i = 0; i < data.Length; i++)
+									objs.Add(data[i].ToStruct(item.Export + "_texanim_" + i));
+								writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
+								writer.WriteLine("};");
+								if (!string.IsNullOrEmpty(data[0].CountModule))
+									writer.WriteLine("\tint *{0} = (int *)GetProcAddress(handlecount, \"{0}\");", data[0].CountModule);
+							}
+							break;
 					}
 				writer.WriteLine("extern \"C\" __declspec(dllexport) void __cdecl Init(const char *path, const HelperFunctions &helperFunctions)");
 				writer.WriteLine("{");
@@ -743,6 +834,9 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 						case "kartmenu":
 						case "kartsoundparameters":
 						case "kartobjectarray":
+						case "modeltexanimarray":
+						case "modeltexanimarrayalt":
+						case "modeltexanimarrayalt2":
 							writer.WriteLine("\tHookExport(handle, \"{0}\", {0});", item.Export);
 							break;
 						default:

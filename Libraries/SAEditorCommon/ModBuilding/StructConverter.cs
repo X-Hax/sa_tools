@@ -79,6 +79,10 @@ namespace SAModel.SAEditorCommon.StructConverter
 			{ "storysequence", "Story Sequence" },
 			{ "charaobjectdatalist", "2P Battle Screen Character Data" },
 			{ "modelindex", "Model Index Array" },
+			{ "modeltexanim", "Model Texture Animation Data" },
+			{ "modeltexanimarray", "Model Texture Animation Array" },
+			{ "modeltexanimarrayalt", "Model Texture Animation Array" },
+			{ "modeltexanimarrayalt2", "Model Texture Animation Array" },
 			{ "kartmenu", "Kart Menu Elements" },
 			{ "kartmodelsarray", "Kart Terrain Model Array" },
 			{ "kartsoundparameters", "Kart Sound Parameters" },
@@ -165,22 +169,36 @@ namespace SAModel.SAEditorCommon.StructConverter
 					break;
 				case "recapscreen":
 					{
-						modified = false;
-						int count = item.Value.Length;
-						string[] hash2 = item.Value.MD5Hash.Split(':');
-						string[][] hashes = new string[hash2.Length][];
-						for (int i = 0; i < hash2.Length; i++)
-							hashes[i] = hash2[i].Split(',');
-						for (int i = 0; i < count; i++)
-							for (int l = 0; l < 5; l++)
-							{
-								string textname = Path.Combine(Path.Combine(item.Value.Filename, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini");
-								if (HelperFunctions.FileHash(textname) != hashes[i][l])
-								{
+						switch (iniData.Game)
+						{
+							case Game.SA2:
+							case Game.SA2B:
+								modified = false;
+								if (HelperFunctions.FileHash(item.Value.Filename) != item.Value.MD5Hash)
 									modified = true;
-									break;
+								break;
+							case Game.SADX:
+							case Game.SA1:
+								{
+									modified = false;
+									int count = item.Value.Length;
+									string[] hash2 = item.Value.MD5Hash.Split(':');
+									string[][] hashes = new string[hash2.Length][];
+									for (int i = 0; i < hash2.Length; i++)
+										hashes[i] = hash2[i].Split(',');
+									for (int i = 0; i < count; i++)
+										for (int l = 0; l < 5; l++)
+										{
+											string textname = Path.Combine(Path.Combine(item.Value.Filename, (i + 1).ToString(NumberFormatInfo.InvariantInfo)), ((Languages)l).ToString() + ".ini");
+											if (HelperFunctions.FileHash(textname) != hashes[i][l])
+											{
+												modified = true;
+												break;
+											}
+										}
 								}
-							}
+								break;
+						}
 					}
 					break;
 				case "npctext":
@@ -675,6 +693,12 @@ namespace SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine("};");
 							}
 							break;
+						case "texlist":
+							{
+								NJS_TEXLIST tex = NJS_TEXLIST.Load(data.Filename);
+								tex.ToStruct(writer, null);
+							}
+							break;
 						case "leveltexlist":
 							{
 								LevelTextureList list = LevelTextureList.Load(data.Filename);
@@ -686,6 +710,25 @@ namespace SAModel.SAEditorCommon.StructConverter
 								writer.WriteLine("};");
 								writer.WriteLine();
 								writer.WriteLine("LevelPVMList {0} = {{ {1}, arraylengthandptrT({0}_list, int16_t) }};", name, list.Level.ToC());
+							}
+							break;
+						case "modeltexanim":
+							{
+								SA2ModelTexanimInfo texanim = SA2ModelTexanimInfo.Load(data.Filename);
+								List<string> labels = new List<string>();
+								if (texanim.UVEditData != null && texanim.UVEditData.Count > 0 && !labels.Contains(texanim.UVEditDataName))
+								{
+									writer.WriteLine("int16_t {0}[] = {{", texanim.UVEditDataName);
+									for (int i = 0; i < texanim.UVEditData.Count; i += 2)
+										writer.WriteLine("\t{0}, {1},", texanim.UVEditData[i], texanim.UVEditData[i + 1]);
+									writer.WriteLine("};");
+									labels.Add(texanim.UVEditDataName);
+								}
+								writer.WriteLine("ModelTexanimInfo {0}[] = {{", name);
+								writer.WriteLine("\t{0}", texanim.ToStruct());
+								writer.WriteLine("};");
+								writer.WriteLine();
+
 							}
 							break;
 						case "triallevellist":
@@ -852,31 +895,54 @@ namespace SAModel.SAEditorCommon.StructConverter
 							break;
 						case "recapscreen":
 							{
-								uint addr = (uint)(data.Address + imagebase);
-								RecapScreen[][] texts = RecapScreenList.Load(data.Filename, data.Length);
-								for (int l = 0; l < 5; l++)
-									for (int j = 0; j < texts.Length; j++)
+								if (SA2)
+								{
+									List<SA2RecapScreen> list = SA2RecapScreenList.Load(data.Filename);
+									for (int i = 0; i < list.Count; i++)
 									{
-										writer.WriteLine("char *{0}_{1}_{2}_Text[] = {{", name, (Languages)l, j);
-										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", texts[j][l].Text.Split('\n').Select((a) => a.ToC((Languages)l) + " " + a.ToComment()).ToArray()));
+										writer.WriteLine("SummaryData {0}_{1}[] = {{", name, i);
+										foreach (SA2SummaryData summary in list[i].SummaryData)
+											writer.WriteLine("\t{0}", string.Join("," + Environment.NewLine + "\t", summary.ToStruct()));
+										writer.WriteLine("};");
+									}
+									writer.WriteLine("SummaryDataArray {0}[] = {{", name);
+									int k = 0;
+									foreach (SA2RecapScreen recap in list)
+									{
+										writer.WriteLine("\t" + recap.ToStruct(name + "_" + k));
+										k++;
+									}
+									writer.WriteLine("{ NULL }");
+									writer.WriteLine("};");
+								}
+								else
+								{ 
+									uint addr = (uint)(data.Address + imagebase);
+									RecapScreen[][] texts = RecapScreenList.Load(data.Filename, data.Length);
+									for (int l = 0; l < 5; l++)
+										for (int j = 0; j < texts.Length; j++)
+										{
+											writer.WriteLine("char *{0}_{1}_{2}_Text[] = {{", name, (Languages)l, j);
+											writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", texts[j][l].Text.Split('\n').Select((a) => a.ToC((Languages)l) + " " + a.ToComment()).ToArray()));
+											writer.WriteLine("};");
+											writer.WriteLine();
+										}
+									for (int l = 0; l < 5; l++)
+									{
+										writer.WriteLine("RecapScreen {0}_{1}[] = {{", name, (Languages)l);
+										List<string> objs = new List<string>(texts.Length);
+										for (int j = 0; j < texts.Length; j++)
+										{
+											RecapScreen scr = texts[j][l];
+											objs.Add(string.Format("{{ {0}, arraylengthandptrT({1}_{2}_{3}_Text, int) }}",
+												scr.Speed.ToC(), name, (Languages)l, j));
+										}
+										writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 										writer.WriteLine("};");
 										writer.WriteLine();
+										pointers.Add(addr, string.Format("{0}_{1}", name, (Languages)l));
+										addr += 4;
 									}
-								for (int l = 0; l < 5; l++)
-								{
-									writer.WriteLine("RecapScreen {0}_{1}[] = {{", name, (Languages)l);
-									List<string> objs = new List<string>(texts.Length);
-									for (int j = 0; j < texts.Length; j++)
-									{
-										RecapScreen scr = texts[j][l];
-										objs.Add(string.Format("{{ {0}, arraylengthandptrT({1}_{2}_{3}_Text, int) }}",
-											scr.Speed.ToC(), name, (Languages)l, j));
-									}
-									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
-									writer.WriteLine("};");
-									writer.WriteLine();
-									pointers.Add(addr, string.Format("{0}_{1}", name, (Languages)l));
-									addr += 4;
 								}
 							}
 							break;
