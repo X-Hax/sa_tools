@@ -223,6 +223,7 @@ namespace ArchiveLib
 		{
 			Node = 0,
 			Shape = 1,
+			Camera = 2,
 			Unknown
 		}
 
@@ -233,22 +234,30 @@ namespace ArchiveLib
 		public nmldMotion(byte[] file, int address, string name, string idx)
 		{
 			string magic = Encoding.ASCII.GetString(file, address, 4);
+			string suffix = "";
 
 			switch (magic)
 			{
 				case "NMDM":
 					Type = MotionType.Node;
-					Name = name + "_motion" + idx;
+					suffix = "_motion";
 					break;
 				case "NSSM":
 					Type = MotionType.Shape;
-					Name = name + "_shape" + idx;
+					suffix = "_shape";
+					break;
+				case "NCAM":
+					Type = MotionType.Camera;
+					suffix = "_camera";
 					break;
 				default:
 					Console.WriteLine("Unidentified Motion Type: %s", magic);
 					Type = MotionType.Unknown;
+					suffix = "_unknown";
 					break;
 			}
+
+			Name = name + suffix + idx;
 
 			int njmsize = ByteConverter.ToInt32(file, address + 4) + 8;
 			int pofsize = ByteConverter.ToInt32(file, address + njmsize + 4) + 8;
@@ -592,8 +601,13 @@ namespace ArchiveLib
 					switch (motion.Type)
 					{
 						case nmldMotion.MotionType.Node:
-						case nmldMotion.MotionType.Shape:
 							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njm"));
+							break;
+						case nmldMotion.MotionType.Shape:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njs"));
+							break;
+						case nmldMotion.MotionType.Camera:
+							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".njc"));
 							break;
 						case nmldMotion.MotionType.Unknown:
 							Entries.Add(new MLDArchiveEntry(motion.File, motion.Name + ".num"));
