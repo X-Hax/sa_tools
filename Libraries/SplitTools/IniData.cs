@@ -2106,6 +2106,7 @@ namespace SplitTools
 			IniSerializer.Serialize(recap, filename);
 		}
 	}
+	[Serializable]
 	public class SA2RecapScreen
 	{
 		public SA2RecapScreen() { }
@@ -2137,16 +2138,19 @@ namespace SplitTools
 
 				for (int j = 0; j < cnt; j++)
 				{
+					//if (PC)
+					//{
+						SummaryData.Add(new SA2SummaryData(file, ptr, PC));
 					if (PC)
-					{
-						SummaryData.Add(new SA2PCSummaryData(file, ptr));
-						ptr += SA2PCSummaryData.Size;
-					}
+						ptr += SA2SummaryData.Size;
 					else
-					{
-						SummaryData.Add(new SA2DCGCSummaryData(file, ptr));
-						ptr += SA2DCGCSummaryData.Size;
-					}
+						ptr += 0x1C;
+					//}
+					//else
+					//{
+					//	SummaryData.Add(new SA2DCGCSummaryData(file, ptr));
+					//	ptr += SA2DCGCSummaryData.Size;
+					//}
 				}
 			}
 			SummaryCount = ByteConverter.ToInt32(file, address + 0x10);
@@ -2156,9 +2160,12 @@ namespace SplitTools
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(StoryType);
+			sb.Append(", ");
 			sb.Append(StorySequenceID);
+			sb.Append(", ");
 			sb.Append(CharBGID);
-			if (SummaryData?.Count > 0)
+			sb.Append(", ");
+			if (SummaryCount > 0)
 			{
 				sb.AppendFormat("{0}, ", label);
 				sb.AppendFormat("{0}", SummaryCount);
@@ -2169,11 +2176,17 @@ namespace SplitTools
 			return sb.ToString();
 		}
 	}
-	[Serializable]
-	public abstract class SA2SummaryData { }
+	//[Serializable]
+	//public abstract class SA2SummaryData {
+
+	//	public abstract string ToStruct();
+	//}
+
+	//	public abstract string ToStruct();
+	//}
 
 	[Serializable]
-	public class SA2PCSummaryData : SA2SummaryData
+	public class SA2SummaryData 
 	{
 		[IniAlwaysInclude]
 		public int StringID { get; set; }
@@ -2191,9 +2204,9 @@ namespace SplitTools
 		public int GERFrameStart { get; set; }
 		[IniAlwaysInclude]
 		public int ITAFrameStart { get; set; }
-		public SA2PCSummaryData() { }
+		public SA2SummaryData() { }
 		public static int Size { get { return 0x20; } }
-		public SA2PCSummaryData(byte[] file, int address)
+		public SA2SummaryData(byte[] file, int address, bool PC)
 		{
 			StringID = ByteConverter.ToInt32(file, address);
 			VoiceID = ByteConverter.ToInt32(file, address + 4);
@@ -2202,70 +2215,80 @@ namespace SplitTools
 			FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
 			SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
 			GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
-			ITAFrameStart = ByteConverter.ToInt32(file, address + 0x1C);
+			if (PC)
+				ITAFrameStart = ByteConverter.ToInt32(file, address + 0x1C);
+			else
+				ITAFrameStart = ByteConverter.ToInt32(file, address + 0x18);
 		}
 
 		public string ToStruct()
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(StringID);
+			sb.Append(", ");
 			sb.Append(VoiceID);
+			sb.Append(", ");
 			sb.Append(JPNFrameStart);
+			sb.Append(", ");
 			sb.Append(ENGFrameStart);
+			sb.Append(", ");
 			sb.Append(FRNFrameStart);
+			sb.Append(", ");
 			sb.Append(SPAFrameStart);
+			sb.Append(", ");
 			sb.Append(GERFrameStart);
+			sb.Append(", ");
 			sb.Append(ITAFrameStart);
 			sb.Append(" }");
 			return sb.ToString();
 		}
 	}
 
-	[Serializable]
-	public class SA2DCGCSummaryData : SA2SummaryData
-	{
-		[IniAlwaysInclude]
-		public int StringID { get; set; }
-		[IniAlwaysInclude]
-		public int VoiceID { get; set; }
-		[IniAlwaysInclude]
-		public int JPNFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int ENGFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int FRNFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int SPAFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int GERFrameStart { get; set; }
-		public SA2DCGCSummaryData() { }
-		public static int Size { get { return 0x1C; } }
-		public SA2DCGCSummaryData(byte[] file, int address)
-		{
-			StringID = ByteConverter.ToInt32(file, address);
-			VoiceID = ByteConverter.ToInt32(file, address + 4);
-			JPNFrameStart = ByteConverter.ToInt32(file, address + 8);
-			ENGFrameStart = ByteConverter.ToInt32(file, address + 0xC);
-			FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
-			SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
-			GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
-		}
+	//[Serializable]
+	//public class SA2DCGCSummaryData : SA2SummaryData
+	//{
+	//	[IniAlwaysInclude]
+	//	public int StringID { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int VoiceID { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int JPNFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int ENGFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int FRNFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int SPAFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int GERFrameStart { get; set; }
+	//	public SA2DCGCSummaryData() { }
+	//	public static int Size { get { return 0x1C; } }
+	//	public SA2DCGCSummaryData(byte[] file, int address)
+	//	{
+	//		StringID = ByteConverter.ToInt32(file, address);
+	//		VoiceID = ByteConverter.ToInt32(file, address + 4);
+	//		JPNFrameStart = ByteConverter.ToInt32(file, address + 8);
+	//		ENGFrameStart = ByteConverter.ToInt32(file, address + 0xC);
+	//		FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
+	//		SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
+	//		GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
+	//	}
 
-		public string ToStruct()
-		{
-			StringBuilder sb = new StringBuilder("{ ");
-			sb.Append(StringID);
-			sb.Append(VoiceID);
-			sb.Append(JPNFrameStart);
-			sb.Append(ENGFrameStart);
-			sb.Append(FRNFrameStart);
-			sb.Append(SPAFrameStart);
-			sb.Append(GERFrameStart);
-			sb.Append("NULL ");
-			sb.Append(" }");
-			return sb.ToString();
-		}
-	}
+	//	public override string ToStruct()
+	//	{
+	//		StringBuilder sb = new StringBuilder("{ ");
+	//		sb.Append(StringID);
+	//		sb.Append(VoiceID);
+	//		sb.Append(JPNFrameStart);
+	//		sb.Append(ENGFrameStart);
+	//		sb.Append(FRNFrameStart);
+	//		sb.Append(SPAFrameStart);
+	//		sb.Append(GERFrameStart);
+	//		sb.Append("NULL ");
+	//		sb.Append(" }");
+	//		return sb.ToString();
+	//	}
+	//}
 
 	public static class SA2BetaRecapScreenList
 	{
@@ -2733,40 +2756,21 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address)
 		{
-			if (ByteConverter.BigEndian)
-			{
-				DeathFlag = file[address++];
-				Constant2 = file[address++];
-				Constant1 = file[address++];
-				Flags = (SA2CharacterFlags)file[address++];
-			}
-			else
-			{
-				Flags = (SA2CharacterFlags)file[address++];
-				Constant1 = file[address++];
-				Constant2 = file[address++];
-				DeathFlag = file[address++];
-			}
+			int dzdata = ByteConverter.ToInt32(file, address);
+			Flags = (SA2CharacterFlags)((byte)dzdata);
+			Constant1 = (byte)(dzdata >> 8);
+			Constant2 = (byte)(dzdata >> 16);
+			DeathFlag = (byte)(dzdata >> 24);
 		}
 
 		public SA2BDeathZoneFlags(byte[] file, int address, string filename)
 		{
-			if (ByteConverter.BigEndian)
-			{
-				DeathFlag = file[address++];
-				Constant2 = file[address++];
-				Constant1 = file[address++];
-				Flags = (SA2CharacterFlags)file[address++];
-				Filename = filename;
-			}
-			else
-			{
-				Flags = (SA2CharacterFlags)file[address++];
-				Constant1 = file[address++];
-				Constant2 = file[address++];
-				DeathFlag = file[address++];
-				Filename = filename;
-			}
+			int dzdata = ByteConverter.ToInt32(file, address);
+			Flags = (SA2CharacterFlags)((byte)dzdata);
+			Constant1 = (byte)(dzdata >> 8);
+			Constant2 = (byte)(dzdata >> 16);
+			DeathFlag = (byte)(dzdata >> 24);
+			Filename = filename;
 		}
 
 		[IniAlwaysInclude]
@@ -4112,6 +4116,295 @@ namespace SplitTools
 		X,
 		Y,
 		Z
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimInfo
+	{
+		public SA2ModelTexanimInfo() { }
+
+		public SA2ModelTexanimInfo(byte[] file, int address, uint imageBase, int count)
+		{
+			Type = ByteConverter.ToInt32(file, address);
+			//This would have been an all-purpose variable, but the game never uses
+			//the other types that would alter its usage.
+			int animspeed = ByteConverter.ToInt32(file, address + 4);
+			PositionSpeed = (short)animspeed;
+			RotationSpeed = (short)(animspeed >> 16);
+			SpeedDivider = ByteConverter.ToInt32(file, address + 8);
+			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
+			uint uvptr = ByteConverter.ToUInt32(file, address + 0x10);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				UVEditDataName = "uvdata_" + ptr.ToString("X8");
+				UVEditData = new List<short>(count);
+				for (int i = 0; i < count; i++)
+				{
+					UVEditData.Add(ByteConverter.ToInt16(file, ptr));
+					ptr += sizeof(short);
+				}
+			}
+			Unk2 = ByteConverter.ToInt32(file, address + 0x14);
+			Unk3 = ByteConverter.ToInt32(file, address + 0x18);
+			Unk4 = ByteConverter.ToInt32(file, address + 0x1C);
+			Unk5 = ByteConverter.ToInt32(file, address + 0x20);
+		}
+
+		[IniAlwaysInclude]
+		public int Type { get; set; }
+		[IniAlwaysInclude]
+		public short PositionSpeed { get; set; }
+		[IniAlwaysInclude]
+		public short RotationSpeed { get; set; }
+		[IniAlwaysInclude]
+		public int SpeedDivider { get; set; }
+		[IniAlwaysInclude]
+		public int Unk1 { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
+		public List<short> UVEditData { get; set; }
+		public string UVEditDataName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk2 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk3 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk4 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk5 { get; set; }
+
+
+		public static int Size { get { return 0x24; } }
+
+		public static SA2ModelTexanimInfo Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimInfo>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Type);
+			result.Append(", ");
+			result.Append(PositionSpeed);
+			result.Append(", ");
+			result.Append(RotationSpeed);
+			result.Append(", ");
+			result.Append(SpeedDivider);
+			result.Append(", ");
+			result.Append(Unk1);
+			result.Append(", ");
+			result.AppendFormat("(uint8_t)(LengthOfArray({0}) / 2)", UVEditDataName);
+			result.Append(", ");
+			result.Append(Unk2);
+			result.Append(", ");
+			result.Append(Unk3);
+			result.Append(", ");
+			result.Append(Unk4);
+			result.Append(", ");
+			result.Append(Unk5);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimArrayA
+	{
+		public SA2ModelTexanimArrayA() { }
+
+		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase, int count)
+		{
+			uint modelptr = ByteConverter.ToUInt32(file, address);
+			if (modelptr != 0)
+			{
+				int ptr = (int)(modelptr - imageBase);
+				Model = "object_" + ptr.ToString("X8");
+			}
+			uint uvptr = ByteConverter.ToUInt32(file, address + 4);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimName = "texdata_" + ptr.ToString("X8");
+			}
+			Unk = ByteConverter.ToInt32(file, address + 8);
+		}
+
+		[IniAlwaysInclude]
+		public string Model { get; set; }
+		public SA2ModelTexanimInfo TexanimData { get; set; }
+		[IniAlwaysInclude]
+		public string TexanimName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk { get; set; }
+		public string CountModule { get; set; }
+
+		public static int Size { get { return 0xC; } }
+
+		public static SA2ModelTexanimArrayA Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimArrayA>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Model);
+			result.Append(", ");
+			if (!string.IsNullOrEmpty(TexanimName))
+
+				result.Append(label);
+			else
+				result.Append("NULL");
+			result.Append(", ");
+			result.Append(Unk);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimArrayB
+	{
+		public SA2ModelTexanimArrayB() { }
+
+		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase, int count)
+		{
+			Type = ByteConverter.ToInt32(file, address);
+			uint modelptr = ByteConverter.ToUInt32(file, address + 4);
+			if (modelptr != 0)
+			{
+				int ptr = (int)(modelptr - imageBase);
+				Model = "object_" + ptr.ToString("X8");
+			}
+			uint uvptr = ByteConverter.ToUInt32(file, address + 8);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimName = "texdata_" + ptr.ToString("X8");
+			}
+			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
+			Unk2 = ByteConverter.ToInt32(file, address + 0x10);
+		}
+
+		[IniAlwaysInclude]
+		public int Type { get; set; }
+		[IniAlwaysInclude]
+		public string Model { get; set; }
+		public SA2ModelTexanimInfo TexanimData { get; set; }
+		[IniAlwaysInclude]
+		public string TexanimName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk1 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk2 { get; set; }
+		public string CountModule { get; set; }
+
+		public static int Size { get { return 0x14; } }
+
+		public static SA2ModelTexanimArrayB Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimArrayB>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Type);
+			result.Append(", ");
+			result.Append(Model);
+			result.Append(", ");
+			if (!string.IsNullOrEmpty(TexanimName))
+
+				result.Append(label);
+			else
+				result.Append("NULL");
+			result.Append(", ");
+			result.Append(Unk1);
+			result.Append(", ");
+			result.Append(Unk2);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimArrayC
+	{
+		public SA2ModelTexanimArrayC() { }
+
+		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase, int count)
+		{
+			uint modelptr = ByteConverter.ToUInt32(file, address);
+			if (modelptr != 0)
+			{
+				int ptr = (int)(modelptr - imageBase);
+				Model = "object_" + ptr.ToString("X8");
+			}
+			uint uvptr = ByteConverter.ToUInt32(file, address + 4);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimName = "texdata_" + ptr.ToString("X8");
+			}
+			Unk1 = ByteConverter.ToInt32(file, address + 8);
+			Unk2 = ByteConverter.ToInt32(file, address + 0xC);
+		}
+
+		[IniAlwaysInclude]
+		public string Model { get; set; }
+		public SA2ModelTexanimInfo TexanimData { get; set; }
+		[IniAlwaysInclude]
+		public string TexanimName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk1 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk2 { get; set; }
+		public string CountModule { get; set; }
+
+		public static int Size { get { return 0x10; } }
+
+		public static SA2ModelTexanimArrayC Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimArrayC>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Model);
+			result.Append(", ");
+			if (!string.IsNullOrEmpty(TexanimName))
+
+				result.Append(label);
+			else
+				result.Append("NULL");
+			result.Append(", ");
+			result.Append(Unk1);
+			result.Append(", ");
+			result.Append(Unk2);
+			result.Append(" }");
+			return result.ToString();
+		}
 	}
 
 	public static class BlackMarketItemAttributesList

@@ -183,7 +183,7 @@ namespace SAModel.SAEditorCommon
 
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
-				bool modified = itemsToExport[item.Key];
+				bool modified = itemsToExport[item.Value.Name];
 
 				if (!oneModified)
 					oneModified = modified;
@@ -213,7 +213,7 @@ namespace SAModel.SAEditorCommon
 
 			foreach (var item in iniData.DataItems)
 			{
-				bool modified = itemsToExport[item.Filename];
+				bool modified = itemsToExport[item.Metadata];
 
 				listView.Items.Add(new ListViewItem
 				(
@@ -288,12 +288,10 @@ namespace SAModel.SAEditorCommon
 			TabPage page = assemblyItemTabs.SelectedTab;
 			ListView listView = assemblyListViews[page.Text];
 
-			int modifiedIndex = (assemblies[page.Text] == AssemblyType.Exe) ? 2 : 1;
-
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
-				item.Checked = item.SubItems[modifiedIndex].Text != "No"; // we need to handle this differently depending on if we're exe or dll
+				item.Checked = item.SubItems[2].Text != "No";
 			}
 			listView.EndUpdate();
 		}
@@ -366,7 +364,7 @@ namespace SAModel.SAEditorCommon
 							break;
 
 						case AssemblyType.DLL:
-							DLLModGenerator.DLLModGen.ExportINIManual((DllIniData)assemblyIniFiles[assembly.Key],
+							DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 

@@ -867,12 +867,12 @@ namespace SplitTools.SplitDLL
 								{
 									if (data.CustomProperties.ContainsKey("meta" + i.ToString() + "_a"))
 										animmeta = data.CustomProperties["meta" + i.ToString() + "_a"];
-									if (File.Exists(fileOutputPath + "/" + i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim") && !splitFlags.HasFlag(SplitFlags.Overwrite))
+									if (File.Exists(fileOutputPath + "/" + i.ToString() + ".saanim") && !splitFlags.HasFlag(SplitFlags.Overwrite))
 										return 0;
 									NJS_MOTION anim = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
 									anim.Description = animmeta;	
-									anim.Save(fileOutputPath + "/" + i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
-									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString("D3", NumberFormatInfo.InvariantInfo) + ".saanim"));
+									anim.Save(fileOutputPath + "/" + i.ToString() + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
+									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString() + ".saanim"));
 									address += 8;
 									i = ByteConverter.ToInt16(datafile, address);
 								}
@@ -990,6 +990,95 @@ namespace SplitTools.SplitDLL
 								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
 							}
 							break;
+						case "modeltexanim":
+							{
+								DllItemInfo info = new DllItemInfo()
+								{
+									Export = name,
+									Label = item.Key
+								};
+								output.Items.Add(info);
+								int cnt = 4;
+								if (data.CustomProperties.ContainsKey("uvlength"))
+									cnt = int.Parse(data.CustomProperties["uvlength"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+								new SA2ModelTexanimInfo(datafile, address, imageBase, cnt).Save(fileOutputPath);
+								string description = data.Filename;
+								if (data.CustomProperties.ContainsKey("meta"))
+									description = data.CustomProperties["meta"];
+							}
+							break;
+						case "modeltexanimarray":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
+								int uvcnt = 4;
+								List<SA2ModelTexanimArrayA> aresult = new List<SA2ModelTexanimArrayA>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									if (data.CustomProperties.ContainsKey("uvlength" + i.ToString()))
+										uvcnt = int.Parse(data.CustomProperties["uvlength" + i.ToString()], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+									SA2ModelTexanimArrayA tanima = new SA2ModelTexanimArrayA(datafile, address, imageBase, uvcnt);
+									aresult.Add(tanima);
+									address += 0xC;
+								}
+								if (data.CustomProperties.ContainsKey("countmodule"))
+									aresult[0].CountModule = data.CustomProperties["countmodule"];
+								IniSerializer.Serialize(aresult, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
+							}
+							break;
+						case "modeltexanimarrayalt":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
+								int uvcnt = 4;
+								List<SA2ModelTexanimArrayB> bresult = new List<SA2ModelTexanimArrayB>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									if (data.CustomProperties.ContainsKey("uvlength" + i.ToString()))
+										uvcnt = int.Parse(data.CustomProperties["uvlength" + i.ToString()], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+									SA2ModelTexanimArrayB tanimb = new SA2ModelTexanimArrayB(datafile, address, imageBase, uvcnt);
+									bresult.Add(tanimb);
+									address += 0x14;
+								}
+								if (data.CustomProperties.ContainsKey("countmodule"))
+									bresult[0].CountModule = data.CustomProperties["countmodule"];
+								IniSerializer.Serialize(bresult, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
+							}
+							break;
+						case "modeltexanimarrayalt2":
+							{
+								Directory.CreateDirectory(fileOutputPath);
+								List<string> hashes = new List<string>();
+								string metaname = data.Filename;
+								int uvcnt = 4;
+								List<SA2ModelTexanimArrayC> cresult = new List<SA2ModelTexanimArrayC>();
+								for (int i = 0; i < data.Length; i++)
+								{
+									if (data.CustomProperties.ContainsKey("uvlength" + i.ToString()))
+										uvcnt = int.Parse(data.CustomProperties["uvlength" + i.ToString()], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+									SA2ModelTexanimArrayC tanimc = new SA2ModelTexanimArrayC(datafile, address, imageBase, uvcnt);
+									cresult.Add(tanimc);
+									address += 0x10;
+								}
+								if (data.CustomProperties.ContainsKey("countmodule"))
+									cresult[0].CountModule = data.CustomProperties["countmodule"];
+								IniSerializer.Serialize(cresult, Path.Combine(fileOutputPath, "info.ini"));
+								hashes.Add("info.ini:" + HelperFunctions.FileHash(Path.Combine(fileOutputPath, "info.ini")));
+								if (data.CustomProperties.ContainsKey("metaname"))
+									metaname = data.CustomProperties["metaname"];
+								output.DataItems.Add(new DllDataItemInfo() { Type = type, Export = name, Filename = data.Filename, MD5Hash = string.Join("|", hashes.ToArray()), Metadata = metaname });
+							}
+							break;
 						case "kartspecialinfolist":
 							{
 								Directory.CreateDirectory(fileOutputPath);
@@ -1038,7 +1127,7 @@ namespace SplitTools.SplitDLL
 											outputFN_l = Path.Combine(fileOutputPath, data.CustomProperties["filename" + i.ToString()] + " Low.sa2mdl");
 											fn_l = Path.Combine(data.Filename, data.CustomProperties["filename" + i.ToString()] + " Low.sa2mdl");
 											hashfn_l = data.CustomProperties["filename" + i.ToString()] + " Low.sa2mdl";
-							}
+										}
 										if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 											Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
 										string meta_l = fn_l;

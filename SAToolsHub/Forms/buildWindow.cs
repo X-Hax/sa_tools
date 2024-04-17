@@ -105,7 +105,7 @@ namespace SAToolsHub
 							SplitTools.SplitDLL.DllIniData dllIniData =
 								SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadINI(iniPath, ref itemsToExport);
 
-							SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINIAuto(dllIniData,
+							SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(dllIniData,
 								itemsToExport, Path.Combine(modFolder, assembly.Key + "_data.ini"));
 						}
 						break;
@@ -140,7 +140,7 @@ namespace SAToolsHub
 			{
 				DLLiniData = SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.LoadMultiINI(iniDLLFiles, ref itemsDLLToExport);
 
-				SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINIAuto(DLLiniData,
+				SAModel.SAEditorCommon.DLLModGenerator.DLLModGen.ExportINI(DLLiniData,
 					itemsDLLToExport, Path.Combine(modFolder, "Data_DLL_orig_data.ini"));
 			}
 

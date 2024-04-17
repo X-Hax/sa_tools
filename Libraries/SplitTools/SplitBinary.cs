@@ -657,6 +657,14 @@ namespace SplitTools.Split
 						nohash = true;
 					}
 					break;
+				case "modeltexanim":
+					{
+						int cnt = 4;
+						if (customProperties.ContainsKey("uvlength"))
+							cnt = int.Parse(customProperties["uvlength"], NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, NumberFormatInfo.InvariantInfo);
+						new SA2ModelTexanimInfo(datafile, address, imageBase, cnt).Save(fileOutputPath);
+					}
+					break;
 				case "leveltexlist":
 					new LevelTextureList(datafile, address, imageBase).Save(fileOutputPath);
 					break;
