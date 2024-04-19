@@ -22,8 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Assets\Language\" />
+    <Folder Include="Assets\Icons\" />
+    <Folder Include="Assets\Themes\" />
     <Folder Include="CharacterStudio\" />
     <Folder Include="LevelStudio\" />
-    <Folder Include="Styling\" />
+    <Folder Include="Assets\Styling\" />
   </ItemGroup>
 </Project>
