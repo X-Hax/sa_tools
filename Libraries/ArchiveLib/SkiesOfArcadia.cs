@@ -651,14 +651,17 @@ namespace ArchiveLib
 		{
 			string directory = Path.Combine(Path.GetDirectoryName(filepath), Path.GetFileNameWithoutExtension(filepath));
 			string filename = Path.GetFileNameWithoutExtension(filepath);
-			ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0xC);
+			string aklzcheck = Encoding.ASCII.GetString(file, 0, 4);
+			if (aklzcheck == "AKLZ")
+				ByteConverter.BigEndian = true;
+			else
+				ByteConverter.BigEndian = SplitTools.HelperFunctions.CheckBigEndianInt32(file, 0xC);
 
 			nmldArchiveFile archive;
 
 			if (ByteConverter.BigEndian)
 			{
 				Console.WriteLine("Skies of Arcadia: Legends MLD File");
-				string aklzcheck = Encoding.ASCII.GetString(file, 0, 4);
 
 				if (aklzcheck == "AKLZ")
 				{
