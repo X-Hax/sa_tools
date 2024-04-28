@@ -1534,6 +1534,9 @@ namespace SAToolsHub
 
 			if (!File.Exists("satoolsver.txt"))
 			{
+				if (!force)
+					return false;
+
 				if (MessageBox.Show(this, "Unable to find local version information. Would you like to download the latest version?", "SA Tools Hub", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
 					return false;
 			}
