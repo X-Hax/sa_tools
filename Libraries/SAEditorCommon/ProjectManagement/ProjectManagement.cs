@@ -332,6 +332,9 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <returns>True if a match is found</returns>
 		private static bool checkFileHashes(string gameHashes, string checkFileHash)
 		{
+			if (gameHashes == null)
+				return true;
+
 			string[] hashes = gameHashes.Split(',');
 
 			if (!hashes.Any(h => h.Equals(checkFileHash, StringComparison.OrdinalIgnoreCase)))
