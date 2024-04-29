@@ -108,8 +108,6 @@ namespace SAModel.SAEditorCommon.UI
 
 			// Material list controls
 			resetButton.Enabled = cloneButton.Enabled = true;
-			upButton.Enabled = materials.Count > 1 && index > 0;
-			downButton.Enabled = materials.Count > 1 && index < materials.Count - 1;
 			deleteButton.Enabled = materials.Count > 1;
 		}
 
