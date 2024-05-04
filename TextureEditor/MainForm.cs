@@ -163,6 +163,7 @@ namespace TextureEditor
 									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
 									paletteSet = Math.Min(currentPalette.GetMaxBanks(pvr.DataFormat == PvrDataFormat.Index8 || pvr.DataFormat == PvrDataFormat.Index8Mipmaps), paletteSet);
 								}
+								actualPaletteColors = currentPalette.Colors.Count();
 								if (!paletteApplied)
 								{
 									// Re-encode texture if data is missing
@@ -217,6 +218,7 @@ namespace TextureEditor
 						{
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
+								actualPaletteColors = currentPalette.Colors.Count();
 								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
 								string gvppath = folder + gvr.Name + ".gvp";
 								if (!customPaletteLoaded && File.Exists(gvppath))
