@@ -239,7 +239,6 @@ namespace TextureEditor
 									currentPalette.IsGVP = true;
 									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
 									int neededcolors = (gvr.DataFormat == GvrDataFormat.Index4) ? 16 : 256;
-									actualPaletteColors = currentPalette.Colors.Count();
 									if (neededcolors - actualPaletteColors > 0)
 									{
 										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
