@@ -33,9 +33,22 @@ namespace TextureEditor
 					bmp.UnlockBits(data8);
 					return;
 				case PixelFormat.Format4bppIndexed:
-					BitmapData data4 = bmp.LockBits(new Rectangle(new Point(x, y), new Size(1, 1)), ImageLockMode.ReadWrite, PixelFormat.Format4bppIndexed);
-					byte b = Marshal.ReadByte(data4.Scan0);
-					Marshal.WriteByte(data4.Scan0, (byte)(b & 0xf | (pixelIndex << 4)));
+					BitmapData data4 = bmp.LockBits(new Rectangle(new Point(0, 0), new Size(bmp.Width, bmp.Height)), ImageLockMode.ReadWrite, PixelFormat.Format4bppIndexed);
+					// Bit index
+					int biti = (data4.Stride > 0 ? y : y - bmp.Height + 1) * data4.Stride * 8 + x * 4;
+					// Pixel index
+					int i = biti / 8;
+					// Retrieve byte
+					byte b = Marshal.ReadByte(data4.Scan0, i);
+					// Write byte
+					if (biti % 8 == 0)
+					{
+						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf | (pixelIndex << 4)));
+					}
+					else
+					{
+						Marshal.WriteByte(data4.Scan0, i, (byte)(b & 0xf0 | pixelIndex));
+					}
 					bmp.UnlockBits(data4);
 					return;
 				default:
