@@ -297,7 +297,8 @@ namespace TextureEditor
 							numericUpDownOrigSizeX.Value = pvmx.Image.Width;
 							numericUpDownOrigSizeY.Value = pvmx.Image.Height;
 						}
-						dataFormatLabel.Hide();
+						dataFormatLabel.Text = "File Format: " + TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData).ToString();
+						dataFormatLabel.Show();
 						pixelFormatLabel.Hide();
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
@@ -347,7 +348,7 @@ namespace TextureEditor
 				newtextures = new List<TextureInfo>();
 				foreach (PVMXFile.PVMXEntry pvmxe in pvmx.Entries)
 				{
-					PvmxTextureInfo texinfo = new PvmxTextureInfo(Path.GetFileNameWithoutExtension(pvmxe.Name), pvmxe.GBIX, pvmxe.GetBitmap());
+					PvmxTextureInfo texinfo = new PvmxTextureInfo(Path.GetFileNameWithoutExtension(pvmxe.Name), pvmxe.GBIX, pvmxe.GetBitmap(), new MemoryStream(pvmxe.Data));
 					if (pvmxe.HasDimensions())
 						texinfo.Dimensions = new Size(pvmxe.Width, pvmxe.Height);
 					newtextures.Add(texinfo);
@@ -731,18 +732,11 @@ namespace TextureEditor
 						PVMXFile pvmx = new PVMXFile();
 						foreach (PvmxTextureInfo tex in textures)
 						{
-							MemoryStream ds;
 							Size size = new Size(tex.Image.Width, tex.Image.Height);
 							if (tex.Dimensions.HasValue)
 								size = new Size(tex.Dimensions.Value.Width, tex.Dimensions.Value.Height);
-							if (tex.TextureData == null)
-							{
-								ds = new MemoryStream();
-								tex.Image.Save(ds, System.Drawing.Imaging.ImageFormat.Png);
-							}
-							else
-								ds = tex.TextureData;
-							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + ".png", tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
+							MemoryStream ds = tex.TextureData == null ? ds = EncodeDDS(tex) : ds = tex.TextureData;
+							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + TextureFunctions.IdentifyTextureFileExtension(ds), tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
 						}
 						File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
 						unsaved = false;
@@ -988,15 +982,20 @@ namespace TextureEditor
 					{
 						foreach (TextureInfo tex in textures)
 						{
-							System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
 							PalettedTextureFormat indexedfmt = GetPalettedTextureFormat(tex);
 							if (indexedfmt != PalettedTextureFormat.NotIndexed)
+							{
+								System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
 								bmp = ProcessIndexedBitmap(tex, indexedfmt);
-							bmp.Save(Path.Combine(dir, tex.Name + ".png"));
-							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
-								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
+								bmp.Save(Path.Combine(dir, tex.Name + ".png"));
+								bmp.Save(tex.TextureData, ImageFormat.Png);
+							}
 							else
-								texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + ".png", tex.Image.Width, tex.Image.Height);
+								File.WriteAllBytes(Path.Combine(dir, tex.Name + TextureFunctions.IdentifyTextureFileExtension(tex.TextureData)), tex.TextureData.ToArray());
+							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
+								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + TextureFunctions.IdentifyTextureFileExtension(xtex.TextureData), xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
+							else
+								texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + TextureFunctions.IdentifyTextureFileExtension(tex.TextureData), tex.Image.Width, tex.Image.Height);
 						}
 					}
 				}
@@ -1644,10 +1643,8 @@ namespace TextureEditor
 							info.TextureData = EncodeGVR(gvrt);
 						else if (info is XvrTextureInfo xvrt)
 							info.TextureData = EncodeXVR(xvrt);
-						else if (info is PakTextureInfo pakt)
-							info.TextureData = EncodeDDS(pakt);
 						else
-							info.Image.Save(info.TextureData, ImageFormat.Png);
+							info.TextureData = EncodeDDS(info);
 					}
 					File.WriteAllBytes(dlg.FileName, textures[listBox1.SelectedIndex].TextureData.ToArray());
 				}
@@ -1720,7 +1717,7 @@ namespace TextureEditor
 			return xvr;
 		}
 
-		private MemoryStream EncodeDDS(PakTextureInfo tex)
+		private MemoryStream EncodeDDS(TextureInfo tex)
 		{
 			if (tex.TextureData != null)
 				return tex.TextureData;

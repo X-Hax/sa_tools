@@ -489,7 +489,7 @@
 			usePNGInsteadOfDDSToolStripMenuItem.Name = "usePNGInsteadOfDDSToolStripMenuItem";
 			usePNGInsteadOfDDSToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
 			usePNGInsteadOfDDSToolStripMenuItem.Text = "Use PNG instead of DDS";
-			usePNGInsteadOfDDSToolStripMenuItem.ToolTipText = "Use PNG instead of DDS in PAK files. PNG has better quality but loads slower and lacks built-in mipmaps.";
+			usePNGInsteadOfDDSToolStripMenuItem.ToolTipText = "Use PNG instead of DDS in PAK and PVMX files. PNG has better quality but loads slower and lacks built-in mipmaps.";
 			usePNGInsteadOfDDSToolStripMenuItem.CheckedChanged += usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged;
 			// 
 			// splitContainer1
