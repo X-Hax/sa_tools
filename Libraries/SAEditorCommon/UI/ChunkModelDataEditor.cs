@@ -246,7 +246,6 @@ namespace SAModel.SAEditorCommon.UI
 						if (catt.Poly[i] is PolyChunkVolume)
 						{
 							chunks.Add(i, catt.Poly[i]);
-							i++;
 						}
 						if (catt.Poly[i] is PolyChunkBitsDrawPolygonList)
 						{

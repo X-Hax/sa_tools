@@ -302,7 +302,7 @@ namespace SplitTools.SAArc
 				Dictionary<int, int> panimaddrs = new Dictionary<int, int>();
 				Dictionary<int, int> pshapeaddrs = new Dictionary<int, int>();
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
-				if (evinfo.BigEndian == true)
+				if (ByteConverter.BigEndian)
 					gamekey = 0x816DFE60;
 				else
 					gamekey = 0xCB00000;

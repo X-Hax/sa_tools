@@ -72,8 +72,6 @@
 			diffuseLabel = new System.Windows.Forms.Label();
 			doneButton = new System.Windows.Forms.Button();
 			toolTip = new System.Windows.Forms.ToolTip(components);
-			upButton = new System.Windows.Forms.Button();
-			downButton = new System.Windows.Forms.Button();
 			cloneButton = new System.Windows.Forms.Button();
 			deleteButton = new System.Windows.Forms.Button();
 			resetButton = new System.Windows.Forms.Button();
@@ -623,34 +621,9 @@
 			toolTip.InitialDelay = 500;
 			toolTip.ReshowDelay = 100;
 			// 
-			// upButton
-			// 
-			upButton.Enabled = false;
-			upButton.Location = new System.Drawing.Point(596, 21);
-			upButton.Margin = new System.Windows.Forms.Padding(4);
-			upButton.Name = "upButton";
-			upButton.Size = new System.Drawing.Size(34, 34);
-			upButton.TabIndex = 2;
-			upButton.Text = "↑";
-			toolTip.SetToolTip(upButton, "Move the material up on the material list.");
-			upButton.UseVisualStyleBackColor = true;
-			upButton.Click += upButton_Click;
-			// 
-			// downButton
-			// 
-			downButton.Location = new System.Drawing.Point(639, 21);
-			downButton.Margin = new System.Windows.Forms.Padding(4);
-			downButton.Name = "downButton";
-			downButton.Size = new System.Drawing.Size(34, 34);
-			downButton.TabIndex = 3;
-			downButton.Text = "↓";
-			toolTip.SetToolTip(downButton, "Move the material down on the material list.");
-			downButton.UseVisualStyleBackColor = true;
-			downButton.Click += downButton_Click;
-			// 
 			// cloneButton
 			// 
-			cloneButton.Location = new System.Drawing.Point(682, 21);
+			cloneButton.Location = new System.Drawing.Point(606, 21);
 			cloneButton.Margin = new System.Windows.Forms.Padding(4);
 			cloneButton.Name = "cloneButton";
 			cloneButton.Size = new System.Drawing.Size(86, 34);
@@ -663,7 +636,7 @@
 			// deleteButton
 			// 
 			deleteButton.Enabled = false;
-			deleteButton.Location = new System.Drawing.Point(777, 21);
+			deleteButton.Location = new System.Drawing.Point(700, 21);
 			deleteButton.Margin = new System.Windows.Forms.Padding(4);
 			deleteButton.Name = "deleteButton";
 			deleteButton.Size = new System.Drawing.Size(86, 34);
@@ -675,7 +648,7 @@
 			// 
 			// resetButton
 			// 
-			resetButton.Location = new System.Drawing.Point(872, 21);
+			resetButton.Location = new System.Drawing.Point(794, 21);
 			resetButton.Margin = new System.Windows.Forms.Padding(4);
 			resetButton.Name = "resetButton";
 			resetButton.Size = new System.Drawing.Size(86, 34);
@@ -696,8 +669,6 @@
 			Controls.Add(resetButton);
 			Controls.Add(deleteButton);
 			Controls.Add(cloneButton);
-			Controls.Add(downButton);
-			Controls.Add(upButton);
 			Controls.Add(doneButton);
 			Controls.Add(generalSettingBox);
 			Controls.Add(flagsGroupBox);
@@ -770,8 +741,6 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.NumericUpDown alphaSpecularNumeric;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Button upButton;
-		private System.Windows.Forms.Button downButton;
 		private System.Windows.Forms.Button cloneButton;
 		private System.Windows.Forms.Button deleteButton;
 		private System.Windows.Forms.Button resetButton;
