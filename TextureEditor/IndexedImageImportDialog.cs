@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static TextureEditor.TexturePalette;
 
@@ -92,7 +86,7 @@ namespace TextureEditor
                     break;
             }
 
-            labelPaletteInfo.Text = "Palette: " + totalColors.ToString() + " colors (" + usedColors.ToString() + " colors used) , " + transparency;
+            labelPaletteInfo.Text = "Palette: " + totalColors.ToString() + " colors (" + usedColors.ToString() + " colors used), " + transparency;
             groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = true;
             if (!gamecube)
                 radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = false;
