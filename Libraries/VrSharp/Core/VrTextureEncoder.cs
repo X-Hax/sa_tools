@@ -364,55 +364,110 @@ namespace VrSharp
             return destination;
         }
 
-        protected unsafe byte[] BitmapToRawIndexed(Bitmap source, int maxColors, out byte[][] palette)
-        {
-            Bitmap img = source;
-            byte[] destination = new byte[img.Width * img.Height];
+		protected unsafe byte[] BitmapToRawIndexed(Bitmap source, int maxColors, out byte[][] palette)
+		{
+			Bitmap img = source;
+			byte[] destination = new byte[img.Width * img.Height];
 
-            // If this is not a 32-bit ARGB bitmap, convert it to one
-            if (img.PixelFormat != PixelFormat.Format32bppArgb)
-            {
-                Bitmap newImage = new Bitmap(img.Width, img.Height, PixelFormat.Format32bppArgb);
-                using (Graphics g = Graphics.FromImage(newImage))
-                {
-                    g.DrawImage(img, 0, 0, img.Width, img.Height);
-                }
-                img = newImage;
-            }
+			// Quantize any non-palettized images, or any palettized-images with more palette entries than the encoded texture allows.
+			if ((img.PixelFormat & PixelFormat.Indexed) == 0
+				|| img.Palette.Entries.Length > maxColors)
+			{
+				// If this is not a 32-bit ARGB bitmap, convert it to one
+				if (img.PixelFormat != PixelFormat.Format32bppArgb)
+				{
+					Bitmap newImage = new Bitmap(img.Width, img.Height, PixelFormat.Format32bppArgb);
+					using (Graphics g = Graphics.FromImage(newImage))
+					{
+						g.DrawImage(img, 0, 0, img.Width, img.Height);
+					}
+					img = newImage;
+				}
 
-            // Quantize the image
-            WuQuantizer quantizer = new WuQuantizer();
-            img = (Bitmap)quantizer.QuantizeImage(img, maxColors);
+				// Quantize the image
+				WuQuantizer quantizer = new WuQuantizer();
+				img = (Bitmap)quantizer.QuantizeImage(img, maxColors);
+			}
 
-            // Copy over the data to the destination. We need to use Stride in this case, as it may not
-            // always be equal to Width.
-            BitmapData bitmapData = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
+			int bitsPerPixel = Image.GetPixelFormatSize(img.PixelFormat);
 
-            byte* pointer = (byte*)bitmapData.Scan0;
-            for (int y = 0; y < bitmapData.Height; y++)
-            {
-                for (int x = 0; x < bitmapData.Width; x++)
-                {
-                    destination[(y * img.Width) + x] = pointer[(y * bitmapData.Stride) + x];
-                }
-            }
+			// Copy over the data to the destination. We need to use Stride in this case, as it may not
+			// always be equal to Width.
+			BitmapData bitmapData = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
 
-            img.UnlockBits(bitmapData);
+			byte* pointer = (byte*)bitmapData.Scan0;
 
-            // Copy over the palette
-            palette = new byte[maxColors][];
-            for (int i = 0; i < maxColors; i++)
-            {
-                palette[i] = new byte[4];
+			if (bitsPerPixel == 1)
+			{
+				for (int y = 0; y < bitmapData.Height; y++)
+				{
+					for (int x = 0; x < bitmapData.Width; x++)
+					{
+						destination[(y * img.Width) + x] = (byte)((pointer[(y * bitmapData.Stride) + (x >> 3)] >> (7 - (x % 8))) & 0x1);
+					}
+				}
+			}
+			else if (bitsPerPixel == 4)
+			{
+				for (int y = 0; y < bitmapData.Height; y++)
+				{
+					for (int x = 0; x < bitmapData.Width; x++)
+					{
+						byte paletteIndex;
+						if (x % 2 == 0)
+						{
+							paletteIndex = (byte)(pointer[(y * bitmapData.Stride) + (x >> 1)] >> 4);
+						}
+						else
+						{
+							paletteIndex = (byte)(pointer[(y * bitmapData.Stride) + (x >> 1)] & 0xF);
+						}
 
-                palette[i][3] = img.Palette.Entries[i].A;
-                palette[i][2] = img.Palette.Entries[i].R;
-                palette[i][1] = img.Palette.Entries[i].G;
-                palette[i][0] = img.Palette.Entries[i].B;
-            }
+						destination[(y * img.Width) + x] = paletteIndex;
+					}
+				}
+			}
+			else
+			{
+				for (int y = 0; y < bitmapData.Height; y++)
+				{
+					for (int x = 0; x < bitmapData.Width; x++)
+					{
+						destination[(y * img.Width) + x] = pointer[(y * bitmapData.Stride) + x];
+					}
+				}
+			}
 
-            return destination;
-        }
-        #endregion
-    }
+			img.UnlockBits(bitmapData);
+
+			// Copy over the palette
+			palette = new byte[maxColors][];
+			for (int i = 0; i < maxColors && i < img.Palette.Entries.Length; i++)
+			{
+				palette[i] = new byte[4];
+
+				palette[i][3] = img.Palette.Entries[i].A;
+				palette[i][2] = img.Palette.Entries[i].R;
+				palette[i][1] = img.Palette.Entries[i].G;
+				palette[i][0] = img.Palette.Entries[i].B;
+			}
+
+			// If there are less palette entries in the source image than the destination, fill the remaining entries with opaque black.
+			if (img.Palette.Entries.Length < maxColors)
+			{
+				for (int i = img.Palette.Entries.Length; i < maxColors; i++)
+				{
+					palette[i] = new byte[4];
+
+					palette[i][3] = 0xFF;
+					palette[i][2] = 0;
+					palette[i][1] = 0;
+					palette[i][0] = 0;
+				}
+			}
+
+			return destination;
+		}
+		#endregion
+	}
 }
