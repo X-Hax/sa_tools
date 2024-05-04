@@ -229,7 +229,7 @@ namespace TextureEditor
 								{
 									if (gvr.TextureData == null)
 									{
-										gvr.PixelFormat = GvrPixelFormat.Rgb565; // Same as default palette
+										gvr.PixelFormat = GvrPixelFormat.IntensityA8; // Indexed GVRs seem to have this set always
 										GvrTextureEncoder enc = new GvrTextureEncoder(gvr.Image, gvr.PixelFormat, gvr.DataFormat);
 										gvr.TextureData = new MemoryStream();
 										enc.Save(gvr.TextureData);
