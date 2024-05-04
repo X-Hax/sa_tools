@@ -245,7 +245,7 @@ namespace VrSharp.Gvr
 
                 dataCodec.PixelCodec = pixelCodec;
 
-                dataFlags |= GvrDataFlags.InternalPalette;
+                dataFlags |= GvrDataFlags.ExternalPalette;
 
                 // Convert the bitmap to an array containing indicies.
                 decodedData = BitmapToRawIndexed(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
