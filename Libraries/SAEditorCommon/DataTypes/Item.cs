@@ -24,6 +24,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		protected Matrix transformMatrix = Matrix.Identity;
 		protected Vertex position = new Vertex();
 		protected Rotation rotation = new Rotation();
+		protected Vertex scale = new Vertex(1, 1, 1);
 		protected bool rotateZYX = false;
 
 		[Category("Common")]

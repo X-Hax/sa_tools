@@ -121,6 +121,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[Category("Common")]
 		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
 		[Category("Common")]
+		[DisplayName("Scale (Unused)")]
+		public Vertex Scale { get { return COL.Model.Scale; } set { COL.Model.Scale = value; GetHandleMatrix(); } }
+		[Category("Common")]
 		public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -373,6 +376,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			position = Position;
 			rotation = Rotation;
+			scale = Scale;
 			base.GetHandleMatrix();
 		}
 
