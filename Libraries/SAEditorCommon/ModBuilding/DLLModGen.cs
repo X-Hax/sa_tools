@@ -192,7 +192,10 @@ namespace SAModel.SAEditorCommon.DLLModGenerator
 			foreach (KeyValuePair<string, FileTypeHash> item in IniData.Files)
 			{
 				bool modified = HelperFunctions.FileHash(item.Key) != item.Value.Hash;
-				defaultExportState.Add(item.Value.Name, modified);
+				if (defaultExportState.ContainsKey(item.Value.Name))
+					MessageBox.Show("Could not add item '" + item.Value.Name + "' because an item with the same name has already been added.\nMake sure the INI file '" + fileName + "' doesn't contain duplicate names.");
+				else
+					defaultExportState.Add(item.Value.Name, modified);
 			}
 
 			foreach (DllDataItemInfo item in IniData.DataItems)
