@@ -82,8 +82,8 @@ namespace SAFontEdit
 								origtext[0] = 0x1B;
 								origtext[1] = 0x24;
 								origtext[2] = 0x42;
-								origtext[3] = (byte)(files[i].ID >> 8 + 255);
-								origtext[4] = (byte)(files[i].ID >> 0 + 255);
+								origtext[3] = (byte)(files[i].ID >> 8);
+								origtext[4] = (byte)(files[i].ID >> 0);
 								origtext[5] = 0x1B;
 								origtext[6] = 0x28;
 								origtext[7] = 0x42;
