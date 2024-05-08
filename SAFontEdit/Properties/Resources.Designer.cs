@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SADXFontEdit.Properties {
+namespace SAFontEdit.Properties {
     using System;
     
     
@@ -19,10 +19,10 @@ namespace SADXFontEdit.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace SADXFontEdit.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SADXFontEdit.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SAFontEdit.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace SADXFontEdit.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,17 @@ namespace SADXFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap character {
+        public static System.Drawing.Bitmap bug {
+            get {
+                object obj = ResourceManager.GetObject("bug", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap character {
             get {
                 object obj = ResourceManager.GetObject("character", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -73,7 +83,7 @@ namespace SADXFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap export {
+        public static System.Drawing.Bitmap export {
             get {
                 object obj = ResourceManager.GetObject("export", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -83,7 +93,27 @@ namespace SADXFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap import {
+        public static System.Drawing.Bitmap grid {
+            get {
+                object obj = ResourceManager.GetObject("grid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap help {
+            get {
+                object obj = ResourceManager.GetObject("help", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap import {
             get {
                 object obj = ResourceManager.GetObject("import", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -93,7 +123,7 @@ namespace SADXFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap open {
+        public static System.Drawing.Bitmap open {
             get {
                 object obj = ResourceManager.GetObject("open", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -103,7 +133,7 @@ namespace SADXFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] pencilcur {
+        public static byte[] pencilcur {
             get {
                 object obj = ResourceManager.GetObject("pencilcur", resourceCulture);
                 return ((byte[])(obj));
@@ -113,9 +143,19 @@ namespace SADXFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap saveas {
+        public static System.Drawing.Bitmap saveas {
             get {
                 object obj = ResourceManager.GetObject("saveas", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap search {
+            get {
+                object obj = ResourceManager.GetObject("search", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -417,7 +417,8 @@
             this.generalToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sAMDLToolStripMenuItem,
             this.sALVLToolStripMenuItem,
-            this.textureEditorToolStripMenuItem});
+			this.sAFontEditorToolStripMenuItem,
+			this.textureEditorToolStripMenuItem});
             this.generalToolsToolStripMenuItem.Name = "generalToolsToolStripMenuItem";
             this.generalToolsToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.generalToolsToolStripMenuItem.Text = "General Tools";
@@ -457,7 +458,6 @@
             this.sADXToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sADXTweakerToolStripMenuItem,
             this.sADXsndSharpToolStripMenuItem,
-            this.sAFontEditorToolStripMenuItem,
             this.toolStripSeparator3,
             this.sASaveToolStripMenuItem,
             this.sADLCToolToolStripMenuItem});
@@ -482,7 +482,7 @@
             this.sADXsndSharpToolStripMenuItem.Name = "sADXsndSharpToolStripMenuItem";
             this.sADXsndSharpToolStripMenuItem.Size = new System.Drawing.Size(196, 54);
             this.sADXsndSharpToolStripMenuItem.Text = "SADXsndSharp";
-            this.sADXsndSharpToolStripMenuItem.ToolTipText = "Open SADXsndSharp (Open SADX Sound .dat Files)\r\n";
+            this.sADXsndSharpToolStripMenuItem.ToolTipText = "Open SADXsndSharp (edits SADX .dat files)\r\n";
             this.sADXsndSharpToolStripMenuItem.Click += new System.EventHandler(this.sADXsndSharpToolStripMenuItem_Click);
             // 
             // sAFontEditorToolStripMenuItem
@@ -491,8 +491,8 @@
             this.sAFontEditorToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.sAFontEditorToolStripMenuItem.Name = "sAFontEditorToolStripMenuItem";
             this.sAFontEditorToolStripMenuItem.Size = new System.Drawing.Size(196, 54);
-            this.sAFontEditorToolStripMenuItem.Text = "SADX Font Editor";
-            this.sAFontEditorToolStripMenuItem.ToolTipText = "Open SADX Font Editor";
+            this.sAFontEditorToolStripMenuItem.Text = "SAFontEdit";
+            this.sAFontEditorToolStripMenuItem.ToolTipText = "Open SAFontEdit (edits SADX/SA2 font files)";
             this.sAFontEditorToolStripMenuItem.Click += new System.EventHandler(this.sAFontEditorToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
@@ -507,7 +507,7 @@
             this.sASaveToolStripMenuItem.Name = "sASaveToolStripMenuItem";
             this.sASaveToolStripMenuItem.Size = new System.Drawing.Size(196, 54);
             this.sASaveToolStripMenuItem.Text = "SASave";
-            this.sASaveToolStripMenuItem.ToolTipText = "Open SA Save";
+            this.sASaveToolStripMenuItem.ToolTipText = "Open SA Save (save editor)";
             this.sASaveToolStripMenuItem.Click += new System.EventHandler(this.sASaveToolStripMenuItem_Click);
             // 
             // sADLCToolToolStripMenuItem

@@ -374,7 +374,7 @@ namespace SAToolsHub
 			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
 			sadxsndsharpStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXsndSharp.exe")));
 			sadxtweakerStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXTweaker2.exe")));
-			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXFontEdit.exe")));
+			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAFontEdit.exe")));
 			sasaveStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SASave.exe")));
 			sa2eventviewStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2EventViewer.exe")));
 			sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));

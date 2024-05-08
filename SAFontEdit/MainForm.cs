@@ -7,8 +7,9 @@ using SplitTools;
 using System.Drawing.Imaging;
 using System.Text;
 using System.ComponentModel;
+using System.Security.Policy;
 
-namespace SADXFontEdit
+namespace SAFontEdit
 {
 	public partial class MainForm : Form
 	{
@@ -19,6 +20,7 @@ namespace SADXFontEdit
 		private List<FontItem> files;
 		private readonly Color[] pal = new Color[] { Color.Black, Color.White };
 		private string filename;
+		bool argb;
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
@@ -32,10 +34,10 @@ namespace SADXFontEdit
 			{
 				LoadFile(args[1]);
 			}
-			tileGfx = TilePicture.CreateGraphics();
-			tileGfx.SetOptions();
-			TilePicture.Cursor = new Cursor(new System.IO.MemoryStream(Properties.Resources.pencilcur));
-			TilePicture.Size = new Size(24 * (int)trackBar1.Value, 24 * (int)trackBar1.Value);
+			characterTileControl1.Cursor = new Cursor(new System.IO.MemoryStream(Properties.Resources.pencilcur));
+			characterTileControl1.Size = new Size(24 * (int)trackBar1.Value, 24 * (int)trackBar1.Value);
+			characterTileControl1.Palette = pal;
+			buttonExportCharacter.Enabled = buttonImportCharacter.Enabled = false;
 		}
 
 		private void LoadFile(string filename_a)
@@ -51,54 +53,72 @@ namespace SADXFontEdit
 				ftd.ShowDialog();
 				if (ftd.DialogResult == DialogResult.OK)
 				{
-					if (File.Exists(ftd.customfile)) customstring = File.ReadAllText(ftd.customfile);
+					if (ftd.charmap)
+						customstring = ftd.customstring;
 					if (ftd.fontdata)
 					{
 						itemlength = 0x58;
 						oldformat = false;
 					}
+					argb = ftd.argb;
+					if (argb)
+						itemlength = 2304;
 					filename = filename_a;
 					byte[] file = System.IO.File.ReadAllBytes(filename);
 					int count = file.Length / itemlength;
+					//MessageBox.Show("Item count: " + count.ToString());
 					files = new List<FontItem>(count);
 					listBox1.Items.Clear();
 					listBox1.BeginUpdate();
 					for (int i = 0; i < count; i++)
 					{
-
-						files.Add(new FontItem(file, i * itemlength, oldformat, (ushort)i));
+						//MessageBox.Show("Item at " + i * itemlength + " (" + i.ToString() + ")");
+						files.Add(new FontItem(file, i * itemlength, oldformat, (ushort)i, argb));
 						if (!ftd.charmap)
 						{
-							if (ftd.charset == 50220)
+							if (ftd.codepage == 50220)
 							{
 								origtext = new byte[8];
 								origtext[0] = 0x1B;
 								origtext[1] = 0x24;
 								origtext[2] = 0x42;
-								origtext[3] = (byte)(files[i].ID >> 8);
-								origtext[4] = (byte)(files[i].ID >> 0);
+								origtext[3] = (byte)(files[i].ID >> 8 + 255);
+								origtext[4] = (byte)(files[i].ID >> 0 + 255);
 								origtext[5] = 0x1B;
 								origtext[6] = 0x28;
 								origtext[7] = 0x42;
 								utf16String = Encoding.GetEncoding(50220).GetString(origtext);
 							}
-							else if (ftd.charset == 1200)
+							else if (ftd.codepage == 1200)
 							{
 								origtext = new byte[2];
 								origtext[0] = (byte)(files[i].ID >> 0);
 								origtext[1] = (byte)(files[i].ID >> 8);
 								utf16String = Encoding.GetEncoding(1200).GetString(origtext);
 							}
+							else if (ftd.codepage == 1252)
+							{
+								origtext = new byte[2];
+								origtext[0] = (byte)(files[i].ID >> 0);
+								origtext[1] = (byte)(files[i].ID >> 8);
+								if (files[i].ID <= 255)
+									utf16String = Encoding.GetEncoding(1252).GetString(origtext);
+								else
+									utf16String = " ";
+							}
 							else if (!oldformat)
 							{
 								origtext = new byte[1];
 								origtext[0] = (byte)files[i].ID;
-								utf16String = Encoding.GetEncoding(ftd.charset).GetString(origtext);
+								utf16String = Encoding.GetEncoding(ftd.codepage).GetString(origtext);
 							}
 						}
 						else
 						{
-							utf16String = customstring[Math.Min(customstring.Length - 1, i)] + "";
+							if (i >= customstring.Length)
+								utf16String = "　";
+							else
+								utf16String = customstring[i] + "";
 						}
 						files[i].character = utf16String;
 						listBox1.Items.Add(files[i].ID.ToString("X4") + ' ' + utf16String);
@@ -106,7 +126,9 @@ namespace SADXFontEdit
 					listBox1.EndUpdate();
 					listBox1.SelectedIndex = 0;
 					extractAllToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
-					Text = "SADXFontEdit - " + filename + " / Total characters: " + files.Count.ToString();
+					Text = "SAFontEdit - " + filename + " / Total characters: " + files.Count.ToString();
+					pictureBoxFontColor.Visible = labelA.Visible = labelR.Visible = labelB.Visible = labelG.Visible = labelColor.Visible = numericUpDownAlpha.Visible = numericUpDownGreen.Visible = numericUpDownRed.Visible = numericUpDownBlue.Visible = argb;
+					fONTDATAFileToolStripMenuItem.Enabled = !argb;
 				}
 			}
 		}
@@ -127,12 +149,10 @@ namespace SADXFontEdit
 
 		private void extractAllToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = "font" })
+			using (FolderBrowserDialog dlg = new FolderBrowserDialog() { Description = "Select the folder to export font files", ShowNewFolderButton = true, UseDescriptionForTitle = true })
 			{
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					Directory.CreateDirectory(dlg.FileName);
-					string dir = Path.Combine(Path.GetDirectoryName(dlg.FileName), Path.GetFileName(dlg.FileName));
 					FontINI ini = new FontINI();
 					ini.chars = new List<FontCharacter>();
 					for (int i = 0; i < (files.Count) / 256 + Math.Min(1 * (files.Count) % 256, 1); i++)
@@ -152,16 +172,12 @@ namespace SADXFontEdit
 								canvas.DrawImage(files[256 * i + u].bits.ToBitmap(), new Rectangle(24 * (u % 16), 24 * (u / 16), 24, 24), new Rectangle(0, 0, 24, 24), GraphicsUnit.Pixel);
 								canvas.Save();
 							}
-							bitmap.Save(System.IO.Path.Combine(dir, "fontsheet" + i.ToString() + ".png"));
+							bitmap.Save(System.IO.Path.Combine(dlg.SelectedPath, "fontsheet" + i.ToString() + ".png"));
 						}
 					}
-					IniSerializer.Serialize(ini, System.IO.Path.Combine(dir, "fontdata.txt"));
+					IniSerializer.Serialize(ini, System.IO.Path.Combine(dlg.SelectedPath, "fontdata.txt"));
 				}
 			}
-		}
-		private void TilePicture_Paint(object sender, PaintEventArgs e)
-		{
-			DrawTile();
 		}
 
 		private void TilePicture_MouseDown(object sender, MouseEventArgs e)
@@ -171,9 +187,18 @@ namespace SADXFontEdit
 				{
 					int x = e.X / (int)trackBar1.Value;
 					int y = e.Y / (int)trackBar1.Value;
-					files[listBox1.SelectedIndex].bits[x, y] = e.Button == MouseButtons.Left;
+					BitmapBits bits = files[listBox1.SelectedIndex].bits;
+					if (bits is BitmapBits1bpp bits1)
+					{
+						bits1[x, y] = e.Button == MouseButtons.Left;
+					}
+					else if (bits is BitmapBits32bpp bits32)
+					{
+						bits32[x, y] = e.Button == MouseButtons.Left ? pictureBoxFontColor.BackColor : Color.Transparent;
+					}
 					lastpoint = new Point(x, y);
 					DrawTile();
+					characterTileControl1.Invalidate();
 				}
 		}
 
@@ -187,40 +212,52 @@ namespace SADXFontEdit
 					x = Math.Min(Math.Max(x, 0), 23);
 					int y = e.Y / (int)trackBar1.Value;
 					y = Math.Min(Math.Max(y, 0), 23);
-					files[listBox1.SelectedIndex].bits.DrawLine(e.Button == MouseButtons.Left, lastpoint, new Point(x, y));
-					files[listBox1.SelectedIndex].bits[x, y] = e.Button == MouseButtons.Left;
+					BitmapBits bits = files[listBox1.SelectedIndex].bits;
+					if (bits is BitmapBits1bpp bits1)
+					{
+						bits1.DrawLine(e.Button == MouseButtons.Left, lastpoint, new Point(x, y));
+						bits1[x, y] = e.Button == MouseButtons.Left;
+					}
+					else if (bits is BitmapBits32bpp bits32)
+					{
+						bits32.DrawLine(e.Button == MouseButtons.Left ? pictureBoxFontColor.BackColor : Color.Transparent, lastpoint, new Point(x, y));
+						bits32[x, y] = e.Button == MouseButtons.Left ? pictureBoxFontColor.BackColor : Color.Transparent;
+					}
 					lastpoint = new Point(x, y);
 					DrawTile();
+					characterTileControl1.Invalidate();
 				}
 		}
 
-		private Graphics tileGfx;
 		private void DrawTile()
 		{
-			if (listBox1.SelectedIndex > -1)
-			{
-				tileGfx.DrawImage(files[listBox1.SelectedIndex].bits.Scale((int)trackBar1.Value).ToBitmap(pal), 0, 0, 24 * (int)trackBar1.Value, 24 * (int)trackBar1.Value);
-			}
+			if (listBox1.SelectedIndex == -1)
+				characterTileControl1.Clear = true;
 			else
-				tileGfx.Clear(Color.Black);
-		}
-
-		private void TilePicture_Resize(object sender, EventArgs e)
-		{
-			tileGfx = TilePicture.CreateGraphics();
-			tileGfx.SetOptions();
+			{
+				BitmapBits bits = files[listBox1.SelectedIndex].bits;
+				characterTileControl1.Bits = bits;
+				characterTileControl1.Palette = pal;
+				characterTileControl1.Clear = false;
+				characterTileControl1.ImgScale = trackBar1.Value;
+				characterTileControl1.Clear = false;
+			}
 		}
 
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			buttonExportCharacter.Enabled = buttonImportCharacter.Enabled = listBox1.SelectedIndex != -1;
 			DrawTile();
+			characterTileControl1.Invalidate();
 		}
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			TilePicture.Size = new Size(24 * (int)trackBar1.Value, 24 * (int)trackBar1.Value);
+			characterTileControl1.Size = new Size(24 * (int)trackBar1.Value, 24 * (int)trackBar1.Value);
 			DrawTile();
+			characterTileControl1.Invalidate();
 		}
+
 		static void FromShort(ushort number, out byte byte1, out byte byte2)
 		{
 			byte2 = (byte)(number >> 8);
@@ -276,14 +313,15 @@ namespace SADXFontEdit
 								canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 								canvas.DrawImage(sheetbmp, new Rectangle(0, 0, 24, 24), new Rectangle((u % 16) * 24, (u / 16) * 24, 24, 24), GraphicsUnit.Pixel);
 								canvas.Save();
-								item.bits = new BitmapBits(charbmp.Clone(new Rectangle(0, 0, 24, 24), PixelFormat.Format1bppIndexed));
-								item.ID = ushort.Parse(ini.chars[i*256+u].id, System.Globalization.NumberStyles.HexNumber);
+								item.bits = new BitmapBits1bpp(charbmp.Clone(new Rectangle(0, 0, 24, 24), PixelFormat.Format1bppIndexed));
+								item.ID = ushort.Parse(ini.chars[i * 256 + u].id, System.Globalization.NumberStyles.HexNumber);
 								item.miscdata = StrToByteArray(ini.chars[i * 256 + u].md);
 								item.character = ini.chars[i * 256 + u].ch;
 								files.Add(item);
 							}
 						}
-						
+						sheetbmp.Dispose();
+
 					}
 					for (int z = 0; z < files.Count; z++)
 					{
@@ -291,7 +329,7 @@ namespace SADXFontEdit
 					}
 					listBox1.EndUpdate();
 					listBox1.SelectedIndex = 0;
-					Text = "SADXFontEdit - " + a.FileName + " / Total characters: " + files.Count.ToString();
+					Text = "SAFontEdit - " + a.FileName + " / Total characters: " + files.Count.ToString();
 					extractAllToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = exportIndividualCharactersToolStripMenuItem.Enabled = true;
 				}
 			}
@@ -299,15 +337,16 @@ namespace SADXFontEdit
 
 		private void exportIndividualCharactersToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "", Filter = "", FileName = "font" })
+			using (FolderBrowserDialog dlg = new FolderBrowserDialog() { Description = "Select the folder to export font files", ShowNewFolderButton = true, UseDescriptionForTitle = true })
 			{
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 				{
-					Directory.CreateDirectory(dlg.FileName);
-					string dir = Path.Combine(Path.GetDirectoryName(dlg.FileName), Path.GetFileName(dlg.FileName));
 					foreach (FontItem item in files)
 					{
-						item.bits.ToBitmap(pal).Save(System.IO.Path.Combine(dir, item.ID.ToString("X4") + ".png"));
+						if (item.bits is BitmapBits1bpp bits1)
+							bits1.ToBitmap(pal).Save(System.IO.Path.Combine(dlg.SelectedPath, item.ID.ToString("X4") + ".png"));
+						else
+							item.bits.ToBitmap().Save(System.IO.Path.Combine(dlg.SelectedPath, item.ID.ToString("X4") + ".png"));
 					}
 				}
 			}
@@ -340,9 +379,149 @@ namespace SADXFontEdit
 			{
 				List<byte> file = new List<byte>();
 				foreach (FontItem item in files)
-					file.AddRange(item.bits.GetBytes(true));
+				{
+					if (item.bits is BitmapBits32bpp bitmapBits1)
+					{
+						item.bits = new BitmapBits1bpp(bitmapBits1.ToBitmap());
+						file.AddRange(item.bits.GetBytes(true));
+					}
+					else
+						file.AddRange(item.bits.GetBytes(false));
+				}
 				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
 			}
+		}
+
+		private void simpleFormatFile32bppToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog a = new SaveFileDialog()
+			{
+				DefaultExt = "bin",
+				Filter = "BIN Files|*.bin|All Files|*.*"
+			};
+			if (a.ShowDialog() == DialogResult.OK)
+			{
+				List<byte> file = new List<byte>();
+				foreach (FontItem item in files)
+				{
+					if (item.bits is BitmapBits1bpp bitmapBits1)
+					{
+						item.bits = new BitmapBits32bpp(bitmapBits1.ToBitmap());
+						file.AddRange(item.bits.GetBytes(false));
+					}
+					else
+						file.AddRange(item.bits.GetBytes(true));
+				}
+				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
+			}
+		}
+
+		private void pictureBoxFontColor_Click(object sender, EventArgs e)
+		{
+			using (ColorDialog dlg = new ColorDialog { FullOpen = true, AnyColor = true, Color = pictureBoxFontColor.BackColor })
+			{
+				if (dlg.ShowDialog(Owner) == DialogResult.OK)
+				{
+					numericUpDownRed.Value = dlg.Color.R;
+					numericUpDownGreen.Value = dlg.Color.G;
+					numericUpDownBlue.Value = dlg.Color.B;
+					pictureBoxFontColor.BackColor = Color.FromArgb((int)numericUpDownAlpha.Value, (int)numericUpDownRed.Value, (int)numericUpDownGreen.Value, (int)numericUpDownBlue.Value);
+				}
+			}
+		}
+
+		private void numericUpDownAlpha_ValueChanged(object sender, EventArgs e)
+		{
+			pictureBoxFontColor.BackColor = Color.FromArgb((int)numericUpDownAlpha.Value, (int)numericUpDownRed.Value, (int)numericUpDownGreen.Value, (int)numericUpDownBlue.Value);
+		}
+
+		private void buttonImportCharacter_Click(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedIndex == -1)
+				return;
+			FontItem item = files[listBox1.SelectedIndex];
+			using (OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "png", Filter = "PNG Files|*.png", FileName = item.ID.ToString("X4") + ".png" })
+			{
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					Bitmap bmp = new Bitmap(dlg.FileName);
+					if (item.bits is BitmapBits1bpp)
+						item.bits = new BitmapBits1bpp(bmp);
+					else if (item.bits is BitmapBits32bpp)
+						item.bits = new BitmapBits32bpp(bmp);
+					DrawTile();
+					characterTileControl1.Invalidate();
+					bmp.Dispose();
+				}
+			}
+		}
+
+		private void buttonExportCharacter_Click(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedIndex == -1)
+				return;
+			FontItem item = files[listBox1.SelectedIndex];
+			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "png", Filter = "PNG Files|*.png", FileName = item.ID.ToString("X4") + ".png" })
+			{
+				if (dlg.ShowDialog(this) == DialogResult.OK)
+				{
+					{
+						if (item.bits is BitmapBits1bpp bits1)
+							bits1.ToBitmap(pal).Save(dlg.FileName);
+						else
+							item.bits.ToBitmap().Save(dlg.FileName);
+					}
+				}
+			}
+		}
+
+		private void toolStripTextBox1_Click(object sender, EventArgs e)
+		{
+			toolStripTextBox1.Text = "";
+			toolStripTextBox1.ForeColor = Color.Black;
+		}
+
+		private void toolStripMenuItemSearch_Click(object sender, EventArgs e)
+		{
+			bool found = false;
+			int start = Math.Max(0, listBox1.SelectedIndex);
+		search:
+			for (int i = start; i < listBox1.Items.Count; i++)
+			{
+				FontItem item = files[i];
+				if (item.ID.ToString("X4").ToLowerInvariant() == toolStripTextBox1.Text.ToLowerInvariant() || item.character.Substring(0, 1) == toolStripTextBox1.Text.Substring(0, 1))
+				{
+					listBox1.SelectedIndex = i;
+					found = true;
+				}
+			}
+			if (!found)
+			{
+				if (start != 0)
+				{
+					start = 0;
+					goto search;
+				}
+				else
+					MessageBox.Show(this, "Item not found.", "SAFontEdit", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+			}
+
+		}
+
+		private void toolStripTextBox1_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == 13)
+				toolStripMenuItemSearch_Click(sender, e);
+		}
+
+		private void sAFontEditGuideToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + "https://github.com/X-Hax/sa_tools/wiki/SAFontEdit") { CreateNoWindow = false });
+		}
+
+		private void bugReportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + "https://github.com/X-Hax/sa_tools/issues/new/choose") { CreateNoWindow = false });
 		}
 	}
 
@@ -357,20 +536,23 @@ namespace SADXFontEdit
         {
         }
 
-        public FontItem(byte[] file, int address, bool oldformat, ushort index)
+        public FontItem(byte[] file, int address, bool oldformat, ushort index, bool argb)
         {
 			if (!oldformat)
 			{
 				ID = BitConverter.ToUInt16(file, address);
 				miscdata = new byte[0xE];
 				Array.Copy(file, address + 2, miscdata, 0, miscdata.Length);
-				bits = new BitmapBits(file, address + 0x10, false);
+					bits = new BitmapBits1bpp(file, address + 0x10, false);
 			}
 			else
 			{
 				ID = index;
 				miscdata = new byte[0xE];
-				bits = new BitmapBits(file, address, true);
+				if (argb)
+					bits = new BitmapBits32bpp(file, address, false);
+				else
+					bits = new BitmapBits1bpp(file, address, true);
 			}
         }
 

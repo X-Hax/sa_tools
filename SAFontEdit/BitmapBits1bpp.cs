@@ -3,24 +3,15 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace SADXFontEdit
+namespace SAFontEdit
 {
     /// <summary>
     /// Represents the pixel data of a 1bpp Bitmap.
     /// </summary>
-    public class BitmapBits
-    {
+    public class BitmapBits1bpp : BitmapBits
+	{
         public bool[] Bits { get; private set; }
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public Size Size
-        {
-            get
-            {
-                return new Size(Width, Height);
-            }
-        }
-
+      
         public bool this[int x, int y]
         {
             get
@@ -33,18 +24,33 @@ namespace SADXFontEdit
             }
         }
 
-        public BitmapBits(int width, int height)
+        public BitmapBits1bpp(int width, int height)
         {
             Width = width;
             Height = height;
             Bits = new bool[width * height];
         }
 
-        public BitmapBits(Bitmap bmp)
+        public BitmapBits1bpp(Bitmap bitmap)
         {
-            if (bmp.PixelFormat != PixelFormat.Format1bppIndexed)
-                throw new ArgumentException();
-            BitmapData bmpd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, bmp.PixelFormat);
+			Bitmap bmp;
+			if (bitmap.PixelFormat != PixelFormat.Format1bppIndexed)
+			{
+				Bitmap original = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
+				for (int y = 0; y < bitmap.Height; y++)
+				{
+					for (int x = 0; x < bitmap.Width; x++)
+						if (bitmap.GetPixel(x, y).A != 0 && bitmap.GetPixel(x, y).R != 0 && bitmap.GetPixel(x, y).G != 0 && bitmap.GetPixel(x, y).B != 0)
+							original.SetPixel(x, y, Color.White);
+						else
+							original.SetPixel(x, y, Color.Black);
+				}
+				var rectangle = new Rectangle(0, 0, original.Width, original.Height);
+				bmp = original.Clone(rectangle, PixelFormat.Format1bppIndexed);
+			}
+			else
+				bmp = bitmap;
+			BitmapData bmpd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, bmp.PixelFormat);
             Width = bmpd.Width;
             Height = bmpd.Height;
             byte[] tmpbits = new byte[Math.Abs(bmpd.Stride) * bmpd.Height];
@@ -66,9 +72,10 @@ namespace SADXFontEdit
                 }
             }
             bmp.UnlockBits(bmpd);
+			bitmap.Dispose();
         }
 
-        public BitmapBits(BitmapBits source)
+        public BitmapBits1bpp(BitmapBits1bpp source)
         {
             Width = source.Width;
             Height = source.Height;
@@ -76,7 +83,7 @@ namespace SADXFontEdit
             Array.Copy(source.Bits, Bits, Bits.Length);
         }
 
-        public BitmapBits(byte[] file, int address, bool reverse)
+        public BitmapBits1bpp(byte[] file, int address, bool reverse)
         {
             Width = Height = 24;
             Bits = new bool[24 * 24];
@@ -111,7 +118,7 @@ namespace SADXFontEdit
             }
         }
 
-        public Bitmap ToBitmap()
+        public override Bitmap ToBitmap()
         {
             Bitmap newbmp = new Bitmap(Width, Height, PixelFormat.Format1bppIndexed);
             BitmapData newbmpd = newbmp.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.WriteOnly, PixelFormat.Format1bppIndexed);
@@ -144,7 +151,7 @@ namespace SADXFontEdit
             return newbmp;
         }
 
-        public Bitmap ToBitmap(params Color[] palette)
+        public Bitmap ToBitmap(Color[] palette)
         {
             Bitmap newbmp = ToBitmap();
             ColorPalette pal = newbmp.Palette;
@@ -154,7 +161,7 @@ namespace SADXFontEdit
             return newbmp;
         }
 
-        public byte[] GetBytes(bool invert)
+        public override byte[] GetBytes(bool invert)
         {
             byte[] bmpbits = new byte[3 * 24];
             for (int y = 0; y < Height; y++)
@@ -194,7 +201,7 @@ namespace SADXFontEdit
             return bmpbits;
         }
 
-        public void DrawBitmap(BitmapBits source, Point location)
+        public void DrawBitmap(BitmapBits1bpp source, Point location)
         {
             int dstx = location.X; int dsty = location.Y;
             for (int i = 0; i < source.Height; i++)
@@ -205,7 +212,7 @@ namespace SADXFontEdit
             }
         }
 
-        public void DrawBitmapComposited(BitmapBits source, Point location)
+        public void DrawBitmapComposited(BitmapBits1bpp source, Point location)
         {
             int srcl = 0;
             if (location.X < 0)
@@ -298,9 +305,9 @@ namespace SADXFontEdit
             }
         }
 
-        public BitmapBits Scale(int factor)
+        public BitmapBits1bpp Scale(int factor)
         {
-            BitmapBits res = new BitmapBits(Width * factor, Height * factor);
+            BitmapBits1bpp res = new BitmapBits1bpp(Width * factor, Height * factor);
             for (int y = 0; y < res.Height; y++)
                 for (int x = 0; x < res.Width; x++)
                     res[x, y] = this[(x / factor), (y / factor)];
@@ -392,7 +399,7 @@ namespace SADXFontEdit
         public override bool Equals(object obj)
         {
             if (base.Equals(obj)) return true;
-            BitmapBits other = obj as BitmapBits;
+            BitmapBits1bpp other = obj as BitmapBits1bpp;
             if (other == null) return false;
             if (Width != other.Width | Height != other.Height) return false;
             for (int y = 0; y < Height; y++)

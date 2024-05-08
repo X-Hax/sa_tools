@@ -7,17 +7,31 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<ApplicationIcon>sadxfontedit.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
 		<Platforms>x64;x86</Platforms>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="sadxfontedit.ico" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>

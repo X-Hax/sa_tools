@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SADXFontEdit.Properties {
+namespace SAFontEdit.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
