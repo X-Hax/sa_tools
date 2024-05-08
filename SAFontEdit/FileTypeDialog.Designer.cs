@@ -32,6 +32,7 @@
 			radioButtonJapanese = new System.Windows.Forms.RadioButton();
 			radioButtonCustomCodepage = new System.Windows.Forms.RadioButton();
 			groupBoxCodepage = new System.Windows.Forms.GroupBox();
+			radioButtonAnsiTrim = new System.Windows.Forms.RadioButton();
 			radioButtonKanjiSOC = new System.Windows.Forms.RadioButton();
 			radioButtonKanji = new System.Windows.Forms.RadioButton();
 			radioButtonCustomCharmap = new System.Windows.Forms.RadioButton();
@@ -56,12 +57,11 @@
 			radioButtonWestern.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			radioButtonWestern.Name = "radioButtonWestern";
 			radioButtonWestern.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
-			radioButtonWestern.Size = new System.Drawing.Size(143, 23);
+			radioButtonWestern.Size = new System.Drawing.Size(83, 23);
 			radioButtonWestern.TabIndex = 0;
 			radioButtonWestern.TabStop = true;
-			radioButtonWestern.Text = "Western Europe (1252)";
+			radioButtonWestern.Text = "Ansi (1252)";
 			radioButtonWestern.UseVisualStyleBackColor = true;
-			radioButtonWestern.CheckedChanged += radioButton_1252_CheckedChanged;
 			// 
 			// radioButtonJapanese
 			// 
@@ -71,10 +71,9 @@
 			radioButtonJapanese.Name = "radioButtonJapanese";
 			radioButtonJapanese.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
 			radioButtonJapanese.Size = new System.Drawing.Size(108, 23);
-			radioButtonJapanese.TabIndex = 1;
+			radioButtonJapanese.TabIndex = 2;
 			radioButtonJapanese.Text = "Shift-JIS (50220)";
 			radioButtonJapanese.UseVisualStyleBackColor = true;
-			radioButtonJapanese.CheckedChanged += radioButton_J2022_CheckedChanged;
 			// 
 			// radioButtonCustomCodepage
 			// 
@@ -84,13 +83,14 @@
 			radioButtonCustomCodepage.Name = "radioButtonCustomCodepage";
 			radioButtonCustomCodepage.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
 			radioButtonCustomCodepage.Size = new System.Drawing.Size(82, 23);
-			radioButtonCustomCodepage.TabIndex = 5;
+			radioButtonCustomCodepage.TabIndex = 6;
 			radioButtonCustomCodepage.Text = "Codepage:";
 			radioButtonCustomCodepage.UseVisualStyleBackColor = true;
 			radioButtonCustomCodepage.CheckedChanged += radioButton_Custom_CheckedChanged;
 			// 
 			// groupBoxCodepage
 			// 
+			groupBoxCodepage.Controls.Add(radioButtonAnsiTrim);
 			groupBoxCodepage.Controls.Add(radioButtonKanjiSOC);
 			groupBoxCodepage.Controls.Add(radioButtonKanji);
 			groupBoxCodepage.Controls.Add(radioButtonCustomCharmap);
@@ -109,17 +109,27 @@
 			groupBoxCodepage.TabStop = false;
 			groupBoxCodepage.Text = "Character Map";
 			// 
+			// radioButtonAnsiTrim
+			// 
+			radioButtonAnsiTrim.AutoSize = true;
+			radioButtonAnsiTrim.Location = new System.Drawing.Point(130, 20);
+			radioButtonAnsiTrim.Name = "radioButtonAnsiTrim";
+			radioButtonAnsiTrim.Size = new System.Drawing.Size(99, 19);
+			radioButtonAnsiTrim.TabIndex = 1;
+			radioButtonAnsiTrim.TabStop = true;
+			radioButtonAnsiTrim.Text = "1252 Trimmed";
+			radioButtonAnsiTrim.UseVisualStyleBackColor = true;
+			// 
 			// radioButtonKanjiSOC
 			// 
 			radioButtonKanjiSOC.AutoSize = true;
 			radioButtonKanjiSOC.Location = new System.Drawing.Point(130, 81);
 			radioButtonKanjiSOC.Name = "radioButtonKanjiSOC";
 			radioButtonKanjiSOC.Size = new System.Drawing.Size(112, 19);
-			radioButtonKanjiSOC.TabIndex = 3;
+			radioButtonKanjiSOC.TabIndex = 4;
 			radioButtonKanjiSOC.TabStop = true;
 			radioButtonKanjiSOC.Text = "Kanji Font (SOC)";
 			radioButtonKanjiSOC.UseVisualStyleBackColor = true;
-			radioButtonKanjiSOC.CheckedChanged += radioButtonKanjiSOC_CheckedChanged;
 			// 
 			// radioButtonKanji
 			// 
@@ -128,11 +138,10 @@
 			radioButtonKanji.Name = "radioButtonKanji";
 			radioButtonKanji.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
 			radioButtonKanji.Size = new System.Drawing.Size(108, 23);
-			radioButtonKanji.TabIndex = 2;
+			radioButtonKanji.TabIndex = 3;
 			radioButtonKanji.TabStop = true;
 			radioButtonKanji.Text = "Kanji Font (Old)";
 			radioButtonKanji.UseVisualStyleBackColor = true;
-			radioButtonKanji.CheckedChanged += radioButtonKanji_CheckedChanged;
 			// 
 			// radioButtonCustomCharmap
 			// 
@@ -141,7 +150,7 @@
 			radioButtonCustomCharmap.Name = "radioButtonCustomCharmap";
 			radioButtonCustomCharmap.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
 			radioButtonCustomCharmap.Size = new System.Drawing.Size(67, 23);
-			radioButtonCustomCharmap.TabIndex = 7;
+			radioButtonCustomCharmap.TabIndex = 8;
 			radioButtonCustomCharmap.TabStop = true;
 			radioButtonCustomCharmap.Text = "Custom";
 			radioButtonCustomCharmap.UseVisualStyleBackColor = true;
@@ -153,7 +162,7 @@
 			buttonLoadCharMap.Margin = new System.Windows.Forms.Padding(2);
 			buttonLoadCharMap.Name = "buttonLoadCharMap";
 			buttonLoadCharMap.Size = new System.Drawing.Size(68, 24);
-			buttonLoadCharMap.TabIndex = 8;
+			buttonLoadCharMap.TabIndex = 9;
 			buttonLoadCharMap.Text = "Load...";
 			buttonLoadCharMap.UseVisualStyleBackColor = true;
 			buttonLoadCharMap.Click += buttonLoadCharMap_Click;
@@ -166,7 +175,7 @@
 			numericUpDownCodepage.Maximum = new decimal(new int[] { 99000, 0, 0, 0 });
 			numericUpDownCodepage.Name = "numericUpDownCodepage";
 			numericUpDownCodepage.Size = new System.Drawing.Size(68, 23);
-			numericUpDownCodepage.TabIndex = 6;
+			numericUpDownCodepage.TabIndex = 7;
 			numericUpDownCodepage.Value = new decimal(new int[] { 1252, 0, 0, 0 });
 			// 
 			// radioButtonUnicode
@@ -177,10 +186,9 @@
 			radioButtonUnicode.Name = "radioButtonUnicode";
 			radioButtonUnicode.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
 			radioButtonUnicode.Size = new System.Drawing.Size(104, 23);
-			radioButtonUnicode.TabIndex = 4;
+			radioButtonUnicode.TabIndex = 5;
 			radioButtonUnicode.Text = "Unicode (1200)";
 			radioButtonUnicode.UseVisualStyleBackColor = true;
-			radioButtonUnicode.CheckedChanged += radioButton_Unicode_CheckedChanged;
 			// 
 			// radioButtonSimple1Bit
 			// 
@@ -221,14 +229,13 @@
 			// radioButtonSimple32Bit
 			// 
 			radioButtonSimple32Bit.AutoSize = true;
-			radioButtonSimple32Bit.Location = new System.Drawing.Point(115, 49);
+			radioButtonSimple32Bit.Location = new System.Drawing.Point(130, 49);
 			radioButtonSimple32Bit.Name = "radioButtonSimple32Bit";
 			radioButtonSimple32Bit.Size = new System.Drawing.Size(97, 19);
 			radioButtonSimple32Bit.TabIndex = 2;
 			radioButtonSimple32Bit.TabStop = true;
 			radioButtonSimple32Bit.Text = "Simple 32bpp";
 			radioButtonSimple32Bit.UseVisualStyleBackColor = true;
-			radioButtonSimple32Bit.CheckedChanged += radioButtonSimple32Bit_CheckedChanged;
 			// 
 			// groupBoxDataFormat
 			// 
@@ -252,12 +259,14 @@
 			Controls.Add(buttonOK);
 			Controls.Add(groupBoxCodepage);
 			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			HelpButton = true;
 			Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "FileTypeDialog";
 			StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			Text = "Open";
+			HelpButtonClicked += FileTypeDialog_HelpButtonClicked;
 			groupBoxCodepage.ResumeLayout(false);
 			groupBoxCodepage.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownCodepage).EndInit();
@@ -283,5 +292,6 @@
 		private System.Windows.Forms.GroupBox groupBoxDataFormat;
 		private System.Windows.Forms.RadioButton radioButtonKanji;
 		private System.Windows.Forms.RadioButton radioButtonKanjiSOC;
+		private System.Windows.Forms.RadioButton radioButtonAnsiTrim;
 	}
 }

@@ -61,6 +61,7 @@ namespace SAFontEdit
 						oldformat = false;
 					}
 					argb = ftd.argb;
+					bool socansi = ftd.ansiTrimmed;
 					if (argb)
 						itemlength = 2304;
 					filename = filename_a;
@@ -99,8 +100,9 @@ namespace SAFontEdit
 							else if (ftd.codepage == 1252)
 							{
 								origtext = new byte[2];
-								origtext[0] = (byte)(files[i].ID >> 0);
-								origtext[1] = (byte)(files[i].ID >> 8);
+								ushort id_final = (ushort)(files[i].ID + (socansi ? 32 : 0));
+								origtext[0] = (byte)(id_final >> 0);
+								origtext[1] = (byte)(id_final >> 8);
 								if (files[i].ID <= 255)
 									utf16String = Encoding.GetEncoding(1252).GetString(origtext);
 								else
