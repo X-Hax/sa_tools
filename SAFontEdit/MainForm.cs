@@ -412,7 +412,7 @@ namespace SAFontEdit
 						file.AddRange(item.bits.GetBytes(false));
 					}
 					else
-						file.AddRange(item.bits.GetBytes(true));
+						file.AddRange(item.bits.GetBytes(false));
 				}
 				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
 			}
