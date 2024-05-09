@@ -193,7 +193,7 @@
 			// radioButtonSimple1Bit
 			// 
 			radioButtonSimple1Bit.AutoSize = true;
-			radioButtonSimple1Bit.Location = new System.Drawing.Point(6, 49);
+			radioButtonSimple1Bit.Location = new System.Drawing.Point(6, 22);
 			radioButtonSimple1Bit.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			radioButtonSimple1Bit.Name = "radioButtonSimple1Bit";
 			radioButtonSimple1Bit.Size = new System.Drawing.Size(91, 19);
@@ -205,11 +205,11 @@
 			// 
 			radioButtonFontdata.AutoSize = true;
 			radioButtonFontdata.Checked = true;
-			radioButtonFontdata.Location = new System.Drawing.Point(6, 23);
+			radioButtonFontdata.Location = new System.Drawing.Point(6, 49);
 			radioButtonFontdata.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			radioButtonFontdata.Name = "radioButtonFontdata";
 			radioButtonFontdata.Size = new System.Drawing.Size(139, 19);
-			radioButtonFontdata.TabIndex = 1;
+			radioButtonFontdata.TabIndex = 2;
 			radioButtonFontdata.TabStop = true;
 			radioButtonFontdata.Text = "SADX2004 FONTDATA";
 			radioButtonFontdata.UseVisualStyleBackColor = true;
@@ -229,10 +229,10 @@
 			// radioButtonSimple32Bit
 			// 
 			radioButtonSimple32Bit.AutoSize = true;
-			radioButtonSimple32Bit.Location = new System.Drawing.Point(130, 49);
+			radioButtonSimple32Bit.Location = new System.Drawing.Point(130, 22);
 			radioButtonSimple32Bit.Name = "radioButtonSimple32Bit";
 			radioButtonSimple32Bit.Size = new System.Drawing.Size(97, 19);
-			radioButtonSimple32Bit.TabIndex = 2;
+			radioButtonSimple32Bit.TabIndex = 1;
 			radioButtonSimple32Bit.TabStop = true;
 			radioButtonSimple32Bit.Text = "Simple 32bpp";
 			radioButtonSimple32Bit.UseVisualStyleBackColor = true;
