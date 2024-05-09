@@ -388,7 +388,7 @@ namespace SAFontEdit
 						file.AddRange(item.bits.GetBytes(true));
 					}
 					else
-						file.AddRange(item.bits.GetBytes(false));
+						file.AddRange(item.bits.GetBytes(true));
 				}
 				System.IO.File.WriteAllBytes(a.FileName, file.ToArray());
 			}
