@@ -19,37 +19,26 @@ namespace SAFontEdit
 		public FileTypeDialog(string filename)
 		{
 			InitializeComponent();
-			if (Path.GetFileName(filename).Length > 8 && Path.GetFileName(filename).Substring(0, 8).ToLowerInvariant() == "fontdata")
-			{
-				radioButtonFontdata.Checked = true;
-				if (Path.GetFileName(filename).Substring(8, 1).ToLowerInvariant() == "0")
-					radioButtonJapanese.Checked = true;
-				else
-					radioButtonWestern.Checked = true;
-			}
-			else
-			{
-				radioButtonSimple1Bit.Checked = true;
-			}
+			GuessData(filename);
 		}
 
 		private void buttonOK_Click(object sender, EventArgs e)
 		{
 			argb = radioButtonSimple32Bit.Checked;
 			fontdata = radioButtonFontdata.Checked;
-			codepage = (int)numericUpDownCodepage.Value;
 			ansiTrimmed = radioButtonAnsiTrim.Checked;
 			charmap = radioButtonKanji.Checked || radioButtonKanjiSOC.Checked || radioButtonCustomCharmap.Checked;
 			if (radioButtonKanji.Checked)
 				customstring = KanjiFont;
-			else if (radioButtonKanjiSOC.Checked)
+			if (radioButtonKanjiSOC.Checked)
 				customstring = KanjiFontSOC;
 			if (radioButtonWestern.Checked || radioButtonAnsiTrim.Checked)
 				numericUpDownCodepage.Value = 1252;
-			else if (radioButtonJapanese.Checked)
+			if (radioButtonJapanese.Checked)
 				numericUpDownCodepage.Value = 50220;
-			else if (radioButtonUnicode.Checked)
+			if (radioButtonUnicode.Checked)
 				numericUpDownCodepage.Value = 1200;
+			codepage = (int)numericUpDownCodepage.Value;
 		}
 
 		private void buttonLoadCharMap_Click(object sender, EventArgs e)
@@ -80,6 +69,152 @@ namespace SAFontEdit
 		private void FileTypeDialog_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start " + "https://github.com/X-Hax/sa_tools/wiki/SAFontEdit#supported-files") { CreateNoWindow = false });
+		}
+
+		private void GuessData(string filename)
+		{
+			string fname = Path.GetFileName(filename).ToUpperInvariant();
+			switch (fname)
+			{
+				case "SOC_FONTDATA0.BIN":
+					// Data layout
+					radioButtonFontdata.Checked = false;
+					radioButtonSimple1Bit.Checked = false;
+					radioButtonSimple32Bit.Checked = true;
+					// Character map
+					radioButtonWestern.Checked = false;
+					radioButtonAnsiTrim.Checked = false;
+					radioButtonJapanese.Checked = false;
+					radioButtonKanji.Checked = false;
+					radioButtonKanjiSOC.Checked = true;
+					radioButtonUnicode.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					break;
+				case "SOC_FONTDATA1.BIN":
+					// Data layout
+					radioButtonFontdata.Checked = false;
+					radioButtonSimple1Bit.Checked = false;
+					radioButtonSimple32Bit.Checked = true;
+					// Character map
+					radioButtonWestern.Checked = true;
+					radioButtonAnsiTrim.Checked = false;
+					radioButtonJapanese.Checked = false;
+					radioButtonKanji.Checked = false;
+					radioButtonKanjiSOC.Checked = false;
+					radioButtonUnicode.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					break;
+				case "FONTDATA0.BIN":
+					// Data layout
+					radioButtonFontdata.Checked = true;
+					radioButtonSimple1Bit.Checked = false;
+					radioButtonSimple32Bit.Checked = false;
+					// Character map
+					radioButtonWestern.Checked = false;
+					radioButtonAnsiTrim.Checked = false;
+					radioButtonKanji.Checked = false;
+					radioButtonKanjiSOC.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					// Korean
+					if (File.ReadAllBytes(filename).Length > 1800000)
+					{
+						radioButtonUnicode.Checked = true;
+						radioButtonJapanese.Checked = false;
+					}
+					else
+					{
+						radioButtonUnicode.Checked = false;
+						radioButtonJapanese.Checked = true;
+					}
+					break;
+				case "FONTDATA1.BIN":
+					// Data layout
+					radioButtonFontdata.Checked = true;
+					radioButtonSimple1Bit.Checked = false;
+					radioButtonSimple32Bit.Checked = false;
+					// Character map
+					radioButtonWestern.Checked = true;
+					radioButtonAnsiTrim.Checked = false;
+					radioButtonJapanese.Checked = false;
+					radioButtonKanji.Checked = false;
+					radioButtonKanjiSOC.Checked = false;
+					radioButtonUnicode.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					break;
+				case "EFMSGFONT_ASCII24E.BIN":
+					radioButtonFontdata.Checked = false;
+					// Character map
+					radioButtonAnsiTrim.Checked = true;
+					radioButtonWestern.Checked = false;
+					radioButtonJapanese.Checked = false;
+					radioButtonKanji.Checked = false;
+					radioButtonKanjiSOC.Checked = false;
+					radioButtonUnicode.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					// SA2 PC
+					if (File.ReadAllBytes(filename).Length > 100000)
+					{
+						radioButtonSimple1Bit.Checked = false;
+						radioButtonSimple32Bit.Checked = true;
+					}
+					else
+					{
+						radioButtonSimple1Bit.Checked = true;
+						radioButtonSimple32Bit.Checked = false;
+					}
+					break;
+				case "EFMSGFONT_ASCII24S.BIN":
+					radioButtonFontdata.Checked = false;
+					// Character map
+					radioButtonAnsiTrim.Checked = true;
+					radioButtonWestern.Checked = false;
+					radioButtonJapanese.Checked = false;
+					radioButtonKanji.Checked = false;
+					radioButtonKanjiSOC.Checked = false;
+					radioButtonUnicode.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					// SA2 PC
+					if (File.ReadAllBytes(filename).Length > 100000)
+					{
+						radioButtonSimple1Bit.Checked = false;
+						radioButtonSimple32Bit.Checked = true;
+					}
+					else
+					{
+						radioButtonSimple1Bit.Checked = true;
+						radioButtonSimple32Bit.Checked = false;
+					}
+					break;
+				case "EFMSGFONT_KANJI24.BIN":
+					radioButtonFontdata.Checked = false;
+					// Character map
+					radioButtonAnsiTrim.Checked = false;
+					radioButtonWestern.Checked = false;
+					radioButtonJapanese.Checked = false;
+					radioButtonKanji.Checked = true;
+					radioButtonKanjiSOC.Checked = false;
+					radioButtonUnicode.Checked = false;
+					radioButtonCustomCodepage.Checked = false;
+					radioButtonCustomCharmap.Checked = false;
+					// SA2 PC
+					if (File.ReadAllBytes(filename).Length > 400000)
+					{
+						radioButtonSimple1Bit.Checked = false;
+						radioButtonSimple32Bit.Checked = true;
+					}
+					else
+					{
+						radioButtonSimple1Bit.Checked = true;
+						radioButtonSimple32Bit.Checked = false;
+					}
+					break;
+			}
 		}
 	}
 }

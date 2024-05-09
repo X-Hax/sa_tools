@@ -57,10 +57,10 @@
 			radioButtonWestern.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			radioButtonWestern.Name = "radioButtonWestern";
 			radioButtonWestern.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
-			radioButtonWestern.Size = new System.Drawing.Size(83, 23);
+			radioButtonWestern.Size = new System.Drawing.Size(86, 23);
 			radioButtonWestern.TabIndex = 0;
 			radioButtonWestern.TabStop = true;
-			radioButtonWestern.Text = "Ansi (1252)";
+			radioButtonWestern.Text = "ANSI (1252)";
 			radioButtonWestern.UseVisualStyleBackColor = true;
 			// 
 			// radioButtonJapanese
