@@ -3,13 +3,14 @@
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
-		<OutputPath>..\..\build\tools\</OutputPath>
+		<OutputPath>..\build\tools\</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<DebugType>embedded</DebugType>
 		<Platforms>x64;x86</Platforms>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<ApplicationIcon>sadxfontedit.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
