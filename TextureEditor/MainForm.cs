@@ -137,15 +137,23 @@ namespace TextureEditor
 				switch (textures[listBox1.SelectedIndex])
 				{
 					case PakTextureInfo pak:
-						dataFormatLabel.Text = $"Data Format: {pak.DataFormat}";
+						TextureFunctions.TextureFileFormat fmt = TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData);
+						switch (fmt)
+						{
+							case TextureFunctions.TextureFileFormat.GVR:
+								dataFormatLabel.Text = $"GVR Data Format: {pak.DataFormat}";
+								break;
+							default:
+								dataFormatLabel.Text = $"File Format: {fmt.ToString()}";
+								break;
+						}
 						pixelFormatLabel.Text = $"Surface Flags: {pak.GetSurfaceFlags()}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
 						checkBoxPAKUseAlpha.Enabled = true;
 						checkBoxPAKUseAlpha.Show();
 						checkBoxPAKUseAlpha.Checked = pak.DataFormat == GvrDataFormat.Rgb5a3;
-						textureSizeLabel.Text = $"File Format: {TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData).ToString()}";
-						textureSizeLabel.Show();
+						textureSizeLabel.Hide();
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pak.Image.Width;
 						numericUpDownOrigSizeY.Value = pak.Image.Height;
@@ -409,9 +417,16 @@ namespace TextureEditor
 						Array.Copy(inf, i, pakentry, 0, 0x3C);
 						PAKInfEntry entry = new PAKInfEntry(pakentry);
 						// Load texture data
-						byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
-						MemoryStream str = new MemoryStream(dds);
-						newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+						try
+						{
+							byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+							MemoryStream str = new MemoryStream(dds);
+							newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show($"Could not add texture {entry.GetFilename() + ".dds"}");
+						}
 					}
 				}
 			}
