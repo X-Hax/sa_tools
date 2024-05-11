@@ -265,7 +265,7 @@ namespace TextureEditor
         {
             StringBuilder sb = new StringBuilder(0x1C);
             for (int j = 0; j < 0x1C; j++)
-                if (filename[j] != 0)
+                if (filename[j] != 0 && filename[j] != 0x20)
                     sb.Append((char)filename[j]);
                 else
                     break;
