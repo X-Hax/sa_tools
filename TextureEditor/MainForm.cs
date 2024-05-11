@@ -144,7 +144,8 @@ namespace TextureEditor
 						checkBoxPAKUseAlpha.Enabled = true;
 						checkBoxPAKUseAlpha.Show();
 						checkBoxPAKUseAlpha.Checked = pak.DataFormat == GvrDataFormat.Rgb5a3;
-						textureSizeLabel.Hide();
+						textureSizeLabel.Text = $"File Format: {TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData).ToString()}";
+						textureSizeLabel.Show();
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pak.Image.Width;
 						numericUpDownOrigSizeY.Value = pak.Image.Height;
