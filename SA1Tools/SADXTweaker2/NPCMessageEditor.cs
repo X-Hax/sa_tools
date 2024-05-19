@@ -18,7 +18,10 @@ namespace SADXTweaker2
 			set { NPCs[level.SelectedIndex].Value[language.SelectedIndex] = value; }
 		}
 		NPCText CurrentNPC { get { return CurrentList[npcID.SelectedIndex]; } }
-		NPCTextGroup CurrentGroup { get { return CurrentNPC.Groups[groupNum.SelectedIndex]; } }
+		NPCTextGroup CurrentGroup 
+		{ 
+			get  { return CurrentNPC.Groups[groupNum.SelectedIndex]; } 
+		}
 
 		public NPCMessageEditor()
 		{
@@ -56,7 +59,11 @@ namespace SADXTweaker2
 
 		private void level_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (level.SelectedIndex == -1) return;
+			if (level.SelectedIndex == -1) 
+				return;
+
+			lineNum.Items.Clear();
+			lineNum.SelectedIndex = -1;
 			npcID.Items.Clear();
 			if (CurrentList.Length > 0)
 			{
