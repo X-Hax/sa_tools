@@ -2422,9 +2422,9 @@ namespace SplitTools
 				hashes[l] = new string[list[l].Length];
 				for (int i = 0; i < list[l].Length; i++)
 				{
-					string scrname = Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo));
+					string scrname = Path.GetFullPath(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)));
 					Directory.CreateDirectory(scrname);
-					string textname = Path.Combine(scrname, ((Languages)l).ToString() + ".ini");
+					string textname = Path.GetFullPath(Path.Combine(scrname, ((Languages)l).ToString() + ".ini"));
 					IniSerializer.Serialize(list[l][i], textname);
 					hashes[l][i] = HelperFunctions.FileHash(textname);
 				}
