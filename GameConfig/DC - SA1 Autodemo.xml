@@ -5,6 +5,7 @@
   <SplitEntry SourceFile="STG00.PRS" IniFile="STG00" CmnName="Practice Stage" />
   <SplitEntry SourceFile="STG01.PRS" IniFile="STG01" CmnName="Emerald Coast" />
   <SplitEntry SourceFile="STG02.PRS" IniFile="STG02" CmnName="Windy Valley" />
+  <SplitEntry SourceFile="STG02.PRS" IniFile="STG02_texlists" CmnName="Windy Valley Texlists" />
   <SplitEntry SourceFile="STG03.PRS" IniFile="STG03" CmnName="Twinkle Park" />
   <SplitEntry SourceFile="STG04.PRS" IniFile="STG04" CmnName="Speed Highway" />
   <SplitEntry SourceFile="STG05.PRS" IniFile="STG05" CmnName="Red Mountain" />
