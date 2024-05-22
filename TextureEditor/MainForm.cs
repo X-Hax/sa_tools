@@ -2148,6 +2148,7 @@ namespace TextureEditor
 				if (info.CheckMipmap())
 				{
 					info.Mipmap = true;
+					info.TextureData = null;
 					if (info is PakTextureInfo pk)
 						pk.SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
 				}
