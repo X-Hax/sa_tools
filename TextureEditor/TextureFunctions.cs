@@ -93,7 +93,7 @@ namespace TextureEditor
 			return tlevels;
 		}
 
-		public static PvrDataFormat GetPvrDataFormatFromBitmap(Bitmap image, bool mipmap, bool includeIndexed)
+		public static PvrDataFormat GetPvrDataFormatFromBitmap(Bitmap image, bool mipmap, bool includeIndexed, PvrTextureCompression compression)
 		{
 			switch (image.PixelFormat)
 			{
@@ -109,10 +109,18 @@ namespace TextureEditor
 					break;
 			}
 			if (image.Width == image.Height)
-				if (mipmap)
-					return PvrDataFormat.SquareTwiddledMipmaps;
-				else
-					return PvrDataFormat.SquareTwiddled;
+			{
+				switch (compression)
+				{
+					case PvrTextureCompression.VQ:
+						return mipmap ? PvrDataFormat.VqMipmaps : PvrDataFormat.Vq;
+					case PvrTextureCompression.SmallVQ:
+						return mipmap ? PvrDataFormat.SmallVqMipmaps : PvrDataFormat.SmallVq;
+					case PvrTextureCompression.None:
+					default:
+						return mipmap ? PvrDataFormat.SquareTwiddledMipmaps : PvrDataFormat.SquareTwiddled;
+				}
+			}
 			else
 				return PvrDataFormat.Rectangle;
 		}

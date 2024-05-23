@@ -111,6 +111,7 @@ namespace TextureEditor
 			else
 				toolStripStatusLabel1.Text = textures.Count + " textures";
 			alphaSortingToolStripMenuItem.Enabled = currentFormat == TextureFormat.PAK;
+			compressTexturesToolStripMenuItem.Enabled = currentFormat == TextureFormat.PVM;
 		}
 
 		private void UpdateTextureInformation()
@@ -619,7 +620,7 @@ namespace TextureEditor
 			compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
 			usePNGInsteadOfDDSToolStripMenuItem.Checked = settingsfile.UsePNGforPAK;
 
-            System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
+			System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
 			toolTip.AutoPopDelay = 5000;
 			toolTip.InitialDelay = 1000;
 			toolTip.ReshowDelay = 500;
@@ -1501,7 +1502,7 @@ namespace TextureEditor
 							if (!TextureFunctions.CheckTextureDimensions(bmp.Width, bmp.Height))
 								return;
 							PvrPixelFormat pvrPixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(bmp);
-							PvrDataFormat pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false, true);
+							PvrDataFormat pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false, true, PvrTextureCompression.None);
 							if (pvrDataFormat == PvrDataFormat.Index4 || pvrDataFormat == PvrDataFormat.Index8 || pvrDataFormat == PvrDataFormat.Index4Mipmaps || pvrDataFormat == PvrDataFormat.Index8Mipmaps)
 							{
 								IndexedImageImportDialog idximp = new IndexedImageImportDialog(bmp, oldpvr, compatibleGVPToolStripMenuItem.Checked);
@@ -1510,7 +1511,7 @@ namespace TextureEditor
 								{
 									if (idximp.outFormat == PalettedTextureFormat.NotIndexed)
 									{
-										pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false, false);
+										pvrDataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(bmp, false, false, PvrTextureCompression.None);
 										Bitmap clone = new Bitmap(bmp.Width, bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
 										using (Graphics gr = Graphics.FromImage(clone))
 										{
@@ -1701,7 +1702,12 @@ namespace TextureEditor
 			if (tex.TextureData != null)
 				return TextureFunctions.UpdateGBIX(tex.TextureData, tex.GlobalIndex);
 			tex.PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
-			tex.DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap, true);
+			PvrTextureCompression compression = PvrTextureCompression.None;
+			if (tex.DataFormat == PvrDataFormat.Vq || tex.DataFormat == PvrDataFormat.VqMipmaps)
+				compression = PvrTextureCompression.VQ;
+			else if (tex.DataFormat == PvrDataFormat.SmallVq || tex.DataFormat == PvrDataFormat.SmallVqMipmaps)
+				compression = PvrTextureCompression.SmallVQ;
+			tex.DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap, true, compression);
 			PvrTextureEncoder encoder = new PvrTextureEncoder(tex.Image, tex.PixelFormat, tex.DataFormat);
 			encoder.GlobalIndex = tex.GlobalIndex;
 			MemoryStream pvr = new MemoryStream();
@@ -2400,10 +2406,10 @@ namespace TextureEditor
 				return;
 
 			DialogResult res = MessageBox.Show(this, "This will generate new GBIX for every texture, are you sure you wish to continue?", "Warning Gbix Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-			
+
 			if (res != DialogResult.Yes)
 			{
-				return; 
+				return;
 			}
 
 			Random random = new();
@@ -2418,6 +2424,28 @@ namespace TextureEditor
 			listBox1.SelectedIndex = -1;
 			listBox1.SelectedItem = null;
 			unsaved = true;
+		}
+
+		private void toolStripMenuVQ_Click(object sender, EventArgs e)
+		{
+			if (currentFormat != TextureFormat.PVM)
+				return;
+			foreach (PvrTextureInfo info in textures)
+			{
+				info.DataFormat = info.Mipmap ? PvrDataFormat.VqMipmaps : PvrDataFormat.Vq;
+				info.TextureData = null;
+			}
+		}
+
+		private void toolStripMenuItemSmallVq_Click(object sender, EventArgs e)
+		{
+			if (currentFormat != TextureFormat.PVM)
+				return;
+			foreach (PvrTextureInfo info in textures)
+			{
+				info.DataFormat = info.Mipmap ? PvrDataFormat.SmallVqMipmaps : PvrDataFormat.SmallVq;
+				info.TextureData = null;
+			}
 		}
 	}
 }
