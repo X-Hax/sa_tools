@@ -1,5 +1,7 @@
 ﻿using System;
 
+// Some code stolen from https://github.com/Shenmue-Mods/ShenmueDKSharp/blob/master/Files/Images/_PVRT/PvrDataCodec.cs
+
 namespace VrSharp.Pvr
 {
     public abstract class PvrDataCodec : VrDataCodec
@@ -133,7 +135,7 @@ namespace VrSharp.Pvr
         {
             public override bool CanEncode
             {
-                get { return false; }
+                get { return true; }
             }
 
             public override int Bpp
@@ -185,8 +187,31 @@ namespace VrSharp.Pvr
 
             public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
             {
-                return null;
-            }
+				// Destination data & index
+				int compressedWidth = (int)(width / 2.0);
+				int compressedHeight = (int)(height / 2.0);
+				byte[] destination = new byte[compressedWidth * compressedHeight];
+				int destinationIndex = 0;
+
+				// Get the size of each block to process.
+				int size = Math.Min(compressedWidth, compressedHeight);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Encode texture data
+				for (int y = 0; y < compressedHeight; y++)
+				{
+					for (int x = 0; x < compressedWidth; x++)
+					{
+						destinationIndex = (twiddleMap[x] << 1) | twiddleMap[y];
+						destination[destinationIndex] = source[sourceIndex];
+						sourceIndex++;
+						//destinationIndex++;
+					}
+				}
+				return destination;
+			}
         }
         #endregion
 
@@ -196,7 +221,7 @@ namespace VrSharp.Pvr
         {
             public override bool CanEncode
             {
-                get { return false; }
+                get { return true; }
             }
 
             public override int Bpp
@@ -268,10 +293,32 @@ namespace VrSharp.Pvr
                 return destination;
             }
 
-            public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
-            {
-                return null;
-            }
+			public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				int compressedWidth = (int)(width * Bpp / 8.0);
+				int compressedHeight = (int)(height * Bpp / 8.0);
+				byte[] destination = new byte[compressedWidth * compressedHeight];
+				int destinationIndex = 0;
+
+				// Get the size of each block to process.
+				int size = Math.Min(compressedWidth, compressedHeight);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Encode texture data
+				for (int y = 0; y < compressedHeight; y++)
+				{
+					for (int x = 0; x < compressedWidth; x++)
+					{
+						destinationIndex = (twiddleMap[x] << 1) | twiddleMap[y];
+						destination[destinationIndex] = source[sourceIndex];
+						sourceIndex++;
+					}
+				}
+				return destination;
+			}
         }
         #endregion
 
@@ -823,109 +870,24 @@ namespace VrSharp.Pvr
         {
             public override bool CanEncode
             {
-                get { return false; }
-            }
-
-            public override int Bpp
-            {
-                get { return 2; }
-            }
-
-            public override int PaletteEntries
-            {
-                get { return 1024; } // Varies, 1024 (actually 256) is the largest
-            }
-
-            public override byte[] Decode(byte[] source, int sourceIndex, int width, int height)
-            {
-                // Destination data & index
-                byte[] destination = new byte[width * height * 4];
-                int destinationIndex;
-
-                // Twiddle map
-                int[] twiddleMap = MakeTwiddleMap(width);
-
-                // Decode texture data
-                for (int y = 0; y < height; y += 2)
-                {
-                    for (int x = 0; x < width; x += 2)
-                    {
-                        int index = (source[sourceIndex + ((twiddleMap[x >> 1] << 1) | twiddleMap[y >> 1])]) * 4;
-
-                        for (int x2 = 0; x2 < 2; x2++)
-                        {
-                            for (int y2 = 0; y2 < 2; y2++)
-                            {
-                                destinationIndex = ((((y + y2) * width) + (x + x2)) * 4);
-
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    destination[destinationIndex] = palette[index][i];
-                                    destinationIndex++;
-                                }
-
-                                index++;
-                            }
-                        }
-                    }
-                }
-
-                return destination;
-            }
-
-            public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
-            {
-                return null;
-            }
-        }
-        #endregion
-
-        #region Small Vq with Mipmaps
-        // Small Vq with Mipmaps
-        public class SmallVqMipmaps : PvrDataCodec
-        {
-            public override bool CanEncode
-            {
-                get { return false; }
-            }
-
-            public override int Bpp
-            {
-                get { return 2; }
-            }
-
-            public override int PaletteEntries
-            {
-                get { return 1024; } // Varies, 1024 (actually 256) is the largest
-            }
-
-            public override bool HasMipmaps
-            {
                 get { return true; }
             }
 
+            public override int Bpp
+            {
+                get { return 2; }
+            }
+
+            public override int PaletteEntries
+            {
+                get { return 1024; } // Varies, 1024 (actually 256) is the largest
+            }
+
             public override byte[] Decode(byte[] source, int sourceIndex, int width, int height)
             {
                 // Destination data & index
                 byte[] destination = new byte[width * height * 4];
                 int destinationIndex;
-
-                // Decode a 1x1 texture (for mipmaps)
-                // No need to make use of a twiddle map in this case
-                if (width == 1 && height == 1)
-                {
-                    int index = source[sourceIndex] * 4;
-
-                    destinationIndex = 0;
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        destination[destinationIndex] = palette[index][i];
-                        destinationIndex++;
-                    }
-
-                    return destination;
-                }
 
                 // Twiddle map
                 int[] twiddleMap = MakeTwiddleMap(width);
@@ -960,9 +922,138 @@ namespace VrSharp.Pvr
 
             public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
             {
-                return null;
-            }
+				// Destination data & index
+				int compressedWidth = (int)(width * Bpp / 8.0);
+				int compressedHeight = (int)(height * Bpp / 8.0);
+				byte[] destination = new byte[compressedWidth * compressedHeight];
+				int destinationIndex = 0;
+
+				// Get the size of each block to process.
+				int size = Math.Min(compressedWidth, compressedHeight);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Encode texture data
+				for (int y = 0; y < compressedHeight; y++)
+				{
+					for (int x = 0; x < compressedWidth; x++)
+					{
+						destinationIndex = (twiddleMap[x] << 1) | twiddleMap[y];
+						destination[destinationIndex] = source[sourceIndex];
+						sourceIndex++;
+					}
+				}
+				return destination;
+			}
         }
+		#endregion
+
+		#region Small Vq with Mipmaps
+		// Small Vq with Mipmaps
+		public class SmallVqMipmaps : PvrDataCodec
+		{
+			public override bool CanEncode
+			{
+				get { return true; }
+			}
+
+			public override int Bpp
+			{
+				get { return 2; }
+			}
+
+			public override int PaletteEntries
+			{
+				get { return 1024; } // Varies, 1024 (actually 256) is the largest
+			}
+
+			public override bool HasMipmaps
+			{
+				get { return true; }
+			}
+
+			public override byte[] Decode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				byte[] destination = new byte[width * height * 4];
+				int destinationIndex;
+
+				// Decode a 1x1 texture (for mipmaps)
+				// No need to make use of a twiddle map in this case
+				if (width == 1 && height == 1)
+				{
+					int index = source[sourceIndex] * 4;
+
+					destinationIndex = 0;
+
+					for (int i = 0; i < 4; i++)
+					{
+						destination[destinationIndex] = palette[index][i];
+						destinationIndex++;
+					}
+
+					return destination;
+				}
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(width);
+
+				// Decode texture data
+				for (int y = 0; y < height; y += 2)
+				{
+					for (int x = 0; x < width; x += 2)
+					{
+						int index = (source[sourceIndex + ((twiddleMap[x >> 1] << 1) | twiddleMap[y >> 1])]) * 4;
+
+						for (int x2 = 0; x2 < 2; x2++)
+						{
+							for (int y2 = 0; y2 < 2; y2++)
+							{
+								destinationIndex = ((((y + y2) * width) + (x + x2)) * 4);
+
+								for (int i = 0; i < 4; i++)
+								{
+									destination[destinationIndex] = palette[index][i];
+									destinationIndex++;
+								}
+
+								index++;
+							}
+						}
+					}
+				}
+
+				return destination;
+			}
+
+			public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
+			{
+				// Destination data & index
+				int compressedWidth = (int)(width * Bpp / 8.0);
+				int compressedHeight = (int)(height * Bpp / 8.0);
+				byte[] destination = new byte[compressedWidth * compressedHeight];
+				int destinationIndex = 0;
+
+				// Get the size of each block to process.
+				int size = Math.Min(compressedWidth, compressedHeight);
+
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+
+				// Encode texture data
+				for (int y = 0; y < compressedHeight; y++)
+				{
+					for (int x = 0; x < compressedWidth; x++)
+					{
+						destinationIndex = (twiddleMap[x] << 1) | twiddleMap[y];
+						destination[destinationIndex] = source[sourceIndex];
+						sourceIndex++;
+					}
+				}
+				return destination;
+			}
+		}
         #endregion
 
         #region Twiddle Code
