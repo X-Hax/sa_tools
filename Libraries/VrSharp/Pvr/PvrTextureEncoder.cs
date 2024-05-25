@@ -186,14 +186,21 @@ namespace VrSharp.Pvr
 
             if (dataCodec.PaletteEntries != 0)
             {
-                // Convert the bitmap to an array containing indicies.
-                decodedData = BitmapToRawIndexed(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
+				if (dataCodec.VQ)
+				{
+					decodedData = BitmapToRawVQ(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
+				}
+				else
+				{
+					// Convert the bitmap to an array containing indicies.
+					decodedData = BitmapToRawIndexed(decodedBitmap, dataCodec.PaletteEntries, out texturePalette);
 
-                // If this texture has an external palette file, set up the palette encoder
-                if (dataCodec.NeedsExternalPalette)
-                {
-                    paletteEncoder = new PvpPaletteEncoder(texturePalette, (ushort)dataCodec.PaletteEntries, pixelFormat, pixelCodec);
-                }
+					// If this texture has an external palette file, set up the palette encoder
+					if (dataCodec.NeedsExternalPalette)
+					{
+						paletteEncoder = new PvpPaletteEncoder(texturePalette, (ushort)dataCodec.PaletteEntries, pixelFormat, pixelCodec);
+					}
+				}
             }
             else
             {
@@ -291,16 +298,32 @@ namespace VrSharp.Pvr
 
             // Write out any mipmaps
             if (dataCodec.HasMipmaps)
-            {
-                // Write out any padding bytes before the 1x1 mipmap
-                for (int i = 0; i < mipmapPadding; i++)
+            {	
+				// Write out any padding bytes before the 1x1 mipmap
+				for (int i = 0; i < mipmapPadding; i++)
                 {
                     destination.WriteByte(0);
                 }
 
                 for (int size = 1; size < textureWidth; size <<= 1)
                 {
-                    byte[] mipmapDecodedData = BitmapToRawResized(decodedBitmap, size, 1);
+					byte[] mipmapDecodedData = null;
+					if (dataCodec.NeedsExternalPalette)
+					{
+						if (dataCodec.VQ)
+						{
+							mipmapDecodedData = BitmapToRawVQResized(decodedBitmap, size, 1, codeBook);
+						}
+						else
+						{
+							mipmapDecodedData = BitmapToRawIndexedResized(decodedBitmap, size, 1, vqPalette);
+						}
+					}
+					else
+					{
+						mipmapDecodedData = BitmapToRawResized(decodedBitmap, size, 1);
+					}
+
                     byte[] mipmapTextureData = dataCodec.Encode(mipmapDecodedData, 0, size, size);
                     destination.Write(mipmapTextureData, 0, mipmapTextureData.Length);
                 }

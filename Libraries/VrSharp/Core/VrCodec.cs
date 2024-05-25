@@ -80,8 +80,14 @@ namespace VrSharp
             get { return false; }
         }
 
-        // Palette
-        protected byte[][] palette;
+		// Returns whether the texture is VQ encoded or not.
+		public virtual bool VQ
+		{
+			get { return false; }
+		}
+
+		// Palette
+		protected byte[][] palette;
         public void SetPalette(byte[] palette, int offset, int numEntries)
         {
             this.palette = PixelCodec.DecodePalette(palette, offset, numEntries);

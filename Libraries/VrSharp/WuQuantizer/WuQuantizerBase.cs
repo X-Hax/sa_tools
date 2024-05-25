@@ -37,7 +37,12 @@ namespace nQuant
             return QuantizeImage(image, maxColorCount, 10, 70);
         }
 
-        public Image QuantizeImage(Bitmap image, int maxColorCount, int alphaThreshold, int alphaFader)
+		public Image QuantizeImage(Bitmap image, QuantizedPalette palette)
+		{
+			return ProcessImagePixels(image, palette);
+		}
+
+		public Image QuantizeImage(Bitmap image, int maxColorCount, int alphaThreshold, int alphaFader)
         {
             var colorCount = maxColorCount;
             var data = BuildHistogram(image, alphaThreshold, alphaFader);

@@ -143,7 +143,12 @@ namespace VrSharp.Pvr
                 get { return 2; }
             }
 
-            public override int PaletteEntries
+			public override bool VQ
+			{
+				get { return true; }
+			}
+
+			public override int PaletteEntries
             {
                 get { return 1024; } // Actually 256
             }
@@ -229,7 +234,12 @@ namespace VrSharp.Pvr
                 get { return 2; }
             }
 
-            public override int PaletteEntries
+			public override bool VQ
+			{
+				get { return true; }
+			}
+
+			public override int PaletteEntries
             {
                 get { return 1024; } // Actually 256
             }
@@ -878,7 +888,12 @@ namespace VrSharp.Pvr
                 get { return 2; }
             }
 
-            public override int PaletteEntries
+			public override bool VQ
+			{
+				get { return true; }
+			}
+
+			public override int PaletteEntries
             {
                 get { return 1024; } // Varies, 1024 (actually 256) is the largest
             }
@@ -961,6 +976,11 @@ namespace VrSharp.Pvr
 			public override int Bpp
 			{
 				get { return 2; }
+			}
+
+			public override bool VQ
+			{
+				get { return true; }
 			}
 
 			public override int PaletteEntries

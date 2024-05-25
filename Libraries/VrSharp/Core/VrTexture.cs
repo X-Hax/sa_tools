@@ -144,6 +144,7 @@ namespace VrSharp
 
         public VrTexture(byte[] source, int offset, int length)
         {
+			File.WriteAllBytes("C:\\Users\\PkR\\Desktop\\test.pvr", source);
             if (source == null || (offset == 0 && source.Length == length))
             {
                 encodedData = source;
