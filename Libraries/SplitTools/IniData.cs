@@ -436,13 +436,22 @@ namespace SplitTools
 			return IniSerializer.Deserialize<Dictionary<SA1LevelAct, SA1StartPosInfo>>(filename);
 		}
 
-		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(byte[] file, int address)
+		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(byte[] file, int address, int count = 255)
 		{
 			Dictionary<SA1LevelAct, SA1StartPosInfo> result = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
-			while (ByteConverter.ToUInt16(file, address) != (ushort)SA1LevelIDs.Invalid)
+			for (int i = 0; i < count; i++)
 			{
+				if (ByteConverter.ToUInt16(file, address) >= (ushort)SA1LevelIDs.Invalid)
+					break;
 				SA1StartPosInfo objgrp = new SA1StartPosInfo(file, address + 4);
-				result.Add(new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2)), objgrp);
+				SA1LevelAct levelAct = new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2));
+				if (result.ContainsKey(levelAct))
+					Console.WriteLine(levelAct.ToString() + " start position is already added, duplicate at " + address.ToString("X"));
+				else
+				{
+					//Console.WriteLine(levelAct.ToString() + " start position at " + address.ToString("X"));
+					result.Add(levelAct, objgrp);
+				}
 				address += Size;
 			}
 			return result;

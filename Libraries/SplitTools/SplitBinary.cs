@@ -610,6 +610,9 @@ namespace SplitTools.Split
 					break;
 				case "startpos":
 					{
+						int cc = 255;
+						if (customProperties.ContainsKey("count"))
+							cc = int.Parse(customProperties["count"]);
 						switch (game)
 						{
 							case Game.SA2:
@@ -621,7 +624,7 @@ namespace SplitTools.Split
 							case Game.SA1:
 							case Game.SADX:
 							default:
-								SA1StartPosList.Load(datafile, address).Save(fileOutputPath);
+								SA1StartPosList.Load(datafile, address, cc).Save(fileOutputPath);
 								break;
 						}
 					}
