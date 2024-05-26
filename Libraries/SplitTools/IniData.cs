@@ -449,7 +449,7 @@ namespace SplitTools
 					Console.WriteLine(levelAct.ToString() + " start position is already added, duplicate at " + address.ToString("X"));
 				else
 				{
-					//Console.WriteLine(levelAct.ToString() + " start position at " + address.ToString("X"));
+					//Console.WriteLine(levelAct.ToString() + " start position at " + address.ToString("X") + ": " + objgrp.Position.ToString());
 					result.Add(levelAct, objgrp);
 				}
 				address += Size;
