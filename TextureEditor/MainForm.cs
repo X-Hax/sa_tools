@@ -617,9 +617,11 @@ namespace TextureEditor
 			highQualityGVMsToolStripMenuItem.Checked = settingsfile.HighQualityGVM;
 			textureFilteringToolStripMenuItem.Checked = settingsfile.EnableFiltering;
 			compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
-			usePNGInsteadOfDDSToolStripMenuItem.Checked = settingsfile.UsePNGforPAK;
+			useDDSInPAKsToolStripMenuItem.Checked = settingsfile.UseDDSforPAK;
+			useDDSInPVMXToolStripMenuItem.Checked = settingsfile.UseDDSforPVMX;
+			useDDSInTexturePacksToolStripMenuItem.Checked = settingsfile.UseDDSforTexPack;
 
-            System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
+			System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
 			toolTip.AutoPopDelay = 5000;
 			toolTip.InitialDelay = 1000;
 			toolTip.ReshowDelay = 500;
@@ -751,7 +753,7 @@ namespace TextureEditor
 							Size size = new Size(tex.Image.Width, tex.Image.Height);
 							if (tex.Dimensions.HasValue)
 								size = new Size(tex.Dimensions.Value.Width, tex.Dimensions.Value.Height);
-							MemoryStream ds = tex.TextureData == null ? ds = EncodeDDSorPNG(tex) : ds = tex.TextureData;
+							MemoryStream ds = tex.TextureData == null ? ds = EncodeDDSorPNG(tex, useDDSInPVMXToolStripMenuItem.Checked) : ds = tex.TextureData;
 							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + TextureFunctions.IdentifyTextureFileExtension(ds), tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
 						}
 						File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
@@ -765,7 +767,7 @@ namespace TextureEditor
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						foreach (PakTextureInfo item in textures)
 						{
-							using (MemoryStream tex = EncodeDDSorPNG(item))
+							using (MemoryStream tex = EncodeDDSorPNG(item, useDDSInPAKsToolStripMenuItem.Checked))
 							{
 								byte[] tb = tex.ToArray();
 								string name = item.Name.ToLowerInvariant();
@@ -1666,8 +1668,12 @@ namespace TextureEditor
 							info.TextureData = EncodeGVR(gvrt);
 						else if (info is XvrTextureInfo xvrt)
 							info.TextureData = EncodeXVR(xvrt);
+						else if (info is PakTextureInfo pakt)
+							info.TextureData = EncodeDDSorPNG(pakt, useDDSInPAKsToolStripMenuItem.Checked);
+						else if (info is PvmxTextureInfo pvmxt)
+							info.TextureData = EncodeDDSorPNG(pvmxt, useDDSInPVMXToolStripMenuItem.Checked);
 						else
-							info.TextureData = EncodeDDSorPNG(info);
+							info.TextureData = EncodeDDSorPNG(info, useDDSInTexturePacksToolStripMenuItem.Checked);
 					}
 					File.WriteAllBytes(dlg.FileName, textures[listBox1.SelectedIndex].TextureData.ToArray());
 				}
@@ -1740,11 +1746,11 @@ namespace TextureEditor
 			return xvr;
 		}
 
-		private MemoryStream EncodeDDSorPNG(TextureInfo tex, bool force = false)
+		private MemoryStream EncodeDDSorPNG(TextureInfo tex, bool dds, bool force = false)
 		{
 			if (!force && tex.TextureData != null)
 				return tex.TextureData;
-			if (settingsfile.UsePNGforPAK)
+			if (!dds)
 			{
 				MemoryStream bmp = new MemoryStream();
 				tex.Image.Save(bmp, ImageFormat.Png);
@@ -2182,11 +2188,6 @@ namespace TextureEditor
 			settingsfile.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
 		}
 
-		private void usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UsePNGforPAK = usePNGInsteadOfDDSToolStripMenuItem.Checked;
-		}
-
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (unsaved)
@@ -2400,10 +2401,10 @@ namespace TextureEditor
 				return;
 
 			DialogResult res = MessageBox.Show(this, "This will generate new GBIX for every texture, are you sure you wish to continue?", "Warning Gbix Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-			
+
 			if (res != DialogResult.Yes)
 			{
-				return; 
+				return;
 			}
 
 			Random random = new();
@@ -2418,6 +2419,21 @@ namespace TextureEditor
 			listBox1.SelectedIndex = -1;
 			listBox1.SelectedItem = null;
 			unsaved = true;
+		}
+
+		private void useDDSInPAKsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSforPAK = useDDSInPAKsToolStripMenuItem.Checked;
+		}
+
+		private void useDDSInTexturePacksToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSforTexPack = useDDSInTexturePacksToolStripMenuItem.Checked;
+		}
+
+		private void useDDSInPVMXToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSforPVMX = useDDSInPVMXToolStripMenuItem.Checked;
 		}
 	}
 }

@@ -249,15 +249,21 @@ namespace SAModel.SAEditorCommon
 			public bool SACompatiblePalettes { get; set; }
 			[DefaultValue(true)]
 			public bool EnableFiltering { get; set; }
+			[DefaultValue(true)]
+			public bool UseDDSforPAK { get; set; }
 			[DefaultValue(false)]
-			public bool UsePNGforPAK { get; set; }
+			public bool UseDDSforTexPack { get; set; }
+			[DefaultValue(false)]
+			public bool UseDDSforPVMX { get; set; }
 
 			public Settings_TextureEditor()
 			{
 				HighQualityGVM = false;
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
-				UsePNGforPAK = false;
+				UseDDSforPAK = true;
+				UseDDSforTexPack = false;
+				UseDDSforPVMX = false;
 			}
 
 			public static Settings_TextureEditor Load()
