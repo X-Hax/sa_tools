@@ -55,8 +55,32 @@ namespace ArchiveLib
 
 		public class GRND
 		{
-			public VertexChunk Vertices;
-			public PolyChunk Polys;
+			// For Reference, the setup for a GRND is as follows:
+			// 0x00	- "GRND"
+			// 0x04	- Chunk Size (Includes first 16 bytes).
+			// 0x08	- Int; null[2]
+
+			// GRND Header begins at 0x10 in a GRND Chunk. The GRND Chunk appears to be made up of a quad-tree to check for collision, followed by the actual
+			// triangle/vertex data
+			// 0x00	- Pointer to Triangles Chunk
+			// 0x04	- Pointer to Quadtree Chunk
+			// 0x08	- Float; X Pos 0,0
+			// 0x0C	- Float; Z Pos 0,0
+			// 0x10	- Short; X quad Number
+			// 0x12	- Short; Z quad Number
+			// 0x14	- Short; X quad Length
+			// 0x16 - Short; Z quad Length
+			// 0x18	- Short; Triangle Count
+			// 0x1A	- Short; Poly Count
+
+			/*
+			 * GRND blocks contain a quad tree for quick lookup and collision detection
+			 * It is made up of two chunks, a chunk for the quad tree, and a chunk for the polygons present in the GRND
+			 * The each polygon in the polygon chunk is made up of a compressed list of triangle info, and a compressed list of vertices
+			 * Since the polygon chunk uses compression to overlap triangle info and vertices, and the triangle indices which define all
+			 * of the triangles are not listed, this algorithm uses the quad tree chunk to first identify all used triangle info (indices into the 
+			 * triangle info block)
+			*/
 			public Vertex Center;
 
 			public NJS_OBJECT ToObject()
@@ -91,6 +115,20 @@ namespace ArchiveLib
 
 		public class GOBJ
 		{
+			// For Reference, the setup for a GOBJ is as follows:
+			// 0x00	- "GOBJ"
+			// 0x04	- Chunk Size (Includes first 16 bytes),
+			// 0x08	- Int; null[2]
+
+			// GOBJ "Header" begins at 0x10 in a GOBJ Chunk.
+			// 0x00	- NJS_OBJECT
+			// NJS_OBJECT should have a child.
+			// Said child node will have a ChunkAttach/NJS_MODEL_CNK, the child pointer is set but it also seems to always follow the first NJS_OBJECT.
+			// As stated above, all pointers are relative to the location of the pointer EXCEPT for the ChunkAttach Pointer for the child.
+			// It has a 1 which does not correspond to the ChunkAttach/NJS_MODEL_CNK's location.
+			// Its location will be immediately after the child NJS_OBJECT.
+			// It's also in a flipped order. The Center/Radius comes first, then the VertexChunk pointer, and the PolyChunk pointer at the end.
+
 			public NJS_OBJECT Object;
 			public BoundingSphere Bounds;
 
@@ -159,39 +197,11 @@ namespace ArchiveLib
 			switch (magic)
 			{
 				case "GRND":
-					// For Reference, the setup for a GRND is as follows:
-					// 0x00	- "GRND"
-					// 0x04	- Chunk Size (Includes first 16 bytes).
-					// 0x08	- Int; null[2]
-
-					// GRND Header begins at 0x10 in a GRND Chunk.
-					// 0x00	- Pointer to Vertex Chunk
-					// 0x04	- Pointer to Poly Chunk
-					// 0x08	- Float; X Pos?
-					// 0x0C	- Float; Z Pos?
-					// 0x10	- Short; Flags?
-					// 0x12	- Short; Flags?
-					// 0x14	- Short; X Dimension?
-					// 0x16 - Short; Z Dimension?
-					// 0x18	- Short; Unknown, seems to always be 2.
-					// 0x1A	- Short; Poly Count
 					Type = GroundType.Ground;
 					//GRNDChunk = new GRND(File, 0);
 					break;
 				case "GOBJ":
-					// For Reference, the setup for a GOBJ is as follows:
-					// 0x00	- "GOBJ"
-					// 0x04	- Chunk Size (Includes first 16 bytes),
-					// 0x08	- Int; null[2]
 
-					// GOBJ "Header" begins at 0x10 in a GOBJ Chunk.
-					// 0x00	- NJS_OBJECT
-					// NJS_OBJECT should have a child.
-					// Said child node will have a ChunkAttach/NJS_MODEL_CNK, the child pointer is set but it also seems to always follow the first NJS_OBJECT.
-					// As stated above, all pointers are relative to the location of the pointer EXCEPT for the ChunkAttach Pointer for the child.
-					// It has a 1 which does not correspond to the ChunkAttach/NJS_MODEL_CNK's location.
-					// Its location will be immediately after the child NJS_OBJECT.
-					// It's also in a flipped order. The Center/Radius comes first, then the VertexChunk pointer, and the PolyChunk pointer at the end.
 					Type = GroundType.GroundObject;
 					//GOBJChunk = new GOBJ(File, 0);
 					break;

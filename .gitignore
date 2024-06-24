@@ -229,3 +229,11 @@ pip-log.txt
 /buildSATools.dll
 /buildSATools.deps.json
 /SA2Tools/SA2ObjectDefinitions/Chao/tree.cs
+/SOAMLDExtract_Tests/SOAMLDExtract_Tests.csproj
+/SOAMLDExtract_Tests/z_SOAMLDExtract_Tests.csproj
+/SOAMLDExtract_Tests/test_mlds/a099h.mld
+/SOAMLDExtract_Tests/GlobalUsings.cs
+/SOAMLDExtract_Tests/UnitTest1.cs
+/SOAMLDExtract_Tests/test_mlds/a099h_dec.mld
+/SOAMLDExtract_Tests/test_mlds/a099h
+/SA Tools.sln
