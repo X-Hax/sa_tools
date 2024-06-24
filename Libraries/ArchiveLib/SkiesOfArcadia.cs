@@ -258,7 +258,7 @@ namespace ArchiveLib
 			{
 				case "GRND":
 					Type = GroundType.Ground;
-					//GRNDChunk = new GRND(File, 0);
+					GRNDObj = new GRND(File, 0);
 					break;
 				case "GOBJ":
 
@@ -273,12 +273,11 @@ namespace ArchiveLib
 
 			// Currently non-function due to weird poly format.
 			// Can uncomment once conversion is fixed.
-			/*
 			if (Type == GroundType.Ground)
 			{
 				ConvertedObject = GRNDChunk.ToObject();
 			}
-
+			/*
 			if (Type == GroundType.GroundObject)
 			{
 				ConvertedObject = GOBJChunk.GroundObject;
