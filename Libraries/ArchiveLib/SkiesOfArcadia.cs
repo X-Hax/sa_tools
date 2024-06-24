@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using System.Linq;
 using AuroraLib.Compression;
 using AuroraLib.Compression.Algorithms;
 using AuroraLib.Core.IO;
 using SplitTools;
 using SAModel;
-using System.Net;
+//using SAModel.SAEditorCommon.ModelConversion;
 
 // Skies of Arcadia MLD archives.
 namespace ArchiveLib
@@ -94,9 +93,10 @@ namespace ArchiveLib
 			public NJS_OBJECT ToObject()
 			{
 				NJS_OBJECT obj = new ();
-
+					
 				BasicAttach attach = new(Vertices, Array.Empty<Vertex>(), Meshes, Array.Empty<NJS_MATERIAL>());
 				obj.Attach = attach;
+				//obj.Attach = obj.Attach.ToChunk();
 
 				return obj;
 			}
@@ -160,7 +160,7 @@ namespace ArchiveLib
 						vert_list.Add(new Vertex(file, vert_offset + v2_ind * 4));
 						vert_list.Add(new Vertex(file, vert_offset + v3_ind * 4));
 					}
-
+					
 					if (tris.Count > 0)
 					{
 						// Create meshset from the current polygon
@@ -195,7 +195,7 @@ namespace ArchiveLib
 			public NJS_OBJECT GroundObject;
 
 			public GOBJ(byte[] file, int address)
-			{
+			{                   
 				int addr = 16;
 				GroundObject = new NJS_OBJECT();
 				GroundObject.Position = new Vertex(file, addr + 8);
@@ -234,7 +234,7 @@ namespace ArchiveLib
 		public byte[] File;
 		public NJS_OBJECT ConvertedObject;
 
-		private GRND GRNDChunk;
+		private GRND GRNDObj;
 		private GOBJ GOBJChunk;
 
 		public nmldGround(byte[] file, int address, string name)
@@ -263,7 +263,7 @@ namespace ArchiveLib
 				case "GOBJ":
 
 					Type = GroundType.GroundObject;
-					//GOBJChunk = new GOBJ(File, 0);
+					GOBJChunk = new GOBJ(File, 0);
 					break;
 				default:
 					Console.WriteLine("Unknown Ground Format Found: %s", magic);
@@ -275,7 +275,7 @@ namespace ArchiveLib
 			// Can uncomment once conversion is fixed.
 			if (Type == GroundType.Ground)
 			{
-				ConvertedObject = GRNDChunk.ToObject();
+				ConvertedObject = GRNDObj.ToObject();
 			}
 			/*
 			if (Type == GroundType.GroundObject)
@@ -377,7 +377,7 @@ namespace ArchiveLib
 			if (Fxn == "eventhook")
 			{
 				bitID = FunctionParameters[FunctionParameters.Count - 1].ToString();
-		}
+			}
 			return Index.ToString("D3") + "_" + Fxn + bitID;
 		}
 
@@ -390,6 +390,15 @@ namespace ArchiveLib
 			}
 			return Index.ToString("D3") + "_" + Fxn + bitID + "_" + index.ToString("D2");
 		}
+
+		private void GetParamList(byte[] file, int offset, List<int> target_var)
+		{
+			int count = ByteConverter.ToInt32(file, offset);
+
+			for (int i = 0; i < count; i ++)
+			{
+				target_var.Add(ByteConverter.ToInt32(file, offset + i * 4 + 4));
+			}
 		}
 
 		private void GetObjects(byte[] file, int offset)
@@ -459,7 +468,7 @@ namespace ArchiveLib
 			for (int i = 0; i < Objects.Count; i++)
 			{
 				sb.AppendLine(
-					Index.ToString("D3") + "_" + Name + "_" + i.ToString("D2") + 
+					Index.ToString("D3") + "_" + Fxn + "_" + i.ToString("D2") + 
 					", " + Position.ToString() + 
 					", " + Rotation.ToString() + 
 					", " + Scale.ToString());
@@ -471,6 +480,7 @@ namespace ArchiveLib
 		public nmldEntry(int offset, byte[] file)
 		{
 			Index = ByteConverter.ToInt32(file, offset);
+			TblID = ByteConverter.ToInt32(file, offset + 4);	
 
 			// Get Entry Name
 			int namesize = 0;
@@ -483,7 +493,14 @@ namespace ArchiveLib
 			}
 			byte[] namechunk = new byte[namesize];
 			Array.Copy(file, offset + 0x24, namechunk, 0, namesize);
-			Name = Encoding.ASCII.GetString(namechunk);
+			Fxn = Encoding.ASCII.GetString(namechunk);
+
+			int ptrGroundLinks = ByteConverter.ToInt32(file, offset + 0x8);
+			GetParamList(file, ptrGroundLinks, GroundLinks);
+			int ptrParamList2 = ByteConverter.ToInt32(file, offset + 0xc);
+			GetParamList(file, ptrParamList2, ParamList2);
+			int ptrFunctionParameters = ByteConverter.ToInt32(file, offset + 0x10);
+			GetParamList(file, ptrFunctionParameters, FunctionParameters);
 
 			Position	= new Vertex(ByteConverter.ToSingle(file, offset + 0x44), ByteConverter.ToSingle(file, offset + 0x48), ByteConverter.ToSingle(file, offset + 0x4C));
 			Rotation	= new Vertex(ByteConverter.ToSingle(file, offset + 0x50), ByteConverter.ToSingle(file, offset + 0x54), ByteConverter.ToSingle(file, offset + 0x58));
@@ -611,7 +628,7 @@ namespace ArchiveLib
 
 			int nmldCount		= ByteConverter.ToInt32(file, 0);
 			int ptr_nmldTable	= ByteConverter.ToInt32(file, 0x04);
-			int eof_nmldTable	= ByteConverter.ToInt32(file, 0x08);
+			int ptr_fxnparams	= ByteConverter.ToInt32(file, 0x08);
 			int realdatapointer = ByteConverter.ToInt32(file, 0x0C);
 			int textablepointer = ByteConverter.ToInt32(file, 0x10);
 			Console.WriteLine("Number of NMLD entries: {0}, NMLD data starts at {1}, real data starts at {2}", nmldCount, ptr_nmldTable.ToString("X"), realdatapointer.ToString("X"));
@@ -662,12 +679,12 @@ namespace ArchiveLib
 				// Add Ground/Ground Object Files
 				foreach (nmldGround ground in entry.Grounds)
 				{
-					//ModelFile mfile = new ModelFile(ModelFormat.Chunk, ground.ConvertedObject, null, null);
+					ModelFile mfile = new ModelFile(ModelFormat.Basic, ground.ConvertedObject, null, null);
 					switch (ground.Type)
 					{
 						case nmldGround.GroundType.Ground:
-							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".grnd"));
-							//mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
+							// Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".grnd"));
+							mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
 							break;
 						case nmldGround.GroundType.GroundObject:
 							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
