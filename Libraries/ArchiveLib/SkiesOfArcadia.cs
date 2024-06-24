@@ -373,12 +373,23 @@ namespace ArchiveLib
 
 		private string GetNameWithIndex()
 		{
-			return Index.ToString("D3") + "_" + Name;
+			string bitID = "";
+			if (Fxn == "eventhook")
+			{
+				bitID = FunctionParameters[FunctionParameters.Count - 1].ToString();
+		}
+			return Index.ToString("D3") + "_" + Fxn + bitID;
 		}
 
 		private string GetNameAndIndex(int index)
 		{
-			return Index.ToString("D3") + "_" + Name + "_" + index.ToString("D2");
+			string bitID = "";
+			if (Fxn == "eventhook")
+			{
+				bitID = FunctionParameters[FunctionParameters.Count - 1].ToString();
+			}
+			return Index.ToString("D3") + "_" + Fxn + bitID + "_" + index.ToString("D2");
+		}
 		}
 
 		private void GetObjects(byte[] file, int offset)
