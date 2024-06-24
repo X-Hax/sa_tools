@@ -81,16 +81,21 @@ namespace ArchiveLib
 			 * of the triangles are not listed, this algorithm uses the quad tree chunk to first identify all used triangle info (indices into the 
 			 * triangle info block)
 			*/
+
+			public Vertex[] Vertices;
+			public List<NJS_MESHSET> Meshes;
 			public Vertex Center;
+			public Vertex Origin;
+			public short XCount;
+			public short ZCount;
+			public short XLen;
+			public short ZLen;
 
 			public NJS_OBJECT ToObject()
 			{
-				NJS_OBJECT obj = new NJS_OBJECT();
+				NJS_OBJECT obj = new ();
 
-				ChunkAttach attach = new ChunkAttach(true, true);
-				attach.Vertex.Add(Vertices);
-				attach.Poly.Add(Polys);
-
+				BasicAttach attach = new(Vertices, Array.Empty<Vertex>(), Meshes, Array.Empty<NJS_MATERIAL>());
 				obj.Attach = attach;
 
 				return obj;
@@ -98,18 +103,73 @@ namespace ArchiveLib
 
 			public GRND(byte[] file, int address)
 			{
+				Meshes = new List<NJS_MESHSET>();
+
 				int addr = 16;
-				int mdldataptr = ByteConverter.ToInt32(file, addr) + addr;
-				addr += 4;
-				int grnddata = ByteConverter.ToInt32(file, addr) + addr;
-				Center = new Vertex(ByteConverter.ToSingle(file, addr + 4), 0.0f, ByteConverter.ToSingle(file, addr + 8));
-				int grnddatacount = ByteConverter.ToInt32(file, addr + 18);
+				int ptr_triangles = ByteConverter.ToInt32(file, addr) + addr;
+				int ptr_quadtree = ByteConverter.ToInt32(file, addr + 4) + addr + 4;
+				
+				Origin = new Vertex(ByteConverter.ToSingle(file, addr + 8), 0.0f, ByteConverter.ToSingle(file, addr + 0xc));
+				XCount = ByteConverter.ToInt16(file, addr + 0x10);   //Might be unsigned?
+				ZCount = ByteConverter.ToInt16(file, addr + 0x12);   //Might be unsigned?
+				XLen = ByteConverter.ToInt16(file, addr + 0x14);   //Might be unsigned?
+				ZLen = ByteConverter.ToInt16(file, addr + 0x16);   //Might be unsigned?
+				Center = new Vertex(Origin.X + XCount / 2 * XLen, 0.0f, Origin.Z + (ZCount / 2) * ZLen);
+				
+				short tri_count = ByteConverter.ToInt16(file, addr + 0x18);
+				short quad_count = ByteConverter.ToInt16(file, addr + 0x1a);
 
-				int vertaddr = mdldataptr + 36;
-				Vertices = new VertexChunk(file, ByteConverter.ToInt32(file, vertaddr) + vertaddr);
 
-				int polyaddr = mdldataptr + 40;
-				Polys = PolyChunk.Load(file, ByteConverter.ToInt32(file, polyaddr) + polyaddr);
+				// This section uses the quad tree to detect the position of all used triangle info blocks in each polygon
+				List<List<ushort>> unique_triangles = new List<List<ushort>>(tri_count);
+				for (int i = 0; i < tri_count; i++) { unique_triangles.Add(new List<ushort>()); }
+
+				
+				for (int i = 0; i < quad_count; i++)
+				{
+					int cur_quad_tri_count = ByteConverter.ToInt32(file, ptr_quadtree + (i * 8));
+					int cur_quad_list_offset = ByteConverter.ToInt32(file, ptr_quadtree + (i * 8) + 4) + ptr_quadtree + (i * 8) + 4;
+					for (int j = 0; j < cur_quad_tri_count; j++)
+					{
+						ushort tri_set = ByteConverter.ToUInt16(file, cur_quad_list_offset + j * 4);
+						ushort tri_ind = ByteConverter.ToUInt16(file, cur_quad_list_offset + j * 4 + 2);
+						if (!unique_triangles[tri_set].Contains(tri_ind)) {
+							unique_triangles[tri_set].Add(tri_ind);
+						}
+					}
+				}
+
+				// This section uses the unique triangles to create triangles from the detected triangle info indices for each polygon
+				List <Vertex> vert_list = new List <Vertex>(0);
+				for (int i = 0;i < tri_count;i++)
+				{
+					List<Triangle> tris = new List<Triangle>();
+					List<Vertex> verts = new List<Vertex>();
+					int triInfo_offset = i * 0x18 + ptr_triangles;
+					int tri_offset = ByteConverter.ToInt32(file, triInfo_offset + 0x10) + triInfo_offset + 0x10;
+					int vert_offset = ByteConverter.ToInt32(file, triInfo_offset + 0xc) + triInfo_offset + 0xc;
+					foreach (int j in unique_triangles[i])
+					{
+						int v1_ind = (int)ByteConverter.ToUInt16(file, tri_offset + j * 4);
+						int v2_ind = (int) ByteConverter.ToUInt16(file, tri_offset + j * 4 + 4);
+						int v3_ind = (int)ByteConverter.ToUInt16(file, tri_offset + j * 4 + 8);
+
+						tris.Add(new Triangle((ushort)vert_list.Count, (ushort) (vert_list.Count + 1), (ushort) (vert_list.Count + 2)));
+
+						vert_list.Add(new Vertex(file, vert_offset + v1_ind * 4));
+						vert_list.Add(new Vertex(file, vert_offset + v2_ind * 4));
+						vert_list.Add(new Vertex(file, vert_offset + v3_ind * 4));
+					}
+
+					if (tris.Count > 0)
+					{
+						// Create meshset from the current polygon
+						Meshes.Add(new NJS_MESHSET(tris.ToArray(), false, false, false));
+					}
+				}
+
+				// Convert the vertex list to an array and store it
+				Vertices = vert_list.ToArray();
 			}
 		}
 
