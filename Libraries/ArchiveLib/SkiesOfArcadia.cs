@@ -358,11 +358,15 @@ namespace ArchiveLib
 	public class nmldEntry
 	{
 		public int Index { get; set; } = 0;
+		public int TblID { get; set; } = 0;
+		public List<int> GroundLinks { get; set; } = new();
+		public List<int> ParamList2 { get; set; } = new();
+		public List<int> FunctionParameters { get; set; } = new();
 		public List<nmldObject> Objects { get; set; } = new();
 		public List<nmldMotion> Motions { get; set; } = new();
 		public List<nmldGround> Grounds { get; set; } = new();
 		public nmldTextureList Texlist { get; set; } = new();
-		public string Name { get; set; } = string.Empty;
+		public string Fxn { get; set; } = string.Empty;
 		public Vertex Position { get; set; } = new();
 		public Vertex Rotation { get; set; } = new();
 		public Vertex Scale { get; set; } = new();
