@@ -191,41 +191,58 @@ namespace ArchiveLib
 
 			public NJS_OBJECT Object;
 			public BoundingSphere Bounds;
-
 			public NJS_OBJECT GroundObject;
 
 			public GOBJ(byte[] file, int address)
 			{                   
 				int addr = 16;
-				GroundObject = new NJS_OBJECT();
-				GroundObject.Position = new Vertex(file, addr + 8);
-				GroundObject.Rotation = new Rotation(file, addr + 20);
-				GroundObject.Scale = new Vertex(file, addr + 32);
-				addr += 44;
+				GroundObject = get_GOBJ_node(file, addr);
 
-				int childptr = ByteConverter.ToInt32(file, addr) + addr;
-				NJS_OBJECT child = new NJS_OBJECT();
-				child.Position = new Vertex(file, childptr + 8);
-				child.Rotation = new Rotation(file, childptr + 20);
-				child.Scale = new Vertex(file, childptr + 32);
+			}
 
-				int attachptr = childptr + 52;
+			private NJS_OBJECT get_GOBJ_node(byte[] file, int address)
+			{
+				NJS_OBJECT obj = new NJS_OBJECT();
+				int data_ptr = ByteConverter.ToInt32(file, address);
+
+				obj.Position = new Vertex(file, address + 0x8);
+				obj.Rotation = new Rotation(file, address + 0x14);
+				obj.Scale = new Vertex(file, address + 0x20);
+
+				int leftptr = ByteConverter.ToInt32(file, address + 0x2c);
+				if (leftptr > 0)
+				{
+					leftptr += 0x2c + address;
+					obj.AddChild(get_GOBJ_node(file, leftptr));
+				}
+
+				int rightptr = ByteConverter.ToInt32(file, address + 0x30);
+				if (rightptr > 0)
+				{
+					rightptr += 0x2c + address;
+					obj.AddChild(get_GOBJ_node(file, rightptr));
+				}
+
+				if (data_ptr != 0)
+				{
+					data_ptr += address;
 				ChunkAttach attach = new ChunkAttach(true, true);
-				attach.Bounds = new BoundingSphere(file, attachptr);
+					attach.Bounds = new BoundingSphere(file, data_ptr);
+					data_ptr += 0x10;
 
-				attachptr += 16;
-				int vertptr = ByteConverter.ToInt32(file, attachptr) + attachptr;
-				int polyptr = attachptr + 76;
+					int vertptr = ByteConverter.ToInt32(file, data_ptr) + data_ptr;
+					int polyptr = data_ptr + 76;
 
+					//The geometry structure may not be in the correct format, but leaving this here for now
 				VertexChunk vertexchunk = new VertexChunk(file, vertptr);
 				PolyChunk polychunk = PolyChunk.Load(file, polyptr);
 
 				attach.Vertex.Add(vertexchunk);
 				attach.Poly.Add(polychunk);
 
-				child.Attach = attach;
-
-				GroundObject.AddChild(child);
+					obj.Attach = attach;
+				}
+				return obj;
 			}
 		}
 
