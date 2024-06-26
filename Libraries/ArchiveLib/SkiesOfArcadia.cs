@@ -177,20 +177,6 @@ namespace ArchiveLib
 
 		public class GOBJ
 		{
-			// For Reference, the setup for a GOBJ is as follows:
-			// 0x00	- "GOBJ"
-			// 0x04	- Chunk Size (Includes first 16 bytes),
-			// 0x08	- Int; null[2]
-
-			// GOBJ "Header" begins at 0x10 in a GOBJ Chunk.
-			// 0x00	- NJS_OBJECT
-			// NJS_OBJECT should have a child.
-			// Said child node will have a ChunkAttach/NJS_MODEL_CNK, the child pointer is set but it also seems to always follow the first NJS_OBJECT.
-			// As stated above, all pointers are relative to the location of the pointer EXCEPT for the ChunkAttach Pointer for the child.
-			// It has a 1 which does not correspond to the ChunkAttach/NJS_MODEL_CNK's location.
-			// Its location will be immediately after the child NJS_OBJECT.
-			// It's also in a flipped order. The Center/Radius comes first, then the VertexChunk pointer, and the PolyChunk pointer at the end.
-
 			public NJS_OBJECT Object;
 			public BoundingSphere Bounds;
 			public NJS_OBJECT GroundObject;
@@ -276,11 +262,39 @@ namespace ArchiveLib
 			switch (magic)
 			{
 				case "GRND":
+					// For Reference, the setup for a GRND is as follows:
+					// 0x00	- "GRND"
+					// 0x04	- Chunk Size (Includes first 16 bytes).
+					// 0x08	- Int; null[2]
+
+					// GRND Header begins at 0x10 in a GRND Chunk.
+					// 0x00	- Pointer to Vertex Chunk
+					// 0x04	- Pointer to Poly Chunk
+					// 0x08	- Float; X Pos?
+					// 0x0C	- Float; Z Pos?
+					// 0x10	- Short; Flags?
+					// 0x12	- Short; Flags?
+					// 0x14	- Short; X Dimension?
+					// 0x16 - Short; Z Dimension?
+					// 0x18	- Short; Unknown, seems to always be 2.
+					// 0x1A	- Short; Poly Count
 					Type = GroundType.Ground;
 					GRNDObj = new GRND(File, 0);
 					break;
 				case "GOBJ":
+					// For Reference, the setup for a GOBJ is as follows:
+					// 0x00	- "GOBJ"
+					// 0x04	- Chunk Size (Includes first 16 bytes),
+					// 0x08	- Int; null[2]
 
+					// GOBJ "Header" begins at 0x10 in a GOBJ Chunk.
+					// 0x00	- NJS_OBJECT
+					// NJS_OBJECT should have a child.
+					// Said child node will have a ChunkAttach/NJS_MODEL_CNK, the child pointer is set but it also seems to always follow the first NJS_OBJECT.
+					// As stated above, all pointers are relative to the location of the pointer EXCEPT for the ChunkAttach Pointer for the child.
+					// It has a 1 which does not correspond to the ChunkAttach/NJS_MODEL_CNK's location.
+					// Its location will be immediately after the child NJS_OBJECT.
+					// It's also in a flipped order. The Center/Radius comes first, then the VertexChunk pointer, and the PolyChunk pointer at the end.
 					Type = GroundType.GroundObject;
 					//GOBJChunk = new GOBJ(File, 0);
 					break;
