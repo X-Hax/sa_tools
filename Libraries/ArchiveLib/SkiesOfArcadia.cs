@@ -282,7 +282,7 @@ namespace ArchiveLib
 				case "GOBJ":
 
 					Type = GroundType.GroundObject;
-					GOBJChunk = new GOBJ(File, 0);
+					//GOBJChunk = new GOBJ(File, 0);
 					break;
 				default:
 					Console.WriteLine("Unknown Ground Format Found: %s", magic);
@@ -706,7 +706,7 @@ namespace ArchiveLib
 							mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
 							break;
 						case nmldGround.GroundType.GroundObject:
-							Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
+							//Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
 							//mfile.SaveToFile(Path.Combine(directory, ground.Name + ".gobj.sa2mdl"));
 							break;
 						case nmldGround.GroundType.Unknown:
