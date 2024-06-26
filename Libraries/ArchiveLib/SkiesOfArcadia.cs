@@ -84,7 +84,6 @@ namespace ArchiveLib
 			public Vertex[] Vertices;
 			public List<NJS_MESHSET> Meshes;
 			public Vertex Center;
-			public Vertex Origin;
 			public short XCount;
 			public short ZCount;
 			public short XLen;
@@ -109,12 +108,11 @@ namespace ArchiveLib
 				int ptr_triangles = ByteConverter.ToInt32(file, addr) + addr;
 				int ptr_quadtree = ByteConverter.ToInt32(file, addr + 4) + addr + 4;
 				
-				Origin = new Vertex(ByteConverter.ToSingle(file, addr + 8), 0.0f, ByteConverter.ToSingle(file, addr + 0xc));
+				Center = new Vertex(ByteConverter.ToSingle(file, addr + 8), 0.0f, ByteConverter.ToSingle(file, addr + 0xc));
 				XCount = ByteConverter.ToInt16(file, addr + 0x10);   //Might be unsigned?
 				ZCount = ByteConverter.ToInt16(file, addr + 0x12);   //Might be unsigned?
 				XLen = ByteConverter.ToInt16(file, addr + 0x14);   //Might be unsigned?
 				ZLen = ByteConverter.ToInt16(file, addr + 0x16);   //Might be unsigned?
-				Center = new Vertex(Origin.X + XCount / 2 * XLen, 0.0f, Origin.Z + (ZCount / 2) * ZLen);
 				
 				short tri_count = ByteConverter.ToInt16(file, addr + 0x18);
 				short quad_count = ByteConverter.ToInt16(file, addr + 0x1a);
