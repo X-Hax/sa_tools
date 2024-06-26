@@ -370,7 +370,7 @@ namespace SAModel
 			}
 		}
 
-		public byte[] ToBytes(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
+		public byte[] GetBytes(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
 		{
 			uint ninjaMagic;
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
