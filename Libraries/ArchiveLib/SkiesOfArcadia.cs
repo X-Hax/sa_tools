@@ -153,8 +153,10 @@ namespace ArchiveLib
 						int v1_ind = (int)ByteConverter.ToUInt16(file, tri_offset + j * 4);
 						int v2_ind = (int) ByteConverter.ToUInt16(file, tri_offset + j * 4 + 4);
 						int v3_ind = (int)ByteConverter.ToUInt16(file, tri_offset + j * 4 + 8);
+						bool reversed = ByteConverter.ToInt16(file, tri_offset + j * 4 + 0xa) < 0;
 
-						tris.Add(new Triangle((ushort)vert_list.Count, (ushort) (vert_list.Count + 1), (ushort) (vert_list.Count + 2)));
+						if (reversed) { tris.Add(new Triangle((ushort)(vert_list.Count + 2), (ushort) (vert_list.Count + 1), (ushort) vert_list.Count)); }
+						else { tris.Add(new Triangle((ushort)vert_list.Count, (ushort)(vert_list.Count + 1), (ushort)(vert_list.Count + 2))); }
 
 						vert_list.Add(new Vertex(file, vert_offset + v1_ind * 4));
 						vert_list.Add(new Vertex(file, vert_offset + v2_ind * 4));
