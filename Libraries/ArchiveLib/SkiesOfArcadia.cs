@@ -702,8 +702,8 @@ namespace ArchiveLib
 					switch (ground.Type)
 					{
 						case nmldGround.GroundType.Ground:
-							// Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".grnd"));
-							mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
+							Entries.Add(new MLDArchiveEntry(mfile.ToBytes(Path.Combine(directory, ground.Name + ".grnd.sa2mdl")), ground.Name + ".grnd.sa2mdl"));
+							// mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
 							break;
 						case nmldGround.GroundType.GroundObject:
 							//Entries.Add(new MLDArchiveEntry(ground.File, ground.Name + ".gobj"));
