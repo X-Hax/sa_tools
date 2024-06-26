@@ -197,7 +197,6 @@ namespace ArchiveLib
 			{                   
 				int addr = 16;
 				GroundObject = get_GOBJ_node(file, addr);
-
 			}
 
 			private NJS_OBJECT get_GOBJ_node(byte[] file, int address)
@@ -226,7 +225,7 @@ namespace ArchiveLib
 				if (data_ptr != 0)
 				{
 					data_ptr += address;
-				ChunkAttach attach = new ChunkAttach(true, true);
+					ChunkAttach attach = new ChunkAttach(true, true);
 					attach.Bounds = new BoundingSphere(file, data_ptr);
 					data_ptr += 0x10;
 
@@ -234,11 +233,11 @@ namespace ArchiveLib
 					int polyptr = data_ptr + 76;
 
 					//The geometry structure may not be in the correct format, but leaving this here for now
-				VertexChunk vertexchunk = new VertexChunk(file, vertptr);
-				PolyChunk polychunk = PolyChunk.Load(file, polyptr);
+					VertexChunk vertexchunk = new VertexChunk(file, vertptr);
+					PolyChunk polychunk = PolyChunk.Load(file, polyptr);
 
-				attach.Vertex.Add(vertexchunk);
-				attach.Poly.Add(polychunk);
+					attach.Vertex.Add(vertexchunk);
+					attach.Poly.Add(polychunk);
 
 					obj.Attach = attach;
 				}
@@ -700,7 +699,7 @@ namespace ArchiveLib
 					switch (ground.Type)
 					{
 						case nmldGround.GroundType.Ground:
-							Entries.Add(new MLDArchiveEntry(mfile.ToBytes(Path.Combine(directory, ground.Name + ".grnd.sa2mdl")), ground.Name + ".grnd.sa2mdl"));
+							Entries.Add(new MLDArchiveEntry(mfile.GetBytes(Path.Combine(directory, ground.Name + ".grnd.sa2mdl")), ground.Name + ".grnd.sa2mdl"));
 							// mfile.SaveToFile(Path.Combine(directory, ground.Name + ".grnd.sa2mdl"));
 							break;
 						case nmldGround.GroundType.GroundObject:

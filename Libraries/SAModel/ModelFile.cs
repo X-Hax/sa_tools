@@ -563,7 +563,7 @@ namespace SAModel
 
 		public void SaveToFile(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
 		{
-			byte[] file = ToBytes(filename, nometa, useNinjaMetaData, njbLittleEndian);
+			byte[] file = GetBytes(filename, nometa, useNinjaMetaData, njbLittleEndian);
 			
 			File.WriteAllBytes(filename, file);
 		}
