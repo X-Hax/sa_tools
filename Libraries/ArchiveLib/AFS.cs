@@ -15,7 +15,9 @@ namespace ArchiveLib
 		const uint Magic_AFS1 = 0x00534641;
 		const uint Magic_AFS2 = 0x20534641; // No idea how it's different from AFS1
 
+		AFSType Type;
 		AFSMetaMode MetaMode;
+		int BlockSize;
 
 		public enum AFSType
 		{
@@ -169,6 +171,7 @@ namespace ArchiveLib
 			if (afstype == AFSType.Unknown)
 				return;
 			int firstentryoffset = BitConverter.ToInt32(afsdata, 8);
+			BlockSize = 0x80000;
 			// Usually the offset for metadata is located after the entry table
 			int metaoffset = BitConverter.ToInt32(afsdata, 8 + numentries * 8);
 			MetaMode = AFSMetaMode.OffsetEndTable;
@@ -192,33 +195,38 @@ namespace ArchiveLib
 
 		public AFSFile(int count)
 		{
+			Type = AFSType.AFS1;
 			Entries = new List<GenericArchiveEntry>(count);
+			BlockSize = 2048;
 		}
 
-		public AFSFile(AFSMetaMode mode) 
+		public AFSFile(AFSType type, AFSMetaMode mode, int blockSize)
 		{
+			Type = type;
 			MetaMode = mode;
+			BlockSize = blockSize;
 		}
 
-		public byte[] GetBytes(AFSType type, AFSMetaMode metaMode)
+		public override byte[] GetBytes()
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(BitConverter.GetBytes(type == AFSType.AFS1 ? Magic_AFS1 : Magic_AFS2));
+			result.AddRange(BitConverter.GetBytes(Type == AFSType.AFS1 ? Magic_AFS1 : Magic_AFS2));
 			result.AddRange(BitConverter.GetBytes(Entries.Count));
 			// Entry table
-			int entrytablesize = Math.Max(2040, Entries.Count * 8 + (0x8 + Entries.Count * 8) % 2048);
+			int entrytablesize = Math.Max(BlockSize, Entries.Count * 8 + (0x8 + Entries.Count * 8) % BlockSize) -8;
 			byte[] entrytable = new byte[entrytablesize];
 			result.AddRange(entrytable);
 			// Align entries by 2048
-			int firstentryaligned = entrytablesize + 8;
+			int firstentryaligned = result.Count;
 			int entrytableend = 8 + Entries.Count * 8;
 			int currentoffset = firstentryaligned;
 			// Add entries
 			for (int index = 0; index < Entries.Count; index++)
 			{
 				// Align by 2048
-				int sizealigned = Entries[index].Data.Length + (2048-Entries[index].Data.Length % 2048);
+				int sizealigned = Entries[index].Data.Length;
 				byte[] entryaligned = new byte[sizealigned];
+				//Console.WriteLine("Entry {0} offset: {1} size: {2}", index, currentoffset.ToString("X8"), sizealigned.ToString("X"));
 				Array.Copy(Entries[index].Data, entryaligned, Entries[index].Data.Length);
 				// Save data
 				result.AddRange(entryaligned);
@@ -227,21 +235,30 @@ namespace ArchiveLib
 				// Set size in the entry table
 				Array.Copy(BitConverter.GetBytes((uint)Entries[index].Data.Length), 0, entrytable, index * 8 + 4, 4);
 				currentoffset += sizealigned;
+				if (currentoffset % 2048 != 0)				
+				{
+					do
+					{
+						currentoffset++;
+						result.Add(0);
+					}
+					while (currentoffset % 2048 != 0);
+				}
 			}
 			// Set meta offset
 			int metaoffset = result.Count;
 			// Set metadata
-			if (metaMode != AFSMetaMode.NoMeta)
+			if (MetaMode != AFSMetaMode.NoMeta)
 			{
 				// Add meta entries
 				foreach (AFSEntry entry in Entries)
 				{
 					result.AddRange(new AFSMetadata(entry.Name, entry.Timestamp, entry.CustomData).GetBytes());
 				}
-				// Add bytes to align with 2048
-				if (result.Count % 2048 != 0)
+				// Add bytes to align with blocksize
+				if (result.Count % BlockSize != 0)
 				{
-					while (result.Count % 2048 > 0)
+					while (result.Count % BlockSize > 0)
 						result.Add(0);
 				}
 			}
@@ -249,17 +266,16 @@ namespace ArchiveLib
 			byte[] resultarr = result.ToArray();
 			// Copy entry table
 			Array.Copy(entrytable, 0, resultarr, 8, entrytable.Length);
-			// Set meta offset
-			Array.Copy(BitConverter.GetBytes(metaoffset), 0, resultarr, metaMode == AFSMetaMode.OffsetBeforeFirstEntry ? firstentryaligned - 0x8 : entrytableend, 4);
-			// Set meta size
-			Array.Copy(BitConverter.GetBytes(48 * Entries.Count), 0, resultarr, metaMode == AFSMetaMode.OffsetBeforeFirstEntry ? firstentryaligned - 0x4 : entrytableend + 4, 4);
+			if (MetaMode != AFSMetaMode.NoMeta)
+			{
+				// Set meta offset
+				Array.Copy(BitConverter.GetBytes(metaoffset), 0, resultarr, MetaMode == AFSMetaMode.OffsetBeforeFirstEntry ? firstentryaligned - 0x8 : entrytableend, 4);
+				// Set meta size
+				Array.Copy(BitConverter.GetBytes(48 * Entries.Count), 0, resultarr, MetaMode == AFSMetaMode.OffsetBeforeFirstEntry ? firstentryaligned - 0x4 : entrytableend + 4, 4);
+			}
 			return resultarr;
 		}
 
-		public override byte[] GetBytes()
-		{
-			return GetBytes(AFSType.AFS1, MetaMode);
-		}
 	}
 
 	public class AFSEntry : GenericArchiveEntry
