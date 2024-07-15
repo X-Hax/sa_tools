@@ -1013,7 +1013,7 @@ namespace TextureEditor
 							// Non-indexed
 							else
 							{
-								exportData = EncodeDDSorPNG(tex, true);
+								exportData = EncodeDDSorPNG(tex, useDDSInTexturePacksToolStripMenuItem.Checked, true);
 							}
 							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
