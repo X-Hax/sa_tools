@@ -78,6 +78,7 @@ namespace ArchiveTool
                     }
                     switch (extension)
                     {
+                        case ".kat":  
                         case ".afs":  
                         case ".pak":  
                         case ".rel":

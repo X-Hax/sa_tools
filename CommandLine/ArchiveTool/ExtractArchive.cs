@@ -36,6 +36,9 @@ namespace ArchiveTool
                 case (".afs"):
 					arc = new AFSFile(arcdata);
 					break;
+				case (".kat"):
+					arc = new KATFile(arcdata);
+					break;
 				case (".pvmx"):
                     arc = new PVMXFile(arcdata);
                     break;
