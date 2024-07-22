@@ -17,7 +17,6 @@ using Point = System.Drawing.Point;
 using SplitTools;
 using SAModel.SAEditorCommon.ProjectManagement;
 using static SAModel.SAEditorCommon.SettingsFile;
-using System.Net.NetworkInformation;
 
 namespace SAModel.SAMDL
 {
@@ -1984,7 +1983,7 @@ namespace SAModel.SAMDL
 				splitToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				sortToolStripMenuItem.Enabled = true;
 				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				exportContextMenuItem.Enabled = selectedObject.Attach != null;
+				exportContextMenuItem.Enabled = selectedObject != null;
 				importContextMenuItem.Enabled = true;
 				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
 				moveDownToolStripMenuItem.Enabled = selectedObject.Parent != null && selectedObject.Parent.Children.IndexOf(selectedObject) < selectedObject.Parent.Children.Count - 1;
@@ -3524,16 +3523,38 @@ namespace SAModel.SAMDL
 
 		private void exportContextMenuItem_Click(object sender, EventArgs e)
 		{
+			string filterSamdl;
+			string defext;
+			switch (selectedObject.GetModelFormat())
+			{
+				case ModelFormat.Chunk:
+					filterSamdl = "SAModel Chunk (*.sa2mdl)|*.sa2mdl";
+					defext = "sa2mdl";
+					break;
+				case ModelFormat.GC:
+					filterSamdl = "SAModel Ginja (*.sa2bmdl)|*.sa2bmdl";
+					defext = "sa2bmdl";
+					break;
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+				default:
+					filterSamdl = "SAModel Basic (*.sa1mdl)|*.sa1mdl";
+					defext = "sa1mdl";
+					break;
+			}
 			using (SaveFileDialog a = new SaveFileDialog
 			{
-				DefaultExt = "dae",
-				Filter = "Collada (*.dae)|*.dae|Wavefront (*.obj)|*.obj",
+				DefaultExt = defext,
+				Filter = filterSamdl + "|Collada (*.dae)|*.dae|Wavefront (*.obj)|*.obj",
 				FileName = selectedObject.Name
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportModel_Assimp(a.FileName, true);
+					if (Path.GetExtension(a.FileName).ToLowerInvariant().Contains("sa"))
+						ModelFile.CreateFile(a.FileName, selectedObject, null, modelAuthor, modelDescription, new Dictionary<uint, byte[]>(), selectedObject.GetModelFormat());
+					else
+						ExportModel_Assimp(a.FileName, true);
 				}
 			}
 		}
