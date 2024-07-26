@@ -17,6 +17,7 @@ namespace SAModel
 
 		public Vertex Position { get; set; }
 		public Rotation Rotation { get; set; }
+		[Description("Makes the node bigger or smaller. In Landtable items, it is used for collision but not for rendering.")]
 		public Vertex Scale { get; set; }
 
 		[Browsable(false)]
@@ -29,23 +30,32 @@ namespace SAModel
 		[Browsable(false)]
 		public NJS_OBJECT Sibling { get; private set; }
 
+		[Description("The label used to identify this node.")]
 		public string Name { get; set; }
 
+		[Description("Do not reposition this node.")]
 		public bool IgnorePosition { get; set; }
-
+		
+		[Description("Do not rotate this node.")]
 		public bool IgnoreRotation { get; set; }
 
+		[Description("Do not scale this node.")]
 		public bool IgnoreScale { get; set; }
 
+		[Description("Use inverse rotation for this node.")]
 		public bool RotateZYX { get; set; }
 
+		[Description("Do not render this node (makes the model invisible).")]
 		public bool SkipDraw { get; set; }
 
+		[Description("Do not process this node's children. This flag should always be set if the node has no child nodes.")]
 		public bool SkipChildren { get; set; }
 
+		[Description("Include this node in NJS_MOTION processing. If this flag is disabled, motions will skip this node.")]
 		[DefaultValue(true)]
 		public bool Animate { get; set; }
 
+		[Description("Include this node in shape motion processing. If this flag is disabled, shape motions will skip this node.")]
 		[DefaultValue(true)]
 		public bool Morph { get; set; }
 
