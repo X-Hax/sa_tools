@@ -271,7 +271,6 @@ namespace SAModel.SAMDL
 			log.Add("OS Version: ");
 			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
 			log.WriteLog();
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
