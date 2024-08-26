@@ -773,6 +773,7 @@ namespace TextureEditor
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
 									name = name.Substring(0, 0x1C);
+								name = name.Trim();
 								pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb));
 								// Create a new PAK INF entry
 								PAKInfEntry entry = new PAKInfEntry();
