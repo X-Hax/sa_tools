@@ -419,13 +419,15 @@ namespace TextureEditor
 						// Load texture data
 						try
 						{
-							byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
+							// The substring thing removes the ".dds" extension in the entry name
+							// Names are trimmed to avoid trailing spaces which the game ignores but the tools don't
+							byte[] dds = pak.Entries.First((file) => file.Name.Substring(0, file.Name.Length - 4).Trim().Equals(entry.GetFilename().Trim(), StringComparison.OrdinalIgnoreCase)).Data;
 							MemoryStream str = new MemoryStream(dds);
-							newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+							newtextures.Add(new PakTextureInfo(entry.GetFilename().Trim(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
 						}
 						catch (Exception ex)
 						{
-							MessageBox.Show(this, $"Could not add texture {entry.GetFilename() + ".dds: " + ex.Message.ToString() + "."}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							MessageBox.Show(this, $"Could not add texture {entry.GetFilename().Trim() + ".dds: " + ex.Message.ToString() + "."}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						}
 					}
 				}
