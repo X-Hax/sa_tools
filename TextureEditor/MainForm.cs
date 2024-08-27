@@ -425,7 +425,7 @@ namespace TextureEditor
 						}
 						catch (Exception ex)
 						{
-							MessageBox.Show($"Could not add texture {entry.GetFilename() + ".dds"}");
+							MessageBox.Show(this, $"Could not add texture {entry.GetFilename() + ".dds: " + ex.Message.ToString() + "."}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						}
 					}
 				}
