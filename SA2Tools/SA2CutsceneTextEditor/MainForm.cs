@@ -112,6 +112,7 @@ namespace SA2CutsceneTextEditor
 
 			ByteConverter.BigEndian = bigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
+			useSJIS = false;
 			if (Path.GetFileNameWithoutExtension(filename).Last() == '0' || 
 				Path.GetFileNameWithoutExtension(filename).Last() == 'E' || 
 				Path.GetFileNameWithoutExtension(filename).Last() == 'e')
