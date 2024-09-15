@@ -273,8 +273,11 @@ namespace SAModel.SAEditorCommon
 		private void CheckAllButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+			if (page == null)
+				return;
 			ListView listView = assemblyListViews[page.Text];
-
+			if (listView == null)
+				return;
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
@@ -286,8 +289,11 @@ namespace SAModel.SAEditorCommon
 		private void CheckModifiedButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+			if (page == null)
+				return;
 			ListView listView = assemblyListViews[page.Text];
-
+			if (listView == null)
+				return;
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
@@ -299,8 +305,11 @@ namespace SAModel.SAEditorCommon
 		private void UncheckAllButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+			if (page == null)
+				return;
 			ListView listView = assemblyListViews[page.Text];
-
+			if (listView == null)
+				return;
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
