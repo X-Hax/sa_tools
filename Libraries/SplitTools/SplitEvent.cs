@@ -88,6 +88,7 @@ namespace SplitTools.SAArc
 					ByteConverter.BigEndian = true;
 					ini.BigEndian = true;
 					ini.Game = Game.SA2B;
+					ini.DCBeta = false;
 					dcbeta = false;
 					if (fc[0x2B] <= 0x01 && fc[0x2A] == 0)
 					{
@@ -129,11 +130,13 @@ namespace SplitTools.SAArc
 					{
 						Console.WriteLine("File is in DC Beta format.");
 						dcbeta = true;
+						ini.DCBeta = true;
 					}
 					else
 					{
 						Console.WriteLine("File is in DC format.");
 						dcbeta = false;
+						ini.DCBeta = false;
 						motionnames = dctogcmotions;
 					}
 
@@ -401,6 +404,17 @@ namespace SplitTools.SAArc
 							ini.Upgrades.Add(info);
 							ptr += 0x14;
 						}
+						// Padding in the event the user wants to convert a DC Beta cutscene to other formats
+						UpgradeInfo pad = new UpgradeInfo();
+						pad.RootNode = "null";
+						pad.AttachNode1 = "null";
+						pad.Model1 = "null";
+						pad.AttachNode2 = "null";
+						pad.Model2 = "null";
+						ini.Upgrades.Add(pad);
+						ini.Upgrades.Add(pad);
+						ini.Upgrades.Add(pad);
+						ini.Upgrades.Add(pad);
 						ini.UpgradeCount = upcount;
 						if (upcount == 0)
 							Console.WriteLine("Event contains no character upgrades.");
@@ -1068,9 +1082,12 @@ namespace SplitTools.SAArc
 
 				uint gamekey;
 				bool battle = evinfo.BattleFormat;
+				bool dcbeta = evinfo.DCBeta;
 				ByteConverter.BigEndian = evinfo.BigEndian;
 				if (evinfo.Game == Game.SA2 || ((!evinfo.BattleFormat) && (!evinfo.BigEndian)))
 					gamekey = 0xC600000;
+				else if ((!evinfo.BattleFormat) && evinfo.BigEndian)
+					gamekey = 0x812FFE60;
 				else
 					gamekey = 0x8125FE60;
 				// This code will only write event data that's compatible with DC final and SA2B final
@@ -1082,29 +1099,36 @@ namespace SplitTools.SAArc
 					{
 						case "dc":
 							battle = false;
+							dcbeta = false;
 							ByteConverter.BigEndian = false;
 							gamekey = 0xC600000;
 							break;
 						case "dcbeta":
 							battle = false;
+							dcbeta = true;
 							ByteConverter.BigEndian = false;
 							gamekey = 0xC600000;
 							break;
 						case "battle":
 							battle = true;
+							dcbeta = false;
 							ByteConverter.BigEndian = true;
 							gamekey = 0x8125FE60;
 							break;
 						case "battlebeta":
 							battle = false;
+							dcbeta = false;
 							ByteConverter.BigEndian = true;
 							gamekey = 0x812FFE60;
 							break;
 						default:
 							battle = evinfo.BattleFormat;
+							dcbeta = evinfo.DCBeta;
 							ByteConverter.BigEndian = evinfo.BigEndian;
 							if (evinfo.Game == Game.SA2 || ((!evinfo.BattleFormat) && (!evinfo.BigEndian)))
 								gamekey = 0xC600000;
+							else if ((!evinfo.BattleFormat) && evinfo.BigEndian)
+								gamekey = 0x812FFE60;
 							else
 								gamekey = 0x8125FE60;
 							break;
@@ -1113,9 +1137,12 @@ namespace SplitTools.SAArc
 				else
 				{
 					battle = evinfo.BattleFormat;
+					dcbeta = evinfo.DCBeta;
 					ByteConverter.BigEndian = evinfo.BigEndian;
 					if (evinfo.Game == Game.SA2 || ((!evinfo.BattleFormat) && (!evinfo.BigEndian)))
 						gamekey = 0xC600000;
+					else if ((!evinfo.BattleFormat) && evinfo.BigEndian)
+						gamekey = 0x812FFE60;
 					else
 						gamekey = 0x8125FE60;
 				}
@@ -1463,9 +1490,87 @@ namespace SplitTools.SAArc
 					int upmodelnum = 0;
 					if (battle)
 						upmodelnum = 18;
+					else if (dcbeta)
+						upmodelnum = 14;
 					else
 						upmodelnum = 16;
-					for (int u = 0; u < upmodelnum; u++)
+					if (dcbeta)
+					{
+						if (evinfo.Upgrades[6].UpgradeName != "Knuckles' Shovel Claws")
+						{
+							UpgradeInfo sclawL = evinfo.Upgrades[6];
+							UpgradeInfo sclawR = evinfo.Upgrades[7];
+							UpgradeInfo hgloveL = evinfo.Upgrades[8];
+							UpgradeInfo hgloveR = evinfo.Upgrades[9];
+							evinfo.Upgrades[6].AttachNode2 = sclawR.AttachNode1;
+							evinfo.Upgrades[6].Model2 = sclawR.Model1;
+							evinfo.Upgrades[7].AttachNode1 = hgloveL.AttachNode1;
+							evinfo.Upgrades[7].Model1 = hgloveL.Model1;
+							evinfo.Upgrades[7].AttachNode2 = hgloveR.AttachNode1;
+							evinfo.Upgrades[7].Model2 = hgloveR.Model1;
+							evinfo.Upgrades[8] = evinfo.Upgrades[10];
+							evinfo.Upgrades[9] = evinfo.Upgrades[11];
+							evinfo.Upgrades[10] = evinfo.Upgrades[12];
+							evinfo.Upgrades[11] = evinfo.Upgrades[13];
+							evinfo.Upgrades[12] = evinfo.Upgrades[14];
+							evinfo.Upgrades[13] = evinfo.Upgrades[15];
+						}
+					}
+					else
+					{
+						if (evinfo.Upgrades[6].UpgradeName != "Knuckles' Shovel Claw L")
+						{
+							UpgradeInfo sclaw = evinfo.Upgrades[6];
+							UpgradeInfo hglove = evinfo.Upgrades[7];
+							UpgradeInfo sun = evinfo.Upgrades[8];
+							UpgradeInfo air = evinfo.Upgrades[9];
+							UpgradeInfo nail = evinfo.Upgrades[10];
+							UpgradeInfo scope = evinfo.Upgrades[11];
+							UpgradeInfo boot = evinfo.Upgrades[12];
+							UpgradeInfo plate = evinfo.Upgrades[13];
+
+							UpgradeInfo sclawL = new UpgradeInfo();
+							UpgradeInfo sclawR = new UpgradeInfo();
+							UpgradeInfo hgloveL = new UpgradeInfo();
+							UpgradeInfo hgloveR = new UpgradeInfo();
+
+							sclawL.RootNode = sclaw.RootNode;
+							sclawL.AttachNode1 = sclaw.AttachNode1;
+							sclawL.Model1 = sclaw.Model1;
+							sclawL.AttachNode2 = null;
+							sclawL.Model2 = null;
+
+							sclawR.RootNode = sclaw.RootNode;
+							sclawR.AttachNode1 = sclaw.AttachNode2;
+							sclawR.Model1 = sclaw.Model2;
+							sclawR.AttachNode2 = null;
+							sclawR.Model2 = null;
+
+							hgloveL.RootNode = hglove.RootNode;
+							hgloveL.AttachNode1 = hglove.AttachNode1;
+							hgloveL.Model1 = hglove.Model1;
+							hgloveL.AttachNode2 = null;
+							hgloveL.Model2 = null;
+
+							hgloveR.RootNode = hglove.RootNode;
+							hgloveR.AttachNode1 = hglove.AttachNode2;
+							hgloveR.Model1 = hglove.Model2;
+							hgloveR.AttachNode2 = null;
+							hgloveR.Model2 = null;
+
+							evinfo.Upgrades[6] = sclawL;
+							evinfo.Upgrades[7] = sclawR;
+							evinfo.Upgrades[8] = hgloveL;
+							evinfo.Upgrades[9] = hgloveR;
+							evinfo.Upgrades[10] = sun;
+							evinfo.Upgrades[11] = air;
+							evinfo.Upgrades[12] = nail;
+							evinfo.Upgrades[13] = scope;
+							evinfo.Upgrades[14] = boot;
+							evinfo.Upgrades[15] = plate;
+						}
+					}
+						for (int u = 0; u < upmodelnum; u++)
 					{
 						UpgradeInfo upgrades = evinfo.Upgrades[u];
 						if (upgrades.RootNode != "null")
@@ -1672,6 +1777,9 @@ namespace SplitTools.SAArc
 								assetbytes.AddRange(ByteConverter.GetBytes(labels[scn.Entities[a].ShadowModel]));
 							else
 								assetbytes.AddRange(new byte[4]);
+							// This segment would point to individual texture animation functions
+							// akin to what's used for models like the fire somersault aura.
+							// Predictably, no cutscenes use this variation of the feature.
 							assetbytes.AddRange(new byte[4]);
 							assetbytes.AddRange(scn.Entities[a].Position.GetBytes());
 							assetbytes.AddRange(ByteConverter.GetBytes(scn.Entities[a].Flags));
@@ -1692,6 +1800,9 @@ namespace SplitTools.SAArc
 								assetbytes.AddRange(ByteConverter.GetBytes(labels[scn.Entities[a].ShapeMotion]));
 							else
 								assetbytes.AddRange(new byte[4]);
+							// This segment would point to individual texture animation functions
+							// akin to what's used for models like the fire somersault aura.
+							// Predictably, no cutscenes use this variation of the feature.
 							assetbytes.AddRange(new byte[4]);
 							assetbytes.AddRange(scn.Entities[a].Position.GetBytes());
 							assetbytes.AddRange(ByteConverter.GetBytes(scn.Entities[a].Flags));
@@ -2051,7 +2162,8 @@ namespace SplitTools.SAArc
 				int ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
-					mtn = new NJS_MOTION(fc, ptr3, key, cnt);
+					mtn = new NJS_MOTION(fc, ptr3, key, cnt, shortrot: false, shortcheck: false);
+					mtn.ShortRot = false;
 					mtn.Description = meta;
 					mtn.OptimizeShape();
 				}
@@ -2167,7 +2279,7 @@ namespace SplitTools.SAArc
 					motions.Add(null);
 				else
 				{
-					mtn = new NJS_MOTION(fc, ptr, 0, nummdl);
+					mtn = new NJS_MOTION(fc, ptr, 0, nummdl, shortrot: false, shortcheck: false);
 					mtn.OptimizeShape();
 					motions.Add(mtn);
 					if (nummdl == 1 && camcheck2 == 0x1C10004)
@@ -2225,7 +2337,7 @@ namespace SplitTools.SAArc
 					motions.Add(i, null);
 				else
 				{
-					mtn = new NJS_MOTION(fc, ptr, 0, nummdl).Name;
+					mtn = new NJS_MOTION(fc, ptr, 0, nummdl, shortrot: false, shortcheck: false).Name;
 					motions.Add(i, mtn);
 					if (nummdl == 1 && camcheck2 == 0x1C10004)
 					{
@@ -2321,6 +2433,7 @@ namespace SplitTools.SAArc
 		}
 		public bool BigEndian { get; set; }
 		public bool BattleFormat { get; set; }
+		public bool DCBeta { get; set; }
 		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
 		public int UpgradeCount { get; set; }
 		public List<UpgradeInfo> Upgrades { get; set; } = new List<UpgradeInfo>();

@@ -230,6 +230,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("MTNLabelFile")]
 			public string MTNLabelFile { get; set; }
 			/// <summary>
+			/// List of external motions that the model pack uses and are not part of the corresponding MTN archive.
+			/// </summary>
+			[XmlAttribute("EXMTNFile")]
+			public string EXMTNFile { get; set; }
+			/// <summary>
 			/// List of Motion files uses by the Model File.
 			/// </summary>
 			[XmlElement("MotionFile")]
@@ -666,6 +671,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 
 			string mtnlabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.MTNLabelFile.ToLower() + ".ini"));
 
+			string exmtnfile = null;
+			
+			if (splitMDL.EXMTNFile != null)
+			{
+				exmtnfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.EXMTNFile.ToLower() + ".ini"));
+			}
+
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
 			if (progress != null)
@@ -689,7 +701,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile);
+				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile, exmtnfile);
 		}
 
 		/// <summary>

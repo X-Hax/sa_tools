@@ -10,7 +10,7 @@ namespace SplitTools.SAArc
 {
 	public static class sa2MDL
 	{
-		public static void Split(string filePath, string outputFolder, string[] animationPaths, string mdllabelfile = null, string mtnlabelfile = null)
+		public static void Split(string filePath, string outputFolder, string[] animationPaths, string mdllabelfile = null, string mtnlabelfile = null, string exmtnfile = null)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -77,6 +77,16 @@ namespace SplitTools.SAArc
 				}
 				string[] mtnmetadata = new string[0];
 
+				// External motion paths
+				Dictionary<int, string> mtnpathlist = new Dictionary<int, string>();
+				Dictionary<int, string> mtnsplitpaths = new Dictionary<int, string>();
+				if (exmtnfile != null) exmtnfile = Path.GetFullPath(exmtnfile);
+				if (File.Exists(exmtnfile))
+				{
+					mtnsplitpaths = IniSerializer.Deserialize<Dictionary<int, string>>(exmtnfile);
+				}
+				string[] exmtndata = new string[0];
+
 				// getting model pointers
 				int address = 0;
 				int i = ByteConverter.ToInt32(mdlfile, address);
@@ -134,9 +144,10 @@ namespace SplitTools.SAArc
 						int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
 						if (!processedanims.ContainsKey(aniaddr))
 						{
-							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2));
+							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2), shortrot: false, shortcheck: false);
 							animfns[i] = Path.Combine(anifilename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 							anims[i].Description = animmeta;
+							anims[i].ShortRot = false;
 							anims[i].Save(animfns[i]);
 							processedanims[aniaddr] = i;
 						}
@@ -173,6 +184,13 @@ namespace SplitTools.SAArc
 							outResult += ("|" + mdlmetadata[2]);
 						mdlsectionlist.Add(model.Key, outResult);
 					}
+					// External motions for SAMDL Project Mode
+					if (exmtnfile != null && mtnsplitpaths.ContainsKey(model.Key))
+					{
+						exmtndata = mtnsplitpaths[model.Key].Split(','); // Assigns external motions based on model ID
+						animlist.AddRange(exmtndata);
+					}
+
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
 						null, null, null, ModelFormat.Chunk);
