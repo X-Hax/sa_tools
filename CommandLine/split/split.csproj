@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<OutputPath>..\..\build\bin\</OutputPath>
@@ -11,7 +11,7 @@
 		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+	  <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
