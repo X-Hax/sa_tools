@@ -3,14 +3,13 @@ SA Tools is a toolkit for modifying and extracting data from the Sonic Adventure
 
 ## Download SA Tools
 
-[Download SA Tools - x64 version (recommended)](https://mm.reimuhakurei.net/SA%20Tools%20x64.7z)
+[![Build status](https://ci.appveyor.com/api/projects/status/hobk9b466cvfrhov?svg=true)](https://ci.appveyor.com/project/PiKeyAr/sa-tools)
 
-[Download SA Tools - x86 version](https://mm.reimuhakurei.net/SA%20Tools%20x86.7z)
+[Download SA Tools - x64 version (recommended)](https://github.com/X-Hax/sa_tools/releases/latest/download/SA.Tools.x64.7z)
+
+[Download SA Tools - x86 version](https://github.com/X-Hax/sa_tools/releases/latest/download/SA.Tools.x86.7z)
 
 [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) - install the `Desktop` runtime matching the version of SA Tools (x86 or x64).
-
-Development build (x64, manual updates only): 
-[![Build status](https://ci.appveyor.com/api/projects/status/hobk9b466cvfrhov?svg=true)](https://ci.appveyor.com/project/PiKeyAr/sa-tools)
 
 ## Quick Links
 The following links will direct you to pages on the [wiki](https://github.com/X-Hax/sa_tools/wiki) to help get you started with modding.
