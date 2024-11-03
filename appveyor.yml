@@ -1,6 +1,12 @@
-version: .{build}
+version: '{build}'
+branches:
+  only:
+  - master
 image: Visual Studio 2022
 configuration: Release
+platform:
+- x64
+- x86
 init:
 - ps: Update-AppveyorBuild -Version "$(Get-Date -format yyyy.MM.dd.HH.mm.ss)"
 nuget:
@@ -20,6 +26,9 @@ after_build:
 
     cd C:\projects\sa-tools\output
     
-    7z a "C:\projects\sa-tools\SA Tools.7z" * -mx9
+    7z a "C:\projects\sa-tools\SA Tools %PLATFORM%.7z" * -mx9
 artifacts:
-- path: SA Tools.7z
+- path: SA Tools x64.7z
+- path: SA Tools x86.7z
+
+deploy: off
