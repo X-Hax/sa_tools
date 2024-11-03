@@ -1,20 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.Net;
-using System.ComponentModel;
 using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using SplitTools.SplitDLL;
-using System.Net.Http;
-using System.Reflection.Emit;
-using Microsoft.VisualBasic.Logging;
-using SAModel.SAEditorCommon.DataTypes;
-using SAModel.SAEditorCommon;
+using SAToolsHub.Updater;
+using Newtonsoft.Json;
 
 namespace SAToolsHub
 {
@@ -1530,7 +1526,7 @@ namespace SAToolsHub
 
 			hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
 
-			string stringdl = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
+			string currentTagName = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
 
 			if (!File.Exists("satoolsver.txt"))
 			{
@@ -1541,76 +1537,119 @@ namespace SAToolsHub
 					return false;
 			}
 
-			using (var wc = new WebClient())
+			// 64 bit check
+			string assetName = "SA.Tools.x86.7z";
+			if (Environment.Is64BitOperatingSystem)
 			{
-				try
+				// If the system and the process are both 64 bit, get the 64 bit archive
+				if (Environment.Is64BitProcess)
+					assetName = "SA.Tools.x64.7z";
+				// If the system is 64 bit but the process is 32 bit, ask the user what to do
+				else if (!Environment.Is64BitProcess && !hubSettings.DisableX86Warning)
 				{
-					string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + stringdl);
-					if (msg.Length > 0)
+					DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\n\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+					switch (updateX86)
 					{
-						using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))
-						{
-							if (dlg.ShowDialog(this) == DialogResult.Yes)
-							{
-								DialogResult result = DialogResult.OK;
-								do
-								{
-									try
-									{
-										if (!Directory.Exists(updatePath))
-										{
-											Directory.CreateDirectory(updatePath);
-										}
-									}
-									catch (Exception ex)
-									{
-										result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
-											+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admininstrator."
-																	   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
-										if (result == DialogResult.Cancel) return false;
-									}
-								} while (result == DialogResult.Retry);
-								// 64 bit check
-								string toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x86.7z";
-								if (Environment.Is64BitOperatingSystem)
-								{
-									// If the system and the process are both 64 bit, get the 64 bit archive
-									if (Environment.Is64BitProcess)
-										toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x64.7z";
-									// If the system is 64 bit but the process is 32 bit, ask the user what to do
-									else if (!Environment.Is64BitProcess && !hubSettings.DisableX86Warning)
-									{
-										DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\n\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-										switch (updateX86)
-										{
-											case DialogResult.Yes:
-												toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x64.7z";
-												break;
-											case DialogResult.No:
-												break;
-											case DialogResult.Cancel:
-												return false;
-										}
-									}
-								}
-								using (var dlg2 = new Updater.LoaderDownloadDialog(toolsArchiveFilename, updatePath))
-									if (dlg2.ShowDialog(this) == DialogResult.OK)
-									{
-										Close();
-										return true;
-									}
-							}
-						}
+						case DialogResult.Yes:
+							assetName = "SA.Tools.x64.7z";
+							break;
+						case DialogResult.No:
+							break;
+						case DialogResult.Cancel:
+							return false;
 					}
-					tsUpdate.Enabled = true;
-					checkForUpdatesToolStripMenuItem.Enabled = true;
-				}
-				catch
-				{
-					MessageBox.Show(this, "Unable to retrieve update information.", "SA Tools");
 				}
 			}
 
+			// Start update check
+			using (var wc = new Updater.UpdaterWebClient())
+			{
+				List<GitHubRelease> releases;
+				string text_releases = string.Empty;
+				string url_releases = "https://api.github.com/repos/x-hax/sa_tools/releases";
+				try
+				{
+					text_releases = wc.DownloadString(url_releases);
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(this, string.Format("Error getting SA Tools GitHub repo data from\n`{0}`.\n{1}\n\nIf this is a 403 error, you may be hitting a rate limit. Wait a while and try again.", url_releases, e.Message.ToString()), "SA Tools Hub Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+				releases = JsonConvert.DeserializeObject<List<GitHubRelease>>(text_releases).Where(x => !x.Draft && !x.PreRelease).ToList();
+				if (releases == null || releases.Count == 0)
+				{
+					MessageBox.Show(this, string.Format("No GitHub releases found for URL " + url_releases), "SA Tools Hub Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+
+				GitHubRelease latestRelease = null;
+				GitHubAsset latestAsset = null;
+
+				DateTime dateCheck = DateTime.MinValue;
+
+				foreach (GitHubRelease release in releases)
+				{
+					GitHubAsset asset;
+					asset = release.Assets
+						.FirstOrDefault(x => x.Name.Equals(assetName, StringComparison.OrdinalIgnoreCase));
+
+					if (asset == null)
+						continue;
+
+					DateTime uploaded = DateTime.Parse(asset.Uploaded, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
+					if (uploaded > dateCheck)
+					{
+						latestRelease = release;
+						latestAsset = asset;
+						dateCheck = uploaded;
+					}
+				}
+
+				if (latestRelease == null || latestAsset == null)
+				{
+					return false;
+				}
+
+				if (latestRelease.TagName != currentTagName)
+				{
+					string body = Regex.Replace(latestRelease.Body, "(?<!\r)\n", "\r\n");
+
+					using (var dlg = new Updater.UpdateMessageDialog("SA Tools", body))
+					{
+						if (dlg.ShowDialog(this) == DialogResult.Yes)
+						{
+							DialogResult result = DialogResult.OK;
+							do
+							{
+								try
+								{
+									if (!Directory.Exists(updatePath))
+									{
+										Directory.CreateDirectory(updatePath);
+									}
+								}
+								catch (Exception ex)
+								{
+									result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
+										+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admininstrator."
+																   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+									if (result == DialogResult.Cancel) return false;
+								}
+							} while (result == DialogResult.Retry);
+
+							using (var dlg2 = new Updater.LoaderDownloadDialog(latestAsset.DownloadUrl, updatePath))
+								if (dlg2.ShowDialog(this) == DialogResult.OK)
+								{
+									Close();
+									return true;
+								}
+						}
+					}
+				}
+				tsUpdate.Enabled = true;
+				checkForUpdatesToolStripMenuItem.Enabled = true;
+			}
 			return false;
 		}
 		#endregion
