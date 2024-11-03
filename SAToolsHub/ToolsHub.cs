@@ -11,6 +11,7 @@ using SplitTools;
 using SplitTools.SplitDLL;
 using SAToolsHub.Updater;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace SAToolsHub
 {
@@ -1527,8 +1528,10 @@ namespace SAToolsHub
 			hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
 
 			string currentTagName = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
+			uint currentID = 0;
+			bool cancelled = false;
 
-			if (!File.Exists("satoolsver.txt"))
+			if (!File.Exists("satoolsver.txt") || !uint.TryParse(currentTagName, out currentID))
 			{
 				if (!force)
 					return false;
@@ -1564,6 +1567,7 @@ namespace SAToolsHub
 			// Start update check
 			using (var wc = new Updater.UpdaterWebClient())
 			{
+				StringBuilder changelog = new StringBuilder();
 				List<GitHubRelease> releases;
 				string text_releases = string.Empty;
 				string url_releases = "https://api.github.com/repos/x-hax/sa_tools/releases";
@@ -1597,6 +1601,16 @@ namespace SAToolsHub
 					if (asset == null)
 						continue;
 
+					uint releaseID = 0;
+
+					if (uint.TryParse(release.TagName, out releaseID))
+					{
+						if (releaseID > currentID)
+						{
+							changelog.AppendLine(string.Format("Revision {0}\n{1}\n", release.TagName, release.Body));
+						}
+					}
+					
 					DateTime uploaded = DateTime.Parse(asset.Uploaded, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
 					if (uploaded > dateCheck)
 					{
@@ -1613,9 +1627,7 @@ namespace SAToolsHub
 
 				if (latestRelease.TagName != currentTagName)
 				{
-					string body = Regex.Replace(latestRelease.Body, "(?<!\r)\n", "\r\n");
-
-					using (var dlg = new Updater.UpdateMessageDialog("SA Tools", body))
+					using (var dlg = new Updater.UpdateMessageDialog("SA Tools", Regex.Replace(changelog.ToString(), "(?<!\r)\n", "\r\n").TrimEnd()))
 					{
 						if (dlg.ShowDialog(this) == DialogResult.Yes)
 						{
@@ -1644,11 +1656,19 @@ namespace SAToolsHub
 									Close();
 									return true;
 								}
+								else
+									cancelled = true;
 						}
+						else
+							cancelled = true;
 					}
 				}
 				tsUpdate.Enabled = true;
 				checkForUpdatesToolStripMenuItem.Enabled = true;
+			}
+			if (force && !cancelled)
+			{
+				MessageBox.Show(this, "SA Tools are up to date.", "SA Tools Hub", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			return false;
 		}
