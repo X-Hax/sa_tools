@@ -23,6 +23,8 @@ after_build:
     buildSATools
 
     cd C:\projects\sa-tools\output
+
+    echo | set /p dummyName="%APPVEYOR_BUILD_VERSION%" > satoolsver.txt
     
     7z a "C:\projects\sa-tools\SA Tools %PLATFORM%.7z" * -mx9
 artifacts:
