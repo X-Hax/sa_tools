@@ -1,7 +1,8 @@
 version: '{build}'
 branches:
   only:
-  - master
+  - master  
+skip_tags: true
 image: Visual Studio 2022
 configuration: Release
 platform:
