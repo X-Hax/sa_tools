@@ -7,8 +7,6 @@ configuration: Release
 platform:
 - x64
 - x86
-init:
-- ps: Update-AppveyorBuild -Version "$(Get-Date -format yyyy.MM.dd.HH.mm.ss)"
 nuget:
   project_feed: true
 before_build:
@@ -29,7 +27,7 @@ after_build:
     7z a "C:\projects\sa-tools\SA Tools %PLATFORM%.7z" * -mx9
 artifacts:
 - path: SA Tools $(platform).7z
-- name: satools
+  name: satools
 
 deploy:
 - provider: GitHub
