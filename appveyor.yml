@@ -28,12 +28,13 @@ after_build:
     
     7z a "C:\projects\sa-tools\SA Tools %PLATFORM%.7z" * -mx9
 artifacts:
-- path: SA Tools*.7z
+- path: SA Tools $(platform).7z
+- name: satools
 
 deploy:
 - provider: GitHub
   auth_token:
     secure: 3U0hYOvkeEJsoN2b4U/c9RTDxjcj9txunvCbWfkg5qvOSB1qOnh4fnIE9EK5yAXi2m8RJMO4Zr/UqiVMB9CDPulfPRcJSJ83rsmh1EXBipUs4K/RQmQHaDG6UiiNQ1Xg
-  artifact: SA Tools*.7z
+  artifact: satools
   on:
     branch: master
