@@ -31,7 +31,7 @@ namespace SAModel
 				case LandTableFormat.SA2B:
 					return 0x20;
 				default:
-					throw new ArgumentOutOfRangeException("format");
+					throw new ArgumentOutOfRangeException(nameof(format));
 			}
 		}
 

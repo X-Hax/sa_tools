@@ -136,7 +136,7 @@ namespace SAModel
 		{
 			if (polyType == Basic_PolyType.NPoly | polyType == Basic_PolyType.Strips)
 			{
-				throw new ArgumentException("Cannot create a Poly of that type!\nTry another overload to create Strip-type Polys.", "polyType");
+				throw new ArgumentException("Cannot create a Poly of that type!\nTry another overload to create Strip-type Polys.", nameof(polyType));
 			}
 			PolyName = $"poly_{Extensions.GenerateIdentifier()}";
 			PolyType = polyType;

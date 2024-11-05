@@ -43,7 +43,7 @@ namespace SAModel
 				case LandTableFormat.SA2:
 					return 0x20;
 				default:
-					throw new ArgumentOutOfRangeException("format");
+					throw new ArgumentOutOfRangeException(nameof(format));
 			}
 		}
 
@@ -705,7 +705,7 @@ namespace SAModel
 					magic = SA2BLVLVer;
 					break;
 				default:
-					throw new ArgumentException($"Cannot save {format} format levels to file!", "format");
+					throw new ArgumentException($"Cannot save {format} format levels to file!", nameof(format));
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();

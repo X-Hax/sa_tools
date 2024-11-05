@@ -326,7 +326,7 @@ namespace SAModel
 				case ModelFormat.XJ:
 					break;
 				default:
-					throw new ArgumentException($"Cannot save {format} format models to file!", "format");
+					throw new ArgumentException($"Cannot save {format} format models to file!", nameof(format));
 			}
 			Format = format;
 			Model = model;

@@ -1271,9 +1271,9 @@ namespace SAModel
 					case ChunkType.Volume_Strip:
 						throw new ArgumentException(
 							"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
-							"type");
+							nameof(type));
 				}
-				throw new ArgumentException("Unknown poly type!", "type");
+				throw new ArgumentException("Unknown poly type!", nameof(type));
 			}
 
 			public static Poly CreatePoly(ChunkType type, byte[] file, int address, byte userFlags)
@@ -1287,7 +1287,7 @@ namespace SAModel
 					case ChunkType.Volume_Strip:
 						return new Strip(file, address, userFlags);
 				}
-				throw new ArgumentException("Unknown poly type!", "type");
+				throw new ArgumentException("Unknown poly type!", nameof(type));
 			}
 
 			public abstract int Size { get; }
