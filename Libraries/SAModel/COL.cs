@@ -16,8 +16,8 @@ namespace SAModel
 
 		public SA1SurfaceFlags SurfaceFlags
 		{
-			get { return (SA1SurfaceFlags)Flags; }
-			set { Flags = (int)value; }
+			get => (SA1SurfaceFlags)Flags;
+			set => Flags = (int)value;
 		}
 
 		public static int Size(LandTableFormat format)

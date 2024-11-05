@@ -12,14 +12,9 @@ namespace SAModel
 		public double U { get; set; }
 		public double V { get; set; }
 
-		public static int Size
-		{
-			get { return 4; }
-		}
+		public static int Size => 4;
 
-		public UV()
-		{
-		}
+		public UV() { }
 
 		public UV(byte[] file, int address)
 			: this(file, address, false)
@@ -81,7 +76,7 @@ namespace SAModel
 
 		public override string ToString()
 		{
-			return U.ToString(NumberFormatInfo.InvariantInfo) + ", " + V.ToString(NumberFormatInfo.InvariantInfo);
+			return $"{U.ToString(NumberFormatInfo.InvariantInfo)}, {V.ToString(NumberFormatInfo.InvariantInfo)}";
 		}
 
 		public string ToStruct()
@@ -91,12 +86,12 @@ namespace SAModel
 				return "{ 0 }";
 			}
 
-			return "{ " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " }";
+			return $"{{ {(short)(U * 255.0)}, {(short)(V * 255.0)} }}";
 		}
 
 		public string ToNJA()
 		{
-			return "UV ( " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " )";
+			return $"UV ( {(short)(U * 255.0)}, {(short)(V * 255.0)} )";
 		}
 
 		public override bool Equals(object obj)

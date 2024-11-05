@@ -114,34 +114,42 @@ namespace SAModel.GC
 				case ParameterType.VtxAttrFmt:
 					if ((data >> 16) != 0x5)
 					{
-						writer.WriteLine("\tGJD_PARAM_IDX      " + "( " + ((GCVertexAttribute)(data >> 16)).ToString() + ", " + (byte)(data >> 8) + ", " + (byte)data + " ),");
+						writer.WriteLine(
+							$"\tGJD_PARAM_IDX      ( {((GCVertexAttribute)(data >> 16))}, {(byte)(data >> 8)}, {(byte)data} ),");
 					}
 					else
 					{
-						writer.WriteLine("\tGJD_PARAM_IDX      " + "( " + ((GCVertexAttribute)(data >> 16)).ToString() + ", " + (byte)(data >> 8) + ", " + (GCUVScale)(byte)data + " ),");
+						writer.WriteLine(
+							$"\tGJD_PARAM_IDX      ( {((GCVertexAttribute)(data >> 16))}, {(byte)(data >> 8)}, {(GCUVScale)(byte)data} ),");
 					}
 
 					break;
 				case ParameterType.IndexAttributeFlags:
-					writer.WriteLine("\tGJD_PARAM_VFLAGS   " + "( " + ((GCIndexAttributeFlags)data).ToString().Replace(", ", " | ") + " ),");
+					writer.WriteLine(
+						$"\tGJD_PARAM_VFLAGS   ( {((GCIndexAttributeFlags)data).ToString().Replace(", ", " | ")} ),");
 					break;
 				case ParameterType.Lighting:
-					writer.WriteLine("\tGJD_PARAM_LIGHT    " + "( " + (short)data + ", " + (byte)((data >> 16) & 0xF) + ", " + (byte)((data >> 20) & 0xF) + ", " + (byte)((data >> 24) & 0xFF) + " ),");
+					writer.WriteLine(
+						$"\tGJD_PARAM_LIGHT    ( {(short)data}, {(byte)((data >> 16) & 0xF)}, {(byte)((data >> 20) & 0xF)}, {(byte)((data >> 24) & 0xFF)} ),");
 					break;
 				case ParameterType.BlendAlpha:
-					writer.WriteLine("\tGJD_PARAM_BLEND    " + "( " + (GCBlendModeControl)((data >> 11) & 7) + ", " + (GCBlendModeControl)((data >> 8) & 7) + " ),");
+					writer.WriteLine(
+						$"\tGJD_PARAM_BLEND    ( {(GCBlendModeControl)((data >> 11) & 7)}, {(GCBlendModeControl)((data >> 8) & 7)} ),");
 					break;
 				case ParameterType.AmbientColor:
-					writer.WriteLine("\tGJD_PARAM_ACOLOR   " + "( " + (byte)data + ", " + (byte)(data >> 8) + ", " + (byte)(data >> 16) + ", " + (byte)(data >> 24) + " ),");
+					writer.WriteLine(
+						$"\tGJD_PARAM_ACOLOR   ( {(byte)data}, {(byte)(data >> 8)}, {(byte)(data >> 16)}, {(byte)(data >> 24)} ),");
 					break;
 				case ParameterType.Texture:
-					writer.WriteLine("\tGJD_PARAM_TEX      " + "( " + (short)data + ", " + ((GCTileMode)(short)(data >> 16)).ToString().Replace(", ", " | ") + " ),");
+					writer.WriteLine(
+						$"\tGJD_PARAM_TEX      ( {(short)data}, {((GCTileMode)(short)(data >> 16)).ToString().Replace(", ", " | ")} ),");
 					break;
 				case ParameterType.Unknown_9:
-					writer.WriteLine("\tGJD_PARAM_UNK      " + "( " + (short)data + ", " + ((short)(data >> 16)) + " ),");
+					writer.WriteLine($"\tGJD_PARAM_UNK      ( {(short)data}, {((short)(data >> 16))} ),");
 					break;
 				case ParameterType.TexCoordGen:
-					writer.WriteLine("\tGJD_PARAM_TEXCOORD " + "( " + (GCTexCoordID)((data >> 16) & 0xFF) + ", " + (GCTexGenType)((data >> 12) & 0xF) + ", " + (GCTexGenSrc)((data >> 4) & 0xFF) + ", " + (GCTexGenMatrix)(data & 0xF) + " ),");
+					writer.WriteLine(
+						$"\tGJD_PARAM_TEXCOORD ( {(GCTexCoordID)((data >> 16) & 0xFF)}, {(GCTexGenType)((data >> 12) & 0xF)}, {(GCTexGenSrc)((data >> 4) & 0xFF)}, {(GCTexGenMatrix)(data & 0xF)} ),");
 					break;
 			}
 		}

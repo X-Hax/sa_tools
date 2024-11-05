@@ -70,7 +70,7 @@ namespace SAModel.GC
 		}
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + x.ToNJA() + ", " + y.ToNJA() + ", " + z.ToNJA() + " ),");
+			writer.WriteLine($"\t{vtype}( {x.ToNJA()}, {y.ToNJA()}, {z.ToNJA()} ),");
 		}
 	}
 
@@ -82,25 +82,13 @@ namespace SAModel.GC
 
 		public float XF
 		{
-			get
-			{
-				return x / 256f;
-			}
-			set
-			{
-				x = (short)(value * 256);
-			}
+			get => x / 256f;
+			set => x = (short)(value * 256);
 		}
 		public float YF
 		{
-			get
-			{
-				return y / 256f;
-			}
-			set
-			{
-				y = (short)(value * 256);
-			}
+			get => y / 256f;
+			set => y = (short)(value * 256);
 		}
 
 		public UV(short x, short y)
@@ -146,7 +134,7 @@ namespace SAModel.GC
 		}
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + x.ToString() + ", " + y.ToString() + " ),");
+			writer.WriteLine($"\t{vtype}( {x}, {y} ),");
 		}
 	}
 
@@ -178,56 +166,32 @@ namespace SAModel.GC
 		/// </summary>
 		public float RedF
 		{
-			get
-			{
-				return red / 255.0f;
-			}
-			set
-			{
-				red = (byte)Math.Round(value * 255);
-			}
+			get => red / 255.0f;
+			set => red = (byte)Math.Round(value * 255);
 		}
 		/// <summary>
 		/// Green float value. Ranges from 0 - 1
 		/// </summary>
 		public float GreenF
 		{
-			get
-			{
-				return green / 255.0f;
-			}
-			set
-			{
-				green = (byte)Math.Round(value * 255);
-			}
+			get => green / 255.0f;
+			set => green = (byte)Math.Round(value * 255);
 		}
 		/// <summary>
 		/// Blue float value. Ranges from 0 - 1
 		/// </summary>
 		public float BlueF
 		{
-			get
-			{
-				return blue / 255.0f;
-			}
-			set
-			{
-				blue = (byte)Math.Round(value * 255);
-			}
+			get => blue / 255.0f;
+			set => blue = (byte)Math.Round(value * 255);
 		}
 		/// <summary>
 		/// Alpha float value. Ranges from 0 - 1
 		/// </summary>
 		public float AlphaF
 		{
-			get
-			{
-				return alpha / 255.0f;
-			}
-			set
-			{
-				alpha = (byte)Math.Round(value * 255);
-			}
+			get => alpha / 255.0f;
+			set => alpha = (byte)Math.Round(value * 255);
 		}
 
 		/// <summary>
@@ -235,10 +199,7 @@ namespace SAModel.GC
 		/// </summary>
 		public uint RGBA
 		{
-			get
-			{
-				return (uint)(red | (green << 8) | (blue << 16) | (alpha << 24));
-			}
+			get => (uint)(red | (green << 8) | (blue << 16) | (alpha << 24));
 			set
 			{
 				red = (byte)(value & 0xFF);
@@ -253,10 +214,7 @@ namespace SAModel.GC
 		/// </summary>
 		public uint ARGB
 		{
-			get
-			{
-				return (uint)(alpha | (red << 8) | (green << 16) | (blue << 24));
-			}
+			get => (uint)(alpha | (red << 8) | (green << 16) | (blue << 24));
 			set
 			{
 				alpha = (byte)(value & 0xFF);
@@ -271,10 +229,7 @@ namespace SAModel.GC
 		/// </summary>
 		public System.Drawing.Color SystemCol
 		{
-			get
-			{
-				return System.Drawing.Color.FromArgb(alpha, red, green, blue);
-			}
+			get => System.Drawing.Color.FromArgb(alpha, red, green, blue);
 			set
 			{
 				alpha = value.A;
@@ -413,13 +368,14 @@ namespace SAModel.GC
 		public string ToStruct()
 		{
 			StringBuilder result = new StringBuilder("{ ");
-					result.Append("0x" + $"{alpha.ToString("X2")}" + $"{blue.ToString("X2")}" + $"{green.ToString("X2")}" + $"{red.ToString("X2")}");
+					result.Append(
+						$"0x{alpha.ToString("X2")}{blue.ToString("X2")}{green.ToString("X2")}{red.ToString("X2")}");
 					result.Append(" }");
 			return result.ToString();
 		}
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + red.ToString() + ", " + green.ToString() + ", " + blue.ToString() + ", " + alpha.ToString() + " ),");
+			writer.WriteLine($"\t{vtype}( {red}, {green}, {blue}, {alpha} ),");
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace SAModel
 	public class MeshInfo
 	{
 		public NJS_MATERIAL Material { get; private set; }
-		public Poly[] Polys { get; private set; }
+		public Poly[] Polys { get; }
 		public VertexData[] Vertices { get; private set; }
 		public bool HasUV { get; private set; }
 		public bool HasVC { get; private set; }
@@ -26,40 +26,49 @@ namespace SAModel
 
 		public ushort[] ToTriangles()
 		{
-			List<ushort> tris = new List<ushort>();
-			foreach (Poly poly in Polys)
+			List<ushort> tris = [];
+
+			foreach (var poly in Polys)
 			{
-				if (poly is Triangle)
+				switch (poly)
 				{
-					tris.AddRange(poly.Indexes);
-				}
-				else if (poly is Quad)
-				{
-					tris.Add(poly.Indexes[0]);
-					tris.Add(poly.Indexes[1]);
-					tris.Add(poly.Indexes[2]);
-					tris.Add(poly.Indexes[2]);
-					tris.Add(poly.Indexes[1]);
-					tris.Add(poly.Indexes[3]);
-				}
-				else if (poly is Strip)
-				{
-					bool flip = !((Strip)poly).Reversed;
-					for (int k = 0; k < poly.Indexes.Length - 2; k++)
+					case Triangle:
 					{
-						flip = !flip;
-						if (!flip)
+						tris.AddRange(poly.Indexes);
+						break;
+					}
+					case Quad:
+					{
+						tris.Add(poly.Indexes[0]);
+						tris.Add(poly.Indexes[1]);
+						tris.Add(poly.Indexes[2]);
+						tris.Add(poly.Indexes[2]);
+						tris.Add(poly.Indexes[1]);
+						tris.Add(poly.Indexes[3]);
+						break;
+					}
+					case Strip strip:
+					{
+						var flip = !strip.Reversed;
+
+						for (var k = 0; k < strip.Indexes.Length - 2; k++)
 						{
-							tris.Add(poly.Indexes[k]);
-							tris.Add(poly.Indexes[k + 1]);
-							tris.Add(poly.Indexes[k + 2]);
+							flip = !flip;
+							if (!flip)
+							{
+								tris.Add(strip.Indexes[k]);
+								tris.Add(strip.Indexes[k + 1]);
+							}
+							else
+							{
+								tris.Add(strip.Indexes[k + 1]);
+								tris.Add(strip.Indexes[k]);
+							}
+
+							tris.Add(strip.Indexes[k + 2]);
 						}
-						else
-						{
-							tris.Add(poly.Indexes[k + 1]);
-							tris.Add(poly.Indexes[k]);
-							tris.Add(poly.Indexes[k + 2]);
-						}
+
+						break;
 					}
 				}
 			}

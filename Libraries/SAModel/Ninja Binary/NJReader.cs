@@ -118,7 +118,7 @@ namespace SAModel
 						//Console.WriteLine("Basic model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelb = new Dictionary<int, string>();
-						labelb.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
+						labelb.Add(0, $"object_{chunk.ImageBase:X8}");
 						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, ModelFormat.Basic, labelb, new Dictionary<int, Attach>()));
 						modelcount++;
 						break;
@@ -126,7 +126,7 @@ namespace SAModel
 						//Console.WriteLine(format.ToString() + " model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelc = new Dictionary<int, string>();
-						labelc.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
+						labelc.Add(0, $"object_{chunk.ImageBase:X8}");
 						// NJCM can be Chunk (NJ file, Big or Little Endian), Ginja (GJ file) or XJ (XJ file)
 						Models.Add(new NJS_OBJECT(chunk.Data, 0, (uint)chunk.ImageBase, format, labelc, new Dictionary<int, Attach>()));
 						modelcount++;
@@ -160,12 +160,12 @@ namespace SAModel
 						{
 							// Add a label so that all motions aren't called "motion_00000000"
 							Dictionary<int, string> labelm = new Dictionary<int, string>();
-							labelm.Add(0, "motion_" + chunk.ImageBase.ToString("X8"));
+							labelm.Add(0, $"motion_{chunk.ImageBase:X8}");
 							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labelm, objectName: Models.Count > 0 ? Models[modelcount - 1].Name : ""));
 						}
 						catch (Exception ex)
 						{
-							Console.WriteLine("Error adding motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message);
+							Console.WriteLine($"Error adding motion at 0x{chunk.ImageBase:X}: {ex.Message}");
 						}
 						break;
 					case NinjaBinaryChunkType.SimpleShapeMotion:
@@ -174,12 +174,12 @@ namespace SAModel
 						{
 							// Add a label so that all motions aren't called "motion_00000000"
 							Dictionary<int, string> labels = new Dictionary<int, string>();
-							labels.Add(0, "shape_" + chunk.ImageBase.ToString("X8"));
+							labels.Add(0, $"shape_{chunk.ImageBase:X8}");
 							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelcount - 1].CountAnimated() : -1, labels, numverts: Models[modelcount].GetVertexCounts()));
 						}
 						catch (Exception ex)
 						{
-							Console.WriteLine("Error adding motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message);
+							Console.WriteLine($"Error adding motion at 0x{chunk.ImageBase:X}: {ex.Message}");
 						}
 						break;
 

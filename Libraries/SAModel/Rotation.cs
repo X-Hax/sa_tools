@@ -18,46 +18,43 @@ namespace SAModel
 		[DisplayName("X")]
 		public string XStr
 		{
-			get { return X.ToString("X"); }
-			set { X = int.Parse(value, NumberStyles.HexNumber); }
+			get => X.ToString("X");
+			set => X = int.Parse(value, NumberStyles.HexNumber);
 		}
 		[DisplayName("Y")]
 		public string YStr
 		{
-			get { return Y.ToString("X"); }
-			set { Y = int.Parse(value, NumberStyles.HexNumber); }
+			get => Y.ToString("X");
+			set => Y = int.Parse(value, NumberStyles.HexNumber);
 		}
 		[DisplayName("Z")]
 		public string ZStr
 		{
-			get { return Z.ToString("X"); }
-			set { Z = int.Parse(value, NumberStyles.HexNumber); }
+			get => Z.ToString("X");
+			set => Z = int.Parse(value, NumberStyles.HexNumber);
 		}
 
 		[Browsable(false)]
 		public float XDeg
 		{
-			get { return BAMSToDeg(X); }
-			set { X = DegToBAMS(value); }
+			get => BAMSToDeg(X);
+			set => X = DegToBAMS(value);
 		}
 		[Browsable(false)]
 		public float YDeg
 		{
-			get { return BAMSToDeg(Y); }
-			set { Y = DegToBAMS(value); }
+			get => BAMSToDeg(Y);
+			set => Y = DegToBAMS(value);
 		}
 		[Browsable(false)]
 		public float ZDeg
 		{
-			get { return BAMSToDeg(Z); }
-			set { Z = DegToBAMS(value); }
+			get => BAMSToDeg(Z);
+			set => Z = DegToBAMS(value);
 		}
 
 		[Browsable(false)]
-		public static int Size
-		{
-			get { return 12; }
-		}
+		public static int Size => 12;
 
 		public Rotation()
 		{
@@ -96,7 +93,7 @@ namespace SAModel
 
 		public override string ToString()
 		{
-			return XStr + ", " + YStr + ", " + ZStr;
+			return $"{XStr}, {YStr}, {ZStr}";
 		}
 
 		public int[] ToArray()
@@ -164,10 +161,7 @@ namespace SAModel
 		}
 
 		[Browsable(false)]
-		public bool IsEmpty
-		{
-			get { return X == 0 && Y == 0 && Z == 0; }
-		}
+		public bool IsEmpty => X == 0 && Y == 0 && Z == 0;
 
 		public override bool Equals(object obj)
 		{

@@ -13,34 +13,34 @@ namespace SAModel
 
 		public ChunkType Type
 		{
-			get { return (ChunkType)(Header1 & 0xFF); }
-			private set { Header1 = (Header1 & 0xFFFFFF00u) | (byte)value; }
+			get => (ChunkType)(Header1 & 0xFF);
+			private set => Header1 = (Header1 & 0xFFFFFF00u) | (byte)value;
 		}
 
 		public byte Flags
 		{
-			get { return (byte)((Header1 >> 8) & 0xFF); }
-			set { Header1 = (Header1 & 0xFFFF00FFu) | (uint)(value << 8); }
+			get => (byte)((Header1 >> 8) & 0xFF);
+			set => Header1 = (Header1 & 0xFFFF00FFu) | (uint)(value << 8);
 		}
 
 		public WeightStatus WeightStatus
 		{
-			get { return (WeightStatus)(Flags & 3); }
-			set { Flags = (byte)((Flags & ~3) | (int)value); }
+			get => (WeightStatus)(Flags & 3);
+			set => Flags = (byte)((Flags & ~3) | (int)value);
 		}
 
 		public ushort Size
 		{
-			get { return (ushort)(Header1 >> 16); }
-			set { Header1 = (Header1 & 0xFFFFu) | (uint)(value << 16); }
+			get => (ushort)(Header1 >> 16);
+			set => Header1 = (Header1 & 0xFFFFu) | (uint)(value << 16);
 		}
 
 		public uint Header2 { get; set; }
 
 		public ushort IndexOffset
 		{
-			get { return (ushort)(Header2 & 0xFFFF); }
-			set { Header2 = (Header2 & 0xFFFF0000u) | value; }
+			get => (ushort)(Header2 & 0xFFFF);
+			set => Header2 = (Header2 & 0xFFFF0000u) | value;
 		}
 
 		private uint GetVertCount() => Header2 >> 16;
@@ -49,7 +49,7 @@ namespace SAModel
 
 		public int VertexCount => Vertices.Count;
 
-		public bool HasWeight { get { return Type == ChunkType.Vertex_VertexNinjaFlags | Type == ChunkType.Vertex_VertexNormalNinjaFlags; } }
+		public bool HasWeight => Type == ChunkType.Vertex_VertexNinjaFlags | Type == ChunkType.Vertex_VertexNormalNinjaFlags;
 
 		public List<Vertex> Vertices { get; set; }
 		public List<Vertex> Normals { get; set; }
@@ -61,12 +61,12 @@ namespace SAModel
 		public VertexChunk()
 		{
 			Type = ChunkType.Vertex_Vertex;
-			Vertices = new List<Vertex>();
-			Normals = new List<Vertex>();
-			Diffuse = new List<Color>();
-			Specular = new List<Color>();
-			UserFlags = new List<uint>();
-			NinjaFlags = new List<uint>();
+			Vertices = [];
+			Normals = [];
+			Diffuse = [];
+			Specular = [];
+			UserFlags = [];
+			NinjaFlags = [];
 		}
 
 		public VertexChunk(ChunkType type)
@@ -92,7 +92,7 @@ namespace SAModel
 				case ChunkType.End:
 					break;
 				default:
-					throw new NotSupportedException("Unsupported chunk type " + type + ".");
+					throw new NotSupportedException($"Unsupported chunk type {type}.");
 			}
 		}
 
@@ -107,60 +107,79 @@ namespace SAModel
 				switch (Type)
 				{
 					case ChunkType.Vertex_VertexSH:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size + sizeof(float);
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalSH:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size + sizeof(float);
 						Normals.Add(new Vertex(file, address));
 						address += Vertex.Size + sizeof(float);
 						break;
+					}
 					case ChunkType.Vertex_Vertex:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						break;
+					}
 					case ChunkType.Vertex_VertexDiffuse8:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Diffuse.Add(VColor.FromBytes(file, address, ColorType.ARGB8888_32));
 						address += VColor.Size(ColorType.ARGB8888_32);
 						break;
+					}
 					case ChunkType.Vertex_VertexUserFlags:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						UserFlags.Add(ByteConverter.ToUInt32(file, address));
 						address += sizeof(uint);
 						break;
+					}
 					case ChunkType.Vertex_VertexNinjaFlags:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						NinjaFlags.Add(ByteConverter.ToUInt32(file, address));
 						address += sizeof(uint);
 						break;
+					}
 					case ChunkType.Vertex_VertexDiffuseSpecular5:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
-						uint tmpcolor = ByteConverter.ToUInt32(file, address);
+						var tmpcolor = ByteConverter.ToUInt32(file, address);
 						address += sizeof(uint);
 						Diffuse.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor & 0xFFFF)), 0, ColorType.RGB565));
 						Specular.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor >> 16)), 0, ColorType.RGB565));
 						break;
+					}
 					case ChunkType.Vertex_VertexDiffuseSpecular4:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
-						tmpcolor = ByteConverter.ToUInt32(file, address);
+						var tmpcolor = ByteConverter.ToUInt32(file, address);
 						address += sizeof(uint);
 						Diffuse.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor & 0xFFFF)), 0, ColorType.ARGB4444));
 						Specular.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor >> 16)), 0, ColorType.RGB565));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormal:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalDiffuse8:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
@@ -168,7 +187,9 @@ namespace SAModel
 						Diffuse.Add(VColor.FromBytes(file, address, ColorType.ARGB8888_32));
 						address += VColor.Size(ColorType.ARGB8888_32);
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalUserFlags:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
@@ -176,7 +197,9 @@ namespace SAModel
 						UserFlags.Add(ByteConverter.ToUInt32(file, address));
 						address += sizeof(uint);
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalNinjaFlags:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
@@ -184,28 +207,35 @@ namespace SAModel
 						NinjaFlags.Add(ByteConverter.ToUInt32(file, address));
 						address += sizeof(uint);
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
 						address += Vertex.Size;
-						tmpcolor = ByteConverter.ToUInt32(file, address);
+						var tmpcolor = ByteConverter.ToUInt32(file, address);
 						address += sizeof(uint);
 						Diffuse.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor & 0xFFFF)), 0, ColorType.RGB565));
 						Specular.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor >> 16)), 0, ColorType.RGB565));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
+					{
 						Vertices.Add(new Vertex(file, address));
 						address += Vertex.Size;
 						Normals.Add(new Vertex(file, address));
 						address += Vertex.Size;
-						tmpcolor = ByteConverter.ToUInt32(file, address);
+						var tmpcolor = ByteConverter.ToUInt32(file, address);
 						address += sizeof(uint);
 						Diffuse.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor & 0xFFFF)), 0, ColorType.ARGB4444));
 						Specular.Add(VColor.FromBytes(ByteConverter.GetBytes((ushort)(tmpcolor >> 16)), 0, ColorType.RGB565));
 						break;
+					}
 					default:
-						throw new NotSupportedException("Unsupported chunk type " + Type + " at " + address.ToString("X8") + ".");
+					{
+						throw new NotSupportedException($"Unsupported chunk type {Type} at {address:X8}.");
+					}
 				}
 			}
 		}
@@ -218,6 +248,7 @@ namespace SAModel
 			switch (Type)
 			{
 				case ChunkType.Vertex_VertexSH:
+				{
 					vertlimit = 65535 / 4;
 					if (Vertices.Count > vertlimit)
 					{
@@ -225,7 +256,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalSH:
+				{
 					vertlimit = 65535 / 8;
 					if (Vertices.Count > vertlimit)
 					{
@@ -233,7 +266,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_Vertex:
+				{
 					vertlimit = 65535 / 3;
 					if (Vertices.Count > vertlimit)
 					{
@@ -241,7 +276,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexDiffuse8:
+				{
 					vertlimit = 65535 / 4;
 					if (Vertices.Count > vertlimit)
 					{
@@ -249,7 +286,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexUserFlags:
+				{
 					vertlimit = 65535 / 4;
 					if (Vertices.Count > vertlimit)
 					{
@@ -257,7 +296,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNinjaFlags:
+				{
 					vertlimit = 65535 / 4;
 					if (Vertices.Count > vertlimit)
 					{
@@ -265,8 +306,10 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexDiffuseSpecular5:
 				case ChunkType.Vertex_VertexDiffuseSpecular4:
+				{
 					vertlimit = 65535 / 4;
 					if (Vertices.Count > vertlimit)
 					{
@@ -279,7 +322,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormal:
+				{
 					vertlimit = 65535 / 6;
 					if (Vertices.Count > vertlimit)
 					{
@@ -287,7 +332,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalDiffuse8:
+				{
 					vertlimit = 65535 / 7;
 					if (Vertices.Count > vertlimit)
 					{
@@ -300,7 +347,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalUserFlags:
+				{
 					vertlimit = 65535 / 7;
 					if (Vertices.Count > vertlimit)
 					{
@@ -313,7 +362,9 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalNinjaFlags:
+				{
 					vertlimit = 65535 / 7;
 					if (Vertices.Count > vertlimit)
 					{
@@ -326,8 +377,10 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
+				{
 					vertlimit = 65535 / 7;
 					if (Vertices.Count > vertlimit)
 					{
@@ -341,10 +394,15 @@ namespace SAModel
 						vertcount = vertlimit;
 					}
 					break;
+				}
 				case ChunkType.End:
+				{
 					break;
+				}
 				default:
-					throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+				{
+					throw new NotSupportedException($"Unsupported chunk type {Type}.");
+				}
 			}
 			SetVertCount(vertcount);
 			switch (Type)
@@ -382,75 +440,103 @@ namespace SAModel
 				switch (Type)
 				{
 					case ChunkType.Vertex_VertexSH:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(1.0f));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalSH:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(1.0f));
 						result.AddRange(Normals[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(1.0f));
 						break;
+					}
 					case ChunkType.Vertex_Vertex:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						break;
+					}
 					case ChunkType.Vertex_VertexDiffuse8:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(VColor.GetBytes(Diffuse[i], ColorType.ARGB8888_32));
 						break;
+					}
 					case ChunkType.Vertex_VertexUserFlags:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(UserFlags[i]));
 						break;
+					}
 					case ChunkType.Vertex_VertexNinjaFlags:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(NinjaFlags[i]));
 						break;
+					}
 					case ChunkType.Vertex_VertexDiffuseSpecular5:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(
 							ByteConverter.ToUInt16(VColor.GetBytes(Diffuse[i], ColorType.RGB565), 0)
 							| (ByteConverter.ToUInt16(VColor.GetBytes(Specular[i], ColorType.RGB565), 0) << 16)));
 						break;
+					}
 					case ChunkType.Vertex_VertexDiffuseSpecular4:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(
 							ByteConverter.ToUInt16(VColor.GetBytes(Diffuse[i], ColorType.ARGB4444), 0)
 							| (ByteConverter.ToUInt16(VColor.GetBytes(Specular[i], ColorType.RGB565), 0) << 16)));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormal:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalDiffuse8:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
 						result.AddRange(VColor.GetBytes(Diffuse[i], ColorType.ARGB8888_32));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalUserFlags:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(UserFlags[i]));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalNinjaFlags:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(NinjaFlags[i]));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(
 							ByteConverter.ToUInt16(VColor.GetBytes(Diffuse[i], ColorType.RGB565), 0)
 							| (ByteConverter.ToUInt16(VColor.GetBytes(Specular[i], ColorType.RGB565), 0) << 16)));
 						break;
+					}
 					case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
+					{
 						result.AddRange(Vertices[i].GetBytes());
 						result.AddRange(Normals[i].GetBytes());
 						result.AddRange(ByteConverter.GetBytes(
 							ByteConverter.ToUInt16(VColor.GetBytes(Diffuse[i], ColorType.ARGB4444), 0)
 							| (ByteConverter.ToUInt16(VColor.GetBytes(Specular[i], ColorType.RGB565), 0) << 16)));
 						break;
+					}
 				}
 			}
 			if (next != null)
@@ -485,202 +571,236 @@ namespace SAModel
 			switch(Type)
 			{
 				case ChunkType.Vertex_VertexSH:
-					writer.WriteLine("\tCnkV_SH(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_SH(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT_SH( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine($"\tVERT_SH( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalSH:
-					writer.WriteLine("\tCnkV_VN_SH(0, " + (VertexCount * 8 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN_SH(0, {(VertexCount * 8 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT_SH( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM_SH( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine($"\tVERT_SH( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM_SH( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_Vertex:
-					writer.WriteLine("\tCnkV(0, " + (VertexCount * 3 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV(0, {(VertexCount * 3 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexDiffuse8:
-					writer.WriteLine("\tCnkV_D8(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_D8(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD8888({Diffuse[i].A}, {Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexUserFlags:
-					writer.WriteLine("\tCnkV_UF(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_UF(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tUFlags({UserFlags}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNinjaFlags:
+				{
 					if (HasWeight)
 					{
-						writer.WriteLine("\tCnkV_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 4 + 1).ToString() + "),");
+						writer.WriteLine($"\tCnkV_NF({vertcalctype}{weighttype}, {(VertexCount * 4 + 1)}),");
 					}
 					else
 					{
-						writer.WriteLine("\tCnkV_NF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+						writer.WriteLine($"\tCnkV_NF(0, {(VertexCount * 4 + 1)}),");
 					}
 
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNFlags(0x{NinjaFlags[i].ToString("X8").ToLowerInvariant()}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexDiffuseSpecular5:
-					writer.WriteLine("\tCnkV_S5(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_S5(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD565S565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD565S565({Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}, {Specular[i].R}, {Specular[i].G}, {Specular[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexDiffuseSpecular4:
-					writer.WriteLine("\tCnkV_S4(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_S4(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD4444S565(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD4444S565({Diffuse[i].A}, {Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}, {Specular[i].R}, {Specular[i].G}, {Specular[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexDiffuseSpecular16:
-					writer.WriteLine("\tCnkV_IN(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_IN(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD16S16(" + Diffuse[i].ToString() + ", " + Specular[i].ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD16S16({Diffuse[i]}, {Specular[i]}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormal:
-					writer.WriteLine("\tCnkV_VN(0, " + (VertexCount * 6 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN(0, {(VertexCount * 6 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalDiffuse8:
-					writer.WriteLine("\tCnkV_VN_D8(0, " + (VertexCount * 7 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN_D8(0, {(VertexCount * 7 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD8888({Diffuse[i].A}, {Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalUserFlags:
-					writer.WriteLine("\tCnkV_VN_UF(0, " + (VertexCount * 7 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN_UF(0, {(VertexCount * 7 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tUFlags({UserFlags}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalNinjaFlags:
+				{
 					if (HasWeight)
 					{
-						writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 7 + 1).ToString() + "),");
+						writer.WriteLine($"\tCnkV_VN_NF({vertcalctype}{weighttype}, {(VertexCount * 7 + 1)}),");
 					}
 					else
 					{
-						writer.WriteLine("\tCnkV_VN_NF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+						writer.WriteLine($"\tCnkV_VN_NF(0, {(VertexCount * 7 + 1)}),");
 					}
 
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNFlags(0x" + NinjaFlags[i].ToString("X8").ToLowerInvariant() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNFlags(0x{NinjaFlags[i].ToString("X8").ToLowerInvariant()}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
-					writer.WriteLine("\tCnkV_VN_S5(0, " + (VertexCount * 7 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN_S5(0, {(VertexCount * 7 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD565S565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD565S565({Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}, {Specular[i].R}, {Specular[i].G}, {Specular[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
-					writer.WriteLine("\tCnkV_VN_S4(0, " + (VertexCount * 7 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN_S4(0, {(VertexCount * 7 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD4444S565(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-							+ ", " + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD4444S565({Diffuse[i].A}, {Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}, {Specular[i].R}, {Specular[i].G}, {Specular[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalDiffuseSpecular16:
-					writer.WriteLine("\tCnkV_VN_IN(0, " + (VertexCount * 7 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VN_IN(0, {(VertexCount * 7 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM( " + Normals[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Normals[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tD16S16(" + Diffuse[i].ToString() + ", " + Specular[i].ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM( {Normals[i].X.ToCHex().ToLowerInvariant()}, {Normals[i].Y.ToCHex().ToLowerInvariant()}, {Normals[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tD16S16({Diffuse[i]}, {Specular[i]}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalX:
-					writer.WriteLine("\tCnkV_VNX(0, " + (VertexCount * 4 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VNX(0, {(VertexCount * 4 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM32({Normals[i].X.ToCHex()}, {Normals[i].Y.ToCHex()}, {Normals[i].Z.ToCHex()}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalXDiffuse8:
-					writer.WriteLine("\tCnkV_VNX_D8(0, " + (VertexCount * 5 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VNX_D8(0, {(VertexCount * 5 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tD8888(" + Diffuse[i].A.ToString() + ", " + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM32({Normals[i].X.ToCHex()}, {Normals[i].Y.ToCHex()}, {Normals[i].Z.ToCHex()}),");
+						writer.WriteLine($"\tD8888({Diffuse[i].A}, {Diffuse[i].R}, {Diffuse[i].G}, {Diffuse[i].B}),");
 					}
 					break;
+				}
 				case ChunkType.Vertex_VertexNormalXUserFlags:
-					writer.WriteLine("\tCnkV_VNX_UF(0, " + (VertexCount * 5 + 1).ToString() + "),");
-					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
+				{
+					writer.WriteLine($"\tCnkV_VNX_UF(0, {(VertexCount * 5 + 1)}),");
+					writer.WriteLine($"\tOffnbIdx({IndexOffset}, {VertexCount}),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
-						writer.WriteLine("\tVERT( " + Vertices[i].X.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Y.ToCHex().ToString().ToLowerInvariant() + ", " + Vertices[i].Z.ToCHex().ToString().ToLowerInvariant() + " ),");
-						writer.WriteLine("\tNORM32(" + Normals[i].X.ToCHex().ToString() + ", " + Normals[i].Y.ToCHex().ToString() + ", " + Normals[i].Z.ToCHex().ToString() + "),");
-						writer.WriteLine("\tUFlags(" + UserFlags.ToString() + "),");
+						writer.WriteLine($"\tVERT( {Vertices[i].X.ToCHex().ToLowerInvariant()}, {Vertices[i].Y.ToCHex().ToLowerInvariant()}, {Vertices[i].Z.ToCHex().ToLowerInvariant()} ),");
+						writer.WriteLine($"\tNORM32({Normals[i].X.ToCHex()}, {Normals[i].Y.ToCHex()}, {Normals[i].Z.ToCHex()}),");
+						writer.WriteLine($"\tUFlags({UserFlags}),");
 					}
 					break;
+				}
 			}
 		}
 

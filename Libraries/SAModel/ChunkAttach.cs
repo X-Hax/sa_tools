@@ -107,7 +107,7 @@ namespace SAModel
 
 		public ChunkAttach()
 		{
-			Name = "attach_" + Extensions.GenerateIdentifier();
+			Name = $"attach_{Extensions.GenerateIdentifier()}";
 			Bounds = new BoundingSphere();
 		}
 
@@ -117,12 +117,12 @@ namespace SAModel
 			if (hasVertex)
 			{
 				Vertex = new List<VertexChunk>();
-				VertexName = "vertex_" + Extensions.GenerateIdentifier();
+				VertexName = $"vertex_{Extensions.GenerateIdentifier()}";
 			}
 			if (hasPoly)
 			{
 				Poly = new List<PolyChunk>();
-				PolyName = "poly_" + Extensions.GenerateIdentifier();
+				PolyName = $"poly_{Extensions.GenerateIdentifier()}";
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace SAModel
 			}
 			else
 			{
-				Name = "attach_" + address.ToString("X8");
+				Name = $"attach_{address:X8}";
 			}
 
 			ChunkType ctype;
@@ -155,7 +155,7 @@ namespace SAModel
 				}
 				else
 				{
-					VertexName = "vertex_" + tmpaddr.ToString("X8");
+					VertexName = $"vertex_{tmpaddr:X8}";
 				}
 
 				ctype = (ChunkType)(ByteConverter.ToUInt32(file, tmpaddr) & 0xFF);
@@ -178,7 +178,7 @@ namespace SAModel
 				}
 				else
 				{
-					PolyName = "poly_" + tmpaddr.ToString("X8");
+					PolyName = $"poly_{tmpaddr:X8}";
 				}
 
 				PolyChunk chunk = PolyChunk.Load(file, tmpaddr);
@@ -274,7 +274,7 @@ namespace SAModel
 				for (int i = 0; i < cb.Length; i += 4)
 				{
 					int it = ByteConverter.ToInt32(cb, i);
-					s.Add("0x" + it.ToString("X") + (it < 0 ? "u" : ""));
+					s.Add($"0x{it:X}{(it < 0 ? "u" : "")}");
 				}
 				writer.Write(string.Join(", ", s.ToArray()));
 				writer.WriteLine(" };");
@@ -295,7 +295,7 @@ namespace SAModel
 				for (int i = 0; i < cb.Length; i += 2)
 				{
 					short sh = ByteConverter.ToInt16(cb, i);
-					s.Add("0x" + sh.ToString("X") + (sh < 0 ? "u" : ""));
+					s.Add($"0x{sh:X}{(sh < 0 ? "u" : "")}");
 				}
 				writer.Write(string.Join(", ", s.ToArray()));
 				writer.WriteLine(" };");
@@ -312,7 +312,7 @@ namespace SAModel
 		{
 			if (Poly != null && !labels.Contains(PolyName))
 			{
-				writer.WriteLine("PLIST      " + PolyName.MakeIdentifier() + "[]");
+				writer.WriteLine($"PLIST      {PolyName.MakeIdentifier()}[]");
 				writer.WriteLine("START");
 
 				foreach (PolyChunk item in Poly)
@@ -321,12 +321,12 @@ namespace SAModel
 				}
 
 				writer.WriteLine("\tCnkEnd()");
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
 			if (Vertex != null && !labels.Contains(VertexName))
 			{
-				writer.WriteLine("VLIST      " + VertexName.MakeIdentifier() + "[]");
+				writer.WriteLine($"VLIST      {VertexName.MakeIdentifier()}[]");
 				writer.WriteLine("START");
 
 				foreach (VertexChunk item in Vertex)
@@ -335,14 +335,14 @@ namespace SAModel
 				}
 
 				writer.WriteLine("\tCnkEnd()");
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			writer.WriteLine("CNKMODEL   " + Name.MakeIdentifier() + "[]");
+			writer.WriteLine($"CNKMODEL   {Name.MakeIdentifier()}[]");
 			writer.WriteLine("START");
 			if (Vertex != null && !labels.Contains(VertexName))
 			{
-				writer.WriteLine("VList      " + VertexName.MakeIdentifier() + ",");
+				writer.WriteLine($"VList      {VertexName.MakeIdentifier()},");
 			}
 			else
 			{
@@ -351,16 +351,17 @@ namespace SAModel
 
 			if (Poly != null && !labels.Contains(PolyName))
 			{
-				writer.WriteLine("PList      " + PolyName.MakeIdentifier() + ",");
+				writer.WriteLine($"PList      {PolyName.MakeIdentifier()},");
 			}
 			else
 			{
 				writer.WriteLine("PList      NULL,");
 			}
 
-			writer.WriteLine("Center    " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
-			writer.WriteLine("Radius    " + Bounds.Radius.ToNJA() + ",");
-			writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			writer.WriteLine(
+				$"Center    {Bounds.Center.X.ToNJA()}, {Bounds.Center.Y.ToNJA()}, {Bounds.Center.Z.ToNJA()},");
+			writer.WriteLine($"Radius    {Bounds.Radius.ToNJA()},");
+			writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 		}
 
 		static NJS_MATERIAL MaterialBuffer = new NJS_MATERIAL { UseTexture = true };

@@ -17,8 +17,8 @@ namespace SAModel
 
 		public MeshInfo[] MeshInfo
 		{
-			get { return meshInfo; }
-			set { meshInfo = value; }
+			get => meshInfo;
+			set => meshInfo = value;
 		}
 
 		public virtual bool HasWeight => VertexWeights != null;

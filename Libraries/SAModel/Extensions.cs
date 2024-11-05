@@ -44,7 +44,7 @@ namespace SAModel
 
 		public static string ToNJA(this float num, bool trim = false)
 		{
-			return (num >= 0 ? " " : "") + num.ToString(trim ? "F" : "F6", CultureInfo.InvariantCulture) + "F";
+			return $"{(num >= 0 ? " " : "")}{num.ToString(trim ? "F" : "F6", CultureInfo.InvariantCulture)}F";
 		}
 
 		public static string ToLongString(this float input)
@@ -85,7 +85,7 @@ namespace SAModel
 					result = "-";
 					newNumber = newNumber.Substring(1);
 				}
-				result += "0" + decSeparator + GetZeros(exponentValue + decimalParts[0].Length) + newNumber;
+				result += $"0{decSeparator}{GetZeros(exponentValue + decimalParts[0].Length)}{newNumber}";
 				result = result.TrimEnd('0');
 			}
 			return result;
@@ -108,7 +108,7 @@ namespace SAModel
 				return i.ToString(NumberFormatInfo.InvariantInfo);
 			}
 
-			return "0x" + i.ToString("X");
+			return $"0x{i:X}";
 		}
 
         public static string ToCHex(this short i)
@@ -118,7 +118,7 @@ namespace SAModel
 	            return i.ToString(NumberFormatInfo.InvariantInfo);
             }
 
-            return "0x" + i.ToString("X");
+            return $"0x{i:X}";
         }
 
         public static string ToCHex(this uint i)
@@ -128,7 +128,7 @@ namespace SAModel
 				return i.ToString(NumberFormatInfo.InvariantInfo);
 			}
 
-			return "0x" + i.ToString("X");
+			return $"0x{i:X}";
 		}
 
 		public static string ToCHex(this ulong i)
@@ -138,14 +138,14 @@ namespace SAModel
 				return i.ToString(NumberFormatInfo.InvariantInfo);
 			}
 
-			return "0x" + i.ToString("X");
+			return $"0x{i:X}";
 		}
 
 		public static string ToCHex(this float f)
 		{
 			var bytes = BitConverter.GetBytes(f);
 			var i = BitConverter.ToInt32(bytes, 0);
-			return "0x" + i.ToString("X8");
+			return $"0x{i:X8}";
 		}
 
 		public static string ToC(this string str)

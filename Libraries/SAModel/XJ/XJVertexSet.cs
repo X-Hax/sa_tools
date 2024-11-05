@@ -6,10 +6,10 @@ namespace SAModel.XJ
 {
 	public class XJVertexSet
 	{
-		public List<Vertex> Positions = new List<Vertex>();
-		public List<Vertex> Normals = new List<Vertex>();
-		public List<Color> Colors = new List<Color>();
-		public List<UV> UVs = new List<UV>();
+		public List<Vertex> Positions = new();
+		public List<Vertex> Normals = new();
+		public List<Color> Colors = new();
+		public List<UV> UVs = new();
 
 		public ushort VertexType;
 		public ushort Ushort_02;

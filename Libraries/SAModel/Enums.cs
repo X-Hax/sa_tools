@@ -75,27 +75,27 @@ namespace SAModel
 		Water                 = 0x2,
 		NoFriction            = 0x4,
 		NoAcceleration        = 0x8,
-		
+
 		LowAcceleration       = 0x10,
 		UseSkyDrawDistance    = 0x20,
 		CannotLand            = 0x40,
 		IncreasedAcceleration = 0x80,
-		
+
 		Diggable              = 0x100,
 		//0x200
 		Waterfall             = 0x400,
 		//0x800
-		
+
 		Unclimbable           = 0x1000,
 		Chaos0Land            = 0x2000, // Turns off Visible when Chaos 0 jumps up a pole
 		Stairs                = 0x4000,
 		//0x8000
-		
+
 		Hurt                  = 0x10000,
 		//0x20000
 		LowDepth              = 0x40000,
 		//0x80000
-		
+
 		Footprints            = 0x100000,
 		Accelerate            = 0x200000,
 		WaterCollision        = 0x400000,
@@ -402,6 +402,7 @@ namespace SAModel
 			NJD_MTYPE_QUAT_1      = BIT_13
 		}
 
+		[Flags]
 		public enum NJD_MTYPE_FN
 		{
 			NJD_MTYPE_LINER  = 0x0000, /* use liner                */

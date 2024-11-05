@@ -34,7 +34,7 @@ namespace SAModel.XJ
 		/// </summary>
 		public XJAttach()
 		{
-			Name = "xjattach_" + Extensions.GenerateIdentifier();
+			Name = $"xjattach_{Extensions.GenerateIdentifier()}";
 
 			flags = 0;
 			vertexData = new List<XJVertexSet>();
@@ -63,7 +63,7 @@ namespace SAModel.XJ
 			}
 			else
 			{
-				Name = "attach_" + address.ToString("X8");
+				Name = $"attach_{address:X8}";
 			}
 
 			flags = ByteConverter.ToUInt32(file, address);

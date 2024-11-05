@@ -266,12 +266,12 @@ namespace SAModel
 				if (filename != null)
 				{
 					string path = Path.GetDirectoryName(filename);
-					if (File.Exists(Path.GetFileNameWithoutExtension(filename) + ".action"))
+					if (File.Exists($"{Path.GetFileNameWithoutExtension(filename)}.action"))
 					{
-						using (TextReader tr = File.OpenText(Path.GetFileNameWithoutExtension(filename) + ".action"))
+						using (TextReader tr = File.OpenText($"{Path.GetFileNameWithoutExtension(filename)}.action"))
 						{
 							List<string> animlist = new List<string>();
-							int count = File.ReadLines(Path.GetFileNameWithoutExtension(filename) + ".action").Count();
+							int count = File.ReadLines($"{Path.GetFileNameWithoutExtension(filename)}.action").Count();
 							for (int i = 0; i < count; i++)
 							{
 								string line = tr.ReadLine();
@@ -417,7 +417,7 @@ namespace SAModel
 					ninjaMagic = NJCMMagic; //XJ uses Chunk's magic
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
+					throw new ArgumentException($"Cannot save {Format} format models to file!", "Format");
 			}
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			List<uint> njOffsets = new List<uint>();

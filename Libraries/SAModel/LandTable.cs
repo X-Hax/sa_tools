@@ -49,11 +49,11 @@ namespace SAModel
 
 		public LandTable()
 		{
-			Name = "landtable_" + Extensions.GenerateIdentifier();
+			Name = $"landtable_{Extensions.GenerateIdentifier()}";
 			COL = new List<COL>();
-			COLName = "collist_" + Extensions.GenerateIdentifier();
+			COLName = $"collist_{Extensions.GenerateIdentifier()}";
 			Anim = new List<GeoAnimData>();
-			AnimName = "animlist_" + Extensions.GenerateIdentifier();
+			AnimName = $"animlist_{Extensions.GenerateIdentifier()}";
 			Metadata = new Dictionary<uint, byte[]>();
 		}
 
@@ -71,7 +71,7 @@ namespace SAModel
 			}
 			else
 			{
-				Name = "landtable_" + address.ToString("X8");
+				Name = $"landtable_{address:X8}";
 			}
 
 			short colcnt = ByteConverter.ToInt16(file, address);
@@ -95,7 +95,7 @@ namespace SAModel
 						}
 						else
 						{
-							COLName = "collist_" + tmpaddr.ToString("X8");
+							COLName = $"collist_{tmpaddr:X8}";
 						}
 
 						for (int i = 0; i < colcnt; i++)
@@ -106,7 +106,7 @@ namespace SAModel
 					}
 					else
 					{
-						COLName = "collist_" + Extensions.GenerateIdentifier();
+						COLName = $"collist_{Extensions.GenerateIdentifier()}";
 					}
 
 					Anim = new List<GeoAnimData>();
@@ -120,7 +120,7 @@ namespace SAModel
 						}
 						else
 						{
-							AnimName = "animlist_" + tmpaddr.ToString("X8");
+							AnimName = $"animlist_{tmpaddr:X8}";
 						}
 
 						for (int i = 0; i < anicnt; i++)
@@ -154,7 +154,7 @@ namespace SAModel
 						}
 						else
 						{
-							COLName = "collist_" + tmpaddr.ToString("X8");
+							COLName = $"collist_{tmpaddr:X8}";
 						}
 
 						for (int i = 0; i < colcnt; i++)
@@ -165,11 +165,11 @@ namespace SAModel
 					}
 					else
 					{
-						COLName = "collist_" + Extensions.GenerateIdentifier();
+						COLName = $"collist_{Extensions.GenerateIdentifier()}";
 					}
 
 					Anim = new List<GeoAnimData>();
-					AnimName = "animlist_" + Extensions.GenerateIdentifier();
+					AnimName = $"animlist_{Extensions.GenerateIdentifier()}";
 					tmpaddr = ByteConverter.ToInt32(file, address + 0x18);
 					if (tmpaddr != 0)
 					{
@@ -544,7 +544,7 @@ namespace SAModel
 					}
 					else
 					{
-						writer.WriteLine("extern NJS_OBJECT " + COL[i].Model.Name.MakeIdentifier() + "[1];");
+						writer.WriteLine($"extern NJS_OBJECT {COL[i].Model.Name.MakeIdentifier()}[1];");
 					}
 				}
 			}
@@ -559,7 +559,7 @@ namespace SAModel
 					}
 					else
 					{
-						writer.WriteLine("extern NJS_OBJECT " + Anim[i].Model.Name.MakeIdentifier() + "[1];");
+						writer.WriteLine($"extern NJS_OBJECT {Anim[i].Model.Name.MakeIdentifier()}[1];");
 					}
 
 					if (!decomp)
@@ -575,7 +575,7 @@ namespace SAModel
 					}
 					else
 					{
-						writer.WriteLine("extern NJS_ACTION " + Anim[i].Animation.ActionName.MakeIdentifier() + "[1];");
+						writer.WriteLine($"extern NJS_ACTION {Anim[i].Animation.ActionName.MakeIdentifier()}[1];");
 					}
 
 					labels.Add(Anim[i].Animation.Name);
@@ -595,7 +595,7 @@ namespace SAModel
 				List<string> lines = new List<string>(COL.Count);
 				foreach (COL item in COL)
 					lines.Add(item.ToStruct(format, decomp));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", lines.ToArray())}");
 				writer.WriteLine("};");
 				writer.WriteLine();
 			}
@@ -608,7 +608,7 @@ namespace SAModel
 				List<string> lines = new List<string>(Anim.Count);
 				foreach (GeoAnimData item in Anim)
 					lines.Add(item.ToStruct(decomp));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", lines.ToArray())}");
 				writer.WriteLine("};");
 				writer.WriteLine();
 			}
@@ -617,11 +617,11 @@ namespace SAModel
 			writer.Write(" = { ");
 			if (decomp)
 			{
-				writer.Write(COL.Count.ToString() + ", ");
+				writer.Write($"{COL.Count}, ");
 			}
 			else
 			{
-				writer.Write("LengthOfArray<int16_t>(" + COLName.MakeIdentifier() + "), ");
+				writer.Write($"LengthOfArray<int16_t>({COLName.MakeIdentifier()}), ");
 			}
 
 			switch (format)
@@ -634,13 +634,13 @@ namespace SAModel
 					}
 					else
 					{
-						writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName.MakeIdentifier() + ")" : "0");
+						writer.Write(Anim.Count > 0 ? $"LengthOfArray<int16_t>({AnimName.MakeIdentifier()})" : "0");
 					}
 
 					writer.Write(", ");
-					writer.Write("0x" + Attributes.ToString("X"));
+					writer.Write($"0x{Attributes:X}");
 					writer.Write(", ");
-					writer.Write("0x" + Flags.ToString("X"));
+					writer.Write($"0x{Flags:X}");
 					writer.Write(", ");
 					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
@@ -705,7 +705,7 @@ namespace SAModel
 					magic = SA2BLVLVer;
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + format + " format levels to file!", "format");
+					throw new ArgumentException($"Cannot save {format} format levels to file!", "format");
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();

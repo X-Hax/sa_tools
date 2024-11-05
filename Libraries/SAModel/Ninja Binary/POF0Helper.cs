@@ -20,7 +20,7 @@ namespace SAModel
 		public static byte[] GetPOFData(List<uint> offsets)
 		{
 			List<byte> result = new List<byte>();
-			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 }; // POF0
+			byte[] magic = "POF0"u8.ToArray();
 			result.AddRange(magic);
 			for (int i = 0; i < offsets.Count; i++)
 			{

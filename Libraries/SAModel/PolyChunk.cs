@@ -13,14 +13,14 @@ namespace SAModel
 
 		public ChunkType Type
 		{
-			get { return (ChunkType)(Header & 0xFF); }
-			protected set { Header = (ushort)((Header & 0xFF00) | (byte)value); }
+			get => (ChunkType)(Header & 0xFF);
+			protected set => Header = (ushort)((Header & 0xFF00) | (byte)value);
 		}
 
 		public byte Flags
 		{
-			get { return (byte)(Header >> 8); }
-			set { Header = (ushort)((Header & 0xFF) | (ushort)(value << 8)); }
+			get => (byte)(Header >> 8);
+			set => Header = (ushort)((Header & 0xFF) | (ushort)(value << 8));
 		}
 
 		public abstract int ByteSize { get; }
@@ -28,59 +28,45 @@ namespace SAModel
 		public static PolyChunk Load(byte[] file, int address)
 		{
 			ChunkType type = (ChunkType)(ByteConverter.ToUInt16(file, address) & 0xFF);
-			switch (type)
+			return type switch
 			{
-				case ChunkType.Null:
-					return new PolyChunkNull(file, address);
-				case ChunkType.Bits_BlendAlpha:
-					return new PolyChunkBitsBlendAlpha(file, address);
-				case ChunkType.Bits_MipmapDAdjust:
-					return new PolyChunkBitsMipmapDAdjust(file, address);
-				case ChunkType.Bits_SpecularExponent:
-					return new PolyChunkBitsSpecularExponent(file, address);
-				case ChunkType.Bits_CachePolygonList:
-					return new PolyChunkBitsCachePolygonList(file, address);
-				case ChunkType.Bits_DrawPolygonList:
-					return new PolyChunkBitsDrawPolygonList(file, address);
-				case ChunkType.Tiny_TextureID:
-				case ChunkType.Tiny_TextureID2:
-					return new PolyChunkTinyTextureID(file, address);
-				case ChunkType.Material_Diffuse:
-				case ChunkType.Material_Ambient:
-				case ChunkType.Material_DiffuseAmbient:
-				case ChunkType.Material_Specular:
-				case ChunkType.Material_DiffuseSpecular:
-				case ChunkType.Material_AmbientSpecular:
-				case ChunkType.Material_DiffuseAmbientSpecular:
-				case ChunkType.Material_Diffuse2:
-				case ChunkType.Material_Ambient2:
-				case ChunkType.Material_DiffuseAmbient2:
-				case ChunkType.Material_Specular2:
-				case ChunkType.Material_DiffuseSpecular2:
-				case ChunkType.Material_AmbientSpecular2:
-				case ChunkType.Material_DiffuseAmbientSpecular2:
-					return new PolyChunkMaterial(file, address);
-				case ChunkType.Material_Bump:
-					return new PolyChunkMaterialBump(file, address);
-				case ChunkType.Volume_Polygon3:
-				case ChunkType.Volume_Polygon4:
-				case ChunkType.Volume_Strip:
-					return new PolyChunkVolume(file, address);
-				case ChunkType.Strip_Strip:
-				case ChunkType.Strip_StripUVN:
-				case ChunkType.Strip_StripUVH:
-				case ChunkType.Strip_StripColor:
-				case ChunkType.Strip_StripUVNColor:
-				case ChunkType.Strip_StripUVHColor:
-				case ChunkType.Strip_Strip2:
-				case ChunkType.Strip_StripUVN2:
-				case ChunkType.Strip_StripUVH2:
-					return new PolyChunkStrip(file, address);
-				case ChunkType.End:
-					return new PolyChunkEnd(file, address);
-				default:
-					throw new NotSupportedException("Unsupported chunk type " + type + " at " + address.ToString("X8") + ".");
-			}
+				ChunkType.Null => new PolyChunkNull(file, address),
+				ChunkType.Bits_BlendAlpha => new PolyChunkBitsBlendAlpha(file, address),
+				ChunkType.Bits_MipmapDAdjust => new PolyChunkBitsMipmapDAdjust(file, address),
+				ChunkType.Bits_SpecularExponent => new PolyChunkBitsSpecularExponent(file, address),
+				ChunkType.Bits_CachePolygonList => new PolyChunkBitsCachePolygonList(file, address),
+				ChunkType.Bits_DrawPolygonList => new PolyChunkBitsDrawPolygonList(file, address),
+				ChunkType.Tiny_TextureID or ChunkType.Tiny_TextureID2 => new PolyChunkTinyTextureID(file, address),
+				ChunkType.Material_Diffuse
+					or ChunkType.Material_Ambient
+					or ChunkType.Material_DiffuseAmbient
+					or ChunkType.Material_Specular
+					or ChunkType.Material_DiffuseSpecular
+					or ChunkType.Material_AmbientSpecular
+					or ChunkType.Material_DiffuseAmbientSpecular
+					or ChunkType.Material_Diffuse2
+					or ChunkType.Material_Ambient2
+					or ChunkType.Material_DiffuseAmbient2
+					or ChunkType.Material_Specular2
+					or ChunkType.Material_DiffuseSpecular2
+					or ChunkType.Material_AmbientSpecular2
+					or ChunkType.Material_DiffuseAmbientSpecular2 => new PolyChunkMaterial(file, address),
+				ChunkType.Material_Bump => new PolyChunkMaterialBump(file, address),
+				ChunkType.Volume_Polygon3
+					or ChunkType.Volume_Polygon4
+					or ChunkType.Volume_Strip => new PolyChunkVolume(file, address),
+				ChunkType.Strip_Strip
+					or ChunkType.Strip_StripUVN
+					or ChunkType.Strip_StripUVH
+					or ChunkType.Strip_StripColor
+					or ChunkType.Strip_StripUVNColor
+					or ChunkType.Strip_StripUVHColor
+					or ChunkType.Strip_Strip2
+					or ChunkType.Strip_StripUVN2
+					or ChunkType.Strip_StripUVH2 => new PolyChunkStrip(file, address),
+				ChunkType.End => new PolyChunkEnd(file, address),
+				_ => throw new NotSupportedException($"Unsupported chunk type {type} at {address:X8}.")
+			};
 		}
 
 		public abstract byte[] GetBytes();
@@ -129,10 +115,7 @@ namespace SAModel
 	[Serializable]
 	public abstract class PolyChunkBits : PolyChunk
 	{
-		public override int ByteSize
-		{
-			get { return 2; }
-		}
+		public override int ByteSize => 2;
 
 		public override byte[] GetBytes()
 		{
@@ -183,14 +166,14 @@ namespace SAModel
 	{
 		public AlphaInstruction SourceAlpha
 		{
-			get { return (AlphaInstruction)((Flags >> 3) & 7); }
-			set { Flags = (byte)((Flags & ~0x38) | ((byte)value << 3)); }
+			get => (AlphaInstruction)((Flags >> 3) & 7);
+			set => Flags = (byte)((Flags & ~0x38) | ((byte)value << 3));
 		}
 
 		public AlphaInstruction DestinationAlpha
 		{
-			get { return (AlphaInstruction)(Flags & 7); }
-			set { Flags = (byte)((Flags & ~7) | (byte)value); }
+			get => (AlphaInstruction)(Flags & 7);
+			set => Flags = (byte)((Flags & ~7) | (byte)value);
 		}
 
 		public PolyChunkBitsBlendAlpha()
@@ -205,65 +188,33 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			string blendSrcStr = "FBS_SA";
-			switch (SourceAlpha)
+			string blendSrcStr = SourceAlpha switch
 			{
-				case AlphaInstruction.Zero:
-					blendSrcStr = "FBS_ZER";
-					break;
-				case AlphaInstruction.One:
-					blendSrcStr = "FBS_ONE";
-					break;
-				case AlphaInstruction.OtherColor:
-					blendSrcStr = "FBS_OC";
-					break;
-				case AlphaInstruction.InverseOtherColor:
-					blendSrcStr = "FBS_IOC";
-					break;
-				case AlphaInstruction.SourceAlpha:
-					blendSrcStr = "FBS_SA";
-					break;
-				case AlphaInstruction.InverseSourceAlpha:
-					blendSrcStr = "FBS_ISA";
-					break;
-				case AlphaInstruction.DestinationAlpha:
-					blendSrcStr = "FBS_DA";
-					break;
-				case AlphaInstruction.InverseDestinationAlpha:
-					blendSrcStr = "FBS_IDA";
-					break;
-			}
+				AlphaInstruction.Zero => "FBS_ZER",
+				AlphaInstruction.One => "FBS_ONE",
+				AlphaInstruction.OtherColor => "FBS_OC",
+				AlphaInstruction.InverseOtherColor => "FBS_IOC",
+				AlphaInstruction.SourceAlpha => "FBS_SA",
+				AlphaInstruction.InverseSourceAlpha => "FBS_ISA",
+				AlphaInstruction.DestinationAlpha => "FBS_DA",
+				AlphaInstruction.InverseDestinationAlpha => "FBS_IDA",
+				_ => "FBS_SA"
+			};
 
-			string blendDstStr = "FBD_ISA";
-			switch (DestinationAlpha)
+			string blendDstStr = DestinationAlpha switch
 			{
-				case AlphaInstruction.Zero:
-					blendDstStr = "FBD_ZER";
-					break;
-				case AlphaInstruction.One:
-					blendDstStr = "FBD_ONE";
-					break;
-				case AlphaInstruction.OtherColor:
-					blendDstStr = "FBD_OC";
-					break;
-				case AlphaInstruction.InverseOtherColor:
-					blendDstStr = "FBD_IOC";
-					break;
-				case AlphaInstruction.SourceAlpha:
-					blendDstStr = "FBD_SA";
-					break;
-				case AlphaInstruction.InverseSourceAlpha:
-					blendDstStr = "FBD_ISA";
-					break;
-				case AlphaInstruction.DestinationAlpha:
-					blendDstStr = "FBD_DA";
-					break;
-				case AlphaInstruction.InverseDestinationAlpha:
-					blendDstStr = "FBD_IDA";
-					break;
-			}
+				AlphaInstruction.Zero => "FBD_ZER",
+				AlphaInstruction.One => "FBD_ONE",
+				AlphaInstruction.OtherColor => "FBD_OC",
+				AlphaInstruction.InverseOtherColor => "FBD_IOC",
+				AlphaInstruction.SourceAlpha => "FBD_SA",
+				AlphaInstruction.InverseSourceAlpha => "FBD_ISA",
+				AlphaInstruction.DestinationAlpha => "FBD_DA",
+				AlphaInstruction.InverseDestinationAlpha => "FBD_IDA",
+				_ => "FBD_ISA"
+			};
 
-			writer.WriteLine("\tCnkB_BA( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ),");
+			writer.WriteLine($"\tCnkB_BA( {blendSrcStr}|{blendDstStr} ),");
 		}
 	}
 
@@ -272,11 +223,8 @@ namespace SAModel
 	{
 		public float MipmapDAdjust
 		{
-			get { return (Flags & 0xF) * 0.25f; }
-			set
-			{
-				Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))));
-			}
+			get => (Flags & 0xF) * 0.25f;
+			set => Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))));
 		}
 
 		public PolyChunkBitsMipmapDAdjust()
@@ -291,58 +239,27 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			string bits = string.Empty;
-			switch (Flags & 0xF)
+			var bits = (Flags & 0xF) switch
 			{
-				case 0:
-					return;
-				case 1:
-					bits = "FDA_025";
-					break;
-				case 2:
-					bits = "FDA_050";
-					break;
-				case 3:
-					bits = "FDA_075";
-					break;
-				case 4:
-					bits = "FDA_100";
-					break;
-				case 5:
-					bits = "FDA_125";
-					break;
-				case 6:
-					bits = "FDA_150";
-					break;
-				case 7:
-					bits = "FDA_175";
-					break;
-				case 8:
-					bits = "FDA_200";
-					break;
-				case 9:
-					bits = "FDA_225";
-					break;
-				case 10:
-					bits = "FDA_250";
-					break;
-				case 11:
-					bits = "FDA_275";
-					break;
-				case 12:
-					bits = "FDA_300";
-					break;
-				case 13:
-					bits = "FDA_325";
-					break;
-				case 14:
-					bits = "FDA_350";
-					break;
-				case 15:
-					bits = "FDA_375";
-					break;
-			}
-			writer.WriteLine("\tCnkB_DA( " + bits + " ),");
+				1 => "FDA_025",
+				2 => "FDA_050",
+				3 => "FDA_075",
+				4 => "FDA_100",
+				5 => "FDA_125",
+				6 => "FDA_150",
+				7 => "FDA_175",
+				8 => "FDA_200",
+				9 => "FDA_225",
+				10 => "FDA_250",
+				11 => "FDA_275",
+				12 => "FDA_300",
+				13 => "FDA_325",
+				14 => "FDA_350",
+				15 => "FDA_375",
+				_ => string.Empty
+			};
+
+			writer.WriteLine($"\tCnkB_DA( {bits} ),");
 		}
 	}
 
@@ -351,8 +268,8 @@ namespace SAModel
 	{
 		public byte SpecularExponent
 		{
-			get { return (byte)(Flags & 0x1F); }
-			set { Flags = (byte)((Flags & ~0x1F) | Math.Min(value, (byte)16)); }
+			get => (byte)(Flags & 0x1F);
+			set => Flags = (byte)((Flags & ~0x1F) | Math.Min(value, (byte)16));
 		}
 
 		public PolyChunkBitsSpecularExponent()
@@ -367,7 +284,7 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+			throw new NotSupportedException($"Unsupported chunk type {Type}.");
 		}
 	}
 
@@ -376,8 +293,8 @@ namespace SAModel
 	{
 		public byte List
 		{
-			get { return Flags; }
-			set { Flags = value; }
+			get => Flags;
+			set => Flags = value;
 		}
 
 		public PolyChunkBitsCachePolygonList()
@@ -392,7 +309,7 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine("\tCnkB_CP( " + List + " ),");
+			writer.WriteLine($"\tCnkB_CP( {List} ),");
 		}
 	}
 
@@ -401,8 +318,8 @@ namespace SAModel
 	{
 		public byte List
 		{
-			get { return Flags; }
-			set { Flags = value; }
+			get => Flags;
+			set => Flags = value;
 		}
 
 		public PolyChunkBitsDrawPolygonList()
@@ -417,7 +334,7 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			writer.WriteLine("\tCnkB_DP( " + List + " ),");
+			writer.WriteLine($"\tCnkB_DP( {List} ),");
 		}
 	}
 
@@ -428,61 +345,55 @@ namespace SAModel
 
 		public float MipmapDAdjust
 		{
-			get { return (Flags & 0xF) * 0.25f; }
-			set
-			{
-				Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))));
-			}
+			get => (Flags & 0xF) * 0.25f;
+			set => Flags = (byte)((Flags & 0xF0) | (byte)Math.Max(0, Math.Min(0xF, Math.Round(value / 0.25, MidpointRounding.AwayFromZero))));
 		}
 
 		public bool ClampV
 		{
-			get { return (Flags & 0x10) == 0x10; }
-			set { Flags = (byte)((Flags & ~0x10) | (value ? 0x10 : 0)); }
+			get => (Flags & 0x10) == 0x10;
+			set => Flags = (byte)((Flags & ~0x10) | (value ? 0x10 : 0));
 		}
 
 		public bool ClampU
 		{
-			get { return (Flags & 0x20) == 0x20; }
-			set { Flags = (byte)((Flags & ~0x20) | (value ? 0x20 : 0)); }
+			get => (Flags & 0x20) == 0x20;
+			set => Flags = (byte)((Flags & ~0x20) | (value ? 0x20 : 0));
 		}
 
 		public bool FlipV
 		{
-			get { return (Flags & 0x40) == 0x40; }
-			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
+			get => (Flags & 0x40) == 0x40;
+			set => Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0));
 		}
 
 		public bool FlipU
 		{
-			get { return (Flags & 0x80) == 0x80; }
-			set { Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0)); }
+			get => (Flags & 0x80) == 0x80;
+			set => Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0));
 		}
 
 		public ushort Data { get; set; }
 
 		public ushort TextureID
 		{
-			get { return (ushort)(Data & 0x1FFF); }
-			set { Data = (ushort)((Data & ~0x1FFF) | Math.Min(value, (ushort)0x1FFF)); }
+			get => (ushort)(Data & 0x1FFF);
+			set => Data = (ushort)((Data & ~0x1FFF) | Math.Min(value, (ushort)0x1FFF));
 		}
 
 		public bool SuperSample
 		{
-			get { return (Data & 0x2000) == 0x2000; }
-			set { Data = (ushort)((Data & ~0x2000) | (value ? 0x2000 : 0)); }
+			get => (Data & 0x2000) == 0x2000;
+			set => Data = (ushort)((Data & ~0x2000) | (value ? 0x2000 : 0));
 		}
 
 		public FilterMode FilterMode
 		{
-			get { return (FilterMode)(Data >> 14); }
-			set { Data = (ushort)((Data & ~0xC000) | ((ushort)value << 14)); }
+			get => (FilterMode)(Data >> 14);
+			set => Data = (ushort)((Data & ~0xC000) | ((ushort)value << 14));
 		}
 
-		public override int ByteSize
-		{
-			get { return 4; }
-		}
+		public override int ByteSize => 4;
 
 		public PolyChunkTinyTextureID()
 		{
@@ -543,7 +454,6 @@ namespace SAModel
 
 			switch(Flags & 0xF)
 			{
-				case 0:
 				default:
 					if (headbits != string.Empty)
 					{
@@ -603,19 +513,19 @@ namespace SAModel
 				headbits = "0x0";
 			}
 
-			writer.Write("\tCnkT_TID( " + headbits + " ), _TID( ");
+			writer.Write($"\tCnkT_TID( {headbits} ), _TID( ");
 
 			switch (FilterMode)
 			{
-			case FilterMode.PointSampled:
-				writer.Write("FFM_PS");
-				break;
-			case FilterMode.Bilinear:
-				writer.Write("FFM_BF");
-				break;
-			case FilterMode.Trilinear:
-				writer.Write("FFM_TF");
-				break;
+				case FilterMode.PointSampled:
+					writer.Write("FFM_PS");
+					break;
+				case FilterMode.Bilinear:
+					writer.Write("FFM_BF");
+					break;
+				case FilterMode.Trilinear:
+					writer.Write("FFM_TF");
+					break;
 			}
 
 			if (SuperSample)
@@ -623,7 +533,7 @@ namespace SAModel
 				writer.Write("|FSS");
 			}
 
-			writer.WriteLine(", " + TextureID.ToString() + " ),");
+			writer.WriteLine($", {TextureID} ),");
 		}
 	}
 
@@ -632,10 +542,7 @@ namespace SAModel
 	{
 		public ushort Size { get; protected set; }
 
-		public override int ByteSize
-		{
-			get { return (Size * 2) + 4; }
-		}
+		public override int ByteSize => (Size * 2) + 4;
 
 		public override byte[] GetBytes()
 		{
@@ -651,14 +558,14 @@ namespace SAModel
 	{
 		public AlphaInstruction SourceAlpha
 		{
-			get { return (AlphaInstruction)((Flags >> 3) & 7); }
-			set { Flags = (byte)((Flags & ~0x38) | ((byte)value << 3)); }
+			get => (AlphaInstruction)((Flags >> 3) & 7);
+			set => Flags = (byte)((Flags & ~0x38) | ((byte)value << 3));
 		}
 
 		public AlphaInstruction DestinationAlpha
 		{
-			get { return (AlphaInstruction)(Flags & 7); }
-			set { Flags = (byte)((Flags & ~7) | (byte)value); }
+			get => (AlphaInstruction)(Flags & 7);
+			set => Flags = (byte)((Flags & ~7) | (byte)value);
 		}
 
 		public Color? Diffuse { get; set; }
@@ -823,78 +730,47 @@ namespace SAModel
 				letters += '2';
 			}
 
-			string blendSrcStr = "FBS_SA";
-			switch (SourceAlpha)
+			var blendSrcStr = SourceAlpha switch
 			{
-				case AlphaInstruction.Zero:
-					blendSrcStr = "FBS_ZER";
-					break;
-				case AlphaInstruction.One:
-					blendSrcStr = "FBS_ONE";
-					break;
-				case AlphaInstruction.OtherColor:
-					blendSrcStr = "FBS_OC";
-					break;
-				case AlphaInstruction.InverseOtherColor:
-					blendSrcStr = "FBS_IOC";
-					break;
-				case AlphaInstruction.SourceAlpha:
-					blendSrcStr = "FBS_SA";
-					break;
-				case AlphaInstruction.InverseSourceAlpha:
-					blendSrcStr = "FBS_ISA";
-					break;
-				case AlphaInstruction.DestinationAlpha:
-					blendSrcStr = "FBS_DA";
-					break;
-				case AlphaInstruction.InverseDestinationAlpha:
-					blendSrcStr = "FBS_IDA";
-					break;
-			}
+				AlphaInstruction.Zero => "FBS_ZER",
+				AlphaInstruction.One => "FBS_ONE",
+				AlphaInstruction.OtherColor => "FBS_OC",
+				AlphaInstruction.InverseOtherColor => "FBS_IOC",
+				AlphaInstruction.SourceAlpha => "FBS_SA",
+				AlphaInstruction.InverseSourceAlpha => "FBS_ISA",
+				AlphaInstruction.DestinationAlpha => "FBS_DA",
+				AlphaInstruction.InverseDestinationAlpha => "FBS_IDA",
+				_ => "FBS_SA"
+			};
 
-			string blendDstStr = "FBD_ISA";
-			switch (DestinationAlpha)
+			var blendDstStr = DestinationAlpha switch
 			{
-				case AlphaInstruction.Zero:
-					blendDstStr = "FBD_ZER";
-					break;
-				case AlphaInstruction.One:
-					blendDstStr = "FBD_ONE";
-					break;
-				case AlphaInstruction.OtherColor:
-					blendDstStr = "FBD_OC";
-					break;
-				case AlphaInstruction.InverseOtherColor:
-					blendDstStr = "FBD_IOC";
-					break;
-				case AlphaInstruction.SourceAlpha:
-					blendDstStr = "FBD_SA";
-					break;
-				case AlphaInstruction.InverseSourceAlpha:
-					blendDstStr = "FBD_ISA";
-					break;
-				case AlphaInstruction.DestinationAlpha:
-					blendDstStr = "FBD_DA";
-					break;
-				case AlphaInstruction.InverseDestinationAlpha:
-					blendDstStr = "FBD_IDA";
-					break;
-			}
+				AlphaInstruction.Zero => "FBD_ZER",
+				AlphaInstruction.One => "FBD_ONE",
+				AlphaInstruction.OtherColor => "FBD_OC",
+				AlphaInstruction.InverseOtherColor => "FBD_IOC",
+				AlphaInstruction.SourceAlpha => "FBD_SA",
+				AlphaInstruction.InverseSourceAlpha => "FBD_ISA",
+				AlphaInstruction.DestinationAlpha => "FBD_DA",
+				AlphaInstruction.InverseDestinationAlpha => "FBD_IDA",
+				_ => "FBD_ISA"
+			};
 
-			writer.WriteLine("\tCnkM_" + letters + "( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ), " + size.ToString() +",");
+			writer.WriteLine($"\tCnkM_{letters}( {blendSrcStr}|{blendDstStr} ), {size},");
+
 			if (Diffuse.HasValue)
 			{
-				writer.WriteLine("\tMDiff( " + Diffuse.Value.A.ToString() + ", " + Diffuse.Value.R.ToString() + ", " + Diffuse.Value.G.ToString() + ", " + Diffuse.Value.B.ToString() + " ),");
+				writer.WriteLine($"\tMDiff( {Diffuse.Value.A}, {Diffuse.Value.R}, {Diffuse.Value.G}, {Diffuse.Value.B} ),");
 			}
 
 			if (Ambient.HasValue)
 			{
-				writer.WriteLine("\tMAmbi( " + Ambient.Value.A.ToString() + ", " + Ambient.Value.R.ToString() + ", " + Ambient.Value.G.ToString() + ", " + Ambient.Value.B.ToString() + " ),");
+				writer.WriteLine($"\tMAmbi( {Ambient.Value.A}, {Ambient.Value.R}, {Ambient.Value.G}, {Ambient.Value.B} ),");
 			}
 
 			if (Specular.HasValue)
 			{
-				writer.WriteLine("\tMSpec( " + SpecularExponent.ToString() + ", " + Specular.Value.R.ToString() + ", " + Specular.Value.G.ToString() + ", " + Specular.Value.B.ToString() + " ),");
+				writer.WriteLine($"\tMSpec( {SpecularExponent}, {Specular.Value.R}, {Specular.Value.G}, {Specular.Value.B} ),");
 			}
 		}
 	}
@@ -949,7 +825,7 @@ namespace SAModel
 
 		public override void ToNJA(TextWriter writer)
 		{
-			throw new NotSupportedException("Unsupported chunk type " + Type + ".");
+			throw new NotSupportedException($"Unsupported chunk type {Type}.");
 		}
 	}
 
@@ -1015,21 +891,21 @@ namespace SAModel
 					writer.Write(Environment.NewLine);
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write("\t" + Indexes[i].ToString() + ",");
+						writer.Write($"\t{Indexes[i]},");
 
 						if (UserFlags1 != null && i > 1)
 						{
 							if (UserFlags3 != null)
 							{
-								writer.Write(" \tUf3( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + ", " + UserFlags3.ToString() + "),");
+								writer.Write($" \tUf3( {UserFlags1}, {UserFlags2}, {UserFlags3}),");
 							}
 							else if (UserFlags2 != null)
 							{
-								writer.Write(" \tUf2( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + "),");
+								writer.Write($" \tUf2( {UserFlags1}, {UserFlags2}),");
 							}
 							else
 							{
-								writer.Write(" \tUf1( " + UserFlags1.ToString() + "),");
+								writer.Write($" \tUf1( {UserFlags1}),");
 							}
 						}
 
@@ -1041,10 +917,10 @@ namespace SAModel
 					writer.Write("  ");
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write(Indexes[i].ToString() + ", ");
+						writer.Write($"{Indexes[i]}, ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
 						{
-							writer.Write(Environment.NewLine + "                   ");
+							writer.Write($"{Environment.NewLine}                   ");
 						}
 					}
 					writer.Write(Environment.NewLine);
@@ -1133,21 +1009,21 @@ namespace SAModel
 					writer.Write(Environment.NewLine);
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write("\t" + Indexes[i].ToString() + ",");
+						writer.Write($"\t{Indexes[i]},");
 
 						if (UserFlags1 != null && i > 1)
 						{
 							if (UserFlags3 != null)
 							{
-								writer.Write(" \tUf3( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + ", " + UserFlags3.ToString() + "),");
+								writer.Write($" \tUf3( {UserFlags1}, {UserFlags2}, {UserFlags3}),");
 							}
 							else if (UserFlags2 != null)
 							{
-								writer.Write(" \tUf2( " + UserFlags1.ToString() + ", " + UserFlags2.ToString() + "),");
+								writer.Write($" \tUf2( {UserFlags1}, {UserFlags2}),");
 							}
 							else
 							{
-								writer.Write(" \tUf1( " + UserFlags1.ToString() + "),");
+								writer.Write($" \tUf1( {UserFlags1}),");
 							}
 						}
 
@@ -1159,10 +1035,10 @@ namespace SAModel
 					writer.Write("  ");
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write(Indexes[i].ToString() + ", ");
+						writer.Write($"{Indexes[i]}, ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
 						{
-							writer.Write(Environment.NewLine + "                   ");
+							writer.Write($"{Environment.NewLine}                   ");
 						}
 					}
 					writer.Write(Environment.NewLine);
@@ -1263,21 +1139,21 @@ namespace SAModel
 					writer.Write(Environment.NewLine);
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write("\t" + Indexes[i].ToString() + ",");
+						writer.Write($"\t{Indexes[i]},");
 
 						if (UserFlags1 != null && i > 1)
 						{
 							if (UserFlags3 != null)
 							{
-								writer.Write(" \tUf3( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + ", " + UserFlags3[i].ToString() + "),");
+								writer.Write($" \tUf3( {UserFlags1[i]}, {UserFlags2[i]}, {UserFlags3[i]}),");
 							}
 							else if (UserFlags2 != null)
 							{
-								writer.Write(" \tUf2( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + "),");
+								writer.Write($" \tUf2( {UserFlags1[i]}, {UserFlags2[i]}),");
 							}
 							else
 							{
-								writer.Write(" \tUf1( " + UserFlags1[i].ToString() + "),");
+								writer.Write($" \tUf1( {UserFlags1[i]}),");
 							}
 						}
 
@@ -1289,10 +1165,10 @@ namespace SAModel
 					writer.Write("  ");
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write(Indexes[i].ToString() + ", ");
+						writer.Write($"{Indexes[i]}, ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
 						{
-							writer.Write(Environment.NewLine + "                   ");
+							writer.Write($"{Environment.NewLine}                   ");
 						}
 					}
 					writer.Write(Environment.NewLine);
@@ -1432,14 +1308,14 @@ namespace SAModel
 
 		public byte UserFlags
 		{
-			get { return (byte)(Header2 >> 14); }
-			private set { Header2 = (ushort)((Header2 & 0x3FFF) | ((value & 3) << 14)); }
+			get => (byte)(Header2 >> 14);
+			private set => Header2 = (ushort)((Header2 & 0x3FFF) | ((value & 3) << 14));
 		}
 
 		public ushort PolyCount
 		{
-			get { return (ushort)Polys.Count; }
-			private set { Header2 = (ushort)((Header2 & 0xC000) | (value & 0x3FFF)); }
+			get => (ushort)Polys.Count;
+			private set => Header2 = (ushort)((Header2 & 0xC000) | (value & 0x3FFF));
 		}
 
 		public List<Poly> Polys { get; private set; }
@@ -1495,21 +1371,21 @@ namespace SAModel
 			switch (Type)
 			{
 				case ChunkType.Volume_Polygon3:
-					writer.WriteLine("\tCnkO_P3, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					writer.WriteLine($"\tCnkO_P3, {Size}, _NB( UFO_{UserFlags}, {Polys.Count} ),");
 					foreach (Triangle item in Polys)
 					{
 						item.ToNJA(writer);
 					}
 					break;
 				case ChunkType.Volume_Polygon4:
-					writer.WriteLine("\tCnkO_P4, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					writer.WriteLine($"\tCnkO_P4, {Size}, _NB( UFO_{UserFlags}, {Polys.Count} ),");
 					foreach (Quad item in Polys)
 					{
 						item.ToNJA(writer);
 					}
 					break;
 				case ChunkType.Volume_Strip:
-					writer.WriteLine("\tCnkO_ST, " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + Polys.Count + " ),");
+					writer.WriteLine($"\tCnkO_ST, {Size}, _NB( UFO_{UserFlags}, {Polys.Count} ),");
 					foreach (Strip item in Polys)
 					{
 						item.ToNJA(writer);
@@ -1688,11 +1564,11 @@ namespace SAModel
 			{
 				if (Reversed)
 				{
-					writer.Write("\tStripR(" + Indexes.Length + "),");
+					writer.Write($"\tStripR({Indexes.Length}),");
 				}
 				else
 				{
-					writer.Write("\tStripL(" + Indexes.Length + "),");
+					writer.Write($"\tStripL({Indexes.Length}),");
 				}
 
 				if (UVs != null || VColors != null || UserFlags1 != null)
@@ -1700,31 +1576,31 @@ namespace SAModel
 					writer.Write(Environment.NewLine);
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write("\t" + Indexes[i].ToString() + ",");
+						writer.Write($"\t{Indexes[i]},");
 
 						if (UVs != null)
 						{
-							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
+							writer.Write($" \tUvn( {((short)(UVs[i].U * (UVH ? 1023.0 : 255.0)))}, {((short)(UVs[i].V * (UVH ? 1023.0 : 255.0)))} ),");
 						}
 
 						if (VColors != null)
 						{
-							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+							writer.Write($" \tD8888({VColors[i].A}, {VColors[i].R}, {VColors[i].G}, {VColors[i].B}),");
 						}
 
 						if (UserFlags1 != null && i > 1)
 						{
 							if (UserFlags3 != null)
 							{
-								writer.Write(" \tUf3( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + ", " + UserFlags3[i].ToString() + "),");
+								writer.Write($" \tUf3( {UserFlags1[i]}, {UserFlags2[i]}, {UserFlags3[i]}),");
 							}
 							else if (UserFlags2 != null)
 							{
-								writer.Write(" \tUf2( " + UserFlags1[i].ToString() + ", " + UserFlags2[i].ToString() + "),");
+								writer.Write($" \tUf2( {UserFlags1[i]}, {UserFlags2[i]}),");
 							}
 							else
 							{
-								writer.Write(" \tUf1( " + UserFlags1[i].ToString() + "),");
+								writer.Write($" \tUf1( {UserFlags1[i]}),");
 							}
 						}
 
@@ -1736,10 +1612,10 @@ namespace SAModel
 					writer.Write("  ");
 					for (int i = 0; i < Indexes.Length; ++i)
 					{
-						writer.Write(Indexes[i].ToString() + ", ");
+						writer.Write($"{Indexes[i]}, ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
 						{
-							writer.Write(Environment.NewLine + "                   ");
+							writer.Write($"{Environment.NewLine}                   ");
 						}
 					}
 					writer.Write(Environment.NewLine);
@@ -1816,58 +1692,58 @@ namespace SAModel
 
 		public bool IgnoreLight
 		{
-			get { return (Flags & 1) == 1; }
-			set { Flags = (byte)((Flags & ~1) | (value ? 1 : 0)); }
+			get => (Flags & 1) == 1;
+			set => Flags = (byte)((Flags & ~1) | (value ? 1 : 0));
 		}
 
 		public bool IgnoreSpecular
 		{
-			get { return (Flags & 2) == 2; }
-			set { Flags = (byte)((Flags & ~2) | (value ? 2 : 0)); }
+			get => (Flags & 2) == 2;
+			set => Flags = (byte)((Flags & ~2) | (value ? 2 : 0));
 		}
 
 		public bool IgnoreAmbient
 		{
-			get { return (Flags & 4) == 4; }
-			set { Flags = (byte)((Flags & ~4) | (value ? 4 : 0)); }
+			get => (Flags & 4) == 4;
+			set => Flags = (byte)((Flags & ~4) | (value ? 4 : 0));
 		}
 
 		public bool UseAlpha
 		{
-			get { return (Flags & 8) == 8; }
-			set { Flags = (byte)((Flags & ~8) | (value ? 8 : 0)); }
+			get => (Flags & 8) == 8;
+			set => Flags = (byte)((Flags & ~8) | (value ? 8 : 0));
 		}
 
 		public bool DoubleSide
 		{
-			get { return (Flags & 0x10) == 0x10; }
-			set { Flags = (byte)((Flags & ~0x10) | (value ? 0x10 : 0)); }
+			get => (Flags & 0x10) == 0x10;
+			set => Flags = (byte)((Flags & ~0x10) | (value ? 0x10 : 0));
 		}
 
 		public bool FlatShading
 		{
-			get { return (Flags & 0x20) == 0x20; }
-			set { Flags = (byte)((Flags & ~0x20) | (value ? 0x20 : 0)); }
+			get => (Flags & 0x20) == 0x20;
+			set => Flags = (byte)((Flags & ~0x20) | (value ? 0x20 : 0));
 		}
 
 		public bool EnvironmentMapping
 		{
-			get { return (Flags & 0x40) == 0x40; }
-			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
+			get => (Flags & 0x40) == 0x40;
+			set => Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0));
 		}
 
 		public ushort Header2 { get; private set; }
 
 		public byte UserFlags
 		{
-			get { return (byte)(Header2 >> 14); }
-			private set { Header2 = (ushort)((Header2 & 0x3FFF) | ((value & 3) << 14)); }
+			get => (byte)(Header2 >> 14);
+			private set => Header2 = (ushort)((Header2 & 0x3FFF) | ((value & 3) << 14));
 		}
 
 		public ushort StripCount
 		{
-			get { return (ushort)Strips.Count; }
-			private set { Header2 = (ushort)((Header2 & 0xC000) | (value & 0x3FFF)); }
+			get => (ushort)Strips.Count;
+			private set => Header2 = (ushort)((Header2 & 0xC000) | (value & 0x3FFF));
 		}
 
 		public List<Strip> Strips { get; private set; }
@@ -2031,7 +1907,7 @@ namespace SAModel
 			int alignmentPadding = (Size % 2);
 			Size += (ushort)alignmentPadding;
 
-			writer.WriteLine("\t" + chunkname + "( " + flags + " ), " + Size.ToString() + ", _NB( UFO_" + UserFlags.ToString() + ", " + StripCount + " ),");
+			writer.WriteLine($"\t{chunkname}( {flags} ), {Size}, _NB( UFO_{UserFlags}, {StripCount} ),");
 
 			foreach(Strip item in Strips)
 			{

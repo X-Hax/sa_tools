@@ -51,7 +51,7 @@ namespace SAModel
 
 		public override string ToString()
 		{
-			return Center.ToString() + ", " + Radius.ToString(NumberFormatInfo.InvariantInfo);
+			return $"{Center}, {Radius.ToString(NumberFormatInfo.InvariantInfo)}";
 		}
 
 		public string ToStruct(bool land = false)

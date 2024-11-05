@@ -109,7 +109,7 @@ namespace SAModel.GC
 				}
 				else
 				{
-					ParameterName = "parameter_" + parameters_offset.ToString("X8");
+					ParameterName = $"parameter_{parameters_offset:X8}";
 				}
 			}
 			for (int i = 0; i < parameters_count; i++)
@@ -135,7 +135,7 @@ namespace SAModel.GC
 				}
 				else
 				{
-					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
+					PrimitiveName = $"primitive_{primitives_offset:X8}";
 				}
 			}
 
@@ -191,43 +191,43 @@ namespace SAModel.GC
 		{
 			if (parameters != null && parameters.Count != 0)
 			{
-				writer.WriteLine("PARAMETER   " + ParameterName + "[]");
+				writer.WriteLine($"PARAMETER   {ParameterName}[]");
 				writer.WriteLine("START");
 				foreach (GCParameter item in parameters)
 					item.ToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
 			if (primitives != null)
 			{
-				writer.WriteLine("PRIMITIVE   " + PrimitiveName + "[]");
+				writer.WriteLine($"PRIMITIVE   {PrimitiveName}[]");
 				writer.WriteLine("START");
 				foreach (GCPrimitive item in primitives)
 					item.ToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 		}
 		public void RefToNJA(TextWriter writer)
 		{
 			if (parameters != null && parameters.Count != 0)
 			{
-				writer.WriteLine("Parameter   " + ParameterName + ",");
-				writer.WriteLine("ParamNum    " + parameters.Count + ",");
+				writer.WriteLine($"Parameter   {ParameterName},");
+				writer.WriteLine($"ParamNum    {parameters.Count},");
 			}
 			else
 			{
-				writer.WriteLine("Parameter   NULL" + ParameterName + ",");
-				writer.WriteLine("ParamNum    " + parameters.Count + ",");
+				writer.WriteLine($"Parameter   NULL{ParameterName},");
+				writer.WriteLine($"ParamNum    {parameters.Count},");
 			}
 			if (primitives != null)
 			{
-				writer.WriteLine("Primitive   " + PrimitiveName + ",");
-				writer.WriteLine("PrimNum     " + primitiveSize + ",");
+				writer.WriteLine($"Primitive   {PrimitiveName},");
+				writer.WriteLine($"PrimNum     {primitiveSize},");
 			}
 			else
 			{
-				writer.WriteLine("Primitive   NULL" + PrimitiveName + ",");
-				writer.WriteLine("PrimNum     " + primitiveSize + ",");
+				writer.WriteLine($"Primitive   NULL{PrimitiveName},");
+				writer.WriteLine($"PrimNum     {primitiveSize},");
 			}
 		}
 

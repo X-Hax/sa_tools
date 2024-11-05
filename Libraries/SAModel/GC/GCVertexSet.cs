@@ -169,7 +169,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataName = "position_" + tmpaddr.ToString("X8");
+						DataName = $"position_{tmpaddr:X8}";
 					}
 
 					for (int i = 0; i < count; i++)
@@ -185,7 +185,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataName = "normal_" + tmpaddr.ToString("X8");
+						DataName = $"normal_{tmpaddr:X8}";
 					}
 
 					for (int i = 0; i < count; i++)
@@ -201,7 +201,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataName = "vcolor_" + tmpaddr.ToString("X8");
+						DataName = $"vcolor_{tmpaddr:X8}";
 					}
 
 					for (int i = 0; i < count; i++)
@@ -216,7 +216,7 @@ namespace SAModel.GC
 					}
 					else
 					{
-						DataName = "uv_" + tmpaddr.ToString("X8");
+						DataName = $"uv_{tmpaddr:X8}";
 					}
 
 					for (int i = 0; i < count; i++)
@@ -330,13 +330,13 @@ namespace SAModel.GC
 					verttype2 = "TEX0       ";
 					break;
 			}
-			writer.WriteLine($"{verttype2}" + DataName + "[]");
+			writer.WriteLine($"{verttype2}{DataName}[]");
 			writer.WriteLine("START");
 			foreach (IOVtx vtx in data)
 			{
 				vtx.ToNJA(writer, verttype);
 			}
-			writer.WriteLine("END" + Environment.NewLine);
+			writer.WriteLine($"END{Environment.NewLine}");
 		}
 		public void RefToNJA(TextWriter writer)
 		{
@@ -356,12 +356,12 @@ namespace SAModel.GC
 					verttype = "TEX0";
 					break;
 			}
-			writer.WriteLine("\tVertAttr     " + $"{verttype}" + ",");
-			writer.WriteLine("\tElementSize  " + StructSize + ",");
-			writer.WriteLine("\tPoints       " + data.Count + ",");
-			writer.WriteLine("\tType         " + "( " + structType + ", " + dataType + " ),");
-			writer.WriteLine("\tName         " + DataName + ",");
-			writer.WriteLine("\tCheckSize    " + (data.Count * StructSize) + "," + Environment.NewLine);
+			writer.WriteLine($"\tVertAttr     {verttype},");
+			writer.WriteLine($"\tElementSize  {StructSize},");
+			writer.WriteLine($"\tPoints       {data.Count},");
+			writer.WriteLine($"\tType         ( {structType}, {dataType} ),");
+			writer.WriteLine($"\tName         {DataName},");
+			writer.WriteLine($"\tCheckSize    {(data.Count * StructSize)},{Environment.NewLine}");
 		}
 
 		public GCVertexSet Clone()

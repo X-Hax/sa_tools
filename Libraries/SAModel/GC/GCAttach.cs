@@ -35,10 +35,10 @@ namespace SAModel.GC
 		/// </summary>
 		public GCAttach()
 		{
-			Name = "gcattach_" + Extensions.GenerateIdentifier();
+			Name = $"gcattach_{Extensions.GenerateIdentifier()}";
 
 			VertexData = [];
-			VertexName = "vertex_" + Extensions.GenerateIdentifier();
+			VertexName = $"vertex_{Extensions.GenerateIdentifier()}";
 			Bounds = new BoundingSphere();
 		}
 
@@ -48,13 +48,13 @@ namespace SAModel.GC
 			if (hasOPoly)
 			{
 				OpaqueMeshes = [];
-				OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+				OpaqueMeshName = $"opoly_{Extensions.GenerateIdentifier()}";
 			}
 
 			if (hasTPoly)
 			{
 				TranslucentMeshes = [];
-				TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+				TranslucentMeshName = $"tpoly_{Extensions.GenerateIdentifier()}";
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace SAModel.GC
 			}
 			else
 			{
-				Name = "attach_" + address.ToString("X8");
+				Name = $"attach_{address:X8}";
 			}
 
 			// The struct is 36/0x24 bytes long
@@ -110,7 +110,7 @@ namespace SAModel.GC
 			}
 			else
 			{
-				VertexName = "vertex_" + vertexAddress.ToString("X8");
+				VertexName = $"vertex_{vertexAddress:X8}";
 			}
 
 			while (vertexSet.attribute != GCVertexAttribute.Null)
@@ -132,7 +132,7 @@ namespace SAModel.GC
 				}
 				else
 				{
-					OpaqueMeshName = "opoly_" + opaqueAddress.ToString("X8");
+					OpaqueMeshName = $"opoly_{opaqueAddress:X8}";
 				}
 			}
 
@@ -159,7 +159,7 @@ namespace SAModel.GC
 				}
 				else
 				{
-					TranslucentMeshName = "tpoly_" + translucentAddress.ToString("X8");
+					TranslucentMeshName = $"tpoly_{translucentAddress:X8}";
 				}
 			}
 
@@ -462,9 +462,9 @@ namespace SAModel.GC
 			result.Append(", ");
 			result.Append(TranslucentMeshes.Count != 0 ? TranslucentMeshName : "NULL");
 			result.Append(", ");
-			result.Append(OpaqueMeshes.Count != 0 ? "LengthOfArray<Uint16>(" + OpaqueMeshName + ")" : "0");
+			result.Append(OpaqueMeshes.Count != 0 ? $"LengthOfArray<Uint16>({OpaqueMeshName})" : "0");
 			result.Append(", ");
-			result.Append(TranslucentMeshes.Count != 0 ? "LengthOfArray<Uint16>(" + TranslucentMeshName + ")" : "0");
+			result.Append(TranslucentMeshes.Count != 0 ? $"LengthOfArray<Uint16>({TranslucentMeshName})" : "0");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			result.Append(" }");
@@ -527,7 +527,7 @@ namespace SAModel.GC
 							}
 								break;
 						}
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtx.ToArray()));
+						writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", vtx.ToArray())}");
 						writer.WriteLine("};");
 						writer.WriteLine();
 
@@ -540,8 +540,8 @@ namespace SAModel.GC
 				var chunks = new List<string>(VertexData.Count);
 				foreach (var item in VertexData)
 					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()) + ",");
-				writer.WriteLine("\t" + string.Join(Environment.NewLine + "\t", "{ 255, 0, 0, 0, NULL, 0 }"));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", chunks.ToArray())},");
+				writer.WriteLine($"\t{string.Join($"{Environment.NewLine}\t", "{ 255, 0, 0, 0, NULL, 0 }")}");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
@@ -561,7 +561,7 @@ namespace SAModel.GC
 							var param = new List<string>(OpaqueMeshes[i].parameters.Count);
 							foreach (var item in OpaqueMeshes[i].parameters)
 								param.Add(item.ToStruct());
-							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
+							writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 							writer.WriteLine("};");
 							writer.WriteLine();
 						}
@@ -592,7 +592,7 @@ namespace SAModel.GC
 						var buffsize = (int)dataSize - cb.Length;
 						var s = new List<string>(dataSize);
 						for (var j = 0; j < cb.Length; j++)
-							s.Add("0x" + cb[j].ToString("X") + (cb[j] < 0 ? "u" : ""));
+							s.Add($"0x{cb[j]:X}{(cb[j] < 0 ? "u" : "")}");
 						for (var l = 0; l < buffsize; l++)
 							s.Add("0x0");
 						writer.Write(string.Join(", ", s.ToArray()));
@@ -612,7 +612,7 @@ namespace SAModel.GC
 				List<string> chunks = [];
 				foreach (var item in OpaqueMeshes)
 					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", chunks.ToArray())}");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
@@ -631,7 +631,7 @@ namespace SAModel.GC
 							var param = new List<string>(TranslucentMeshes[i].parameters.Count);
 							foreach (var item in TranslucentMeshes[i].parameters)
 								param.Add(item.ToStruct());
-							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
+							writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 							writer.WriteLine("};");
 							writer.WriteLine();
 						}
@@ -662,7 +662,7 @@ namespace SAModel.GC
 						var buffsize = dataSize - cb.Length;
 						var s = new List<string>(dataSize);
 						for (var j = 0; j < cb.Length; j++)
-							s.Add("0x" + cb[j].ToString("X") + (cb[j] < 0 ? "u" : ""));
+							s.Add($"0x{cb[j]:X}{(cb[j] < 0 ? "u" : "")}");
 						for (var l = 0; l < buffsize; l++)
 							s.Add("0x0");
 						writer.Write(string.Join(", ", s.ToArray()));
@@ -678,7 +678,7 @@ namespace SAModel.GC
 				List<string> chunks = [];
 				foreach (var item in TranslucentMeshes)
 					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", chunks.ToArray())}");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
@@ -694,8 +694,8 @@ namespace SAModel.GC
 		{
 			if (!labels.Contains(VertexName))
 			{
-				writer.WriteLine("VLIST      " + VertexName + "[]");
-				writer.WriteLine("START" + Environment.NewLine);
+				writer.WriteLine($"VLIST      {VertexName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
 				foreach (var item in VertexData)
 					item.ToNJA(writer);
 				foreach (var item in VertexData)
@@ -706,37 +706,37 @@ namespace SAModel.GC
 				writer.WriteLine("\tType         NULL" + ",");
 				writer.WriteLine("\tName         NULL" + ",");
 				writer.WriteLine("\tCheckSize    0" + ",");
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
 			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
-				writer.WriteLine("OPLIST      " + OpaqueMeshName + "[]");
-				writer.WriteLine("START" + Environment.NewLine);
+				writer.WriteLine($"OPLIST      {OpaqueMeshName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
 				foreach (var item in OpaqueMeshes)
 					item.ToNJA(writer);
 				foreach (var item in OpaqueMeshes)
 					item.RefToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
 			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
-				writer.WriteLine("APLIST      " + TranslucentMeshName + "[]");
-				writer.WriteLine("START" + Environment.NewLine);
+				writer.WriteLine($"APLIST      {TranslucentMeshName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
 				foreach (var item in TranslucentMeshes)
 					item.ToNJA(writer);
 				foreach (var item in TranslucentMeshes)
 					item.RefToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			writer.WriteLine("GINJAMODEL  " + Name + "[]");
+			writer.WriteLine($"GINJAMODEL  {Name}[]");
 			writer.WriteLine("START");
-			writer.WriteLine("VList       " + VertexName + ",");
+			writer.WriteLine($"VList       {VertexName},");
 			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
-				writer.WriteLine("OPList      " + OpaqueMeshName + ",");
+				writer.WriteLine($"OPList      {OpaqueMeshName},");
 			}
 			else
 			{
@@ -745,18 +745,19 @@ namespace SAModel.GC
 
 			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
-				writer.WriteLine("APList      " + TranslucentMeshName + ",");
+				writer.WriteLine($"APList      {TranslucentMeshName},");
 			}
 			else
 			{
 				writer.WriteLine("APList      NULL,");
 			}
 
-			writer.WriteLine("OPNum       " + OpaqueMeshes.Count + ",");
-			writer.WriteLine("APNum       " + TranslucentMeshes.Count + ",");
-			writer.WriteLine("Center     " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
-			writer.WriteLine("Radius     " + Bounds.Radius.ToNJA() + ",");
-			writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			writer.WriteLine($"OPNum       {OpaqueMeshes.Count},");
+			writer.WriteLine($"APNum       {TranslucentMeshes.Count},");
+			writer.WriteLine(
+				$"Center     {Bounds.Center.X.ToNJA()}, {Bounds.Center.Y.ToNJA()}, {Bounds.Center.Z.ToNJA()},");
+			writer.WriteLine($"Radius     {Bounds.Radius.ToNJA()},");
+			writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 		}
 
 		#region Unused

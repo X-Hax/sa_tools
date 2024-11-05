@@ -312,9 +312,9 @@ namespace SAModel.GC
 					primtype = "GJD_PRIM_POINT";
 					break;
 			}
-			writer.WriteLine($"\t{primtype}(" + loops.Count + "),");
+			writer.WriteLine($"\t{primtype}({loops.Count}),");
 			for (int i = 0; i < loops.Count; i++)
-				writer.WriteLine("\t" + loops[i] + ",");
+				writer.WriteLine($"\t{loops[i]},");
 		}
 
 		/// <summary>
@@ -382,7 +382,7 @@ namespace SAModel.GC
 
 			if (degTriangles > 0)
 			{
-				Console.WriteLine("Degenerate triangles skipped: " + degTriangles);
+				Console.WriteLine($"Degenerate triangles skipped: {degTriangles}");
 			}
 
 			return sorted_vertices;

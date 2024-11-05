@@ -59,10 +59,7 @@ namespace SAModel
 		[DefaultValue(true)]
 		public bool Morph { get; set; }
 
-		public static int Size
-		{
-			get { return 0x34; }
-		}
+		public static int Size => 0x34;
 
 		[Browsable(false)]
 		public bool HasWeight
@@ -114,7 +111,7 @@ namespace SAModel
 
 		public NJS_OBJECT()
 		{
-			Name = "object_" + Extensions.GenerateIdentifier();
+			Name = $"object_{Extensions.GenerateIdentifier()}";
 			Position = new Vertex();
 			Rotation = new Rotation();
 			Scale = new Vertex(1, 1, 1);
@@ -138,7 +135,7 @@ namespace SAModel
 			}
 			else
 			{
-				Name = "object_" + address.ToString("X8");
+				Name = $"object_{address:X8}";
 			}
 
 			if (address > file.Length - 52)
@@ -637,7 +634,7 @@ namespace SAModel
 			var result = new StringBuilder("{ ");
 			result.Append(((StructEnums.NJD_EVAL)GetFlags()).ToString().Replace(", ", " | "));
 			result.Append(", ");
-			result.Append(Attach != null ? "&" + Attach.Name.MakeIdentifier() : "NULL");
+			result.Append(Attach != null ? $"&{Attach.Name.MakeIdentifier()}" : "NULL");
 			foreach (var value in Position.ToArray())
 			{
 				result.Append(", ");
@@ -654,9 +651,9 @@ namespace SAModel
 				result.Append(value.ToC());
 			}
 			result.Append(", ");
-			result.Append(Children.Count > 0 ? "&" + Children[0].Name.MakeIdentifier() : "NULL");
+			result.Append(Children.Count > 0 ? $"&{Children[0].Name.MakeIdentifier()}" : "NULL");
 			result.Append(", ");
-			result.Append(Sibling != null ? "&" + Sibling.Name.MakeIdentifier() : "NULL");
+			result.Append(Sibling != null ? $"&{Sibling.Name.MakeIdentifier()}" : "NULL");
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -698,19 +695,19 @@ namespace SAModel
 
 			if (isBasic)
 			{
-				writer.WriteLine("OBJECT_START" + Environment.NewLine);
+				writer.WriteLine($"OBJECT_START{Environment.NewLine}");
 			}
 			else if (isChunk)
 			{
-				writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
+				writer.WriteLine($"CNKOBJECT_START{Environment.NewLine}");
 			}
 			else if (isGinja)
 			{
-				writer.WriteLine("GCOBJECT_START" + Environment.NewLine);
+				writer.WriteLine($"GCOBJECT_START{Environment.NewLine}");
 			}
 			else if (isXinja)
 			{
-				writer.WriteLine("XBOBJECT_START" + Environment.NewLine);
+				writer.WriteLine($"XBOBJECT_START{Environment.NewLine}");
 			}
 
 			if (!isDup)
@@ -757,30 +754,31 @@ namespace SAModel
 			writer.Write(Name.MakeIdentifier());
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
-			writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
+			writer.WriteLine($"EvalFlags ( 0x{((int)GetFlags()):x8} ),");
 			if (isBasic)
 			{
-				writer.WriteLine("Model       " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine($"Model       {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
 			}
 			else if (isChunk)
 			{
-				writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine($"CNKModel   {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
 			}
 			else if (isGinja)
 			{
-				writer.WriteLine("GINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine($"GINJAModel {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
 			}
 			else if (isXinja)
 			{
-				writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine($"XINJAModel {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
 			}
 
 			writer.WriteLine("OPosition  {0},", Position.ToNJA());
-			writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
+			writer.WriteLine(
+				$"OAngle     ( {((float)Rotation.X / 182.044f).ToNJA()}, {((float)Rotation.Y / 182.044f).ToNJA()}, {((float)Rotation.Z / 182.044f).ToNJA()} ),");
 			writer.WriteLine("OScale     {0},", Scale.ToNJA());
-			writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("END" + Environment.NewLine);
+			writer.WriteLine($"Child       {(Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL")},");
+			writer.WriteLine($"Sibling     {(Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL")},");
+			writer.WriteLine($"END{Environment.NewLine}");
 
 			if (isBasic)
 			{
@@ -801,11 +799,11 @@ namespace SAModel
 
 			if (Parent == null)
 			{
-				writer.WriteLine(Environment.NewLine + "DEFAULT_START");
-				writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
-				writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
+				writer.WriteLine($"{Environment.NewLine}DEFAULT_START");
+				writer.WriteLine($"{Environment.NewLine}#ifndef DEFAULT_OBJECT_NAME");
+				writer.WriteLine($"#define DEFAULT_OBJECT_NAME {Name.MakeIdentifier()}");
 				writer.WriteLine("#endif");
-				writer.WriteLine(Environment.NewLine + "DEFAULT_END");
+				writer.WriteLine($"{Environment.NewLine}DEFAULT_END");
 			}
 		}
 
