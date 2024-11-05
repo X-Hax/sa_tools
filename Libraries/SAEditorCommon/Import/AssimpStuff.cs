@@ -511,7 +511,7 @@ namespace SAModel.SAEditorCommon.Import
 			List<Vector3D> normals = new List<Vector3D>();
 			List<Vector3D> texcoords = new List<Vector3D>();
 			List<Color4D> colors = new List<Color4D>();
-			foreach (GC.GCParameter param in m.parameters)
+			foreach (GC.GCParameter param in m.Parameters)
 			{
 				if (param.type == GC.ParameterType.Texture)
 				{
@@ -550,7 +550,7 @@ namespace SAModel.SAEditorCommon.Import
 			List<GC.IOVtx> gcColors = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Color0)?.data;
 			List<GC.IOVtx> gcUVs = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Tex0)?.data;
 
-			foreach (GC.GCPrimitive prim in m.primitives)
+			foreach (GC.GCPrimitive prim in m.Primitives)
 			{
 				for (int i = 0; i < prim.ToTriangles().Count; i += 3)
 				{

@@ -1269,9 +1269,7 @@ namespace SAModel
 					case ChunkType.Volume_Polygon4:
 						return new Quad();
 					case ChunkType.Volume_Strip:
-						throw new ArgumentException(
-							"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
-							nameof(type));
+						throw new ArgumentException("Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.", nameof(type));
 				}
 				throw new ArgumentException("Unknown poly type!", nameof(type));
 			}

@@ -256,7 +256,7 @@ namespace SAModel.GC
 					var primAddrs = new uint[OpaqueMeshes.Count];
 					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						if (OpaqueMeshes[i].parameters != null && OpaqueMeshes[i].parameters.Count > 0)
+						if (OpaqueMeshes[i].Parameters != null && OpaqueMeshes[i].Parameters.Count > 0)
 						{
 							if (labels.ContainsKey(OpaqueMeshes[i].ParameterName))
 							{
@@ -267,14 +267,14 @@ namespace SAModel.GC
 								result.Align(4);
 								paramAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(OpaqueMeshes[i].ParameterName, paramAddrs[i]);
-								for (var j = 0; j < OpaqueMeshes[i].parameters.Count; j++)
-									result.AddRange(OpaqueMeshes[i].parameters[j].GetBytes());
+								for (var j = 0; j < OpaqueMeshes[i].Parameters.Count; j++)
+									result.AddRange(OpaqueMeshes[i].Parameters[j].GetBytes());
 							}
 						}
 					}
 					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						if (OpaqueMeshes[i].primitives != null && OpaqueMeshes[i].primitives.Count > 0)
+						if (OpaqueMeshes[i].Primitives != null && OpaqueMeshes[i].Primitives.Count > 0)
 						{
 							if (labels.ContainsKey(OpaqueMeshes[i].PrimitiveName))
 							{
@@ -291,8 +291,8 @@ namespace SAModel.GC
 									indexFlags = t.Value;
 								}
 
-								for (var j = 0; j < OpaqueMeshes[i].primitives.Count; j++)
-									result.AddRange(OpaqueMeshes[i].primitives[j].GetBytes(indexFlags));
+								for (var j = 0; j < OpaqueMeshes[i].Primitives.Count; j++)
+									result.AddRange(OpaqueMeshes[i].Primitives[j].GetBytes(indexFlags));
 							}
 						}
 					}
@@ -312,7 +312,7 @@ namespace SAModel.GC
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 						}
 
-						result.AddRange(OpaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
+						result.AddRange(OpaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i]));
 					}
 				}
 			}
@@ -332,7 +332,7 @@ namespace SAModel.GC
 					var primAddrs = new uint[TranslucentMeshes.Count];
 					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						if (TranslucentMeshes[i].parameters != null && TranslucentMeshes[i].parameters.Count > 0)
+						if (TranslucentMeshes[i].Parameters != null && TranslucentMeshes[i].Parameters.Count > 0)
 						{
 							if (labels.ContainsKey(TranslucentMeshes[i].ParameterName))
 							{
@@ -343,14 +343,14 @@ namespace SAModel.GC
 								result.Align(4);
 								paramAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(TranslucentMeshes[i].ParameterName, paramAddrs[i]);
-								for (var j = 0; j < TranslucentMeshes[i].parameters.Count; j++)
-									result.AddRange(TranslucentMeshes[i].parameters[j].GetBytes());
+								for (var j = 0; j < TranslucentMeshes[i].Parameters.Count; j++)
+									result.AddRange(TranslucentMeshes[i].Parameters[j].GetBytes());
 							}
 						}
 					}
 					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						if (TranslucentMeshes[i].primitives != null && TranslucentMeshes[i].primitives.Count > 0)
+						if (TranslucentMeshes[i].Primitives != null && TranslucentMeshes[i].Primitives.Count > 0)
 						{
 							if (labels.ContainsKey(TranslucentMeshes[i].PrimitiveName))
 							{
@@ -367,8 +367,8 @@ namespace SAModel.GC
 									indexFlags = t.Value;
 								}
 
-								for (var j = 0; j < TranslucentMeshes[i].primitives.Count; j++)
-									result.AddRange(TranslucentMeshes[i].primitives[j].GetBytes(indexFlags));
+								for (var j = 0; j < TranslucentMeshes[i].Primitives.Count; j++)
+									result.AddRange(TranslucentMeshes[i].Primitives[j].GetBytes(indexFlags));
 							}
 						}
 					}
@@ -388,7 +388,7 @@ namespace SAModel.GC
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 						}
 
-						result.AddRange(TranslucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
+						result.AddRange(TranslucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i]));
 					}
 				}
 			}
@@ -550,16 +550,16 @@ namespace SAModel.GC
 			{
 				for (var i = 0; i < OpaqueMeshes.Count; i++)
 				{
-					for (var j = 0; j < OpaqueMeshes[i].parameters.Count; j++)
+					for (var j = 0; j < OpaqueMeshes[i].Parameters.Count; j++)
 					{
-						if (OpaqueMeshes[i].parameters[j] != null && !labels.Contains(OpaqueMeshes[i].ParameterName))
+						if (OpaqueMeshes[i].Parameters[j] != null && !labels.Contains(OpaqueMeshes[i].ParameterName))
 						{
 							labels.Add(OpaqueMeshes[i].ParameterName);
 							writer.Write("SA2B_ParameterData ");
 							writer.Write(OpaqueMeshes[i].ParameterName);
 							writer.WriteLine("[] = {");
-							var param = new List<string>(OpaqueMeshes[i].parameters.Count);
-							foreach (var item in OpaqueMeshes[i].parameters)
+							var param = new List<string>(OpaqueMeshes[i].Parameters.Count);
+							foreach (var item in OpaqueMeshes[i].Parameters)
 								param.Add(item.ToStruct());
 							writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 							writer.WriteLine("};");
@@ -576,7 +576,7 @@ namespace SAModel.GC
 						writer.Write(OpaqueMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
 						List<byte> pbytes = [];
-						foreach (var item in OpaqueMeshes[i].primitives)
+						foreach (var item in OpaqueMeshes[i].Primitives)
 						{
 							var t = OpaqueMeshes[i].IndexFlags;
 							if (t.HasValue)
@@ -584,8 +584,8 @@ namespace SAModel.GC
 								indexFlags = t.Value;
 							}
 
-							for (var k = 0; k < OpaqueMeshes[i].primitives.Count; k++)
-								pbytes.AddRange(OpaqueMeshes[i].primitives[k].GetBytes(indexFlags));
+							for (var k = 0; k < OpaqueMeshes[i].Primitives.Count; k++)
+								pbytes.AddRange(OpaqueMeshes[i].Primitives[k].GetBytes(indexFlags));
 						}
 						var cb = pbytes.ToArray();
 						var dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
@@ -620,16 +620,16 @@ namespace SAModel.GC
 			{
 				for (var i = 0; i < TranslucentMeshes.Count; i++)
 				{
-					for (var j = 0; j < TranslucentMeshes[i].parameters.Count; j++)
+					for (var j = 0; j < TranslucentMeshes[i].Parameters.Count; j++)
 					{
-						if (TranslucentMeshes[i].parameters[j] != null && !labels.Contains(TranslucentMeshes[i].ParameterName))
+						if (TranslucentMeshes[i].Parameters[j] != null && !labels.Contains(TranslucentMeshes[i].ParameterName))
 						{
 							labels.Add(TranslucentMeshes[i].ParameterName);
 							writer.Write("SA2B_ParameterData ");
 							writer.Write(TranslucentMeshes[i].ParameterName);
 							writer.WriteLine("[] = {");
-							var param = new List<string>(TranslucentMeshes[i].parameters.Count);
-							foreach (var item in TranslucentMeshes[i].parameters)
+							var param = new List<string>(TranslucentMeshes[i].Parameters.Count);
+							foreach (var item in TranslucentMeshes[i].Parameters)
 								param.Add(item.ToStruct());
 							writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 							writer.WriteLine("};");
@@ -646,7 +646,7 @@ namespace SAModel.GC
 						writer.Write(TranslucentMeshes[i].PrimitiveName);
 						writer.WriteLine("[] = {");
 						List<byte> pbytes = [];
-						foreach (var item in TranslucentMeshes[i].primitives)
+						foreach (var item in TranslucentMeshes[i].Primitives)
 						{
 							var t = TranslucentMeshes[i].IndexFlags;
 							if (t.HasValue)
@@ -654,8 +654,8 @@ namespace SAModel.GC
 								indexFlags = t.Value;
 							}
 
-							for (var k = 0; k < TranslucentMeshes[i].primitives.Count; k++)
-								pbytes.AddRange(TranslucentMeshes[i].primitives[k].GetBytes(indexFlags));
+							for (var k = 0; k < TranslucentMeshes[i].Primitives.Count; k++)
+								pbytes.AddRange(TranslucentMeshes[i].Primitives[k].GetBytes(indexFlags));
 						}
 						var cb = pbytes.ToArray();
 						var dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
