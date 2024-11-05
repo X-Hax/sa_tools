@@ -454,7 +454,10 @@ namespace SAModel
 				}
 			}
 			if (next != null)
+			{
 				result.AddRange(next.GetBytes());
+			}
+
 			return result.ToArray();
 		}
 
@@ -475,7 +478,10 @@ namespace SAModel
 			}
 			string vertcalctype = string.Empty;
 			if (Flags >> 4 == 8)
+			{
 				vertcalctype = "FV_CONT|";
+			}
+
 			switch(Type)
 			{
 				case ChunkType.Vertex_VertexSH:
@@ -523,9 +529,14 @@ namespace SAModel
 					break;
 				case ChunkType.Vertex_VertexNinjaFlags:
 					if (HasWeight)
+					{
 						writer.WriteLine("\tCnkV_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 4 + 1).ToString() + "),");
+					}
 					else
+					{
 						writer.WriteLine("\tCnkV_NF(0, " + (VertexCount * 4 + 1).ToString() + "),");
+					}
+
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -593,9 +604,14 @@ namespace SAModel
 					break;
 				case ChunkType.Vertex_VertexNormalNinjaFlags:
 					if (HasWeight)
+					{
 						writer.WriteLine("\tCnkV_VN_NF(" + vertcalctype + weighttype + ", " + (VertexCount * 7 + 1).ToString() + "),");
+					}
 					else
+					{
 						writer.WriteLine("\tCnkV_VN_NF(0, " + (VertexCount * 7 + 1).ToString() + "),");
+					}
+
 					writer.WriteLine("\tOffnbIdx(" + IndexOffset.ToString() + ", " + VertexCount.ToString() + "),");
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -688,13 +704,24 @@ namespace SAModel
 
 		public static List<VertexChunk> Merge(List<VertexChunk> source)
 		{
-			if (source == null) return null;
-			if (source.Count < 2) return source;
+			if (source == null)
+			{
+				return null;
+			}
+
+			if (source.Count < 2)
+			{
+				return source;
+			}
+
 			var chunks = new Dictionary<ChunkType, List<VertexChunk>>();
 			foreach (var c in source)
 			{
 				if (!chunks.ContainsKey(c.Type))
+				{
 					chunks[c.Type] = new List<VertexChunk>();
+				}
+
 				chunks[c.Type].Add(c);
 			}
 			var result = new List<VertexChunk>();
@@ -709,7 +736,10 @@ namespace SAModel
 						foreach (var c in list)
 						{
 							if (!weights.ContainsKey(c.WeightStatus))
+							{
 								weights[c.WeightStatus] = new List<VertexChunk>();
+							}
+
 							weights[c.WeightStatus].Add(c);
 						}
 						foreach (var (s, l2) in weights.OrderBy(a => a.Key))
@@ -719,16 +749,23 @@ namespace SAModel
 							{
 								r.Vertices.AddRange(c.Vertices);
 								if (c.Normals?.Count > 0)
+								{
 									r.Normals.AddRange(c.Normals);
+								}
+
 								if (c.IndexOffset == r.IndexOffset)
+								{
 									r.NinjaFlags.AddRange(c.NinjaFlags);
+								}
 								else
+								{
 									for (int i = 0; i < c.Vertices.Count; i++)
 									{
 										int ind = (int)c.NinjaFlags[i] & 0xFFFF;
 										ind += c.IndexOffset - r.IndexOffset;
 										r.NinjaFlags.Add((c.NinjaFlags[i] & 0xFFFF0000) | (uint)ind);
 									}
+								}
 							}
 							result.Add(r);
 						}
@@ -747,13 +784,24 @@ namespace SAModel
 							{
 								r2.Vertices.AddRange(c.Vertices);
 								if (c.Normals?.Count > 0)
+								{
 									r2.Normals.AddRange(c.Normals);
+								}
+
 								if (c.Diffuse?.Count > 0)
+								{
 									r2.Diffuse.AddRange(c.Diffuse);
+								}
+
 								if (c.Specular?.Count > 0)
+								{
 									r2.Specular.AddRange(c.Specular);
+								}
+
 								if (c.UserFlags?.Count > 0)
+								{
 									r2.UserFlags.AddRange(c.UserFlags);
+								}
 							}
 						}
 						result.Add(r2);

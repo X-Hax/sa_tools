@@ -30,7 +30,9 @@ namespace SAModel
 			foreach (Poly poly in Polys)
 			{
 				if (poly is Triangle)
+				{
 					tris.AddRange(poly.Indexes);
+				}
 				else if (poly is Quad)
 				{
 					tris.Add(poly.Indexes[0]);
@@ -108,7 +110,10 @@ namespace SAModel
 		public override bool Equals(object obj)
 		{
 			if (obj is VertexData)
+			{
 				return Equals((VertexData)obj);
+			}
+
 			return false;
 		}
 

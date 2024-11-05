@@ -87,7 +87,10 @@ namespace SAModel
 		public string ToStruct()
 		{
 			if (U == 0 && V == 0)
+			{
 				return "{ 0 }";
+			}
+
 			return "{ " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " }";
 		}
 
@@ -99,7 +102,10 @@ namespace SAModel
 		public override bool Equals(object obj)
 		{
 			if (obj is UV)
+			{
 				return Equals((UV)obj);
+			}
+
 			return false;
 		}
 
@@ -111,7 +117,10 @@ namespace SAModel
 		public bool Equals(UV other)
 		{
 			if (other == null)
+			{
 				return false;
+			}
+
 			return U == other.U && V == other.V;
 		}
 
@@ -125,28 +134,40 @@ namespace SAModel
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(UV))
+			{
 				return true;
+			}
+
 			return base.CanConvertTo(context, destinationType);
 		}
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string) && value is UV)
+			{
 				return ((UV)value).ToString();
+			}
+
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
 			if (sourceType == typeof(string))
+			{
 				return true;
+			}
+
 			return base.CanConvertFrom(context, sourceType);
 		}
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value is string)
+			{
 				return new UV((string)value);
+			}
+
 			return base.ConvertFrom(context, culture, value);
 		}
 	}

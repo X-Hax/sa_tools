@@ -78,7 +78,10 @@ namespace SAModel
 		public string ToStruct()
 		{
 			if (X == 0 && Y == 0 && Z == 0)
+			{
 				return "{ 0 }";
+			}
+
 			return "{ " + X.ToC() + ", " + Y.ToC() + ", " + Z.ToC() + " }";
 		}
 
@@ -143,7 +146,9 @@ namespace SAModel
 			Vertex center = new Vertex(0, 0, 0);
 
 			if (points == null || points.Count == 0)
+			{
 				return center;
+			}
 
 			float xTotal = 0;
 			float yTotal = 0;
@@ -172,7 +177,10 @@ namespace SAModel
 		public override bool Equals(object obj)
 		{
 			if (obj is Vertex)
+			{
 				return Equals((Vertex)obj);
+			}
+
 			return false;
 		}
 
@@ -224,28 +232,40 @@ namespace SAModel
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(Vertex))
+			{
 				return true;
+			}
+
 			return base.CanConvertTo(context, destinationType);
 		}
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string) && value is Vertex)
+			{
 				return ((Vertex)value).ToString();
+			}
+
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
 			if (sourceType == typeof(string))
+			{
 				return true;
+			}
+
 			return base.CanConvertFrom(context, sourceType);
 		}
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value is string)
+			{
 				return new Vertex((string)value);
+			}
+
 			return base.ConvertFrom(context, culture, value);
 		}
 	}

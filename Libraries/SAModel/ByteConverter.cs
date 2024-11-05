@@ -119,7 +119,11 @@ namespace SAModel
 			Array.Copy(value, startIndex, y, 0, 4);
 			SwapEndian(y);
 			float res = BitConverter.ToSingle(y, 0);
-			if (res == -0.0f) res = 0.0f;
+			if (res == -0.0f)
+			{
+				res = 0.0f;
+			}
+
 			return res;
 		}
 
@@ -134,9 +138,14 @@ namespace SAModel
 		private static void SwapEndian(byte[] value)
 		{
 			if (!BigEndian & !BitConverter.IsLittleEndian)
+			{
 				Array.Reverse(value);
+			}
+
 			if (BigEndian & BitConverter.IsLittleEndian)
+			{
 				Array.Reverse(value);
+			}
 		}
 	}
 }

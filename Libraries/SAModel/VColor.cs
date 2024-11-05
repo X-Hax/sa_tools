@@ -15,22 +15,38 @@ namespace SAModel
 			switch (type)
 			{
 				case ColorType.RGBA8888_32:
-					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
+					if (address > file.Length - 4)
+					{
+						return Color.FromArgb(0, 0, 0, 0);
+					}
+
 					return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 				case ColorType.ARGB8888_32:
-					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
+					if (address > file.Length - 4)
+					{
+						return Color.FromArgb(0, 0, 0, 0);
+					}
+
 					// "Reverse" mode is for SADX Gamecube/SA2B/SA2PC where the color order is ABGR
 					if (ByteConverter.BigEndian)
 					{
 						if (ByteConverter.Reverse)
+						{
 							return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
+						}
 						else
+						{
 							return Color.FromArgb(file[address], file[address + 1], file[address + 2], file[address + 3]);
+						}
 					}
 					else if (ByteConverter.Reverse)
+					{
 						return Color.FromArgb(file[address], file[address + 3], file[address + 2], file[address + 1]);
+					}
 					else
+					{
 						return Color.FromArgb(file[address + 3], file[address + 2], file[address + 1], file[address]);
+					}
 				case ColorType.XRGB8888_32:
 					return Color.FromArgb(unchecked((int)(ByteConverter.ToUInt32(file, address) | 0xFF000000u)));
 				case ColorType.ARGB8888_16:
@@ -101,14 +117,20 @@ namespace SAModel
 		public static string ToStruct(this Color color)
 		{
 			if (color == Color.Empty)
+			{
 				return "{ 0 }";
+			}
+
 			return "{ 0x" + color.ToArgb().ToString("X8") + " }";
 		}
 
 		public static string ToNJA(this Color color)
 		{
 			if (color == Color.Empty)
+			{
 				return "ARGB ( 0, 0, 0, 0)";
+			}
+
 			return "ARGB ( " + color.A.ToString() + ", " + color.R.ToString() + ", " + color.G.ToString() + ", " + color.B.ToString() + ")";
 		}
 

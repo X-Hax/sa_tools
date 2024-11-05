@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Linq;
-using System.Diagnostics;
 
 namespace SAModel
 {
@@ -32,12 +31,36 @@ namespace SAModel
 
 		public bool Equals(CachedVertex other)
 		{
-			if (!vertex.Equals(other.vertex)) return false;
-			if (!normal.Equals(other.normal)) return false;
-			if (!color.Equals(other.color)) return false;
-			if (uv == null && other.uv != null) return false;
-			if (other.uv == null) return false;
-			if (!uv.Equals(other.uv)) return false;
+			if (!vertex.Equals(other.vertex))
+			{
+				return false;
+			}
+
+			if (!normal.Equals(other.normal))
+			{
+				return false;
+			}
+
+			if (!color.Equals(other.color))
+			{
+				return false;
+			}
+
+			if (uv == null && other.uv != null)
+			{
+				return false;
+			}
+
+			if (other.uv == null)
+			{
+				return false;
+			}
+
+			if (!uv.Equals(other.uv))
+			{
+				return false;
+			}
+
 			return true;
 		}
 	}
@@ -54,16 +77,30 @@ namespace SAModel
 		{
 			get
 			{
-				if (base.HasWeight) return true;
+				if (base.HasWeight)
+				{
+					return true;
+				}
+
 				if (Poly == null || !Poly.Any(a => a is PolyChunkStrip))
+				{
 					return Vertex != null && Vertex.Any(a => a.HasWeight);
+				}
+
 				List<int> ids = new List<int>();
 				if (Vertex != null)
+				{
 					foreach (var vc in Vertex)
 					{
-						if (vc.HasWeight) return true;
+						if (vc.HasWeight)
+						{
+							return true;
+						}
+
 						ids.AddRange(Enumerable.Range(vc.IndexOffset, vc.VertexCount));
 					}
+				}
+
 				return Poly.OfType<PolyChunkStrip>().SelectMany(a => a.Strips).SelectMany(a => a.Indexes).Any(a => !ids.Contains(a));
 			}
 		}
@@ -98,9 +135,14 @@ namespace SAModel
 			: this()
 		{
 			if (labels.ContainsKey(address))
+			{
 				Name = labels[address];
+			}
 			else
+			{
 				Name = "attach_" + address.ToString("X8");
+			}
+
 			ChunkType ctype;
 			int tmpaddr = ByteConverter.ToInt32(file, address);
 			if (tmpaddr != 0)
@@ -108,9 +150,14 @@ namespace SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Vertex = new List<VertexChunk>();
 				if (labels.ContainsKey(tmpaddr))
+				{
 					VertexName = labels[tmpaddr];
+				}
 				else
+				{
 					VertexName = "vertex_" + tmpaddr.ToString("X8");
+				}
+
 				ctype = (ChunkType)(ByteConverter.ToUInt32(file, tmpaddr) & 0xFF);
 				while (ctype != ChunkType.End)
 				{
@@ -126,9 +173,14 @@ namespace SAModel
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Poly = new List<PolyChunk>();
 				if (labels.ContainsKey(tmpaddr))
+				{
 					PolyName = labels[tmpaddr];
+				}
 				else
+				{
 					PolyName = "poly_" + tmpaddr.ToString("X8");
+				}
+
 				PolyChunk chunk = PolyChunk.Load(file, tmpaddr);
 				while (chunk.Type != ChunkType.End)
 				{
@@ -148,7 +200,9 @@ namespace SAModel
 			if (Vertex != null && Vertex.Count > 0)
 			{
 				if (labels.ContainsKey(VertexName))
+				{
 					vertexAddress = labels[VertexName];
+				}
 				else
 				{
 					vertexAddress = imageBase;
@@ -163,7 +217,9 @@ namespace SAModel
 			if (Poly != null && Poly.Count > 0)
 			{
 				if (labels.ContainsKey(PolyName))
+				{
 					polyAddress = labels[PolyName];
+				}
 				else
 				{
 					polyAddress = (uint)(imageBase + result.Count);
@@ -285,13 +341,23 @@ namespace SAModel
 			writer.WriteLine("CNKMODEL   " + Name.MakeIdentifier() + "[]");
 			writer.WriteLine("START");
 			if (Vertex != null && !labels.Contains(VertexName))
+			{
 				writer.WriteLine("VList      " + VertexName.MakeIdentifier() + ",");
+			}
 			else
+			{
 				writer.WriteLine("VList      NULL,");
+			}
+
 			if (Poly != null && !labels.Contains(PolyName))
+			{
 				writer.WriteLine("PList      " + PolyName.MakeIdentifier() + ",");
+			}
 			else
+			{
 				writer.WriteLine("PList      NULL,");
+			}
+
 			writer.WriteLine("Center    " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
 			writer.WriteLine("Radius    " + Bounds.Radius.ToNJA() + ",");
 			writer.Write("END" + Environment.NewLine + Environment.NewLine);
@@ -314,20 +380,31 @@ namespace SAModel
 					Extensions.Log("Vertex Declaration: " + chunk.IndexOffset + "-" + (chunk.IndexOffset + chunk.VertexCount - 1) + Environment.NewLine);
 #endif
 					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+					{
 						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+					}
+
 					for (int i = 0; i < chunk.VertexCount; i++)
 					{
 						VertexBuffer[i + chunk.IndexOffset] = new VertexData(chunk.Vertices[i]);
 						if (chunk.Normals.Count > 0)
+						{
 							VertexBuffer[i + chunk.IndexOffset].Normal = chunk.Normals[i];
+						}
+
 						if (chunk.Diffuse.Count > 0)
+						{
 							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+						}
 					}
 				}
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
 			if (Poly != null)
+			{
 				result = ProcessPolyList(PolyName, Poly, 0);
+			}
+
 			MeshInfo = result.ToArray();
 		}
 
@@ -349,27 +426,44 @@ namespace SAModel
 					Extensions.Log("Vertex Declaration: " + chunk.IndexOffset + "-" + (chunk.IndexOffset + chunk.VertexCount - 1) + Environment.NewLine);
 #endif
 					if (VertexBuffer.Length < chunk.IndexOffset + chunk.VertexCount)
+					{
 						Array.Resize(ref VertexBuffer, chunk.IndexOffset + chunk.VertexCount);
+					}
+
 					Vertex[] vertdata = chunk.Vertices.ToArray();
 					Vertex[] normdata = chunk.Normals.ToArray();
 					AnimModelData data = motion.Models[animindex];
 					if (data.Vertex.Count > 0)
+					{
 						vertdata = data.GetVertex(frame);
+					}
+
 					if (data.Normal.Count > 0)
+					{
 						normdata = data.GetNormal(frame);
+					}
+
 					for (int i = 0; i < chunk.VertexCount; i++)
 					{
 						VertexBuffer[i + chunk.IndexOffset] = new VertexData(vertdata[i]);
 						if (normdata.Length > 0)
+						{
 							VertexBuffer[i + chunk.IndexOffset].Normal = normdata[i];
+						}
+
 						if (chunk.Diffuse.Count > 0)
+						{
 							VertexBuffer[i + chunk.IndexOffset].Color = chunk.Diffuse[i];
+						}
 					}
 				}
 			}
 			List<MeshInfo> result = new List<MeshInfo>();
 			if (Poly != null)
+			{
 				result = ProcessPolyList(PolyName, Poly, 0);
+			}
+
 			MeshInfo = result.ToArray();
 		}
 
@@ -458,7 +552,9 @@ namespace SAModel
 								polys.Add(str);
 							}
 							if (!hasVColor)
+							{
 								hasVColor = verts.Any(a => a.Color.HasValue && a.Color.Value != Color.White);
+							}
 #if modellog
 							indexes = new List<ushort>(System.Linq.Enumerable.Distinct(indexes));
 							indexes.Sort();

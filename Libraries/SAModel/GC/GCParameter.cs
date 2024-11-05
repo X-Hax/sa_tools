@@ -19,7 +19,7 @@ namespace SAModel.GC
 		Unknown_9 = 9,
 		TexCoordGen = 10,
 	}
-	
+
 	/// <summary>
 	/// Base class for all GC parameter types. <br/>
 	/// Used to store geometry information (like materials).
@@ -56,36 +56,20 @@ namespace SAModel.GC
 		/// <returns>Any of the parameter types</returns>
 		public static GCParameter Read(byte[] file, int address)
 		{
-			GCParameter result = null;
-			ParameterType paramType = (ParameterType)file[address];
+			var paramType = (ParameterType)file[address];
 
-			switch (paramType)
+			GCParameter result = paramType switch
 			{
-				case ParameterType.VtxAttrFmt:
-					result = new VtxAttrFmtParameter(GCVertexAttribute.Null);
-					break;
-				case ParameterType.IndexAttributeFlags:
-					result = new IndexAttributeParameter();
-					break;
-				case ParameterType.Lighting:
-					result = new LightingParameter();
-					break;
-				case ParameterType.BlendAlpha:
-					result = new BlendAlphaParameter();
-					break;
-				case ParameterType.AmbientColor:
-					result = new AmbientColorParameter();
-					break;
-				case ParameterType.Texture:
-					result = new TextureParameter();
-					break;
-				case ParameterType.Unknown_9:
-					result = new Unknown9Parameter();
-					break;
-				case ParameterType.TexCoordGen:
-					result = new TexCoordGenParameter();
-					break;
-			}
+				ParameterType.VtxAttrFmt => new VtxAttrFmtParameter(GCVertexAttribute.Null),
+				ParameterType.IndexAttributeFlags => new IndexAttributeParameter(),
+				ParameterType.Lighting => new LightingParameter(),
+				ParameterType.BlendAlpha => new BlendAlphaParameter(),
+				ParameterType.AmbientColor => new AmbientColorParameter(),
+				ParameterType.Texture => new TextureParameter(),
+				ParameterType.Unknown_9 => new Unknown9Parameter(),
+				ParameterType.TexCoordGen => new TexCoordGenParameter(),
+				_ => null
+			};
 
 			result.data = ByteConverter.ToUInt32(file, address + 4);
 
@@ -113,7 +97,7 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append((byte)type);
 			result.Append(", ");
 			result.Append("0, 0, 0");
@@ -129,9 +113,14 @@ namespace SAModel.GC
 			{
 				case ParameterType.VtxAttrFmt:
 					if ((data >> 16) != 0x5)
+					{
 						writer.WriteLine("\tGJD_PARAM_IDX      " + "( " + ((GCVertexAttribute)(data >> 16)).ToString() + ", " + (byte)(data >> 8) + ", " + (byte)data + " ),");
+					}
 					else
+					{
 						writer.WriteLine("\tGJD_PARAM_IDX      " + "( " + ((GCVertexAttribute)(data >> 16)).ToString() + ", " + (byte)(data >> 8) + ", " + (GCUVScale)(byte)data + " ),");
+					}
+
 					break;
 				case ParameterType.IndexAttributeFlags:
 					writer.WriteLine("\tGJD_PARAM_VFLAGS   " + "( " + ((GCIndexAttributeFlags)data).ToString().Replace(", ", " | ") + " ),");
@@ -139,7 +128,7 @@ namespace SAModel.GC
 				case ParameterType.Lighting:
 					writer.WriteLine("\tGJD_PARAM_LIGHT    " + "( " + (short)data + ", " + (byte)((data >> 16) & 0xF) + ", " + (byte)((data >> 20) & 0xF) + ", " + (byte)((data >> 24) & 0xFF) + " ),");
 					break;
-				case ParameterType.BlendAlpha: 
+				case ParameterType.BlendAlpha:
 					writer.WriteLine("\tGJD_PARAM_BLEND    " + "( " + (GCBlendModeControl)((data >> 11) & 7) + ", " + (GCBlendModeControl)((data >> 8) & 7) + " ),");
 					break;
 				case ParameterType.AmbientColor:
@@ -160,7 +149,7 @@ namespace SAModel.GC
 
 	/// <summary>
 	/// Parameter that is relevent for Vertex data. <br/>
-	/// A geometry object needs to have one for each 
+	/// A geometry object needs to have one for each
 	/// </summary>
 	[Serializable]
 	public class VtxAttrFmtParameter : GCParameter
@@ -170,10 +159,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCVertexAttribute VertexAttribute
 		{
-			get
-			{
-				return (GCVertexAttribute)(data >> 16);
-			}
+			get => (GCVertexAttribute)(data >> 16);
 			set
 			{
 				data &= 0xFFFF;
@@ -187,10 +173,7 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort Unknown
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(data & 0xFFFF);
 			set
 			{
 				data &= 0xFFFF0000;
@@ -207,33 +190,23 @@ namespace SAModel.GC
 			VertexAttribute = vertexAttrib;
 
 			// Setting the default values
-			switch (vertexAttrib)
+			Unknown = vertexAttrib switch
 			{
-				case GCVertexAttribute.Position:
-					Unknown = 5120;
-					break;
-				case GCVertexAttribute.Normal:
-					Unknown = 9216;
-					break;
-				case GCVertexAttribute.Color0:
-					Unknown = 27136;
-					break;
-				case GCVertexAttribute.Tex0:
-					Unknown = 33544;
-					break;
-				default:
-					break;
-			}
+				GCVertexAttribute.Position => 5120,
+				GCVertexAttribute.Normal => 9216,
+				GCVertexAttribute.Color0 => 27136,
+				GCVertexAttribute.Tex0 => 33544
+			};
 		}
 
 		/// <summary>
 		/// Allows to manually create a Vertex attribute parameter
 		/// </summary>
-		/// <param name="Unknown"></param>
+		/// <param name="unknown"></param>
 		/// <param name="vertexAttrib">The vertex attribute type that the parameter is for</param>
-		public VtxAttrFmtParameter(ushort Unknown, GCVertexAttribute vertexAttrib) : base(ParameterType.VtxAttrFmt)
+		public VtxAttrFmtParameter(ushort unknown, GCVertexAttribute vertexAttrib) : base(ParameterType.VtxAttrFmt)
 		{
-			this.Unknown = Unknown;
+			this.Unknown = unknown;
 			VertexAttribute = vertexAttrib;
 		}
 	}
@@ -245,18 +218,12 @@ namespace SAModel.GC
 	public class IndexAttributeParameter : GCParameter
 	{
 		/// <summary>
-		/// Holds information about the vertex data thats stored in the geometry 
+		/// Holds information about the vertex data thats stored in the geometry
 		/// </summary>
 		public GCIndexAttributeFlags IndexAttributes
 		{
-			get
-			{
-				return (GCIndexAttributeFlags)data;
-			}
-			set
-			{
-				data = (uint)value;
-			}
+			get => (GCIndexAttributeFlags)data;
+			set => data = (uint)value;
 		}
 
 		/// <summary>
@@ -290,10 +257,7 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort LightingFlags
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(data & 0xFFFF);
 			set
 			{
 				data &= 0xFFFF0000;
@@ -307,10 +271,7 @@ namespace SAModel.GC
 		/// </summary>
 		public byte ShadowStencil
 		{
-			get
-			{
-				return (byte)((data >> 16) & 0xF);
-			}
+			get => (byte)((data >> 16) & 0xF);
 			set
 			{
 				data &= 0xFFF0FFFF;
@@ -320,10 +281,7 @@ namespace SAModel.GC
 
 		public byte Unknown1
 		{
-			get
-			{
-				return (byte)((data >> 20) & 0xF);
-			}
+			get => (byte)((data >> 20) & 0xF);
 			set
 			{
 				data &= 0xFFF0FFFF;
@@ -333,23 +291,20 @@ namespace SAModel.GC
 
 		public byte Unknown2
 		{
-			get
-			{
-				return (byte)((data >> 24) & 0xFF);
-			}
+			get => (byte)((data >> 24) & 0xFF);
 			set
 			{
 				data &= 0xFFF0FFFF;
 				data |= (uint)(value << 24);
 			}
-		} 
+		}
 
 		/// <summary>
 		/// Creates a lighting parameter with the default data
 		/// </summary>
 		public LightingParameter() : base(ParameterType.Lighting)
 		{
-			//default value
+			// Default value
 			LightingFlags = 0xB11;
 			ShadowStencil = 1;
 		}
@@ -365,17 +320,14 @@ namespace SAModel.GC
 	/// The blending information for the surface of the geometry
 	/// </summary>
 	[Serializable]
-	public class BlendAlphaParameter : GCParameter
+	public class BlendAlphaParameter() : GCParameter(ParameterType.BlendAlpha)
 	{
 		/// <summary>
 		/// NJ Blendmode for the source alpha
 		/// </summary>
 		public AlphaInstruction NJSourceAlpha
 		{
-			get
-			{
-				return GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 11) & 7));
-			}
+			get => GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 11) & 7));
 			set
 			{
 				uint inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
@@ -389,10 +341,7 @@ namespace SAModel.GC
 		/// </summary>
 		public AlphaInstruction NJDestAlpha
 		{
-			get
-			{
-				return GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 8) & 7));
-			}
+			get => GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 8) & 7));
 			set
 			{
 				uint inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
@@ -406,10 +355,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCBlendModeControl SourceAlpha
 		{
-			get
-			{
-				return (GCBlendModeControl)((data >> 11) & 7);
-			}
+			get => (GCBlendModeControl)((data >> 11) & 7);
 			set
 			{
 				uint inst = (uint)value;
@@ -423,21 +369,13 @@ namespace SAModel.GC
 		/// </summary>
 		public GCBlendModeControl DestAlpha
 		{
-			get
-			{
-				return (GCBlendModeControl)((data >> 8) & 7);
-			}
+			get => (GCBlendModeControl)((data >> 8) & 7);
 			set
 			{
 				uint inst = (uint)value;
 				data &= 0xFFFFF8FF; // ~(7 << 8)
 				data |= (inst & 7) << 8;
 			}
-		}
-
-		public BlendAlphaParameter() : base(ParameterType.BlendAlpha)
-		{
-
 		}
 	}
 
@@ -460,10 +398,7 @@ namespace SAModel.GC
 				};
 				return col;
 			}
-			set
-			{
-				data = value.ARGB;
-			}
+			set => data = value.ARGB;
 		}
 
 		public AmbientColorParameter() : base(ParameterType.AmbientColor)
@@ -483,10 +418,7 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort TextureID
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(data & 0xFFFF);
 			set
 			{
 				data &= 0xFFFF0000;
@@ -499,10 +431,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTileMode Tile
 		{
-			get
-			{
-				return (GCTileMode)(data >> 16);
-			}
+			get => (GCTileMode)(data >> 16);
 			set
 			{
 				data &= 0xFFFF;
@@ -534,10 +463,7 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort Unknown1
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(data & 0xFFFF);
 			set
 			{
 				data &= 0xFFFF0000;
@@ -550,10 +476,7 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort Unknown2
 		{
-			get
-			{
-				return (ushort)(data >> 16);
-			}
+			get => (ushort)(data >> 16);
 			set
 			{
 				data &= 0xFFFF;
@@ -580,10 +503,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTexCoordID TexCoordID
 		{
-			get
-			{
-				return (GCTexCoordID)((data >> 16) & 0xFF);
-			}
+			get => (GCTexCoordID)((data >> 16) & 0xFF);
 			set
 			{
 				data &= 0xFF00FFFF;
@@ -596,10 +516,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTexGenType TexGenType
 		{
-			get
-			{
-				return (GCTexGenType)((data >> 12) & 0xF);
-			}
+			get => (GCTexGenType)((data >> 12) & 0xF);
 			set
 			{
 				data &= 0xFFFF0FFF;
@@ -612,10 +529,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTexGenSrc TexGenSrc
 		{
-			get
-			{
-				return (GCTexGenSrc)((data >> 4) & 0xFF);
-			}
+			get => (GCTexGenSrc)((data >> 4) & 0xFF);
 			set
 			{
 				data &= 0xFFFFF00F;
@@ -628,10 +542,7 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTexGenMatrix MatrixID
 		{
-			get
-			{
-				return (GCTexGenMatrix)(data & 0xF);
-			}
+			get => (GCTexGenMatrix)(data & 0xF);
 			set
 			{
 				data &= 0xFFFFFFF0;

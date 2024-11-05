@@ -11,7 +11,10 @@ namespace SAModel
 		{
 			int off = me.Count % alignment;
 			if (off == 0)
+			{
 				return;
+			}
+
 			me.AddRange(new byte[alignment - off]);
 		}
 
@@ -32,7 +35,10 @@ namespace SAModel
 		{
 			string result = num.ToLongString();
 			if (result.Contains(".") && !noF)
+			{
 				result += "f";
+			}
+
 			return result;
 		}
 
@@ -46,7 +52,10 @@ namespace SAModel
 			string str = input.ToString(NumberFormatInfo.InvariantInfo);
 			// if string representation was collapsed from scientific notation, just return it: 
 			if (!str.Contains("E") & !str.Contains("e"))
+			{
 				return str;
+			}
+
 			str = str.ToUpper();
 			char decSeparator = '.';
 			string[] exponentParts = str.Split('E');
@@ -64,7 +73,9 @@ namespace SAModel
 			string newNumber = decimalParts[0] + decimalParts[1];
 			string result;
 			if (exponentValue > 0)
+			{
 				result = newNumber + GetZeros(exponentValue - decimalParts[1].Length);
+			}
 			else
 			{
 				// negative exponent 
@@ -83,35 +94,50 @@ namespace SAModel
 		public static string GetZeros(int zeroCount)
 		{
 			if (zeroCount < 0)
+			{
 				zeroCount = Math.Abs(zeroCount);
+			}
+
 			return new string('0', zeroCount);
 		}
 
 		public static string ToCHex(this int i)
 		{
 			if (i < 10 && i > -1)
+			{
 				return i.ToString(NumberFormatInfo.InvariantInfo);
+			}
+
 			return "0x" + i.ToString("X");
 		}
 
         public static string ToCHex(this short i)
         {
             if (i < 10 && i > -1)
-                return i.ToString(NumberFormatInfo.InvariantInfo);
+            {
+	            return i.ToString(NumberFormatInfo.InvariantInfo);
+            }
+
             return "0x" + i.ToString("X");
         }
 
         public static string ToCHex(this uint i)
 		{
 			if (i < 10)
+			{
 				return i.ToString(NumberFormatInfo.InvariantInfo);
+			}
+
 			return "0x" + i.ToString("X");
 		}
 
 		public static string ToCHex(this ulong i)
 		{
 			if (i < 10)
+			{
 				return i.ToString(NumberFormatInfo.InvariantInfo);
+			}
+
 			return "0x" + i.ToString("X");
 		}
 
@@ -125,7 +151,10 @@ namespace SAModel
 		public static string ToC(this string str)
 		{
 			if (str == null)
+			{
 				return "NULL";
+			}
+
 			Encoding enc = Encoding.GetEncoding(932);
 			StringBuilder result = new StringBuilder("\"");
 			foreach (char item in str)
@@ -164,14 +193,19 @@ namespace SAModel
 						break;
 					default:
 						if (item < ' ')
+						{
 							result.AppendFormat(@"\{0}", Convert.ToString((short)item, 8).PadLeft(3, '0'));
+						}
 						else if (item > '\x7F')
 						{
 							foreach (byte b in enc.GetBytes(item.ToString()))
 								result.AppendFormat(@"\{0}", Convert.ToString(b, 8).PadLeft(3, '0'));
 						}
 						else
+						{
 							result.Append(item);
+						}
+
 						break;
 				}
 			}
@@ -185,12 +219,19 @@ namespace SAModel
 			foreach (char item in s)
 			{
 				if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
+				{
 					result.Append(item);
+				}
 				else
+				{
 					result.Append('_');
+				}
 			}
 			if (result[0] >= '0' & result[0] <= '9')
+			{
 				result.Insert(0, '_');
+			}
+
 			return result.ToString();
 		}
 
@@ -204,7 +245,10 @@ namespace SAModel
 		public static int AddUnique<T>(this List<T> list, T item)
 		{
 			if (list.Contains(item))
+			{
 				return list.IndexOf(item);
+			}
+
 			int val = list.Count;
 			list.Add(item);
 			return val;

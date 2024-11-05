@@ -64,15 +64,25 @@ namespace SAModel
 					break;
 				case LandTableFormat.SA2:
 					if (forceBasic.HasValue && forceBasic.Value)
+					{
 						mfmt = ModelFormat.Basic;
+					}
 					else
+					{
 						mfmt = ModelFormat.Chunk;
+					}
+
 					break;
 				case LandTableFormat.SA2B:
 					if (forceBasic.HasValue && forceBasic.Value)
+					{
 						mfmt = ModelFormat.Basic;
+					}
 					else
+					{
 						mfmt = ModelFormat.GC;
+					}
+
 					break;
 			}
 			switch (format)
@@ -90,7 +100,10 @@ namespace SAModel
 				case LandTableFormat.SA2B:
 					Flags = ByteConverter.ToInt32(file, address + 0x1C);
 					if (!forceBasic.HasValue && Flags >= 0)
+					{
 						mfmt = ModelFormat.Basic;
+					}
+
 					tmpaddr = ByteConverter.ToUInt32(file, address + 0x10) - imageBase;
 					Model = new NJS_OBJECT(file, (int)tmpaddr, imageBase, mfmt, labels, attaches);
 					WidthZ = ByteConverter.ToInt32(file, address + 0x14);

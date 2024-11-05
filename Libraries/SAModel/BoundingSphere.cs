@@ -66,7 +66,10 @@ namespace SAModel
 				result.Append(Center.Z.ToC());
 			}
 			else
+			{
 				result.Append(Center.ToStruct());
+			}
+
 			result.Append(", ");
 			result.Append(Radius.ToC());
 			return result.ToString();

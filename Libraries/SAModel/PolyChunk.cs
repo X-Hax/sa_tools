@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 
 namespace SAModel
 {
@@ -112,12 +110,17 @@ namespace SAModel
 							break;
 						}
 					if (!found)
+					{
 						strips.Add((curmat, cnks, str));
+					}
+
 					curmat = new NJS_MATERIAL(curmat);
 					cnks = new List<PolyChunk>();
 				}
 				else
+				{
 					cnks.Add(chunk);
+				}
 			}
 			return strips.SelectMany(a => a.pre.Append(a.str)).ToList();
 		}
@@ -519,20 +522,34 @@ namespace SAModel
 		{
 			string headbits = string.Empty;
 			if (FlipU)
+			{
 				headbits += "FFL_U|";
+			}
+
 			if (FlipV)
+			{
 				headbits += "FFL_V|";
+			}
+
 			if (ClampU)
+			{
 				headbits += "FCL_U|";
+			}
+
 			if (ClampV)
+			{
 				headbits += "FCL_V|";
+			}
 
 			switch(Flags & 0xF)
 			{
 				case 0:
 				default:
 					if (headbits != string.Empty)
+					{
 						headbits = headbits.Remove(headbits.Length - 1);
+					}
+
 					break;
 				case 1:
 					headbits += "FDA_025";
@@ -582,7 +599,9 @@ namespace SAModel
 			}
 
 			if (headbits == string.Empty)
+			{
 				headbits = "0x0";
+			}
 
 			writer.Write("\tCnkT_TID( " + headbits + " ), _TID( ");
 
@@ -600,7 +619,9 @@ namespace SAModel
 			}
 
 			if (SuperSample)
+			{
 				writer.Write("|FSS");
+			}
 
 			writer.WriteLine(", " + TextureID.ToString() + " ),");
 		}
@@ -721,7 +742,10 @@ namespace SAModel
 			DestinationAlpha = mat.DestinationAlpha;
 			Diffuse = mat.DiffuseColor;
 			if (mat.AmbientColor != Color.White)
+			{
 				Ambient = mat.AmbientColor;
+			}
+
 			if (mat.SpecularColor != Color.Transparent)
 			{
 				Specular = mat.SpecularColor;
@@ -749,13 +773,22 @@ namespace SAModel
 				Size += 2;
 			}
 			if (Second)
+			{
 				t |= 8;
+			}
+
 			Type = (ChunkType)t;
 			List<byte> result = new List<byte>(base.GetBytes());
 			if (Diffuse.HasValue)
+			{
 				result.AddRange(VColor.GetBytes(Diffuse.Value, ColorType.ARGB8888_16));
+			}
+
 			if (Ambient.HasValue)
+			{
 				result.AddRange(VColor.GetBytes(Ambient.Value, ColorType.XRGB8888_16));
+			}
+
 			if (Specular.HasValue)
 			{
 				int i = Specular.Value.ToArgb();
@@ -850,11 +883,19 @@ namespace SAModel
 
 			writer.WriteLine("\tCnkM_" + letters + "( " + blendSrcStr.ToString() + "|" + blendDstStr.ToString() + " ), " + size.ToString() +",");
 			if (Diffuse.HasValue)
+			{
 				writer.WriteLine("\tMDiff( " + Diffuse.Value.A.ToString() + ", " + Diffuse.Value.R.ToString() + ", " + Diffuse.Value.G.ToString() + ", " + Diffuse.Value.B.ToString() + " ),");
+			}
+
 			if (Ambient.HasValue)
+			{
 				writer.WriteLine("\tMAmbi( " + Ambient.Value.A.ToString() + ", " + Ambient.Value.R.ToString() + ", " + Ambient.Value.G.ToString() + ", " + Ambient.Value.B.ToString() + " ),");
+			}
+
 			if (Specular.HasValue)
+			{
 				writer.WriteLine("\tMSpec( " + SpecularExponent.ToString() + ", " + Specular.Value.R.ToString() + ", " + Specular.Value.G.ToString() + ", " + Specular.Value.B.ToString() + " ),");
+			}
 		}
 	}
 
@@ -940,7 +981,9 @@ namespace SAModel
 					{
 						UserFlags2 = ByteConverter.ToUInt16(file, address + 8);
 						if (userFlags > 2)
+						{
 							UserFlags3 = ByteConverter.ToUInt16(file, address + 10);
+						}
 					}
 				}
 			}
@@ -957,7 +1000,9 @@ namespace SAModel
 					{
 						result.AddRange(ByteConverter.GetBytes(UserFlags2.Value));
 						if (UserFlags3.HasValue)
+						{
 							result.AddRange(ByteConverter.GetBytes(UserFlags3.Value));
+						}
 					}
 				}
 				return result.ToArray();
@@ -998,7 +1043,9 @@ namespace SAModel
 					{
 						writer.Write(Indexes[i].ToString() + ", ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+						{
 							writer.Write(Environment.NewLine + "                   ");
+						}
 					}
 					writer.Write(Environment.NewLine);
 				}
@@ -1016,7 +1063,9 @@ namespace SAModel
 						{
 							size += 2;
 							if (UserFlags3.HasValue)
+							{
 								size += 2;
+							}
 						}
 					}
 					return size;
@@ -1050,7 +1099,9 @@ namespace SAModel
 					{
 						UserFlags2 = ByteConverter.ToUInt16(file, address + 10);
 						if (userFlags > 2)
+						{
 							UserFlags3 = ByteConverter.ToUInt16(file, address + 12);
+						}
 					}
 				}
 			}
@@ -1067,7 +1118,9 @@ namespace SAModel
 					{
 						result.AddRange(ByteConverter.GetBytes(UserFlags2.Value));
 						if (UserFlags3.HasValue)
+						{
 							result.AddRange(ByteConverter.GetBytes(UserFlags3.Value));
+						}
 					}
 				}
 				return result.ToArray();
@@ -1108,7 +1161,9 @@ namespace SAModel
 					{
 						writer.Write(Indexes[i].ToString() + ", ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+						{
 							writer.Write(Environment.NewLine + "                   ");
+						}
 					}
 					writer.Write(Environment.NewLine);
 				}
@@ -1126,7 +1181,9 @@ namespace SAModel
 						{
 							size += 2;
 							if (UserFlags3.HasValue)
+							{
 								size += 2;
+							}
 						}
 					}
 					return size;
@@ -1159,11 +1216,20 @@ namespace SAModel
 				Indexes = new ushort[ByteConverter.ToUInt16(file, address) & 0x7FFF];
 				Reversed = (ByteConverter.ToUInt16(file, address) & 0x8000) == 0x8000;
 				if (userFlags > 0)
+				{
 					UserFlags1 = new ushort[Indexes.Length - 2];
+				}
+
 				if (userFlags > 1)
+				{
 					UserFlags2 = new ushort[Indexes.Length - 2];
+				}
+
 				if (userFlags > 2)
+				{
 					UserFlags3 = new ushort[Indexes.Length - 2];
+				}
+
 				address += 2;
 				for (int i = 0; i < Indexes.Length; i++)
 				{
@@ -1225,7 +1291,9 @@ namespace SAModel
 					{
 						writer.Write(Indexes[i].ToString() + ", ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+						{
 							writer.Write(Environment.NewLine + "                   ");
+						}
 					}
 					writer.Write(Environment.NewLine);
 				}
@@ -1244,7 +1312,9 @@ namespace SAModel
 						{
 							size += UserFlags2.Length * 2;
 							if (UserFlags3 != null)
+							{
 								size += UserFlags3.Length * 2;
+							}
 						}
 					}
 					return size;
@@ -1256,7 +1326,10 @@ namespace SAModel
 				List<byte> result = new List<byte>();
 				int ind = Indexes.Length;
 				if (Reversed)
+				{
 					ind = -ind;
+				}
+
 				result.AddRange(ByteConverter.GetBytes((short)(ind)));
 				for (int i = 0; i < Indexes.Length; i++)
 				{
@@ -1270,7 +1343,9 @@ namespace SAModel
 							{
 								result.AddRange(ByteConverter.GetBytes(UserFlags2[i - 2]));
 								if (UserFlags3 != null)
+								{
 									result.AddRange(ByteConverter.GetBytes(UserFlags3[i - 2]));
+								}
 							}
 						}
 					}
@@ -1282,11 +1357,20 @@ namespace SAModel
 			{
 				Strip result = (Strip)base.Clone();
 				if (result.UserFlags1 != null)
+				{
 					result.UserFlags1 = (ushort[])UserFlags1.Clone();
+				}
+
 				if (result.UserFlags2 != null)
+				{
 					result.UserFlags2 = (ushort[])UserFlags2.Clone();
+				}
+
 				if (result.UserFlags3 != null)
+				{
 					result.UserFlags3 = (ushort[])UserFlags3.Clone();
+				}
+
 				return result;
 			}
 		}
@@ -1433,7 +1517,9 @@ namespace SAModel
 					break;
 			}
 			if (alignmentPadding > 0)
+			{
 				writer.WriteLine("\tCnkNull(),");
+			}
 		}
 	}
 
@@ -1482,11 +1568,20 @@ namespace SAModel
 						break;
 				}
 				if (userFlags > 0)
+				{
 					UserFlags1 = new ushort[Indexes.Length - 2];
+				}
+
 				if (userFlags > 1)
+				{
 					UserFlags2 = new ushort[Indexes.Length - 2];
+				}
+
 				if (userFlags > 2)
+				{
 					UserFlags3 = new ushort[Indexes.Length - 2];
+				}
+
 				for (int i = 0; i < Indexes.Length; i++)
 				{
 					Indexes[i] = ByteConverter.ToUInt16(file, address);
@@ -1541,7 +1636,10 @@ namespace SAModel
 				List<byte> result = new List<byte>();
 				int ind = Indexes.Length;
 				if (Reversed)
+				{
 					ind = -ind;
+				}
+
 				result.AddRange(ByteConverter.GetBytes((short)(ind)));
 				for (int i = 0; i < Indexes.Length; i++)
 				{
@@ -1576,7 +1674,9 @@ namespace SAModel
 							{
 								result.AddRange(ByteConverter.GetBytes(UserFlags2[i - 2]));
 								if (UserFlags3 != null)
+								{
 									result.AddRange(ByteConverter.GetBytes(UserFlags3[i - 2]));
+								}
 							}
 						}
 					}
@@ -1587,9 +1687,13 @@ namespace SAModel
 			public void ToNJA(TextWriter writer, bool UVH)
 			{
 				if (Reversed)
+				{
 					writer.Write("\tStripR(" + Indexes.Length + "),");
+				}
 				else
+				{
 					writer.Write("\tStripL(" + Indexes.Length + "),");
+				}
 
 				if (UVs != null || VColors != null || UserFlags1 != null)
 				{
@@ -1599,10 +1703,14 @@ namespace SAModel
 						writer.Write("\t" + Indexes[i].ToString() + ",");
 
 						if (UVs != null)
+						{
 							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
+						}
 
 						if (VColors != null)
+						{
 							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+						}
 
 						if (UserFlags1 != null && i > 1)
 						{
@@ -1630,7 +1738,9 @@ namespace SAModel
 					{
 						writer.Write(Indexes[i].ToString() + ", ");
 						if (((i + 1) % 10) == 0 && i != Indexes.Length - 1)
+						{
 							writer.Write(Environment.NewLine + "                   ");
+						}
 					}
 					writer.Write(Environment.NewLine);
 				}
@@ -1643,9 +1753,15 @@ namespace SAModel
 					int size = 2;
 					size += Indexes.Length * 2;
 					if (UVs != null)
+					{
 						size += UVs.Length * UV.Size;
+					}
+
 					if (VColors != null)
+					{
 						size += VColors.Length * VColor.Size(ColorType.ARGB8888_16);
+					}
+
 					if (UserFlags1 != null)
 					{
 						size += UserFlags1.Length * 2;
@@ -1653,7 +1769,9 @@ namespace SAModel
 						{
 							size += UserFlags2.Length * 2;
 							if (UserFlags3 != null)
+							{
 								size += UserFlags3.Length * 2;
+							}
 						}
 					}
 					return size;
@@ -1672,10 +1790,26 @@ namespace SAModel
 					for (int i = 0; i < UVs.Length; i++)
 						result.UVs[i] = UVs[i].Clone();
 				}
-				if (VColors != null) result.VColors = (Color[])VColors.Clone();
-				if (UserFlags1 != null) result.UserFlags1 = (ushort[])UserFlags1.Clone();
-				if (UserFlags2 != null) result.UserFlags2 = (ushort[])UserFlags2.Clone();
-				if (UserFlags3 != null) result.UserFlags3 = (ushort[])UserFlags3.Clone();
+				if (VColors != null)
+				{
+					result.VColors = (Color[])VColors.Clone();
+				}
+
+				if (UserFlags1 != null)
+				{
+					result.UserFlags1 = (ushort[])UserFlags1.Clone();
+				}
+
+				if (UserFlags2 != null)
+				{
+					result.UserFlags2 = (ushort[])UserFlags2.Clone();
+				}
+
+				if (UserFlags3 != null)
+				{
+					result.UserFlags3 = (ushort[])UserFlags3.Clone();
+				}
+
 				return result;
 			}
 		}
@@ -1799,23 +1933,48 @@ namespace SAModel
 			string flags = string.Empty;
 
 			if (IgnoreLight)
+			{
 				flags += "FST_IL|";
+			}
+
 			if (IgnoreSpecular)
+			{
 				flags += "FST_IS|";
+			}
+
 			if (IgnoreAmbient)
+			{
 				flags += "FST_IA|";
+			}
+
 			if (UseAlpha)
+			{
 				flags += "FST_UA|";
+			}
+
 			if (DoubleSide)
+			{
 				flags += "FST_DB|";
+			}
+
 			if (FlatShading)
+			{
 				flags += "FST_FL|";
+			}
+
 			if (EnvironmentMapping)
+			{
 				flags += "FST_ENV|";
+			}
+
 			if (flags == string.Empty)
+			{
 				flags = "0x0";
+			}
 			else
+			{
 				flags = flags.Remove(flags.Length - 1);
+			}
 
 			string chunkname = string.Empty;
 			bool UVH = false;
@@ -1880,7 +2039,9 @@ namespace SAModel
 			}
 
 			if (alignmentPadding > 0)
+			{
 				writer.WriteLine("\tCnkNull(),");
+			}
 		}
 
 		public void UpdateFlags(NJS_MATERIAL mat)

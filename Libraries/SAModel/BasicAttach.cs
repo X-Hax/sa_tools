@@ -41,16 +41,26 @@ namespace SAModel
 			: this()
 		{
 			if (labels.ContainsKey(address))
+			{
 				Name = labels[address];
+			}
 			else
+			{
 				Name = "attach_" + address.ToString("X8");
+			}
+
 			Vertex = new Vertex[ByteConverter.ToInt32(file, address + 8)];
 			Normal = new Vertex[Vertex.Length];
 			int tmpaddr = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
 			if (labels.ContainsKey(tmpaddr))
+			{
 				VertexName = labels[tmpaddr];
+			}
 			else
+			{
 				VertexName = "vertex_" + tmpaddr.ToString("X8");
+			}
+
 			for (int i = 0; i < Vertex.Length; i++)
 			{
 				Vertex[i] = new Vertex(file, tmpaddr);
@@ -61,9 +71,14 @@ namespace SAModel
 			{
 				tmpaddr = (int)((uint)tmpaddr - imageBase);
 				if (labels.ContainsKey(tmpaddr))
+				{
 					NormalName = labels[tmpaddr];
+				}
 				else
+				{
 					NormalName = "normal_" + tmpaddr.ToString("X8");
+				}
+
 				for (int i = 0; i < Vertex.Length; i++)
 				{
 					Normal[i] = new Vertex(file, tmpaddr);
@@ -82,9 +97,14 @@ namespace SAModel
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				if (labels.ContainsKey(tmpaddr))
+				{
 					MeshName = labels[tmpaddr];
+				}
 				else
+				{
 					MeshName = "meshlist_" + tmpaddr.ToString("X8");
+				}
+
 				for (int i = 0; i < meshcnt; i++)
 				{
 					Mesh.Add(new NJS_MESHSET(file, tmpaddr, imageBase, labels));
@@ -99,9 +119,14 @@ namespace SAModel
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				if (labels.ContainsKey(tmpaddr))
+				{
 					MaterialName = labels[tmpaddr];
+				}
 				else
+				{
 					MaterialName = "matlist_" + tmpaddr.ToString("X8");
+				}
+
 				for (int i = 0; i < matcnt; i++)
 				{
 					Material.Add(new NJS_MATERIAL(file, tmpaddr, labels));
@@ -130,7 +155,9 @@ namespace SAModel
 			if (Material != null && Material.Count > 0)
 			{
 				if (labels.ContainsKey(MaterialName))
+				{
 					materialAddress = labels[MaterialName];
+				}
 				else
 				{
 					materialAddress = imageBase;
@@ -143,7 +170,9 @@ namespace SAModel
 			if (Mesh != null && Mesh.Count > 0)
 			{
 				if (labels.ContainsKey(MeshName))
+				{
 					meshAddress = labels[MeshName];
+				}
 				else
 				{
 					uint[] polyAddrs = new uint[Mesh.Count];
@@ -153,7 +182,9 @@ namespace SAModel
 					for (int i = 0; i < Mesh.Count; i++)
 					{
 						if (labels.ContainsKey(Mesh[i].PolyName))
+						{
 							polyAddrs[i] = labels[Mesh[i].PolyName];
+						}
 						else
 						{
 							result.Align(4);
@@ -168,7 +199,9 @@ namespace SAModel
 						if (Mesh[i].PolyNormal != null && Mesh[i].PolyNormal.Length > 0)
 						{
 							if (labels.ContainsKey(Mesh[i].PolyNormalName))
+							{
 								polyNormalAddrs[i] = labels[Mesh[i].PolyNormalName];
+							}
 							else
 							{
 								result.Align(4);
@@ -184,7 +217,9 @@ namespace SAModel
 						if (Mesh[i].VColor != null && Mesh[i].VColor.Length > 0)
 						{
 							if (labels.ContainsKey(Mesh[i].VColorName))
+							{
 								vColorAddrs[i] = labels[Mesh[i].VColorName];
+							}
 							else
 							{
 								result.Align(4);
@@ -200,7 +235,9 @@ namespace SAModel
 						if (Mesh[i].UV != null && Mesh[i].UV.Length > 0)
 						{
 							if (labels.ContainsKey(Mesh[i].UVName))
+							{
 								uVAddrs[i] = labels[Mesh[i].UVName];
+							}
 							else
 							{
 								result.Align(4);
@@ -235,7 +272,9 @@ namespace SAModel
 			if (Vertex != null && Vertex.Length > 0)
 			{
 				if (labels.ContainsKey(VertexName))
+				{
 					vertexAddress = labels[VertexName];
+				}
 				else
 				{
 					vertexAddress = (uint)result.Count + imageBase;
@@ -243,9 +282,13 @@ namespace SAModel
 					foreach (Vertex item in Vertex)
 					{
 						if (item == null)
+						{
 							result.AddRange(new byte[SAModel.Vertex.Size]);
+						}
 						else
+						{
 							result.AddRange(item.GetBytes());
+						}
 					}
 				}
 				result.Align(4);
@@ -254,7 +297,9 @@ namespace SAModel
 			if (Normal != null && Normal.Length > 0)
 			{
 				if (labels.ContainsKey(NormalName))
+				{
 					normalAddress = labels[NormalName];
+				}
 				else
 				{
 					normalAddress = (uint)result.Count + imageBase;
@@ -262,9 +307,13 @@ namespace SAModel
 					foreach (Vertex item in Normal)
 					{
 						if (item == null)
+						{
 							result.AddRange(new byte[SAModel.Vertex.Size]);
+						}
 						else
+						{
 							result.AddRange(item.GetBytes());
+						}
 					}
 				}
 				result.Align(4);
@@ -290,7 +339,10 @@ namespace SAModel
 			result.AddRange(ByteConverter.GetBytes((short)Material.Count));
 			result.AddRange(Bounds.GetBytes());
 			if (DX)
+			{
 				result.AddRange(new byte[4]);
+			}
+
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
 		}
@@ -314,7 +366,10 @@ namespace SAModel
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			if (DX)
+			{
 				result.Append(", NULL");
+			}
+
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -403,7 +458,10 @@ namespace SAModel
 				labels.Add(MeshName);
 				writer.Write("NJS_MESHSET");
 				if (DX)
+				{
 					writer.Write("_SADX");
+				}
+
 				writer.Write(" ");
 				writer.Write(MeshName.MakeIdentifier());
 				writer.WriteLine("[] = {");
@@ -442,7 +500,10 @@ namespace SAModel
 			}
 			writer.Write("NJS_MODEL");
 			if (DX)
+			{
 				writer.Write("_SADX");
+			}
+
 			writer.Write(" ");
 			writer.Write(Name.MakeIdentifier());
 			writer.Write(" = ");
@@ -646,7 +707,10 @@ namespace SAModel
 				}
 				NJS_MATERIAL mat = null;
 				if (Material != null && mesh.MaterialID < Material.Count)
+				{
 					mat = Material[mesh.MaterialID];
+				}
+
 				result.Add(new MeshInfo(mat, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 			}
 			MeshInfo = result.ToArray();
@@ -663,9 +727,15 @@ namespace SAModel
 			Vertex[] normdata = Normal;
 			AnimModelData data = motion.Models[animindex];
 			if (data.Vertex.Count > 0)
+			{
 				vertdata = data.GetVertex(frame);
+			}
+
 			if (data.Normal.Count > 0)
+			{
 				normdata = data.GetNormal(frame);
+			}
+
 			List<MeshInfo> result = new List<MeshInfo>();
 			foreach (NJS_MESHSET mesh in Mesh)
 			{
@@ -703,7 +773,10 @@ namespace SAModel
 				}
 				NJS_MATERIAL mat = null;
 				if (Material != null && mesh.MaterialID < Material.Count)
+				{
 					mat = Material[mesh.MaterialID];
+				}
+
 				result.Add(new MeshInfo(mat, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 			}
 			MeshInfo = result.ToArray();

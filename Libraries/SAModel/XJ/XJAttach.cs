@@ -58,9 +58,14 @@ namespace SAModel.XJ
 		public XJAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{
 			if (labels.ContainsKey(address))
+			{
 				Name = labels[address];
+			}
 			else
+			{
 				Name = "attach_" + address.ToString("X8");
+			}
+
 			flags = ByteConverter.ToUInt32(file, address);
 			uint vertexSetOffset = ByteConverter.ToUInt32(file, address + 0x4) - imageBase;
 			uint vertexSetCount = ByteConverter.ToUInt32(file, address + 0x8); //Should always be 1?

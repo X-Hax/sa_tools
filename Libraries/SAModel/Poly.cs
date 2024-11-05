@@ -108,7 +108,10 @@ namespace SAModel
 		{
 			StringBuilder result = new StringBuilder();
 			if (Reversed)
+			{
 				result.Append("0x8000u | ");
+			}
+
 			result.Append(Indexes.Length & 0x7FFF);
 			result.Append(", ");
 			result.Append(base.ToStruct());

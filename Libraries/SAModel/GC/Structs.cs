@@ -353,7 +353,10 @@ namespace SAModel.GC
 				case GCDataType.RGBA8:
 					RGBA = ByteConverter.ToUInt32(file, address);
 					if (dataType != GCDataType.RGBA8)
+					{
 						alpha = 255;
+					}
+
 					endaddr = address + 4;
 					return;
 				default:

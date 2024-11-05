@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
-using System.Diagnostics.Eventing.Reader;
 
 namespace SAModel.GC
 {
@@ -33,8 +29,14 @@ namespace SAModel.GC
 			get
 			{
 				IndexAttributeParameter index_param = (IndexAttributeParameter)parameters.Find(x => x.type == ParameterType.IndexAttributeFlags);
-				if (index_param == null) return null;
-				else return index_param.IndexAttributes;
+				if (index_param == null)
+				{
+					return null;
+				}
+				else
+				{
+					return index_param.IndexAttributes;
+				}
 			}
 		}
 
@@ -102,9 +104,13 @@ namespace SAModel.GC
 			if (parameters_count != 0)
 			{
 				if (labels.ContainsKey(parameters_offset))
+				{
 					ParameterName = labels[parameters_offset];
+				}
 				else
+				{
 					ParameterName = "parameter_" + parameters_offset.ToString("X8");
+				}
 			}
 			for (int i = 0; i < parameters_count; i++)
 			{
@@ -115,16 +121,22 @@ namespace SAModel.GC
 			// getting the index attribute parameter
 			GCIndexAttributeFlags? flags = IndexFlags;
 			if (flags.HasValue)
+			{
 				indexFlags = flags.Value;
+			}
 
 			// reading the primitives
 			primitives = new List<GCPrimitive>();
 			if (primitives_size != 0)
 			{
 				if (labels.ContainsKey(primitives_offset))
+				{
 					PrimitiveName = labels[primitives_offset];
+				}
 				else
+				{
 					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
+				}
 			}
 
 			int end_pos = primitives_offset + (int)primitives_size;
@@ -132,7 +144,11 @@ namespace SAModel.GC
 			while (primitives_offset < end_pos)
 			{
 				// if the primitive isnt valid
-				if (file[primitives_offset] == 0) break;
+				if (file[primitives_offset] == 0)
+				{
+					break;
+				}
+
 				primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
 			}
 			primitiveSize = primitives_size;
@@ -275,12 +291,17 @@ public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx
 						indices[j] = (ushort)corners.Count;
 						corners.Add(l);
 					}
-					else indices[j] = t;
+					else
+					{
+						indices[j] = t;
+					}
+
 					j++;
 				}
 
 				// creating the polygons
 				if (prim.primitiveType == GCPrimitiveType.Triangles)
+				{
 					for (int i = 0; i < indices.Length; i += 3)
 					{
 						Triangle t = new Triangle();
@@ -289,8 +310,11 @@ public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx
 						t.Indexes[2] = indices[i + 2];
 						polys.Add(t);
 					}
+				}
 				else if (prim.primitiveType == GCPrimitiveType.TriangleStrip)
+				{
 					polys.Add(new Strip(indices, false));
+				}
 			}
 
 			// creating the vertex data

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Forms;
 
 // Dreamcast Ninja Binary (.nj) format and its platform variations (.gj, .xj)
 namespace SAModel
@@ -60,13 +59,19 @@ namespace SAModel
 					{
 						// Stop if reached the end of file
 						if (startoffset >= data.Length - 4)
+						{
 							break;
+						}
+
 						startoffset += 1;
 					}
 				}
 				// Stop if reached the end of file
 				if (startoffset >= data.Length - 4)
+				{
 					break;
+				}
+
 				// Get Ninja data chunk type
 				NinjaBinaryChunkType idtype = IdentifyChunk(data, startoffset);
 				// Endianness checks for the first chunk
@@ -78,10 +83,10 @@ namespace SAModel
 					sizeIsLittleEndian = BitConverter.ToUInt32(data, startoffset + 4) < ByteConverter.ToUInt32(data, startoffset + 4);
 					// Then, check if the actual data is Big Endian. Works in NJBM, NJCM and NJTL.
 					ByteConverter.BigEndian = BitConverter.ToUInt32(data, startoffset + 8) > ByteConverter.ToUInt32(data, startoffset + 8);
-					//MessageBox.Show(ByteConverter.BigEndian.ToString());
+					//Console.WriteLine(ByteConverter.BigEndian.ToString());
 				}
 				int size = sizeIsLittleEndian ? BitConverter.ToInt32(data, startoffset + 4) : ByteConverter.ToInt32(data, startoffset + 4);
-				//MessageBox.Show(idtype.ToString() + " chunk at " + (startoffset + 8).ToString("X8") + " size " + size.ToString());
+				//Console.WriteLine(idtype.ToString() + " chunk at " + (startoffset + 8).ToString("X8") + " size " + size.ToString());
 				// Add the chunk to the list to process
 				chunks.Add(new NinjaDataChunk(idtype, new byte[size]));
 				Array.Copy(data, startoffset + 8, chunks[currentchunk].Data, 0, chunks[currentchunk].Data.Length);
@@ -89,7 +94,7 @@ namespace SAModel
 				if (idtype == NinjaBinaryChunkType.POF0)
 				{
 					List<int> offs = POF0Helper.GetPointerListFromPOF(chunks[currentchunk].Data);
-					//MessageBox.Show("POF at " + (startoffset + 8).ToString("X") + " imgBase: " + imgBase.ToString("X") + " size " + chunks[currentchunk].Data.Length.ToString());
+					//Console.WriteLine("POF at " + (startoffset + 8).ToString("X") + " imgBase: " + imgBase.ToString("X") + " size " + chunks[currentchunk].Data.Length.ToString());
 					POF0Helper.FixPointersWithPOF(chunks[currentchunk - 1].Data, offs, imgBase);
 					chunks[currentchunk - 1].ImageBase = imgBase;
 					//System.IO.File.WriteAllBytes("C:\\Users\\PkR\\Desktop\\chunk\\" + currentchunk.ToString("D3") + "_pof.bin", chunks[currentchunk].Data);
@@ -110,7 +115,7 @@ namespace SAModel
 				switch (chunk.Type)
 				{
 					case NinjaBinaryChunkType.BasicModel:
-						//MessageBox.Show("Basic model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//Console.WriteLine("Basic model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelb = new Dictionary<int, string>();
 						labelb.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
@@ -118,7 +123,7 @@ namespace SAModel
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.ChunkModel:
-						//MessageBox.Show(format.ToString() + " model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//Console.WriteLine(format.ToString() + " model at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						// Add a label so that all models aren't called "object_00000000"
 						Dictionary<int, string> labelc = new Dictionary<int, string>();
 						labelc.Add(0, "object_" + chunk.ImageBase.ToString("X8"));
@@ -127,7 +132,7 @@ namespace SAModel
 						modelcount++;
 						break;
 					case NinjaBinaryChunkType.Texlist:
-						//MessageBox.Show("Texlist at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//Console.WriteLine("Texlist at " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						int firstEntry = ByteConverter.ToInt32(chunk.Data, 0) - chunk.ImageBase; // Prooobably, seems to be 8 always
 						int numTextures = ByteConverter.ToInt32(chunk.Data, 0x4);
 						List<string> texNames = new List<string>();
@@ -150,7 +155,7 @@ namespace SAModel
 						Texnames.Add(texNames.ToArray());
 						break;
 					case NinjaBinaryChunkType.Motion:
-						//MessageBox.Show("Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//Console.WriteLine("Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						try
 						{
 							// Add a label so that all motions aren't called "motion_00000000"
@@ -160,11 +165,11 @@ namespace SAModel
 						}
 						catch (Exception ex)
 						{
-							MessageBox.Show("Error adding motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message.ToString());
+							Console.WriteLine("Error adding motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message);
 						}
 						break;
 					case NinjaBinaryChunkType.SimpleShapeMotion:
-						//MessageBox.Show("Shape Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
+						//Console.WriteLine("Shape Motion with ImgBase " + chunk.ImageBase.ToString("X") + " size " + chunk.Data.Length.ToString());
 						try
 						{
 							// Add a label so that all motions aren't called "motion_00000000"
@@ -174,13 +179,13 @@ namespace SAModel
 						}
 						catch (Exception ex)
 						{
-							MessageBox.Show("Error adding shape motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message.ToString());
+							Console.WriteLine("Error adding motion at 0x" + chunk.ImageBase.ToString("X") + ": " + ex.Message);
 						}
 						break;
 
 				}
 			}
-			//MessageBox.Show("Models: " + Models.Count.ToString() + " Animations: " + Motions.Count.ToString() + " Texlists: " + Texnames.Count.ToString() + ", Texture arrays: " + Textures.Count.ToString());
+			//Console.WriteLine("Models: " + Models.Count.ToString() + " Animations: " + Motions.Count.ToString() + " Texlists: " + Texnames.Count.ToString() + ", Texture arrays: " + Textures.Count.ToString());
 			// Restore Big Endian mode
 			ByteConverter.BigEndian = bigEndianBk;
 		}
@@ -188,9 +193,15 @@ namespace SAModel
 		private NinjaBinaryChunkType IdentifyChunk(byte[] data, int offset)
 		{
 			if (offset >= data.Length - 8)
+			{
 				return NinjaBinaryChunkType.Invalid;
+			}
+
 			if (BitConverter.ToUInt32(data, offset + 4) == 0)
+			{
 				return NinjaBinaryChunkType.Invalid;
+			}
+
 			switch (System.Text.Encoding.ASCII.GetString(data, offset, 4))
 			{
 				// Implemented chunk types

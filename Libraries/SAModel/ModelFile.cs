@@ -45,7 +45,10 @@ namespace SAModel
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
+			{
 				throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
+			}
+
 			Metadata = new Dictionary<uint, byte[]>();
 			Dictionary<int, string> labels = new Dictionary<int, string>();
 			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
@@ -94,7 +97,10 @@ namespace SAModel
 						animationFiles = animfiles.ToArray();
 					}
 					else
+					{
 						animationFiles = new string[0];
+					}
+
 					string path = Path.GetDirectoryName(filename);
 					List<NJS_MOTION> anims = new List<NJS_MOTION>();
 					try
@@ -269,7 +275,10 @@ namespace SAModel
 							for (int i = 0; i < count; i++)
 							{
 								string line = tr.ReadLine();
-								if (File.Exists(Path.Combine(path, line))) animlist.Add(line);
+								if (File.Exists(Path.Combine(path, line)))
+								{
+									animlist.Add(line);
+								}
 							}
 							animationFiles = animlist.ToArray();
 						}
@@ -289,7 +298,9 @@ namespace SAModel
 								}
 							}
 							else
+							{
 								anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+							}
 						}
 					}
 					catch
@@ -322,12 +333,15 @@ namespace SAModel
 			this.animationFiles = animationFiles;
 			List<NJS_MOTION> anims = new List<NJS_MOTION>();
 			if (animationFiles != null)
+			{
 				try
 				{
 					foreach (string item in animationFiles)
 					{
 						if (!File.Exists(Path.Combine(basePath, item)))
+						{
 							continue;
+						}
 						else if (Path.GetExtension(item).ToLowerInvariant() == ".json")
 						{
 							JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
@@ -347,6 +361,8 @@ namespace SAModel
 				{
 					anims.Clear();
 				}
+			}
+
 			Animations = anims.AsReadOnly();
 			Metadata = new Dictionary<uint, byte[]>();
 		}
@@ -376,7 +392,10 @@ namespace SAModel
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
 			bool be = ByteConverter.BigEndian;
 			if (!useNinjaMetaData)
+			{
 				ByteConverter.BigEndian = false;
+			}
+
 			List<byte> file = new List<byte>();
 			ulong magic;
 			switch (Format)

@@ -132,7 +132,7 @@ namespace SplitTools.SplitDLL
 										landfmt_cur = landfmt_def;
 										break;
 								}
-								if (data.CustomProperties.ContainsKey("format")) 
+								if (data.CustomProperties.ContainsKey("format"))
 									landfmt_cur = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
 								LandTable land = new LandTable(datafile, address, imageBase, landfmt_cur) { Description = name };
 								DllItemInfo info = new DllItemInfo()
@@ -333,7 +333,7 @@ namespace SplitTools.SplitDLL
                                     output.SAMDLData.Add(data.Filename, new SAMDLMetadata(data.CustomProperties["meta"]));
                             }
 							break;
-						
+
 						// NJS_OBJECT arrays
 						case "modelarray":
 						case "basicmodelarray":
@@ -342,7 +342,7 @@ namespace SplitTools.SplitDLL
 						case "gcmodelarray":
 							// The code below was used for identifying models in DLLs using a source file list for SADX X360
 							/*
-							bool srclist_on = false; 
+							bool srclist_on = false;
 							/string[] srclist;
 							int strid = 0;
 							if (File.Exists(name + ".txt"))
@@ -576,7 +576,7 @@ namespace SplitTools.SplitDLL
 									NJS_ACTION ani = new NJS_ACTION(datafile, ptr, imageBase, modelfmt_def, new Dictionary<int, Attach>());
 									string nm = item.Key + "_" + i;
 									string metadesc = "";
-									if (splitFlags.HasFlag(SplitFlags.NoLabels)) 
+									if (splitFlags.HasFlag(SplitFlags.NoLabels))
 										nm = ani.Animation.Name;
 									bool saveani = false;
 									if (!anilabels.ContainsKey(ani.Animation.Name))
@@ -625,7 +625,7 @@ namespace SplitTools.SplitDLL
 										ani.Animation.Description = metadesc;
 										saveani = true;
 									}
-									
+
 									if (saveani)
 									{
 										if (File.Exists(outputFN) && !splitFlags.HasFlag(SplitFlags.Overwrite))
@@ -870,7 +870,7 @@ namespace SplitTools.SplitDLL
 									if (File.Exists(fileOutputPath + "/" + i.ToString() + ".saanim") && !splitFlags.HasFlag(SplitFlags.Overwrite))
 										return 0;
 									NJS_MOTION anim = new NJS_MOTION(datafile, datafile.GetPointer(address + 4, imageBase), imageBase, ByteConverter.ToInt16(datafile, address + 2));
-									anim.Description = animmeta;	
+									anim.Description = animmeta;
 									anim.Save(fileOutputPath + "/" + i.ToString() + ".saanim", splitFlags.HasFlag(SplitFlags.NoMeta));
 									hashes.Add(i.ToString(NumberFormatInfo.InvariantInfo) + ":" + HelperFunctions.FileHash(fileOutputPath + "/" + i.ToString() + ".saanim"));
 									address += 8;
@@ -1511,7 +1511,7 @@ namespace SplitTools.SplitDLL
 							}
 							break;
 						default: // raw binary
-							{ 
+							{
 								byte[] bin = new byte[int.Parse(data.CustomProperties["size"], NumberStyles.HexNumber)];
 								Array.Copy(datafile, address, bin, 0, bin.Length);
 								File.WriteAllBytes(fileOutputPath, bin);

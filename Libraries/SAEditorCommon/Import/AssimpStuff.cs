@@ -426,7 +426,7 @@ namespace SAModel.SAEditorCommon.Import
 			if (attach is GC.GCAttach gcAttach)
 			{
 				int nameMeshIndex = 0;
-				foreach (GC.GCMesh m in gcAttach.opaqueMeshes)
+				foreach (GC.GCMesh m in gcAttach.OpaqueMeshes)
 				{
 					result.Add(scene.Meshes.Count);
 					scene.Meshes.Add(ExportGCMesh(gcAttach, m, scene, texInfo, ref nameMeshIndex));
@@ -440,7 +440,7 @@ namespace SAModel.SAEditorCommon.Import
 			}
 			else
 			{
-				int nameMeshIndex = 0; 
+				int nameMeshIndex = 0;
 				if (attach.MeshInfo == null)
 					attach.ProcessVertexData();
 				foreach (MeshInfo meshInfo in attach.MeshInfo)
@@ -545,10 +545,10 @@ namespace SAModel.SAEditorCommon.Import
 				}
 			}
 
-			List<GC.IOVtx> gcPositions = gcAttach.vertexData.Find(x => x.attribute == GC.GCVertexAttribute.Position)?.data;
-			List<GC.IOVtx> gcNormals = gcAttach.vertexData.Find(x => x.attribute == GC.GCVertexAttribute.Normal)?.data;
-			List<GC.IOVtx> gcColors = gcAttach.vertexData.Find(x => x.attribute == GC.GCVertexAttribute.Color0)?.data;
-			List<GC.IOVtx> gcUVs = gcAttach.vertexData.Find(x => x.attribute == GC.GCVertexAttribute.Tex0)?.data;
+			List<GC.IOVtx> gcPositions = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Position)?.data;
+			List<GC.IOVtx> gcNormals = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Normal)?.data;
+			List<GC.IOVtx> gcColors = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Color0)?.data;
+			List<GC.IOVtx> gcUVs = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Tex0)?.data;
 
 			foreach (GC.GCPrimitive prim in m.primitives)
 			{
@@ -1063,7 +1063,7 @@ namespace SAModel.SAEditorCommon.Import
 			obj.Scale = new Vertex(scaling.X, scaling.Y, scaling.Z);
 			List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
 
-			// Import all meshes into a single NJS_OBJECT regardless of nodes 
+			// Import all meshes into a single NJS_OBJECT regardless of nodes
 			if (asSingle)
 				meshes = new List<Assimp.Mesh>(scene.Meshes);
 
@@ -1510,29 +1510,29 @@ namespace SAModel.SAEditorCommon.Import
 			//VertexAttribute stuff
 			GC.GCVertexSet vtxPositions = new GC.GCVertexSet(GC.GCVertexAttribute.Position);
 			vtxPositions.data.AddRange(gcvertices);
-			attach.vertexData.Add(vtxPositions);
+			attach.VertexData.Add(vtxPositions);
 
 			if (texcoords.Count > 0)
 			{
 				GC.GCVertexSet vtxUV = new GC.GCVertexSet(GC.GCVertexAttribute.Tex0);
 				vtxUV.data.AddRange(texcoords);
-				attach.vertexData.Add(vtxUV);
+				attach.VertexData.Add(vtxUV);
 			}
 
 			if (colors.Count > 0)
 			{
 				GC.GCVertexSet vtxColors = new GC.GCVertexSet(GC.GCVertexAttribute.Color0);
 				vtxColors.data.AddRange(colors);
-				attach.vertexData.Add(vtxColors);
+				attach.VertexData.Add(vtxColors);
 			}
 			else
 			{
 				GC.GCVertexSet vtxNormals = new GC.GCVertexSet(GC.GCVertexAttribute.Normal);
 				vtxNormals.data.AddRange(gcnormals);
-				attach.vertexData.Add(vtxNormals);
+				attach.VertexData.Add(vtxNormals);
 			}
 
-			attach.opaqueMeshes.AddRange(gcmeshes);
+			attach.OpaqueMeshes.AddRange(gcmeshes);
 			return attach;
 		}
 		#endregion

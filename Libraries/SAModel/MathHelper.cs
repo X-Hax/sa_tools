@@ -40,9 +40,14 @@
 		public static float Lerp(float min, float max, float tValue)
 		{
 			if (tValue == 0)
+			{
 				return min;
+			}
+
 			if (tValue == 1)
+			{
 				return max;
+			}
 
 			return min + (max - min) * tValue;
 		}

@@ -39,9 +39,14 @@ namespace SAModel
 			Poly[] polys = new Poly[ByteConverter.ToInt16(file, address + 2)];
 			int tmpaddr = (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase);
 			if (labels.ContainsKey(tmpaddr))
+			{
 				PolyName = labels[tmpaddr];
+			}
 			else
+			{
 				PolyName = "poly_" + tmpaddr.ToString("X8");
+			}
+
 			int striptotal = 0;
 			for (int i = 0; i < polys.Length; i++)
 			{
@@ -56,9 +61,14 @@ namespace SAModel
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				if (labels.ContainsKey(tmpaddr))
+				{
 					PolyNormalName = labels[tmpaddr];
+				}
 				else
+				{
 					PolyNormalName = "polynormal_" + tmpaddr.ToString("X8");
+				}
+
 				PolyNormal = new Vertex[polys.Length];
 				for (int i = 0; i < polys.Length; i++)
 				{
@@ -67,15 +77,23 @@ namespace SAModel
 				}
 			}
 			else
+			{
 				PolyNormalName = "polynormal_" + Extensions.GenerateIdentifier();
+			}
+
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				if (labels.ContainsKey(tmpaddr))
+				{
 					VColorName = labels[tmpaddr];
+				}
 				else
+				{
 					VColorName = "vcolor_" + tmpaddr.ToString("X8");
+				}
+
 				VColor = new Color[striptotal];
 				for (int i = 0; i < striptotal; i++)
 				{
@@ -84,15 +102,23 @@ namespace SAModel
 				}
 			}
 			else
+			{
 				VColorName = "vcolor_" + Extensions.GenerateIdentifier();
+			}
+
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
 			if (tmpaddr != 0)
 			{
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				if (labels.ContainsKey(tmpaddr))
+				{
 					UVName = labels[tmpaddr];
+				}
 				else
+				{
 					UVName = "uv_" + tmpaddr.ToString("X8");
+				}
+
 				UV = new UV[striptotal];
 				for (int i = 0; i < striptotal; i++)
 				{
@@ -101,7 +127,9 @@ namespace SAModel
 				}
 			}
 			else
+			{
 				UVName = "uv_" + Extensions.GenerateIdentifier();
+			}
 		}
 
 		public NJS_MESHSET(Basic_PolyType polyType, int polyCount, bool hasPolyNormal, bool hasUV, bool hasVColor)
@@ -174,7 +202,10 @@ namespace SAModel
 			result.AddRange(ByteConverter.GetBytes(vColorAddress));
 			result.AddRange(ByteConverter.GetBytes(uVAddress));
 			if (DX)
+			{
 				result.AddRange(new byte[4]);
+			}
+
 			return result.ToArray();
 		}
 
@@ -195,7 +226,10 @@ namespace SAModel
 			result.Append(", ");
 			result.Append(UV != null ? UVName.MakeIdentifier() : "NULL");
 			if (DX)
+			{
 				result.Append(", NULL");
+			}
+
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -241,7 +275,10 @@ namespace SAModel
 					result.PolyNormal[i] = PolyNormal[i].Clone();
 			}
 			if (VColor != null)
+			{
 				result.VColor = (Color[])VColor.Clone();
+			}
+
 			if (UV != null)
 			{
 				result.UV = new UV[UV.Length];

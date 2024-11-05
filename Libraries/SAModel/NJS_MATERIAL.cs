@@ -233,7 +233,10 @@ namespace SAModel
 		public string ToStruct(string[] textures = null)
 		{
 			if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
+			{
 				return "{ 0 }";
+			}
+
 			StringBuilder result = new StringBuilder("{ ");
 			result.Append(DiffuseColor.ToStruct());
 			result.Append(", ");
@@ -244,15 +247,26 @@ namespace SAModel
 			int callback = (int)(TextureID & 0xC0000000);
 			int texid = (int)(TextureID & ~0xC0000000);
 			if (callback != 0)
+			{
 				result.Append(((StructEnums.NJD_CALLBACK)callback).ToString().Replace(", ", " | ") + " | ");
+			}
+
 			if (textures == null || texid >= textures.Length)
+			{
 				result.Append(texid);
+			}
 			else
+			{
 				result.Append(textures[texid].MakeIdentifier());
+			}
+
 			result.Append(", ");
 			result.Append(((StructEnums.MaterialFlags)(Flags & ~0x7F)).ToString().Replace(", ", " | "));
 			if (UserFlags != 0)
+			{
 				result.Append(" | 0x" + UserFlags.ToString("X"));
+			}
+
 			result.Append(" }");
 			return result.ToString();
 		}
@@ -260,7 +274,10 @@ namespace SAModel
 		public string ToNJA(string[] textures)
 		{
 			if (DiffuseColor == Color.Empty && SpecularColor == Color.Empty && Exponent == 0 && TextureID == 0 && Flags == 0)
+			{
 				return "{ 0 }";
+			}
+
 			StringBuilder result = new StringBuilder("MATSTART" + Environment.NewLine);
 			result.Append("Diffuse   ( ");
 			result.Append(DiffuseColor.A + ", " + DiffuseColor.R + ", " + DiffuseColor.G + ", " + DiffuseColor.B);
@@ -308,9 +325,15 @@ namespace SAModel
 					SourceAlpha = mat.SourceAlpha;
 					DestinationAlpha = mat.DestinationAlpha;
 					if (mat.Ambient.HasValue)
+					{
 						AmbientColor = mat.Ambient.Value;
+					}
+
 					if (mat.Diffuse.HasValue)
+					{
 						DiffuseColor = mat.Diffuse.Value;
+					}
+
 					if (mat.Specular.HasValue)
 					{
 						SpecularColor = mat.Specular.Value;
@@ -344,7 +367,10 @@ namespace SAModel
 		public override bool Equals(object obj)
 		{
 			if (!(obj is NJS_MATERIAL))
+			{
 				return false;
+			}
+
 			NJS_MATERIAL other = (NJS_MATERIAL)obj;
 			return AmbientColor == other.AmbientColor && DiffuseColor == other.DiffuseColor && SpecularColor == other.SpecularColor &&
 				Exponent == other.Exponent && TextureID == other.TextureID && Flags == other.Flags;

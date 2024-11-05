@@ -338,7 +338,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				COL.Flags = int.Parse(value, NumberStyles.HexNumber);
 			}
 		}
-				
+
 		[Category("Miscellaneous"), DisplayName("Y Width"), Description("A field that can store a floating point value. Only used in some SA1 Autodemo levels.")]
 		public string WidthY
 		{
