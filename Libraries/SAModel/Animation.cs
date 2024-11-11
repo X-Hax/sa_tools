@@ -2381,11 +2381,11 @@ namespace SAModel
 					}
 					if (model.Value.Quaternion.Count > 0 && !labels.Contains(model.Value.QuaternionName))
 					{
-						hasPnt = true;
-						writer.Write("QROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
+						hasQuat = true;
+						writer.WriteLine("QROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
 						writer.WriteLine("START");
 						foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
-							writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + item.Value[2].ToC() + item.Value[3].ToNJA() + " ),");
+							writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + ", " + item.Value[2].ToNJA() + ", " + item.Value[3].ToNJA() + " ),");
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.QuaternionName);
