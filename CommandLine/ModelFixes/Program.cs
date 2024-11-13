@@ -3,65 +3,71 @@ using System.Collections.Generic;
 using System.IO;
 using SAModel;
 
-//this program fixes the wrong flags, rotation and scaling values from a new model based on an existing one (usually legacy).
+// This program fixes the wrong flags, rotation and scaling values from a new model based on an existing one (usually legacy).
 
 namespace ModelFixes
 {
-	static class Program
+	internal static class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			Queue<string> argq = new(args);
-			string newmdlFileName;
+			Queue<string> fileQueue = new(args);
+			string newModelFile;
 
-			if (argq.Count > 0)
+			if (fileQueue.Count > 0)
 			{
-				newmdlFileName = argq.Dequeue();
-				Console.WriteLine("New Model File: {0}", newmdlFileName);
+				newModelFile = fileQueue.Dequeue();
+				Console.WriteLine("New Model File: {0}", newModelFile);
 			}
 			else
 			{
 				Console.Write("New Model File: ");
-				newmdlFileName = Console.ReadLine().Trim('"');
+				newModelFile = Console.ReadLine().Trim('"');
 			}
 
-			ModelFile newModel = new(newmdlFileName);
-			string newMdlNameNoExt = Path.GetFileNameWithoutExtension(newmdlFileName);
-			string ext = Path.GetExtension(newmdlFileName);
-			NJS_OBJECT[] newmdlObjects = newModel.Model.GetObjects();
-			string legacymdlfilename;
-			if (argq.Count > 0)
+			ModelFile newModel = new(newModelFile);
+
+			var newModelObjects = newModel.Model.GetObjects();
+			string legacyModelFile;
+			if (fileQueue.Count > 0)
 			{
-				legacymdlfilename = argq.Dequeue();
-				Console.WriteLine("Legacy Model File: {0}", legacymdlfilename);
+				legacyModelFile = fileQueue.Dequeue();
+				Console.WriteLine("Legacy Model File: {0}", legacyModelFile);
 			}
 			else
 			{
 				Console.Write("Legacy Model File: ");
-				legacymdlfilename = Console.ReadLine().Trim('"');
+				legacyModelFile = Console.ReadLine().Trim('"');
 			}
-			ModelFile legacyModel = new(legacymdlfilename);
-			NJS_OBJECT[] legacymdlObjects = legacyModel.Model.GetObjects();
+
+			ModelFile legacyModel = new(legacyModelFile);
+			var legacyModelObjects = legacyModel.Model.GetObjects();
 
 			if (newModel.Format != legacyModel.Format)
-				Console.WriteLine("Format mismatch between files! Most data won't be fixed.");
-			if (newmdlObjects.Length != legacymdlObjects.Length)
-				Console.WriteLine("Models have different structures, the game may crash.");
-
-			for (int i = 0; i < Math.Min(newmdlObjects.Length, legacymdlObjects.Length); i++)
 			{
-				newmdlObjects[i].Rotation = legacymdlObjects[i].Rotation;
-				newmdlObjects[i].Scale = legacymdlObjects[i].Scale;
-				newmdlObjects[i].SkipChildren = legacymdlObjects[i].SkipChildren;
-				newmdlObjects[i].SkipDraw = legacymdlObjects[i].SkipDraw;
-				newmdlObjects[i].IgnorePosition = legacymdlObjects[i].IgnorePosition;
-				newmdlObjects[i].IgnoreRotation = legacymdlObjects[i].IgnoreRotation;
-				newmdlObjects[i].IgnoreScale = legacymdlObjects[i].IgnoreScale;
+				Console.WriteLine("Format mismatch between files! Most data won't be fixed.");
 			}
 
+			if (newModelObjects.Length != legacyModelObjects.Length)
+			{
+				Console.WriteLine("Models have different structures, the game may crash.");
+			}
 
-			newModel.SaveToFile(newMdlNameNoExt + "_fixed" + ext);
+			for (var i = 0; i < Math.Min(newModelObjects.Length, legacyModelObjects.Length); i++)
+			{
+				newModelObjects[i].Rotation = legacyModelObjects[i].Rotation;
+				newModelObjects[i].Scale = legacyModelObjects[i].Scale;
+				newModelObjects[i].SkipChildren = legacyModelObjects[i].SkipChildren;
+				newModelObjects[i].SkipDraw = legacyModelObjects[i].SkipDraw;
+				newModelObjects[i].IgnorePosition = legacyModelObjects[i].IgnorePosition;
+				newModelObjects[i].IgnoreRotation = legacyModelObjects[i].IgnoreRotation;
+				newModelObjects[i].IgnoreScale = legacyModelObjects[i].IgnoreScale;
+			}
 
+			var newModelFileWithoutExtension = Path.GetFileNameWithoutExtension(newModelFile);
+			var extension = Path.GetExtension(newModelFile);
+
+			newModel.SaveToFile(newModelFileWithoutExtension + "_fixed" + extension);
 		}
 	}
 }

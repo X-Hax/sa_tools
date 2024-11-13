@@ -79,7 +79,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VMSEditor", "SA1Tools\VMSEd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "split", "CommandLine\Split\split.csproj", "{2DC86B9B-D691-4D64-9F74-65420B56F6A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splitShapeMotion", "CommandLine\SplitShapeMotion\splitShapeMotion.csproj", "{45799202-AFC0-4EC0-AE8E-974DBFA19A0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SplitShapeMotion", "CommandLine\SplitShapeMotion\SplitShapeMotion.csproj", "{45799202-AFC0-4EC0-AE8E-974DBFA19A0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildShapeMotion", "CommandLine\BuildShapeMotion\BuildShapeMotion.csproj", "{27223DD0-71BC-4D77-90AB-6E6FBB475B34}"
 EndProject
