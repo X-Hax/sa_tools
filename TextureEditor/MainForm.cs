@@ -1012,6 +1012,7 @@ namespace TextureEditor
 								bmp = ProcessIndexedBitmap(tex, indexedfmt);
 								bmp.Save(Path.Combine(dir, tex.Name + ".png"));
 								bmp.Save(tex.TextureData, ImageFormat.Png);
+								exportData = tex.TextureData;
 							}
 							// Non-indexed
 							else
