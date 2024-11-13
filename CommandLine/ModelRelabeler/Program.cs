@@ -4,80 +4,127 @@ using SAModel;
 
 namespace ModelRelabeler
 {
-	static class Program
+	internal static class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			Queue<string> argq = new Queue<string>(args);
-			string mdlfilename;
-			if (argq.Count > 0)
+			Queue<string> fileQueue = new Queue<string>(args);
+			string newModelFile;
+
+			if (fileQueue.Count > 0)
 			{
-				mdlfilename = argq.Dequeue();
-				Console.WriteLine("New Model File: {0}", mdlfilename);
+				newModelFile = fileQueue.Dequeue();
+				Console.WriteLine("New Model File: {0}", newModelFile);
 			}
 			else
 			{
 				Console.Write("New Model File: ");
-				mdlfilename = Console.ReadLine().Trim('"');
+				newModelFile = Console.ReadLine().Trim('"');
 			}
-			ModelFile model = new ModelFile(mdlfilename);
-			NJS_OBJECT[] objects = model.Model.GetObjects();
-			string repmdlfilename;
-			if (argq.Count > 0)
+
+			string oldModelFile;
+			if (fileQueue.Count > 0)
 			{
-				repmdlfilename = argq.Dequeue();
-				Console.WriteLine("Old Model File: {0}", repmdlfilename);
+				oldModelFile = fileQueue.Dequeue();
+				Console.WriteLine("Old Model File: {0}", oldModelFile);
 			}
 			else
 			{
 				Console.Write("Old Model File: ");
-				repmdlfilename = Console.ReadLine().Trim('"');
+				oldModelFile = Console.ReadLine().Trim('"');
 			}
-			ModelFile repmodel = new ModelFile(repmdlfilename);
-			NJS_OBJECT[] repobjects = repmodel.Model.GetObjects();
-			if (model.Format != repmodel.Format)
-				Console.WriteLine("Format mismatch between files! Most data will be unable to be relabeled.");
-			if (objects.Length != repobjects.Length)
-				Console.WriteLine("Models have different structures, the game may crash.");
-			for (int i = 0; i < Math.Min(objects.Length, repobjects.Length); i++)
+
+			var model = new ModelFile(newModelFile);
+			var modelObjects = model.Model.GetObjects();
+
+			var oldModel = new ModelFile(oldModelFile);
+			var oldModelObjects = oldModel.Model.GetObjects();
+
+			if (model.Format != oldModel.Format)
 			{
-				objects[i].Name = repobjects[i].Name;
-				if (objects[i].Attach != null && repobjects[i].Attach != null)
+				Console.WriteLine("Format mismatch between files! Most data will be unable to be relabeled.");
+			}
+
+			if (modelObjects.Length != oldModelObjects.Length)
+			{
+				Console.WriteLine("Models have different structures, the game may crash.");
+			}
+
+			for (var i = 0; i < Math.Min(modelObjects.Length, oldModelObjects.Length); i++)
+			{
+				modelObjects[i].Name = oldModelObjects[i].Name;
+
+				if (modelObjects[i].Attach == null || oldModelObjects[i].Attach == null)
 				{
-					objects[i].Attach.Name = repobjects[i].Attach.Name;
-					if (objects[i].Attach is BasicAttach && repobjects[i].Attach is BasicAttach)
+					continue;
+				}
+
+				modelObjects[i].Attach.Name = oldModelObjects[i].Attach.Name;
+
+				switch (modelObjects[i].Attach)
+				{
+					case BasicAttach when oldModelObjects[i].Attach is BasicAttach:
 					{
-						BasicAttach attach = (BasicAttach)objects[i].Attach;
-						BasicAttach repattach = (BasicAttach)repobjects[i].Attach;
-						attach.VertexName = repattach.VertexName;
-						if (repattach.NormalName != null)
-							attach.NormalName = repattach.NormalName;
-						if (repattach.MaterialName != null)
-							attach.MaterialName = repattach.MaterialName;
-						attach.MeshName = repattach.MeshName;
-						for (int j = 0; j < Math.Min(attach.Mesh.Count, repattach.Mesh.Count); j++)
+						var attach = (BasicAttach)modelObjects[i].Attach;
+						var oldAttach = (BasicAttach)oldModelObjects[i].Attach;
+
+						attach.VertexName = oldAttach.VertexName;
+
+						if (oldAttach.NormalName != null)
 						{
-							attach.Mesh[j].PolyName = repattach.Mesh[j].PolyName;
-							if (repattach.Mesh[j].PolyNormalName != null)
-								attach.Mesh[j].PolyNormalName = repattach.Mesh[j].PolyNormalName;
-							if (repattach.Mesh[j].UVName != null)
-								attach.Mesh[j].UVName = repattach.Mesh[j].UVName;
-							if (repattach.Mesh[j].VColorName != null)
-								attach.Mesh[j].VColorName = repattach.Mesh[j].VColorName;
+							attach.NormalName = oldAttach.NormalName;
 						}
+
+						if (oldAttach.MaterialName != null)
+						{
+							attach.MaterialName = oldAttach.MaterialName;
+						}
+
+						attach.MeshName = oldAttach.MeshName;
+
+						for (var j = 0; j < Math.Min(attach.Mesh.Count, oldAttach.Mesh.Count); j++)
+						{
+							attach.Mesh[j].PolyName = oldAttach.Mesh[j].PolyName;
+
+							if (oldAttach.Mesh[j].PolyNormalName != null)
+							{
+								attach.Mesh[j].PolyNormalName = oldAttach.Mesh[j].PolyNormalName;
+							}
+
+							if (oldAttach.Mesh[j].UVName != null)
+							{
+								attach.Mesh[j].UVName = oldAttach.Mesh[j].UVName;
+							}
+
+							if (oldAttach.Mesh[j].VColorName != null)
+							{
+								attach.Mesh[j].VColorName = oldAttach.Mesh[j].VColorName;
+							}
+						}
+
+						break;
 					}
-					else if (objects[i].Attach is ChunkAttach && repobjects[i].Attach is ChunkAttach)
+					case ChunkAttach when oldModelObjects[i].Attach is ChunkAttach:
 					{
-						ChunkAttach attach = (ChunkAttach)objects[i].Attach;
-						ChunkAttach repattach = (ChunkAttach)repobjects[i].Attach;
-						if (repattach.VertexName != null)
-							attach.VertexName = repattach.VertexName;
-						if (repattach.PolyName != null)
-							attach.PolyName = repattach.PolyName;
+						var attach = (ChunkAttach)modelObjects[i].Attach;
+						var oldAttach = (ChunkAttach)oldModelObjects[i].Attach;
+
+						if (oldAttach.VertexName != null)
+						{
+							attach.VertexName = oldAttach.VertexName;
+						}
+
+						if (oldAttach.PolyName != null)
+						{
+							attach.PolyName = oldAttach.PolyName;
+						}
+
+						break;
 					}
 				}
 			}
-			model.SaveToFile(repmdlfilename);
+
+			model.SaveToFile(oldModelFile);
 		}
 	}
 }
