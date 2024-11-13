@@ -28,10 +28,7 @@ namespace SAModel
 			Indexes[2] = ByteConverter.ToUInt16(file, address + 4);
 		}
 
-		public override Basic_PolyType PolyType
-		{
-			get { return Basic_PolyType.Triangles; }
-		}
+		public override Basic_PolyType PolyType => Basic_PolyType.Triangles;
 	}
 
 	[Serializable]
@@ -51,10 +48,7 @@ namespace SAModel
 			Indexes[3] = ByteConverter.ToUInt16(file, address + 6);
 		}
 
-		public override Basic_PolyType PolyType
-		{
-			get { return Basic_PolyType.Quads; }
-		}
+		public override Basic_PolyType PolyType => Basic_PolyType.Quads;
 	}
 
 	[Serializable]
@@ -86,15 +80,9 @@ namespace SAModel
 			}
 		}
 
-		public override int Size
-		{
-			get { return base.Size + 2; }
-		}
+		public override int Size => base.Size + 2;
 
-		public override Basic_PolyType PolyType
-		{
-			get { return Basic_PolyType.Strips; }
-		}
+		public override Basic_PolyType PolyType => Basic_PolyType.Strips;
 
 		public override byte[] GetBytes()
 		{
@@ -108,7 +96,10 @@ namespace SAModel
 		{
 			StringBuilder result = new StringBuilder();
 			if (Reversed)
+			{
 				result.Append("0x8000u | ");
+			}
+
 			result.Append(Indexes.Length & 0x7FFF);
 			result.Append(", ");
 			result.Append(base.ToStruct());
@@ -132,10 +123,7 @@ namespace SAModel
 		{
 		}
 
-		public virtual int Size
-		{
-			get { return Indexes.Length * 2; }
-		}
+		public virtual int Size => Indexes.Length * 2;
 
 		public abstract Basic_PolyType PolyType { get; }
 
@@ -165,34 +153,24 @@ namespace SAModel
 
 		public static Poly CreatePoly(Basic_PolyType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case Basic_PolyType.Triangles:
-					return new Triangle();
-				case Basic_PolyType.Quads:
-					return new Quad();
-				case Basic_PolyType.NPoly:
-				case Basic_PolyType.Strips:
-					throw new ArgumentException(
-						"Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.",
-						"type");
-			}
-			throw new ArgumentException("Unknown poly type!", "type");
+				Basic_PolyType.Triangles => new Triangle(),
+				Basic_PolyType.Quads => new Quad(),
+				Basic_PolyType.NPoly or Basic_PolyType.Strips => throw new ArgumentException("Cannot create strip-type poly without additional information.\nUse Strip.Strip(int NumVerts, bool Reverse) instead.", nameof(type)),
+				_ => throw new ArgumentException("Unknown poly type!", nameof(type))
+			};
 		}
 
 		public static Poly CreatePoly(Basic_PolyType type, byte[] file, int address)
 		{
-			switch (type)
+			return type switch
 			{
-				case Basic_PolyType.Triangles:
-					return new Triangle(file, address);
-				case Basic_PolyType.Quads:
-					return new Quad(file, address);
-				case Basic_PolyType.NPoly:
-				case Basic_PolyType.Strips:
-					return new Strip(file, address);
-			}
-			throw new ArgumentException("Unknown poly type!", "type");
+				Basic_PolyType.Triangles => new Triangle(file, address),
+				Basic_PolyType.Quads => new Quad(file, address),
+				Basic_PolyType.NPoly or Basic_PolyType.Strips => new Strip(file, address),
+				_ => throw new ArgumentException("Unknown poly type!", nameof(type))
+			};
 		}
 
 		object ICloneable.Clone() => Clone();

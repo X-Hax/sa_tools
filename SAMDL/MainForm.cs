@@ -2045,7 +2045,7 @@ namespace SAModel.SAMDL
 				case GC.GCAttach gatt:
 					string vtype = null;
 					gatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-					foreach (GC.GCVertexSet m in gatt.vertexData)
+					foreach (GC.GCVertexSet m in gatt.VertexData)
 					{
 						switch (m.attribute)
 						{
@@ -2065,7 +2065,7 @@ namespace SAModel.SAMDL
 						m.DataName = $"{vtype}" + Extensions.GenerateIdentifier();
 					}
 					gatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
-					foreach (GC.GCMesh m in gatt.opaqueMeshes)
+					foreach (GC.GCMesh m in gatt.OpaqueMeshes)
 					{
 						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
@@ -2180,7 +2180,7 @@ namespace SAModel.SAMDL
 			{
 				case GC.GCAttach gcatt:
 					int matind = 0;
-					foreach (var msh in gcatt.opaqueMeshes.Concat(gcatt.translucentMeshes))
+					foreach (var msh in gcatt.OpaqueMeshes.Concat(gcatt.translucentMeshes))
 					{
 						msh.parameters.RemoveAll(a => a is GC.TextureParameter);
 						if (mats[matind].UseTexture)
@@ -2311,7 +2311,7 @@ namespace SAModel.SAMDL
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
 							case GC.GCAttach gatt:
-								foreach (var msh in gatt.opaqueMeshes.Concat(gatt.translucentMeshes))
+								foreach (var msh in gatt.OpaqueMeshes.Concat(gatt.translucentMeshes))
 								{
 									var tp = (GC.TextureParameter)msh.parameters.LastOrDefault(a => a is GC.TextureParameter);
 									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureID))
@@ -3766,7 +3766,7 @@ namespace SAModel.SAMDL
 							gcatt.OpaqueMeshName = FixLabel(gcatt.OpaqueMeshName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
-							foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+							foreach (GC.GCMesh m in gcatt.OpaqueMeshes)
 							{
 								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
 								if (!string.IsNullOrEmpty(dup))
@@ -3792,7 +3792,7 @@ namespace SAModel.SAMDL
 							gcatt.VertexName = FixLabel(gcatt.VertexName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
-							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							foreach (GC.GCVertexSet v in gcatt.VertexData)
 							{
 								v.DataName = FixLabel(v.DataName, checkingLabels, out dup);
 								if (!string.IsNullOrEmpty(dup))
@@ -3873,16 +3873,16 @@ namespace SAModel.SAMDL
 								}
 							}
 							gcatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
-							if (gcatt.opaqueMeshes.Count != 0)
+							if (gcatt.OpaqueMeshes.Count != 0)
 							{
-								foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+								foreach (GC.GCMesh m in gcatt.OpaqueMeshes)
 								{
 									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
 								}
 							}
 							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							foreach (GC.GCVertexSet v in gcatt.VertexData)
 							{
 								switch (v.attribute)
 								{

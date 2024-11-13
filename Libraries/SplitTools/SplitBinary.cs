@@ -317,7 +317,7 @@ namespace SplitTools.Split
 							mdlanis.AddRange(mdlmorphs);
 						}
 						ModelFile.CreateFile(fileOutputPath, mdl, mdlanis.ToArray(), null, itemName, null, mdlformat, splitFlags.HasFlag(SplitFlags.NoMeta));
-						if (data.CustomProperties.ContainsKey("reverse")) 
+						if (data.CustomProperties.ContainsKey("reverse"))
 							ByteConverter.Reverse = rev;
 					}
 					break;

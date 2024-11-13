@@ -12,14 +12,9 @@ namespace SAModel
 		public double U { get; set; }
 		public double V { get; set; }
 
-		public static int Size
-		{
-			get { return 4; }
-		}
+		public static int Size => 4;
 
-		public UV()
-		{
-		}
+		public UV() { }
 
 		public UV(byte[] file, int address)
 			: this(file, address, false)
@@ -81,25 +76,31 @@ namespace SAModel
 
 		public override string ToString()
 		{
-			return U.ToString(NumberFormatInfo.InvariantInfo) + ", " + V.ToString(NumberFormatInfo.InvariantInfo);
+			return $"{U.ToString(NumberFormatInfo.InvariantInfo)}, {V.ToString(NumberFormatInfo.InvariantInfo)}";
 		}
 
 		public string ToStruct()
 		{
 			if (U == 0 && V == 0)
+			{
 				return "{ 0 }";
-			return "{ " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " }";
+			}
+
+			return $"{{ {(short)(U * 255.0)}, {(short)(V * 255.0)} }}";
 		}
 
 		public string ToNJA()
 		{
-			return "UV ( " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " )";
+			return $"UV ( {(short)(U * 255.0)}, {(short)(V * 255.0)} )";
 		}
 
 		public override bool Equals(object obj)
 		{
 			if (obj is UV)
+			{
 				return Equals((UV)obj);
+			}
+
 			return false;
 		}
 
@@ -111,7 +112,10 @@ namespace SAModel
 		public bool Equals(UV other)
 		{
 			if (other == null)
+			{
 				return false;
+			}
+
 			return U == other.U && V == other.V;
 		}
 
@@ -125,28 +129,40 @@ namespace SAModel
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(UV))
+			{
 				return true;
+			}
+
 			return base.CanConvertTo(context, destinationType);
 		}
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string) && value is UV)
+			{
 				return ((UV)value).ToString();
+			}
+
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
 			if (sourceType == typeof(string))
+			{
 				return true;
+			}
+
 			return base.CanConvertFrom(context, sourceType);
 		}
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value is string)
+			{
 				return new UV((string)value);
+			}
+
 			return base.ConvertFrom(context, culture, value);
 		}
 	}

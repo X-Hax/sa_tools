@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SAModel.XJ
 {
 	public class XJVertexSet
 	{
-		public List<Vertex> Positions = new List<Vertex>();
-		public List<Vertex> Normals = new List<Vertex>();
-		public List<Color> Colors = new List<Color>();
-		public List<UV> UVs = new List<UV>();
+		public List<Vertex> Positions = new();
+		public List<Vertex> Normals = new();
+		public List<Color> Colors = new();
+		public List<UV> UVs = new();
 
 		public ushort VertexType;
 		public ushort Ushort_02;
@@ -40,11 +37,19 @@ namespace SAModel.XJ
 
 			ushort calcedVertSize = 0xC;
 			if (hasNormal)
+			{
 				calcedVertSize += 0xC;
+			}
+
 			if (hasColor)
+			{
 				calcedVertSize += 0x4;
+			}
+
 			if (hasUV)
+			{
 				calcedVertSize += 0x8;
+			}
 
 			if(VertexSize != calcedVertSize)
 			{
@@ -92,11 +97,19 @@ namespace SAModel.XJ
 			{
 				result.AddRange(Positions[i].GetBytes());
 				if(hasNormal)
+				{
 					result.AddRange(Normals[i].GetBytes());
+				}
+
 				if(hasColor)
+				{
 					result.AddRange(VColor.GetBytes(Colors[i], ColorType.RGBA8888_32));
+				}
+
 				if(hasUV)
+				{
 					result.AddRange(UVs[i].GetBytesXJ());
+				}
 			}
 			result.Align(0x10);
 

@@ -141,7 +141,10 @@ namespace SAModel.GC
 		public GCVertexSet(byte[] file, uint address, uint imageBase, Dictionary<int, string> labels)
 		{
 			attribute = (GCVertexAttribute)file[address];
-			if (attribute == GCVertexAttribute.Null) return;
+			if (attribute == GCVertexAttribute.Null)
+			{
+				return;
+			}
 
 			uint structure = ByteConverter.ToUInt32(file, (int)address + 4);
 			structType = (GCStructType)(structure & 0x0F);
@@ -161,9 +164,14 @@ namespace SAModel.GC
 			{
 				case GCVertexAttribute.Position:
 					if (labels.ContainsKey(tmpaddr))
+					{
 						DataName = labels[tmpaddr];
+					}
 					else
-						DataName = "position_" + tmpaddr.ToString("X8");
+					{
+						DataName = $"position_{tmpaddr:X8}";
+					}
+
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Vector3(file, tmpaddr));
@@ -172,9 +180,14 @@ namespace SAModel.GC
 					break;
 				case GCVertexAttribute.Normal:
 					if (labels.ContainsKey(tmpaddr))
+					{
 						DataName = labels[tmpaddr];
+					}
 					else
-						DataName = "normal_" + tmpaddr.ToString("X8");
+					{
+						DataName = $"normal_{tmpaddr:X8}";
+					}
+
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Vector3(file, tmpaddr));
@@ -183,9 +196,14 @@ namespace SAModel.GC
 					break;
 				case GCVertexAttribute.Color0:
 					if (labels.ContainsKey(tmpaddr))
+					{
 						DataName = labels[tmpaddr];
+					}
 					else
-						DataName = "vcolor_" + tmpaddr.ToString("X8");
+					{
+						DataName = $"vcolor_{tmpaddr:X8}";
+					}
+
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new Color(file, tmpaddr, dataType, out tmpaddr));
@@ -193,9 +211,14 @@ namespace SAModel.GC
 					break;
 				case GCVertexAttribute.Tex0:
 					if (labels.ContainsKey(tmpaddr))
+					{
 						DataName = labels[tmpaddr];
+					}
 					else
-						DataName = "uv_" + tmpaddr.ToString("X8");
+					{
+						DataName = $"uv_{tmpaddr:X8}";
+					}
+
 					for (int i = 0; i < count; i++)
 					{
 						data.Add(new UV(file, tmpaddr));
@@ -231,7 +254,9 @@ namespace SAModel.GC
 		public void WriteAttribute(BinaryWriter writer, uint imagebase, List<uint> njOffsets)
 		{
 			if (dataAddress == 0)
+			{
 				throw new Exception("Data has not been written yet!");
+			}
 
 			//POF0 Offsets
 			njOffsets.Add((uint)(writer.BaseStream.Position + 8));
@@ -305,13 +330,13 @@ namespace SAModel.GC
 					verttype2 = "TEX0       ";
 					break;
 			}
-			writer.WriteLine($"{verttype2}" + DataName + "[]");
+			writer.WriteLine($"{verttype2}{DataName}[]");
 			writer.WriteLine("START");
 			foreach (IOVtx vtx in data)
 			{
 				vtx.ToNJA(writer, verttype);
 			}
-			writer.WriteLine("END" + Environment.NewLine);
+			writer.WriteLine($"END{Environment.NewLine}");
 		}
 		public void RefToNJA(TextWriter writer)
 		{
@@ -331,12 +356,12 @@ namespace SAModel.GC
 					verttype = "TEX0";
 					break;
 			}
-			writer.WriteLine("\tVertAttr     " + $"{verttype}" + ",");
-			writer.WriteLine("\tElementSize  " + StructSize + ",");
-			writer.WriteLine("\tPoints       " + data.Count + ",");
-			writer.WriteLine("\tType         " + "( " + structType + ", " + dataType + " ),");
-			writer.WriteLine("\tName         " + DataName + ",");
-			writer.WriteLine("\tCheckSize    " + (data.Count * StructSize) + "," + Environment.NewLine);
+			writer.WriteLine($"\tVertAttr     {verttype},");
+			writer.WriteLine($"\tElementSize  {StructSize},");
+			writer.WriteLine($"\tPoints       {data.Count},");
+			writer.WriteLine($"\tType         ( {structType}, {dataType} ),");
+			writer.WriteLine($"\tName         {DataName},");
+			writer.WriteLine($"\tCheckSize    {(data.Count * StructSize)},{Environment.NewLine}");
 		}
 
 		public GCVertexSet Clone()

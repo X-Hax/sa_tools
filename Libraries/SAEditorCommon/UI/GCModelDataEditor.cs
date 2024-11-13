@@ -179,7 +179,7 @@ namespace SAModel.SAEditorCommon.UI
 					}
 				}
 				counter = 0;
-				// Polynormal	
+				// Polynormal
 				if (meshset.PolyNormal != null)
 				{
 					if (!labels.Contains(meshset.PolyNormalName))
@@ -378,7 +378,7 @@ namespace SAModel.SAEditorCommon.UI
 				}
 				if (invalidMaterials > 0)
 					MessageBox.Show(this, invalidMaterials.ToString() + " materials were using invalid material IDs. " +
-						"Those material IDs have been reset to the value " + 
+						"Those material IDs have been reset to the value " +
 						(batt.Material.Count - 1).ToString() + ".", "Model Data Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			listViewMeshes.SelectedIndices.Clear();

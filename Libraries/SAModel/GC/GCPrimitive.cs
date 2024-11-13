@@ -312,9 +312,9 @@ namespace SAModel.GC
 					primtype = "GJD_PRIM_POINT";
 					break;
 			}
-			writer.WriteLine($"\t{primtype}(" + loops.Count + "),");
+			writer.WriteLine($"\t{primtype}({loops.Count}),");
 			for (int i = 0; i < loops.Count; i++)
-				writer.WriteLine("\t" + loops[i] + ",");
+				writer.WriteLine($"\t{loops[i]},");
 		}
 
 		/// <summary>
@@ -344,25 +344,35 @@ namespace SAModel.GC
 
 						// Check against degenerate triangles (a triangle which shares indexes)
 						if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
+						{
 							sorted_vertices.AddRange(newTri);
-						else degTriangles++;
+						}
+						else
+						{
+							degTriangles++;
+						}
 					}
 					break;
 				case GCPrimitiveType.TriangleFan:
 					for (int v = 1; v < loops.Count - 1; v++)
 					{
 						// Triangle is always, v, v+1, and index[0]?
-						Loop[] newTri = new Loop[]
-						{
+						Loop[] newTri =
+						[
 							loops[v],
 							loops[v + 1],
-							loops[0],
-						};
+							loops[0]
+						];
 
 						// Check against degenerate triangles (a triangle which shares indexes)
 						if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
+						{
 							sorted_vertices.AddRange(newTri);
-						else degTriangles++;
+						}
+						else
+						{
+							degTriangles++;
+						}
 					}
 					break;
 				default:
@@ -372,7 +382,7 @@ namespace SAModel.GC
 
 			if (degTriangles > 0)
 			{
-				Console.WriteLine("Degenerate triangles skipped: " + degTriangles);
+				Console.WriteLine($"Degenerate triangles skipped: {degTriangles}");
 			}
 
 			return sorted_vertices;

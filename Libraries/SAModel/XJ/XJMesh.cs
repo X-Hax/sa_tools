@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SAModel.XJ
 {
-	
+
 	public class XJMesh
 	{
 		public NJS_MATERIAL mat;

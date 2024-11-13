@@ -43,17 +43,17 @@ namespace SAModel
 				case LandTableFormat.SA2:
 					return 0x20;
 				default:
-					throw new ArgumentOutOfRangeException("format");
+					throw new ArgumentOutOfRangeException(nameof(format));
 			}
 		}
 
 		public LandTable()
 		{
-			Name = "landtable_" + Extensions.GenerateIdentifier();
+			Name = $"landtable_{Extensions.GenerateIdentifier()}";
 			COL = new List<COL>();
-			COLName = "collist_" + Extensions.GenerateIdentifier();
+			COLName = $"collist_{Extensions.GenerateIdentifier()}";
 			Anim = new List<GeoAnimData>();
-			AnimName = "animlist_" + Extensions.GenerateIdentifier();
+			AnimName = $"animlist_{Extensions.GenerateIdentifier()}";
 			Metadata = new Dictionary<uint, byte[]>();
 		}
 
@@ -66,9 +66,14 @@ namespace SAModel
 		{
 			Format = format;
 			if (labels.ContainsKey(address))
+			{
 				Name = labels[address];
+			}
 			else
-				Name = "landtable_" + address.ToString("X8");
+			{
+				Name = $"landtable_{address:X8}";
+			}
+
 			short colcnt = ByteConverter.ToInt16(file, address);
 			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
 			switch (format)
@@ -85,9 +90,14 @@ namespace SAModel
 					{
 						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 						if (labels.ContainsKey(tmpaddr))
+						{
 							COLName = labels[tmpaddr];
+						}
 						else
-							COLName = "collist_" + tmpaddr.ToString("X8");
+						{
+							COLName = $"collist_{tmpaddr:X8}";
+						}
+
 						for (int i = 0; i < colcnt; i++)
 						{
 							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, attaches));
@@ -95,16 +105,24 @@ namespace SAModel
 						}
 					}
 					else
-						COLName = "collist_" + Extensions.GenerateIdentifier();
+					{
+						COLName = $"collist_{Extensions.GenerateIdentifier()}";
+					}
+
 					Anim = new List<GeoAnimData>();
 					tmpaddr = ByteConverter.ToInt32(file, address + 0x10);
 					if (tmpaddr != 0)
 					{
 						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 						if (labels.ContainsKey(tmpaddr))
+						{
 							AnimName = labels[tmpaddr];
+						}
 						else
-							AnimName = "animlist_" + tmpaddr.ToString("X8");
+						{
+							AnimName = $"animlist_{tmpaddr:X8}";
+						}
+
 						for (int i = 0; i < anicnt; i++)
 						{
 							Anim.Add(new GeoAnimData(file, tmpaddr, imageBase, format, labels, attaches));
@@ -131,9 +149,14 @@ namespace SAModel
 					{
 						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 						if (labels.ContainsKey(tmpaddr))
+						{
 							COLName = labels[tmpaddr];
+						}
 						else
-							COLName = "collist_" + tmpaddr.ToString("X8");
+						{
+							COLName = $"collist_{tmpaddr:X8}";
+						}
+
 						for (int i = 0; i < colcnt; i++)
 						{
 							COL.Add(new COL(file, tmpaddr, imageBase, format, labels, cnkcnt < 0 ? null : (bool?)(i >= cnkcnt), attaches));
@@ -141,9 +164,12 @@ namespace SAModel
 						}
 					}
 					else
-						COLName = "collist_" + Extensions.GenerateIdentifier();
+					{
+						COLName = $"collist_{Extensions.GenerateIdentifier()}";
+					}
+
 					Anim = new List<GeoAnimData>();
-					AnimName = "animlist_" + Extensions.GenerateIdentifier();
+					AnimName = $"animlist_{Extensions.GenerateIdentifier()}";
 					tmpaddr = ByteConverter.ToInt32(file, address + 0x18);
 					if (tmpaddr != 0)
 					{
@@ -164,7 +190,10 @@ namespace SAModel
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
+			{
 				throw new FormatException("Not a valid SA1LVL/SA2LVL file.");
+			}
+
 			Dictionary<int, string> labels = new Dictionary<int, string>();
 			string author = null, description = null;
 			Dictionary<uint, byte[]> meta = new Dictionary<uint, byte[]>();
@@ -322,9 +351,13 @@ namespace SAModel
 			foreach (COL item in COL)
 			{
 				if (item.Model.Attach is BasicAttach)
+				{
 					bas.Add(item);
+				}
 				else
+				{
 					cnk.Add(item);
+				}
 			}
 			COL.Clear();
 			COL.AddRange(cnk);
@@ -332,7 +365,9 @@ namespace SAModel
 			for (int i = 0; i < COL.Count; i++)
 			{
 				if (labels.ContainsKey(COL[i].Model.Name))
+				{
 					colmdladdrs[i] = labels[COL[i].Model.Name];
+				}
 				else
 				{
 					result.Align(4);
@@ -346,7 +381,9 @@ namespace SAModel
 			for (int i = 0; i < Anim.Count; i++)
 			{
 				if (labels.ContainsKey(Anim[i].Model.Name))
+				{
 					animmdladdrs[i] = labels[Anim[i].Model.Name];
+				}
 				else
 				{
 					result.Align(4);
@@ -357,7 +394,9 @@ namespace SAModel
 				}
 				uint mtnaddr;
 				if (labels.ContainsKey(Anim[i].Animation.Name))
+				{
 					mtnaddr = labels[Anim[i].Animation.Name];
+				}
 				else
 				{
 					result.Align(4);
@@ -374,7 +413,9 @@ namespace SAModel
 			if (COL.Count > 0)
 			{
 				if (labels.ContainsKey(COLName))
+				{
 					coladdr = labels[COLName];
+				}
 				else
 				{
 					coladdr = imageBase + (uint)result.Count;
@@ -387,28 +428,42 @@ namespace SAModel
 				}
 			}
 			else
+			{
 				coladdr = 0;
+			}
+
 			uint animaddr;
 			if (Anim.Count > 0)
 			{
 				if (labels.ContainsKey(AnimName))
+				{
 					animaddr = labels[AnimName];
+				}
 				else
 				{
 					animaddr = imageBase + (uint)result.Count;
-					if (!labels.ContainsKey(AnimName)) 
+					if (!labels.ContainsKey(AnimName))
+					{
 						labels.Add(AnimName, animaddr);
+					}
+
 					for (int i = 0; i < Anim.Count; i++)
 					{
-						if (!labels.ContainsValue(animaniaddrs[i])) 
+						if (!labels.ContainsValue(animaniaddrs[i]))
+						{
 							labels.Add(Anim[i].Animation.ActionName, animaniaddrs[i]);
+						}
+
 						result.Align(4);
 						result.AddRange(Anim[i].GetBytes(imageBase + (uint)result.Count, animmdladdrs[i], animaniaddrs[i]));
 					}
 				}
 			}
 			else
+			{
 				animaddr = 0;
+			}
+
 			result.Align(4);
 			uint texnameaddr = 0;
 			if (TextureFileName != null)
@@ -467,9 +522,13 @@ namespace SAModel
 			foreach (COL item in COL)
 			{
 				if (item.Model.Attach is BasicAttach)
+				{
 					bas.Add(item);
+				}
 				else
+				{
 					cnk.Add(item);
+				}
 			}
 			COL.Clear();
 			COL.AddRange(cnk);
@@ -480,9 +539,13 @@ namespace SAModel
 				{
 					labels.Add(COL[i].Model.Name);
 					if (!decomp)
+					{
 						COL[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
-					else 
-						writer.WriteLine("extern NJS_OBJECT " + COL[i].Model.Name.MakeIdentifier() + "[1];");
+					}
+					else
+					{
+						writer.WriteLine($"extern NJS_OBJECT {COL[i].Model.Name.MakeIdentifier()}[1];");
+					}
 				}
 			}
 			for (int i = 0; i < Anim.Count; i++)
@@ -491,21 +554,35 @@ namespace SAModel
 				{
 					labels.Add(Anim[i].Model.Name);
 					if (!decomp)
+					{
 						Anim[i].Model.ToStructVariables(writer, format == LandTableFormat.SADX, labels, textures);
+					}
 					else
-						writer.WriteLine("extern NJS_OBJECT " + Anim[i].Model.Name.MakeIdentifier() + "[1];");
+					{
+						writer.WriteLine($"extern NJS_OBJECT {Anim[i].Model.Name.MakeIdentifier()}[1];");
+					}
+
 					if (!decomp)
+					{
 						writer.WriteLine();
+					}
 				}
 				if (!labels.Contains(Anim[i].Animation.Name))
 				{
 					if (!decomp)
+					{
 						Anim[i].Animation.ToStructVariables(writer, labels);
+					}
 					else
-						writer.WriteLine("extern NJS_ACTION " + Anim[i].Animation.ActionName.MakeIdentifier() + "[1];");
+					{
+						writer.WriteLine($"extern NJS_ACTION {Anim[i].Animation.ActionName.MakeIdentifier()}[1];");
+					}
+
 					labels.Add(Anim[i].Animation.Name);
 					if (!decomp)
+					{
 						writer.WriteLine();
+					}
 				}
 			}
 			writer.WriteLine();
@@ -518,7 +595,7 @@ namespace SAModel
 				List<string> lines = new List<string>(COL.Count);
 				foreach (COL item in COL)
 					lines.Add(item.ToStruct(format, decomp));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", lines.ToArray())}");
 				writer.WriteLine("};");
 				writer.WriteLine();
 			}
@@ -531,7 +608,7 @@ namespace SAModel
 				List<string> lines = new List<string>(Anim.Count);
 				foreach (GeoAnimData item in Anim)
 					lines.Add(item.ToStruct(decomp));
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", lines.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", lines.ToArray())}");
 				writer.WriteLine("};");
 				writer.WriteLine();
 			}
@@ -539,21 +616,31 @@ namespace SAModel
 			writer.Write(Name.MakeIdentifier());
 			writer.Write(" = { ");
 			if (decomp)
-				writer.Write(COL.Count.ToString() + ", ");
+			{
+				writer.Write($"{COL.Count}, ");
+			}
 			else
-				writer.Write("LengthOfArray<int16_t>(" + COLName.MakeIdentifier() + "), ");
+			{
+				writer.Write($"LengthOfArray<int16_t>({COLName.MakeIdentifier()}), ");
+			}
+
 			switch (format)
 			{
 				case LandTableFormat.SA1:
 				case LandTableFormat.SADX:
 					if (decomp)
+					{
 						writer.Write(Anim.Count);
+					}
 					else
-						writer.Write(Anim.Count > 0 ? "LengthOfArray<int16_t>(" + AnimName.MakeIdentifier() + ")" : "0");
+					{
+						writer.Write(Anim.Count > 0 ? $"LengthOfArray<int16_t>({AnimName.MakeIdentifier()})" : "0");
+					}
+
 					writer.Write(", ");
-					writer.Write("0x" + Attributes.ToString("X"));
+					writer.Write($"0x{Attributes:X}");
 					writer.Write(", ");
-					writer.Write("0x" + Flags.ToString("X"));
+					writer.Write($"0x{Flags:X}");
 					writer.Write(", ");
 					writer.Write(FarClipping.ToC());
 					writer.Write(", ");
@@ -600,7 +687,10 @@ namespace SAModel
 			bool be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
 			if (format == LandTableFormat.SADX)
+			{
 				format = LandTableFormat.SA1;
+			}
+
 			List<byte> file = new List<byte>();
 			ulong magic;
 			switch (format)
@@ -615,7 +705,7 @@ namespace SAModel
 					magic = SA2BLVLVer;
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + format + " format levels to file!", "format");
+					throw new ArgumentException($"Cannot save {format} format levels to file!", nameof(format));
 			}
 			file.AddRange(ByteConverter.GetBytes(magic));
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();

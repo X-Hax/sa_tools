@@ -15,22 +15,38 @@ namespace SAModel
 			switch (type)
 			{
 				case ColorType.RGBA8888_32:
-					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
+					if (address > file.Length - 4)
+					{
+						return Color.FromArgb(0, 0, 0, 0);
+					}
+
 					return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
 				case ColorType.ARGB8888_32:
-					if (address > file.Length - 4) return Color.FromArgb(0, 0, 0, 0);
+					if (address > file.Length - 4)
+					{
+						return Color.FromArgb(0, 0, 0, 0);
+					}
+
 					// "Reverse" mode is for SADX Gamecube/SA2B/SA2PC where the color order is ABGR
 					if (ByteConverter.BigEndian)
 					{
 						if (ByteConverter.Reverse)
+						{
 							return Color.FromArgb(file[address + 3], file[address], file[address + 1], file[address + 2]);
+						}
 						else
+						{
 							return Color.FromArgb(file[address], file[address + 1], file[address + 2], file[address + 3]);
+						}
 					}
 					else if (ByteConverter.Reverse)
+					{
 						return Color.FromArgb(file[address], file[address + 3], file[address + 2], file[address + 1]);
+					}
 					else
+					{
 						return Color.FromArgb(file[address + 3], file[address + 2], file[address + 1], file[address]);
+					}
 				case ColorType.XRGB8888_32:
 					return Color.FromArgb(unchecked((int)(ByteConverter.ToUInt32(file, address) | 0xFF000000u)));
 				case ColorType.ARGB8888_16:
@@ -59,8 +75,9 @@ namespace SAModel
 						g << 2 | g >> 4,
 						b << 3 | b >> 2
 						);
+				default:
+					throw new ArgumentOutOfRangeException(nameof(type));
 			}
-			throw new ArgumentOutOfRangeException("type");
 		}
 
 		public static byte[] GetBytes(Color Color)
@@ -73,7 +90,7 @@ namespace SAModel
 			switch (type)
 			{
 				case ColorType.RGBA8888_32:
-					return new byte[] { color.R, color.G, color.B, color.A};
+					return [color.R, color.G, color.B, color.A];
 				case ColorType.ARGB8888_32:
 					return ByteConverter.GetBytes(color.ToArgb());
 				case ColorType.XRGB8888_32:
@@ -81,10 +98,12 @@ namespace SAModel
 					goto case ColorType.ARGB8888_32;
 				case ColorType.ARGB8888_16:
 				{
-					byte[] result = new byte[4];
-					int i = color.ToArgb();
+					var result = new byte[4];
+					var i = color.ToArgb();
+
 					ByteConverter.GetBytes((ushort)(i & 0xFFFF)).CopyTo(result, 0);
 					ByteConverter.GetBytes((ushort)((i >> 16) & 0xFFFF)).CopyTo(result, 2);
+
 					return result;
 				}
 				case ColorType.XRGB8888_16:
@@ -94,39 +113,43 @@ namespace SAModel
 					return ByteConverter.GetBytes((ushort)(((color.A >> 4) << 12) | ((color.R >> 4) << 8) | ((color.G >> 4) << 4) | (color.B >> 4)));
 				case ColorType.RGB565:
 					return ByteConverter.GetBytes((ushort)(((color.R >> 3) << 11) | ((color.G >> 2) << 5) | (color.B >> 3)));
+				default:
+					throw new ArgumentOutOfRangeException(nameof(type));
 			}
-			throw new ArgumentOutOfRangeException("type");
 		}
 
 		public static string ToStruct(this Color color)
 		{
 			if (color == Color.Empty)
+			{
 				return "{ 0 }";
-			return "{ 0x" + color.ToArgb().ToString("X8") + " }";
+			}
+
+			return $"{{ 0x{color.ToArgb():X8} }}";
 		}
 
 		public static string ToNJA(this Color color)
 		{
 			if (color == Color.Empty)
+			{
 				return "ARGB ( 0, 0, 0, 0)";
-			return "ARGB ( " + color.A.ToString() + ", " + color.R.ToString() + ", " + color.G.ToString() + ", " + color.B.ToString() + ")";
+			}
+
+			return $"ARGB ( {color.A}, {color.R}, {color.G}, {color.B})";
 		}
 
 		public static int Size(ColorType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case ColorType.ARGB8888_32:
-				case ColorType.RGBA8888_32:
-				case ColorType.XRGB8888_32:
-				case ColorType.ARGB8888_16:
-				case ColorType.XRGB8888_16:
-					return 4;
-				case ColorType.ARGB4444:
-				case ColorType.RGB565:
-					return 2;
-			}
-			throw new ArgumentOutOfRangeException("type");
+				ColorType.ARGB8888_32
+					or ColorType.RGBA8888_32
+					or ColorType.XRGB8888_32
+					or ColorType.ARGB8888_16
+					or ColorType.XRGB8888_16 => 4,
+				ColorType.ARGB4444 or ColorType.RGB565 => 2,
+				_ => throw new ArgumentOutOfRangeException(nameof(type))
+			};
 		}
 	}
 

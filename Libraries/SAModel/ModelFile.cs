@@ -45,7 +45,10 @@ namespace SAModel
 			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			byte version = file[7];
 			if (version > CurrentVersion)
+			{
 				throw new FormatException("Not a valid SA1MDL/SA2MDL file.");
+			}
+
 			Metadata = new Dictionary<uint, byte[]>();
 			Dictionary<int, string> labels = new Dictionary<int, string>();
 			Dictionary<int, Attach> attaches = new Dictionary<int, Attach>();
@@ -94,7 +97,10 @@ namespace SAModel
 						animationFiles = animfiles.ToArray();
 					}
 					else
+					{
 						animationFiles = new string[0];
+					}
+
 					string path = Path.GetDirectoryName(filename);
 					List<NJS_MOTION> anims = new List<NJS_MOTION>();
 					try
@@ -260,16 +266,19 @@ namespace SAModel
 				if (filename != null)
 				{
 					string path = Path.GetDirectoryName(filename);
-					if (File.Exists(Path.GetFileNameWithoutExtension(filename) + ".action"))
+					if (File.Exists($"{Path.GetFileNameWithoutExtension(filename)}.action"))
 					{
-						using (TextReader tr = File.OpenText(Path.GetFileNameWithoutExtension(filename) + ".action"))
+						using (TextReader tr = File.OpenText($"{Path.GetFileNameWithoutExtension(filename)}.action"))
 						{
 							List<string> animlist = new List<string>();
-							int count = File.ReadLines(Path.GetFileNameWithoutExtension(filename) + ".action").Count();
+							int count = File.ReadLines($"{Path.GetFileNameWithoutExtension(filename)}.action").Count();
 							for (int i = 0; i < count; i++)
 							{
 								string line = tr.ReadLine();
-								if (File.Exists(Path.Combine(path, line))) animlist.Add(line);
+								if (File.Exists(Path.Combine(path, line)))
+								{
+									animlist.Add(line);
+								}
 							}
 							animationFiles = animlist.ToArray();
 						}
@@ -289,7 +298,9 @@ namespace SAModel
 								}
 							}
 							else
+							{
 								anims.Add(NJS_MOTION.Load(Path.Combine(path, item), Model.CountAnimated()));
+							}
 						}
 					}
 					catch
@@ -315,19 +326,22 @@ namespace SAModel
 				case ModelFormat.XJ:
 					break;
 				default:
-					throw new ArgumentException($"Cannot save {format} format models to file!", "format");
+					throw new ArgumentException($"Cannot save {format} format models to file!", nameof(format));
 			}
 			Format = format;
 			Model = model;
 			this.animationFiles = animationFiles;
 			List<NJS_MOTION> anims = new List<NJS_MOTION>();
 			if (animationFiles != null)
+			{
 				try
 				{
 					foreach (string item in animationFiles)
 					{
 						if (!File.Exists(Path.Combine(basePath, item)))
+						{
 							continue;
+						}
 						else if (Path.GetExtension(item).ToLowerInvariant() == ".json")
 						{
 							JsonSerializer js = new JsonSerializer() { Culture = System.Globalization.CultureInfo.InvariantCulture };
@@ -347,6 +361,8 @@ namespace SAModel
 				{
 					anims.Clear();
 				}
+			}
+
 			Animations = anims.AsReadOnly();
 			Metadata = new Dictionary<uint, byte[]>();
 		}
@@ -376,7 +392,10 @@ namespace SAModel
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
 			bool be = ByteConverter.BigEndian;
 			if (!useNinjaMetaData)
+			{
 				ByteConverter.BigEndian = false;
+			}
+
 			List<byte> file = new List<byte>();
 			ulong magic;
 			switch (Format)
@@ -398,7 +417,7 @@ namespace SAModel
 					ninjaMagic = NJCMMagic; //XJ uses Chunk's magic
 					break;
 				default:
-					throw new ArgumentException("Cannot save " + Format.ToString() + " format models to file!", "Format");
+					throw new ArgumentException($"Cannot save {Format} format models to file!", "Format");
 			}
 			Dictionary<string, uint> labels = new Dictionary<string, uint>();
 			List<uint> njOffsets = new List<uint>();

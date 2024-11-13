@@ -17,8 +17,8 @@ namespace SAModel
 
 		public MeshInfo[] MeshInfo
 		{
-			get { return meshInfo; }
-			set { meshInfo = value; }
+			get => meshInfo;
+			set => meshInfo = value;
 		}
 
 		public virtual bool HasWeight => VertexWeights != null;
@@ -51,7 +51,7 @@ namespace SAModel
 				case ModelFormat.GC:
 					return new GCAttach();
 			}
-			throw new ArgumentOutOfRangeException("format");
+			throw new ArgumentOutOfRangeException(nameof(format));
 		}
 
 		public static Attach Load(byte[] file, int address, uint imageBase, ModelFormat format)
@@ -73,7 +73,7 @@ namespace SAModel
 				case ModelFormat.XJ:
 					return new XJAttach(file, address, imageBase, labels);
 			}
-			throw new ArgumentOutOfRangeException("format");
+			throw new ArgumentOutOfRangeException(nameof(format));
 		}
 
 		public abstract byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address);

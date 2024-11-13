@@ -13,10 +13,7 @@ namespace SAModel
 		public NJS_MOTION Animation { get; set; }
 		public uint TexlistPointer { get; set; } // Unused
 
-		public static int Size
-		{
-			get { return 0x18; }
-		}
+		public static int Size => 0x18;
 
 		public GeoAnimData(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, Attach> attaches)
 			: this(file, address, imageBase, format, new Dictionary<int, string>(), attaches)
@@ -29,7 +26,7 @@ namespace SAModel
 			Animation = animation;
 			MaxFrame = animation.Frames;
 			AnimationSpeed = 1.0f;
-			Animation.ActionName = "action_" + Extensions.GenerateIdentifier();
+			Animation.ActionName = $"action_{Extensions.GenerateIdentifier()}";
 			Animation.ObjectName = model.Name;
 		}
 

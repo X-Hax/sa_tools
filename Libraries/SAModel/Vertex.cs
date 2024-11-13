@@ -13,14 +13,9 @@ namespace SAModel
 		public float Y { get; set; }
 		public float Z { get; set; }
 
-		public static int Size
-		{
-			get { return 12; }
-		}
+		public static int Size => 12;
 
-		public Vertex()
-		{
-		}
+		public Vertex() { }
 
 		public Vertex(byte[] file, int address)
 		{
@@ -40,7 +35,8 @@ namespace SAModel
 
 		public Vertex(string data)
 		{
-			string[] a = data.Split(',');
+			var a = data.Split(',');
+
 			X = float.Parse(a[0], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
 			Y = float.Parse(a[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
 			Z = float.Parse(a[2], NumberStyles.Float, NumberFormatInfo.InvariantInfo);
@@ -62,29 +58,34 @@ namespace SAModel
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>();
+			List<byte> result = [];
+
 			result.AddRange(ByteConverter.GetBytes(X));
 			result.AddRange(ByteConverter.GetBytes(Y));
 			result.AddRange(ByteConverter.GetBytes(Z));
+
 			return result.ToArray();
 		}
 
 		public override string ToString()
 		{
-			return X.ToString(NumberFormatInfo.InvariantInfo) + ", " + Y.ToString(NumberFormatInfo.InvariantInfo) + ", " +
-			       Z.ToString(NumberFormatInfo.InvariantInfo);
+			return
+				$"{X.ToString(NumberFormatInfo.InvariantInfo)}, {Y.ToString(NumberFormatInfo.InvariantInfo)}, {Z.ToString(NumberFormatInfo.InvariantInfo)}";
 		}
 
 		public string ToStruct()
 		{
 			if (X == 0 && Y == 0 && Z == 0)
+			{
 				return "{ 0 }";
-			return "{ " + X.ToC() + ", " + Y.ToC() + ", " + Z.ToC() + " }";
+			}
+
+			return $"{{ {X.ToC()}, {Y.ToC()}, {Z.ToC()} }}";
 		}
 
 		public string ToNJA()
 		{
-			return "( " + X.ToNJA() + ", " + Y.ToNJA() + ", " + Z.ToNJA() + " )";
+			return $"( {X.ToNJA()}, {Y.ToNJA()}, {Z.ToNJA()})";
 		}
 
 		public float[] ToArray()
@@ -100,17 +101,13 @@ namespace SAModel
 		{
 			get
 			{
-				switch (index)
+				return index switch
 				{
-					case 0:
-						return X;
-					case 1:
-						return Y;
-					case 2:
-						return Z;
-					default:
-						throw new IndexOutOfRangeException();
-				}
+					0 => X,
+					1 => Y,
+					2 => Z,
+					_ => throw new IndexOutOfRangeException()
+				};
 			}
 			set
 			{
@@ -131,7 +128,7 @@ namespace SAModel
 			}
 		}
 
-		public static readonly Vertex UpNormal = new Vertex(0, 1, 0);
+		public static readonly Vertex UpNormal = new(0, 1, 0);
 
 		/// <summary>
 		/// Returns the center of a list of Vertex points.
@@ -140,16 +137,18 @@ namespace SAModel
 		/// <returns></returns>
 		public static Vertex CenterOfPoints(List<Vertex> points)
 		{
-			Vertex center = new Vertex(0, 0, 0);
+			var center = new Vertex(0, 0, 0);
 
 			if (points == null || points.Count == 0)
+			{
 				return center;
+			}
 
 			float xTotal = 0;
 			float yTotal = 0;
 			float zTotal = 0;
 
-			foreach (Vertex vertex in points)
+			foreach (var vertex in points)
 			{
 				xTotal += vertex.X;
 				yTotal += vertex.Y;
@@ -164,15 +163,15 @@ namespace SAModel
 		}
 
 		[Browsable(false)]
-		public bool IsEmpty
-		{
-			get { return X == 0 && Y == 0 && Z == 0; }
-		}
+		public bool IsEmpty => X == 0 && Y == 0 && Z == 0;
 
 		public override bool Equals(object obj)
 		{
-			if (obj is Vertex)
-				return Equals((Vertex)obj);
+			if (obj is Vertex vertex)
+			{
+				return Equals(vertex);
+			}
+
 			return false;
 		}
 
@@ -207,14 +206,14 @@ namespace SAModel
 			return new Vertex(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
 		}
 
-		public static Vertex operator -(Vertex v) => new Vertex(-v.X, -v.Y, -v.Z);
+		public static Vertex operator -(Vertex v) => new(-v.X, -v.Y, -v.Z);
 
 		public static Vertex operator *(Vertex v, float f)
 		{
 			return new Vertex(v.X * f, v.Y * f, v.Z * f);
 		}
 
-		public Vertex Clone() => new Vertex(X, Y, Z);
+		public Vertex Clone() => new(X, Y, Z);
 
 		object ICloneable.Clone() => Clone();
 	}
@@ -223,30 +222,27 @@ namespace SAModel
 	{
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
-			if (destinationType == typeof(Vertex))
-				return true;
-			return base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(Vertex) || base.CanConvertTo(context, destinationType);
 		}
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if (destinationType == typeof(string) && value is Vertex)
-				return ((Vertex)value).ToString();
+			if (destinationType == typeof(string) && value is Vertex vertex)
+			{
+				return vertex.ToString();
+			}
+
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			if (sourceType == typeof(string))
-				return true;
-			return base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 		}
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			if (value is string)
-				return new Vertex((string)value);
-			return base.ConvertFrom(context, culture, value);
+			return value is string stringValue ? new Vertex(stringValue) : base.ConvertFrom(context, culture, value);
 		}
 	}
 }

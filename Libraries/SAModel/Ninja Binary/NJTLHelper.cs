@@ -14,12 +14,13 @@ namespace SAModel
 
 			if (isGC)
 			{
-				njTLHeader.AddRange(new byte[] { 0x47, 0x4A, 0x54, 0x4C });
+				njTLHeader.AddRange("GJTL"u8.ToArray());
 			}
 			else
 			{
-				njTLHeader.AddRange(new byte[] { 0x4E, 0x4A, 0x54, 0x4C });
+				njTLHeader.AddRange("NJTL"u8.ToArray());
 			}
+
 			njTexList.AddRange(ByteConverter.GetBytes(0x8));
 			njTexList.AddRange(ByteConverter.GetBytes(texList.Length));
 
@@ -52,7 +53,7 @@ namespace SAModel
 			pof0List.Align(4);
 
 			int pofLength = pof0List.Count;
-			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
+			byte[] magic = "POF0"u8.ToArray();
 
 			pof0List.InsertRange(0, sizeLittleEndian ? BitConverter.GetBytes(pofLength) : ByteConverter.GetBytes(pofLength));
 			pof0List.InsertRange(0, magic);

@@ -20,7 +20,7 @@ namespace SAModel
 		public static byte[] GetPOFData(List<uint> offsets)
 		{
 			List<byte> result = new List<byte>();
-			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 }; // POF0
+			byte[] magic = "POF0"u8.ToArray();
 			result.AddRange(magic);
 			for (int i = 0; i < offsets.Count; i++)
 			{
@@ -67,20 +67,23 @@ namespace SAModel
 		// Adjusts pointers in a data chunk using a pointer list
 		public static void FixPointersWithPOF(byte[] data, List<int> pointerList, int imgBase)
 		{
-			//System.Text.StringBuilder sb = new StringBuilder();
-			//System.Windows.Forms.MessageBox.Show(data.Length.ToString());
+			// System.Text.StringBuilder sb = new StringBuilder();
+			// Console.WriteLine(data.Length.ToString());
 			int currentPos = 0;
 			foreach (int pointer in pointerList)
 			{
 				currentPos += pointer;
-				//System.Windows.Forms.MessageBox.Show("Pointer: " + pointer.ToString("X") + " currentPos: " + currentPos.ToString("X"));
+				// Console.WriteLine("Pointer: " + pointer.ToString("X") + " currentPos: " + currentPos.ToString("X"));
 				int oldPointer = ByteConverter.ToInt32(data, currentPos);
 				if (oldPointer != 0)
+				{
 					oldPointer += imgBase;
+				}
+
 				byte[] newPointerBytes = ByteConverter.GetBytes(oldPointer);
-				//sb.Append("\n" + "Fixing pointer at " + (currentPos).ToString("X") + ": " + (oldPointer < imgBase ? "0" : ((uint)oldPointer - (uint)imgBase).ToString("X")) + " to " + oldPointer.ToString("X"));
-				//System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb" + imgBase.ToString("X") + ".txt", sb.ToString());
-				//System.Windows.Forms.MessageBox.Show("Fixing pointer at " + (currentPos).ToString("X") + ": " + oldPointer.ToString("X"));
+				// sb.Append("\n" + "Fixing pointer at " + (currentPos).ToString("X") + ": " + (oldPointer < imgBase ? "0" : ((uint)oldPointer - (uint)imgBase).ToString("X")) + " to " + oldPointer.ToString("X"));
+				// System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb" + imgBase.ToString("X") + ".txt", sb.ToString());
+				// Console.WriteLine("Fixing pointer at " + (currentPos).ToString("X") + ": " + oldPointer.ToString("X"));
 				Array.Copy(newPointerBytes, 0, data, currentPos, 4);
 			}
 		}
@@ -94,10 +97,10 @@ namespace SAModel
 			int longs = 0;
 			List<int> offsets = new List<int>();
 			int currentoff = 0;
-			//MessageBox.Show("Pof length: " + pofdata.Length.ToString());
+			// Console.WriteLine("Pof length: " + pofdata.Length.ToString());
 			while (currentoff < pofdata.Length)
 			{
-				//MessageBox.Show("Tock " + currentoff.ToString());
+				// Console.WriteLine("Tock " + currentoff.ToString());
 				byte first = (byte)(pofdata[currentoff] & (byte)POFOffsetType.DataMask);
 				POFOffsetType type = (POFOffsetType)(pofdata[currentoff] & (byte)POFOffsetType.TypeMask);
 				currentoff++;
@@ -105,7 +108,7 @@ namespace SAModel
 				{
 					// Padding
 					case POFOffsetType.Padding:
-						//MessageBox.Show("This is padding: " + pofdata[currentoff-1].ToString("X") + "at " + currentoff.ToString());
+						// Console.WriteLine("This is padding: " + pofdata[currentoff-1].ToString("X") + "at " + currentoff.ToString());
 						pads++;
 						break;
 					// Single byte
@@ -137,11 +140,11 @@ namespace SAModel
 			for (int i = 0; i < offsets.Count; i++)
 			{
 				currentPos += offsets[i];
-				sb.Append(", " + currentPos.ToString("X"));	
+				sb.Append(", " + currentPos.ToString("X"));
 			}
 			sb.AppendJoin(',', offsets.ToArray());
-			
-			System.Windows.Forms.MessageBox.Show("offsets in POF: " + offsets.Count.ToString() + ", pads " + pads.ToString() + ", chars " + chars.ToString() + ", shorts " + shorts.ToString());
+
+			Console.WriteLine("offsets in POF: " + offsets.Count.ToString() + ", pads " + pads.ToString() + ", chars " + chars.ToString() + ", shorts " + shorts.ToString());
 			System.IO.File.WriteAllText("C:\\Users\\PkR\\Desktop\\sb_.txt", sb.ToString());
 			*/
 			return offsets;

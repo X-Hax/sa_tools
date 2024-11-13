@@ -354,7 +354,7 @@ namespace SAModel.GC
 		MirrorV = 1 << 1,	// Enables Tile Mirror on V axis (overrides clamping)
 		WrapU = 1 << 2,		// Enables Tile Wrapping/Repeating on U axis
 		MirrorU = 1 << 3,	// Enables Tile Mirror on U axis (overrides clamping)
-		Unk_1 = 1 << 4,		
+		Unk_1 = 1 << 4,
 		Mask = (1 << 5) - 1
 	}
 
@@ -362,12 +362,12 @@ namespace SAModel.GC
 	{
 		Default = 0,		// Normal Display
 		NoUV1 = 1,          // UV Map set to 0
-		NoUV2 = 2,			// Same as NoUV1	
-		NoUV3 = 3,          // Same as NoUV1	
-		NoUV4 = 4,          // Same as NoUV1	
-		NoUV5 = 5,          // Same as NoUV1	
-		NoUV6 = 6,          // Same as NoUV1	
-		NoUV7 = 7,          // Same as NoUV1	
+		NoUV2 = 2,			// Same as NoUV1
+		NoUV3 = 3,          // Same as NoUV1
+		NoUV4 = 4,          // Same as NoUV1
+		NoUV5 = 5,          // Same as NoUV1
+		NoUV6 = 6,          // Same as NoUV1
+		NoUV7 = 7,          // Same as NoUV1
 		Scale1 = 8,			// UV * 1.00
 		Scale2 = 9,         // UV * 0.50
 		Scale3 = 0xA,       // UV * 0.25
@@ -387,52 +387,34 @@ namespace SAModel.GC
 	{
 		public static AlphaInstruction GXToNJAlphaInstruction(GCBlendModeControl gx)
 		{
-			switch (gx)
+			return gx switch
 			{
-				case GCBlendModeControl.SrcAlpha:
-					return AlphaInstruction.SourceAlpha;
-				case GCBlendModeControl.DstAlpha:
-					return AlphaInstruction.DestinationAlpha;
-				case GCBlendModeControl.InverseSrcAlpha:
-					return AlphaInstruction.InverseSourceAlpha;
-				case GCBlendModeControl.InverseDstAlpha:
-					return AlphaInstruction.InverseDestinationAlpha;
-				case GCBlendModeControl.SrcColor:
-					return AlphaInstruction.OtherColor;
-				case GCBlendModeControl.InverseSrcColor:
-					return AlphaInstruction.InverseOtherColor;
-				case GCBlendModeControl.One:
-					return AlphaInstruction.One;
-				case GCBlendModeControl.Zero:
-					return AlphaInstruction.Zero;
-			}
-
-			return AlphaInstruction.Zero;
+				GCBlendModeControl.SrcAlpha => AlphaInstruction.SourceAlpha,
+				GCBlendModeControl.DstAlpha => AlphaInstruction.DestinationAlpha,
+				GCBlendModeControl.InverseSrcAlpha => AlphaInstruction.InverseSourceAlpha,
+				GCBlendModeControl.InverseDstAlpha => AlphaInstruction.InverseDestinationAlpha,
+				GCBlendModeControl.SrcColor => AlphaInstruction.OtherColor,
+				GCBlendModeControl.InverseSrcColor => AlphaInstruction.InverseOtherColor,
+				GCBlendModeControl.One => AlphaInstruction.One,
+				GCBlendModeControl.Zero => AlphaInstruction.Zero,
+				_ => AlphaInstruction.Zero
+			};
 		}
 
 		public static GCBlendModeControl NJtoGXBlendModeControl(AlphaInstruction nj)
 		{
-			switch (nj)
+			return nj switch
 			{
-				case AlphaInstruction.SourceAlpha:
-					return GCBlendModeControl.SrcAlpha;
-				case AlphaInstruction.DestinationAlpha:
-					return GCBlendModeControl.DstAlpha;
-				case AlphaInstruction.InverseSourceAlpha:
-					return GCBlendModeControl.InverseSrcAlpha;
-				case AlphaInstruction.InverseDestinationAlpha:
-					return GCBlendModeControl.InverseDstAlpha;
-				case AlphaInstruction.OtherColor:
-					return GCBlendModeControl.SrcColor;
-				case AlphaInstruction.InverseOtherColor:
-					return GCBlendModeControl.InverseSrcColor;
-				case AlphaInstruction.One:
-					return GCBlendModeControl.One;
-				case AlphaInstruction.Zero:
-					return GCBlendModeControl.Zero;
-			}
-
-			return GCBlendModeControl.Zero;
+				AlphaInstruction.SourceAlpha => GCBlendModeControl.SrcAlpha,
+				AlphaInstruction.DestinationAlpha => GCBlendModeControl.DstAlpha,
+				AlphaInstruction.InverseSourceAlpha => GCBlendModeControl.InverseSrcAlpha,
+				AlphaInstruction.InverseDestinationAlpha => GCBlendModeControl.InverseDstAlpha,
+				AlphaInstruction.OtherColor => GCBlendModeControl.SrcColor,
+				AlphaInstruction.InverseOtherColor => GCBlendModeControl.InverseSrcColor,
+				AlphaInstruction.One => GCBlendModeControl.One,
+				AlphaInstruction.Zero => GCBlendModeControl.Zero,
+				_ => GCBlendModeControl.Zero
+			};
 		}
 
 	}

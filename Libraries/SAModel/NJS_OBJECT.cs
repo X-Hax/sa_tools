@@ -35,7 +35,7 @@ namespace SAModel
 
 		[Description("Do not reposition this node.")]
 		public bool IgnorePosition { get; set; }
-		
+
 		[Description("Do not rotate this node.")]
 		public bool IgnoreRotation { get; set; }
 
@@ -59,22 +59,29 @@ namespace SAModel
 		[DefaultValue(true)]
 		public bool Morph { get; set; }
 
-		public static int Size
-		{
-			get { return 0x34; }
-		}
+		public static int Size => 0x34;
 
 		[Browsable(false)]
 		public bool HasWeight
 		{
 			get
 			{
-				if (Attach != null && Attach.HasWeight) return true;
-				foreach (NJS_OBJECT child in Children)
-					if (child.HasWeight)
-						return true;
-				if (Parent == null && Sibling != null && Sibling.HasWeight)
+				if (Attach != null && Attach.HasWeight)
+				{
 					return true;
+				}
+
+				foreach (var child in Children)
+					if (child.HasWeight)
+					{
+						return true;
+					}
+
+				if (Parent == null && Sibling != null && Sibling.HasWeight)
+				{
+					return true;
+				}
+
 				return false;
 			}
 		}
@@ -86,18 +93,25 @@ namespace SAModel
 			get
 			{
 				if (Parent == null)
+				{
 					return "root";
-				StringBuilder result = new StringBuilder("->child");
-				int idx = Parent.Children.IndexOf(this);
-				for (int i = 0; i < idx; i++)
+				}
+
+				var result = new StringBuilder("->child");
+				var idx = Parent.Children.IndexOf(this);
+
+				for (var i = 0; i < idx; i++)
+				{
 					result.Append("->sibling");
-				return Parent.CodePath + result.ToString();
+				}
+
+				return Parent.CodePath + result;
 			}
 		}
 
 		public NJS_OBJECT()
 		{
-			Name = "object_" + Extensions.GenerateIdentifier();
+			Name = $"object_{Extensions.GenerateIdentifier()}";
 			Position = new Vertex();
 			Rotation = new Rotation();
 			Scale = new Vertex(1, 1, 1);
@@ -115,10 +129,15 @@ namespace SAModel
 
 		private NJS_OBJECT(byte[] file, int address, uint imageBase, ModelFormat format, NJS_OBJECT parent, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			if (labels.ContainsKey(address))
-				Name = labels[address];
+			if (labels.TryGetValue(address, out var name))
+			{
+				Name = name;
+			}
 			else
-				Name = "object_" + address.ToString("X8");
+			{
+				Name = $"object_{address:X8}";
+			}
+
 			if (address > file.Length - 52)
 			{
 				Position = new Vertex();
@@ -128,7 +147,8 @@ namespace SAModel
 				Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 				return;
 			}
-			ObjectFlags flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
+
+			var flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
 			RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
 			SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
 			SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
@@ -137,22 +157,24 @@ namespace SAModel
 			IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
 			Animate = (flags & ObjectFlags.NoAnimate) == 0;
 			Morph = (flags & ObjectFlags.NoMorph) == 0;
-			int tmpaddr = ByteConverter.ToInt32(file, address + 4);
-			if (tmpaddr != 0)
+
+			var tempAddress = ByteConverter.ToInt32(file, address + 4);
+
+			if (tempAddress != 0)
 			{
-				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				if(attaches != null && attaches.ContainsKey(tmpaddr))
+				tempAddress = (int)unchecked((uint)tempAddress - imageBase);
+				if (attaches != null && attaches.TryGetValue(tempAddress, out var attach))
 				{
-					Attach = attaches[tmpaddr];
+					Attach = attach;
 				}
 				else
 				{
-					Attach = Attach.Load(file, tmpaddr, imageBase, format, labels);
-					if (attaches != null)
-						attaches.Add(tmpaddr, Attach);
+					Attach = Attach.Load(file, tempAddress, imageBase, format, labels);
+					attaches?.Add(tempAddress, Attach);
 				}
-				
+
 			}
+
 			Position = new Vertex(file, address + 8);
 			Rotation = new Rotation(file, address + 0x14);
 			Scale = new Vertex(file, address + 0x20);
@@ -160,22 +182,26 @@ namespace SAModel
 			children = new List<NJS_OBJECT>();
 			Children = new ReadOnlyCollection<NJS_OBJECT>(children);
 			NJS_OBJECT child = null;
-			tmpaddr = ByteConverter.ToInt32(file, address + 0x2C);
-			if (tmpaddr != 0)
+
+			tempAddress = ByteConverter.ToInt32(file, address + 0x2C);
+
+			if (tempAddress != 0)
 			{
-				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				child = new NJS_OBJECT(file, tmpaddr, imageBase, format, this, labels, attaches);
+				tempAddress = (int)unchecked((uint)tempAddress - imageBase);
+				child = new NJS_OBJECT(file, tempAddress, imageBase, format, this, labels, attaches);
 			}
 			while (child != null)
 			{
 				children.Add(child);
 				child = child.Sibling;
 			}
-			tmpaddr = ByteConverter.ToInt32(file, address + 0x30);
-			if (tmpaddr != 0)
+
+			tempAddress = ByteConverter.ToInt32(file, address + 0x30);
+
+			if (tempAddress != 0)
 			{
-				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
-				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels, attaches);
+				tempAddress = (int)unchecked((uint)tempAddress - imageBase);
+				Sibling = new NJS_OBJECT(file, tempAddress, imageBase, format, parent, labels, attaches);
 			}
 
 			//Assimp.AssimpContext context = new AssimpContext();
@@ -185,12 +211,12 @@ namespace SAModel
 
 		public byte[] NJGetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
-			List<byte> result = new List<byte>();
-			ObjectFlags flags = GetFlags();
+			var result = new List<byte>();
+			var flags = GetFlags();
 			FixSiblings();
-			int attachAddressAddress = result.Count + 0x4;
-			int childAddressAddress = result.Count + 0x2C;
-			int siblingAddressAddress = result.Count + 0x30;
+			var attachAddressAddress = result.Count + 0x4;
+			var childAddressAddress = result.Count + 0x2C;
+			var siblingAddressAddress = result.Count + 0x30;
 
 			address = 0;
 			result.AddRange(ByteConverter.GetBytes((int)flags));
@@ -200,53 +226,58 @@ namespace SAModel
 			result.AddRange(Scale.GetBytes());
 			result.AddRange(ByteConverter.GetBytes(0)); //Child placeholder
 			result.AddRange(ByteConverter.GetBytes(0)); //Sibling placeholder
+
 			// Ginja NJS_OBJECT has an extra 4 bytes at the end
 			if (GetModelFormat() == ModelFormat.GC)
+			{
 				result.AddRange(new byte[4]);
+			}
+
 			// Add pointers for POF0
-			int currentEnd = result.Count;
+			var currentEnd = result.Count;
 			if (Attach != null)
 			{
-				if (labels.ContainsKey(Attach.Name))
-				{ 
-					int attachAddress = (int)labels[Attach.Name];
-					result.SetByteListInt(attachAddressAddress, attachAddress);
+				if (labels.TryGetValue(Attach.Name, out var attachAddress))
+				{
+					result.SetByteListInt(attachAddressAddress, (int)attachAddress);
 				}
 				else
 				{
-					result.AddRange(Attach.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint attachAddress));
+					result.AddRange(Attach.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out attachAddress));
 					result.SetByteListInt(attachAddressAddress, (int)(imageBase + currentEnd + attachAddress));
 				}
 			}
-					njOffsets.Add((uint)(imageBase + attachAddressAddress));
-					result.Align(4);
-					currentEnd = result.Count;
+
+			njOffsets.Add((uint)(imageBase + attachAddressAddress));
+			result.Align(4);
+			currentEnd = result.Count;
+
 			if (Children.Count > 0)
 			{
-				if (labels.ContainsKey(Children[0].Name))
+				if (labels.TryGetValue(Children[0].Name, out var childAddress))
 				{
-					int childAddress = (int)labels[Children[0].Name];
-					result.SetByteListInt(childAddressAddress, childAddress);
+					result.SetByteListInt(childAddressAddress, (int)childAddress);
 				}
 				else
 				{
-					result.AddRange(Children[0].NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint childAddress));
+					result.AddRange(Children[0].NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out childAddress));
 					result.SetByteListInt(childAddressAddress, (int)(imageBase + currentEnd + childAddress));
 				}
 			}
-					njOffsets.Add((uint)(imageBase + childAddressAddress));
-					result.Align(4);
-					currentEnd = result.Count;
+
+			njOffsets.Add((uint)(imageBase + childAddressAddress));
+			result.Align(4);
+			currentEnd = result.Count;
+
 			if (Sibling != null)
 			{
-				if (labels.ContainsKey(Sibling.Name))
+				if (labels.TryGetValue(Sibling.Name, out var siblingAddress))
 				{
-					int siblingAddress = (int)labels[Sibling.Name];
-					result.SetByteListInt(siblingAddressAddress, siblingAddress);
+					result.SetByteListInt(siblingAddressAddress, (int)siblingAddress);
 				}
 				else
 				{
-					result.AddRange(Sibling.NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint siblingAddress));
+					result.AddRange(Sibling.NJGetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out siblingAddress));
 					result.SetByteListInt(siblingAddressAddress, (int)(imageBase + currentEnd + siblingAddress));
 				}
 			}
@@ -260,7 +291,7 @@ namespace SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
-			List<byte> result = new List<byte>();
+			var result = new List<byte>();
 			FixSiblings();
 			uint childaddr = 0;
 			uint siblingaddr = 0;
@@ -269,7 +300,9 @@ namespace SAModel
 			if (Children.Count > 0)
 			{
 				if (labels.ContainsKey(Children[0].Name))
+				{
 					childaddr = labels[Children[0].Name];
+				}
 				else
 				{
 					result.Align(4);
@@ -281,7 +314,9 @@ namespace SAModel
 			if (Sibling != null)
 			{
 				if (labels.ContainsKey(Sibling.Name))
+				{
 					siblingaddr = labels[Sibling.Name];
+				}
 				else
 				{
 					result.Align(4);
@@ -293,7 +328,9 @@ namespace SAModel
 			if (Attach != null)
 			{
 				if (labels.ContainsKey(Attach.Name))
+				{
 					attachaddr = labels[Attach.Name];
+				}
 				else
 				{
 					result.Align(4);
@@ -305,8 +342,8 @@ namespace SAModel
 
 			result.Align(4);
 			address = (uint)result.Count;
-			ObjectFlags flags = GetFlags();
-			List<byte> objBytes = new List<byte>();
+			var flags = GetFlags();
+			var objBytes = new List<byte>();
 			objBytes.AddRange(ByteConverter.GetBytes((int)flags));
 			objBytes.AddRange(ByteConverter.GetBytes(attachaddr));
 			objBytes.AddRange(Position.GetBytes());
@@ -316,7 +353,10 @@ namespace SAModel
 			objBytes.AddRange(ByteConverter.GetBytes(siblingaddr));
 			// Ginja NJS_OBJECT has an extra 4 bytes at the end
 			if (GetModelFormat() == ModelFormat.GC)
-			objBytes.AddRange(new byte[4]);
+			{
+				objBytes.AddRange(new byte[4]);
+			}
+
 			result.AddRange(objBytes);
 			labels.Add(Name, address + imageBase);
 			return result.ToArray();
@@ -324,13 +364,13 @@ namespace SAModel
 
 		public void FixSiblings()
 		{
-			for (int i = 1; i < Children.Count; i++)
+			for (var i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
 		}
 
 		public void FixParents()
 		{
-			foreach (NJS_OBJECT child in Children)
+			foreach (var child in Children)
 			{
 				child.Parent = this;
 				child.FixParents();
@@ -340,16 +380,28 @@ namespace SAModel
 		public ModelFormat GetModelFormat()
 		{
 			// BasicAttach has no internal distinction between Basic and BasicDX
-			ModelFormat result = ModelFormat.BasicDX;
+			var result = ModelFormat.BasicDX;
 			if (Attach == null)
+			{
 				if (Children.Count > 0)
+				{
 					return Children[0].GetModelFormat();
+				}
 				else if (Sibling != null)
+				{
 					return Sibling.GetModelFormat();
+				}
+			}
+
 			if (Attach is ChunkAttach)
+			{
 				result = ModelFormat.Chunk;
+			}
 			else if (Attach is GCAttach)
+			{
 				result = ModelFormat.GC;
+			}
+
 			return result;
 		}
 
@@ -357,21 +409,45 @@ namespace SAModel
 		{
 			ObjectFlags flags = 0;
 			if (IgnorePosition || Position.IsEmpty)
+			{
 				flags = ObjectFlags.NoPosition;
+			}
+
 			if (IgnoreRotation || Rotation.IsEmpty)
+			{
 				flags |= ObjectFlags.NoRotate;
+			}
+
 			if (IgnoreScale || (Scale.X == 1 && Scale.Y == 1 && Scale.Z == 1))
+			{
 				flags |= ObjectFlags.NoScale;
+			}
+
 			if (Attach == null || SkipDraw)
+			{
 				flags |= ObjectFlags.NoDisplay;
+			}
+
 			if (Children.Count == 0 || SkipChildren)
+			{
 				flags |= ObjectFlags.NoChildren;
+			}
+
 			if (RotateZYX)
+			{
 				flags |= ObjectFlags.RotateZYX;
+			}
+
 			if (!Animate)
+			{
 				flags |= ObjectFlags.NoAnimate;
+			}
+
 			if (!Morph)
+			{
 				flags |= ObjectFlags.NoMorph;
+			}
+
 			return flags;
 		}
 
@@ -382,18 +458,20 @@ namespace SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX)
 		{
-			return GetBytes(imageBase, DX, out uint address);
+			return GetBytes(imageBase, DX, out var address);
 		}
 
 		public IEnumerable<NJS_OBJECT> EnumerateObjects()
 		{
 			yield return this;
-			foreach (NJS_OBJECT obj in Children)
-				foreach (NJS_OBJECT child in obj.EnumerateObjects())
+			foreach (var obj in Children)
+				foreach (var child in obj.EnumerateObjects())
 					yield return child;
 			if (Parent == null && Sibling != null)
-				foreach (NJS_OBJECT obj in Sibling.EnumerateObjects())
+			{
+				foreach (var obj in Sibling.EnumerateObjects())
 					yield return obj;
+			}
 		}
 
 		public NJS_OBJECT[] GetObjects() => EnumerateObjects().ToArray();
@@ -412,34 +490,43 @@ namespace SAModel
                 case ModelFormat.Chunk:
                     return GetObjects().Where(a => a.Animate).Select(a =>
                     {
-                        ChunkAttach cnkatt = a.Attach as ChunkAttach;
+                        var cnkatt = a.Attach as ChunkAttach;
                         if (cnkatt != null && cnkatt.Vertex != null)
-                            return cnkatt.Vertex.Sum(b => b.VertexCount);
+                        {
+	                        return cnkatt.Vertex.Sum(b => b.VertexCount);
+                        }
+
                         return 0;
                     }).ToArray();
                 default:
                     return new int[0];
             }
-          
+
         }
 
 		public int CountAnimated()
 		{
-			int result = Animate ? 1 : 0;
-			foreach (NJS_OBJECT item in Children)
+			var result = Animate ? 1 : 0;
+			foreach (var item in Children)
 				result += item.CountAnimated();
 			if (Parent == null && Sibling != null)
+			{
 				result += Sibling.CountAnimated();
+			}
+
 			return result;
 		}
 
 		public int CountMorph()
 		{
-			int result = Morph ? 1 : 0;
-			foreach (NJS_OBJECT item in Children)
+			var result = Morph ? 1 : 0;
+			foreach (var item in Children)
 				result += item.CountMorph();
 			if (Parent == null && Sibling != null)
+			{
 				result += Sibling.CountMorph();
+			}
+
 			return result;
 		}
 
@@ -447,12 +534,15 @@ namespace SAModel
 		{
 			children.Add(child);
 			child.Parent = this;
-			if (child.Sibling != null) AddChild(child.Sibling);
+			if (child.Sibling != null)
+			{
+				AddChild(child.Sibling);
+			}
 		}
 
 		public void AddChildren(IEnumerable<NJS_OBJECT> children)
 		{
-			foreach (NJS_OBJECT child in children)
+			foreach (var child in children)
 				AddChild(child);
 		}
 
@@ -464,23 +554,26 @@ namespace SAModel
 
 		public void RemoveChild(NJS_OBJECT child)
 		{
-			int index = children.IndexOf(child);
+			var index = children.IndexOf(child);
 			if (index > 0 && children[index - 1] != null && children[index - 1].Sibling == child)
+			{
 				children[index - 1].Sibling = null;
+			}
+
 			children.Remove(child);
 			child.Parent = null;
 		}
 
 		public void RemoveChildAt(int index)
 		{
-			NJS_OBJECT child = children[index];
+			var child = children[index];
 			children.RemoveAt(index);
 			child.Parent = null;
 		}
 
 		public void ClearChildren()
 		{
-			foreach (NJS_OBJECT child in children)
+			foreach (var child in children)
 				child.Parent = null;
 			children.Clear();
 		}
@@ -497,17 +590,22 @@ namespace SAModel
 			Extensions.Log("Processing Object " + Name + Environment.NewLine);
 #endif
 			if (Attach != null)
+			{
 				Attach.ProcessVertexData();
-			foreach (NJS_OBJECT item in Children)
+			}
+
+			foreach (var item in Children)
 				item.ProcessVertexData();
 			if (Parent == null && Sibling != null)
+			{
 				Sibling.ProcessVertexData();
+			}
 		}
 
 		public void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame)
 		{
-			int animindex = -1;
-			NJS_OBJECT obj = this;
+			var animindex = -1;
+			var obj = this;
 			do
 			{
 				obj.ProcessShapeMotionVertexData(motion, frame, ref animindex);
@@ -518,47 +616,53 @@ namespace SAModel
 		private void ProcessShapeMotionVertexData(NJS_MOTION motion, float frame, ref int animindex)
 		{
 			if (Morph)
+			{
 				animindex++;
+			}
+
 			if (Attach != null)
+			{
 				Attach.ProcessShapeMotionVertexData(motion, frame, animindex);
-			foreach (NJS_OBJECT item in Children)
+			}
+
+			foreach (var item in Children)
 				item.ProcessShapeMotionVertexData(motion, frame, ref animindex);
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
+			var result = new StringBuilder("{ ");
 			result.Append(((StructEnums.NJD_EVAL)GetFlags()).ToString().Replace(", ", " | "));
 			result.Append(", ");
-			result.Append(Attach != null ? "&" + Attach.Name.MakeIdentifier() : "NULL");
-			foreach (float value in Position.ToArray())
+			result.Append(Attach != null ? $"&{Attach.Name.MakeIdentifier()}" : "NULL");
+			foreach (var value in Position.ToArray())
 			{
 				result.Append(", ");
 				result.Append(value.ToC());
 			}
-			foreach (int value in Rotation.ToArray())
+			foreach (var value in Rotation.ToArray())
 			{
 				result.Append(", ");
 				result.Append(value.ToCHex());
 			}
-			foreach (float value in Scale.ToArray())
+			foreach (var value in Scale.ToArray())
 			{
 				result.Append(", ");
 				result.Append(value.ToC());
 			}
 			result.Append(", ");
-			result.Append(Children.Count > 0 ? "&" + Children[0].Name.MakeIdentifier() : "NULL");
+			result.Append(Children.Count > 0 ? $"&{Children[0].Name.MakeIdentifier()}" : "NULL");
 			result.Append(", ");
-			result.Append(Sibling != null ? "&" + Sibling.Name.MakeIdentifier() : "NULL");
+			result.Append(Sibling != null ? $"&{Sibling.Name.MakeIdentifier()}" : "NULL");
 			result.Append(" }");
 			return result.ToString();
 		}
 
 		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false)
 		{
-			for (int i = 1; i < Children.Count; i++)
+			for (var i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
-			for (int i = Children.Count - 1; i >= 0; i--)
+			for (var i = Children.Count - 1; i >= 0; i--)
 			{
 				if (!labels.Contains(Children[i].Name))
 				{
@@ -574,13 +678,13 @@ namespace SAModel
 				writer.WriteLine();
 			}
 
-			bool isBasic = Attach is BasicAttach;
-			bool isChunk = Attach is ChunkAttach;
-			bool isGinja = Attach is GCAttach;
-			bool isXinja = Attach is XJ.XJAttach;
+			var isBasic = Attach is BasicAttach;
+			var isChunk = Attach is ChunkAttach;
+			var isGinja = Attach is GCAttach;
+			var isXinja = Attach is XJ.XJAttach;
 			if (Attach == null)
 			{
-				NJS_OBJECT root = this;
+				var root = this;
 				while (root.Parent != null)
 					root = root.Parent;
 				isBasic = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is BasicAttach;
@@ -590,90 +694,124 @@ namespace SAModel
 			}
 
 			if (isBasic)
-				writer.WriteLine("OBJECT_START" + Environment.NewLine);
+			{
+				writer.WriteLine($"OBJECT_START{Environment.NewLine}");
+			}
 			else if (isChunk)
-				writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
+			{
+				writer.WriteLine($"CNKOBJECT_START{Environment.NewLine}");
+			}
 			else if (isGinja)
-				writer.WriteLine("GCOBJECT_START" + Environment.NewLine);
+			{
+				writer.WriteLine($"GCOBJECT_START{Environment.NewLine}");
+			}
 			else if (isXinja)
-				writer.WriteLine("XBOBJECT_START" + Environment.NewLine);
+			{
+				writer.WriteLine($"XBOBJECT_START{Environment.NewLine}");
+			}
 
 			if (!isDup)
 			{
 				if (Attach is BasicAttach)
 				{
-					BasicAttach basicattach = Attach as BasicAttach;
+					var basicattach = Attach as BasicAttach;
 					basicattach.ToNJA(writer, labels, textures);
 				}
 				else if (Attach is ChunkAttach)
 				{
-					ChunkAttach ChunkAttach = Attach as ChunkAttach;
+					var ChunkAttach = Attach as ChunkAttach;
 					ChunkAttach.ToNJA(writer, labels, textures);
 				}
 				else if (Attach is GCAttach)
 				{
-					GCAttach gcattach = Attach as GCAttach;
+					var gcattach = Attach as GCAttach;
 					gcattach.ToNJA(writer, labels, textures);
 				}
 				else if (Attach is XJ.XJAttach)
 				{
-					XJ.XJAttach xjattach = Attach as XJ.XJAttach;
+					var xjattach = Attach as XJ.XJAttach;
 					//ChunkAttach.ToNJA(writer, labels, textures);
 				}
 			}
 
 			if (isBasic)
+			{
 				writer.Write("OBJECT      ");
+			}
 			else if (isChunk)
+			{
 				writer.Write("CNKOBJECT  ");
+			}
 			else if (isGinja)
+			{
 				writer.Write("GCOBJECT    ");
+			}
 			else if (isXinja)
+			{
 				writer.Write("XBOBJECT    ");
+			}
 
 			writer.Write(Name.MakeIdentifier());
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
-			writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
+			writer.WriteLine($"EvalFlags ( 0x{((int)GetFlags()):x8} ),");
 			if (isBasic)
-				writer.WriteLine("Model       " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+			{
+				writer.WriteLine($"Model       {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
+			}
 			else if (isChunk)
-				writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+			{
+				writer.WriteLine($"CNKModel   {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
+			}
 			else if (isGinja)
-				writer.WriteLine("GINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+			{
+				writer.WriteLine($"GINJAModel {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
+			}
 			else if (isXinja)
-				writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+			{
+				writer.WriteLine($"XINJAModel {(Attach != null ? Attach.Name.MakeIdentifier() : "NULL")},");
+			}
+
 			writer.WriteLine("OPosition  {0},", Position.ToNJA());
-			writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
+			writer.WriteLine(
+				$"OAngle     ( {((float)Rotation.X / 182.044f).ToNJA()}, {((float)Rotation.Y / 182.044f).ToNJA()}, {((float)Rotation.Z / 182.044f).ToNJA()} ),");
 			writer.WriteLine("OScale     {0},", Scale.ToNJA());
-			writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("END" + Environment.NewLine);
-			
+			writer.WriteLine($"Child       {(Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL")},");
+			writer.WriteLine($"Sibling     {(Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL")},");
+			writer.WriteLine($"END{Environment.NewLine}");
+
 			if (isBasic)
+			{
 				writer.WriteLine("OBJECT_END");
+			}
 			else if (isChunk)
+			{
 				writer.WriteLine("CNKOBJECT_END");
+			}
 			else if (isGinja)
+			{
 				writer.WriteLine("GCOBJECT_END");
+			}
 			else if (isXinja)
+			{
 				writer.WriteLine("XBOBJECT_END");
+			}
 
 			if (Parent == null)
 			{
-				writer.WriteLine(Environment.NewLine + "DEFAULT_START");
-				writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
-				writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
+				writer.WriteLine($"{Environment.NewLine}DEFAULT_START");
+				writer.WriteLine($"{Environment.NewLine}#ifndef DEFAULT_OBJECT_NAME");
+				writer.WriteLine($"#define DEFAULT_OBJECT_NAME {Name.MakeIdentifier()}");
 				writer.WriteLine("#endif");
-				writer.WriteLine(Environment.NewLine + "DEFAULT_END");
+				writer.WriteLine($"{Environment.NewLine}DEFAULT_END");
 			}
 		}
 
 		public void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
 		{
-			for (int i = 1; i < Children.Count; i++)
+			for (var i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
-			for (int i = Children.Count - 1; i >= 0; i--)
+			for (var i = Children.Count - 1; i >= 0; i--)
 			{
 				if (!labels.Contains(Children[i].Name))
 				{
@@ -703,7 +841,7 @@ namespace SAModel
 
 		public string ToStructVariables(bool DX, List<string> labels, string[] textures = null)
 		{
-			using (StringWriter sw = new StringWriter())
+			using (var sw = new StringWriter())
 			{
 				ToStructVariables(sw, DX, labels, textures);
 				return sw.ToString();
@@ -715,7 +853,7 @@ namespace SAModel
 		{
 			if (Attach is ChunkAttach attach && attach.Poly != null)
 			{
-				for (int i = 0; i < attach.Poly.Count; i++)
+				for (var i = 0; i < attach.Poly.Count; i++)
 				{
 					switch (attach.Poly[i].Type)
 					{
@@ -736,19 +874,24 @@ namespace SAModel
 					attach.PolyName = null;
 				}
 			}
-			foreach (NJS_OBJECT child in Children)
+			foreach (var child in Children)
 				child.StripPolyCache();
 			if (Parent == null && Sibling != null)
+			{
 				Sibling.StripPolyCache();
+			}
 		}
 
 		object ICloneable.Clone() => Clone();
 
 		public NJS_OBJECT Clone()
 		{
-			NJS_OBJECT result = (NJS_OBJECT)MemberwiseClone();
+			var result = (NJS_OBJECT)MemberwiseClone();
 			if (Attach != null)
+			{
 				result.Attach = Attach.Clone();
+			}
+
 			result.Position = Position.Clone();
 			result.Rotation = Rotation.Clone();
 			result.Scale = Scale.Clone();
@@ -756,7 +899,7 @@ namespace SAModel
 			result.Children = new ReadOnlyCollection<NJS_OBJECT>(result.children);
 			if (children.Count > 0)
 			{
-				NJS_OBJECT child = children[0].Clone();
+				var child = children[0].Clone();
 				while (child != null)
 				{
 					result.children.Add(child);
@@ -764,7 +907,10 @@ namespace SAModel
 				}
 			}
 			if (Sibling != null)
+			{
 				result.Sibling = Sibling.Clone();
+			}
+
 			return result;
 		}
 	}
