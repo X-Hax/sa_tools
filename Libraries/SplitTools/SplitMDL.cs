@@ -65,7 +65,7 @@ namespace SplitTools.SAArc
 				{
 					mdlsplitfilenames = IniSerializer.Deserialize<Dictionary<int, string>>(mdllabelfile);
 				}
-				string[] mdlmetadata = new string[0];
+				string[] mdlmetadata = [];
 
 				// mtn labels
 				Dictionary<int, string> mtnsectionlist = new Dictionary<int, string>();
@@ -85,7 +85,7 @@ namespace SplitTools.SAArc
 				{
 					mtnsplitpaths = IniSerializer.Deserialize<Dictionary<int, string>>(exmtnfile);
 				}
-				string[] exmtndata = new string[0];
+				string[] exmtndata = [];
 
 				// getting model pointers
 				int address = 0;
@@ -129,18 +129,19 @@ namespace SplitTools.SAArc
 					i = ByteConverter.ToInt16(anifile, address);
 					while (i != -1)
 					{
-						if (mtnlabelfile != null)
-						{
-							mtnmetadata = mtnsplitfilenames[i].Split('|'); // Filename|Description
-							string outFilename = mtnmetadata[0];
-							if (!mtnmetadata[0].StartsWith("NO FILE"))
-							{
-								animmeta = mtnmetadata[1];
-								mtnsectionlist[i] = outFilename + "|" + animmeta;
-							}
-							else
-								mtnsectionlist[i] = "NULL";
-						}
+						// This doesn't work as of November 2024. Reimplement when fixed.
+						//if (mtnlabelfile != null)
+						//{
+						//	mtnmetadata = mtnsplitfilenames[i].Split('|'); // Filename|Description
+						//	string outFilename = mtnmetadata[0];
+						//	if (!mtnmetadata[0].StartsWith("NO FILE"))
+						//	{
+						//		animmeta = mtnmetadata[1];
+						//		mtnsectionlist[i] = outFilename + "|" + animmeta;
+						//	}
+						//	else
+						//		mtnsectionlist[i] = "NULL";
+						//}
 						int aniaddr = ByteConverter.ToInt32(anifile, address + 4);
 						if (!processedanims.ContainsKey(aniaddr))
 						{
@@ -203,11 +204,11 @@ namespace SplitTools.SAArc
 					IniSerializer.Serialize(mdlsectionlist, Path.Combine(outputFolder, mdlsectionListFilename));
 				}
 
-				if (mtnlabelfile != null)
-				{
-					string mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnlabelfile) + "_data.ini";
-					IniSerializer.Serialize(mtnsectionlist, Path.Combine(outputFolder, mtnsectionListFilename));
-				}
+				//if (mtnlabelfile != null)
+				//{
+				//	string mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnlabelfile) + "_data.ini";
+				//	IniSerializer.Serialize(mtnsectionlist, Path.Combine(outputFolder, mtnsectionListFilename));
+				//}
 
 				// save ini file
 				IniSerializer.Serialize(new MDLInfo() { BigEndian = ByteConverter.BigEndian, Indexes = modelnames },
