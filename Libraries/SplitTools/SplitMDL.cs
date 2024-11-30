@@ -171,26 +171,27 @@ namespace SplitTools.SAArc
 							animlist.Add(rel);
 						}
 					}
+					// This section does not work as of November 2024. Reimplement when fixed.
 					// Model Labels
-					if (mdllabelfile != null)
-					{
-						mdlmetadata = mdlsplitfilenames[model.Key].Split('|'); // Filename|Description|Texture file
-						string outFilename = mdlmetadata[0];
-						if (mdlsplitfilenames[model.Key] == "NULL")
-							mdlsectionlist.Add(model.Key, "NULL");
-						string outResult = outFilename;
-						if (mdlmetadata.Length > 1)
-							outResult += ("|" + mdlmetadata[1]);
-						if (mdlmetadata.Length > 2)
-							outResult += ("|" + mdlmetadata[2]);
-						mdlsectionlist.Add(model.Key, outResult);
-					}
+					//if (mdllabelfile != null)
+					//{
+					//	mdlmetadata = mdlsplitfilenames[model.Key].Split('|'); // Filename|Description|Texture file
+					//	string outFilename = mdlmetadata[0];
+					//	if (mdlsplitfilenames[model.Key] == "NULL")
+					//		mdlsectionlist.Add(model.Key, "NULL");
+					//	string outResult = outFilename;
+					//	if (mdlmetadata.Length > 1)
+					//		outResult += ("|" + mdlmetadata[1]);
+					//	if (mdlmetadata.Length > 2)
+					//		outResult += ("|" + mdlmetadata[2]);
+					//	mdlsectionlist.Add(model.Key, outResult);
+					//}
 					// External motions for SAMDL Project Mode
-					if (exmtnfile != null && mtnsplitpaths.ContainsKey(model.Key))
-					{
-						exmtndata = mtnsplitpaths[model.Key].Split(','); // Assigns external motions based on model ID
-						animlist.AddRange(exmtndata);
-					}
+					//if (exmtnfile != null && mtnsplitpaths.ContainsKey(model.Key))
+					//{
+					//	exmtndata = mtnsplitpaths[model.Key].Split(','); // Assigns external motions based on model ID
+					//	animlist.AddRange(exmtndata);
+					//}
 
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlfilename),
 						model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), model.Value, animlist.ToArray(),
@@ -198,11 +199,11 @@ namespace SplitTools.SAArc
 				}
 
 				// labels for SAMDL Project Mode
-				if (mdllabelfile != null)
-				{
-					string mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdllabelfile) + "_data.ini";
-					IniSerializer.Serialize(mdlsectionlist, Path.Combine(outputFolder, mdlsectionListFilename));
-				}
+				//if (mdllabelfile != null)
+				//{
+				//	string mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdllabelfile) + "_data.ini";
+				//	IniSerializer.Serialize(mdlsectionlist, Path.Combine(outputFolder, mdlsectionListFilename));
+				//}
 
 				//if (mtnlabelfile != null)
 				//{
