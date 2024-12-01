@@ -28,20 +28,22 @@ namespace SAModel
 
 		public UV(byte[] file, int address, bool UVH, bool chunk = false, bool xj = false)
 		{
-			if(xj)
+			// XJ uses actual floats as UVs
+			if (xj)
 			{
 				U = ByteConverter.ToSingle(file, address);
 				V = ByteConverter.ToSingle(file, address + 4);
-			} //"Reverse" is for the order used in SADX Gamecube
+			} 
+			// "Reverse" is for the order used in SADX Gamecube
 			else if (ByteConverter.Reverse || !ByteConverter.BigEndian || chunk)
 			{
-				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023.0 : 255.0);
-				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023.0 : 255.0);
+				U = ByteConverter.ToInt16(file, address) / (UVH ? 1024.0 : 256.0);
+				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1024.0 : 256.0);
 			}
 			else
 			{
-				V = ByteConverter.ToInt16(file, address) / (UVH ? 1023.0 : 255.0);
-				U = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023.0 : 255.0);
+				V = ByteConverter.ToInt16(file, address) / (UVH ? 1024.0 : 256.0);
+				U = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1024.0 : 256.0);
 			}
 		}
 
@@ -66,8 +68,8 @@ namespace SAModel
 		public byte[] GetBytes(bool UVH)
 		{
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1023.0 : 255.0))));
-			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1023.0 : 255.0))));
+			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1024.0 : 256.0))));
+			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1024.0 : 256.0))));
 			return result.ToArray();
 		}
 
@@ -88,12 +90,12 @@ namespace SAModel
 		{
 			if (U == 0 && V == 0)
 				return "{ 0 }";
-			return "{ " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " }";
+			return "{ " + (short)(U * 256.0) + ", " + (short)(V * 256.0) + " }";
 		}
 
 		public string ToNJA()
 		{
-			return "UV ( " + (short)(U * 255.0) + ", " + (short)(V * 255.0) + " )";
+			return "UV ( " + (short)(U * 256.0) + ", " + (short)(V * 256.0) + " )";
 		}
 
 		public override bool Equals(object obj)
