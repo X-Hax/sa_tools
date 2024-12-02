@@ -76,8 +76,20 @@ namespace SAModel
 					// First, determine whether size is Big Endian or not.
 					ByteConverter.BigEndian = true;
 					sizeIsLittleEndian = BitConverter.ToUInt32(data, startoffset + 4) < ByteConverter.ToUInt32(data, startoffset + 4);
-					// Then, check if the actual data is Big Endian. Works in NJBM, NJCM and NJTL.
-					ByteConverter.BigEndian = BitConverter.ToUInt32(data, startoffset + 8) > ByteConverter.ToUInt32(data, startoffset + 8);
+					// Then, check if the actual data is Big Endian. Unfortunately this is just guessing so it may not always work.
+					switch (idtype)
+					{
+						case NinjaBinaryChunkType.BasicModel: // Attach pointer
+						case NinjaBinaryChunkType.ChunkModel: // Attach pointer
+						case NinjaBinaryChunkType.Motion: // Number of frames
+						case NinjaBinaryChunkType.SimpleShapeMotion: // Number of frames
+						case NinjaBinaryChunkType.Texlist: // Number of texnames
+							ByteConverter.BigEndian = BitConverter.ToUInt32(data, startoffset + 12) > ByteConverter.ToUInt32(data, startoffset + 12);
+							break;
+						default: // Old check
+							ByteConverter.BigEndian = BitConverter.ToUInt32(data, startoffset + 8) > ByteConverter.ToUInt32(data, startoffset + 8);
+							break;							
+					}
 					//MessageBox.Show(ByteConverter.BigEndian.ToString());
 				}
 				int size = sizeIsLittleEndian ? BitConverter.ToInt32(data, startoffset + 4) : ByteConverter.ToInt32(data, startoffset + 4);
