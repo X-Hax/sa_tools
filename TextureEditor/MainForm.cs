@@ -421,7 +421,7 @@ namespace TextureEditor
 						{
 							// The substring thing removes the ".dds" extension in the entry name
 							// Names are trimmed to avoid trailing spaces which the game ignores but the tools don't
-							byte[] dds = pak.Entries.First((file) => file.Name.Substring(0, file.Name.Length - 4).Trim().Equals(entry.GetFilename().Trim(), StringComparison.OrdinalIgnoreCase)).Data;
+							byte[] dds = pak.Entries.First((file) => Path.GetExtension(file.Name) != ".inf" && file.Name.Substring(0, file.Name.Length - 4).Trim().Equals(entry.GetFilename().Trim(), StringComparison.OrdinalIgnoreCase)).Data;
 							MemoryStream str = new MemoryStream(dds);
 							newtextures.Add(new PakTextureInfo(entry.GetFilename().Trim(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
 						}
