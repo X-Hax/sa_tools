@@ -37,6 +37,35 @@ namespace SAModel
 			}
 		}
 
+		public enum BigEndianResult
+		{
+			LittleEndian,
+			BigEndian,
+			CantTell
+		}
+
+		public BigEndianResult CheckPointerBigEndian(byte[] data, int address)
+		{
+			BigEndianResult result = BigEndianResult.CantTell;
+			// Back up Big Endian mode
+			bool bk = ByteConverter.BigEndian;
+			// Set Big Endian mode
+			ByteConverter.BigEndian = true;
+			// Get Little Endian version
+			uint pnt_little = BitConverter.ToUInt32(data, address);
+			// Get Big Endian version
+			uint png_big = ByteConverter.ToUInt32(data, address);
+			// If Little is bigger, it's likely Big Endian
+			if (pnt_little > png_big)
+				result = BigEndianResult.BigEndian;
+			// If Big is bigger, it's likely Little Endian
+			else if (pnt_little < png_big)
+				result = BigEndianResult.LittleEndian;
+			// Restore Big Endian mode
+			ByteConverter.BigEndian = bk;
+			return result;
+		}
+
 		public NinjaBinaryFile(byte[] data, ModelFormat format)
 		{
 			Models = new List<NJS_OBJECT>();
@@ -77,10 +106,25 @@ namespace SAModel
 					ByteConverter.BigEndian = true;
 					sizeIsLittleEndian = BitConverter.ToUInt32(data, startoffset + 4) < ByteConverter.ToUInt32(data, startoffset + 4);
 					// Then, check if the actual data is Big Endian. Unfortunately this is just guessing so it may not always work.
+					// startoffset + 8 is where the data begins
 					switch (idtype)
 					{
-						case NinjaBinaryChunkType.BasicModel: // Attach pointer
-						case NinjaBinaryChunkType.ChunkModel: // Attach pointer
+						case NinjaBinaryChunkType.BasicModel:
+						case NinjaBinaryChunkType.ChunkModel:
+							// Check attach pointer
+							BigEndianResult res_endian = CheckPointerBigEndian(data, startoffset + 8 + 4);
+							if (res_endian == BigEndianResult.CantTell)
+							{
+								// Check child pointer
+								res_endian = CheckPointerBigEndian(data, startoffset + 8 + 0x2C);
+								if (res_endian == BigEndianResult.CantTell)
+								{
+									// Check sibling pointer
+									res_endian = CheckPointerBigEndian(data, startoffset + 8 + 0x30);
+								}
+							}
+							ByteConverter.BigEndian = res_endian == BigEndianResult.BigEndian;
+							break;
 						case NinjaBinaryChunkType.Motion: // Number of frames
 						case NinjaBinaryChunkType.SimpleShapeMotion: // Number of frames
 						case NinjaBinaryChunkType.Texlist: // Number of texnames
