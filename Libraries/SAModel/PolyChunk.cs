@@ -1446,6 +1446,7 @@ namespace SAModel
 			public bool Reversed { get; private set; }
 			public ushort[] Indexes { get; private set; }
 			public UV[] UVs { get; private set; }
+			public UV[] UVs2 { get; private set; }
 			public Color[] VColors { get; private set; }
 			public ushort[] UserFlags1 { get; private set; }
 			public ushort[] UserFlags2 { get; private set; }
@@ -1459,6 +1460,15 @@ namespace SAModel
 				VColors = vcolors;
 			}
 
+			public Strip(bool reversed, ushort[] indexes, UV[] uvs, UV[] uvs2, Color[] vcolors)
+			{
+				Reversed = reversed;
+				Indexes = indexes;
+				UVs = uvs;
+				UVs2 = uvs2;
+				VColors = vcolors;
+			}
+
 			public Strip(byte[] file, int address, ChunkType type, byte userFlags)
 			{
 				Indexes = new ushort[Math.Abs(ByteConverter.ToInt16(file, address))];
@@ -1468,9 +1478,12 @@ namespace SAModel
 				{
 					case ChunkType.Strip_StripUVN:
 					case ChunkType.Strip_StripUVH:
+						UVs = new UV[Indexes.Length];
+						break;
 					case ChunkType.Strip_StripUVN2:
 					case ChunkType.Strip_StripUVH2:
 						UVs = new UV[Indexes.Length];
+						UVs2 = new UV[Indexes.Length];
 						break;
 					case ChunkType.Strip_StripColor:
 						VColors = new Color[Indexes.Length];
@@ -1513,6 +1526,17 @@ namespace SAModel
 						case ChunkType.Strip_StripUVHColor:
 							VColors[i] = VColor.FromBytes(file, address, ColorType.ARGB8888_16);
 							address += VColor.Size(ColorType.ARGB8888_16);
+							break;
+					}
+					switch (type)
+					{
+						case ChunkType.Strip_StripUVN2:
+							UVs2[i] = new UV(file, address, false, true);
+							address += UV.Size;
+							break;
+						case ChunkType.Strip_StripUVH2:
+							UVs2[i] = new UV(file, address, true, true);
+							address += UV.Size;
 							break;
 					}
 					if (i > 1)
@@ -1567,6 +1591,15 @@ namespace SAModel
 							result.AddRange(VColor.GetBytes(VColors[i], ColorType.ARGB8888_16));
 							break;
 					}
+					switch (type)
+					{
+						case ChunkType.Strip_StripUVN2:
+							result.AddRange(UVs2[i].GetBytes(false));
+							break;
+						case ChunkType.Strip_StripUVH2:
+							result.AddRange(UVs2[i].GetBytes(true));
+							break;
+					}
 					if (i > 1)
 					{
 						if (UserFlags1 != null)
@@ -1603,6 +1636,9 @@ namespace SAModel
 
 						if (VColors != null)
 							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
+
+						if (UVs2 != null)
+							writer.Write(" \tUvn( " + ((short)(UVs2[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs2[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
 
 						if (UserFlags1 != null && i > 1)
 						{
@@ -1646,6 +1682,8 @@ namespace SAModel
 						size += UVs.Length * UV.Size;
 					if (VColors != null)
 						size += VColors.Length * VColor.Size(ColorType.ARGB8888_16);
+					if (UVs2 != null)
+						size += UVs2.Length * UV.Size;
 					if (UserFlags1 != null)
 					{
 						size += UserFlags1.Length * 2;
@@ -1673,6 +1711,12 @@ namespace SAModel
 						result.UVs[i] = UVs[i].Clone();
 				}
 				if (VColors != null) result.VColors = (Color[])VColors.Clone();
+				if (UVs2 != null)
+				{
+					result.UVs2 = new UV[UVs.Length];
+					for (int i = 0; i < UVs2.Length; i++)
+						result.UVs2[i] = UVs2[i].Clone();
+				}
 				if (UserFlags1 != null) result.UserFlags1 = (ushort[])UserFlags1.Clone();
 				if (UserFlags2 != null) result.UserFlags2 = (ushort[])UserFlags2.Clone();
 				if (UserFlags3 != null) result.UserFlags3 = (ushort[])UserFlags3.Clone();
