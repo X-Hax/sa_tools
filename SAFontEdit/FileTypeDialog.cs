@@ -16,7 +16,7 @@ namespace SAFontEdit
 		public bool argb; // True if using 32-bit ARGB
 		public bool ansiTrimmed; // True if using truncated ANSI mapping (trimmed)
 		public string customstring; // Custom mapping string
-		
+
 		public FileTypeDialog(string filename)
 		{
 			guess_filename = filename;
@@ -33,13 +33,13 @@ namespace SAFontEdit
 		{
 			argb = radioButtonSimple32Bit.Checked;
 			fontdata = radioButtonFontdata.Checked;
-			ansiTrimmed = radioButtonAnsiTrim.Checked;
+			ansiTrimmed = checkBoxTrimmedANSI.Checked;
 			charmap = radioButtonKanji.Checked || radioButtonKanjiSOC.Checked || radioButtonCustomCharmap.Checked;
 			if (radioButtonKanji.Checked)
 				customstring = KanjiFont;
 			if (radioButtonKanjiSOC.Checked)
 				customstring = KanjiFontSOC;
-			if (radioButtonWestern.Checked || radioButtonAnsiTrim.Checked)
+			if (radioButtonWestern.Checked)
 				numericUpDownCodepage.Value = 1252;
 			if (radioButtonJapanese.Checked)
 				numericUpDownCodepage.Value = 50220;
@@ -90,7 +90,7 @@ namespace SAFontEdit
 					radioButtonSimple32Bit.Checked = true;
 					// Character map
 					radioButtonWestern.Checked = false;
-					radioButtonAnsiTrim.Checked = false;
+					checkBoxTrimmedANSI.Checked = false;
 					radioButtonJapanese.Checked = false;
 					radioButtonKanji.Checked = false;
 					radioButtonKanjiSOC.Checked = true;
@@ -105,7 +105,7 @@ namespace SAFontEdit
 					radioButtonSimple32Bit.Checked = true;
 					// Character map
 					radioButtonWestern.Checked = true;
-					radioButtonAnsiTrim.Checked = false;
+					checkBoxTrimmedANSI.Checked = false;
 					radioButtonJapanese.Checked = false;
 					radioButtonKanji.Checked = false;
 					radioButtonKanjiSOC.Checked = false;
@@ -120,7 +120,7 @@ namespace SAFontEdit
 					radioButtonSimple32Bit.Checked = false;
 					// Character map
 					radioButtonWestern.Checked = false;
-					radioButtonAnsiTrim.Checked = false;
+					checkBoxTrimmedANSI.Checked = false;
 					radioButtonKanji.Checked = false;
 					radioButtonKanjiSOC.Checked = false;
 					radioButtonCustomCodepage.Checked = false;
@@ -144,7 +144,7 @@ namespace SAFontEdit
 					radioButtonSimple32Bit.Checked = false;
 					// Character map
 					radioButtonWestern.Checked = true;
-					radioButtonAnsiTrim.Checked = false;
+					checkBoxTrimmedANSI.Checked = false;
 					radioButtonJapanese.Checked = false;
 					radioButtonKanji.Checked = false;
 					radioButtonKanjiSOC.Checked = false;
@@ -155,8 +155,8 @@ namespace SAFontEdit
 				case "EFMSGFONT_ASCII24E.BIN":
 					radioButtonFontdata.Checked = false;
 					// Character map
-					radioButtonAnsiTrim.Checked = true;
-					radioButtonWestern.Checked = false;
+					checkBoxTrimmedANSI.Checked = true;
+					radioButtonWestern.Checked = true;
 					radioButtonJapanese.Checked = false;
 					radioButtonKanji.Checked = false;
 					radioButtonKanjiSOC.Checked = false;
@@ -178,8 +178,8 @@ namespace SAFontEdit
 				case "EFMSGFONT_ASCII24S.BIN":
 					radioButtonFontdata.Checked = false;
 					// Character map
-					radioButtonAnsiTrim.Checked = true;
-					radioButtonWestern.Checked = false;
+					checkBoxTrimmedANSI.Checked = true;
+					radioButtonWestern.Checked = true;
 					radioButtonJapanese.Checked = false;
 					radioButtonKanji.Checked = false;
 					radioButtonKanjiSOC.Checked = false;
@@ -201,7 +201,7 @@ namespace SAFontEdit
 				case "EFMSGFONT_KANJI24.BIN":
 					radioButtonFontdata.Checked = false;
 					// Character map
-					radioButtonAnsiTrim.Checked = false;
+					checkBoxTrimmedANSI.Checked = false;
 					radioButtonWestern.Checked = false;
 					radioButtonJapanese.Checked = false;
 					radioButtonKanji.Checked = true;

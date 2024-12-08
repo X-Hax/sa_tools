@@ -113,6 +113,18 @@ namespace SAFontEdit
 								origtext[0] = (byte)files[i].ID;
 								utf16String = Encoding.GetEncoding(ftd.codepage).GetString(origtext);
 							}
+							else
+							{
+								// This is for EFMSGFONT files with custom codepages based on the original "trimmed 1252"
+								origtext = new byte[2];
+								ushort id_final = (ushort)(files[i].ID + (socansi ? 32 : 0));
+								origtext[0] = (byte)(id_final >> 0);
+								origtext[1] = (byte)(id_final >> 8);
+								if (files[i].ID <= 255)
+									utf16String = Encoding.GetEncoding(ftd.codepage).GetString(origtext);
+								else
+									utf16String = " ";
+							}
 						}
 						else
 						{
