@@ -280,15 +280,15 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(false)]
 			public bool BigEndian { get; set; }
-			[DefaultValue(false)]
-			public bool UseSJIS { get; set; }
+			[DefaultValue(0)]
+			public int Encoding { get; set; }
 			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 			public List<string> RecentFiles { get; set; } = new List<string>();
 
 			public Settings_SA2CutsceneTextEditor()
 			{
 				BigEndian = false;
-				UseSJIS = false;
+				Encoding = 0;
 				RecentFiles = new List<string>();
 			}
 

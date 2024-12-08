@@ -220,7 +220,6 @@
 			// 
 			// autoToolStripMenuItem
 			// 
-			autoToolStripMenuItem.CheckOnClick = true;
 			autoToolStripMenuItem.Name = "autoToolStripMenuItem";
 			autoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			autoToolStripMenuItem.Text = "Auto";
@@ -229,7 +228,6 @@
 			// 
 			// shiftJISToolStripMenuItem
 			// 
-			shiftJISToolStripMenuItem.CheckOnClick = true;
 			shiftJISToolStripMenuItem.Name = "shiftJISToolStripMenuItem";
 			shiftJISToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			shiftJISToolStripMenuItem.Text = "&Shift-JIS";
@@ -239,7 +237,6 @@
 			// windows1252ToolStripMenuItem
 			// 
 			windows1252ToolStripMenuItem.Checked = true;
-			windows1252ToolStripMenuItem.CheckOnClick = true;
 			windows1252ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			windows1252ToolStripMenuItem.Name = "windows1252ToolStripMenuItem";
 			windows1252ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);

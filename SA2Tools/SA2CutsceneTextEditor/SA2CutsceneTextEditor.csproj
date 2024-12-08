@@ -10,6 +10,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<Platforms>x64;x86</Platforms>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
@@ -19,5 +20,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="icon_sa2DiagEdit.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="InputCustomEncoding.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
 	</ItemGroup>
 </Project>

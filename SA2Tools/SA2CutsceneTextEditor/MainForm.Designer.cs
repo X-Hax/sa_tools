@@ -38,34 +38,36 @@
 			System.Windows.Forms.Label label2;
 			System.Windows.Forms.Label label3;
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.encodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.shiftJISToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.windows1252ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bigEndianGCSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.messageEdit = new System.Windows.Forms.RichTextBox();
-			this.sceneRemoveButton = new System.Windows.Forms.Button();
-			this.sceneAddButton = new System.Windows.Forms.Button();
-			this.sceneNum = new System.Windows.Forms.ComboBox();
-			this.messagePanel = new System.Windows.Forms.Panel();
-			this.messageCentered = new System.Windows.Forms.CheckBox();
-			this.messageCharacter = new System.Windows.Forms.NumericUpDown();
-			this.messageRemoveButton = new System.Windows.Forms.Button();
-			this.messageAddButton = new System.Windows.Forms.Button();
-			this.messageNum = new System.Windows.Forms.ComboBox();
-			this.scenePanel = new System.Windows.Forms.Panel();
-			this.sceneID = new System.Windows.Forms.NumericUpDown();
+			menuStrip1 = new System.Windows.Forms.MenuStrip();
+			fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			encodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			shiftJISToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			windows1252ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			bigEndianGCSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			findNextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			messageEdit = new System.Windows.Forms.RichTextBox();
+			sceneRemoveButton = new System.Windows.Forms.Button();
+			sceneAddButton = new System.Windows.Forms.Button();
+			sceneNum = new System.Windows.Forms.ComboBox();
+			messagePanel = new System.Windows.Forms.Panel();
+			messageCentered = new System.Windows.Forms.CheckBox();
+			messageCharacter = new System.Windows.Forms.NumericUpDown();
+			messageRemoveButton = new System.Windows.Forms.Button();
+			messageAddButton = new System.Windows.Forms.Button();
+			messageNum = new System.Windows.Forms.ComboBox();
+			scenePanel = new System.Windows.Forms.Panel();
+			sceneID = new System.Windows.Forms.NumericUpDown();
+			autoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			customToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -75,12 +77,12 @@
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
-			this.menuStrip1.SuspendLayout();
-			this.messagePanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.messageCharacter)).BeginInit();
-			this.scenePanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.sceneID)).BeginInit();
-			this.SuspendLayout();
+			menuStrip1.SuspendLayout();
+			messagePanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)messageCharacter).BeginInit();
+			scenePanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)sceneID).BeginInit();
+			SuspendLayout();
 			// 
 			// toolStripSeparator1
 			// 
@@ -100,9 +102,10 @@
 			// label4
 			// 
 			label4.AutoSize = true;
-			label4.Location = new System.Drawing.Point(12, 32);
+			label4.Location = new System.Drawing.Point(14, 37);
+			label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label4.Name = "label4";
-			label4.Size = new System.Drawing.Size(41, 13);
+			label4.Size = new System.Drawing.Size(41, 15);
 			label4.TabIndex = 1;
 			label4.Text = "Scene:";
 			// 
@@ -121,348 +124,352 @@
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(12, 32);
+			label1.Location = new System.Drawing.Point(14, 37);
+			label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(53, 13);
+			label1.Size = new System.Drawing.Size(56, 15);
 			label1.TabIndex = 2;
 			label1.Text = "Message:";
 			// 
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(12, 5);
+			label2.Location = new System.Drawing.Point(14, 6);
+			label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(21, 13);
+			label2.Size = new System.Drawing.Size(21, 15);
 			label2.TabIndex = 0;
 			label2.Text = "ID:";
 			// 
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(12, 6);
+			label3.Location = new System.Drawing.Point(14, 7);
+			label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(56, 13);
+			label3.Size = new System.Drawing.Size(61, 15);
 			label3.TabIndex = 0;
 			label3.Text = "Character:";
 			// 
 			// menuStrip1
 			// 
-			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem});
-			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(334, 24);
-			this.menuStrip1.TabIndex = 0;
-			this.menuStrip1.Text = "menuStrip1";
+			menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
+			menuStrip1.Location = new System.Drawing.Point(0, 0);
+			menuStrip1.Name = "menuStrip1";
+			menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+			menuStrip1.Size = new System.Drawing.Size(390, 24);
+			menuStrip1.TabIndex = 0;
+			menuStrip1.Text = "menuStrip1";
 			// 
 			// fileToolStripMenuItem
 			// 
-			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.openToolStripMenuItem,
-            toolStripSeparator1,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            toolStripSeparator2,
-            this.exportToolStripMenuItem,
-            toolStripSeparator4,
-            this.recentFilesToolStripMenuItem,
-            toolStripSeparator3,
-            this.exitToolStripMenuItem});
-			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-			this.fileToolStripMenuItem.Text = "&File";
+			fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator2, exportToolStripMenuItem, toolStripSeparator4, recentFilesToolStripMenuItem, toolStripSeparator3, exitToolStripMenuItem });
+			fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+			fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+			fileToolStripMenuItem.Text = "&File";
 			// 
 			// newToolStripMenuItem
 			// 
-			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.newToolStripMenuItem.Text = "&New";
-			this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+			newToolStripMenuItem.Name = "newToolStripMenuItem";
+			newToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N;
+			newToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			newToolStripMenuItem.Text = "&New";
+			newToolStripMenuItem.Click += newToolStripMenuItem_Click;
 			// 
 			// openToolStripMenuItem
 			// 
-			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.openToolStripMenuItem.Text = "&Open...";
-			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+			openToolStripMenuItem.Name = "openToolStripMenuItem";
+			openToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
+			openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			openToolStripMenuItem.Text = "&Open...";
+			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
 			// saveToolStripMenuItem
 			// 
-			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.saveToolStripMenuItem.Text = "&Save";
-			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+			saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+			saveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+			saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			saveToolStripMenuItem.Text = "&Save";
+			saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
 			// 
 			// saveAsToolStripMenuItem
 			// 
-			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.saveAsToolStripMenuItem.Text = "Save &As";
-			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+			saveAsToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			saveAsToolStripMenuItem.Text = "Save &As";
+			saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
 			// 
 			// exportToolStripMenuItem
 			// 
-			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.exportToolStripMenuItem.Text = "&Export...";
-			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+			exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+			exportToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			exportToolStripMenuItem.Text = "&Export...";
+			exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
 			// 
 			// recentFilesToolStripMenuItem
 			// 
-			this.recentFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            emptyToolStripMenuItem});
-			this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-			this.recentFilesToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.recentFilesToolStripMenuItem.Text = "&Recent Files";
-			this.recentFilesToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.recentFilesToolStripMenuItem_DropDownItemClicked);
+			recentFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { emptyToolStripMenuItem });
+			recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
+			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			recentFilesToolStripMenuItem.Text = "&Recent Files";
+			recentFilesToolStripMenuItem.DropDownItemClicked += recentFilesToolStripMenuItem_DropDownItemClicked;
 			// 
 			// exitToolStripMenuItem
 			// 
-			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt+F4";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-			this.exitToolStripMenuItem.Text = "E&xit";
-			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt+F4";
+			exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+			exitToolStripMenuItem.Text = "E&xit";
+			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
 			// 
 			// editToolStripMenuItem
 			// 
-			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.encodingToolStripMenuItem,
-            this.bigEndianGCSteamToolStripMenuItem,
-            this.findToolStripMenuItem,
-            this.findNextToolStripMenuItem});
-			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-			this.editToolStripMenuItem.Text = "&Edit";
+			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { encodingToolStripMenuItem, bigEndianGCSteamToolStripMenuItem, findToolStripMenuItem, findNextToolStripMenuItem });
+			editToolStripMenuItem.Name = "editToolStripMenuItem";
+			editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+			editToolStripMenuItem.Text = "&Edit";
 			// 
 			// encodingToolStripMenuItem
 			// 
-			this.encodingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.shiftJISToolStripMenuItem,
-            this.windows1252ToolStripMenuItem});
-			this.encodingToolStripMenuItem.Name = "encodingToolStripMenuItem";
-			this.encodingToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-			this.encodingToolStripMenuItem.Text = "&Encoding";
+			encodingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { autoToolStripMenuItem, shiftJISToolStripMenuItem, windows1252ToolStripMenuItem, customToolStripMenuItem });
+			encodingToolStripMenuItem.Name = "encodingToolStripMenuItem";
+			encodingToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			encodingToolStripMenuItem.Text = "&Encoding";
 			// 
 			// shiftJISToolStripMenuItem
 			// 
-			this.shiftJISToolStripMenuItem.Name = "shiftJISToolStripMenuItem";
-			this.shiftJISToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.shiftJISToolStripMenuItem.Text = "&Shift-JIS";
-			this.shiftJISToolStripMenuItem.Click += new System.EventHandler(this.shiftJISToolStripMenuItem_Click);
+			shiftJISToolStripMenuItem.Name = "shiftJISToolStripMenuItem";
+			shiftJISToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			shiftJISToolStripMenuItem.Text = "&Shift-JIS";
+			shiftJISToolStripMenuItem.Click += shiftJISToolStripMenuItem_Click;
 			// 
 			// windows1252ToolStripMenuItem
 			// 
-			this.windows1252ToolStripMenuItem.Checked = true;
-			this.windows1252ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.windows1252ToolStripMenuItem.Name = "windows1252ToolStripMenuItem";
-			this.windows1252ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.windows1252ToolStripMenuItem.Text = "&Windows-1252";
-			this.windows1252ToolStripMenuItem.Click += new System.EventHandler(this.windows1252ToolStripMenuItem_Click);
+			windows1252ToolStripMenuItem.Name = "windows1252ToolStripMenuItem";
+			windows1252ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			windows1252ToolStripMenuItem.Text = "&Windows-1252";
+			windows1252ToolStripMenuItem.Click += windows1252ToolStripMenuItem_Click;
 			// 
 			// bigEndianGCSteamToolStripMenuItem
 			// 
-			this.bigEndianGCSteamToolStripMenuItem.CheckOnClick = true;
-			this.bigEndianGCSteamToolStripMenuItem.Name = "bigEndianGCSteamToolStripMenuItem";
-			this.bigEndianGCSteamToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-			this.bigEndianGCSteamToolStripMenuItem.Text = "&Big Endian (GC/Steam)";
-			this.bigEndianGCSteamToolStripMenuItem.Click += new System.EventHandler(this.bigEndianGCSteamToolStripMenuItem_Click);
+			bigEndianGCSteamToolStripMenuItem.CheckOnClick = true;
+			bigEndianGCSteamToolStripMenuItem.Name = "bigEndianGCSteamToolStripMenuItem";
+			bigEndianGCSteamToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			bigEndianGCSteamToolStripMenuItem.Text = "&Big Endian (GC/Steam)";
+			bigEndianGCSteamToolStripMenuItem.Click += bigEndianGCSteamToolStripMenuItem_Click;
 			// 
 			// findToolStripMenuItem
 			// 
-			this.findToolStripMenuItem.Name = "findToolStripMenuItem";
-			this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.findToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-			this.findToolStripMenuItem.Text = "&Find...";
-			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+			findToolStripMenuItem.Name = "findToolStripMenuItem";
+			findToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F;
+			findToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			findToolStripMenuItem.Text = "&Find...";
+			findToolStripMenuItem.Click += findToolStripMenuItem_Click;
 			// 
 			// findNextToolStripMenuItem
 			// 
-			this.findNextToolStripMenuItem.Enabled = false;
-			this.findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
-			this.findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.findNextToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-			this.findNextToolStripMenuItem.Text = "Find &Next";
-			this.findNextToolStripMenuItem.Click += new System.EventHandler(this.findNextToolStripMenuItem_Click);
+			findNextToolStripMenuItem.Enabled = false;
+			findNextToolStripMenuItem.Name = "findNextToolStripMenuItem";
+			findNextToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+			findNextToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+			findNextToolStripMenuItem.Text = "Find &Next";
+			findNextToolStripMenuItem.Click += findNextToolStripMenuItem_Click;
 			// 
 			// messageEdit
 			// 
-			this.messageEdit.AcceptsTab = true;
-			this.messageEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.messageEdit.DetectUrls = false;
-			this.messageEdit.Location = new System.Drawing.Point(12, 30);
-			this.messageEdit.Name = "messageEdit";
-			this.messageEdit.Size = new System.Drawing.Size(310, 157);
-			this.messageEdit.TabIndex = 2;
-			this.messageEdit.Text = "";
-			this.messageEdit.TextChanged += new System.EventHandler(this.messageEdit_TextChanged);
+			messageEdit.AcceptsTab = true;
+			messageEdit.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+			messageEdit.DetectUrls = false;
+			messageEdit.Location = new System.Drawing.Point(14, 35);
+			messageEdit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messageEdit.Name = "messageEdit";
+			messageEdit.Size = new System.Drawing.Size(361, 181);
+			messageEdit.TabIndex = 2;
+			messageEdit.Text = "";
+			messageEdit.TextChanged += messageEdit_TextChanged;
 			// 
 			// sceneRemoveButton
 			// 
-			this.sceneRemoveButton.AutoSize = true;
-			this.sceneRemoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.sceneRemoveButton.Enabled = false;
-			this.sceneRemoveButton.Location = new System.Drawing.Point(265, 27);
-			this.sceneRemoveButton.Name = "sceneRemoveButton";
-			this.sceneRemoveButton.Size = new System.Drawing.Size(57, 23);
-			this.sceneRemoveButton.TabIndex = 4;
-			this.sceneRemoveButton.Text = "Remove";
-			this.sceneRemoveButton.UseVisualStyleBackColor = true;
-			this.sceneRemoveButton.Click += new System.EventHandler(this.sceneRemoveButton_Click);
+			sceneRemoveButton.AutoSize = true;
+			sceneRemoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			sceneRemoveButton.Enabled = false;
+			sceneRemoveButton.Location = new System.Drawing.Point(309, 31);
+			sceneRemoveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			sceneRemoveButton.Name = "sceneRemoveButton";
+			sceneRemoveButton.Size = new System.Drawing.Size(60, 25);
+			sceneRemoveButton.TabIndex = 4;
+			sceneRemoveButton.Text = "Remove";
+			sceneRemoveButton.UseVisualStyleBackColor = true;
+			sceneRemoveButton.Click += sceneRemoveButton_Click;
 			// 
 			// sceneAddButton
 			// 
-			this.sceneAddButton.AutoSize = true;
-			this.sceneAddButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.sceneAddButton.Location = new System.Drawing.Point(223, 27);
-			this.sceneAddButton.Name = "sceneAddButton";
-			this.sceneAddButton.Size = new System.Drawing.Size(36, 23);
-			this.sceneAddButton.TabIndex = 3;
-			this.sceneAddButton.Text = "Add";
-			this.sceneAddButton.UseVisualStyleBackColor = true;
-			this.sceneAddButton.Click += new System.EventHandler(this.sceneAddButton_Click);
+			sceneAddButton.AutoSize = true;
+			sceneAddButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			sceneAddButton.Location = new System.Drawing.Point(260, 31);
+			sceneAddButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			sceneAddButton.Name = "sceneAddButton";
+			sceneAddButton.Size = new System.Drawing.Size(39, 25);
+			sceneAddButton.TabIndex = 3;
+			sceneAddButton.Text = "Add";
+			sceneAddButton.UseVisualStyleBackColor = true;
+			sceneAddButton.Click += sceneAddButton_Click;
 			// 
 			// sceneNum
 			// 
-			this.sceneNum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.sceneNum.FormattingEnabled = true;
-			this.sceneNum.Location = new System.Drawing.Point(59, 29);
-			this.sceneNum.Name = "sceneNum";
-			this.sceneNum.Size = new System.Drawing.Size(158, 21);
-			this.sceneNum.TabIndex = 2;
-			this.sceneNum.SelectedIndexChanged += new System.EventHandler(this.sceneNum_SelectedIndexChanged);
+			sceneNum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			sceneNum.FormattingEnabled = true;
+			sceneNum.Location = new System.Drawing.Point(69, 33);
+			sceneNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			sceneNum.Name = "sceneNum";
+			sceneNum.Size = new System.Drawing.Size(184, 23);
+			sceneNum.TabIndex = 2;
+			sceneNum.SelectedIndexChanged += sceneNum_SelectedIndexChanged;
 			// 
 			// messagePanel
 			// 
-			this.messagePanel.Controls.Add(this.messageCentered);
-			this.messagePanel.Controls.Add(this.messageCharacter);
-			this.messagePanel.Controls.Add(label3);
-			this.messagePanel.Controls.Add(this.messageEdit);
-			this.messagePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.messagePanel.Enabled = false;
-			this.messagePanel.Location = new System.Drawing.Point(0, 56);
-			this.messagePanel.Name = "messagePanel";
-			this.messagePanel.Size = new System.Drawing.Size(334, 199);
-			this.messagePanel.TabIndex = 6;
+			messagePanel.Controls.Add(messageCentered);
+			messagePanel.Controls.Add(messageCharacter);
+			messagePanel.Controls.Add(label3);
+			messagePanel.Controls.Add(messageEdit);
+			messagePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+			messagePanel.Enabled = false;
+			messagePanel.Location = new System.Drawing.Point(0, 64);
+			messagePanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messagePanel.Name = "messagePanel";
+			messagePanel.Size = new System.Drawing.Size(390, 230);
+			messagePanel.TabIndex = 6;
 			// 
 			// messageCentered
 			// 
-			this.messageCentered.AutoSize = true;
-			this.messageCentered.Location = new System.Drawing.Point(151, 5);
-			this.messageCentered.Name = "messageCentered";
-			this.messageCentered.Size = new System.Drawing.Size(69, 17);
-			this.messageCentered.TabIndex = 3;
-			this.messageCentered.Text = "Centered";
-			this.messageCentered.UseVisualStyleBackColor = true;
-			this.messageCentered.CheckedChanged += new System.EventHandler(this.messageCentered_CheckedChanged);
+			messageCentered.AutoSize = true;
+			messageCentered.Location = new System.Drawing.Point(176, 6);
+			messageCentered.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messageCentered.Name = "messageCentered";
+			messageCentered.Size = new System.Drawing.Size(74, 19);
+			messageCentered.TabIndex = 3;
+			messageCentered.Text = "Centered";
+			messageCentered.UseVisualStyleBackColor = true;
+			messageCentered.CheckedChanged += messageCentered_CheckedChanged;
 			// 
 			// messageCharacter
 			// 
-			this.messageCharacter.Location = new System.Drawing.Point(74, 3);
-			this.messageCharacter.Name = "messageCharacter";
-			this.messageCharacter.Size = new System.Drawing.Size(71, 20);
-			this.messageCharacter.TabIndex = 1;
-			this.messageCharacter.ValueChanged += new System.EventHandler(this.messageCharacter_ValueChanged);
+			messageCharacter.Location = new System.Drawing.Point(86, 3);
+			messageCharacter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messageCharacter.Name = "messageCharacter";
+			messageCharacter.Size = new System.Drawing.Size(83, 23);
+			messageCharacter.TabIndex = 1;
+			messageCharacter.ValueChanged += messageCharacter_ValueChanged;
 			// 
 			// messageRemoveButton
 			// 
-			this.messageRemoveButton.AutoSize = true;
-			this.messageRemoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.messageRemoveButton.Enabled = false;
-			this.messageRemoveButton.Location = new System.Drawing.Point(265, 27);
-			this.messageRemoveButton.Name = "messageRemoveButton";
-			this.messageRemoveButton.Size = new System.Drawing.Size(57, 23);
-			this.messageRemoveButton.TabIndex = 5;
-			this.messageRemoveButton.Text = "Remove";
-			this.messageRemoveButton.UseVisualStyleBackColor = true;
-			this.messageRemoveButton.Click += new System.EventHandler(this.messageRemoveButton_Click);
+			messageRemoveButton.AutoSize = true;
+			messageRemoveButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			messageRemoveButton.Enabled = false;
+			messageRemoveButton.Location = new System.Drawing.Point(309, 31);
+			messageRemoveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messageRemoveButton.Name = "messageRemoveButton";
+			messageRemoveButton.Size = new System.Drawing.Size(60, 25);
+			messageRemoveButton.TabIndex = 5;
+			messageRemoveButton.Text = "Remove";
+			messageRemoveButton.UseVisualStyleBackColor = true;
+			messageRemoveButton.Click += messageRemoveButton_Click;
 			// 
 			// messageAddButton
 			// 
-			this.messageAddButton.AutoSize = true;
-			this.messageAddButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.messageAddButton.Location = new System.Drawing.Point(223, 27);
-			this.messageAddButton.Name = "messageAddButton";
-			this.messageAddButton.Size = new System.Drawing.Size(36, 23);
-			this.messageAddButton.TabIndex = 4;
-			this.messageAddButton.Text = "Add";
-			this.messageAddButton.UseVisualStyleBackColor = true;
-			this.messageAddButton.Click += new System.EventHandler(this.messageAddButton_Click);
+			messageAddButton.AutoSize = true;
+			messageAddButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			messageAddButton.Location = new System.Drawing.Point(260, 31);
+			messageAddButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messageAddButton.Name = "messageAddButton";
+			messageAddButton.Size = new System.Drawing.Size(39, 25);
+			messageAddButton.TabIndex = 4;
+			messageAddButton.Text = "Add";
+			messageAddButton.UseVisualStyleBackColor = true;
+			messageAddButton.Click += messageAddButton_Click;
 			// 
 			// messageNum
 			// 
-			this.messageNum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.messageNum.FormattingEnabled = true;
-			this.messageNum.Location = new System.Drawing.Point(71, 29);
-			this.messageNum.Name = "messageNum";
-			this.messageNum.Size = new System.Drawing.Size(146, 21);
-			this.messageNum.TabIndex = 3;
-			this.messageNum.SelectedIndexChanged += new System.EventHandler(this.messageNum_SelectedIndexChanged);
+			messageNum.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			messageNum.FormattingEnabled = true;
+			messageNum.Location = new System.Drawing.Point(83, 33);
+			messageNum.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			messageNum.Name = "messageNum";
+			messageNum.Size = new System.Drawing.Size(170, 23);
+			messageNum.TabIndex = 3;
+			messageNum.SelectedIndexChanged += messageNum_SelectedIndexChanged;
 			// 
 			// scenePanel
 			// 
-			this.scenePanel.Controls.Add(this.sceneID);
-			this.scenePanel.Controls.Add(label2);
-			this.scenePanel.Controls.Add(this.messageRemoveButton);
-			this.scenePanel.Controls.Add(this.messagePanel);
-			this.scenePanel.Controls.Add(this.messageAddButton);
-			this.scenePanel.Controls.Add(label1);
-			this.scenePanel.Controls.Add(this.messageNum);
-			this.scenePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.scenePanel.Enabled = false;
-			this.scenePanel.Location = new System.Drawing.Point(0, 56);
-			this.scenePanel.Name = "scenePanel";
-			this.scenePanel.Size = new System.Drawing.Size(334, 255);
-			this.scenePanel.TabIndex = 5;
+			scenePanel.Controls.Add(sceneID);
+			scenePanel.Controls.Add(label2);
+			scenePanel.Controls.Add(messageRemoveButton);
+			scenePanel.Controls.Add(messagePanel);
+			scenePanel.Controls.Add(messageAddButton);
+			scenePanel.Controls.Add(label1);
+			scenePanel.Controls.Add(messageNum);
+			scenePanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+			scenePanel.Enabled = false;
+			scenePanel.Location = new System.Drawing.Point(0, 65);
+			scenePanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			scenePanel.Name = "scenePanel";
+			scenePanel.Size = new System.Drawing.Size(390, 294);
+			scenePanel.TabIndex = 5;
 			// 
 			// sceneID
 			// 
-			this.sceneID.Location = new System.Drawing.Point(39, 3);
-			this.sceneID.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-			this.sceneID.Name = "sceneID";
-			this.sceneID.Size = new System.Drawing.Size(75, 20);
-			this.sceneID.TabIndex = 1;
-			this.sceneID.ValueChanged += new System.EventHandler(this.sceneID_ValueChanged);
+			sceneID.Location = new System.Drawing.Point(46, 3);
+			sceneID.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			sceneID.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+			sceneID.Name = "sceneID";
+			sceneID.Size = new System.Drawing.Size(88, 23);
+			sceneID.TabIndex = 1;
+			sceneID.ValueChanged += sceneID_ValueChanged;
+			// 
+			// autoToolStripMenuItem
+			// 
+			autoToolStripMenuItem.Checked = true;
+			autoToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			autoToolStripMenuItem.Name = "autoToolStripMenuItem";
+			autoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			autoToolStripMenuItem.Text = "Auto";
+			autoToolStripMenuItem.Click += autoToolStripMenuItem_Click;
+			// 
+			// customToolStripMenuItem
+			// 
+			customToolStripMenuItem.Name = "customToolStripMenuItem";
+			customToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			customToolStripMenuItem.Text = "Custom...";
+			customToolStripMenuItem.Click += customToolStripMenuItem_Click;
 			// 
 			// MainForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(334, 311);
-			this.Controls.Add(this.scenePanel);
-			this.Controls.Add(this.sceneRemoveButton);
-			this.Controls.Add(this.sceneAddButton);
-			this.Controls.Add(this.sceneNum);
-			this.Controls.Add(label4);
-			this.Controls.Add(this.menuStrip1);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MainMenuStrip = this.menuStrip1;
-			this.Name = "MainForm";
-			this.Text = "SA2 Cutscene Text Editor";
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-			this.Load += new System.EventHandler(this.MainForm_Load);
-			this.menuStrip1.ResumeLayout(false);
-			this.menuStrip1.PerformLayout();
-			this.messagePanel.ResumeLayout(false);
-			this.messagePanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.messageCharacter)).EndInit();
-			this.scenePanel.ResumeLayout(false);
-			this.scenePanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.sceneID)).EndInit();
-			this.ResumeLayout(false);
-			this.PerformLayout();
-
+			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			ClientSize = new System.Drawing.Size(390, 359);
+			Controls.Add(scenePanel);
+			Controls.Add(sceneRemoveButton);
+			Controls.Add(sceneAddButton);
+			Controls.Add(sceneNum);
+			Controls.Add(label4);
+			Controls.Add(menuStrip1);
+			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+			MainMenuStrip = menuStrip1;
+			Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			Name = "MainForm";
+			Text = "SA2 Cutscene Text Editor";
+			FormClosing += MainForm_FormClosing;
+			Load += MainForm_Load;
+			menuStrip1.ResumeLayout(false);
+			menuStrip1.PerformLayout();
+			messagePanel.ResumeLayout(false);
+			messagePanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)messageCharacter).EndInit();
+			scenePanel.ResumeLayout(false);
+			scenePanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)sceneID).EndInit();
+			ResumeLayout(false);
+			PerformLayout();
 		}
 
 		#endregion
@@ -495,6 +502,8 @@
 		private System.Windows.Forms.NumericUpDown sceneID;
 		private System.Windows.Forms.NumericUpDown messageCharacter;
 		private System.Windows.Forms.CheckBox messageCentered;
+		private System.Windows.Forms.ToolStripMenuItem autoToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem customToolStripMenuItem;
 	}
 }
 
