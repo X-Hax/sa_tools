@@ -7,7 +7,6 @@ using SplitTools;
 using System.Drawing.Imaging;
 using System.Text;
 using System.ComponentModel;
-using System.Security.Policy;
 
 namespace SAFontEdit
 {
@@ -300,10 +299,16 @@ namespace SAFontEdit
 					files = new List<FontItem>();
 					listBox1.Items.Clear();
 					listBox1.BeginUpdate();
+					bool usealpha = false;
 					for (int i = 0; i < (ini.chars.Count) / 256 + Math.Min(1 * (ini.chars.Count) % 256, 1); i++)
 					{
 						if (!File.Exists(Path.GetDirectoryName(a.FileName) + "\\fontsheet" + i.ToString() + ".png")) break;
 						Bitmap sheetbmp = new Bitmap(Image.FromFile(Path.GetDirectoryName(a.FileName) + "\\fontsheet" + i.ToString() + ".png"));
+						if (i == 0 && sheetbmp.PixelFormat == PixelFormat.Format32bppArgb)
+						{
+							DialogResult res = MessageBox.Show(this, "Import with full transparency?\n\nSelect 'Yes' for SA2 PC or 'SOC' files, 'No' for Dreamcast, Gamecube and SADX PC 2004 files.", "SA Font Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+							usealpha = res == DialogResult.Yes;
+						}
 						for (int u = 0; u < 256; u++)
 						{
 							if (i * 256 + u >= ini.chars.Count) break;
@@ -315,7 +320,7 @@ namespace SAFontEdit
 								canvas.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 								canvas.DrawImage(sheetbmp, new Rectangle(0, 0, 24, 24), new Rectangle((u % 16) * 24, (u / 16) * 24, 24, 24), GraphicsUnit.Pixel);
 								canvas.Save();
-								item.bits = new BitmapBits1bpp(charbmp.Clone(new Rectangle(0, 0, 24, 24), PixelFormat.Format1bppIndexed));
+								item.bits = usealpha ? new BitmapBits32bpp(charbmp.Clone(new Rectangle(0, 0, 24, 24), PixelFormat.Format32bppArgb)) : new BitmapBits1bpp(charbmp.Clone(new Rectangle(0, 0, 24, 24), PixelFormat.Format1bppIndexed));
 								item.ID = ushort.Parse(ini.chars[i * 256 + u].id, System.Globalization.NumberStyles.HexNumber);
 								item.miscdata = StrToByteArray(ini.chars[i * 256 + u].md);
 								item.character = ini.chars[i * 256 + u].ch;
