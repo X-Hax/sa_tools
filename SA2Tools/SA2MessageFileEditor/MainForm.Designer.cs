@@ -47,8 +47,10 @@
 			exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			encodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			autoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			shiftJISToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			windows1252ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			customToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			bigEndianGCSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textOnlyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -211,26 +213,47 @@
 			// 
 			// encodingToolStripMenuItem
 			// 
-			encodingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { shiftJISToolStripMenuItem, windows1252ToolStripMenuItem });
+			encodingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { autoToolStripMenuItem, shiftJISToolStripMenuItem, windows1252ToolStripMenuItem, customToolStripMenuItem });
 			encodingToolStripMenuItem.Name = "encodingToolStripMenuItem";
 			encodingToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
 			encodingToolStripMenuItem.Text = "&Encoding";
 			// 
+			// autoToolStripMenuItem
+			// 
+			autoToolStripMenuItem.CheckOnClick = true;
+			autoToolStripMenuItem.Name = "autoToolStripMenuItem";
+			autoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			autoToolStripMenuItem.Text = "Auto";
+			autoToolStripMenuItem.ToolTipText = "Try to guess character encoding from the filename. This will only apply for newly opened files.";
+			autoToolStripMenuItem.Click += autoToolStripMenuItem_Click;
+			// 
 			// shiftJISToolStripMenuItem
 			// 
+			shiftJISToolStripMenuItem.CheckOnClick = true;
 			shiftJISToolStripMenuItem.Name = "shiftJISToolStripMenuItem";
-			shiftJISToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			shiftJISToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			shiftJISToolStripMenuItem.Text = "&Shift-JIS";
+			shiftJISToolStripMenuItem.ToolTipText = "Use Japanese encoding for parsing text.";
 			shiftJISToolStripMenuItem.Click += shiftJISToolStripMenuItem_Click;
 			// 
 			// windows1252ToolStripMenuItem
 			// 
 			windows1252ToolStripMenuItem.Checked = true;
+			windows1252ToolStripMenuItem.CheckOnClick = true;
 			windows1252ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			windows1252ToolStripMenuItem.Name = "windows1252ToolStripMenuItem";
-			windows1252ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			windows1252ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			windows1252ToolStripMenuItem.Text = "&Windows-1252";
+			windows1252ToolStripMenuItem.ToolTipText = "Use Western European encoding for parsing text.";
 			windows1252ToolStripMenuItem.Click += windows1252ToolStripMenuItem_Click;
+			// 
+			// customToolStripMenuItem
+			// 
+			customToolStripMenuItem.Name = "customToolStripMenuItem";
+			customToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			customToolStripMenuItem.Text = "Custom...";
+			customToolStripMenuItem.ToolTipText = "Set custom encoding for parsing text.";
+			customToolStripMenuItem.Click += customToolStripMenuItem_Click;
 			// 
 			// bigEndianGCSteamToolStripMenuItem
 			// 
@@ -388,7 +411,7 @@
 			waitTimeCheckBox.Location = new System.Drawing.Point(14, 68);
 			waitTimeCheckBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			waitTimeCheckBox.Name = "waitTimeCheckBox";
-			waitTimeCheckBox.Size = new System.Drawing.Size(82, 19);
+			waitTimeCheckBox.Size = new System.Drawing.Size(83, 19);
 			waitTimeCheckBox.TabIndex = 20;
 			waitTimeCheckBox.Text = "Wait Time:";
 			waitTimeCheckBox.UseVisualStyleBackColor = true;
@@ -563,6 +586,8 @@
 		private System.Windows.Forms.CheckBox messageCentered;
 		private System.Windows.Forms.ToolStripMenuItem textOnlyToolStripMenuItem;
 		private System.Windows.Forms.CheckBox messageEmerald2P;
+		private System.Windows.Forms.ToolStripMenuItem customToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem autoToolStripMenuItem;
 	}
 }
 
