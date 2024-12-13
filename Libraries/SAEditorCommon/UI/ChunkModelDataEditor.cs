@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -31,6 +32,85 @@ namespace SAModel.SAEditorCommon.UI
 		}
 		#region Mesh management
 
+		private void editDiffuseToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("Not implemented yet!");
+		}
+		private void editAmbientToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("Not implemented yet!");
+		}
+		private void editSpecularToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("Not implemented yet!");
+		}
+		private void editTextureIDToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[2].Text);
+			int cnkcount = int.Parse(listViewMeshes.SelectedItems[0].SubItems[1].Text);
+			string matstart = listViewMeshes.SelectedItems[0].SubItems[3].Text;
+			PolyChunkTinyTextureID ttid;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+			int index = selectedObj.IndexOf(selectedMesh);
+			if (matstart.StartsWith("Tiny"))
+			{
+				ttid = (PolyChunkTinyTextureID)selectedObj[matID];
+				using (LabelEditor le = new LabelEditor(ttid.TextureID.ToString(), "", true))
+				{
+					if (le.ShowDialog(this) == DialogResult.OK)
+					{
+						int.TryParse(le.Result, out int result);
+						ttid.TextureID = (ushort)result;
+					}
+				}
+			}
+		BuildPolyChunkList();
+		}
+
+		private void editStripAlphaToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[2].Text);
+			int cnkcount = int.Parse(listViewMeshes.SelectedItems[0].SubItems[1].Text);
+			string matstart = listViewMeshes.SelectedItems[0].SubItems[3].Text;
+			int matID2 = 0;
+			string matstart2 = "";
+			if (cnkcount >= 2)
+			{
+				matID2 = int.Parse(listViewMeshes.SelectedItems[0].SubItems[4].Text);
+				matstart2 = listViewMeshes.SelectedItems[0].SubItems[5].Text;
+			}
+			PolyChunkStrip pcs;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+			int index = selectedObj.IndexOf(selectedMesh);
+			if (matstart.StartsWith("Strip"))
+			{
+				pcs = (PolyChunkStrip)selectedObj[matID];
+				using (LabelEditor le = new LabelEditor(pcs.UseAlpha.ToString()))
+				{
+					if (le.ShowDialog(this) == DialogResult.OK)
+					{
+						bool.TryParse(le.Result, out bool result);
+						pcs.UseAlpha = result;
+					}
+				}
+			}
+			else if (matstart2.StartsWith("Strip"))
+			{
+				pcs = (PolyChunkStrip)selectedObj[matID2];
+				using (LabelEditor le = new LabelEditor(pcs.UseAlpha.ToString()))
+				{
+					if (le.ShowDialog(this) == DialogResult.OK)
+					{
+						bool.TryParse(le.Result, out bool result);
+						pcs.UseAlpha = result;
+					}
+				}
+			}
+			BuildPolyChunkList();
+		}
+
 		private void buttonResetMeshes_Click(object sender, System.EventArgs e)
 		{
 			((ChunkAttach)editedModel).Poly.Clear();
@@ -53,7 +133,7 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
 			int index = selectedObj.IndexOf(selectedMesh);
 			foreach (PolyChunk mesh in selectedMeshes)
-			selectedObj.Insert(matID1 + cnkcount, mesh.Clone());
+				selectedObj.Insert(matID1 + cnkcount, mesh.Clone());
 			BuildPolyChunkList();
 			SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
 		}
@@ -72,7 +152,7 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
 			int index = selectedObj.IndexOf(selectedMesh);
 			foreach (PolyChunk mesh in selectedMeshes)
-			selectedObj.Remove(mesh);
+				selectedObj.Remove(mesh);
 			BuildPolyChunkList();
 			SelectMesh(Math.Max(0, index - 1));
 		}
@@ -130,7 +210,7 @@ namespace SAModel.SAEditorCommon.UI
 				selectedObj.RemoveAt(matID1);
 			}
 			BuildPolyChunkList();
-			SelectMesh(Math.Min(listViewMeshes.Items.Count -1, index + 1));
+			SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
 		}
 
 		private void SelectMesh(int index)
@@ -237,6 +317,7 @@ namespace SAModel.SAEditorCommon.UI
 				//editedHierarchy.StripPolyCache();
 				Dictionary<int, PolyChunk> chunks = new Dictionary<int, PolyChunk>();
 				Dictionary<int, PolyChunk> nullchunk = new Dictionary<int, PolyChunk>();
+				Dictionary<int, PolyChunk> matchunk = new Dictionary<int, PolyChunk>();
 				Dictionary<int, Dictionary<int, PolyChunk>> wholechunks = new Dictionary<int, Dictionary<int, PolyChunk>>();
 				if (catt.Poly != null)
 				{
@@ -263,8 +344,8 @@ namespace SAModel.SAEditorCommon.UI
 						}
 						if (catt.Poly[i] is PolyChunkMaterial)
 						{
-							chunks.Add(i, catt.Poly[i]);
-							i++;
+							matchunk.Add(i, catt.Poly[i]);
+							//i++;
 						}
 						if (catt.Poly[i] is PolyChunkTinyTextureID)
 						{
@@ -278,14 +359,23 @@ namespace SAModel.SAEditorCommon.UI
 						if (nullchunk.Count > 0)
 						{
 							wholechunks.Add(n, nullchunk);
-							wholechunks.Add(n + 1, chunks);
+							if (matchunk.Count > 0)
+								wholechunks.Add(n + 1, matchunk);
+							else
+								wholechunks.Add(n + 1, chunks);
 							n++;
 						}
 						else
-							wholechunks.Add(n, chunks);
+						{
+							if (matchunk.Count > 0)
+								wholechunks.Add(n, matchunk);
+							else
+								wholechunks.Add(n, chunks);
+						}
 						n++;
 						chunks = new Dictionary<int, PolyChunk>();
 						nullchunk = new Dictionary<int, PolyChunk>();
+						matchunk = new Dictionary<int, PolyChunk>();
 					}
 
 					foreach (KeyValuePair<int, Dictionary<int, PolyChunk>> meshset in wholechunks)
@@ -358,11 +448,18 @@ namespace SAModel.SAEditorCommon.UI
 				buttonCloneMesh.Enabled = false;
 			else
 				buttonCloneMesh.Enabled = true;
+			editDiffuseToolStripMenuItem.Enabled = matstart.Contains("Diffuse");
+			editAmbientToolStripMenuItem.Enabled = matstart.Contains("Ambient");
+			editSpecularToolStripMenuItem.Enabled = matstart.Contains("Specular");
+			editTextureIDToolStripMenuItem.Enabled = matstart.StartsWith("Tiny");
+			editStripAlphaToolStripMenuItem.Enabled = matstart.StartsWith("Strip");
+			if (cnkcount >= 2 && listViewMeshes.SelectedItems[0].SubItems[5].Text.StartsWith("Strip"))
+				editStripAlphaToolStripMenuItem.Enabled = true;
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
 			if (prevmatstart.StartsWith("Bits"))
 				buttonMoveMeshUp.Enabled = false;
-			buttonMoveMeshDown.Enabled = matID1 + cnkcount < selectedObj.Count - 1;
+			buttonMoveMeshDown.Enabled = matID1 + cnkcount < selectedObj.Count;
 			if (matstart.StartsWith("Bits"))
 				buttonMoveMeshDown.Enabled = false;
 			// Status bar
@@ -381,7 +478,8 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void listViewMeshes_MouseClick(object sender, MouseEventArgs e)
 		{
-
+			if (e.Button == MouseButtons.Right && listViewMeshes.SelectedIndices.Count != 0)
+				contextMenuStripMatEdit.Show(listViewMeshes, e.Location);
 		}
 
 		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
@@ -435,5 +533,10 @@ namespace SAModel.SAEditorCommon.UI
 			comboBoxNode_SelectedIndexChanged(sender, e);
 		}
 		#endregion
+
+		private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+
+		}
 	}
 }

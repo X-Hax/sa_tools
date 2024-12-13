@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChunkModelDataEditor));
 			buttonMoveMeshUp = new System.Windows.Forms.Button();
 			buttonMoveMeshDown = new System.Windows.Forms.Button();
@@ -66,10 +67,17 @@
 			buttonResetMeshes = new System.Windows.Forms.Button();
 			buttonClose = new System.Windows.Forms.Button();
 			comboBoxNode = new System.Windows.Forms.ComboBox();
+			contextMenuStripMatEdit = new System.Windows.Forms.ContextMenuStrip(components);
+			editDiffuseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editAmbientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editSpecularToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editTextureIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editStripAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			statusStrip1.SuspendLayout();
 			groupBoxLabels.SuspendLayout();
 			groupBoxBounds.SuspendLayout();
 			groupBoxMeshList.SuspendLayout();
+			contextMenuStripMatEdit.SuspendLayout();
 			SuspendLayout();
 			// 
 			// buttonMoveMeshUp
@@ -186,8 +194,8 @@
 			// toolStripStatusLabelInfo
 			// 
 			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-			toolStripStatusLabelInfo.Size = new System.Drawing.Size(514, 25);
-			toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(663, 25);
+			toolStripStatusLabelInfo.Text = "Click a mesh to display its information here. Right-click to edit pieces, if applicable.";
 			// 
 			// labelModelName
 			// 
@@ -414,6 +422,49 @@
 			comboBoxNode.TabIndex = 0;
 			comboBoxNode.SelectedIndexChanged += comboBoxNode_SelectedIndexChanged;
 			// 
+			// contextMenuStripMatEdit
+			// 
+			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editDiffuseToolStripMenuItem, editAmbientToolStripMenuItem, editSpecularToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
+			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(207, 164);
+			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
+			// 
+			// editDiffuseToolStripMenuItem
+			// 
+			editDiffuseToolStripMenuItem.Name = "editDiffuseToolStripMenuItem";
+			editDiffuseToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
+			editDiffuseToolStripMenuItem.Text = "Edit Diffuse";
+			this.editDiffuseToolStripMenuItem.Click += new System.EventHandler(this.editDiffuseToolStripMenuItem_Click);
+			// 
+			// editAmbientToolStripMenuItem
+			// 
+			editAmbientToolStripMenuItem.Name = "editAmbientToolStripMenuItem";
+			editAmbientToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
+			editAmbientToolStripMenuItem.Text = "Edit Ambient";
+			this.editAmbientToolStripMenuItem.Click += new System.EventHandler(this.editAmbientToolStripMenuItem_Click);
+			// 
+			// editSpecularToolStripMenuItem
+			// 
+			editSpecularToolStripMenuItem.Name = "editSpecularToolStripMenuItem";
+			editSpecularToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
+			editSpecularToolStripMenuItem.Text = "Edit Specular";
+			this.editSpecularToolStripMenuItem.Click += new System.EventHandler(this.editSpecularToolStripMenuItem_Click);
+			// 
+			// editTextureIDToolStripMenuItem
+			// 
+			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
+			editTextureIDToolStripMenuItem.Text = "Edit Texture ID";
+			this.editTextureIDToolStripMenuItem.Click += new System.EventHandler(this.editTextureIDToolStripMenuItem_Click);
+			// 
+			// editStripAlphaToolStripMenuItem
+			// 
+			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
+			editStripAlphaToolStripMenuItem.Text = "Edit Strip Alpha";
+			this.editStripAlphaToolStripMenuItem.Click += new System.EventHandler(this.editStripAlphaToolStripMenuItem_Click);
+			// 
 			// ChunkModelDataEditor
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
@@ -442,6 +493,7 @@
 			groupBoxBounds.ResumeLayout(false);
 			groupBoxBounds.PerformLayout();
 			groupBoxMeshList.ResumeLayout(false);
+			contextMenuStripMatEdit.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -484,5 +536,11 @@
 		private System.Windows.Forms.ColumnHeader columnHeaderCnkType3;
 		private System.Windows.Forms.ColumnHeader columnHeaderCnkID2;
 		private System.Windows.Forms.ColumnHeader columnHeaderCnkID3;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripMatEdit;
+		private System.Windows.Forms.ToolStripMenuItem editDiffuseToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editAmbientToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editSpecularToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editTextureIDToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editStripAlphaToolStripMenuItem;
 	}
 }
