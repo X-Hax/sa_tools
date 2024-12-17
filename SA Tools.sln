@@ -25,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splitMDL", "CommandLine\spl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splitMTN", "CommandLine\splitMTN\splitMTN.csproj", "{58051113-C935-4EBD-99AE-DED1D3D0C42A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "buildMDL", "CommandLine\buildMDL\buildMDL.csproj", "{3A947AD1-86A1-468E-8627-8FBF78193DE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildMDL", "CommandLine\BuildMDL\BuildMDL.csproj", "{3A947AD1-86A1-468E-8627-8FBF78193DE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "buildMTN", "CommandLine\buildMTN\buildMTN.csproj", "{BEBE522C-F75C-4CAD-9B5D-FC9CDF98DBEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildMTN", "CommandLine\BuildMTN\BuildMTN.csproj", "{BEBE522C-F75C-4CAD-9B5D-FC9CDF98DBEB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAEditorCommon", "Libraries\SAEditorCommon\SAEditorCommon.csproj", "{0D72870C-29A2-4B16-B016-2F2E266A0E64}"
 EndProject
@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextureRemap", "CommandLine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "splitEvent", "CommandLine\splitEvent\splitEvent.csproj", "{91C5411A-8BC5-4428-A486-DF3F0F52F288}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "buildEvent", "CommandLine\buildEvent\buildEvent.csproj", "{8F6F97D2-0662-420A-8490-CC2B749D36DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildEvent", "CommandLine\BuildEvent\BuildEvent.csproj", "{8F6F97D2-0662-420A-8490-CC2B749D36DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SA2EventViewer", "SA2Tools\SA2EventViewer\SA2EventViewer.csproj", "{82157E5D-B596-4380-9AB0-2DFF27DBB716}"
 EndProject
