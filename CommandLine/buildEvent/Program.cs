@@ -3,47 +3,35 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Net;
 
-namespace buildEvent
+namespace BuildEvent
 {
-	static class Program
+	internal static class Program
 	{
-		public class Wildcard : Regex
+		private class Wildcard : Regex
 		{
-			/// <summary>
-			/// Initializes a wildcard with the given search pattern.
-			/// </summary>
-			/// <param name="pattern">The wildcard pattern to match.</param>
-			public Wildcard(string pattern)
-			 : base(WildcardToRegex(pattern))
-			{
-			}
-
 			/// <summary>
 			/// Initializes a wildcard with the given search pattern and options.
 			/// </summary>
 			/// <param name="pattern">The wildcard pattern to match.</param>
 			/// <param name="options">A combination of one or more
-			/// <see cref="System.Text.RegexOptions"/>.</param>
-			public Wildcard(string pattern, RegexOptions options)
-			 : base(WildcardToRegex(pattern), options)
-			{
-			}
+			/// <see cref="System.Text.RegularExpressions.RegexOptions"/>.</param>
+			public Wildcard(string pattern, RegexOptions options) : base(WildcardToRegex(pattern), options) { }
 
 			/// <summary>
 			/// Converts a wildcard to a regex.
 			/// </summary>
 			/// <param name="pattern">The wildcard pattern to convert.</param>
 			/// <returns>A regex equivalent of the given wildcard.</returns>
-			public static string WildcardToRegex(string pattern)
+			private static string WildcardToRegex(string pattern)
 			{
-				return "^" + Regex.Escape(pattern).
-				 Replace("\\*", ".*").
-				 Replace("\\?", ".") + "$";
+				return "^" + Escape(pattern)
+					.Replace("\\*", ".*")
+					.Replace("\\?", ".") + "$";
 			}
 		}
-		static void Main(string[] args)
+
+		private static void Main(string[] args)
 		{
 			if (args.Length == 0)
 			{
@@ -71,250 +59,360 @@ namespace buildEvent
 				Console.ReadLine();
 				return;
 			}
-			Queue<string> argq = new Queue<string>(args);
-			string fullpath_bin = Path.GetFullPath(args[0]);
-			string fullpath_out = Path.GetDirectoryName(fullpath_bin);
-			string name = Path.GetFileName(fullpath_bin);
-			Wildcard evwcard = new Wildcard("e*", RegexOptions.IgnoreCase);
-			Wildcard mevwcard = new Wildcard("me*", RegexOptions.IgnoreCase);
-			Wildcard evxwcard = new Wildcard("e*_*", RegexOptions.IgnoreCase);
-			Wildcard mevxwcard = new Wildcard("me*_*", RegexOptions.IgnoreCase);
-			Wildcard exfwcard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
-			Wildcard mexfwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
+			
+			var argQueue = new Queue<string>(args);
+			
+			var fullPathBin = Path.GetFullPath(args[0]);
+			var fullPathOut = Path.GetDirectoryName(fullPathBin);
+			var name = Path.GetFileName(fullPathBin);
+			
+			var evWCard = new Wildcard("e*", RegexOptions.IgnoreCase);
+			var mevWCard = new Wildcard("me*", RegexOptions.IgnoreCase);
+			var evxWCard = new Wildcard("e*_*", RegexOptions.IgnoreCase);
+			var mevxWCard = new Wildcard("me*_*", RegexOptions.IgnoreCase);
+			var exfWCard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
+			var mexfWCard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
+			
 			if (!name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
 			{
-				if (mevwcard.IsMatch(name))
+				if (mevWCard.IsMatch(name))
 				{
-					if (mevxwcard.IsMatch(name))
+					if (mevxWCard.IsMatch(name))
 					{
 						if (!name.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+						{
 							name += ".scr";
+						}
 					}
 					else
 					{
 						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+						{
 							name += ".prs";
+						}
 					}
 				}
-				else if (evwcard.IsMatch(name))
+				else if (evWCard.IsMatch(name))
 				{
-					if (evxwcard.IsMatch(name))
+					if (evxWCard.IsMatch(name))
 					{
 						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
 						&& (!name.EndsWith(".scr", StringComparison.OrdinalIgnoreCase)))
+						{
 							name += ".prs";
+						}
 					}
 					else
 					{
 						if (!name.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
 							&& (!name.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)))
+						{
 							name += ".prs";
+						}
 					}
 				}
 			}
-			bool? be = null;
-			string endian = "";
+			
+			bool? bigEndian = null;
 			bool? lang = null;
-			string langfile;
-			string format = "default";
-			string formattype;
-			int formatid = 0;
-			string compress;
 			bool? compression = null;
+
+			var format = "default";
+			var formatId = 0;
+			
 			if (args.Length > 1)
 			{
-				for (int a = 1; a < args.Length; a++)
+				for (var a = 1; a < args.Length; a++)
 				{
 					switch (args[a])
 					{
 						case "-endian":
-							endian = args[a + 1];
+							var endian = args[a + 1];
+							
 							if (endian.Equals("be", StringComparison.OrdinalIgnoreCase))
-								be = true;
+							{
+								bigEndian = true;
+							}
 							else if (endian.Equals("le", StringComparison.OrdinalIgnoreCase))
-								be = false;
+							{
+								bigEndian = false;
+							}
 							else
+							{
 								Console.WriteLine("Invalid endian setting. Using file's default setting.");
+							}
+
 							a++;
 							break;
 						case "-datatype":
-							langfile = args[a + 1];
-							if (langfile.Equals("full", StringComparison.OrdinalIgnoreCase))
+							var langFile = args[a + 1];
+							
+							if (langFile.Equals("full", StringComparison.OrdinalIgnoreCase))
+							{
 								lang = false;
-							else if (langfile.Equals("language", StringComparison.OrdinalIgnoreCase))
+							}
+							else if (langFile.Equals("language", StringComparison.OrdinalIgnoreCase))
+							{
 								lang = true;
+							}
 							else
+							{
 								Console.WriteLine("Invalid Event Extra data type setting. Using file's default setting.");
+							}
+
 							a++;
 							break;
 						case "-format":
-							formattype = args[a + 1];
-							if (formattype.Equals("dc", StringComparison.OrdinalIgnoreCase))
+							var formatType = args[a + 1];
+							
+							if (formatType.Equals("dc", StringComparison.OrdinalIgnoreCase))
 							{
-								format = formattype.ToLowerInvariant();
-								formatid = 1;
+								format = formatType.ToLowerInvariant();
+								formatId = 1;
 							}
-							else if (formattype.Equals("battle", StringComparison.OrdinalIgnoreCase))
+							else if (formatType.Equals("battle", StringComparison.OrdinalIgnoreCase))
 							{
-								format = formattype.ToLowerInvariant();
-								formatid = 2;
+								format = formatType.ToLowerInvariant();
+								formatId = 2;
 							}
-							else if (formattype.Equals("dcbeta", StringComparison.OrdinalIgnoreCase))
+							else if (formatType.Equals("dcbeta", StringComparison.OrdinalIgnoreCase))
 							{
-								format = formattype.ToLowerInvariant();
-								formatid = 3;
+								format = formatType.ToLowerInvariant();
+								formatId = 3;
 							}
-							else if (formattype.Equals("battlebeta", StringComparison.OrdinalIgnoreCase))
+							else if (formatType.Equals("battlebeta", StringComparison.OrdinalIgnoreCase))
 							{
-								format = formattype.ToLowerInvariant();
-								formatid = 4;
+								format = formatType.ToLowerInvariant();
+								formatId = 4;
 							}
 							else
+							{
 								Console.WriteLine("Invalid event format setting. Using file's default setting.");
+							}
+
 							a++;
 							break;
 						case "-output":
-							fullpath_out = args[a + 1];
-							if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
-								fullpath_out = Path.GetFullPath(fullpath_out);
+							fullPathOut = args[a + 1];
+							
+							if (fullPathOut[^1] != '/')
+							{
+								fullPathOut = string.Concat(fullPathOut, '/');
+							}
+
+							fullPathOut = Path.GetFullPath(fullPathOut);
 							a++;
 							break;
 						case "-compression":
-							compress = args[a + 1];
+							var compress = args[a + 1];
 							if (compress.Equals("bin", StringComparison.OrdinalIgnoreCase))
+							{
 								compression = false;
+							}
 							else if (compress.Equals("prs", StringComparison.OrdinalIgnoreCase))
+							{
 								compression = true;
+							}
+
 							a++;
 							break;
 					}
 				}
 			}
-			string evfilename;
-			if (argq.Count > 0)
+
+			if (argQueue.Count <= 0)
 			{
-				evfilename = fullpath_bin;
-				Console.WriteLine("File: {0}", evfilename);
-				Console.WriteLine("Output path: {0}", fullpath_out);
-				System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-				string endiangame = "";
-				if (be.HasValue)
+				return;
+			}
+
+			Console.WriteLine("File: {0}", fullPathBin);
+			Console.WriteLine("Output path: {0}", fullPathOut);
+			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+			
+			var endianGame = "";
+			
+			if (bigEndian.HasValue)
+			{
+				if (bigEndian == false)
 				{
-					if (be == false)
-						endiangame = "Dreamcast";
-					else
-						endiangame = "GameCube/PS3/X360/PC";
-				}
-				if (name.Contains("TAILSPLAIN", StringComparison.OrdinalIgnoreCase))
-				{
-					if (be.HasValue)
-						Console.WriteLine("Building Tails' Cyclone File for the {0} version.", be == false ? "Dreamcast" : "GameCube/PS3/X360/PC");
-					else
-						Console.WriteLine("Building Tails' Cyclone file");
-					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
-						sa2EventTailsPlane.Build(be, evfilename, fullpath_out);
-					else
-						sa2EventTailsPlane.Build(be, evfilename + ".prs", fullpath_out);
-				}
-				else if (name.EndsWith("TEXLIST.PRS", StringComparison.OrdinalIgnoreCase)
-					|| name.EndsWith("TEXLIST", StringComparison.OrdinalIgnoreCase))
-				{
-					if (be.HasValue)
-						Console.WriteLine($"Building Event Texlist File {name} for the {endiangame} version.");
-					else
-						Console.WriteLine($"Building Event Texlist file {name}");
-					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
-						sa2Event.BuildTexlist(be, evfilename, fullpath_out);
-					else
-						sa2Event.BuildTexlist (be, evfilename + ".prs", fullpath_out);
-				}
-				else if (mexfwcard.IsMatch(name))
-				{
-					if (be.HasValue)
-						Console.WriteLine($"Building Mini-Event Extra file {name} for the {endiangame} version.");
-					else
-						Console.WriteLine($"Building Mini-Event Extra file {name}");
-					if (fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
-						sa2EventExtra.BuildMini(be, evfilename, fullpath_out);
-					else
-						sa2EventExtra.BuildMini(be, evfilename + ".scr", fullpath_out);
-				}
-				else if (exfwcard.IsMatch(name))
-				{
-					string datagame = "";
-					if (lang.HasValue)
-					{
-						if (lang == false)
-							datagame = "This is a complete file.";
-						else
-							datagame = "File will only contain subtitle and audio timings.";
-					}
-					if (be.HasValue && lang.HasValue)
-						Console.WriteLine($"Building Event Extra file {name} for the {endiangame} version. {datagame}");
-					else if (be.HasValue)
-						Console.WriteLine($"Building Event Extra file {name} for the {endiangame} version.");
-					else if (lang.HasValue)
-						Console.WriteLine($"Building Event Extra file {name}. {datagame}");
-					else
-						Console.WriteLine($"Building Event Extra file {name}");
-					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
-						|| fullpath_bin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
-						sa2EventExtra.Build(be, lang, evfilename, fullpath_out);
-					else
-						sa2EventExtra.Build(be, lang, evfilename + ".prs", fullpath_out);
-				}
-				else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
-				{
-					if (be.HasValue)
-						Console.WriteLine($"Building Mini-Event {name} for the {endiangame} version.");
-					else
-						Console.WriteLine($"Building Mini-Event {name}");
-					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
-						SA2MiniEvent.Build(be, evfilename, fullpath_out);
-					else
-						SA2MiniEvent.Build(be, evfilename + ".prs", fullpath_out);
+					endianGame = "Dreamcast";
 				}
 				else
 				{
-					string ext;
-					if (compression.HasValue)
-					{
-						if (compression == true)
-							ext = ".prs";
-						else
-							ext = ".bin";
-					}
-					else
-						ext = ".prs";
-					string mainevname = Path.GetFileNameWithoutExtension(name) + ext;
+					endianGame = "GameCube/PS3/X360/PC";
+				}
+			}
+			if (name.Contains("TAILSPLAIN", StringComparison.OrdinalIgnoreCase))
+			{
+				if (bigEndian.HasValue)
+				{
+					Console.WriteLine("Building Tails' Cyclone File for the {0} version.", bigEndian == false ? "Dreamcast" : "GameCube/PS3/X360/PC");
+				}
+				else
+				{
+					Console.WriteLine("Building Tails' Cyclone file");
+				}
 
-					if (format != "default")
+				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+				{
+					sa2EventTailsPlane.Build(bigEndian, fullPathBin, fullPathOut);
+				}
+				else
+				{
+					sa2EventTailsPlane.Build(bigEndian, fullPathBin + ".prs", fullPathOut);
+				}
+			}
+			else if (name.EndsWith("TEXLIST.PRS", StringComparison.OrdinalIgnoreCase)
+			         || name.EndsWith("TEXLIST", StringComparison.OrdinalIgnoreCase))
+			{
+				if (bigEndian.HasValue)
+				{
+					Console.WriteLine($"Building Event Texlist File {name} for the {endianGame} version.");
+				}
+				else
+				{
+					Console.WriteLine($"Building Event Texlist file {name}");
+				}
+
+				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+				{
+					sa2Event.BuildTexlist(bigEndian, fullPathBin, fullPathOut);
+				}
+				else
+				{
+					sa2Event.BuildTexlist (bigEndian, fullPathBin + ".prs", fullPathOut);
+				}
+			}
+			else if (mexfWCard.IsMatch(name))
+			{
+				if (bigEndian.HasValue)
+				{
+					Console.WriteLine($"Building Mini-Event Extra file {name} for the {endianGame} version.");
+				}
+				else
+				{
+					Console.WriteLine($"Building Mini-Event Extra file {name}");
+				}
+
+				if (fullPathBin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+				{
+					sa2EventExtra.BuildMini(bigEndian, fullPathBin, fullPathOut);
+				}
+				else
+				{
+					sa2EventExtra.BuildMini(bigEndian, fullPathBin + ".scr", fullPathOut);
+				}
+			}
+			else if (exfWCard.IsMatch(name))
+			{
+				var dataGame = "";
+				
+				if (lang.HasValue)
+				{
+					if (lang == false)
 					{
-						string gametype = "version specified in the json file.";
-						switch (formatid)
-						{
-							case 1:
-								gametype = "Dreamcast version.";
-								break;
-							case 2:
-								gametype = "GameCube/PS3/X360/PC version.";
-								break;
-							case 3:
-								gametype = "Dreamcast (Beta) version. This file is only compatible with SA2: The Trial and SA2: Preview.";
-								break;
-							case 4:
-								gametype = "GameCube (Beta) version. This file will not work with any available version of SA2.";
-								break;
-						}
-						Console.WriteLine($"Building Event {mainevname} for the {gametype}");
+						dataGame = "This is a complete file.";
 					}
 					else
-						Console.WriteLine($"Building Event {mainevname}");
-					if (fullpath_bin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
-						|| fullpath_bin.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
-						sa2Event.Build(evfilename, format, fullpath_out);
+					{
+						dataGame = "File will only contain subtitle and audio timings.";
+					}
+				}
+				
+				if (bigEndian.HasValue && lang.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name} for the {endianGame} version. {dataGame}");
+				}
+				else if (bigEndian.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name} for the {endianGame} version.");
+				}
+				else if (lang.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name}. {dataGame}");
+				}
+				else
+				{
+					Console.WriteLine($"Building Event Extra file {name}");
+				}
+
+				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+				    || fullPathBin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
+				{
+					sa2EventExtra.Build(bigEndian, lang, fullPathBin, fullPathOut);
+				}
+				else
+				{
+					sa2EventExtra.Build(bigEndian, lang, fullPathBin + ".prs", fullPathOut);
+				}
+			}
+			else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
+			{
+				if (bigEndian.HasValue)
+				{
+					Console.WriteLine($"Building Mini-Event {name} for the {endianGame} version.");
+				}
+				else
+				{
+					Console.WriteLine($"Building Mini-Event {name}");
+				}
+
+				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
+				{
+					SA2MiniEvent.Build(bigEndian, fullPathBin, fullPathOut);
+				}
+				else
+				{
+					SA2MiniEvent.Build(bigEndian, fullPathBin + ".prs", fullPathOut);
+				}
+			}
+			else
+			{
+				string ext;
+				if (compression.HasValue)
+				{
+					if (compression == true)
+					{
+						ext = ".prs";
+					}
 					else
-						sa2Event.Build(evfilename + ext, format, fullpath_out);
+					{
+						ext = ".bin";
+					}
+				}
+				else
+				{
+					ext = ".prs";
+				}
+
+				var mainEventName = Path.GetFileNameWithoutExtension(name) + ext;
+
+				if (format != "default")
+				{
+					var gameType = formatId switch
+					{
+						1 => "Dreamcast version.",
+						2 => "GameCube/PS3/X360/PC version.",
+						3 => "Dreamcast (Beta) version. This file is only compatible with SA2: The Trial and SA2: Preview.",
+						4 => "GameCube (Beta) version. This file will not work with any available version of SA2.",
+						_ => "version specified in the json file."
+					};
+					
+					Console.WriteLine($"Building Event {mainEventName} for the {gameType}");
+				}
+				else
+				{
+					Console.WriteLine($"Building Event {mainEventName}");
+				}
+
+				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
+				    || fullPathBin.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+				{
+					sa2Event.Build(fullPathBin, format, fullPathOut);
+				}
+				else
+				{
+					sa2Event.Build(fullPathBin + ext, format, fullPathOut);
 				}
 			}
 		}
