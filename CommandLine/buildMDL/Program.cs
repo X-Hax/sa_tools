@@ -38,7 +38,7 @@ namespace BuildMDL
 				mdlFilename = Console.ReadLine().Trim('"');
 			}
 
-			sa2MDL.Build(bigEndian, mdlFilename);
+			SA2MDL.Build(bigEndian, mdlFilename);
 			
 			/*
 			if (argQueue.Count > 0)
@@ -50,11 +50,11 @@ namespace BuildMDL
 
 				if (file.HasFlag(FileAttributes.Directory))
 				{
-					sa2MDL.Build(bigEndian, mdlFilename);
+					SA2MDL.Build(bigEndian, mdlFilename);
 				}
 				else
 				{
-					sa2MDL.Split(mdlFilename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(mdlFilename)), argQueue.ToArray());
+					SA2MDL.Split(mdlFilename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(mdlFilename)), argQueue.ToArray());
 				}
 			}
 			else
@@ -66,11 +66,11 @@ namespace BuildMDL
 
 				if (file.HasFlag(FileAttributes.Directory))
 				{
-					sa2MDL.Build(be, mdlFilename);
+					SA2MDL.Build(be, mdlFilename);
 				}
 				else
 				{
-					sa2MDL.Split(mdlFilename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(mdlFilename)), argQueue.ToArray());
+					SA2MDL.Split(mdlFilename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(mdlFilename)), argQueue.ToArray());
 				}
 			}
 			*/

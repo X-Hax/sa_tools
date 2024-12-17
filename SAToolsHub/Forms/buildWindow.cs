@@ -157,9 +157,9 @@ namespace SAToolsHub
 				{
 					string file = Path.Combine(filePath, folder);
 					if (file.Contains("mdl"))
-						sa2MDL.Build(true, file);
+						SA2MDL.Build(true, file);
 					if (file.Contains("mtn"))
-						sa2MTN.Build(true, file);
+						SA2MTN.Build(true, file);
 				}
 			}
 

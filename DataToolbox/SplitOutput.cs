@@ -156,7 +156,7 @@ namespace SAModel.DataToolbox
 			{
 				Console.WriteLine("Starting split for " + files[0] + System.Environment.NewLine);
 				Console.WriteLine("Output folder: " + out_path + System.Environment.NewLine);
-				SplitTools.SAArc.sa2MDL.Split(files[0], out_path, files.Skip(1).ToArray());
+				SplitTools.SAArc.SA2MDL.Split(files[0], out_path, files.Skip(1).ToArray());
 			}
 			Console.WriteLine("Split job finished.");
 		}

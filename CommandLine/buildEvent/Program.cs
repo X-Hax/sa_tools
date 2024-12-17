@@ -276,11 +276,11 @@ namespace BuildEvent
 
 				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					sa2Event.BuildTexlist(bigEndian, fullPathBin, fullPathOut);
+					SA2Event.BuildTexlist(bigEndian, fullPathBin, fullPathOut);
 				}
 				else
 				{
-					sa2Event.BuildTexlist (bigEndian, fullPathBin + ".prs", fullPathOut);
+					SA2Event.BuildTexlist (bigEndian, fullPathBin + ".prs", fullPathOut);
 				}
 			}
 			else if (mexfWCard.IsMatch(name))
@@ -408,11 +408,11 @@ namespace BuildEvent
 				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
 				    || fullPathBin.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
 				{
-					sa2Event.Build(fullPathBin, format, fullPathOut);
+					SA2Event.Build(fullPathBin, format, fullPathOut);
 				}
 				else
 				{
-					sa2Event.Build(fullPathBin + ext, format, fullPathOut);
+					SA2Event.Build(fullPathBin + ext, format, fullPathOut);
 				}
 			}
 		}
