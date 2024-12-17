@@ -4,36 +4,42 @@ using System.Collections.Generic;
 
 namespace buildMTN
 {
-	class Program
+	internal static class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			Queue<string> argq = new Queue<string>(args);
-			bool? be = null;
-			if (argq.Count > 0)
-				if (argq.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
-				{
-					be = true;
-					argq.Dequeue();
-				}
-				else if (argq.Peek().Equals("/le", StringComparison.OrdinalIgnoreCase))
-				{
-					be = false;
-					argq.Dequeue();
-				}
-			string mtnFileName;
-			if (argq.Count > 0)
+			var argQueue = new Queue<string>(args);
+			
+			bool? bigEndian = null;
+			
+			if (argQueue.Count > 0)
 			{
-				mtnFileName = argq.Dequeue();
+				if (argQueue.Peek().Equals("/be", StringComparison.OrdinalIgnoreCase))
+				{
+					bigEndian = true;
+					argQueue.Dequeue();
+				}
+				else if (argQueue.Peek().Equals("/le", StringComparison.OrdinalIgnoreCase))
+				{
+					bigEndian = false;
+					argQueue.Dequeue();
+				}
+			}
+
+			string mtnFileName;
+			if (argQueue.Count > 0)
+			{
+				mtnFileName = argQueue.Dequeue();
 				Console.WriteLine("File: {0}", mtnFileName);
-				sa2MTN.Build(be, mtnFileName);
 			}
 			else
 			{
 				Console.Write("File: ");
 				mtnFileName = Console.ReadLine().Trim('"');
-				sa2MTN.Build(be, mtnFileName);
 			}
+
+			SA2MTN.Build(bigEndian, mtnFileName);
+
 			/*
 			if (argq.Count > 0)
 			{

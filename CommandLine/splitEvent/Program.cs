@@ -118,7 +118,7 @@ namespace splitEvent
 			if (name.Contains("tailsplain", StringComparison.OrdinalIgnoreCase))
 				sa2EventTailsPlane.Split(fullpath_bin, fullpath_out);
 			else if (name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
-				sa2Event.SplitExternalTexlist(fullpath_bin, fullpath_out);
+				SA2Event.SplitExternalTexList(fullpath_bin, fullpath_out);
 			else if (mexfwcard.IsMatch(name))
 				sa2EventExtra.SplitMini(fullpath_bin, fullpath_out);
 			else if (exfwcard.IsMatch(name))
@@ -126,7 +126,7 @@ namespace splitEvent
 			else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
 				SA2MiniEvent.Split(fullpath_bin, fullpath_out);
 			else
-				sa2Event.Split(fullpath_bin, fullpath_out);
+				SA2Event.Split(fullpath_bin, fullpath_out);
 		}
 	}
 }

@@ -14,13 +14,13 @@ namespace splitMTN
 			{
 				filename = argq.Dequeue();
 				Console.WriteLine("File: {0}", filename);
-				sa2MTN.Split(filename);
+				SA2MTN.Split(filename);
 			}
 			else
 			{
 				Console.Write("File: ");
 				filename = Console.ReadLine();
-				sa2MTN.Split(filename);
+				SA2MTN.Split(filename);
 			}
 		}
 	}

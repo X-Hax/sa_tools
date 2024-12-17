@@ -701,7 +701,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile, exmtnfile);
+				SA2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile, exmtnfile);
 		}
 
 		/// <summary>
@@ -829,19 +829,19 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 						break;
 					case "Trial":
 					case "Preview":
-						sa2Event.Split(filePath, fileOutputFolder, labelfile);
+						SA2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
 						break;
 					case "MainPRS":
 					case "MainPC":
-						sa2Event.Split(filePath, fileOutputFolder, labelfile);
+						SA2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
-						sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
+						SA2Event.SplitExternalTexList(filePathTex, fileOutputFolder);
 						break;
 					case "MainBIN":
-						sa2Event.Split(filePath, fileOutputFolder, labelfile);
+						SA2Event.Split(filePath, fileOutputFolder, labelfile);
 						break;
 					case "Cyclone":
 						sa2EventTailsPlane.Split(filePath, fileOutputFolder, labelfile);
