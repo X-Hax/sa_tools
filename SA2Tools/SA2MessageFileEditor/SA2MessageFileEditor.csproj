@@ -9,7 +9,6 @@
 		<DebugType>embedded</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<Platforms>x64;x86</Platforms>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<ItemGroup>

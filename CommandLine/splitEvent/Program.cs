@@ -7,23 +7,14 @@ namespace splitEvent
 {
 	static class Program
 	{
-		public class Wildcard : Regex
+		private class Wildcard : Regex
 		{
-			/// <summary>
-			/// Initializes a wildcard with the given search pattern.
-			/// </summary>
-			/// <param name="pattern">The wildcard pattern to match.</param>
-			public Wildcard(string pattern)
-			 : base(WildcardToRegex(pattern))
-			{
-			}
-
 			/// <summary>
 			/// Initializes a wildcard with the given search pattern and options.
 			/// </summary>
 			/// <param name="pattern">The wildcard pattern to match.</param>
 			/// <param name="options">A combination of one or more
-			/// <see cref="System.Text.RegexOptions"/>.</param>
+			/// <see cref="System.Text.RegularExpressions.RegexOptions"/>.</param>
 			public Wildcard(string pattern, RegexOptions options)
 			 : base(WildcardToRegex(pattern), options)
 			{
@@ -45,19 +36,23 @@ namespace splitEvent
 		{
 			string fullpath_out;
 			string fullpath_bin;
+			
 			if (args.Length == 0)
 			{
 				Console.Write("Filename: ");
-				args = new string[] { Console.ReadLine().Trim('"') };
+				args = [Console.ReadLine().Trim('"')];
 			}
+			
 			fullpath_bin = Path.GetFullPath(args[0]);
 			string name = Path.GetFileName(fullpath_bin);
+			
 			Wildcard evwcard = new Wildcard("e*", RegexOptions.IgnoreCase);
 			Wildcard mevwcard = new Wildcard("me*", RegexOptions.IgnoreCase);
 			Wildcard evxwcard = new Wildcard("e*_*", RegexOptions.IgnoreCase);
 			Wildcard mevxwcard = new Wildcard("me*_*", RegexOptions.IgnoreCase);
 			Wildcard exfwcard = new Wildcard("e*_*.*", RegexOptions.IgnoreCase);
 			Wildcard mexfwcard = new Wildcard("me*_*.*", RegexOptions.IgnoreCase);
+			
 			if (!name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
 			{
 				if (mevwcard.IsMatch(name))
@@ -111,22 +106,40 @@ namespace splitEvent
 			if (args.Length > 1)
 			{
 				fullpath_out = args[1];
-				if (fullpath_out[fullpath_out.Length - 1] != '/') fullpath_out = string.Concat(fullpath_out, '/');
+				if (fullpath_out[fullpath_out.Length - 1] != '/')
+				{
+					fullpath_out = string.Concat(fullpath_out, '/');
+				}
+
 				fullpath_out = Path.GetFullPath(fullpath_out);
 			}
+			
 			Console.WriteLine("Output folder: {0}", fullpath_out);
+			
 			if (name.Contains("tailsplain", StringComparison.OrdinalIgnoreCase))
+			{
 				sa2EventTailsPlane.Split(fullpath_bin, fullpath_out);
+			}
 			else if (name.EndsWith("texlist.prs", StringComparison.OrdinalIgnoreCase))
+			{
 				SA2Event.SplitExternalTexList(fullpath_bin, fullpath_out);
+			}
 			else if (mexfwcard.IsMatch(name))
+			{
 				sa2EventExtra.SplitMini(fullpath_bin, fullpath_out);
+			}
 			else if (exfwcard.IsMatch(name))
+			{
 				sa2EventExtra.Split(fullpath_bin, fullpath_out);
+			}
 			else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))
+			{
 				SA2MiniEvent.Split(fullpath_bin, fullpath_out);
+			}
 			else
+			{
 				SA2Event.Split(fullpath_bin, fullpath_out);
+			}
 		}
 	}
 }
