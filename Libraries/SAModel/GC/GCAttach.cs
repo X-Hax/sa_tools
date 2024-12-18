@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SAModel.GC
@@ -14,19 +15,19 @@ namespace SAModel.GC
 		/// <summary>
 		/// The seperate sets of vertex data in this attach
 		/// </summary>
-		public List<GCVertexSet> vertexData;
+		public List<GCVertexSet> VertexData;
 		public string VertexName { get; set; }
-		public uint gap { get; set; }
+		public uint Gap { get; set; }
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
-		public List<GCMesh> opaqueMeshes;
+		public List<GCMesh> OpaqueMeshes;
 		public string OpaqueMeshName { get; set; }
 
 		/// <summary>
 		/// The meshes with translucent rendering properties
 		/// </summary>
-		public List<GCMesh> translucentMeshes;
+		public List<GCMesh> TranslucentMeshes;
 		public string TranslucentMeshName { get; set; }
 
 		/// <summary>
@@ -34,25 +35,26 @@ namespace SAModel.GC
 		/// </summary>
 		public GCAttach()
 		{
-			Name = "gcattach_" + Extensions.GenerateIdentifier();
+			Name = $"gcattach_{Extensions.GenerateIdentifier()}";
 
-			vertexData = new List<GCVertexSet>();
-			VertexName = "vertex_" + Extensions.GenerateIdentifier();
+			VertexData = [];
+			VertexName = $"vertex_{Extensions.GenerateIdentifier()}";
 			Bounds = new BoundingSphere();
 		}
 
-		public GCAttach(bool HasOPoly, bool HasTPoly)
+		public GCAttach(bool hasOPoly, bool hasTPoly)
 			:this()
 		{
-			if (HasOPoly)
+			if (hasOPoly)
 			{
-				opaqueMeshes = new List<GCMesh>();
-				OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
+				OpaqueMeshes = [];
+				OpaqueMeshName = $"opoly_{Extensions.GenerateIdentifier()}";
 			}
-			if (HasTPoly)
+			
+			if (hasTPoly)
 			{
-				translucentMeshes = new List<GCMesh>();
-				TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
+				TranslucentMeshes = [];
+				TranslucentMeshName = $"tpoly_{Extensions.GenerateIdentifier()}";
 			}
 		}
 
@@ -68,74 +70,105 @@ namespace SAModel.GC
 			: this(file, address, imageBase, new Dictionary<int, string>())
 		{
 		}
+		
 		public GCAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{
-			if (labels.ContainsKey(address))
-				Name = labels[address];
+			if (labels.TryGetValue(address, out var name))
+			{
+				Name = name;
+			}
 			else
+			{
 				Name = "attach_" + address.ToString("X8");
+			}
 
 			// The struct is 36/0x24 bytes long
 
-			uint vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
-			uint gap = ByteConverter.ToUInt32(file, address + 4);
-			int opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
-			int translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
+			var vertexAddress = ByteConverter.ToUInt32(file, address) - imageBase;
+			Gap = ByteConverter.ToUInt32(file, address + 4);
+			var opaqueAddress = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
+			var translucentAddress = (int)(ByteConverter.ToInt32(file, address + 12) - imageBase);
 
 			int opaqueCount = ByteConverter.ToInt16(file, address + 16);
 			int translucentCount = ByteConverter.ToInt16(file, address + 18);
 
 			Bounds = new BoundingSphere(file, address + 20);
 
-			// reading vertex data
-			vertexData = new List<GCVertexSet>();
-			GCVertexSet vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
-			if (labels.ContainsKey((int)vertexAddress))
-				VertexName = labels[(int)vertexAddress];
+			// Reading vertex data
+			VertexData = [];
+			var vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
+			
+			if (labels.TryGetValue((int)vertexAddress, out var vertexName))
+			{
+				VertexName = vertexName;
+			}
 			else
-				VertexName = "vertex_" + vertexAddress.ToString("X8");
+			{
+				VertexName = $"vertex_{vertexAddress:X8}";
+			}
+
 			while (vertexSet.attribute != GCVertexAttribute.Null)
 			{
-				vertexData.Add(vertexSet);
+				VertexData.Add(vertexSet);
 				vertexAddress += 16;
 				vertexSet = new GCVertexSet(file, vertexAddress, imageBase, labels);
 			}
-			// reading geometry
-			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
-			opaqueMeshes = new List<GCMesh>();
+			
+			// Reading geometry
+			var indexFlags = GCIndexAttributeFlags.HasPosition;
+			OpaqueMeshes = [];
+			
 			if (opaqueCount != 0)
 			{
-				if (labels.ContainsKey(opaqueAddress))
-					OpaqueMeshName = labels[opaqueAddress];
+				if (labels.TryGetValue(opaqueAddress, out var oMeshName))
+				{
+					OpaqueMeshName = oMeshName;
+				}
 				else
-					OpaqueMeshName = "opoly_" + opaqueAddress.ToString("X8");
+				{
+					OpaqueMeshName = $"opoly_{opaqueAddress:X8}";
+				}
 			}
-			for (int i = 0; i < opaqueCount; i++)
+			
+			for (var i = 0; i < opaqueCount; i++)
 			{
-				GCMesh mesh = new GCMesh(file, opaqueAddress, imageBase, labels, indexFlags);
+				var mesh = new GCMesh(file, opaqueAddress, imageBase, labels, indexFlags);
 
-				GCIndexAttributeFlags? t = mesh.IndexFlags;
-				if (t.HasValue) indexFlags = t.Value;
+				var t = mesh.IndexFlags;
+				if (t.HasValue)
+				{
+					indexFlags = t.Value;
+				}
 
-				opaqueMeshes.Add(mesh);
+				OpaqueMeshes.Add(mesh);
 				opaqueAddress += 16;
 			}
-			translucentMeshes = new List<GCMesh>();
+			
+			TranslucentMeshes = [];
+			
 			if (translucentCount != 0)
 			{
-				if (labels.ContainsKey(translucentAddress))
-					TranslucentMeshName = labels[translucentAddress];
+				if (labels.TryGetValue(translucentAddress, out var tMeshName))
+				{
+					TranslucentMeshName = tMeshName;
+				}
 				else
-					TranslucentMeshName = "tpoly_" + translucentAddress.ToString("X8");
+				{
+					TranslucentMeshName = $"tpoly_{translucentAddress:X8}";
+				}
 			}
-			for (int i = 0; i < translucentCount; i++)
+			
+			for (var i = 0; i < translucentCount; i++)
 			{
-				GCMesh mesh = new GCMesh(file, translucentAddress, imageBase, labels, indexFlags);
+				var mesh = new GCMesh(file, translucentAddress, imageBase, labels, indexFlags);
 
-				GCIndexAttributeFlags? t = mesh.IndexFlags;
-				if (t.HasValue) indexFlags = t.Value;
+				var t = mesh.IndexFlags;
+				if (t.HasValue)
+				{
+					indexFlags = t.Value;
+				}
 
-				translucentMeshes.Add(mesh);
+				TranslucentMeshes.Add(mesh);
 				translucentAddress += 16;
 			}
 		}
@@ -144,191 +177,266 @@ namespace SAModel.GC
 		/// Writes the attaches contents into a byte array
 		/// </summary>
 		/// <param name="imageBase">The files imagebase</param>
-		/// <param name="DX">Unused</param>
+		/// <param name="dx">Unused</param>
 		/// <param name="labels">The files labels</param>
+		/// <param name="njOffsets"></param>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
+		public override byte[] GetBytes(uint imageBase, bool dx, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
-			List<byte> result = new List<byte>();
-
+			var result = new List<byte>();
 			uint vertexAddress = 0;
-			if (vertexData != null && vertexData.Count > 0)
+			
+			if (VertexData != null && VertexData.Count > 0)
 			{
-				if (labels.ContainsKey(VertexName))
-					vertexAddress = labels[VertexName];
+				if (labels.TryGetValue(VertexName, out var vertAddr))
+				{
+					vertexAddress = vertAddr;
+				}
 				else
 				{
-					uint[] vdataAddrs = new uint[vertexData.Count];
-					for (int i = 0; i < vertexData.Count; i++)
+					var vDataAddrs = new uint[VertexData.Count];
+					for (var i = 0; i < VertexData.Count; i++)
 					{
 						{
-							if (labels.ContainsKey(vertexData[i].DataName))
-								vdataAddrs[i] = labels[vertexData[i].DataName];
+							if (labels.TryGetValue(VertexData[i].DataName, out var dataAddr))
+							{
+								vDataAddrs[i] = dataAddr;
+							}
 							else
 							{
 								result.Align(4);
-								vdataAddrs[i] = (uint)result.Count + imageBase;
-								labels.Add(vertexData[i].DataName, vdataAddrs[i]);
-								for (int j = 0; j < vertexData[i].data.Count; j++)
-									result.AddRange(vertexData[i].data[j].GetBytes());
+								vDataAddrs[i] = (uint)result.Count + imageBase;
+								labels.Add(VertexData[i].DataName, vDataAddrs[i]);
+								
+								foreach (var data in VertexData[i].data)
+								{
+									result.AddRange(data.GetBytes());
+								}
 							}
 						}
 					}
+					
 					vertexAddress = (uint)result.Count + imageBase;
 					labels.Add(VertexName, vertexAddress);
-					for (int i = 0; i < vertexData.Count; i++)
+					
+					for (var i = 0; i < VertexData.Count; i++)
 					{
-						//POF0
-						if (vdataAddrs[i] != 0)
+						// POF0
+						if (vDataAddrs[i] != 0)
+						{
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						}
 
-						result.AddRange(vertexData[i].GetBytes(vdataAddrs[i]));
+						result.AddRange(VertexData[i].GetBytes(vDataAddrs[i]));
 					}
 					result.Add(255);
 					result.AddRange(new byte[15]);
 				}
 			}
-			uint opolyAddress = 0;
-			// writing geometry data
-			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
-			if (opaqueMeshes != null && opaqueMeshes.Count > 0)
+			
+			uint oPolyAddress = 0;
+			// Writing geometry data
+			var indexFlags = GCIndexAttributeFlags.HasPosition;
+			
+			if (OpaqueMeshes != null && OpaqueMeshes.Count > 0)
 			{
-				if (labels.ContainsKey(OpaqueMeshName))
-					opolyAddress = labels[OpaqueMeshName];
+				if (labels.TryGetValue(OpaqueMeshName, out var polyAddr))
+				{
+					oPolyAddress = polyAddr;
+				}
 				else
 				{
-					uint[] paramAddrs = new uint[opaqueMeshes.Count];
-					uint[] primAddrs = new uint[opaqueMeshes.Count];
-					for (int i = 0; i < opaqueMeshes.Count; i++)
+					var paramAddrs = new uint[OpaqueMeshes.Count];
+					var primAddrs = new uint[OpaqueMeshes.Count];
+					
+					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						if (opaqueMeshes[i].parameters != null && opaqueMeshes[i].parameters.Count > 0)
+						if (OpaqueMeshes[i].parameters != null && OpaqueMeshes[i].parameters.Count > 0)
 						{
-							if (labels.ContainsKey(opaqueMeshes[i].ParameterName))
-								paramAddrs[i] = labels[opaqueMeshes[i].ParameterName];
+							if (labels.TryGetValue(OpaqueMeshes[i].ParameterName, out var paramAddr))
+							{
+								paramAddrs[i] = paramAddr;
+							}
 							else
 							{
 								result.Align(4);
 								paramAddrs[i] = (uint)result.Count + imageBase;
-								labels.Add(opaqueMeshes[i].ParameterName, paramAddrs[i]);
-								for (int j = 0; j < opaqueMeshes[i].parameters.Count; j++)
-									result.AddRange(opaqueMeshes[i].parameters[j].GetBytes());
+								labels.Add(OpaqueMeshes[i].ParameterName, paramAddrs[i]);
+								
+								foreach (var parameter in OpaqueMeshes[i].parameters)
+								{
+									result.AddRange(parameter.GetBytes());
+								}
 							}
 						}
 					}
-					for (int i = 0; i < opaqueMeshes.Count; i++)
+					
+					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						if (opaqueMeshes[i].primitives != null && opaqueMeshes[i].primitives.Count > 0)
+						if (OpaqueMeshes[i].primitives != null && OpaqueMeshes[i].primitives.Count > 0)
 						{
-							if (labels.ContainsKey(opaqueMeshes[i].PrimitiveName))
-								primAddrs[i] = labels[opaqueMeshes[i].PrimitiveName];
+							if (labels.TryGetValue(OpaqueMeshes[i].PrimitiveName, out var primAddr))
+							{
+								primAddrs[i] = primAddr;
+							}
 							else
 							{
 								result.Align(32);
 								primAddrs[i] = (uint)result.Count + imageBase;
-								labels.Add(opaqueMeshes[i].PrimitiveName, primAddrs[i]);
-								GCIndexAttributeFlags? t = opaqueMeshes[i].IndexFlags;
-								if (t.HasValue) indexFlags = t.Value;
-								for (int j = 0; j < opaqueMeshes[i].primitives.Count; j++)
-									result.AddRange(opaqueMeshes[i].primitives[j].GetBytes(indexFlags));
+								labels.Add(OpaqueMeshes[i].PrimitiveName, primAddrs[i]);
+								
+								var t = OpaqueMeshes[i].IndexFlags;
+								if (t.HasValue)
+								{
+									indexFlags = t.Value;
+								}
+
+								foreach (var primitive in OpaqueMeshes[i].primitives)
+								{
+									result.AddRange(primitive.GetBytes(indexFlags));
+								}
 							}
 						}
 					}
+					
 					result.Align(32);
-					opolyAddress = (uint)result.Count + imageBase;
-					labels.Add(OpaqueMeshName, opolyAddress);
-					for (int i = 0; i < opaqueMeshes.Count; i++)
+					oPolyAddress = (uint)result.Count + imageBase;
+					labels.Add(OpaqueMeshName, oPolyAddress);
+					
+					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						//POF0
+						// POF0
 						if (paramAddrs[i] != 0)
+						{
 							njOffsets.Add((uint)(result.Count + imageBase));
-						if (primAddrs[i] != 0)
-							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						}
 
-						result.AddRange(opaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
+						if (primAddrs[i] != 0)
+						{
+							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						}
+
+						result.AddRange(OpaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
 					}
 				}
 			}
+			
 			result.Align(4);
-			uint tpolyAddress = 0;
-			if (translucentMeshes != null && translucentMeshes.Count > 0)
+			uint tPolyAddress = 0;
+			
+			if (TranslucentMeshes != null && TranslucentMeshes.Count > 0)
 			{
-				if (labels.ContainsKey(TranslucentMeshName))
-					tpolyAddress = labels[TranslucentMeshName];
+				if (labels.TryGetValue(TranslucentMeshName, out var polyAddr))
+				{
+					tPolyAddress = polyAddr;
+				}
 				else
 				{
-					uint[] paramAddrs = new uint[translucentMeshes.Count];
-					uint[] primAddrs = new uint[translucentMeshes.Count];
-					for (int i = 0; i < translucentMeshes.Count; i++)
+					var paramAddrs = new uint[TranslucentMeshes.Count];
+					var primAddrs = new uint[TranslucentMeshes.Count];
+					
+					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						if (translucentMeshes[i].parameters != null && translucentMeshes[i].parameters.Count > 0)
+						if (TranslucentMeshes[i].parameters != null && TranslucentMeshes[i].parameters.Count > 0)
 						{
-							if (labels.ContainsKey(translucentMeshes[i].ParameterName))
-								paramAddrs[i] = labels[translucentMeshes[i].ParameterName];
+							if (labels.TryGetValue(TranslucentMeshes[i].ParameterName, out var paramAddr))
+							{
+								paramAddrs[i] = paramAddr;
+							}
 							else
 							{
 								result.Align(4);
 								paramAddrs[i] = (uint)result.Count + imageBase;
-								labels.Add(translucentMeshes[i].ParameterName, paramAddrs[i]);
-								for (int j = 0; j < translucentMeshes[i].parameters.Count; j++)
-									result.AddRange(translucentMeshes[i].parameters[j].GetBytes());
+								labels.Add(TranslucentMeshes[i].ParameterName, paramAddrs[i]);
+								
+								foreach (var parameter in TranslucentMeshes[i].parameters)
+								{
+									result.AddRange(parameter.GetBytes());
+								}
 							}
 						}
 					}
-					for (int i = 0; i < translucentMeshes.Count; i++)
+					
+					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						if (translucentMeshes[i].primitives != null && translucentMeshes[i].primitives.Count > 0)
+						if (TranslucentMeshes[i].primitives != null && TranslucentMeshes[i].primitives.Count > 0)
 						{
-							if (labels.ContainsKey(translucentMeshes[i].PrimitiveName))
-								primAddrs[i] = labels[translucentMeshes[i].PrimitiveName];
+							if (labels.TryGetValue(TranslucentMeshes[i].PrimitiveName, out var primAddr))
+							{
+								primAddrs[i] = primAddr;
+							}
 							else
 							{
 								result.Align(32);
 								primAddrs[i] = (uint)result.Count + imageBase;
-								labels.Add(translucentMeshes[i].PrimitiveName, primAddrs[i]);
-								GCIndexAttributeFlags? t = translucentMeshes[i].IndexFlags;
-								if (t.HasValue) indexFlags = t.Value;
-								for (int j = 0; j < translucentMeshes[i].primitives.Count; j++)
-									result.AddRange(translucentMeshes[i].primitives[j].GetBytes(indexFlags));
+								labels.Add(TranslucentMeshes[i].PrimitiveName, primAddrs[i]);
+								
+								var t = TranslucentMeshes[i].IndexFlags;
+								if (t.HasValue)
+								{
+									indexFlags = t.Value;
+								}
+
+								foreach (var primitive in TranslucentMeshes[i].primitives)
+								{
+									result.AddRange(primitive.GetBytes(indexFlags));
+								}
 							}
 						}
 					}
+					
 					result.Align(32);
-					tpolyAddress = (uint)result.Count + imageBase;
-					labels.Add(TranslucentMeshName, tpolyAddress);
-					for (int i = 0; i < translucentMeshes.Count; i++)
+					tPolyAddress = (uint)result.Count + imageBase;
+					labels.Add(TranslucentMeshName, tPolyAddress);
+					
+					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						//POF0
+						// POF0
 						if (paramAddrs[i] != 0)
+						{
 							njOffsets.Add((uint)(result.Count + imageBase));
-						if (primAddrs[i] != 0)
-							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						}
 
-						result.AddRange(translucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
+						if (primAddrs[i] != 0)
+						{
+							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+						}
+
+						result.AddRange(TranslucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
 					}
 				}
 			}
 
-				result.Align(4);
-				address = (uint)result.Count;
+			result.Align(4);
+			address = (uint)result.Count;
 
-				//POF0
-				if (vertexAddress != 0)
-					njOffsets.Add((uint)(result.Count + imageBase));
-				if (opolyAddress != 0)
-					njOffsets.Add((uint)(result.Count + imageBase + 0x8));
-				if (tpolyAddress != 0)
-					njOffsets.Add((uint)(result.Count + imageBase + 0xC));
+			// POF0
+			if (vertexAddress != 0)
+			{
+				njOffsets.Add((uint)(result.Count + imageBase));
+			}
 
-				result.AddRange(ByteConverter.GetBytes(vertexAddress));
-				result.AddRange(new byte[4]);
-				result.AddRange(ByteConverter.GetBytes(opolyAddress));
-				result.AddRange(ByteConverter.GetBytes(tpolyAddress));
-				result.AddRange(ByteConverter.GetBytes((ushort)opaqueMeshes.Count));
-				result.AddRange(ByteConverter.GetBytes((ushort)translucentMeshes.Count));
-				result.AddRange(Bounds.GetBytes());
-				labels.Add(Name, address + imageBase);
-				return result.ToArray();
+			if (oPolyAddress != 0)
+			{
+				njOffsets.Add((uint)(result.Count + imageBase + 0x8));
+			}
+
+			if (tPolyAddress != 0)
+			{
+				njOffsets.Add((uint)(result.Count + imageBase + 0xC));
+			}
+
+			result.AddRange(ByteConverter.GetBytes(vertexAddress));
+			result.AddRange(new byte[4]);
+			result.AddRange(ByteConverter.GetBytes(oPolyAddress));
+			result.AddRange(ByteConverter.GetBytes(tPolyAddress));
+			result.AddRange(ByteConverter.GetBytes((ushort)OpaqueMeshes.Count));
+			result.AddRange(ByteConverter.GetBytes((ushort)TranslucentMeshes.Count));
+			result.AddRange(Bounds.GetBytes());
+			labels.Add(Name, address + imageBase);
+			
+			return result.ToArray();
 		}
 
 		/// <summary>
@@ -336,22 +444,18 @@ namespace SAModel.GC
 		/// </summary>
 		public override void ProcessVertexData()
 		{
-			List<MeshInfo> meshInfo = new List<MeshInfo>();
+			var positions = VertexData.Find(x => x.attribute == GCVertexAttribute.Position)?.data;
+			var normals = VertexData.Find(x => x.attribute == GCVertexAttribute.Normal)?.data;
+			var colors = VertexData.Find(x => x.attribute == GCVertexAttribute.Color0)?.data;
+			var uvs = VertexData.Find(x => x.attribute == GCVertexAttribute.Tex0)?.data;
 
-			List<IOVtx> positions = vertexData.Find(x => x.attribute == GCVertexAttribute.Position)?.data;
-			List<IOVtx> normals = vertexData.Find(x => x.attribute == GCVertexAttribute.Normal)?.data;
-			List<IOVtx> colors = vertexData.Find(x => x.attribute == GCVertexAttribute.Color0)?.data;
-			List<IOVtx> uvs = vertexData.Find(x => x.attribute == GCVertexAttribute.Tex0)?.data;
+			var mat = new NJS_MATERIAL();
 
-			NJS_MATERIAL mat = new NJS_MATERIAL();
+			mat.UseAlpha = false;
+			var meshInfo = OpaqueMeshes.Select(m => m.Process(mat, positions, normals, colors, uvs)).ToList();
 
-				mat.UseAlpha = false;
-				foreach (GCMesh m in opaqueMeshes)
-					meshInfo.Add(m.Process(mat, positions, normals, colors, uvs));
-
-				mat.UseAlpha = true;
-				foreach (GCMesh m in translucentMeshes)
-					meshInfo.Add(m.Process(mat, positions, normals, colors, uvs));
+			mat.UseAlpha = true;
+			meshInfo.AddRange(TranslucentMeshes.Select(m => m.Process(mat, positions, normals, colors, uvs)));
 
 			MeshInfo = meshInfo.ToArray();
 		}
@@ -359,22 +463,22 @@ namespace SAModel.GC
 		/// <summary>
 		/// Creates a C Struct string identical to the data given (WIP)
 		/// </summary>
-		/// <param name="DX">Unused</param>
+		/// <param name="dx">Unused</param>
 		/// <returns></returns>
-		public override string ToStruct(bool DX)
+		public override string ToStruct(bool dx)
 		{
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append(vertexData != null ? VertexName : "NULL");
+			var result = new StringBuilder("{ ");
+			result.Append(VertexData != null ? VertexName : "NULL");
 			result.Append(", ");
-			result.Append(gap);
+			result.Append(Gap);
 			result.Append(", ");
-			result.Append(opaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
+			result.Append(OpaqueMeshes.Count != 0 ? OpaqueMeshName : "NULL");
 			result.Append(", ");
-			result.Append(translucentMeshes.Count != 0 ? TranslucentMeshName : "NULL");
+			result.Append(TranslucentMeshes.Count != 0 ? TranslucentMeshName : "NULL");
 			result.Append(", ");
-			result.Append(opaqueMeshes.Count != 0 ? "LengthOfArray<Uint16>(" + OpaqueMeshName + ")" : "0");
+			result.Append(OpaqueMeshes.Count != 0 ? $"LengthOfArray<Uint16>({OpaqueMeshName})" : "0");
 			result.Append(", ");
-			result.Append(translucentMeshes.Count != 0 ? "LengthOfArray<Uint16>(" + TranslucentMeshName + ")" : "0");
+			result.Append(TranslucentMeshes.Count != 0 ? $"LengthOfArray<Uint16>({TranslucentMeshName})" : "0");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			result.Append(" }");
@@ -385,19 +489,20 @@ namespace SAModel.GC
 		/// WIP
 		/// </summary>
 		/// <param name="writer"></param>
-		/// <param name="DX">Unused</param>
+		/// <param name="dx">Unused</param>
 		/// <param name="labels"></param>
 		/// <param name="textures"></param>
-		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
+		public override void ToStructVariables(TextWriter writer, bool dx, List<string> labels, string[] textures = null)
 		{
-			if (vertexData.Count != 0 && !labels.Contains(VertexName))
+			if (VertexData.Count != 0 && !labels.Contains(VertexName))
 			{
-				for (int i = 0; i < vertexData.Count; i++)
+				foreach (var data in VertexData)
 				{
-					if (!labels.Contains(vertexData[i].DataName))
+					if (!labels.Contains(data.DataName))
 					{
-						labels.Add(vertexData[i].DataName);
-						switch (vertexData[i].attribute)
+						labels.Add(data.DataName);
+						
+						switch (data.attribute)
 						{
 							case GCVertexAttribute.Position:
 								writer.Write("SA2B_PositionData ");
@@ -412,243 +517,316 @@ namespace SAModel.GC
 								writer.Write("SA2B_Tex0Data ");
 								break;
 						}
-						writer.Write(vertexData[i].DataName);
+						
+						writer.Write(data.DataName);
 						writer.WriteLine("[] = {");
-						List<string> vtx = new List<string>(vertexData[i].data.Count);
-						switch (vertexData[i].attribute)
+						var vtx = new List<string>(data.data.Count);
+						
+						switch (data.attribute)
 						{
 							case GCVertexAttribute.Position:
 							case GCVertexAttribute.Normal:
+								foreach (Vector3 item in data.data)
 								{
-									foreach (Vector3 item in vertexData[i].data)
-										vtx.Add(item.ToStruct());
+									vtx.Add(item.ToStruct());
 								}
 								break;
 							case GCVertexAttribute.Color0:
+								foreach (Color item in data.data)
 								{
-									foreach (Color item in vertexData[i].data)
-										vtx.Add(item.ToStruct());
+									vtx.Add(item.ToStruct());
 								}
 								break;
 							case GCVertexAttribute.Tex0:
+								foreach (UV item in data.data)
 								{
-									foreach (UV item in vertexData[i].data)
-										vtx.Add(item.ToStruct());
+									vtx.Add(item.ToStruct());
 								}
 								break;
 						}
-						writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", vtx.ToArray()));
+						
+						writer.WriteLine("\t" + string.Join($",{Environment.NewLine}\t", vtx.ToArray()));
 						writer.WriteLine("};");
 						writer.WriteLine();
-
 					}
 				}
+				
 				labels.Add(VertexName);
 				writer.Write("SA2B_VertexData ");
 				writer.Write(VertexName);
 				writer.Write("[] = {");
-				List<string> chunks = new List<string>(vertexData.Count);
-				foreach (GCVertexSet item in vertexData)
-					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()) + ",");
-				writer.WriteLine("\t" + string.Join(Environment.NewLine + "\t", "{ 255, 0, 0, 0, NULL, 0 }"));
+				
+				var chunks = new List<string>(VertexData.Count);
+				chunks.AddRange(VertexData.Select(item => item.ToStruct()));
+				
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", chunks.ToArray())},");
+				writer.WriteLine($"\t{string.Join($"{Environment.NewLine}\t", "{ 255, 0, 0, 0, NULL, 0 }")}");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			GCIndexAttributeFlags indexFlags = GCIndexAttributeFlags.HasPosition;
-			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
+			
+			var indexFlags = GCIndexAttributeFlags.HasPosition;
+			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
-				for (int i = 0; i < opaqueMeshes.Count; i++)
+				foreach (var mesh in OpaqueMeshes)
 				{
-					for (int j = 0; j < opaqueMeshes[i].parameters.Count; j++)
+					foreach (var parameter in mesh.parameters)
 					{
-						if (opaqueMeshes[i].parameters[j] != null && !labels.Contains(opaqueMeshes[i].ParameterName))
+						if (parameter == null || labels.Contains(mesh.ParameterName))
 						{
-							labels.Add(opaqueMeshes[i].ParameterName);
-							writer.Write("SA2B_ParameterData ");
-							writer.Write(opaqueMeshes[i].ParameterName);
-							writer.WriteLine("[] = {");
-							List<string> param = new List<string>(opaqueMeshes[i].parameters.Count);
-							foreach (GCParameter item in opaqueMeshes[i].parameters)
-								param.Add(item.ToStruct());
-							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
-							writer.WriteLine("};");
-							writer.WriteLine();
+							continue;
 						}
-					}
-				}
-				for (int i = 0; i < opaqueMeshes.Count; i++)
-				{
-					if (!labels.Contains(opaqueMeshes[i].PrimitiveName))
-					{
-						labels.Add(opaqueMeshes[i].PrimitiveName);
-						writer.Write("Uint8 ");
-						writer.Write(opaqueMeshes[i].PrimitiveName);
+
+						labels.Add(mesh.ParameterName);
+						writer.Write("SA2B_ParameterData ");
+						writer.Write(mesh.ParameterName);
 						writer.WriteLine("[] = {");
-						List<byte> pbytes = new List<byte>();
-						foreach (GCPrimitive item in opaqueMeshes[i].primitives)
-						{
-							GCIndexAttributeFlags? t = opaqueMeshes[i].IndexFlags;
-							if (t.HasValue) indexFlags = t.Value;
-							for (int k = 0; k < opaqueMeshes[i].primitives.Count; k++)
-								pbytes.AddRange(opaqueMeshes[i].primitives[k].GetBytes(indexFlags));
-						}
-						byte[] cb = pbytes.ToArray();
-						int dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
-						int buffsize = (int)dataSize - cb.Length;
-						List<string> s = new List<string>(dataSize);
-						for (int j = 0; j < cb.Length; j++)
-							s.Add("0x" + cb[j].ToString("X") + (cb[j] < 0 ? "u" : ""));
-						for (int l = 0; l < buffsize; l++)
-							s.Add("0x0");
-						writer.Write(string.Join(", ", s.ToArray()));
-						//
-						//List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
-						//foreach (GCPrimitive item in opaqueMeshes[i].primitives)
-						//prim.Add(item.ToStruct());
-						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
+							
+						var param = new List<string>(mesh.parameters.Count);
+						param.AddRange(mesh.parameters.Select(item => item.ToStruct()));
+							
+						writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
 				}
+				
+				foreach (var mesh in OpaqueMeshes)
+				{
+					if (labels.Contains(mesh.PrimitiveName))
+					{
+						continue;
+					}
+
+					labels.Add(mesh.PrimitiveName);
+					writer.Write("Uint8 ");
+					writer.Write(mesh.PrimitiveName);
+					writer.WriteLine("[] = {");
+					
+					var pBytes = new List<byte>();
+					
+					foreach (var item in mesh.primitives)
+					{
+						var t = mesh.IndexFlags;
+						if (t.HasValue)
+						{
+							indexFlags = t.Value;
+						}
+
+						foreach (var primitive in mesh.primitives)
+						{
+							pBytes.AddRange(primitive.GetBytes(indexFlags));
+						}
+					}
+					
+					var cb = pBytes.ToArray();
+					var dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
+					var buffSize = dataSize - cb.Length;
+					var s = new List<string>(dataSize);
+						
+					s.AddRange(cb.Select(b => $"0x{b:X}"));
+
+					for (var l = 0; l < buffSize; l++)
+					{
+						s.Add("0x0");
+					}
+
+					writer.Write(string.Join(", ", s.ToArray()));
+					//
+					//List<string> prim = new List<string>(opaqueMeshes[i].primitives.Count);
+					//foreach (GCPrimitive item in opaqueMeshes[i].primitives)
+					//prim.Add(item.ToStruct());
+					//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", prim.ToArray()));
+					writer.WriteLine("};");
+					writer.WriteLine();
+				}
+				
 				labels.Add(OpaqueMeshName);
 				writer.Write("SA2B_GeometryData ");
 				writer.Write(OpaqueMeshName);
 				writer.Write("[] = {");
-				List<string> chunks = new List<string>();
-				foreach (GCMesh item in opaqueMeshes)
-					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", OpaqueMeshes.Select(item => item.ToStruct()).ToArray())}");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
-			if (translucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
+			
+			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
-				for (int i = 0; i < translucentMeshes.Count; i++)
+				foreach (var mesh in TranslucentMeshes)
 				{
-					for (int j = 0; j < translucentMeshes[i].parameters.Count; j++)
+					foreach (var parameter in mesh.parameters)
 					{
-						if (translucentMeshes[i].parameters[j] != null && !labels.Contains(translucentMeshes[i].ParameterName))
+						if (parameter == null || labels.Contains(mesh.ParameterName))
 						{
-							labels.Add(translucentMeshes[i].ParameterName);
-							writer.Write("SA2B_ParameterData ");
-							writer.Write(translucentMeshes[i].ParameterName);
-							writer.WriteLine("[] = {");
-							List<string> param = new List<string>(translucentMeshes[i].parameters.Count);
-							foreach (GCParameter item in translucentMeshes[i].parameters)
-								param.Add(item.ToStruct());
-							writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", param.ToArray()));
-							writer.WriteLine("};");
-							writer.WriteLine();
+							continue;
 						}
-					}
-				}
-				for (int i = 0; i < translucentMeshes.Count; i++)
-				{
-					if (!labels.Contains(translucentMeshes[i].PrimitiveName))
-					{
-						labels.Add(translucentMeshes[i].PrimitiveName);
-						writer.Write("Uint8 ");
-						writer.Write(translucentMeshes[i].PrimitiveName);
+
+						labels.Add(mesh.ParameterName);
+						writer.Write("SA2B_ParameterData ");
+						writer.Write(mesh.ParameterName);
 						writer.WriteLine("[] = {");
-						List<byte> pbytes = new List<byte>();
-						foreach (GCPrimitive item in translucentMeshes[i].primitives)
-						{
-							GCIndexAttributeFlags? t = translucentMeshes[i].IndexFlags;
-							if (t.HasValue) indexFlags = t.Value;
-							for (int k = 0; k < translucentMeshes[i].primitives.Count; k++)
-								pbytes.AddRange(translucentMeshes[i].primitives[k].GetBytes(indexFlags));
-						}
-						byte[] cb = pbytes.ToArray();
-						int dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
-						int buffsize = dataSize - cb.Length;
-						List<string> s = new List<string>(dataSize);
-						for (int j = 0; j < cb.Length; j++)
-							s.Add("0x" + cb[j].ToString("X") + (cb[j] < 0 ? "u" : ""));
-						for (int l = 0; l < buffsize; l++)
-							s.Add("0x0");
-						writer.Write(string.Join(", ", s.ToArray()));
-						//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", s.ToArray()));
+							
+						var param = new List<string>(mesh.parameters.Count);
+						param.AddRange(mesh.parameters.Select(item => item.ToStruct()));
+							
+						writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 						writer.WriteLine("};");
 						writer.WriteLine();
 					}
 				}
+				
+				foreach (var mesh in TranslucentMeshes)
+				{
+					if (labels.Contains(mesh.PrimitiveName))
+					{
+						continue;
+					}
+
+					labels.Add(mesh.PrimitiveName);
+					writer.Write("Uint8 ");
+					writer.Write(mesh.PrimitiveName);
+					writer.WriteLine("[] = {");
+					
+					var pbytes = new List<byte>();
+					foreach (var item in mesh.primitives)
+					{
+						var t = mesh.IndexFlags;
+						if (t.HasValue)
+						{
+							indexFlags = t.Value;
+						}
+
+						foreach (var primitive in mesh.primitives)
+						{
+							pbytes.AddRange(primitive.GetBytes(indexFlags));
+						}
+					}
+					
+					var cb = pbytes.ToArray();
+					var dataSize = Convert.ToInt32(Math.Ceiling(decimal.Divide(cb.Length, 32)) * 32);
+					var buffSize = dataSize - cb.Length;
+					var s = new List<string>(dataSize);
+					
+					s.AddRange(cb.Select(b => $"0x{b:X}"));
+
+					for (var l = 0; l < buffSize; l++)
+					{
+						s.Add("0x0");
+					}
+
+					writer.Write(string.Join(", ", s.ToArray()));
+					//writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", s.ToArray()));
+					writer.WriteLine("};");
+					writer.WriteLine();
+				}
+				
 				labels.Add(TranslucentMeshName);
 				writer.Write("SA2B_GeometryData ");
 				writer.Write(TranslucentMeshName);
 				writer.Write("[] = {");
-				List<string> chunks = new List<string>();
-				foreach (GCMesh item in translucentMeshes)
-					chunks.Add(item.ToStruct());
-				writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", chunks.ToArray()));
+
+				writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", TranslucentMeshes.Select(item => item.ToStruct()).ToArray())}");
 				writer.WriteLine(" };");
 				writer.WriteLine();
 			}
+			
 			writer.Write("SA2B_Model ");
 			writer.Write(Name);
 			writer.Write(" = ");
-			writer.Write(ToStruct(DX));
+			writer.Write(ToStruct(dx));
 			writer.WriteLine(";");
 		}
 
-		//WIP
+		// WIP
 		public void ToNJA(TextWriter writer, List<string> labels, string[] textures)
 		{
 			if (!labels.Contains(VertexName))
 			{
-				writer.WriteLine("VLIST      " + VertexName + "[]");
-				writer.WriteLine("START" + Environment.NewLine);
-				foreach (GCVertexSet item in vertexData)
+				writer.WriteLine($"VLIST      {VertexName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
+				
+				foreach (var item in VertexData)
+				{
 					item.ToNJA(writer);
-				foreach (GCVertexSet item in vertexData)
+				}
+
+				foreach (var item in VertexData)
+				{
 					item.RefToNJA(writer);
-				writer.WriteLine("\tVertAttr     NULL" + ",");
-				writer.WriteLine("\tElementSize  0" + ",");
-				writer.WriteLine("\tPoints       0" + ",");
-				writer.WriteLine("\tType         NULL" + ",");
-				writer.WriteLine("\tName         NULL" + ",");
-				writer.WriteLine("\tCheckSize    0" + ",");
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				}
+
+				writer.WriteLine("\tVertAttr     NULL,");
+				writer.WriteLine("\tElementSize  0,");
+				writer.WriteLine("\tPoints       0,");
+				writer.WriteLine("\tType         NULL,");
+				writer.WriteLine("\tName         NULL,");
+				writer.WriteLine("\tCheckSize    0,");
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
+			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
 			{
-				writer.WriteLine("OPLIST      " + OpaqueMeshName + "[]");
-				writer.WriteLine("START" + Environment.NewLine);
-				foreach (GCMesh item in opaqueMeshes)
+				writer.WriteLine($"OPLIST      {OpaqueMeshName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
+				
+				foreach (var item in OpaqueMeshes)
+				{
 					item.ToNJA(writer);
-				foreach (GCMesh item in opaqueMeshes)
+				}
+
+				foreach (var item in OpaqueMeshes)
+				{
 					item.RefToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				}
+
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			if (translucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
+			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
 			{
-				writer.WriteLine("APLIST      " + TranslucentMeshName + "[]");
-				writer.WriteLine("START" + Environment.NewLine);
-				foreach (GCMesh item in translucentMeshes)
+				writer.WriteLine($"APLIST      {TranslucentMeshName}[]");
+				writer.WriteLine($"START{Environment.NewLine}");
+				
+				foreach (var item in TranslucentMeshes)
+				{
 					item.ToNJA(writer);
-				foreach (GCMesh item in translucentMeshes)
+				}
+
+				foreach (var item in TranslucentMeshes)
+				{
 					item.RefToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				}
+
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			writer.WriteLine("GINJAMODEL  " + Name + "[]");
+			writer.WriteLine($"GINJAMODEL  {Name}[]");
 			writer.WriteLine("START");
-			writer.WriteLine("VList       " + VertexName + ",");
-			if (opaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
-				writer.WriteLine("OPList      " + OpaqueMeshName + ",");
+			writer.WriteLine($"VList       {VertexName},");
+			
+			if (OpaqueMeshes.Count != 0 && !labels.Contains(OpaqueMeshName))
+			{
+				writer.WriteLine($"OPList      {OpaqueMeshName},");
+			}
 			else
+			{
 				writer.WriteLine("OPList      NULL,");
-			if (translucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
-				writer.WriteLine("APList      " + TranslucentMeshName + ",");
+			}
+
+			if (TranslucentMeshes.Count != 0 && !labels.Contains(TranslucentMeshName))
+			{
+				writer.WriteLine($"APList      {TranslucentMeshName},");
+			}
 			else
+			{
 				writer.WriteLine("APList      NULL,");
-			writer.WriteLine("OPNum       " + opaqueMeshes.Count + ",");
-			writer.WriteLine("APNum       " + translucentMeshes.Count + ",");
-			writer.WriteLine("Center     " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
-			writer.WriteLine("Radius     " + Bounds.Radius.ToNJA() + ",");
-			writer.Write("END" + Environment.NewLine + Environment.NewLine);
+			}
+
+			writer.WriteLine($"OPNum       {OpaqueMeshes.Count},");
+			writer.WriteLine($"APNum       {TranslucentMeshes.Count},");
+			writer.WriteLine($"Center     {Bounds.Center.X.ToNJA()}, {Bounds.Center.Y.ToNJA()}, {Bounds.Center.Z.ToNJA()},");
+			writer.WriteLine($"Radius     {Bounds.Radius.ToNJA()},");
+			writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 		}
 
 		#region Unused
@@ -670,26 +848,38 @@ namespace SAModel.GC
 		/// <returns></returns>
 		public override Attach Clone()
 		{
-			GCAttach result = (GCAttach)MemberwiseClone();
-			if (vertexData != null)
+			var result = (GCAttach)MemberwiseClone();
+			
+			if (VertexData != null)
 			{
-				result.vertexData = new List<GCVertexSet>(vertexData.Count);
-				foreach (GCVertexSet item in vertexData)
-					result.vertexData.Add(item.Clone());
+				result.VertexData = new List<GCVertexSet>(VertexData.Count);
+				
+				foreach (var item in VertexData)
+				{
+					result.VertexData.Add(item.Clone());
+				}
 			}
-			if (opaqueMeshes != null)
+			
+			if (OpaqueMeshes != null)
 			{
-				result.opaqueMeshes = new List<GCMesh>(opaqueMeshes.Count);
-				foreach (GCMesh item in opaqueMeshes)
-					result.opaqueMeshes.Add(item.Clone());
+				result.OpaqueMeshes = new List<GCMesh>(OpaqueMeshes.Count);
+				
+				foreach (var item in OpaqueMeshes)
+				{
+					result.OpaqueMeshes.Add(item.Clone());
+				}
 			}
 
-			if (translucentMeshes != null)
+			if (TranslucentMeshes != null)
 			{
-				result.translucentMeshes = new List<GCMesh>(translucentMeshes.Count);
-				foreach (GCMesh item in translucentMeshes)
-					result.translucentMeshes.Add(item.Clone());
+				result.TranslucentMeshes = new List<GCMesh>(TranslucentMeshes.Count);
+				
+				foreach (var item in TranslucentMeshes)
+				{
+					result.TranslucentMeshes.Add(item.Clone());
+				}
 			}
+			
 			result.Bounds = Bounds.Clone();
 			return result;
 		}
