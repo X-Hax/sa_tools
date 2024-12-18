@@ -107,7 +107,7 @@ namespace SAModel.GC
 				VertexName = $"vertex_{vertexAddress:X8}";
 			}
 
-			while (vertexSet.attribute != GCVertexAttribute.Null)
+			while (vertexSet.Attribute != GCVertexAttribute.Null)
 			{
 				VertexData.Add(vertexSet);
 				vertexAddress += 16;
@@ -209,7 +209,7 @@ namespace SAModel.GC
 								vDataAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(VertexData[i].DataName, vDataAddrs[i]);
 								
-								foreach (var data in VertexData[i].data)
+								foreach (var data in VertexData[i].Data)
 								{
 									result.AddRange(data.GetBytes());
 								}
@@ -252,7 +252,7 @@ namespace SAModel.GC
 					
 					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						if (OpaqueMeshes[i].parameters != null && OpaqueMeshes[i].parameters.Count > 0)
+						if (OpaqueMeshes[i].Parameters != null && OpaqueMeshes[i].Parameters.Count > 0)
 						{
 							if (labels.TryGetValue(OpaqueMeshes[i].ParameterName, out var paramAddr))
 							{
@@ -264,7 +264,7 @@ namespace SAModel.GC
 								paramAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(OpaqueMeshes[i].ParameterName, paramAddrs[i]);
 								
-								foreach (var parameter in OpaqueMeshes[i].parameters)
+								foreach (var parameter in OpaqueMeshes[i].Parameters)
 								{
 									result.AddRange(parameter.GetBytes());
 								}
@@ -274,7 +274,7 @@ namespace SAModel.GC
 					
 					for (var i = 0; i < OpaqueMeshes.Count; i++)
 					{
-						if (OpaqueMeshes[i].primitives != null && OpaqueMeshes[i].primitives.Count > 0)
+						if (OpaqueMeshes[i].Primitives != null && OpaqueMeshes[i].Primitives.Count > 0)
 						{
 							if (labels.TryGetValue(OpaqueMeshes[i].PrimitiveName, out var primAddr))
 							{
@@ -292,7 +292,7 @@ namespace SAModel.GC
 									indexFlags = t.Value;
 								}
 
-								foreach (var primitive in OpaqueMeshes[i].primitives)
+								foreach (var primitive in OpaqueMeshes[i].Primitives)
 								{
 									result.AddRange(primitive.GetBytes(indexFlags));
 								}
@@ -317,7 +317,7 @@ namespace SAModel.GC
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 						}
 
-						result.AddRange(OpaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
+						result.AddRange(OpaqueMeshes[i].GetBytes(paramAddrs[i], primAddrs[i]));
 					}
 				}
 			}
@@ -338,7 +338,7 @@ namespace SAModel.GC
 					
 					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						if (TranslucentMeshes[i].parameters != null && TranslucentMeshes[i].parameters.Count > 0)
+						if (TranslucentMeshes[i].Parameters != null && TranslucentMeshes[i].Parameters.Count > 0)
 						{
 							if (labels.TryGetValue(TranslucentMeshes[i].ParameterName, out var paramAddr))
 							{
@@ -350,7 +350,7 @@ namespace SAModel.GC
 								paramAddrs[i] = (uint)result.Count + imageBase;
 								labels.Add(TranslucentMeshes[i].ParameterName, paramAddrs[i]);
 								
-								foreach (var parameter in TranslucentMeshes[i].parameters)
+								foreach (var parameter in TranslucentMeshes[i].Parameters)
 								{
 									result.AddRange(parameter.GetBytes());
 								}
@@ -360,7 +360,7 @@ namespace SAModel.GC
 					
 					for (var i = 0; i < TranslucentMeshes.Count; i++)
 					{
-						if (TranslucentMeshes[i].primitives != null && TranslucentMeshes[i].primitives.Count > 0)
+						if (TranslucentMeshes[i].Primitives != null && TranslucentMeshes[i].Primitives.Count > 0)
 						{
 							if (labels.TryGetValue(TranslucentMeshes[i].PrimitiveName, out var primAddr))
 							{
@@ -378,7 +378,7 @@ namespace SAModel.GC
 									indexFlags = t.Value;
 								}
 
-								foreach (var primitive in TranslucentMeshes[i].primitives)
+								foreach (var primitive in TranslucentMeshes[i].Primitives)
 								{
 									result.AddRange(primitive.GetBytes(indexFlags));
 								}
@@ -403,7 +403,7 @@ namespace SAModel.GC
 							njOffsets.Add((uint)(result.Count + imageBase + 0x8));
 						}
 
-						result.AddRange(TranslucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i], indexFlags));
+						result.AddRange(TranslucentMeshes[i].GetBytes(paramAddrs[i], primAddrs[i]));
 					}
 				}
 			}
@@ -444,10 +444,10 @@ namespace SAModel.GC
 		/// </summary>
 		public override void ProcessVertexData()
 		{
-			var positions = VertexData.Find(x => x.attribute == GCVertexAttribute.Position)?.data;
-			var normals = VertexData.Find(x => x.attribute == GCVertexAttribute.Normal)?.data;
-			var colors = VertexData.Find(x => x.attribute == GCVertexAttribute.Color0)?.data;
-			var uvs = VertexData.Find(x => x.attribute == GCVertexAttribute.Tex0)?.data;
+			var positions = VertexData.Find(x => x.Attribute == GCVertexAttribute.Position)?.Data;
+			var normals = VertexData.Find(x => x.Attribute == GCVertexAttribute.Normal)?.Data;
+			var colors = VertexData.Find(x => x.Attribute == GCVertexAttribute.Color0)?.Data;
+			var uvs = VertexData.Find(x => x.Attribute == GCVertexAttribute.Tex0)?.Data;
 
 			var mat = new NJS_MATERIAL();
 
@@ -502,7 +502,7 @@ namespace SAModel.GC
 					{
 						labels.Add(data.DataName);
 						
-						switch (data.attribute)
+						switch (data.Attribute)
 						{
 							case GCVertexAttribute.Position:
 								writer.Write("SA2B_PositionData ");
@@ -520,25 +520,25 @@ namespace SAModel.GC
 						
 						writer.Write(data.DataName);
 						writer.WriteLine("[] = {");
-						var vtx = new List<string>(data.data.Count);
+						var vtx = new List<string>(data.Data.Count);
 						
-						switch (data.attribute)
+						switch (data.Attribute)
 						{
 							case GCVertexAttribute.Position:
 							case GCVertexAttribute.Normal:
-								foreach (Vector3 item in data.data)
+								foreach (Vector3 item in data.Data)
 								{
 									vtx.Add(item.ToStruct());
 								}
 								break;
 							case GCVertexAttribute.Color0:
-								foreach (Color item in data.data)
+								foreach (Color item in data.Data)
 								{
 									vtx.Add(item.ToStruct());
 								}
 								break;
 							case GCVertexAttribute.Tex0:
-								foreach (UV item in data.data)
+								foreach (UV item in data.Data)
 								{
 									vtx.Add(item.ToStruct());
 								}
@@ -570,7 +570,7 @@ namespace SAModel.GC
 			{
 				foreach (var mesh in OpaqueMeshes)
 				{
-					foreach (var parameter in mesh.parameters)
+					foreach (var parameter in mesh.Parameters)
 					{
 						if (parameter == null || labels.Contains(mesh.ParameterName))
 						{
@@ -582,8 +582,8 @@ namespace SAModel.GC
 						writer.Write(mesh.ParameterName);
 						writer.WriteLine("[] = {");
 							
-						var param = new List<string>(mesh.parameters.Count);
-						param.AddRange(mesh.parameters.Select(item => item.ToStruct()));
+						var param = new List<string>(mesh.Parameters.Count);
+						param.AddRange(mesh.Parameters.Select(item => item.ToStruct()));
 							
 						writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 						writer.WriteLine("};");
@@ -605,7 +605,7 @@ namespace SAModel.GC
 					
 					var pBytes = new List<byte>();
 					
-					foreach (var item in mesh.primitives)
+					foreach (var item in mesh.Primitives)
 					{
 						var t = mesh.IndexFlags;
 						if (t.HasValue)
@@ -613,7 +613,7 @@ namespace SAModel.GC
 							indexFlags = t.Value;
 						}
 
-						foreach (var primitive in mesh.primitives)
+						foreach (var primitive in mesh.Primitives)
 						{
 							pBytes.AddRange(primitive.GetBytes(indexFlags));
 						}
@@ -654,7 +654,7 @@ namespace SAModel.GC
 			{
 				foreach (var mesh in TranslucentMeshes)
 				{
-					foreach (var parameter in mesh.parameters)
+					foreach (var parameter in mesh.Parameters)
 					{
 						if (parameter == null || labels.Contains(mesh.ParameterName))
 						{
@@ -666,8 +666,8 @@ namespace SAModel.GC
 						writer.Write(mesh.ParameterName);
 						writer.WriteLine("[] = {");
 							
-						var param = new List<string>(mesh.parameters.Count);
-						param.AddRange(mesh.parameters.Select(item => item.ToStruct()));
+						var param = new List<string>(mesh.Parameters.Count);
+						param.AddRange(mesh.Parameters.Select(item => item.ToStruct()));
 							
 						writer.WriteLine($"\t{string.Join($",{Environment.NewLine}\t", param.ToArray())}");
 						writer.WriteLine("};");
@@ -688,7 +688,7 @@ namespace SAModel.GC
 					writer.WriteLine("[] = {");
 					
 					var pbytes = new List<byte>();
-					foreach (var item in mesh.primitives)
+					foreach (var item in mesh.Primitives)
 					{
 						var t = mesh.IndexFlags;
 						if (t.HasValue)
@@ -696,7 +696,7 @@ namespace SAModel.GC
 							indexFlags = t.Value;
 						}
 
-						foreach (var primitive in mesh.primitives)
+						foreach (var primitive in mesh.Primitives)
 						{
 							pbytes.AddRange(primitive.GetBytes(indexFlags));
 						}
