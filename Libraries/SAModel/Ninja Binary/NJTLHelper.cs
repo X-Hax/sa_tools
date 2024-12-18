@@ -8,23 +8,18 @@ namespace SAModel
 	{
 		public static byte[] GenerateNJTexList(string[] texList, bool isGC, bool sizeLittleEndian)
 		{
-			List<byte> njTexList = new List<byte>();
-			List<byte> njTLHeader = new List<byte>();
-			List<byte> pof0List = new List<byte>();
+			List<byte> njTexList = [];
+			List<byte> njTLHeader = [];
+			List<byte> pof0List = [];
 
-			if (isGC)
-			{
-				njTLHeader.AddRange(new byte[] { 0x47, 0x4A, 0x54, 0x4C });
-			}
-			else
-			{
-				njTLHeader.AddRange(new byte[] { 0x4E, 0x4A, 0x54, 0x4C });
-			}
+			njTLHeader.AddRange(isGC ? "GJTL"u8 : "NTJL"u8);
+			
 			njTexList.AddRange(ByteConverter.GetBytes(0x8));
 			njTexList.AddRange(ByteConverter.GetBytes(texList.Length));
 
-			int offset = texList.Length * 0xC + 0x8;
-			for (int i = 0; i < texList.Length; i++)
+			var offset = texList.Length * 0xC + 0x8;
+			
+			for (var i = 0; i < texList.Length; i++)
 			{
 				if (i > 0)
 				{
@@ -34,25 +29,29 @@ namespace SAModel
 				njTexList.AddRange(ByteConverter.GetBytes(0));
 				njTexList.AddRange(ByteConverter.GetBytes(0));
 			}
-			for (int i = 0; i < texList.Length; i++)
+			
+			foreach (var tex in texList)
 			{
-				njTexList.AddRange(Encoding.ASCII.GetBytes(texList[i]));
+				njTexList.AddRange(Encoding.ASCII.GetBytes(tex));
 				njTexList.Add(0);
 			}
+			
 			njTexList.Align(0x4);
 
 			njTLHeader.AddRange(BitConverter.GetBytes(njTexList.Count));
 
 			pof0List.Add(0x40);
 			pof0List.Add(0x42);
-			for (int i = 1; i < texList.Length; i++)
+			
+			for (var i = 1; i < texList.Length; i++)
 			{
 				pof0List.Add(0x43);
 			}
+			
 			pof0List.Align(4);
 
-			int pofLength = pof0List.Count;
-			byte[] magic = { 0x50, 0x4F, 0x46, 0x30 };
+			var pofLength = pof0List.Count;
+			byte[] magic = [0x50, 0x4F, 0x46, 0x30];
 
 			pof0List.InsertRange(0, sizeLittleEndian ? BitConverter.GetBytes(pofLength) : ByteConverter.GetBytes(pofLength));
 			pof0List.InsertRange(0, magic);
@@ -62,6 +61,5 @@ namespace SAModel
 
 			return njTexList.ToArray();
 		}
-
 	}
 }
