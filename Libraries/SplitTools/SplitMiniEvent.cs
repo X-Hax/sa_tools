@@ -1,21 +1,19 @@
 ﻿using FraGag.Compression;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SAModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web.Services.Description;
 
 namespace SplitTools.SAArc
 {
 	public static class SA2MiniEvent
 	{
-		static List<string> nodenames = new List<string>();
-		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
-		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
-		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
+		static List<string> nodenames = new();
+		static Dictionary<string, ModelInfo> modelfiles = new();
+		static Dictionary<string, MotionInfo> motionfiles = new();
+		static Dictionary<string, CameraInfo> camarrayfiles = new();
 
 		public static void Split(string filename, string outputPath, string labelFile = null)
 		{
@@ -26,7 +24,11 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
-				if (outputPath[outputPath.Length - 1] != '/') outputPath = string.Concat(outputPath, "/");
+				if (outputPath[outputPath.Length - 1] != '/')
+				{
+					outputPath = string.Concat(outputPath, "/");
+				}
+
 				// get file name, read it from the console if nothing
 				string evfilename = filename;
 				evfilename = Path.GetFullPath(evfilename);
@@ -34,24 +36,39 @@ namespace SplitTools.SAArc
 				Console.WriteLine("Splitting file {0}...", evfilename);
 				byte[] fc;
 				if (Path.GetExtension(evfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				{
 					fc = Prs.Decompress(evfilename);
+				}
 				else
+				{
 					fc = File.ReadAllBytes(evfilename);
+				}
+
 				MiniEventIniData ini = new MiniEventIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
+					{
 						Directory.CreateDirectory(outputPath);
+					}
+
 					Environment.CurrentDirectory = outputPath;
 				}
 				else
+				{
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
+				}
+
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(evfilename));
 				// Metadata for SAMDL Project Mode
 				byte[] mlength = null;
 				Dictionary<string, string> evsectionlist = new Dictionary<string, string>();
 				Dictionary<string, string> evsplitfilenames = new Dictionary<string, string>();
-				if (labelFile != null) labelFile = Path.GetFullPath(labelFile);
+				if (labelFile != null)
+				{
+					labelFile = Path.GetFullPath(labelFile);
+				}
+
 				if (File.Exists(labelFile))
 				{
 					evsplitfilenames = IniSerializer.Deserialize<Dictionary<string, string>>(labelFile);
@@ -185,10 +202,16 @@ namespace SplitTools.SAArc
 								{
 									parts.Anims = GetMotion(fc, address2 + 4, key, $"{chnm}\\{prnm}.saanim", motions, modelfiles[parts.Model].Model.CountAnimated(), $"{evname} {chnm} EV {partmetaname} Animation");
 									if (parts.Anims != null)
+									{
 										modelfiles[parts.Model].Motions.Add($"{prnm}.saanim");
+									}
+
 									parts.ShapeMotions = GetMotion(fc, address2 + 8, key, $"{chnm}\\{prnm}Shape.saanim", motions, modelfiles[parts.Model].Model.CountMorph(), $"{evname} {chnm} EV {partmetaname} Shape Motion");
 									if (parts.ShapeMotions != null)
+									{
 										modelfiles[parts.Model].Motions.Add($"{prnm}Shape.saanim");
+									}
+
 									// populating metadata file
 									string outResult = null;
 									// checks if the source ini is a placeholder
@@ -207,7 +230,9 @@ namespace SplitTools.SAArc
 								data.Parts.Add(parts);
 							}
 							else
+							{
 								data.Parts.Add(null);
+							}
 						}
 						ini.MainData.Add(data);
 					}
@@ -225,7 +250,10 @@ namespace SplitTools.SAArc
 					ini.NinjaCamera = GetCamData(fc, 4, key, "CameraAttributes.ini", ncams);
 				}
 				else
+				{
 					Console.WriteLine("Mini-Event does not contain a camera.");
+				}
+
 				ini.CharacterFlags = (SA2CharacterFlags)ByteConverter.ToInt32(fc, 0);
 				foreach (var item in motionfiles.Values)
 				{
@@ -278,10 +306,17 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
-				if (fileOutputPath[fileOutputPath.Length - 1] != '/') fileOutputPath = string.Concat(fileOutputPath, "/");
+				if (fileOutputPath[fileOutputPath.Length - 1] != '/')
+				{
+					fileOutputPath = string.Concat(fileOutputPath, "/");
+				}
+
 				filename = Path.GetFullPath(filename);
 				if (Directory.Exists(filename))
+				{
 					filename += ".prs";
+				}
+
 				Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
@@ -291,9 +326,14 @@ namespace SplitTools.SAArc
 				evinfo = js.Deserialize<MiniEventIniData>(jtr);
 				uint gamekey;
 				if (!isBigEndian.HasValue)
+				{
 					ByteConverter.BigEndian = evinfo.BigEndian;
+				}
 				else
+				{
 					ByteConverter.BigEndian = isBigEndian.Value;
+				}
+
 				List<byte> evfile = new List<byte>();
 				List<byte> databytes = new List<byte>();
 				Dictionary<string, int> animaddrs = new Dictionary<string, int>();
@@ -303,9 +343,14 @@ namespace SplitTools.SAArc
 				Dictionary<int, int> pshapeaddrs = new Dictionary<int, int>();
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
 				if (ByteConverter.BigEndian)
+				{
 					gamekey = 0x816DFE60;
+				}
 				else
+				{
 					gamekey = 0xCB00000;
+				}
+
 				uint imageBase = gamekey + 0x2C;
 				// Character flags
 				evfile.AddRange(ByteConverter.GetBytes(Convert.ToUInt32(evinfo.CharacterFlags)));
@@ -404,7 +449,9 @@ namespace SplitTools.SAArc
 						imageBase += 0x34;
 					}
 					else
+					{
 						evfile.AddRange(new byte[4]);
+					}
 				}
 				evfile.AddRange(new byte[4]);
 				// Raw data goes here
@@ -426,16 +473,27 @@ namespace SplitTools.SAArc
 								{
 									evfile.AddRange(ByteConverter.GetBytes(mdladdrs[constant + p]));
 									if (part.Anims != null)
+									{
 										evfile.AddRange(ByteConverter.GetBytes(panimaddrs[constant + p]));
+									}
 									else
+									{
 										evfile.AddRange(new byte[4]);
+									}
+
 									if (part.ShapeMotions != null)
+									{
 										evfile.AddRange(ByteConverter.GetBytes(pshapeaddrs[constant + p]));
+									}
 									else
+									{
 										evfile.AddRange(new byte[4]);
+									}
 								}
 								else
+								{
 									evfile.AddRange(new byte[0xC]);
+								}
 							}
 						}
 					}
@@ -444,7 +502,10 @@ namespace SplitTools.SAArc
 				if (fileOutputPath.Length != 0)
 				{
 					if (!Directory.Exists(fileOutputPath))
+					{
 						Directory.CreateDirectory(fileOutputPath);
+					}
+
 					filename = Path.Combine(fileOutputPath, Path.GetFileName(filename));
 				}
 
@@ -452,10 +513,14 @@ namespace SplitTools.SAArc
 				{
 					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
 					if (!File.Exists(filename))
+					{
 						File.Create(filename);
+					}
 				}
 				else
+				{
 					File.WriteAllBytes(filename, evfile.ToArray());
+				}
 			}
 			finally
 			{
@@ -478,7 +543,10 @@ namespace SplitTools.SAArc
 					List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
 					foreach (string s in names)
 						if (modelfiles.ContainsKey(s))
+						{
 							modelfiles.Remove(s);
+						}
+
 					nodenames.AddRange(names);
 					modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk, meta));
 				}
@@ -490,7 +558,9 @@ namespace SplitTools.SAArc
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
+			{
 				mtn = motions[ByteConverter.ToInt32(fc, address)];
+			}
 			else
 			{
 				int ptr3 = fc.GetPointer(address, key);
@@ -501,9 +571,16 @@ namespace SplitTools.SAArc
 					mtn.OptimizeShape();
 				}
 			}
-			if (mtn == null) return null;
+			if (mtn == null)
+			{
+				return null;
+			}
+
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
+			{
 				motionfiles[mtn.Name] = new MotionInfo(fn, mtn, meta);
+			}
+
 			return mtn.Name;
 		}
 
@@ -511,7 +588,9 @@ namespace SplitTools.SAArc
 		{
 			NJS_CAMERA ncam = null;
 			if (ncams != null)
+			{
 				ncam = ncams[ByteConverter.ToInt32(fc, address)];
+			}
 			else
 			{
 				int ptr3 = fc.GetPointer(address, key);
@@ -520,9 +599,16 @@ namespace SplitTools.SAArc
 					ncam = new NJS_CAMERA(fc, ptr3 + 0xC, key);
 				}
 			}
-			if (ncam == null) return null;
+			if (ncam == null)
+			{
+				return null;
+			}
+
 			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+			{
 				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			}
+
 			return ncam.Name;
 		}
 	}
@@ -539,7 +625,7 @@ namespace SplitTools.SAArc
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
 		public bool BigEndian { get; set; }
-		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
+		public Dictionary<string, string> Files { get; set; } = new();
 		[JsonIgnore]
 		public SA2CharacterFlags CharacterFlags { get; set; }
 		[JsonProperty(PropertyName = "CharacterFlags")]
@@ -550,8 +636,8 @@ namespace SplitTools.SAArc
 		}
 		public string Camera { get; set; }
 		public string NinjaCamera { get; set; }
-		public Dictionary<int, string> MainDataAddrs { get; set; } = new Dictionary<int, string>();
-		public List<MiniEventMaster> MainData { get; set; } = new List<MiniEventMaster>();
+		public Dictionary<int, string> MainDataAddrs { get; set; } = new();
+		public List<MiniEventMaster> MainData { get; set; } = new();
 	}
 
 	public class MiniEventMaster
@@ -559,7 +645,7 @@ namespace SplitTools.SAArc
 		public string Name { get; set; }
 		public string Character { get; set; }
 		public string BodyAnims { get; set; }
-		public List<MiniEventParts> Parts { get; set; } = new List<MiniEventParts>();
+		public List<MiniEventParts> Parts { get; set; } = new();
 	}
 
 	public class MiniEventParts

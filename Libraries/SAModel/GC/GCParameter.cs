@@ -30,12 +30,12 @@ namespace SAModel.GC
 		/// <summary>
 		/// The type of parameter
 		/// </summary>
-		public readonly ParameterType type;
+		public readonly ParameterType Type;
 
 		/// <summary>
 		/// All parameter data is stored in these 4 bytes
 		/// </summary>
-		protected uint data;
+		protected uint Data;
 
 		/// <summary>
 		/// Base constructor for an empty parameter. <br/>
@@ -44,8 +44,8 @@ namespace SAModel.GC
 		/// <param name="type">The type of parameter to create</param>
 		protected GCParameter(ParameterType type)
 		{
-			this.type = type;
-			data = 0;
+			Type = type;
+			Data = 0;
 		}
 
 		/// <summary>
@@ -56,38 +56,22 @@ namespace SAModel.GC
 		/// <returns>Any of the parameter types</returns>
 		public static GCParameter Read(byte[] file, int address)
 		{
-			GCParameter result = null;
-			ParameterType paramType = (ParameterType)file[address];
+			var paramType = (ParameterType)file[address];
 
-			switch (paramType)
+			GCParameter result = paramType switch
 			{
-				case ParameterType.VtxAttrFmt:
-					result = new VtxAttrFmtParameter(GCVertexAttribute.Null);
-					break;
-				case ParameterType.IndexAttributeFlags:
-					result = new IndexAttributeParameter();
-					break;
-				case ParameterType.Lighting:
-					result = new LightingParameter();
-					break;
-				case ParameterType.BlendAlpha:
-					result = new BlendAlphaParameter();
-					break;
-				case ParameterType.AmbientColor:
-					result = new AmbientColorParameter();
-					break;
-				case ParameterType.Texture:
-					result = new TextureParameter();
-					break;
-				case ParameterType.Unknown_9:
-					result = new Unknown9Parameter();
-					break;
-				case ParameterType.TexCoordGen:
-					result = new TexCoordGenParameter();
-					break;
-			}
+				ParameterType.VtxAttrFmt => new VtxAttrFmtParameter(GCVertexAttribute.Null),
+				ParameterType.IndexAttributeFlags => new IndexAttributeParameter(),
+				ParameterType.Lighting => new LightingParameter(),
+				ParameterType.BlendAlpha => new BlendAlphaParameter(),
+				ParameterType.AmbientColor => new AmbientColorParameter(),
+				ParameterType.Texture => new TextureParameter(),
+				ParameterType.Unknown_9 => new Unknown9Parameter(),
+				ParameterType.TexCoordGen => new TexCoordGenParameter(),
+				_ => null
+			};
 
-			result.data = ByteConverter.ToUInt32(file, address + 4);
+			result.Data = ByteConverter.ToUInt32(file, address + 4);
 
 			return result;
 		}
@@ -98,68 +82,75 @@ namespace SAModel.GC
 		/// <param name="writer">The stream writer</param>
 		public void Write(BinaryWriter writer)
 		{
-			writer.Write((byte)type);
-			writer.Write(data);
+			writer.Write((byte)Type);
+			writer.Write(Data);
 		}
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>();
-			result.Add((byte)type);
+			List<byte> result = [];
+			
+			result.Add((byte)Type);
 			result.AddRange(new byte[3]);
-			result.AddRange(ByteConverter.GetBytes(data));
+			result.AddRange(ByteConverter.GetBytes(Data));
+			
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append((byte)type);
+			var result = new StringBuilder("{ ");
+			
+			result.Append((byte)Type);
 			result.Append(", ");
 			result.Append("0, 0, 0");
 			result.Append(", ");
-			result.AppendFormat(data.ToCHex());
+			result.AppendFormat(Data.ToCHex());
 			result.Append(" }");
+			
 			return result.ToString();
 		}
 
 		public void ToNJA(TextWriter writer)
 		{
-			switch (type)
+			switch (Type)
 			{
 				case ParameterType.VtxAttrFmt:
-					if ((data >> 16) != 0x5)
-						writer.WriteLine("\tGJD_PARAM_IDX      " + "( " + ((GCVertexAttribute)(data >> 16)).ToString() + ", " + (byte)(data >> 8) + ", " + (byte)data + " ),");
+					if (Data >> 16 != 0x5)
+					{
+						writer.WriteLine($"\tGJD_PARAM_IDX      ( {(GCVertexAttribute)(Data >> 16)}, {(byte)(Data >> 8)}, {(byte)Data} ),");
+					}
 					else
-						writer.WriteLine("\tGJD_PARAM_IDX      " + "( " + ((GCVertexAttribute)(data >> 16)).ToString() + ", " + (byte)(data >> 8) + ", " + (GCUVScale)(byte)data + " ),");
+					{
+						writer.WriteLine($"\tGJD_PARAM_IDX      ( {(GCVertexAttribute)(Data >> 16)}, {(byte)(Data >> 8)}, {(GCUVScale)(byte)Data} ),");
+					}
 					break;
 				case ParameterType.IndexAttributeFlags:
-					writer.WriteLine("\tGJD_PARAM_VFLAGS   " + "( " + ((GCIndexAttributeFlags)data).ToString().Replace(", ", " | ") + " ),");
+					writer.WriteLine($"\tGJD_PARAM_VFLAGS   ( {((GCIndexAttributeFlags)Data).ToString().Replace(", ", " | ")} ),");
 					break;
 				case ParameterType.Lighting:
-					writer.WriteLine("\tGJD_PARAM_LIGHT    " + "( " + (short)data + ", " + (byte)((data >> 16) & 0xF) + ", " + (byte)((data >> 20) & 0xF) + ", " + (byte)((data >> 24) & 0xFF) + " ),");
+					writer.WriteLine($"\tGJD_PARAM_LIGHT    ( {(short)Data}, {(byte)((Data >> 16) & 0xF)}, {(byte)((Data >> 20) & 0xF)}, {(byte)((Data >> 24) & 0xFF)} ),");
 					break;
 				case ParameterType.BlendAlpha: 
-					writer.WriteLine("\tGJD_PARAM_BLEND    " + "( " + (GCBlendModeControl)((data >> 11) & 7) + ", " + (GCBlendModeControl)((data >> 8) & 7) + " ),");
+					writer.WriteLine($"\tGJD_PARAM_BLEND    ( {(GCBlendModeControl)((Data >> 11) & 7)}, {(GCBlendModeControl)((Data >> 8) & 7)} ),");
 					break;
 				case ParameterType.AmbientColor:
-					writer.WriteLine("\tGJD_PARAM_ACOLOR   " + "( " + (byte)data + ", " + (byte)(data >> 8) + ", " + (byte)(data >> 16) + ", " + (byte)(data >> 24) + " ),");
+					writer.WriteLine($"\tGJD_PARAM_ACOLOR   ( {(byte)Data}, {(byte)(Data >> 8)}, {(byte)(Data >> 16)}, {(byte)(Data >> 24)} ),");
 					break;
 				case ParameterType.Texture:
-					writer.WriteLine("\tGJD_PARAM_TEX      " + "( " + (short)data + ", " + ((GCTileMode)(short)(data >> 16)).ToString().Replace(", ", " | ") + " ),");
+					writer.WriteLine($"\tGJD_PARAM_TEX      ( {(short)Data}, {((GCTileMode)(short)(Data >> 16)).ToString().Replace(", ", " | ")} ),");
 					break;
-				case ParameterType.Unknown_9:
-					writer.WriteLine("\tGJD_PARAM_UNK      " + "( " + (short)data + ", " + ((short)(data >> 16)) + " ),");
+				case ParameterType.Unknown_9: writer.WriteLine($"\tGJD_PARAM_UNK      ( {(short)Data}, {(short)(Data >> 16)} ),");
 					break;
 				case ParameterType.TexCoordGen:
-					writer.WriteLine("\tGJD_PARAM_TEXCOORD " + "( " + (GCTexCoordID)((data >> 16) & 0xFF) + ", " + (GCTexGenType)((data >> 12) & 0xF) + ", " + (GCTexGenSrc)((data >> 4) & 0xFF) + ", " + (GCTexGenMatrix)(data & 0xF) + " ),");
+					writer.WriteLine($"\tGJD_PARAM_TEXCOORD ( {(GCTexCoordID)((Data >> 16) & 0xFF)}, {(GCTexGenType)((Data >> 12) & 0xF)}, {(GCTexGenSrc)((Data >> 4) & 0xFF)}, {(GCTexGenMatrix)(Data & 0xF)} ),");
 					break;
 			}
 		}
 	}
 
 	/// <summary>
-	/// Parameter that is relevent for Vertex data. <br/>
+	/// Parameter that is relevant for Vertex data. <br/>
 	/// A geometry object needs to have one for each 
 	/// </summary>
 	[Serializable]
@@ -170,14 +161,11 @@ namespace SAModel.GC
 		/// </summary>
 		public GCVertexAttribute VertexAttribute
 		{
-			get
-			{
-				return (GCVertexAttribute)(data >> 16);
-			}
+			get => (GCVertexAttribute)(Data >> 16);
 			set
 			{
-				data &= 0xFFFF;
-				data |= ((uint)value) << 16;
+				Data &= 0xFFFF;
+				Data |= (uint)value << 16;
 			}
 		}
 
@@ -187,14 +175,11 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort Unknown
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(Data & 0xFFFF);
 			set
 			{
-				data &= 0xFFFF0000;
-				data |= value;
+				Data &= 0xFFFF0000;
+				Data |= value;
 			}
 		}
 
@@ -221,42 +206,34 @@ namespace SAModel.GC
 				case GCVertexAttribute.Tex0:
 					Unknown = 33544;
 					break;
-				default:
-					break;
 			}
 		}
 
 		/// <summary>
 		/// Allows to manually create a Vertex attribute parameter
 		/// </summary>
-		/// <param name="Unknown"></param>
+		/// <param name="unknown"></param>
 		/// <param name="vertexAttrib">The vertex attribute type that the parameter is for</param>
-		public VtxAttrFmtParameter(ushort Unknown, GCVertexAttribute vertexAttrib) : base(ParameterType.VtxAttrFmt)
+		public VtxAttrFmtParameter(ushort unknown, GCVertexAttribute vertexAttrib) : base(ParameterType.VtxAttrFmt)
 		{
-			this.Unknown = Unknown;
+			Unknown = unknown;
 			VertexAttribute = vertexAttrib;
 		}
 	}
 
 	/// <summary>
-	/// Holds information about the vertex data thats stored in the geometry
+	/// Holds information about the vertex data that's stored in the geometry
 	/// </summary>
 	[Serializable]
 	public class IndexAttributeParameter : GCParameter
 	{
 		/// <summary>
-		/// Holds information about the vertex data thats stored in the geometry 
+		/// Holds information about the vertex data that's stored in the geometry 
 		/// </summary>
 		public GCIndexAttributeFlags IndexAttributes
 		{
-			get
-			{
-				return (GCIndexAttributeFlags)data;
-			}
-			set
-			{
-				data = (uint)value;
-			}
+			get => (GCIndexAttributeFlags)Data;
+			set => Data = (uint)value;
 		}
 
 		/// <summary>
@@ -264,7 +241,7 @@ namespace SAModel.GC
 		/// </summary>
 		public IndexAttributeParameter() : base(ParameterType.IndexAttributeFlags)
 		{
-			//this always exists
+			// This always exists
 			IndexAttributes &= GCIndexAttributeFlags.HasPosition;
 		}
 
@@ -290,57 +267,45 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort LightingFlags
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(Data & 0xFFFF);
 			set
 			{
-				data &= 0xFFFF0000;
-				data |= value;
+				Data &= 0xFFFF0000;
+				Data |= value;
 			}
 		}
 
 		/// <summary>
 		/// Which shadow stencil the geometry should use. <br/>
-		/// Ranges from 0 - 15
+		/// Ranges from 0 to 15
 		/// </summary>
 		public byte ShadowStencil
 		{
-			get
-			{
-				return (byte)((data >> 16) & 0xF);
-			}
+			get => (byte)((Data >> 16) & 0xF);
 			set
 			{
-				data &= 0xFFF0FFFF;
-				data |= (uint)((value & 0xF) << 16);
+				Data &= 0xFFF0FFFF;
+				Data |= (uint)((value & 0xF) << 16);
 			}
 		}
 
 		public byte Unknown1
 		{
-			get
-			{
-				return (byte)((data >> 20) & 0xF);
-			}
+			get => (byte)((Data >> 20) & 0xF);
 			set
 			{
-				data &= 0xFFF0FFFF;
-				data |= (uint)((value & 0xF) << 20);
+				Data &= 0xFFF0FFFF;
+				Data |= (uint)((value & 0xF) << 20);
 			}
 		}
 
 		public byte Unknown2
 		{
-			get
-			{
-				return (byte)((data >> 24) & 0xFF);
-			}
+			get => (byte)((Data >> 24) & 0xFF);
 			set
 			{
-				data &= 0xFFF0FFFF;
-				data |= (uint)(value << 24);
+				Data &= 0xFFF0FFFF;
+				Data |= (uint)(value << 24);
 			}
 		} 
 
@@ -349,7 +314,7 @@ namespace SAModel.GC
 		/// </summary>
 		public LightingParameter() : base(ParameterType.Lighting)
 		{
-			//default value
+			// Default value
 			LightingFlags = 0xB11;
 			ShadowStencil = 1;
 		}
@@ -365,79 +330,62 @@ namespace SAModel.GC
 	/// The blending information for the surface of the geometry
 	/// </summary>
 	[Serializable]
-	public class BlendAlphaParameter : GCParameter
+	public class BlendAlphaParameter() : GCParameter(ParameterType.BlendAlpha)
 	{
 		/// <summary>
-		/// NJ Blendmode for the source alpha
+		/// NJ Blend mode for the source alpha
 		/// </summary>
 		public AlphaInstruction NJSourceAlpha
 		{
-			get
-			{
-				return GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 11) & 7));
-			}
+			get => GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((Data >> 11) & 7));
 			set
 			{
-				uint inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
-				data &= 0xFFFFC7FF; // ~(7 << 11)
-				data |= (inst & 7) << 11;
+				var inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
+				Data &= 0xFFFFC7FF; // ~(7 << 11)
+				Data |= (inst & 7) << 11;
 			}
 		}
 
 		/// <summary>
-		/// NJ Blendmode for the destination alpha
+		/// NJ Blend mode for the destination alpha
 		/// </summary>
 		public AlphaInstruction NJDestAlpha
 		{
-			get
-			{
-				return GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((data >> 8) & 7));
-			}
+			get => GCEnumConverter.GXToNJAlphaInstruction((GCBlendModeControl)((Data >> 8) & 7));
 			set
 			{
-				uint inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
-				data &= 0xFFFFF8FF; // ~(7 << 8)
-				data |= (inst & 7) << 8;
+				var inst = (uint)GCEnumConverter.NJtoGXBlendModeControl(value);
+				Data &= 0xFFFFF8FF; // ~(7 << 8)
+				Data |= (inst & 7) << 8;
 			}
 		}
 
 		/// <summary>
-		/// Blendmode for the source alpha
+		/// Blend mode for the source alpha
 		/// </summary>
 		public GCBlendModeControl SourceAlpha
 		{
-			get
-			{
-				return (GCBlendModeControl)((data >> 11) & 7);
-			}
+			get => (GCBlendModeControl)((Data >> 11) & 7);
 			set
 			{
-				uint inst = (uint)value;
-				data &= 0xFFFFC7FF; // ~(7 << 11)
-				data |= (inst & 7) << 11;
+				var inst = (uint)value;
+				Data &= 0xFFFFC7FF; // ~(7 << 11)
+				Data |= (inst & 7) << 11;
 			}
 		}
 
 		/// <summary>
-		/// Blendmode for the destination alpha
+		/// Blend mode for the destination alpha
 		/// </summary>
 		public GCBlendModeControl DestAlpha
 		{
-			get
-			{
-				return (GCBlendModeControl)((data >> 8) & 7);
-			}
+			get => (GCBlendModeControl)((Data >> 8) & 7);
 			set
 			{
-				uint inst = (uint)value;
-				data &= 0xFFFFF8FF; // ~(7 << 8)
-				data |= (inst & 7) << 8;
+				var inst = (uint)value;
+				Data &= 0xFFFFF8FF; // ~(7 << 8)
+				Data |= (inst & 7) << 8;
 			}
-		}
-
-		public BlendAlphaParameter() : base(ParameterType.BlendAlpha)
-		{
-
 		}
 	}
 
@@ -448,27 +396,25 @@ namespace SAModel.GC
 	public class AmbientColorParameter : GCParameter
 	{
 		/// <summary>
-		/// The Color of the gemoetry
+		/// The Color of the geometry
 		/// </summary>
 		public Color AmbientColor
 		{
 			get
 			{
-				Color col = new Color()
+				var col = new Color
 				{
-					ARGB = data
+					ARGB = Data
 				};
+				
 				return col;
 			}
-			set
-			{
-				data = value.ARGB;
-			}
+			set => Data = value.ARGB;
 		}
 
 		public AmbientColorParameter() : base(ParameterType.AmbientColor)
 		{
-			data = uint.MaxValue; // white is default
+			Data = uint.MaxValue; // White is default
 		}
 	}
 
@@ -481,16 +427,13 @@ namespace SAModel.GC
 		/// <summary>
 		/// The id of the texture
 		/// </summary>
-		public ushort TextureID
+		public ushort TextureId
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(Data & 0xFFFF);
 			set
 			{
-				data &= 0xFFFF0000;
-				data |= value;
+				Data &= 0xFFFF0000;
+				Data |= value;
 			}
 		}
 
@@ -499,26 +442,23 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTileMode Tile
 		{
-			get
-			{
-				return (GCTileMode)(data >> 16);
-			}
+			get => (GCTileMode)(Data >> 16);
 			set
 			{
-				data &= 0xFFFF;
-				data |= ((uint)value) << 16;
+				Data &= 0xFFFF;
+				Data |= (uint)value << 16;
 			}
 		}
 
 		public TextureParameter() : base(ParameterType.Texture)
 		{
-			TextureID = 0;
+			TextureId = 0;
 			Tile = GCTileMode.WrapU | GCTileMode.WrapV;
 		}
 
-		public TextureParameter(ushort TexID, GCTileMode tileMode) : base(ParameterType.Texture)
+		public TextureParameter(ushort textureId, GCTileMode tileMode) : base(ParameterType.Texture)
 		{
-			TextureID = TexID;
+			TextureId = textureId;
 			Tile = tileMode;
 		}
 	}
@@ -534,14 +474,11 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort Unknown1
 		{
-			get
-			{
-				return (ushort)(data & 0xFFFF);
-			}
+			get => (ushort)(Data & 0xFFFF);
 			set
 			{
-				data &= 0xFFFF0000;
-				data |= (uint)value;
+				Data &= 0xFFFF0000;
+				Data |= value;
 			}
 		}
 
@@ -550,20 +487,17 @@ namespace SAModel.GC
 		/// </summary>
 		public ushort Unknown2
 		{
-			get
-			{
-				return (ushort)(data >> 16);
-			}
+			get => (ushort)(Data >> 16);
 			set
 			{
-				data &= 0xFFFF;
-				data |= (uint)value << 16;
+				Data &= 0xFFFF;
+				Data |= (uint)value << 16;
 			}
 		}
 
 		public Unknown9Parameter() : base(ParameterType.Unknown_9)
 		{
-			// default values
+			// Default values
 			Unknown1 = 4;
 			Unknown2 = 0;
 		}
@@ -578,16 +512,13 @@ namespace SAModel.GC
 		/// <summary>
 		/// The output location of the generated texture coordinates
 		/// </summary>
-		public GCTexCoordID TexCoordID
+		public GCTexCoordID TexCoordId
 		{
-			get
-			{
-				return (GCTexCoordID)((data >> 16) & 0xFF);
-			}
+			get => (GCTexCoordID)((Data >> 16) & 0xFF);
 			set
 			{
-				data &= 0xFF00FFFF;
-				data |= (uint)value << 16;
+				Data &= 0xFF00FFFF;
+				Data |= (uint)value << 16;
 			}
 		}
 
@@ -596,14 +527,11 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTexGenType TexGenType
 		{
-			get
-			{
-				return (GCTexGenType)((data >> 12) & 0xF);
-			}
+			get => (GCTexGenType)((Data >> 12) & 0xF);
 			set
 			{
-				data &= 0xFFFF0FFF;
-				data |= (uint)value << 12;
+				Data &= 0xFFFF0FFF;
+				Data |= (uint)value << 12;
 			}
 		}
 
@@ -612,30 +540,24 @@ namespace SAModel.GC
 		/// </summary>
 		public GCTexGenSrc TexGenSrc
 		{
-			get
-			{
-				return (GCTexGenSrc)((data >> 4) & 0xFF);
-			}
+			get => (GCTexGenSrc)((Data >> 4) & 0xFF);
 			set
 			{
-				data &= 0xFFFFF00F;
-				data |= (uint)value << 4;
+				Data &= 0xFFFFF00F;
+				Data |= (uint)value << 4;
 			}
 		}
 
 		/// <summary>
 		/// The id of the matrix to use for generating the texture coordinates
 		/// </summary>
-		public GCTexGenMatrix MatrixID
+		public GCTexGenMatrix MatrixId
 		{
-			get
-			{
-				return (GCTexGenMatrix)(data & 0xF);
-			}
+			get => (GCTexGenMatrix)(Data & 0xF);
 			set
 			{
-				data &= 0xFFFFFFF0;
-				data |= (uint)value;
+				Data &= 0xFFFFFFF0;
+				Data |= (uint)value;
 			}
 		}
 
@@ -647,16 +569,16 @@ namespace SAModel.GC
 		/// <summary>
 		/// Create a custom Texture coordinate generation parameter
 		/// </summary>
-		/// <param name="texCoordID">The output location of the generated texture coordinates</param>
+		/// <param name="texCoordId">The output location of the generated texture coordinates</param>
 		/// <param name="texGenType">The function to use for generating the texture coordinates</param>
 		/// <param name="texGenSrc">The source which should be used to generate the texture coordinates</param>
-		/// <param name="matrixID">The id of the matrix to use for generating the texture coordinates</param>
-		public TexCoordGenParameter(GCTexCoordID texCoordID, GCTexGenType texGenType, GCTexGenSrc texGenSrc, GCTexGenMatrix matrixID) : base(ParameterType.TexCoordGen)
+		/// <param name="matrixId">The id of the matrix to use for generating the texture coordinates</param>
+		public TexCoordGenParameter(GCTexCoordID texCoordId, GCTexGenType texGenType, GCTexGenSrc texGenSrc, GCTexGenMatrix matrixId) : base(ParameterType.TexCoordGen)
 		{
-			TexCoordID = texCoordID;
+			TexCoordId = texCoordId;
 			TexGenType = texGenType;
 			TexGenSrc = texGenSrc;
-			MatrixID = matrixID;
+			MatrixId = matrixId;
 		}
 	}
 }

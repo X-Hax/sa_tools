@@ -10,7 +10,6 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<ApplicationIcon>ico_samdl.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 	  <DefineConstants>TRACE</DefineConstants>

@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SplitTools;
 using SAModel;
 using SAModel.GC;
 using SplitTools.Split;

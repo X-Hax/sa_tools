@@ -8,7 +8,6 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 		<ApplicationIcon>sadxfontedit.ico</ApplicationIcon>
 	</PropertyGroup>
