@@ -92,14 +92,14 @@ namespace SAModel
 
 		public VertexData(GC.Vector3 position, GC.Vector3 normal, GC.Color color, GC.UV uv)
 		{
-			Position = new Vertex(position.x, position.y, position.z);
-			Normal = new Vertex(normal.x, normal.y, normal.z) ?? Vertex.UpNormal;
+			Position = new Vertex(position.X, position.Y, position.Z);
+			Normal = new Vertex(normal.X, normal.Y, normal.Z) ?? Vertex.UpNormal;
 
 			//why does this work, i fed R in as A
 			//Color = System.Drawing.Color.FromArgb((int)(color.R), (int)(color.G), (int)(color.B), (int)(color.A));
 
 			//Color = color.SystemCol;
-			Color = System.Drawing.Color.FromArgb(color.red, color.alpha, color.blue, color.green);
+			Color = System.Drawing.Color.FromArgb(color.Red, color.Alpha, color.Blue, color.Green);
 
 			//Color = color;
 			UV = new UV() { U = uv.XF, V = uv.YF };

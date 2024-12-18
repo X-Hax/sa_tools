@@ -511,13 +511,13 @@ namespace SAModel.SAEditorCommon.Import
 			List<Vector3D> normals = new List<Vector3D>();
 			List<Vector3D> texcoords = new List<Vector3D>();
 			List<Color4D> colors = new List<Color4D>();
-			foreach (GC.GCParameter param in m.parameters)
+			foreach (GC.GCParameter param in m.Parameters)
 			{
-				if (param.type == GC.ParameterType.Texture)
+				if (param.Type == GC.ParameterType.Texture)
 				{
 					GC.TextureParameter tex = param as GC.TextureParameter;
 					MaterialBuffer.UseTexture = true;
-					MaterialBuffer.TextureID = tex.TextureID;
+					MaterialBuffer.TextureID = tex.TextureId;
 					if (tex.Tile.HasFlag(GC.GCTileMode.MirrorU))
 						MaterialBuffer.FlipU = true;
 					if (tex.Tile.HasFlag(GC.GCTileMode.MirrorV))
@@ -530,14 +530,14 @@ namespace SAModel.SAEditorCommon.Import
 					MaterialBuffer.ClampU &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
 					MaterialBuffer.ClampV &= tex.Tile.HasFlag(GC.GCTileMode.Unk_1);
 				}
-				else if (param.type == GC.ParameterType.TexCoordGen)
+				else if (param.Type == GC.ParameterType.TexCoordGen)
 				{
 					GC.TexCoordGenParameter gen = param as GC.TexCoordGenParameter;
 					if (gen.TexGenSrc == GC.GCTexGenSrc.Normal)
 						MaterialBuffer.EnvironmentMap = true;
 					else MaterialBuffer.EnvironmentMap = false;
 				}
-				else if (param.type == GC.ParameterType.BlendAlpha)
+				else if (param.Type == GC.ParameterType.BlendAlpha)
 				{
 					GC.BlendAlphaParameter blend = param as GC.BlendAlphaParameter;
 					MaterialBuffer.SourceAlpha = blend.NJSourceAlpha;
@@ -545,12 +545,12 @@ namespace SAModel.SAEditorCommon.Import
 				}
 			}
 
-			List<GC.IOVtx> gcPositions = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Position)?.data;
-			List<GC.IOVtx> gcNormals = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Normal)?.data;
-			List<GC.IOVtx> gcColors = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Color0)?.data;
-			List<GC.IOVtx> gcUVs = gcAttach.VertexData.Find(x => x.attribute == GC.GCVertexAttribute.Tex0)?.data;
+			List<GC.IOVtx> gcPositions = gcAttach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Position)?.Data;
+			List<GC.IOVtx> gcNormals = gcAttach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Normal)?.Data;
+			List<GC.IOVtx> gcColors = gcAttach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Color0)?.Data;
+			List<GC.IOVtx> gcUVs = gcAttach.VertexData.Find(x => x.Attribute == GC.GCVertexAttribute.Tex0)?.Data;
 
-			foreach (GC.GCPrimitive prim in m.primitives)
+			foreach (GC.GCPrimitive prim in m.Primitives)
 			{
 				for (int i = 0; i < prim.ToTriangles().Count; i += 3)
 				{
@@ -559,11 +559,11 @@ namespace SAModel.SAEditorCommon.Import
 					for (int j = 0; j < 3; j++)
 					{
 						GC.Vector3 vertex = (GC.Vector3)gcPositions[prim.ToTriangles()[i + j].PositionIndex];
-						positions.Add(new Vector3D(vertex.x, vertex.y, vertex.z));
+						positions.Add(new Vector3D(vertex.X, vertex.Y, vertex.Z));
 						if (gcNormals != null)
 						{
 							GC.Vector3 normal = (GC.Vector3)gcNormals[prim.ToTriangles()[i + j].NormalIndex];
-							normals.Add(new Vector3D(normal.x, normal.y, normal.z));
+							normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
 						}
 						if (gcUVs != null)
 						{
@@ -1492,7 +1492,7 @@ namespace SAModel.SAEditorCommon.Import
 							vert.Color0Index = (ushort)(colorStartIndex + grp.Indices[j]);
 						else if (m.HasNormals)
 							vert.NormalIndex = (ushort)(normStartIndex + grp.Indices[j]);
-						prim.loops.Add(vert);
+						prim.Loops.Add(vert);
 					}
 					primitives.Add(prim);
 				}
@@ -1509,26 +1509,26 @@ namespace SAModel.SAEditorCommon.Import
 
 			//VertexAttribute stuff
 			GC.GCVertexSet vtxPositions = new GC.GCVertexSet(GC.GCVertexAttribute.Position);
-			vtxPositions.data.AddRange(gcvertices);
+			vtxPositions.Data.AddRange(gcvertices);
 			attach.VertexData.Add(vtxPositions);
 
 			if (texcoords.Count > 0)
 			{
 				GC.GCVertexSet vtxUV = new GC.GCVertexSet(GC.GCVertexAttribute.Tex0);
-				vtxUV.data.AddRange(texcoords);
+				vtxUV.Data.AddRange(texcoords);
 				attach.VertexData.Add(vtxUV);
 			}
 
 			if (colors.Count > 0)
 			{
 				GC.GCVertexSet vtxColors = new GC.GCVertexSet(GC.GCVertexAttribute.Color0);
-				vtxColors.data.AddRange(colors);
+				vtxColors.Data.AddRange(colors);
 				attach.VertexData.Add(vtxColors);
 			}
 			else
 			{
 				GC.GCVertexSet vtxNormals = new GC.GCVertexSet(GC.GCVertexAttribute.Normal);
-				vtxNormals.data.AddRange(gcnormals);
+				vtxNormals.Data.AddRange(gcnormals);
 				attach.VertexData.Add(vtxNormals);
 			}
 

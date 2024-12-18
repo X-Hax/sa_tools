@@ -2047,7 +2047,7 @@ namespace SAModel.SAMDL
 					gatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 					foreach (GC.GCVertexSet m in gatt.VertexData)
 					{
-						switch (m.attribute)
+						switch (m.Attribute)
 						{
 							case GC.GCVertexAttribute.Position:
 								vtype = "position_";
@@ -2182,7 +2182,7 @@ namespace SAModel.SAMDL
 					int matind = 0;
 					foreach (var msh in gcatt.OpaqueMeshes.Concat(gcatt.TranslucentMeshes))
 					{
-						msh.parameters.RemoveAll(a => a is GC.TextureParameter);
+						msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
 						if (mats[matind].UseTexture)
 						{
 							GC.GCTileMode tm = GC.GCTileMode.Mask;
@@ -2194,10 +2194,10 @@ namespace SAModel.SAMDL
 								tm &= ~GC.GCTileMode.WrapV;
 							if (mats[matind].FlipV)
 								tm &= ~GC.GCTileMode.MirrorV;
-							msh.parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
+							msh.Parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
 						}
-						msh.parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
-						msh.parameters.Add(new GC.BlendAlphaParameter() { NJSourceAlpha = mats[matind].SourceAlpha, NJDestAlpha = mats[matind].DestinationAlpha });
+						msh.Parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
+						msh.Parameters.Add(new GC.BlendAlphaParameter() { NJSourceAlpha = mats[matind].SourceAlpha, NJDestAlpha = mats[matind].DestinationAlpha });
 						matind++;
 					}
 					break;
@@ -2313,11 +2313,11 @@ namespace SAModel.SAMDL
 							case GC.GCAttach gatt:
 								foreach (var msh in gatt.OpaqueMeshes.Concat(gatt.TranslucentMeshes))
 								{
-									var tp = (GC.TextureParameter)msh.parameters.LastOrDefault(a => a is GC.TextureParameter);
-									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureID))
+									var tp = (GC.TextureParameter)msh.Parameters.LastOrDefault(a => a is GC.TextureParameter);
+									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureId))
 									{
-										msh.parameters.RemoveAll(a => a is GC.TextureParameter);
-										msh.parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureID], tp.Tile));
+										msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+										msh.Parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureId], tp.Tile));
 									}
 								}
 								break;
@@ -3884,7 +3884,7 @@ namespace SAModel.SAMDL
 							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
 							foreach (GC.GCVertexSet v in gcatt.VertexData)
 							{
-								switch (v.attribute)
+								switch (v.Attribute)
 								{
 									case GC.GCVertexAttribute.Position:
 										vtype = "position_";
