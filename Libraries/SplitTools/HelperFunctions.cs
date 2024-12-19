@@ -87,7 +87,7 @@ namespace SplitTools
 
 		        if (!((int)data.LengthLeft < 0 || lookbackHead < 0))
 		        {
-			        for (int i = 0; i < numBytes; i++)
+			        for (var i = 0; i < numBytes; i++)
 			        {
 				        data.OutputBuffer[data.WriteHead++] = data.OutputBuffer[lookbackHead++];
 			        }
