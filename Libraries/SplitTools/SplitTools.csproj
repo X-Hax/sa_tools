@@ -2,13 +2,11 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Library</OutputType>
-		<UseWindowsForms>true</UseWindowsForms>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<OutputPath>..\..\build\lib\</OutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
@@ -21,7 +19,4 @@
 	<ItemGroup>
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
 	</ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\bin\&quot;&#xD;&#xA;xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\tools\&quot;" />
-	</Target>
 </Project>

@@ -10,7 +10,6 @@
 		<ApplicationIcon>icon_TexEdit.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Platforms>x64;x86</Platforms>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<ItemGroup>

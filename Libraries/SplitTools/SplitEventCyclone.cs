@@ -3,23 +3,19 @@ using Newtonsoft.Json;
 using SAModel;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Web.Services.Description;
-using static System.Windows.Forms.Design.AxImporter;
 
 namespace SplitTools.SAArc
 {
 	public static class sa2EventTailsPlane
 	{
-		static List<string> nodenames = new List<string>();
-		static Dictionary<string, ModelInfo> modelfiles = new Dictionary<string, ModelInfo>();
-		static Dictionary<string, MotionInfo> motionfiles = new Dictionary<string, MotionInfo>();
-		static Dictionary<string, CameraInfo> camarrayfiles = new Dictionary<string, CameraInfo>();
-		static Dictionary<string, TexAnimFileInfo> texanimfiles = new Dictionary<string, TexAnimFileInfo>();
+		static List<string> nodenames = new();
+		static Dictionary<string, ModelInfo> modelfiles = new();
+		static Dictionary<string, MotionInfo> motionfiles = new();
+		static Dictionary<string, CameraInfo> camarrayfiles = new();
+		static Dictionary<string, TexAnimFileInfo> texanimfiles = new();
 
 		public static void Split(string filename, string outputPath, string labelFile = null)
 		{
@@ -28,49 +24,75 @@ namespace SplitTools.SAArc
 			camarrayfiles.Clear();
 			motionfiles.Clear();
 			texanimfiles.Clear();
+			
 			string dir = Environment.CurrentDirectory;
+			
 			try
 			{
-				if (outputPath[outputPath.Length - 1] != '/') outputPath = string.Concat(outputPath, "/");
+				if (outputPath[outputPath.Length - 1] != '/')
+				{
+					outputPath = string.Concat(outputPath, "/");
+				}
+
 				// get file name, read it from the console if nothing
 				string evfilename = filename;
 
 				evfilename = Path.GetFullPath(evfilename);
 				string EventFileName = Path.GetFileNameWithoutExtension(evfilename);
 				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase))
+				{
 					EventFileName += "_bin";
+				}
 
 				Console.WriteLine("Splitting file {0}...", evfilename);
 				byte[] fc;
 				if (Path.GetExtension(evfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
+				{
 					fc = Prs.Decompress(evfilename);
+				}
 				else
+				{
 					fc = File.ReadAllBytes(evfilename);
+				}
+
 				if (Path.GetExtension(evfilename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
+				{
 					fc = Prs.Decompress(evfilename);
+				}
+
 				EventCycloneIniData ini = new EventCycloneIniData() { Name = Path.GetFileNameWithoutExtension(evfilename) };
 				if (outputPath.Length != 0)
 				{
 					if (!Directory.Exists(outputPath))
+					{
 						Directory.CreateDirectory(outputPath);
+					}
+
 					Environment.CurrentDirectory = outputPath;
 				}
 				else
+				{
 					Environment.CurrentDirectory = Path.GetDirectoryName(evfilename);
-					Directory.CreateDirectory(EventFileName);
+				}
+
+				Directory.CreateDirectory(EventFileName);
 
 				// Metadata for SAMDL Project Mode
 				byte[] mlength = null;
 				Dictionary<string, string> evsectionlist = new Dictionary<string, string>();
 				Dictionary<string, string> evsplitfilenames = new Dictionary<string, string>();
-				if (labelFile != null) labelFile = Path.GetFullPath(labelFile);
+				if (labelFile != null)
+				{
+					labelFile = Path.GetFullPath(labelFile);
+				}
+
 				if (File.Exists(labelFile))
 				{
 					evsplitfilenames = IniSerializer.Deserialize<Dictionary<string, string>>(labelFile);
 					mlength = File.ReadAllBytes(labelFile);
 				}
 				string evname = Path.GetFileNameWithoutExtension(evfilename);
-				string[] evmetadata = new string[0];
+				string[] evmetadata = [];
 
 				string evtexname = Path.Combine("EVENT", evname);
 
@@ -122,10 +144,15 @@ namespace SplitTools.SAArc
 					{
 						EntityName = modelfiles[ini.Model].MetaName;
 						if (battle)
+						{
 							outResult += modelfiles[ini.Model].MetaName + "|" + $"{evtexname}TEX";
-						
+						}
+
 						else
+						{
 							outResult += modelfiles[ini.Model].MetaName + "|" + $"{evtexname}";
+						}
+
 						evsectionlist[modelfiles[ini.Model].Filename] = outResult;
 					}
 				}
@@ -191,10 +218,17 @@ namespace SplitTools.SAArc
 			string dir = Environment.CurrentDirectory;
 			try
 			{
-				if (fileOutputPath[fileOutputPath.Length - 1] != '/') fileOutputPath = string.Concat(fileOutputPath, "/");
+				if (fileOutputPath[fileOutputPath.Length - 1] != '/')
+				{
+					fileOutputPath = string.Concat(fileOutputPath, "/");
+				}
+
 				filename = Path.GetFullPath(filename);
 				if (Directory.Exists(filename))
+				{
 					filename += ".prs";
+				}
+
 				Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 				string path = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(filename)), Path.GetFileNameWithoutExtension(filename));
 				JsonSerializer js = new JsonSerializer();
@@ -204,9 +238,14 @@ namespace SplitTools.SAArc
 					evinfo = js.Deserialize<EventCycloneIniData>(jtr);
 				uint gamekey;
 				if (!isBigEndian.HasValue)
+				{
 					ByteConverter.BigEndian = evinfo.BigEndian;
+				}
 				else
+				{
 					ByteConverter.BigEndian = isBigEndian.Value;
+				}
+
 				List<byte> evfile = new List<byte>();
 				List<byte> databytes = new List<byte>();
 				Dictionary<string, int> animaddrs = new Dictionary<string, int>();
@@ -214,9 +253,14 @@ namespace SplitTools.SAArc
 				Dictionary<int, int> panimaddrs = new Dictionary<int, int>();
 				Dictionary<string, uint> labels = new Dictionary<string, uint>();
 				if (evinfo.BigEndian == true)
+				{
 					gamekey = 0x8162FE60;
+				}
 				else
+				{
 					gamekey = 0xCB00000;
+				}
+
 				uint imageBase = gamekey + 0x10;
 				uint tlsstart = gamekey + 0x10;
 				NJS_TEXLIST tex = NJS_TEXLIST.Load(Path.Combine(path, "tailsPlain.satex"));
@@ -286,7 +330,10 @@ namespace SplitTools.SAArc
 				if (fileOutputPath.Length != 0)
 				{
 					if (!Directory.Exists(fileOutputPath))
+					{
 						Directory.CreateDirectory(fileOutputPath);
+					}
+
 					filename = Path.Combine(fileOutputPath, Path.GetFileName(filename));
 				}
 
@@ -294,10 +341,14 @@ namespace SplitTools.SAArc
 				{ 
 					FraGag.Compression.Prs.Compress(evfile.ToArray(), filename);
 					if (!File.Exists(filename))
+					{
 						File.Create(filename);
+					}
 				}
 				else
+				{
 					File.WriteAllBytes(filename, evfile.ToArray());
+				}
 			}
 			finally
 			{
@@ -320,7 +371,10 @@ namespace SplitTools.SAArc
 						List<string> names = new List<string>(obj.GetObjects().Select((o) => o.Name));
 						foreach (string s in names)
 							if (modelfiles.ContainsKey(s))
+							{
 								modelfiles.Remove(s);
+							}
+
 						nodenames.AddRange(names);
 						modelfiles.Add(obj.Name, new ModelInfo(fn, obj, ModelFormat.Chunk, meta));
 					}
@@ -332,7 +386,9 @@ namespace SplitTools.SAArc
 		{
 			NJS_MOTION mtn = null;
 			if (motions != null)
+			{
 				mtn = motions[ByteConverter.ToInt32(fc, address)];
+			}
 			else
 			{
 				int ptr3 = fc.GetPointer(address, key);
@@ -343,9 +399,16 @@ namespace SplitTools.SAArc
 					mtn.OptimizeShape();
 				}
 			}
-			if (mtn == null) return null;
+			if (mtn == null)
+			{
+				return null;
+			}
+
 			if (!motionfiles.ContainsKey(mtn.Name) || motionfiles[mtn.Name].Filename == null)
+			{
 				motionfiles[mtn.Name] = new MotionInfo(fn, mtn);
+			}
+
 			return mtn.Name;
 		}
 
@@ -386,7 +449,9 @@ namespace SplitTools.SAArc
 		{
 			NJS_CAMERA ncam = null;
 			if (ncams != null)
+			{
 				ncam = ncams[ByteConverter.ToInt32(fc, address + 0xC)];
+			}
 			else
 			{
 				int ptr3 = fc.GetPointer(address, key);
@@ -395,9 +460,16 @@ namespace SplitTools.SAArc
 					ncam = new NJS_CAMERA(fc, ptr3 + 0xC, key);
 				}
 			}
-			if (ncam == null) return null;
+			if (ncam == null)
+			{
+				return null;
+			}
+
 			if (!camarrayfiles.ContainsKey(ncam.Name) || camarrayfiles[ncam.Name].Filename == null)
+			{
 				camarrayfiles[ncam.Name] = new CameraInfo(fn, ncam);
+			}
+
 			return ncam.Name;
 		}
 	}
@@ -413,7 +485,7 @@ namespace SplitTools.SAArc
 			set { Game = (Game)Enum.Parse(typeof(Game), value); }
 		}
 		public bool BigEndian { get; set; }
-		public Dictionary<string, string> Files { get; set; } = new Dictionary<string, string>();
+		public Dictionary<string, string> Files { get; set; } = new();
 		public string Texlist { get; set; }
 		public string Model { get; set; }
 		public string Animation { get; set; }
