@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using Newtonsoft.Json;
-using System.ServiceModel.Channels;
 
 namespace SAModel.DataToolbox
 {
