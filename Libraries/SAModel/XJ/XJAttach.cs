@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SAModel.XJ
 {
@@ -12,36 +13,22 @@ namespace SAModel.XJ
 		/// <summary>
 		/// Flags for the XJ Attach
 		/// </summary>
-		public uint flags;
+		private readonly uint _flags;
 
 		/// <summary>
 		/// The seperate sets of vertex data in this attach
 		/// </summary>
-		public readonly List<XJVertexSet> vertexData = new List<XJVertexSet>();
+		private readonly List<XjVertexSet> _vertexData = [];
 
 		/// <summary>
 		/// The meshes with opaque rendering properties
 		/// </summary>
-		public readonly List<XJMesh> opaqueMeshes = new List<XJMesh>();
+		private readonly List<XJMesh> _opaqueMeshes = [];
 
 		/// <summary>
 		/// The meshes with translucent rendering properties
 		/// </summary>
-		public readonly List<XJMesh> translucentMeshes = new List<XJMesh>();
-
-		/// <summary>
-		/// Create a new empty XJ attach
-		/// </summary>
-		public XJAttach()
-		{
-			Name = "xjattach_" + Extensions.GenerateIdentifier();
-
-			flags = 0;
-			vertexData = new List<XJVertexSet>();
-			opaqueMeshes = new List<XJMesh>();
-			translucentMeshes = new List<XJMesh>();
-			Bounds = new BoundingSphere();
-		}
+		private readonly List<XJMesh> _translucentMeshes = [];
 
 		/// <summary>
 		/// Reads a XJ attach from a file
@@ -49,74 +36,84 @@ namespace SAModel.XJ
 		/// <param name="file">The files contents</param>
 		/// <param name="address">The address at which the attach is located</param>
 		/// <param name="imageBase">The imagebase of the file</param>
-		/// <param name="labels">The labels of the file</param>
-		/// 
 		public XJAttach(byte[] file, int address, uint imageBase)
 			: this(file, address, imageBase, new Dictionary<int, string>())
 		{
 		}
+		
 		public XJAttach(byte[] file, int address, uint imageBase, Dictionary<int, string> labels)
 		{
-			if (labels.ContainsKey(address))
-				Name = labels[address];
+			if (labels.TryGetValue(address, out var name))
+			{
+				Name = name;
+			}
 			else
-				Name = "attach_" + address.ToString("X8");
-			flags = ByteConverter.ToUInt32(file, address);
-			uint vertexSetOffset = ByteConverter.ToUInt32(file, address + 0x4) - imageBase;
-			uint vertexSetCount = ByteConverter.ToUInt32(file, address + 0x8); //Should always be 1?
-			uint opaqueMeshesOffset = ByteConverter.ToUInt32(file, address + 0xC) - imageBase;
-			uint opaqueMeshesCount = ByteConverter.ToUInt32(file, address + 0x10);
-			uint translucentMeshesOffset = ByteConverter.ToUInt32(file, address + 0x14) - imageBase;
-			uint translucentMeshesCount = ByteConverter.ToUInt32(file, address + 0x18);
+			{
+				Name = $"attach_{address:X8}";
+			}
+
+			_flags = ByteConverter.ToUInt32(file, address);
+			
+			var vertexSetOffset = ByteConverter.ToUInt32(file, address + 0x4) - imageBase;
+			var vertexSetCount = ByteConverter.ToUInt32(file, address + 0x8); //Should always be 1?
+			var opaqueMeshesOffset = ByteConverter.ToUInt32(file, address + 0xC) - imageBase;
+			var opaqueMeshesCount = ByteConverter.ToUInt32(file, address + 0x10);
+			var translucentMeshesOffset = ByteConverter.ToUInt32(file, address + 0x14) - imageBase;
+			var translucentMeshesCount = ByteConverter.ToUInt32(file, address + 0x18);
+			
 			Bounds = new BoundingSphere(file, address + 0x1C);
 
-			for(int i = 0; i < vertexSetCount; i++)
+			for (var i = 0; i < vertexSetCount; i++)
 			{
-				vertexData.Add(new XJVertexSet(file, (int)(vertexSetOffset + (0x10 * i)), imageBase));
+				_vertexData.Add(new XjVertexSet(file, (int)(vertexSetOffset + 0x10 * i), imageBase));
 			}
 
-			for (int i = 0; i < opaqueMeshesCount; i++)
+			for (var i = 0; i < opaqueMeshesCount; i++)
 			{
-				opaqueMeshes.Add(new XJMesh(file, (uint)(opaqueMeshesOffset + (0x14 * i)), imageBase));
+				_opaqueMeshes.Add(new XJMesh(file, (uint)(opaqueMeshesOffset + 0x14 * i), imageBase));
 			}
 
-			for (int i = 0; i < translucentMeshesCount; i++)
+			for (var i = 0; i < translucentMeshesCount; i++)
 			{
-				translucentMeshes.Add(new XJMesh (file, (uint)(translucentMeshesOffset + (0x14 * i)), imageBase));
+				_translucentMeshes.Add(new XJMesh (file, (uint)(translucentMeshesOffset + 0x14 * i), imageBase));
 			}
 		}
 
-		public override byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
+		public override byte[] GetBytes(uint imageBase, bool dx, Dictionary<string, uint> labels, List<uint> njOffsets, out uint address)
 		{
-			List<byte> result = new List<byte>();
-			List<uint> vdataAddresses = new List<uint>();
+			List<byte> result = [];
+			List<uint> vDataAddresses = [];
 
-			foreach(var vdata in vertexData)
+			foreach(var vData in _vertexData)
 			{
-				result.AddRange(vdata.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, out uint vdataAddress));
-				vdataAddresses.Add(vdataAddress + imageBase);
+				result.AddRange(vData.GetBytes((uint)(imageBase + result.Count), dx, labels, njOffsets, out var vDataAddress));
+				vDataAddresses.Add(vDataAddress + imageBase);
 			}
+			
 			result.Align(0x10);
-			int curCount = result.Count;
-			result.AddRange(XJMesh.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, opaqueMeshes, out uint opaqueAddress));
+			var curCount = result.Count;
+			
+			result.AddRange(XJMesh.GetBytes((uint)(imageBase + result.Count), dx, labels, njOffsets, _opaqueMeshes, out var opaqueAddress));
 			opaqueAddress += (uint)curCount;
 			result.Align(0x10);
 			curCount = result.Count;
-			result.AddRange(XJMesh.GetBytes((uint)(imageBase + result.Count), DX, labels, njOffsets, translucentMeshes, out uint translucentAddress));
+			result.AddRange(XJMesh.GetBytes((uint)(imageBase + result.Count), dx, labels, njOffsets, _translucentMeshes, out var translucentAddress));
 			translucentAddress += (uint)curCount;
 			result.Align(0x10);
 
-			address = (uint)(result.Count);
+			address = (uint)result.Count;
+			
 			njOffsets.Add((uint)(imageBase + result.Count + 0x4));
 			njOffsets.Add((uint)(imageBase + result.Count + 0xC));
 			njOffsets.Add((uint)(imageBase + result.Count + 0x14));
-			result.AddRange(ByteConverter.GetBytes(flags));
-			result.AddRange(ByteConverter.GetBytes(vdataAddresses[0]));
-			result.AddRange(ByteConverter.GetBytes(vdataAddresses.Count));
+			
+			result.AddRange(ByteConverter.GetBytes(_flags));
+			result.AddRange(ByteConverter.GetBytes(vDataAddresses[0]));
+			result.AddRange(ByteConverter.GetBytes(vDataAddresses.Count));
 			result.AddRange(ByteConverter.GetBytes(opaqueAddress + imageBase));
-			result.AddRange(ByteConverter.GetBytes(opaqueMeshes.Count));
+			result.AddRange(ByteConverter.GetBytes(_opaqueMeshes.Count));
 			result.AddRange(ByteConverter.GetBytes(translucentAddress + imageBase));
-			result.AddRange(ByteConverter.GetBytes(translucentMeshes.Count));
+			result.AddRange(ByteConverter.GetBytes(_translucentMeshes.Count));
 			result.AddRange(Bounds.GetBytes());
 			result.Align(0x10);
 
@@ -125,38 +122,36 @@ namespace SAModel.XJ
 
 		public override void ProcessVertexData()
 		{
-			List<MeshInfo> meshInfo = new List<MeshInfo>();
-			List<List<VertexData>> verts = new List<List<VertexData>>();
-			List<bool> hasNormals = new List<bool>();
-			List<bool> hasColors = new List<bool>();
-			List<bool> hasUVs = new List<bool>();
+			List<MeshInfo> meshInfo = [];
+			List<List<VertexData>> verts = [];
+			List<bool> hasNormals = [];
+			List<bool> hasColors = [];
+			List<bool> hasUVs = [];
 
-			if (vertexData != null)
+			if (_vertexData != null)
 			{
-				for(int vd = 0; vd < vertexData.Count; vd++) //There should only be 1 of these, but in case there's not...
+				for (var vd = 0; vd < _vertexData.Count; vd++) //There should only be 1 of these, but in case there's not...
 				{
-					var vertData = vertexData[vd];
-					List<VertexData> vertSet = new List<VertexData>();
+					var vertData = _vertexData[vd];
+					List<VertexData> vertSet = [];
 
 					hasNormals.Add(vertData.Normals.Count > 0);
 					hasColors.Add(vertData.Colors.Count > 0);
 					hasUVs.Add(vertData.UVs.Count > 0);
-					for(int i = 0; i < vertData.Positions.Count; i++)
+					for (var i = 0; i < vertData.Positions.Count; i++)
 					{
 						var normal = hasNormals[vd] ? vertData.Normals[i] : new Vertex(0, 1, 0);
 						var color = hasColors[vd] ? vertData.Colors[i] : System.Drawing.Color.White;
 						var uv = hasUVs[vd] ? vertData.UVs[i] : new UV(0, 0);
+						
 						vertSet.Add(new VertexData(vertData.Positions[i], normal, color, uv));
 					}
 					verts.Add(vertSet);
 				}
 			}
 
-			foreach(XJMesh m in opaqueMeshes)
-				meshInfo.Add(m.Process(verts[0], hasNormals[0], hasColors[0]));
-
-			foreach (XJMesh m in translucentMeshes)
-				meshInfo.Add(m.Process(verts[0], hasNormals[0], hasColors[0]));
+			meshInfo.AddRange(_opaqueMeshes.Select(m => m.Process(verts[0], hasNormals[0], hasColors[0])));
+			meshInfo.AddRange(_translucentMeshes.Select(m => m.Process(verts[0], hasNormals[0], hasColors[0])));
 
 			MeshInfo = meshInfo.ToArray();
 		}
@@ -171,12 +166,12 @@ namespace SAModel.XJ
 		{
 			throw new NotImplementedException();
 		}
-		public override string ToStruct(bool DX)
+		public override string ToStruct(bool dx)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void ToStructVariables(TextWriter writer, bool DX, List<string> labels, string[] textures = null)
+		public override void ToStructVariables(TextWriter writer, bool dx, List<string> labels, string[] textures = null)
 		{
 			throw new NotImplementedException();
 		}
