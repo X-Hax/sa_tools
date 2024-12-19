@@ -41,6 +41,6 @@
 	  </None>
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\7z*.*&quot; &quot;$(ProjectDir)..\build\lib\&quot;&#xD;&#xA;xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\build\&quot;" />
+	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\7z*.*&quot; &quot;$(ProjectDir)..\build\lib\&quot;" />
 	</Target>
 </Project>
