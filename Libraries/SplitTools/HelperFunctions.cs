@@ -1,11 +1,9 @@
 ﻿using SAModel;
 using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -89,11 +87,10 @@ namespace SplitTools
 
 		        if (!((int)data.LengthLeft < 0 || lookbackHead < 0))
 		        {
-			        // Copies a slice from earlier in the output buffer to place at the head.
-			        data.OutputBuffer.Slice(lookbackHead, (int)numBytes)
-				        .CopyTo(data.OutputBuffer.Slice(data.WriteHead, (int)numBytes));
-
-			        data.WriteHead += (int)numBytes;
+			        for (int i = 0; i < numBytes; i++)
+			        {
+				        data.OutputBuffer[data.WriteHead++] = data.OutputBuffer[lookbackHead++];
+			        }
 
 			        if (data.LengthLeft == 0)
 			        {
