@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Windows.Forms;
 
 namespace SplitTools.SAArc
 {
@@ -117,9 +116,7 @@ namespace SplitTools.SAArc
 				{
 					if (!animParts.TryGetValue(item.Value, out short animPart))
 					{
-						var msgError = "Error, The animation \"" + item.Value + "\" is missing. Please check your ini file and make sure the animation name matches.";
-						MessageBox.Show(msgError, "Missing Anim File");
-						return;
+						throw new ArgumentOutOfRangeException(nameof(mtnFilename), $"The animation {item.Value} is missing. Please check your .ini file and make sure the animation name matches.");
 					}
 
 					mtnFile.AddRange(ByteConverter.GetBytes(item.Key));

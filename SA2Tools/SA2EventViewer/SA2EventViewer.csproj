@@ -5,7 +5,6 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\..\build\tools\</OutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationIcon>icon_sa2EvView.ico</ApplicationIcon>
