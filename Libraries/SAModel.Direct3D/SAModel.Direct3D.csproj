@@ -15,7 +15,7 @@
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
-		<PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+		<PackageReference Include="SharpDX.Direct3D9" />
+		<PackageReference Include="SharpDX.Mathematics" />
 	</ItemGroup>
 </Project>

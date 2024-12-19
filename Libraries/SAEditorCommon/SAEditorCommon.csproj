@@ -34,8 +34,8 @@
 		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="AssimpNet" Version="4.1.0" />
-		<PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
-		<PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+		<PackageReference Include="AssimpNet" />
+		<PackageReference Include="SharpDX.Direct3D9" />
+		<PackageReference Include="SharpDX.Mathematics" />
 	</ItemGroup>
 </Project>

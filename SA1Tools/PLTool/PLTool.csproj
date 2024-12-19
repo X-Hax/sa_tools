@@ -21,6 +21,6 @@
 		<Content Include="PLTool_100.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+		<PackageReference Include="System.Data.DataSetExtensions" />
 	</ItemGroup>
 </Project>

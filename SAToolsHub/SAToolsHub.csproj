@@ -28,8 +28,8 @@
 		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+		<PackageReference Include="System.Data.DataSetExtensions" />
+		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="Updater\SizeSuffix.cs" />

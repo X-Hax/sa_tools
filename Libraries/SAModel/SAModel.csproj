@@ -9,8 +9,7 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.10" />
+		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 	<PropertyGroup>
 		<DebugType>embedded</DebugType>
