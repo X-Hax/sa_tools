@@ -1,8 +1,11 @@
 ﻿using SAModel;
 using System;
-using System.Collections.Generic;
+using System.Buffers;
+using System.Buffers.Binary;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -10,42 +13,201 @@ namespace SplitTools
 {
 	public static class HelperFunctions
 	{
-        // X86 SACompGC
-		[DllImport("SACompGC_x86.dll", EntryPoint = "GetDecompressedSize", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-		private static extern uint GetDecompressedSizeX86(IntPtr InputBuffer);
-		[DllImport("SACompGC_x86.dll", EntryPoint = "DecompressBuffer", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-		private static extern void DecompressBufferX86(IntPtr InputBuffer, IntPtr OutputBuffer);
-        // X64 SACompGC
-        [DllImport("SACompGC_x64.dll", EntryPoint = "GetDecompressedSize", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-        private static extern uint GetDecompressedSizeX64(IntPtr InputBuffer);
-        [DllImport("SACompGC_x64.dll", EntryPoint = "DecompressBuffer", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-        private static extern void DecompressBufferX64(IntPtr InputBuffer, IntPtr OutputBuffer);
+		private static T ReadAs<T>(Span<byte> span, int byteIndex) where T : unmanaged
+		{
+			return MemoryMarshal.Read<T>(span[byteIndex..]);
+		}
+		
+        private static uint SACompGC_GetData(uint numBits, ref SACompGCStatus data)
+        {
+	        uint retVal;
+
+	        if (data.BitBufferRemaining < numBits)
+	        {
+		        var v6 = (int)(numBits - data.BitBufferRemaining);
+		        retVal = data.BitBuffer << (int)(numBits - data.BitBufferRemaining);
+
+		        if (data.ReadOffset != 0 || data.ChunkCount != 0)
+		        {
+			        var v9 = BinaryPrimitives.ReverseEndianness(ReadAs<uint>(data.InputBuffer, data.ReadHead + (int)data.ReadOffset));
+			        data.ReadOffset += 4;
+
+			        var clearBits = 32 - v6;
+			        retVal |= v9 << clearBits >> clearBits;
+			        data.BitBufferRemaining = (byte)clearBits;
+			        data.BitBuffer = v9 >> v6;
+
+			        if (data.ReadOffset == 0x8000)
+			        {
+				        data.ReadOffset = 0;
+				        data.ReadHead += 0x8000;
+				        if (data.ReadHead == data.EndOffset)
+				        {
+					        data.ReadHead = 0;
+				        }
+				        data.ChunkCount--;
+			        }
+		        }
+	        }
+	        else
+	        {
+		        var v4 = data.BitBuffer;
+		        data.BitBufferRemaining -= (byte)numBits;
+		        data.BitBuffer >>= (int)numBits;
+
+		        var clearBits = (int)(32 - numBits);
+		        retVal = v4 << clearBits >> clearBits;
+	        }
+
+	        return retVal;
+        }
+        
+        private static void SACompGCStatus_Process(ref SACompGCStatus data)
+        {
+	        while (true)
+	        {
+		        if (SACompGC_GetData(1, ref data) != 0)
+		        {
+			        data.OutputBuffer[data.WriteHead] = (byte)SACompGC_GetData(8, ref data);
+			        data.WriteHead++;
+			        data.LengthLeft--;
+
+			        if (data.LengthLeft == 0)
+			        {
+				        return;
+			        }
+
+			        continue;
+		        }
+
+		        // Perform RLE lookback
+		        var copyIdx = (int)SACompGC_GetData(data.CopyOffsetBits, ref data) + 1;
+		        var numBytes = SACompGC_GetData(data.CopySizeBits, ref data) + 2;
+		        data.LengthLeft -= numBytes;
+
+		        var lookbackHead = data.WriteHead - copyIdx;
+
+		        if (!((int)data.LengthLeft < 0 || lookbackHead < 0))
+		        {
+			        // Copies a slice from earlier in the output buffer to place at the head.
+			        data.OutputBuffer.Slice(lookbackHead, (int)numBytes)
+				        .CopyTo(data.OutputBuffer.Slice(data.WriteHead, (int)numBytes));
+
+			        data.WriteHead += (int)numBytes;
+
+			        if (data.LengthLeft == 0)
+			        {
+				        return;
+			        }
+		        }
+		        else
+		        {
+			        // Invalid?
+			        return;
+		        }
+	        }
+        }
+        
+        private static uint SACompGC_GetDecompressedSize(byte[] inputBuffer, out byte[] dataStart)
+        {
+	        var saCompGcData = MemoryMarshal.Cast<byte, uint>(inputBuffer);
+
+	        if (inputBuffer != null)
+	        {
+		        while (saCompGcData[0] != 0x6F436153)
+		        {
+			        saCompGcData = saCompGcData[1..];
+
+			        // Do not read out of bounds
+			        if (saCompGcData.Length == 0)
+			        {
+				        dataStart = null;
+				        return 0;
+			        }
+		        }
+
+		        dataStart = MemoryMarshal.Cast<uint, byte>(saCompGcData).ToArray();
+
+		        return BinaryPrimitives.ReverseEndianness(saCompGcData[2]) & 0x0FFFFFFF;
+	        }
+
+	        dataStart = null;
+	        return 0;
+        }
+        
+        private static byte[] SACompGC_DecompressBuffer(byte[] input)
+        {
+	        if (input == null)
+	        {
+		        return [];
+	        }
+
+	        var size = SACompGC_GetDecompressedSize(input, out input);
+	        var output = new byte[size];
+		        
+	        if (size == 0)
+	        {
+		        throw new ArgumentOutOfRangeException(nameof(input), "Empty file!");
+	        }
+
+	        SACompGCStatus data = new()
+	        {
+		        CopyOffsetBits = input[12],
+		        CopySizeBits = input[13],
+		        Field0x2D = (byte)(input[8] >> 6),
+		        ReadOffset = 16,
+		        LengthLeft = size,
+		        Length = size,
+		        ChunkCount = 0xFF, // -1 as byte
+		        OutputBuffer = output,
+		        WriteHead = 0,
+		        InputBuffer = input,
+		        ReadHead = 0,
+		        EndOffset = (int)((size + 47) & 0xFFFFFFE0)
+	        };
+
+	        SACompGCStatus_Process(ref data);
+
+	        return output.ToArray();
+        }
+        
         public static uint? SetupEXE(ref byte[] exefile)
 		{
 			if (ByteConverter.ToUInt16(exefile, 0) != 0x5A4D)
+			{
 				return null;
-			int ptr = ByteConverter.ToInt32(exefile, 0x3c);
-			if (ByteConverter.ToInt32(exefile, (int)ptr) != 0x4550) //PE\0\0
+			}
+
+			var ptr = ByteConverter.ToInt32(exefile, 0x3c);
+			
+			if (ByteConverter.ToInt32(exefile, ptr) != 0x4550) //PE\0\0
+			{
 				return null;
+			}
+
 			try
 			{
 				ptr += 4;
-				UInt16 numsects = ByteConverter.ToUInt16(exefile, (int)ptr + 2);
+				var numSects = ByteConverter.ToUInt16(exefile, ptr + 2);
 				ptr += 0x14;
-				int PEHead = ptr;
-				uint imageBase = ByteConverter.ToUInt32(exefile, ptr + 28);
+
+				var imageBase = ByteConverter.ToUInt32(exefile, ptr + 28);
+				
 				if (imageBase != 0x82000000) // SADX X360 EXE doesn't like this
 				{
-					byte[] result = new byte[ByteConverter.ToUInt32(exefile, ptr + 56)];
+					var result = new byte[ByteConverter.ToUInt32(exefile, ptr + 56)];
 					Array.Copy(exefile, result, ByteConverter.ToUInt32(exefile, ptr + 60));
 					ptr += 0xe0;
-					for (int i = 0; i < numsects; i++)
+					
+					for (var i = 0; i < numSects; i++)
 					{
 						Array.Copy(exefile, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FAddr), result, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.VAddr), ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FSize));
 						ptr += (int)SectOffs.Size;
 					}
+					
 					exefile = result;
 				}
+				
 				return imageBase;
 			}
 			catch 
@@ -53,162 +215,92 @@ namespace SplitTools
 				return null;
 			}
 		}
-
-		public static uint GetNewSectionAddress(byte[] exefile)
-		{
-			int ptr = ByteConverter.ToInt32(exefile, 0x3c);
-			ptr += 4;
-			UInt16 numsects = ByteConverter.ToUInt16(exefile, (int)ptr + 2);
-			ptr += 0x14;
-			ptr += 0xe0;
-			ptr += (int)SectOffs.Size * (numsects - 1);
-			return HelperFunctions.Align(ByteConverter.ToUInt32(exefile, ptr + (int)SectOffs.VAddr) + ByteConverter.ToUInt32(exefile, ptr + (int)SectOffs.VSize));
-		}
-
-		public static void CreateNewSection(ref byte[] exefile, string name, byte[] data, bool isCode)
-		{
-			int ptr = ByteConverter.ToInt32(exefile, 0x3c);
-			ptr += 4;
-			UInt16 numsects = ByteConverter.ToUInt16(exefile, ptr + 2);
-			int sectnumptr = ptr + 2;
-			ptr += 0x14;
-			int PEHead = ptr;
-			ptr += 0xe0;
-			int sectptr = ptr;
-			ptr += (int)SectOffs.Size * numsects;
-			ByteConverter.GetBytes((ushort)(numsects + 1)).CopyTo(exefile, sectnumptr);
-			Array.Clear(exefile, ptr, 8);
-			Encoding.ASCII.GetBytes(name).CopyTo(exefile, ptr);
-			UInt32 vaddr = HelperFunctions.Align(ByteConverter.ToUInt32(exefile, ptr - (int)SectOffs.Size + (int)SectOffs.VAddr) + ByteConverter.ToUInt32(exefile, ptr - (int)SectOffs.Size + (int)SectOffs.VSize));
-			ByteConverter.GetBytes(vaddr).CopyTo(exefile, ptr + (int)SectOffs.VAddr);
-			UInt32 faddr = HelperFunctions.Align(ByteConverter.ToUInt32(exefile, ptr - (int)SectOffs.Size + (int)SectOffs.FAddr) + ByteConverter.ToUInt32(exefile, ptr - (int)SectOffs.Size + (int)SectOffs.FSize));
-			ByteConverter.GetBytes(faddr).CopyTo(exefile, ptr + (int)SectOffs.FAddr);
-			ByteConverter.GetBytes(isCode ? 0x60000020 : 0xC0000040).CopyTo(exefile, ptr + (int)SectOffs.Flags);
-			int diff = (int)HelperFunctions.Align((uint)data.Length);
-			ByteConverter.GetBytes(diff).CopyTo(exefile, ptr + (int)SectOffs.VSize);
-			ByteConverter.GetBytes(diff).CopyTo(exefile, ptr + (int)SectOffs.FSize);
-			if (isCode)
-				ByteConverter.GetBytes(Convert.ToUInt32(ByteConverter.ToUInt32(exefile, PEHead + 4) + diff)).CopyTo(exefile, PEHead + 4);
-			else
-				ByteConverter.GetBytes(Convert.ToUInt32(ByteConverter.ToUInt32(exefile, PEHead + 8) + diff)).CopyTo(exefile, PEHead + 8);
-			ByteConverter.GetBytes(Convert.ToUInt32(ByteConverter.ToUInt32(exefile, PEHead + 0x38) + diff)).CopyTo(exefile, PEHead + 0x38);
-			Array.Resize(ref exefile, exefile.Length + diff);
-			data.CopyTo(exefile, vaddr);
-		}
-
-		public static void CompactEXE(ref byte[] exefile)
-		{
-			if (ByteConverter.ToUInt16(exefile, 0) != 0x5A4D)
-				return;
-			int ptr = ByteConverter.ToInt32(exefile, 0x3c);
-			if (ByteConverter.ToInt32(exefile, (int)ptr) != 0x4550) //PE\0\0
-				return;
-			ptr += 4;
-			UInt16 numsects = ByteConverter.ToUInt16(exefile, (int)ptr + 2);
-			ptr += 0x14;
-			int PEHead = ptr;
-			uint imageBase = ByteConverter.ToUInt32(exefile, ptr + 28);
-			byte[] result = new byte[ByteConverter.ToInt32(exefile, ptr + 0xe0 + ((int)SectOffs.Size * (numsects - 1)) + (int)SectOffs.FAddr) + ByteConverter.ToInt32(exefile, ptr + 0xe0 + ((int)SectOffs.Size * (numsects - 1)) + (int)SectOffs.FSize)];
-			Array.Copy(exefile, result, ByteConverter.ToUInt32(exefile, ptr + 60));
-			ptr += 0xe0;
-			for (int i = 0; i < numsects; i++)
-			{
-				Array.Copy(exefile, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.VAddr), result, ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FAddr), ByteConverter.ToInt32(exefile, ptr + (int)SectOffs.FSize));
-				ptr += (int)SectOffs.Size;
-			}
-			exefile = result;
-		}
-
+        
 		public static void FixRELPointers(byte[] file, uint imageBase = 0)
 		{
-			OSModuleHeader header = new OSModuleHeader(file, 0);
-			OSSectionInfo[] sections = new OSSectionInfo[header.info.numSections];
-			for (int i = 0; i < header.info.numSections; i++)
-				sections[i] = new OSSectionInfo(file, (int)header.info.sectionInfoOffset + (i * 8));
-			OSImportInfo[] imports = new OSImportInfo[header.impSize / 8];
-			for (int i = 0; i < imports.Length; i++)
-				imports[i] = new OSImportInfo(file, (int)header.impOffset + (i * 8));
-			int reladdr = 0;
-			for (int i = 0; i < imports.Length; i++)
-				if (imports[i].id == header.info.id)
+			var header = new OsModuleHeader(file, 0);
+			var sections = new OsSectionInfo[header.Info.NumSections];
+			
+			for (var i = 0; i < header.Info.NumSections; i++)
+			{
+				sections[i] = new OsSectionInfo(file, (int)header.Info.SectionInfoOffset + (i * 8));
+			}
+
+			var imports = new OsImportInfo[header.ImpSize / 8];
+			
+			for (var i = 0; i < imports.Length; i++)
+			{
+				imports[i] = new OsImportInfo(file, (int)header.ImpOffset + (i * 8));
+			}
+
+			var relAddr = (from import in imports where import.Id == header.Info.Id select (int)import.Offset).FirstOrDefault();
+
+			var rel = new OsRel(file, relAddr);
+			var dataAddr = 0;
+				
+			unchecked 
+			{
+				while (rel.Type != (byte)RelocTypes.R_DOLPHIN_END)
 				{
-					reladdr = (int)imports[i].offset;
-					break;
-				}
-				OSRel rel = new OSRel(file, reladdr);
-				int dataaddr = 0;
-				unchecked
-				{
-					while (rel.type != (byte)RelocTypes.R_DOLPHIN_END)
+					dataAddr += rel.Offset;
+					var sectionBase = (uint)(sections[rel.Section].Offset & ~1);
+					
+					switch (rel.Type)
 					{
-						dataaddr += rel.offset;
-						uint sectionbase = (uint)(sections[rel.section].offset & ~1);
-						switch (rel.type)
-						{
-							case 0x01:
-								ByteConverter.GetBytes(rel.addend + sectionbase + imageBase).CopyTo(file, dataaddr);
-								break;
-							case 0x02:
-								ByteConverter.GetBytes((ByteConverter.ToUInt32(file, dataaddr) & 0xFC000003) | ((rel.addend + sectionbase) & 0x3FFFFFC) + imageBase).CopyTo(file, dataaddr);
-								break;
-							case 0x03:
-							case 0x04:
-								ByteConverter.GetBytes((ushort)(rel.addend + sectionbase) + imageBase).CopyTo(file, dataaddr);
-								break;
-							case 0x05:
-								ByteConverter.GetBytes((ushort)((rel.addend + sectionbase) >> 16) + imageBase).CopyTo(file, dataaddr);
-								break;
-							case 0x06:
-								ByteConverter.GetBytes((ushort)(((rel.addend + sectionbase) >> 16) + (((rel.addend + sectionbase) & 0x8000) == 0x8000 ? 1 : 0)) + imageBase).CopyTo(file, dataaddr);
-								break;
-							case 0x0A:
-								ByteConverter.GetBytes((uint)((ByteConverter.ToUInt32(file, dataaddr) & 0xFC000003) | (((rel.addend + sectionbase) - dataaddr) & 0x3FFFFFC)) + imageBase).CopyTo(file, dataaddr);
-								break;
-							case 0x00:
-							case (byte)RelocTypes.R_DOLPHIN_NOP:
-							case (byte)RelocTypes.R_DOLPHIN_END:
-								break;
-							case (byte)RelocTypes.R_DOLPHIN_SECTION:
-								dataaddr = (int)sectionbase;
-								break;
-							default:
-								throw new NotImplementedException();
-						}
-						reladdr += 8;
-						rel = new OSRel(file, reladdr);
+						case 0x01: 
+							ByteConverter.GetBytes(rel.Addend + sectionBase + imageBase).CopyTo(file, dataAddr);
+							break;
+						case 0x02:
+							ByteConverter.GetBytes((ByteConverter.ToUInt32(file, dataAddr) & 0xFC000003) | ((rel.Addend + sectionBase) & 0x3FFFFFC) + imageBase).CopyTo(file, dataAddr);
+							break;
+						case 0x03:
+						case 0x04:
+							ByteConverter.GetBytes((ushort)(rel.Addend + sectionBase) + imageBase).CopyTo(file, dataAddr);
+							break;
+						case 0x05:
+							ByteConverter.GetBytes((ushort)((rel.Addend + sectionBase) >> 16) + imageBase).CopyTo(file, dataAddr);
+							break;
+						case 0x06:
+							ByteConverter.GetBytes((ushort)(((rel.Addend + sectionBase) >> 16) + (((rel.Addend + sectionBase) & 0x8000) == 0x8000 ? 1 : 0)) + imageBase).CopyTo(file, dataAddr);
+							break;
+						case 0x0A:
+							ByteConverter.GetBytes((uint)((ByteConverter.ToUInt32(file, dataAddr) & 0xFC000003) | (((rel.Addend + sectionBase) - dataAddr) & 0x3FFFFFC)) + imageBase).CopyTo(file, dataAddr);
+							break;
+						case 0x00:
+						case (byte)RelocTypes.R_DOLPHIN_NOP:
+						case (byte)RelocTypes.R_DOLPHIN_END:
+							break;
+						case (byte)RelocTypes.R_DOLPHIN_SECTION:
+							dataAddr = (int)sectionBase;
+							break;
+						default:
+							throw new NotImplementedException();
 					}
+					relAddr += 8;
+					rel = new OsRel(file, relAddr);
 				}
+			}
 		}
 
-		public static void AlignCode(this List<byte> me)
+		private static readonly System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+
+		public static string FileHash(string path, int rangeStart = 0, int rangeFinish = 0)
 		{
-			while (me.Count % 0x10 > 0)
-				me.Add(0x90);
+			return FileHash(File.ReadAllBytes(path), rangeStart, rangeFinish);
 		}
-
-		public static uint Align(uint address)
-		{
-			if (address % 0x1000 == 0) return address;
-			return ((address / 0x1000) + 1) * 0x1000;
-		}
-
-		static readonly System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-
-		public static string FileHash(string path, int rangeStart = 0, int rangeFinish = 0) { return FileHash(File.ReadAllBytes(path), rangeStart, rangeFinish); }
 
 		public static string FileHash(byte[] file, int rangeStart = 0, int rangeFinish = 0)
 		{
 			if (rangeStart != 0 || rangeFinish != 0)
 			{
-				byte[] newfile = new byte[rangeFinish - rangeStart];
-				Array.Copy(file, rangeStart, newfile, 0, newfile.Length);
-				file = newfile;
+				var newFile = new byte[rangeFinish - rangeStart];
+				Array.Copy(file, rangeStart, newFile, 0, newFile.Length);
+				file = newFile;
 			}
+			
 			file = md5.ComputeHash(file);
-			string result = string.Empty;
-			foreach (byte item in file)
-				result += item.ToString("x2");
-			return result;
+			
+			return file.Aggregate(string.Empty, (current, item) => current + item.ToString("x2"));
 		}
 
 		private static readonly Encoding jpenc = Encoding.GetEncoding(932);
@@ -223,24 +315,17 @@ namespace SplitTools
 
 		public static Encoding GetEncoding(Game game, Languages language)
 		{
-			switch (language)
+			return language switch
 			{
-				case Languages.Japanese:
-					return KoreanMode ? krenc : jpenc;
-				case Languages.English:
-					switch (game)
-					{
-						case Game.SA1:
-						case Game.SADX:
-							return KoreanMode ? krenc : jpenc;
-						case Game.SA2:
-						case Game.SA2B:
-							return euenc;
-					}
-					throw new ArgumentOutOfRangeException("game");
-				default:
-					return euenc;
-			}
+				Languages.Japanese => KoreanMode ? krenc : jpenc,
+				Languages.English => game switch
+				{
+					Game.SA1 or Game.SADX => KoreanMode ? krenc : jpenc,
+					Game.SA2 or Game.SA2B => euenc,
+					_ => throw new ArgumentOutOfRangeException(nameof(game))
+				},
+				_ => euenc
+			};
 		}
 
 		public static string GetCString(this byte[] file, int address)
@@ -250,29 +335,40 @@ namespace SplitTools
 
 		public static int GetPointer(this byte[] file, int address, uint imageBase)
 		{
-			uint tmp = ByteConverter.ToUInt32(file, address);
-			if (tmp == 0) return 0;
+			var tmp = ByteConverter.ToUInt32(file, address);
+			
+			if (tmp == 0)
+			{
+				return 0;
+			}
+
 			return (int)(tmp - imageBase);
 		}
 
 		public static string UnescapeNewlines(this string line)
 		{
-			StringBuilder sb = new StringBuilder(line.Length);
-			for (int c = 0; c < line.Length; c++)
+			var sb = new StringBuilder(line.Length);
+			
+			for (var c = 0; c < line.Length; c++)
+			{
 				switch (line[c])
 				{
-					case '\\': // escape character
-						if (c + 1 == line.Length) goto default;
+					case '\\': // Escape character
+						if (c + 1 == line.Length)
+						{
+							goto default;
+						}
+
 						c++;
 						switch (line[c])
 						{
-							case 'n': // line feed
+							case 'n': // Line feed
 								sb.Append('\n');
 								break;
-							case 'r': // carriage return
+							case 'r': // Carriage return
 								sb.Append('\r');
 								break;
-							default: // literal character
+							default: // Literal character
 								sb.Append(line[c]);
 								break;
 						}
@@ -281,6 +377,8 @@ namespace SplitTools
 						sb.Append(line[c]);
 						break;
 				}
+			}
+
 			return sb.ToString();
 		}
 
@@ -292,9 +390,11 @@ namespace SplitTools
 		public static string ToCHex(this ushort i)
 		{
 			if (i < 10)
+			{
 				return i.ToString(NumberFormatInfo.InvariantInfo);
-			else
-				return "0x" + i.ToString("X");
+			}
+
+			return "0x" + i.ToString("X");
 		}
 
 		public static string ToC(this string str) => str.ToC(Languages.Japanese);
@@ -303,40 +403,64 @@ namespace SplitTools
 
 		public static string ToC(this string str, Game game, Languages language)
 		{
-			if (str == null) return "NULL";
-			Encoding enc = GetEncoding(game, language);
-			StringBuilder result = new StringBuilder("\"");
-			foreach (char item in str)
+			if (str == null)
 			{
-				if (item == '\0')
-					result.Append(@"\0");
-				else if (item == '\a')
-					result.Append(@"\a");
-				else if (item == '\b')
-					result.Append(@"\b");
-				else if (item == '\f')
-					result.Append(@"\f");
-				else if (item == '\n')
-					result.Append(@"\n");
-				else if (item == '\r')
-					result.Append(@"\r");
-				else if (item == '\t')
-					result.Append(@"\t");
-				else if (item == '\v')
-					result.Append(@"\v");
-				else if (item == '"')
-					result.Append(@"\""");
-				else if (item == '\\')
-					result.Append(@"\\");
-				else if (item < ' ')
-					result.AppendFormat(@"\{0}", Convert.ToString((short)item, 8).PadLeft(3, '0'));
-				else if (item > '\x7F')
-					foreach (byte b in enc.GetBytes(item.ToString()))
-						result.AppendFormat(@"\{0}", Convert.ToString(b, 8).PadLeft(3, '0'));
-				else
-					result.Append(item);
+				return "NULL";
 			}
-			result.Append("\"");
+
+			var enc = GetEncoding(game, language);
+			var result = new StringBuilder("\"");
+			
+			foreach (var item in str)
+			{
+				switch (item)
+				{
+					case '\0':
+						result.Append(@"\0");
+						break;
+					case '\a':
+						result.Append(@"\a");
+						break;
+					case '\b':
+						result.Append(@"\b");
+						break;
+					case '\f':
+						result.Append(@"\f");
+						break;
+					case '\n':
+						result.Append(@"\n");
+						break;
+					case '\r':
+						result.Append(@"\r");
+						break;
+					case '\t':
+						result.Append(@"\t");
+						break;
+					case '\v':
+						result.Append(@"\v");
+						break;
+					case '"':
+						result.Append(@"\""");
+						break;
+					case '\\':
+						result.Append(@"\\");
+						break;
+					case < ' ':
+						result.Append($@"\{Convert.ToString((short)item, 8).PadLeft(3, '0')}");
+						break;
+					case > '\x7F':
+					{
+						foreach (byte b in enc.GetBytes(item.ToString()))
+							result.Append($@"\{Convert.ToString(b, 8).PadLeft(3, '0')}");
+						break;
+					}
+					default:
+						result.Append(item);
+						break;
+				}
+			}
+			
+			result.Append('"');
 			return result.ToString();
 		}
 
@@ -345,38 +469,59 @@ namespace SplitTools
 			return "/* " + str.ToCNoEncoding().Replace("*/", @"*\/") + " */";
 		}
 
-		public static string ToCNoEncoding(this string str)
+		private static string ToCNoEncoding(this string str)
 		{
-			if (str == null) return "NULL";
-			StringBuilder result = new StringBuilder("\"");
-			foreach (char item in str)
+			if (str == null)
 			{
-				if (item == '\0')
-					result.Append(@"\0");
-				else if (item == '\a')
-					result.Append(@"\a");
-				else if (item == '\b')
-					result.Append(@"\b");
-				else if (item == '\f')
-					result.Append(@"\f");
-				else if (item == '\n')
-					result.Append(@"\n");
-				else if (item == '\r')
-					result.Append(@"\r");
-				else if (item == '\t')
-					result.Append(@"\t");
-				else if (item == '\v')
-					result.Append(@"\v");
-				else if (item == '"')
-					result.Append(@"\""");
-				else if (item == '\\')
-					result.Append(@"\\");
-				else if (item < ' ')
-					result.AppendFormat(@"\{0}", Convert.ToString((short)item, 8).PadLeft(3, '0'));
-				else
-					result.Append(item);
+				return "NULL";
 			}
-			result.Append("\"");
+
+			var result = new StringBuilder("\"");
+			
+			foreach (var item in str)
+			{
+				switch (item)
+				{
+					case '\0':
+						result.Append(@"\0");
+						break;
+					case '\a':
+						result.Append(@"\a");
+						break;
+					case '\b':
+						result.Append(@"\b");
+						break;
+					case '\f':
+						result.Append(@"\f");
+						break;
+					case '\n':
+						result.Append(@"\n");
+						break;
+					case '\r':
+						result.Append(@"\r");
+						break;
+					case '\t':
+						result.Append(@"\t");
+						break;
+					case '\v':
+						result.Append(@"\v");
+						break;
+					case '"':
+						result.Append(@"\""");
+						break;
+					case '\\':
+						result.Append(@"\\");
+						break;
+					case < ' ':
+						result.Append($@"\{Convert.ToString((short)item, 8).PadLeft(3, '0')}");
+						break;
+					default:
+						result.Append(item);
+						break;
+				}
+			}
+			
+			result.Append('"');
 			return result.ToString();
 		}
 
@@ -386,56 +531,72 @@ namespace SplitTools
 			return item.ToC(typeof(T).Name);
 		}
 
-		public static string ToC<T>(this T item, string enumname)
+		public static string ToC<T>(this T item, string enumName)
 			where T : Enum
 		{
-			Type type = typeof(T);
+			var type = typeof(T);
 			if (type.GetCustomAttributes(typeof(FlagsAttribute), false).Length == 0)
-				if (Enum.IsDefined(typeof(T), item))
-					return enumname + "_" + item.ToString();
-				else
-					return item.ToString();
-			else
 			{
-				ulong num = Convert.ToUInt64(item);
-				ulong[] values = Array.ConvertAll((T[])Enum.GetValues(type), (a) => Convert.ToUInt64(a));
-				int num2 = values.Length - 1;
-				StringBuilder stringBuilder = new StringBuilder();
-				bool flag = true;
-				ulong num3 = num;
-				while (num2 >= 0 && (num2 != 0 || values[num2] != 0uL))
+				if (Enum.IsDefined(typeof(T), item))
 				{
-					if ((num & values[num2]) == values[num2])
-					{
-						num -= values[num2];
-						if (!flag)
-							stringBuilder.Insert(0, " | ");
-						stringBuilder.Insert(0, enumname + "_" + Enum.GetName(type, values[num2]));
-						flag = false;
-					}
-					num2--;
+					return enumName + "_" + item;
 				}
-				if (num != 0uL)
-				{
-					if (flag)
-						return item.ToString();
-					else
-						return stringBuilder.ToString() + " | " + item.ToString();
-				}
-				if (num3 != 0uL)
-					return stringBuilder.ToString();
-				if (values.Length > 0 && values[0] == 0uL)
-					return enumname + "_" + Enum.GetName(type, 0);
-				return "0";
+
+				return item.ToString();
 			}
+
+			var num = Convert.ToUInt64(item);
+			var values = Array.ConvertAll((T[])Enum.GetValues(type), (a) => Convert.ToUInt64(a));
+			var num2 = values.Length - 1;
+			var stringBuilder = new StringBuilder();
+			var flag = true;
+			var num3 = num;
+			
+			while (num2 >= 0 && (num2 != 0 || values[num2] != 0uL))
+			{
+				if ((num & values[num2]) == values[num2])
+				{
+					num -= values[num2];
+					if (!flag)
+					{
+						stringBuilder.Insert(0, " | ");
+					}
+
+					stringBuilder.Insert(0, enumName + "_" + Enum.GetName(type, values[num2]));
+					flag = false;
+				}
+				num2--;
+			}
+			
+			if (num != 0uL)
+			{
+				if (flag)
+				{
+					return item.ToString();
+				}
+
+				return stringBuilder + " | " + item;
+			}
+			
+			if (num3 != 0uL)
+			{
+				return stringBuilder.ToString();
+			}
+
+			if (values.Length > 0 && values[0] == 0uL)
+			{
+				return enumName + "_" + Enum.GetName(type, 0);
+			}
+
+			return "0";
 		}
 
 		public static bool CheckBigEndianInt16(byte[] file, int address)
 		{
-			bool bigEndState = ByteConverter.BigEndian;
+			var bigEndState = ByteConverter.BigEndian;
 
 			ByteConverter.BigEndian = true;
-			bool isBigEndian = BitConverter.ToUInt16(file, address) > ByteConverter.ToUInt16(file, address);
+			var isBigEndian = BitConverter.ToUInt16(file, address) > ByteConverter.ToUInt16(file, address);
 
 			ByteConverter.BigEndian = bigEndState;
 
@@ -443,10 +604,10 @@ namespace SplitTools
 		}
 		public static bool CheckBigEndianInt32(byte[] file, int address)
 		{
-			bool bigEndState = ByteConverter.BigEndian;
+			var bigEndState = ByteConverter.BigEndian;
 
 			ByteConverter.BigEndian = true;
-			bool isBigEndian = BitConverter.ToUInt32(file, address) > ByteConverter.ToUInt32(file, address);
+			var isBigEndian = BitConverter.ToUInt32(file, address) > ByteConverter.ToUInt32(file, address);
 
 			ByteConverter.BigEndian = bigEndState;
 
@@ -456,11 +617,12 @@ namespace SplitTools
 		public static byte[] DecompressREL(byte[] file)
 		{
 			// Scan the array for the last instance of the "SaCompGC" string because there are some files with redundant headers
-			int start = 0;
-			bool isCompressed = false;
-			bool bigend = ByteConverter.BigEndian;
+			var start = 0;
+			var isCompressed = false;
+			var bigEndian = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = true;
-			for (int u = file.Length - 8; u >= 0; u--)
+			
+			for (var u = file.Length - 8; u >= 0; u--)
 			{
 				if (ByteConverter.ToUInt32(file, u) == 0x5361436F)// && BitConverter.ToUInt32(file, u + 4) == 0x4347706D)
 				{
@@ -469,33 +631,42 @@ namespace SplitTools
 					break;
 				}
 			}
-			if (!isCompressed) return file;
-			byte[] input = new byte[file.Length - start];
+			
+			if (!isCompressed)
+			{
+				return file;
+			}
+
+			var input = new byte[file.Length - start];
 			Array.Copy(file, start, input, 0, input.Length);
 
-			// Process the new array
-			IntPtr pnt_input = Marshal.AllocHGlobal(input.Length);
-			Marshal.Copy(input, 0, pnt_input, input.Length);
-            int size_output;
-            if (Environment.Is64BitProcess)
-                size_output = (int)GetDecompressedSizeX64(pnt_input);
-            else
-                size_output = (int)GetDecompressedSizeX86(pnt_input);
-            IntPtr pnt_output = Marshal.AllocHGlobal(size_output);
-            if (Environment.Is64BitProcess)
-                DecompressBufferX64(pnt_input, pnt_output);
-            else
-                DecompressBufferX86(pnt_input, pnt_output);
-            byte[] decompbuf = new byte[size_output];
-			Marshal.Copy(pnt_output, decompbuf, 0, size_output);
-			Marshal.FreeHGlobal(pnt_output);
-			Marshal.FreeHGlobal(pnt_input);
-			ByteConverter.BigEndian = bigend;
-			return decompbuf;
+			var decompBuf = SACompGC_DecompressBuffer(input);
+			
+			ByteConverter.BigEndian = bigEndian;
+			return decompBuf;
 		}
 	}
 
+	ref struct SACompGCStatus
+	{
+		public uint LengthLeft;
+		public uint Length;
+		public uint ReadOffset; // 0x8
+		public uint BitBuffer; // 0xc
+		public Span<byte> OutputBuffer;
+		public int ReadHead;
+		public Span<byte> InputBuffer;
+		public int EndOffset; // 0x1c
+		public int WriteHead; // byte offset instead of pointer
 
+		public byte ChunkCount; // 0x28
+		public byte BitBufferRemaining; // 0x29
+		public byte CopyOffsetBits; //0x2a
+		public byte CopySizeBits; //0x2b
+		// special note: missing 0x2c for some reason. bad decomp?
+		public byte Field0x2D;
+	}
+	
 	enum SectOffs
 	{
 		VSize = 8,
@@ -561,7 +732,7 @@ namespace SplitTools
 		MetalSonic = 8
 	}
 
-	[Flags()]
+	[Flags]
 	public enum SA1CharacterFlags
 	{
 		Sonic = 1 << SA1Characters.Sonic,
@@ -711,8 +882,7 @@ namespace SplitTools
 		ChaoWorld = 90,
 		Invalid = 91
 	}
-
-
+	
 	public enum SA2Characters
 	{
 		Sonic = 0,
@@ -739,7 +909,7 @@ namespace SplitTools
 		Rouge = 7
 	}
 
-	[Flags()]
+	[Flags]
 	public enum SA2CharacterFlags
 	{
 		Sonic = 1 << SA2Characters.Sonic,
@@ -764,149 +934,147 @@ namespace SplitTools
 
 	public enum ChaoItemCategory
 	{
-		ChaoItemCategory_Egg = 1,
-		ChaoItemCategory_Fruit = 3,
-		ChaoItemCategory_Seed = 7,
-		ChaoItemCategory_Hat = 9,
-		ChaoItemCategory_MenuTheme = 0x10
+		Egg = 1,
+		Fruit = 3,
+		Seed = 7,
+		Hat = 9,
+		MenuTheme = 0x10
 	}
 
-	class OSModuleLink
+	internal class OsModuleLink
 	{
-		public uint next;
-		public uint prev;
+		public uint Next;
+		public uint Prev;
 
-		public OSModuleLink(byte[] file, int address)
+		public OsModuleLink(byte[] file, int address)
 		{
-			next = ByteConverter.ToUInt32(file, address);
-			prev = ByteConverter.ToUInt32(file, address + 4);
+			Next = ByteConverter.ToUInt32(file, address);
+			Prev = ByteConverter.ToUInt32(file, address + 4);
 		}
 	}
 
-	class OSModuleInfo
+	internal class OsModuleInfo
 	{
-		public uint id;				 // unique identifier for the module
-		public OSModuleLink link;			   // doubly linked list of modules
-		public uint numSections;		// # of sections
-		public uint sectionInfoOffset;  // offset to section info table
-		public uint nameOffset;		 // offset to module name
-		public uint nameSize;		   // size of module name
-		public uint version;			// version number
+		public uint Id;				   // Unique identifier for the module
+		public OsModuleLink Link;	   // Doubly linked list of modules
+		public uint NumSections;	   // # of sections
+		public uint SectionInfoOffset; // Offset to section info table
+		public uint NameOffset;		   // Offset to module name
+		public uint NameSize;		   // Size of module name
+		public uint Version;		   // Version number
 
-		public OSModuleInfo(byte[] file, int address)
+		public OsModuleInfo(byte[] file, int address)
 		{
-			id = ByteConverter.ToUInt32(file, address);
+			Id = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			link = new OSModuleLink(file, address);
+			Link = new OsModuleLink(file, address);
 			address += 8;
-			numSections = ByteConverter.ToUInt32(file, address);
+			NumSections = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			sectionInfoOffset = ByteConverter.ToUInt32(file, address);
+			SectionInfoOffset = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			nameOffset = ByteConverter.ToUInt32(file, address);
+			NameOffset = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			nameSize = ByteConverter.ToUInt32(file, address);
+			NameSize = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			version = ByteConverter.ToUInt32(file, address);
+			Version = ByteConverter.ToUInt32(file, address);
 		}
 	}
 
-	class OSModuleHeader
+	internal class OsModuleHeader
 	{
-		// CAUTION: info must be the 1st member
-		public OSModuleInfo info;
+		// CAUTION: Info must be the 1st member
+		public OsModuleInfo Info;
 
 		// OS_MODULE_VERSION == 1
-		public uint bssSize;			// total size of bss sections in bytes
-		public uint relOffset;
-		public uint impOffset;
-		public uint impSize;			// size in bytes
-		public byte prologSection;	  // section # for prolog function
-		public byte epilogSection;	  // section # for epilog function
-		public byte unresolvedSection;  // section # for unresolved function
-		public byte padding0;
-		public uint prolog;			 // prolog function offset
-		public uint epilog;			 // epilog function offset
-		public uint unresolved;		 // unresolved function offset
+		public uint BssSize;		   // Total size of bss sections in bytes
+		public uint RelOffset;
+		public uint ImpOffset;
+		public uint ImpSize;		   // Size in bytes
+		public byte PrologSection;	   // Section # for prolog function
+		public byte EpilogSection;	   // Section # for epilog function
+		public byte UnresolvedSection; // Section # for unresolved function
+		public byte Padding0;
+		public uint Prolog;			   // Prolog function offset
+		public uint Epilog;			   // Epilog function offset
+		public uint Unresolved;		   // Unresolved function offset
 
 		// OS_MODULE_VERSION == 2
-		public uint align;			  // module alignment constraint
-		public uint bssAlign;		   // bss alignment constraint
+		public uint Align;			   // Module alignment constraint
+		public uint BssAlign;		   // Bss alignment constraint
 
-		public OSModuleHeader(byte[] file, int address)
+		public OsModuleHeader(byte[] file, int address)
 		{
-			info = new OSModuleInfo(file, address);
+			Info = new OsModuleInfo(file, address);
 			address += 0x20;
-			bssSize = ByteConverter.ToUInt32(file, address);
+			BssSize = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			relOffset = ByteConverter.ToUInt32(file, address);
+			RelOffset = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			impOffset = ByteConverter.ToUInt32(file, address);
+			ImpOffset = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			impSize = ByteConverter.ToUInt32(file, address);
+			ImpSize = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			prologSection = file[address++];
-			epilogSection = file[address++];
-			unresolvedSection = file[address++];
-			padding0 = file[address++];
-			prolog = ByteConverter.ToUInt32(file, address);
+			PrologSection = file[address++];
+			EpilogSection = file[address++];
+			UnresolvedSection = file[address++];
+			Padding0 = file[address++];
+			Prolog = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			epilog = ByteConverter.ToUInt32(file, address);
+			Epilog = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			unresolved = ByteConverter.ToUInt32(file, address);
+			Unresolved = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			align = ByteConverter.ToUInt32(file, address);
+			Align = ByteConverter.ToUInt32(file, address);
 			address += 4;
-			bssAlign = ByteConverter.ToUInt32(file, address);
+			BssAlign = ByteConverter.ToUInt32(file, address);
 		}
 	}
 
-	class OSSectionInfo
+	class OsSectionInfo
 	{
-		public uint offset;
-		public uint size;
+		public uint Offset;
+		public uint Size;
 
-		public OSSectionInfo(byte[] file, int address)
+		public OsSectionInfo(byte[] file, int address)
 		{
-			offset = ByteConverter.ToUInt32(file, address);
-			size = ByteConverter.ToUInt32(file, address + 4);
+			Offset = ByteConverter.ToUInt32(file, address);
+			Size = ByteConverter.ToUInt32(file, address + 4);
 		}
 	}
 
-	class OSImportInfo
+	class OsImportInfo
 	{
-		public uint id;				 // external module id
-		public uint offset;			 // offset to OSRel instructions
+		public uint Id;		// External module id
+		public uint Offset; // Offset to OSRel instructions
 
-		public OSImportInfo(byte[] file, int address)
+		public OsImportInfo(byte[] file, int address)
 		{
-			id = ByteConverter.ToUInt32(file, address);
-			offset = ByteConverter.ToUInt32(file, address + 4);
+			Id = ByteConverter.ToUInt32(file, address);
+			Offset = ByteConverter.ToUInt32(file, address + 4);
 		}
 	}
 
-	class OSRel
+	class OsRel
 	{
-		public ushort offset;			 // byte offset from the previous entry
-		public byte type;
-		public byte section;
-		public uint addend;
+		public ushort Offset; // Byte offset from the previous entry
+		public byte Type;
+		public byte Section;
+		public uint Addend;
 
-		public OSRel(byte[] file, int address)
+		public OsRel(byte[] file, int address)
 		{
-			offset = ByteConverter.ToUInt16(file, address);
-			type = file[address + 2];
-			section = file[address + 3];
-			addend = ByteConverter.ToUInt32(file, address + 4);
+			Offset = ByteConverter.ToUInt16(file, address);
+			Type = file[address + 2];
+			Section = file[address + 3];
+			Addend = ByteConverter.ToUInt32(file, address + 4);
 		}
 	}
 
 	enum RelocTypes
 	{
 		R_DOLPHIN_NOP = 201,	 //  C9h current offset += OSRel.offset
-		R_DOLPHIN_SECTION = 202,	 //  CAh current section = OSRel.section
-		R_DOLPHIN_END = 203	 //  CBh
+		R_DOLPHIN_SECTION = 202, //  CAh current section = OSRel.section
+		R_DOLPHIN_END = 203	     //  CBh
 	}
-
-
 }

@@ -7,7 +7,6 @@
 		<OutputPath>..\..\build\lib\</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="BCnEncoder.Net" Version="2.1.0" />

@@ -8,7 +8,6 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />

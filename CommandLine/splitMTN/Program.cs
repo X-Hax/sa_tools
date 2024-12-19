@@ -4,24 +4,26 @@ using System.Collections.Generic;
 
 namespace splitMTN
 {
-	class Program
+	internal static class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			Queue<string> argq = new Queue<string>(args);
+			var argQueue = new Queue<string>(args);
+			
 			string filename;
-			if (argq.Count > 0)
+			
+			if (argQueue.Count > 0)
 			{
-				filename = argq.Dequeue();
+				filename = argQueue.Dequeue();
 				Console.WriteLine("File: {0}", filename);
-				SA2MTN.Split(filename);
 			}
 			else
 			{
 				Console.Write("File: ");
 				filename = Console.ReadLine();
-				SA2MTN.Split(filename);
 			}
+
+			SA2MTN.Split(filename);
 		}
 	}
 }
