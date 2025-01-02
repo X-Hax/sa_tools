@@ -5,6 +5,9 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
+using static SAModel.PolyChunkVolume;
+using System.Security.Policy;
+using static SAModel.PolyChunkStrip;
 
 namespace SAModel
 {
@@ -483,6 +486,23 @@ namespace SAModel
 							result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 							MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
 						}
+						break;
+					case ChunkType.Volume_Polygon3:
+						PolyChunkVolume vol = (PolyChunkVolume)chunk;
+						List<Poly> polytri = new List<Poly>();
+						List<VertexData> verttri = new List<VertexData>();
+						foreach (PolyChunkVolume.Triangle tri in vol.Polys)
+						{
+							Triangle three = new Triangle();
+							for (int k = 0; k < tri.Indexes.Length; k++)
+							{
+								three.Indexes[k] = (ushort)verttri.Count;
+								verttri.Add(new VertexData(
+									VertexBuffer[tri.Indexes[k]].Position));
+							}
+							polytri.Add(three);
+						}
+						result.Add(new MeshInfo(MaterialBuffer, polytri.ToArray(), verttri.ToArray(), false, false, true));
 						break;
 				}
 			}

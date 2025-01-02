@@ -129,7 +129,7 @@ namespace SAModel.Direct3D
 				device.Material = new Material
 				{
 					Diffuse = material.DiffuseColor.ToRawColor4(),
-					Ambient = material.DiffuseColor.ToRawColor4(),
+					Ambient = material.AmbientColor.ToRawColor4(),
 					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
 					Power = material.Exponent
 				};
@@ -364,10 +364,14 @@ namespace SAModel.Direct3D
 					data |= 1;
 				if (item.HasVC)
 					data |= 2;
+				if (item.IsMod)
+					data |= 4;
 			}
 			if (numverts == 0) return null;
 			switch (data)
 			{
+				case 4:
+					return new Mesh<FVF_PositionColored>(attach);
 				case 3:
 					return new Mesh<FVF_PositionNormalTexturedColored>(attach);
 				case 2:

@@ -14,14 +14,16 @@ namespace SAModel
 		public VertexData[] Vertices { get; private set; }
 		public bool HasUV { get; private set; }
 		public bool HasVC { get; private set; }
+		public bool IsMod { get; private set; }
 
-		public MeshInfo(NJS_MATERIAL material, Poly[] polys, VertexData[] vertices, bool hasUV, bool hasVC)
+		public MeshInfo(NJS_MATERIAL material, Poly[] polys, VertexData[] vertices, bool hasUV, bool hasVC, bool isMod = false)
 		{
 			Material = material;
 			Polys = polys;
 			Vertices = vertices;
 			HasUV = hasUV;
 			HasVC = hasVC;
+			IsMod = isMod;
 		}
 
 		public ushort[] ToTriangles()
