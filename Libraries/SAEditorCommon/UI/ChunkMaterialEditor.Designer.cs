@@ -354,9 +354,9 @@
 			pickStatusCheck.Location = new System.Drawing.Point(10, 33);
 			pickStatusCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			pickStatusCheck.Name = "pickStatusCheck";
-			pickStatusCheck.Size = new System.Drawing.Size(122, 29);
+			pickStatusCheck.Size = new System.Drawing.Size(163, 29);
 			pickStatusCheck.TabIndex = 0;
-			pickStatusCheck.Text = "Pick Status";
+			pickStatusCheck.Text = "Ignore Ambient";
 			pickStatusCheck.UseVisualStyleBackColor = true;
 			pickStatusCheck.Click += pickStatusCheck_Click;
 			pickStatusCheck.KeyDown += onKeyDown;

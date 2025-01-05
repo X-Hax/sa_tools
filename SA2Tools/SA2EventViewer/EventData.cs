@@ -200,8 +200,6 @@ namespace SA2EventViewer
 		public Vertex Position { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
 		public SA2CutsceneEntityFlags Flags { get; set; }
-		[TypeConverter(typeof(UInt32HexConverter))]
-		public SA2DCCutsceneEntityFlags DCFlags { get; set; }
 		public uint Layer { get; set; }
 
 		public static int Size(bool battle) => battle ? 44 : 32;
@@ -228,7 +226,7 @@ namespace SA2EventViewer
 				if (ptr != 0)
 					ShapeMotion = new NJS_MOTION(file, ptr, imageBase, Model.CountMorph());
 				Position = new Vertex(file, address + 16);
-				DCFlags = (SA2DCCutsceneEntityFlags)ByteConverter.ToUInt32(file, address + 28);
+				Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(file, address + 28);
 			}
 		}
 	}

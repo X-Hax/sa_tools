@@ -141,33 +141,18 @@ namespace SAModel
 	}
 
 	[Flags]
-	public enum SA2DCCutsceneEntityFlags : int
-	{
-		HasEnvMap			= 0x1,
-		IgnoreCulling		= 0x2,
-		Unk1				= 0x4,
-		MultiLight1			= 0x8,
-		MultiLight2			= 0x10,
-		MultiLight3			= 0x20,
-		ModifierVolume		= 0x40,
-		ReflectModel		= 0x80,
-		BlurModel			= 0x100,
-		Unk2				= 0x200
-	}
-
-	[Flags]
 	public enum SA2CutsceneEntityFlags : int
 	{
-		HasEnvMap			= 0x1,
-		NoShapeMotion		= 0x2,
-		Unk1				= 0x4,
-		NoAnimation			= 0x8,
-		Unk2				= 0x10,
-		Unk3				= 0x20,
-		ModifierVolume		= 0x40,
-		ReflectModel		= 0x80,
-		BlurModel			= 0x100,
-		Unk4				= 0x200
+		HasEnvMap           = 0x1,
+		EasyDraw            = 0x2,
+		Light1              = 0x4,
+		Light2              = 0x8,
+		Light3              = 0x10,
+		Light4              = 0x20,
+		ModifierVolume      = 0x40,
+		ReflectModel        = 0x80,
+		BlurModel           = 0x100,
+		SimpleDraw          = 0x200
 	}
 	public enum LandTableFormat
 	{

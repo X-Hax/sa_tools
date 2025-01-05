@@ -34,13 +34,8 @@
 			buttonMoveMeshDown = new System.Windows.Forms.Button();
 			listViewMeshes = new System.Windows.Forms.ListView();
 			columnHeaderMatID = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkNum = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkID1 = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkType1 = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkID2 = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkType2 = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkID3 = new System.Windows.Forms.ColumnHeader();
-			columnHeaderCnkType3 = new System.Windows.Forms.ColumnHeader();
+			columnHeaderCnkType = new System.Windows.Forms.ColumnHeader();
+			columnHeaderCnkData = new System.Windows.Forms.ColumnHeader();
 			buttonCloneMesh = new System.Windows.Forms.Button();
 			buttonDeleteMesh = new System.Windows.Forms.Button();
 			statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -68,22 +63,29 @@
 			buttonClose = new System.Windows.Forms.Button();
 			comboBoxNode = new System.Windows.Forms.ComboBox();
 			contextMenuStripMatEdit = new System.Windows.Forms.ContextMenuStrip(components);
-			editDiffuseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			editAmbientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			editSpecularToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editPCMatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editTextureIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editStripAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			groupBoxVertList = new System.Windows.Forms.GroupBox();
+			listViewVertices = new System.Windows.Forms.ListView();
+			columnHeaderVertID = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertType = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertData = new System.Windows.Forms.ColumnHeader();
+			contextMenuStripVertCol = new System.Windows.Forms.ContextMenuStrip(components);
+			showVertexCollectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			statusStrip1.SuspendLayout();
 			groupBoxLabels.SuspendLayout();
 			groupBoxBounds.SuspendLayout();
 			groupBoxMeshList.SuspendLayout();
 			contextMenuStripMatEdit.SuspendLayout();
+			groupBoxVertList.SuspendLayout();
+			contextMenuStripVertCol.SuspendLayout();
 			SuspendLayout();
 			// 
 			// buttonMoveMeshUp
 			// 
 			buttonMoveMeshUp.Enabled = false;
-			buttonMoveMeshUp.Location = new System.Drawing.Point(1071, 32);
+			buttonMoveMeshUp.Location = new System.Drawing.Point(544, 31);
 			buttonMoveMeshUp.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveMeshUp.Name = "buttonMoveMeshUp";
 			buttonMoveMeshUp.Size = new System.Drawing.Size(36, 36);
@@ -95,7 +97,7 @@
 			// buttonMoveMeshDown
 			// 
 			buttonMoveMeshDown.Enabled = false;
-			buttonMoveMeshDown.Location = new System.Drawing.Point(1071, 76);
+			buttonMoveMeshDown.Location = new System.Drawing.Point(544, 75);
 			buttonMoveMeshDown.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveMeshDown.Name = "buttonMoveMeshDown";
 			buttonMoveMeshDown.Size = new System.Drawing.Size(36, 36);
@@ -107,7 +109,7 @@
 			// listViewMeshes
 			// 
 			listViewMeshes.AutoArrange = false;
-			listViewMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderMatID, columnHeaderCnkNum, columnHeaderCnkID1, columnHeaderCnkType1, columnHeaderCnkID2, columnHeaderCnkType2, columnHeaderCnkID3, columnHeaderCnkType3 });
+			listViewMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderMatID, columnHeaderCnkType, columnHeaderCnkData });
 			listViewMeshes.FullRowSelect = true;
 			listViewMeshes.GridLines = true;
 			listViewMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
@@ -116,7 +118,7 @@
 			listViewMeshes.MultiSelect = false;
 			listViewMeshes.Name = "listViewMeshes";
 			listViewMeshes.ShowGroups = false;
-			listViewMeshes.Size = new System.Drawing.Size(1052, 352);
+			listViewMeshes.Size = new System.Drawing.Size(526, 352);
 			listViewMeshes.TabIndex = 11;
 			listViewMeshes.UseCompatibleStateImageBehavior = false;
 			listViewMeshes.View = System.Windows.Forms.View.Details;
@@ -125,35 +127,16 @@
 			// 
 			// columnHeaderMatID
 			// 
-			columnHeaderMatID.Text = "Material";
+			columnHeaderMatID.Text = "ID";
 			// 
-			// columnHeaderCnkNum
+			// columnHeaderCnkType
 			// 
-			columnHeaderCnkNum.Text = "Chunks";
+			columnHeaderCnkType.Text = "Type";
+			columnHeaderCnkType.Width = 180;
 			// 
-			// columnHeaderCnkID1
+			// columnHeaderCnkData
 			// 
-			columnHeaderCnkID1.Text = "ID 1";
-			// 
-			// columnHeaderCnkType1
-			// 
-			columnHeaderCnkType1.Text = "Type 1";
-			// 
-			// columnHeaderCnkID2
-			// 
-			columnHeaderCnkID2.Text = "ID 2";
-			// 
-			// columnHeaderCnkType2
-			// 
-			columnHeaderCnkType2.Text = "Type 2";
-			// 
-			// columnHeaderCnkID3
-			// 
-			columnHeaderCnkID3.Text = "ID 3";
-			// 
-			// columnHeaderCnkType3
-			// 
-			columnHeaderCnkType3.Text = "Type 3";
+			columnHeaderCnkData.Text = "Data";
 			// 
 			// buttonCloneMesh
 			// 
@@ -194,8 +177,8 @@
 			// toolStripStatusLabelInfo
 			// 
 			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-			toolStripStatusLabelInfo.Size = new System.Drawing.Size(663, 25);
-			toolStripStatusLabelInfo.Text = "Click a mesh to display its information here. Right-click to edit pieces, if applicable.";
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(729, 25);
+			toolStripStatusLabelInfo.Text = "Click a material piece to display its information here. Right-click to edit pieces, if applicable.";
 			// 
 			// labelModelName
 			// 
@@ -382,16 +365,16 @@
 			groupBoxMeshList.Controls.Add(listViewMeshes);
 			groupBoxMeshList.Controls.Add(buttonDeleteMesh);
 			groupBoxMeshList.Controls.Add(buttonCloneMesh);
-			groupBoxMeshList.Location = new System.Drawing.Point(12, 240);
+			groupBoxMeshList.Location = new System.Drawing.Point(539, 240);
 			groupBoxMeshList.Name = "groupBoxMeshList";
-			groupBoxMeshList.Size = new System.Drawing.Size(1118, 441);
+			groupBoxMeshList.Size = new System.Drawing.Size(592, 441);
 			groupBoxMeshList.TabIndex = 28;
 			groupBoxMeshList.TabStop = false;
-			groupBoxMeshList.Text = "Mesh List";
+			groupBoxMeshList.Text = "Poly Data";
 			// 
 			// buttonResetMeshes
 			// 
-			buttonResetMeshes.Location = new System.Drawing.Point(927, 392);
+			buttonResetMeshes.Location = new System.Drawing.Point(292, 392);
 			buttonResetMeshes.Margin = new System.Windows.Forms.Padding(4);
 			buttonResetMeshes.Name = "buttonResetMeshes";
 			buttonResetMeshes.Size = new System.Drawing.Size(135, 36);
@@ -425,51 +408,92 @@
 			// contextMenuStripMatEdit
 			// 
 			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
-			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editDiffuseToolStripMenuItem, editAmbientToolStripMenuItem, editSpecularToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
+			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
 			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
-			contextMenuStripMatEdit.Size = new System.Drawing.Size(207, 164);
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(225, 100);
 			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
 			// 
-			// editDiffuseToolStripMenuItem
+			// editPCMatToolStripMenuItem
 			// 
-			editDiffuseToolStripMenuItem.Name = "editDiffuseToolStripMenuItem";
-			editDiffuseToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
-			editDiffuseToolStripMenuItem.Text = "Edit Diffuse";
-			this.editDiffuseToolStripMenuItem.Click += new System.EventHandler(this.editDiffuseToolStripMenuItem_Click);
-			// 
-			// editAmbientToolStripMenuItem
-			// 
-			editAmbientToolStripMenuItem.Name = "editAmbientToolStripMenuItem";
-			editAmbientToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
-			editAmbientToolStripMenuItem.Text = "Edit Ambient";
-			this.editAmbientToolStripMenuItem.Click += new System.EventHandler(this.editAmbientToolStripMenuItem_Click);
-			// 
-			// editSpecularToolStripMenuItem
-			// 
-			editSpecularToolStripMenuItem.Name = "editSpecularToolStripMenuItem";
-			editSpecularToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
-			editSpecularToolStripMenuItem.Text = "Edit Specular";
-			this.editSpecularToolStripMenuItem.Click += new System.EventHandler(this.editSpecularToolStripMenuItem_Click);
+			editPCMatToolStripMenuItem.Name = "editPCMatToolStripMenuItem";
+			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(224, 32);
+			editPCMatToolStripMenuItem.Text = "Edit Material Data";
+			editPCMatToolStripMenuItem.Click += editDiffuseToolStripMenuItem_Click;
 			// 
 			// editTextureIDToolStripMenuItem
 			// 
 			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
-			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
-			editTextureIDToolStripMenuItem.Text = "Edit Texture ID";
-			this.editTextureIDToolStripMenuItem.Click += new System.EventHandler(this.editTextureIDToolStripMenuItem_Click);
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(224, 32);
+			editTextureIDToolStripMenuItem.Text = "Edit Texture Data";
+			editTextureIDToolStripMenuItem.Click += editTextureIDToolStripMenuItem_Click;
 			// 
 			// editStripAlphaToolStripMenuItem
 			// 
 			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
-			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(206, 32);
-			editStripAlphaToolStripMenuItem.Text = "Edit Strip Alpha";
-			this.editStripAlphaToolStripMenuItem.Click += new System.EventHandler(this.editStripAlphaToolStripMenuItem_Click);
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(224, 32);
+			editStripAlphaToolStripMenuItem.Text = "Edit Strip Data";
+			editStripAlphaToolStripMenuItem.Click += editStripAlphaToolStripMenuItem_Click;
+			// 
+			// groupBoxVertList
+			// 
+			groupBoxVertList.Controls.Add(listViewVertices);
+			groupBoxVertList.Location = new System.Drawing.Point(12, 240);
+			groupBoxVertList.Name = "groupBoxVertList";
+			groupBoxVertList.Size = new System.Drawing.Size(521, 441);
+			groupBoxVertList.TabIndex = 29;
+			groupBoxVertList.TabStop = false;
+			groupBoxVertList.Text = "Vertex Data";
+			// 
+			// listViewVertices
+			// 
+			listViewVertices.AutoArrange = false;
+			listViewVertices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderVertID, columnHeaderVertType, columnHeaderVertData });
+			listViewVertices.FullRowSelect = true;
+			listViewVertices.GridLines = true;
+			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewVertices.Location = new System.Drawing.Point(6, 28);
+			listViewVertices.MultiSelect = false;
+			listViewVertices.Name = "listViewVertices";
+			listViewVertices.ShowGroups = false;
+			listViewVertices.Size = new System.Drawing.Size(509, 352);
+			listViewVertices.TabIndex = 11;
+			listViewVertices.UseCompatibleStateImageBehavior = false;
+			listViewVertices.View = System.Windows.Forms.View.Details;
+			listViewVertices.SelectedIndexChanged += listViewVertices_SelectedIndexChanged;
+			listViewVertices.MouseClick += listViewVertices_MouseClick;
+			// 
+			// columnHeaderVertID
+			// 
+			columnHeaderVertID.Text = "ID";
+			// 
+			// columnHeaderVertType
+			// 
+			columnHeaderVertType.Text = "Type";
+			// 
+			// columnHeaderVertData
+			// 
+			columnHeaderVertData.Text = "Data";
+			// 
+			// contextMenuStripVertCol
+			// 
+			contextMenuStripVertCol.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripVertCol.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { showVertexCollectionToolStripMenuItem });
+			contextMenuStripVertCol.Name = "contextMenuStripVertCol";
+			contextMenuStripVertCol.Size = new System.Drawing.Size(265, 36);
+			// 
+			// showVertexCollectionToolStripMenuItem
+			// 
+			showVertexCollectionToolStripMenuItem.Name = "showVertexCollectionToolStripMenuItem";
+			showVertexCollectionToolStripMenuItem.Size = new System.Drawing.Size(264, 32);
+			showVertexCollectionToolStripMenuItem.Text = "Show Vertex Collection";
+			showVertexCollectionToolStripMenuItem.Click += showVertexCollectionToolStripMenuItem_Click;
 			// 
 			// ChunkModelDataEditor
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			ClientSize = new System.Drawing.Size(1137, 764);
+			Controls.Add(groupBoxVertList);
 			Controls.Add(comboBoxNode);
 			Controls.Add(buttonClose);
 			Controls.Add(groupBoxMeshList);
@@ -494,6 +518,8 @@
 			groupBoxBounds.PerformLayout();
 			groupBoxMeshList.ResumeLayout(false);
 			contextMenuStripMatEdit.ResumeLayout(false);
+			groupBoxVertList.ResumeLayout(false);
+			contextMenuStripVertCol.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -502,11 +528,9 @@
 		private System.Windows.Forms.Button buttonMoveMeshUp;
 		private System.Windows.Forms.Button buttonMoveMeshDown;
 		private System.Windows.Forms.ListView listViewMeshes;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkID1;
 		private System.Windows.Forms.Button buttonCloneMesh;
 		private System.Windows.Forms.Button buttonDeleteMesh;
 		private System.Windows.Forms.ColumnHeader columnHeaderMatID;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkNum;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelInfo;
 		private System.Windows.Forms.Label labelModelName;
@@ -531,16 +555,18 @@
 		private System.Windows.Forms.TextBox textBoxObjectName;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.ComboBox comboBoxNode;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkType1;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkType2;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkType3;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkID2;
-		private System.Windows.Forms.ColumnHeader columnHeaderCnkID3;
+		private System.Windows.Forms.ColumnHeader columnHeaderCnkType;
+		private System.Windows.Forms.ColumnHeader columnHeaderCnkData;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripMatEdit;
-		private System.Windows.Forms.ToolStripMenuItem editDiffuseToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem editAmbientToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem editSpecularToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editPCMatToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editTextureIDToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editStripAlphaToolStripMenuItem;
+		private System.Windows.Forms.GroupBox groupBoxVertList;
+		private System.Windows.Forms.ListView listViewVertices;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertID;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertType;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertData;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripVertCol;
+		private System.Windows.Forms.ToolStripMenuItem showVertexCollectionToolStripMenuItem;
 	}
 }

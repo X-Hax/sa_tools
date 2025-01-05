@@ -6,7 +6,6 @@ using System.Text;
 using System.Linq;
 using System.Diagnostics;
 using static SAModel.PolyChunkVolume;
-using System.Security.Policy;
 using static SAModel.PolyChunkStrip;
 
 namespace SAModel
@@ -488,21 +487,56 @@ namespace SAModel
 						}
 						break;
 					case ChunkType.Volume_Polygon3:
+					case ChunkType.Volume_Polygon4:
+					case ChunkType.Volume_Strip:
 						PolyChunkVolume vol = (PolyChunkVolume)chunk;
-						List<Poly> polytri = new List<Poly>();
-						List<VertexData> verttri = new List<VertexData>();
-						foreach (PolyChunkVolume.Triangle tri in vol.Polys)
+						List<Poly> polyvol = new List<Poly>();
+						List<VertexData> vertvol = new List<VertexData>();
+						switch (chunk.Type)
 						{
-							Triangle three = new Triangle();
-							for (int k = 0; k < tri.Indexes.Length; k++)
-							{
-								three.Indexes[k] = (ushort)verttri.Count;
-								verttri.Add(new VertexData(
-									VertexBuffer[tri.Indexes[k]].Position));
-							}
-							polytri.Add(three);
+							case ChunkType.Volume_Polygon3:
+								foreach (PolyChunkVolume.Triangle tri in vol.Polys)
+								{
+									Triangle three = new Triangle();
+									for (int k = 0; k < tri.Indexes.Length; k++)
+									{
+										three.Indexes[k] = (ushort)vertvol.Count;
+										vertvol.Add(new VertexData(
+											VertexBuffer[tri.Indexes[k]].Position));
+									}
+									polyvol.Add(three);
+								}
+								break;
+							//Untested
+							case ChunkType.Volume_Polygon4:
+								foreach (PolyChunkVolume.Quad quad in vol.Polys)
+								{
+									Quad four = new Quad();
+									for (int k = 0; k < quad.Indexes.Length; k++)
+									{
+										four.Indexes[k] = (ushort)vertvol.Count;
+										vertvol.Add(new VertexData(
+											VertexBuffer[quad.Indexes[k]].Position));
+									}
+									polyvol.Add(four);
+								}
+								break;
+							//Untested
+							case ChunkType.Volume_Strip:
+								foreach (PolyChunkVolume.Strip strip in vol.Polys)
+								{
+									Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
+									for (int k = 0; k < strip.Indexes.Length; k++)
+									{
+										str.Indexes[k] = (ushort)vertvol.Count;
+										vertvol.Add(new VertexData(
+											VertexBuffer[strip.Indexes[k]].Position));
+									}
+									polyvol.Add(str);
+								}
+								break;
 						}
-						result.Add(new MeshInfo(MaterialBuffer, polytri.ToArray(), verttri.ToArray(), false, false, true));
+						result.Add(new MeshInfo(MaterialBuffer, polyvol.ToArray(), vertvol.ToArray(), false, false, true));
 						break;
 				}
 			}

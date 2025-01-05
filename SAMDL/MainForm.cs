@@ -1349,7 +1349,8 @@ namespace SAModel.SAMDL
 
 		private void DrawVertexIndices(NJS_OBJECT obj, MatrixStack transform)
 		{
-			if (obj.Attach == null || (!(obj.Attach is BasicAttach))) return;
+			if (obj.Attach == null || obj.Attach is GC.GCAttach) return;
+			if (obj.Attach is BasicAttach)
 			{
 				BasicAttach basicatt = (BasicAttach)obj.Attach;
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
@@ -1362,6 +1363,25 @@ namespace SAModel.SAMDL
 					Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
 					Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
 					EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString(), (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+				}
+				osd.textSprite.End();
+			}
+			if (obj.Attach is ChunkAttach)
+			{
+				ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
+				Viewport viewport = d3ddevice.Viewport;
+				Matrix projection = d3ddevice.GetTransform(TransformState.Projection);
+				osd.textSprite.Begin(SpriteFlags.AlphaBlend);
+				for (int i = 0; i < chunkatt.Vertex.Count; i++)
+				{
+					for (int j = 0; j < chunkatt.Vertex[i].VertexCount; j++)
+					{
+						Vertex vtx = chunkatt.Vertex[i].Vertices[j];
+						Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
+						Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
+						EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+					}
 				}
 				osd.textSprite.End();
 			}
@@ -4388,7 +4408,7 @@ namespace SAModel.SAMDL
 					break;
 				case ChunkAttach:
 					{
-						ChunkModelDataEditor me = new ChunkModelDataEditor(model, idx);
+						ChunkModelDataEditor me = new ChunkModelDataEditor(model, TextureInfoCurrent, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();

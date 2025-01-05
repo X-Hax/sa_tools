@@ -11,7 +11,22 @@
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Update="UI\ChunkModelVertexDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelStripDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelMaterialDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelTextureDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
 		<Compile Update="UI\GCMaterialEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelDataEditor.cs">
 		  <SubType>Form</SubType>
 		</Compile>
 		<Compile Update="UI\ModelLibraryControl.cs">

@@ -89,7 +89,7 @@ namespace SAModel.SAEditorCommon.UI
 			dstAlphaCombo.SelectedIndex = (int)materials[index].DestinationAlpha;
 
 			// Setting flags
-			pickStatusCheck.Checked = materials[index].PickStatus;
+			pickStatusCheck.Checked = materials[index].IgnoreAmbient;
 			superSampleCheck.Checked = materials[index].SuperSample;
 			clampUCheck.Checked = materials[index].ClampU;
 			clampVCheck.Checked = materials[index].ClampV;
@@ -282,7 +282,7 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void pickStatusCheck_Click(object sender, EventArgs e)
 		{
-			materials[comboMaterial.SelectedIndex].PickStatus = pickStatusCheck.Checked;
+			materials[comboMaterial.SelectedIndex].IgnoreAmbient = pickStatusCheck.Checked;
 			RaiseFormUpdated();
 		}
 
