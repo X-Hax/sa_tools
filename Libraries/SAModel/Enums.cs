@@ -52,19 +52,19 @@ namespace SAModel
 	[Flags]
 	public enum AnimFlags : ushort
 	{
-		Position = 0x1,
-		Rotation = 0x2,
-		Scale = 0x4,
-		Vector = 0x8,
-		Vertex = 0x10,
-		Normal = 0x20,
-		Target = 0x40,
-		Roll = 0x80,
-		Angle = 0x100,
-		Color = 0x200,
-		Intensity = 0x400,
-		Spot = 0x800,
-		Point = 0x1000,
+		Position   = 0x1,
+		Rotation   = 0x2,
+		Scale      = 0x4,
+		Vector     = 0x8,
+		Vertex     = 0x10,
+		Normal     = 0x20,
+		Target     = 0x40,
+		Roll       = 0x80,
+		Angle      = 0x100,
+		Color      = 0x200,
+		Intensity  = 0x400,
+		Spot       = 0x800,
+		Point      = 0x1000,
 		Quaternion = 0x2000
 	}
 
@@ -143,16 +143,16 @@ namespace SAModel
 	[Flags]
 	public enum SA2CutsceneEntityFlags : int
 	{
-		HasEnvMap           = 0x1,
-		EasyDraw            = 0x2,
-		Light1              = 0x4,
-		Light2              = 0x8,
-		Light3              = 0x10,
-		Light4              = 0x20,
+		SimpleDraw          = 0x1,
+		NoFogEasyDraw       = 0x2,
+		MultiLight1         = 0x4,
+		MultiLight2         = 0x8,
+		MultiLight3         = 0x10,
+		MultiLight4         = 0x20,
 		ModifierVolume      = 0x40,
 		ReflectModel        = 0x80,
 		BlurModel           = 0x100,
-		SimpleDraw          = 0x200
+		ForceSimpleDraw     = 0x200
 	}
 	public enum LandTableFormat
 	{

@@ -25,6 +25,7 @@ namespace SA2EventViewer
 		bool FormResizing;
 		bool Playing;
 		bool NeedRedraw;
+		bool unsavedChanges = false;
 		FormWindowState LastWindowState = FormWindowState.Minimized;
 		public MainForm()
 		{
@@ -82,6 +83,9 @@ namespace SA2EventViewer
 		BMPInfo[] TextureInfo;
 		Texture[] Textures;
 		EventEntity selectedObject;
+		int selectedObjectScene;
+		int selectedObjectEntity;
+		byte[] filecontents;
 		bool eventcamera = true;
 		OnScreenDisplay osd;
 
@@ -165,6 +169,17 @@ namespace SA2EventViewer
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (loaded && unsavedChanges)
+			{
+				switch (MessageBox.Show(this, "You have modified the event layers. Would you like to save those changes to a new file?", "SA2 Event Viewer", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+				{
+					case DialogResult.Yes:
+						SaveAs();
+						break;
+					case DialogResult.Cancel:
+						return;
+				}
+			}
 			using (OpenFileDialog a = new OpenFileDialog()
 			{
 				DefaultExt = "sa1mdl",
@@ -187,6 +202,7 @@ namespace SA2EventViewer
 			loaded = false;
 			Environment.CurrentDirectory = Path.GetDirectoryName(filename);
 			@event = new Event(filename);
+			filecontents = @event.filecontents;
 			meshes = new List<List<Mesh[]>>();
 			bigmeshes = new List<Mesh[]>();
 			buttonNextFrame.Enabled = buttonPreviousFrame.Enabled = buttonNextScene.Enabled = buttonPrevScene.Enabled = buttonPlayScene.Enabled = true;
@@ -255,7 +271,7 @@ namespace SA2EventViewer
 			loaded = true;
 			selectedObject = null;
 			SelectedItemChanged();
-
+			BuildEventEntityList();
 			currentFileName = filename;
 		}
 
@@ -285,6 +301,21 @@ namespace SA2EventViewer
 				cameraAngleLabel.Text = $"Pitch: " + cam.Pitch.ToString("X5") + " Yaw: " + cam.Yaw.ToString("X5") + (cam.mode == 1 ? " Distance: " + cam.Distance : "");
 				camModeLabel.Text = $"Mode: " + cameramode + ", Speed: " + cam.MoveSpeed;
 			}
+		}
+
+		private void BuildEventEntityList()
+		{
+			listViewEntities.Items.Clear();
+			listViewEntities.Enabled = @event.Scenes[scenenum].Entities.Count > 0;
+			for (int i = 1; i < @event.Scenes[scenenum].Entities.Count + 1; i++)
+			{
+				ListViewItem ents = new ListViewItem($"Scene {scenenum} Entity {i}");
+				listViewEntities.Items.Add(ents);
+			}
+			listViewEntities.SelectedIndices.Clear();
+			listViewEntities.SelectedItems.Clear();
+			listViewEntities_SelectedIndexChanged(null, null);
+			listViewEntities.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 		}
 
 		#region Rendering Methods
@@ -557,7 +588,7 @@ namespace SA2EventViewer
 
 		private void panel1_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (e.Button == MouseButtons.Middle) 
+			if (e.Button == MouseButtons.Middle)
 				actionInputCollector.KeyUp(Keys.MButton);
 		}
 		#endregion
@@ -583,9 +614,13 @@ namespace SA2EventViewer
 			if (scenenum == @event.Scenes.Count)
 			{
 				if (Playing)
+				{
 					scenenum = 1;
+				}
 				else
+				{
 					scenenum = 0;
+				}
 			}
 			if (scenenum == 0)
 			{
@@ -600,6 +635,7 @@ namespace SA2EventViewer
 				buttonPreviousFrame.Enabled = true;
 			}
 			NeedRedraw = true;
+			BuildEventEntityList();
 		}
 
 		private void PreviousAnimation()
@@ -615,9 +651,13 @@ namespace SA2EventViewer
 			}
 			int total = sceneframes.Sum();
 			if (Playing && scenenum == 1)
+			{
 				evframe = 0;
+			}
 			else
+			{
 				evframe = total - 1;
+			}
 			if (scenenum == 0)
 				evframe = (Playing ? 0 : -1);
 			animframe = (Playing ? 0 : -1);
@@ -636,6 +676,7 @@ namespace SA2EventViewer
 				buttonPreviousFrame.Enabled = true;
 			}
 			NeedRedraw = true;
+			BuildEventEntityList();
 		}
 
 		private void PreviousFrame()
@@ -648,6 +689,7 @@ namespace SA2EventViewer
 				if (animframe <= -1)
 				{
 					scenenum--;
+					BuildEventEntityList();
 					if (scenenum == 0)
 						scenenum = @event.Scenes.Count - 1;
 					for (int n = 1; n <= scenenum; n++)
@@ -658,7 +700,7 @@ namespace SA2EventViewer
 					int total = sceneframes.Sum();
 					evframe = total - 1;
 					animframe = @event.Scenes[scenenum].FrameCount - 1;
-				}	
+				}
 				nextframe = animframe;
 				AnimationTimer.Stop();
 				Playing = false;
@@ -690,7 +732,8 @@ namespace SA2EventViewer
 				Playing = false;
 				osd.UpdateOSDItem("Animation frame: " + animframe.ToString(), RenderPanel.Width, 8, Color.AliceBlue.ToRawColorBGRA(), "gizmo", 120);
 				osd.UpdateOSDItem("Cutscene frame: " + evframe.ToString(), RenderPanel.Width, 28, Color.AliceBlue.ToRawColorBGRA(), "gizmo2", 120);
-				NeedRedraw = true;	
+				NeedRedraw = true;
+				BuildEventEntityList();
 			}
 		}
 
@@ -719,6 +762,7 @@ namespace SA2EventViewer
 				AnimationTimer.Stop();
 			}
 			NeedRedraw = true;
+			BuildEventEntityList();
 		}
 		private void ActionInputCollector_OnActionRelease(ActionInputCollector sender, string actionName)
 		{
@@ -933,6 +977,8 @@ namespace SA2EventViewer
 						{
 							dist = hit;
 							entity = @event.Scenes[0].Entities[i];
+							selectedObjectScene = 0;
+							selectedObjectEntity = i + 1;
 						}
 					}
 					if (@event.Scenes[0].Entities[i].GCModel != null)
@@ -943,6 +989,7 @@ namespace SA2EventViewer
 						{
 							dist = hit;
 							entity = @event.Scenes[0].Entities[i];
+							selectedObjectEntity = i + 1;
 						}
 					}
 				}
@@ -962,6 +1009,8 @@ namespace SA2EventViewer
 							{
 								dist = hit;
 								entity = @event.Scenes[scenenum].Entities[i];
+								selectedObjectScene = scenenum;
+								selectedObjectEntity = i + 1;
 							}
 						}
 					}
@@ -988,6 +1037,7 @@ namespace SA2EventViewer
 				propertyGrid1.SelectedObject = selectedObject;
 				exportSA2MDLToolStripMenuItem.Enabled = selectedObject.Model != null;
 				exportSA2BMDLToolStripMenuItem.Enabled = selectedObject.GCModel != null;
+				textBoxEntityName.Text = $"Scene {selectedObjectScene} Entity {selectedObjectEntity}";
 			}
 			else
 			{
@@ -1001,6 +1051,14 @@ namespace SA2EventViewer
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
+			if (e.ChangedItem.Label == "Layer")
+			{
+				if (@event.isBattle)
+				{
+					filecontents[selectedObject.Layerloc] = (byte)(uint)e.ChangedItem.Value;
+					unsavedChanges = true;
+				}
+			}
 		}
 
 		private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1223,6 +1281,18 @@ namespace SA2EventViewer
 			}
 			catch { };
 			AnimationTimer.Stop();
+			if (loaded && unsavedChanges)
+			{
+				switch (MessageBox.Show(this, "You have modified the event layers. Would you like to save those changes to a new file?", "SA2 Event Viewer", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+				{
+					case DialogResult.Yes:
+						SaveAs();
+						break;
+					case DialogResult.Cancel:
+						e.Cancel = true;
+						break;
+				}
+			}
 		}
 
 		private void buttonShowHints_Click(object sender, EventArgs e)
@@ -1250,6 +1320,64 @@ namespace SA2EventViewer
 		private void toolStripStatusLabel1_Click(object sender, EventArgs e)
 		{
 
+		}
+
+		private void Save(string fileName)
+		{
+			bool bigEndian = @event.isBattle;
+			string extension = Path.GetExtension(fileName);
+
+			FraGag.Compression.Prs.Compress(filecontents, fileName);
+			if (!File.Exists(fileName))
+			{
+				File.Create(fileName);
+			}
+
+			currentFileName = fileName;
+			UpdateStatusString();
+			unsavedChanges = false;
+		}
+
+		private void SaveAs()
+		{
+			string filterString = "Event files (*.prs)|*.prs";
+			using (SaveFileDialog a = new SaveFileDialog()
+			{
+				DefaultExt = "prs",
+				Filter = filterString
+			})
+			{
+				if (currentFileName.Length > 0) a.InitialDirectory = currentFileName;
+
+				if (a.ShowDialog(this) == DialogResult.OK)
+				{
+					Save(a.FileName);
+				}
+			}
+		}
+
+		private void buttonSave_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void buttonSaveAs_Click(object sender, EventArgs e)
+		{
+			SaveAs();
+		}
+
+		private void treeViewEntities_AfterSelect(object sender, TreeViewEventArgs e)
+		{
+
+		}
+
+		private void listViewEntities_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listViewEntities.SelectedItems.Count == 0)
+				return;
+			selectedObject = @event.Scenes[scenenum].Entities[listViewEntities.SelectedItems[0].Index];
+			selectedObjectEntity = listViewEntities.SelectedItems[0].Index + 1;
+			SelectedItemChanged();
 		}
 	}
 }

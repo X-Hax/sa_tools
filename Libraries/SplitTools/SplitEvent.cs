@@ -996,10 +996,22 @@ namespace SplitTools.SAArc
 							{
 								tanimcount++;
 								main.Model = $"object_{mptr:X8}";
+								main.HasChildren = GetTexanimChild(fc, ptr2, key);
+								main.PolyType = GetPolyType(fc, ptr2, key);
 								main.ModelFile = modelFiles[main.Model].Filename;
 								main.TexAnimDataEntries = ByteConverter.ToInt32(fc, ptr2 + 4);
 								for (var t = 0; t < tanims; t++)
 								{
+									if (main.HasChildren)
+									{
+										main.PolyAddress = null;
+									}
+									else
+									{
+										var attachptr = fc.GetPointer(mptr + 4, key);
+										var polyptr = fc.GetPointer(attachptr + 4, key);
+										main.PolyAddress = $"poly_{polyptr:X8}";
+									}
 									main.TexAnimPointers.Add(GetTexanim(fc, taptr, key, $"Texture Animations\\TexanimInfo {d} Part {t + 1}.ini"));
 									taptr += 0x4;
 								}
@@ -1056,11 +1068,23 @@ namespace SplitTools.SAArc
 							{
 								tanimcount++;
 								main.Model = $"object_{mptr:X8}";
+								main.HasChildren = GetTexanimChild(fc, ptr2, key);
+								main.PolyType = GetPolyType(fc, ptr2, key);
 								main.ModelFile = modelFiles[main.Model].Filename;
 								main.TexAnimDataEntries = ByteConverter.ToInt32(fc, ptr2 + 4);
 								
 								for (var t = 0; t < tanims; t++)
 								{
+									if (main.HasChildren)
+									{
+										main.PolyAddress = null;
+									}
+									else
+									{
+										var attachptr = fc.GetPointer(mptr + 4, key);
+										var polyptr = fc.GetPointer(attachptr + 4, key);
+										main.PolyAddress = $"poly_{polyptr:X8}";
+									}
 									main.TexAnimPointers.Add(GetTexanim(fc, taptr, key, $"Texture Animations\\TexanimInfo {d} Part {t + 1}.ini"));
 									taptr += 0x4;
 								}
@@ -1940,7 +1964,6 @@ namespace SplitTools.SAArc
 
 				// Texture animation data
 				var texanimptr = (int)imageBase;
-				Dictionary<int, int> uvdatastartaddrs = new();
 				Dictionary<int, int> uvdataaddrs = new();
 				Dictionary<int, int> uvdataarrayaddrs = new();
 				List<byte> evtexanimref = [];
@@ -1951,93 +1974,84 @@ namespace SplitTools.SAArc
 					for (var q = 0; q < evinfo.TexAnimCount; q++)
 					{
 						var maindata = texmaster.MainData[q];
+						int tinyadjust = 0;
+						var originalmataddr = 0;
+						var firstuvdata = EV_TEXANIM.Load(Path.Combine(path, $"Texture Animations\\TexanimInfo {q + 1} Part 1.ini"));
+						if (int.TryParse(firstuvdata.MaterialTexAddress.Substring(7), System.Globalization.NumberStyles.HexNumber, null, out var firsttiny))
+						{
+							originalmataddr = firsttiny;
+						}
 						for (var j = 0; j < maindata.TexAnimDataEntries; j++)
 						{
-							var materialsetup = 0;
-							var materialaddr = 0;
+							var currentmataddr = 0;
 							List<int> polysize = [];
 							Dictionary<int, int> polyadd = new();
 							var uvdata = EV_TEXANIM.Load(Path.Combine(path, $"Texture Animations\\TexanimInfo {q + 1} Part {j + 1}.ini"));
-							// UV data start calculation
+							
+							// Texture animation data starting point within the file.
 							var uvstart = (int)imageBase;
 
+							// Actual UV edit data is not required for the texture animations to work.
+							// The original data places this information first per entry.
 							for (var v = 0; v < uvdata.UVEditEntries; v++)
 							{
-								var uvaddr = 0;
-								var uvaddrminus = 0;
-								int uvsize;
-								// Material/UV addresses. How the hell are we getting these?
-								// Answer: Hacks!
+								if (labels.ContainsKeySafe(maindata.PolyAddress))
+								{
+									switch (maindata.PolyType)
+									{
+										case "Material_Diffuse":
+										case "Material_Ambient":
+										case "Material_Specular":
+											tinyadjust = 10;
+											break;
+										case "Material_DiffuseAmbient":
+										case "Material_DiffuseSpecular":
+										case "Material_AmbientSpecular":
+											tinyadjust = 14;
+											break;
+										case "Material_DiffuseAmbientSpecular":
+											tinyadjust = 18;
+											break;
+									}
+								}
+								int uvaddr = 0;
+								int uvdist;
+								//Get the original addresses to do MATH
 								if (int.TryParse(uvdata.UVEditData[v].UVAddress.Substring(3), System.Globalization.NumberStyles.HexNumber, null, out var uv))
 								{
 									uvaddr = uv;
 								}
-
-								if (v != 0)
+								uvdist = uvaddr - originalmataddr;
+								if (labels.ContainsKeySafe(maindata.PolyAddress))
 								{
-									if (int.TryParse(uvdata.UVEditData[v - 1].UVAddress.Substring(3), System.Globalization.NumberStyles.HexNumber, null, out var uvminus))
-									{
-										uvaddrminus = uvminus;
-									}
-								}
-								if (v != 0)
-								{
-									uvsize = uvaddr - uvaddrminus;
+									uvdatabytes.AddRange(ByteConverter.GetBytes((uint)(labels[maindata.PolyAddress] + tinyadjust + uvdist)));
 								}
 								else
 								{
-									uvsize = 0;
+									uvdatabytes.AddRange(new byte[4]);
 								}
-
-								polysize.Add(uvsize);
-								if (v == 0)
-								{
-									polyadd.Add(v, 0);
-								}
-								else
-								{
-									polyadd.Add(v, polysize.Sum());
-								}
-							}
-							var firstuv = 0;
-							var mat = 0;
-							if (int.TryParse(uvdata.UVEditData[0].UVAddress.Substring(3), System.Globalization.NumberStyles.HexNumber, null, out var uvstaddr))
-							{
-								firstuv = uvstaddr;
-							}
-
-							if (int.TryParse(uvdata.MaterialTexAddress.Substring(7), System.Globalization.NumberStyles.HexNumber, null, out var maddr))
-							{
-								mat = maddr;
-							}
-
-							var polysizeminus = polysize.Sum() + 6;
-							if (labels.ContainsKeySafe(texmaster.MainData[q].Model))
-							{
-								var attachptr = labels[texmaster.MainData[q].Model];
-								materialsetup = (int)attachptr - 0x1C - polysizeminus;
-								materialaddr = materialsetup - (firstuv - mat);
-							}
-							// Actual UV edit data is not required for the texture animations to work
-							for (var v = 0; v < uvdata.UVEditEntries; v++)
-							{
-								if (v == 0)
-								{
-									uvdatabytes.AddRange(ByteConverter.GetBytes(materialsetup));
-								}
-								else
-								{
-									uvdatabytes.AddRange(ByteConverter.GetBytes(materialsetup + polyadd[v]));
-								}
-
 								uvdatabytes.AddRange(ByteConverter.GetBytes(uvdata.UVEditData[v].U));
 								uvdatabytes.AddRange(ByteConverter.GetBytes(uvdata.UVEditData[v].V));
 							}
 							// UV Array segment calculation
+							// A strange constant is used to prevent cases of data overlap from occurring.
 							uvdataarrayaddrs[(q * 100) + j] = uvstart + (uvdata.UVEditEntries * 0x8);
-
+							int tinydist;
+							if (int.TryParse(uvdata.MaterialTexAddress.Substring(7), System.Globalization.NumberStyles.HexNumber, null, out var tiny))
+							{
+								currentmataddr = tiny;
+							}
+							tinydist = currentmataddr - originalmataddr;
+							// Tiny Texture ID material edit information goes here. This is what's actually used
+							// during the texture animation process.
 							uvdatabytes.AddRange(ByteConverter.GetBytes(uvdata.TextureID));
-							uvdatabytes.AddRange(ByteConverter.GetBytes(materialaddr));
+							if (labels.ContainsKeySafe(maindata.PolyAddress))
+								uvdatabytes.AddRange(ByteConverter.GetBytes((uint)(labels[maindata.PolyAddress] + tinyadjust + tinydist)));
+							else
+							{
+								Console.WriteLine("Tiny Texture ID pointer for TexAnim {0} is missing an address! {1}", q + 1, q < evinfo.UsedTexAnims ? "This data is used. Fix that!" : "This is unused data.");
+								uvdatabytes.AddRange(new byte[4]);
+							}
 							uvdatabytes.AddRange(ByteConverter.GetBytes(uvdata.UVEditEntries));
 							uvdatabytes.AddRange(ByteConverter.GetBytes(uvstart));
 							imageBase += (uint)(uvdata.UVEditEntries * 0x8) + 0x10;
@@ -2619,6 +2633,39 @@ namespace SplitTools.SAArc
 				return name;
 			}
 
+		private static string GetPolyType(byte[] fc, int address, uint key)
+		{
+			string type = null;
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				ChunkAttach mdl;
+				NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
+				if (obj.Attach != null)
+					mdl = new ChunkAttach(fc, ptr3 - 0x18, key);
+				else
+					mdl = new ChunkAttach(fc, ptr3 - 0x4C, key);
+				List<PolyChunk> poly = mdl.Poly;
+				type = poly[0].Type.ToString();
+			}
+			return type;
+		}
+
+		private static bool GetTexanimChild(byte[] fc, int address, uint key)
+		{
+			int ptr3 = fc.GetPointer(address, key);
+			if (ptr3 != 0)
+			{
+				string data = ptr3.ToCHex();
+				NJS_OBJECT obj = new NJS_OBJECT(fc, ptr3, key, ModelFormat.Chunk, null);
+				if (obj.Attach != null)
+					return false;
+				else
+					return true;
+			}
+			return false;
+		}
+
 		private static string GetGCModel(byte[] fc, int address, uint key, string fn, string meta = null)
 		{
 			string name = null;
@@ -3116,6 +3163,9 @@ namespace SplitTools.SAArc
 	{
 		public string ModelFile { get; set; }
 		public string Model { get; set; }
+		public string PolyAddress { get; set; }
+		public string PolyType { get; set; }
+		public bool HasChildren { get; set; }
 		public int TexAnimDataEntries { get; set; }
 		public List<string> TexAnimPointers { get; } = [];
 	}
