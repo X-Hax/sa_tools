@@ -6,8 +6,7 @@ skip_tags: true
 image: Visual Studio 2022
 configuration: Release
 platform:
-- x64
-- x86
+- Any CPU
 nuget:
   project_feed: true
 before_build:
