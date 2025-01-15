@@ -1541,7 +1541,8 @@ namespace SAToolsHub
 			}
 
 			// 64 bit check
-			string assetName = "SA.Tools.x86.7z";
+			string assetName = "SA.Tools.Any.CPU.7z";
+			/*
 			if (Environment.Is64BitOperatingSystem)
 			{
 				// If the system and the process are both 64 bit, get the 64 bit archive
@@ -1563,6 +1564,7 @@ namespace SAToolsHub
 					}
 				}
 			}
+			*/
 
 			// Start update check
 			using (var wc = new Updater.UpdaterWebClient())
