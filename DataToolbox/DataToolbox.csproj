@@ -9,6 +9,7 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<DebugType>embedded</DebugType>
 		<ApplicationIcon>datatoolbox.ico</ApplicationIcon>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="datatoolbox.ico" />
