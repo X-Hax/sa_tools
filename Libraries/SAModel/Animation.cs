@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace SAModel
@@ -20,8 +21,14 @@ namespace SAModel
 		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
 			if (labels != null && labels.ContainsKey(address))
+			{
 				Name = labels[address];
-			else Name = "action_" + address.ToString("X8");
+			}
+			else
+			{
+				Name = $"action_{address:X8}";
+			}
+
 			if (address > file.Length - 4)
 			{
 				Model = new NJS_OBJECT();
@@ -30,14 +37,17 @@ namespace SAModel
 			}
 			else
 			{
-				int objaddr = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
+				var objaddr = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
 				if (objaddr > file.Length - 4)
 				{
 					Model = new NJS_OBJECT();
 					Animation = new NJS_MOTION();
 					return;
 				}
-				else Model = new NJS_OBJECT(file, objaddr, imageBase, format, labels, attaches);
+				else
+				{
+					Model = new NJS_OBJECT(file, objaddr, imageBase, format, labels, attaches);
+				}
 			}
 			if (address > file.Length - 8)
 			{
@@ -45,23 +55,25 @@ namespace SAModel
 				return;
 			}
 			else
+			{
 				Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
 					Model.CountAnimated(), labels, false, Model.GetVertexCounts(), Name, Model.Name);
+			}
 		}
 
 		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
 		{
-			Name = "action_" + animation.Name;
+			Name = $"action_{animation.Name}";
 			Model = model;
 			Animation = animation;
 		}
 
 		public byte[] GetBytes(uint imageBase, bool DX, Dictionary<string, uint> labels, out uint address)
 		{
-			List<byte> result = new List<byte>();
-			result.AddRange(Model.GetBytes(imageBase, DX, labels, new List<uint>(), out uint modeladdr));
-			uint tmp = (uint)result.Count;
-			result.AddRange(Animation.GetBytes(imageBase + tmp, labels, out uint head2));
+			var result = new List<byte>();
+			result.AddRange(Model.GetBytes(imageBase, DX, labels, new List<uint>(), out var modeladdr));
+			var tmp = (uint)result.Count;
+			result.AddRange(Animation.GetBytes(imageBase + tmp, labels, out var head2));
 			address = (uint)result.Count;
 			result.AddRange(ByteConverter.GetBytes(modeladdr + imageBase));
 			result.AddRange(ByteConverter.GetBytes(head2 + tmp + imageBase));
@@ -75,7 +87,7 @@ namespace SAModel
 
 		public byte[] GetBytes(uint imageBase, bool DX)
 		{
-			return GetBytes(imageBase, DX, out uint address);
+			return GetBytes(imageBase, DX, out var address);
 		}
 	}
 
@@ -102,31 +114,25 @@ namespace SAModel
 
 		public NJS_MOTION()
 		{
-			Name = "animation_" + Extensions.GenerateIdentifier();
-			MdataName = Name + "_mdat";
+			Name = $"animation_{Extensions.GenerateIdentifier()}";
+			MdataName = $"{Name}_mdat";
 		}
 
 		public int CalculateModelParts(byte[] file, int address, uint imageBase)
 		{
-			int mdatap = ByteConverter.ToInt32(file, address);
-			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
-			if (animtype == 0) return 0;
-			int mdata = 0;
-			if (animtype.HasFlag(AnimFlags.Position)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Rotation)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Scale)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Vector)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Vertex)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Normal)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Color)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Intensity)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Target)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Spot)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Point)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Roll)) mdata++;
-			if (animtype.HasFlag(AnimFlags.Quaternion)) mdata++;
-			int mdatasize = 0;
-			bool lost = false;
+			var mdatap = ByteConverter.ToInt32(file, address);
+			var animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
+			
+			if (animtype == 0)
+			{
+				return 0;
+			}
+
+			var mdata = BitOperations.PopCount((uint)animtype);
+
+			var mdatasize = 0;
+			var lost = false;
+			
 			switch (mdata)
 			{
 				case 1:
@@ -146,38 +152,54 @@ namespace SAModel
 					lost = true;
 					break;
 			}
-			if (lost) return 0;
-			// Check MKEY pointers
-			int mdatas = 0;
-			for (int u = 0; u < 255; u++)
+			
+			if (lost)
 			{
-				for (int m = 0; m < mdata; m++)
+				return 0;
+			}
+
+			// Check MKEY pointers
+			var mdatas = 0;
+			
+			for (var u = 0; u < 255; u++)
+			{
+				for (var m = 0; m < mdata; m++)
 				{
-					if (lost) continue;
-					uint pointer = ByteConverter.ToUInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * m);
+					if (lost)
+					{
+						continue;
+					}
+
+					var pointer = ByteConverter.ToUInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * m);
+					
 					if (pointer != 0 && (pointer < imageBase || pointer - (int)imageBase >= file.Length - 36))
+					{
 						lost = true;
+					}
+
 					if (!lost)
 					{
-						int framecount = ByteConverter.ToInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * mdata + 4 * m);
+						var framecount = ByteConverter.ToInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * mdata + 4 * m);
+						
 						if (framecount < 0 || framecount > 100 || (pointer == 0 && framecount != 0))
+						{
 							lost = true;
+						}
 					}
 				}
+				
 				if (!lost)
+				{
 					mdatas++;
+				}
 			}
+			
 			return mdatas;
 		}
 
 		public bool IsShapeMotion()
 		{
-			foreach (var mdl in Models)
-			{
-				if (mdl.Value.Vertex.Count > 0 || mdl.Value.Normal.Count > 0)
-					return true;
-			}
-			return false;
+			return Models.Any(mdl => mdl.Value.Vertex.Count > 0 || mdl.Value.Normal.Count > 0);
 		}
 
 		public bool OptimizeShape()
@@ -185,202 +207,138 @@ namespace SAModel
 			return optimizeMotions = true;
 		}
 
-		public NJS_MOTION(byte[] file, int address, uint imageBase, int nummodels, Dictionary<int, string> labels = null, bool shortrot = false, int[] numverts = null, string actionName = null, string objectName = null, bool shortcheck = true)
+		public NJS_MOTION(byte[] file, int address, uint imageBase, int numModels, Dictionary<int, string> labels = null, bool shortRot = false, int[] numVerts = null, string actionName = null, string objectName = null, bool shortCheck = true)
 		{
-			if (nummodels == 0) 
-				nummodels = CalculateModelParts(file, address, imageBase);
+			if (numModels == 0)
+			{
+				numModels = CalculateModelParts(file, address, imageBase);
+			}
+
 			ActionName = actionName;
 			ObjectName = objectName;
-			if (labels != null && labels.ContainsKey(address))
+			
+			if (labels != null && labels.TryGetValue(address, out var name))
 			{
-				Name = labels[address];
-				if (int.TryParse(Name, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int num) == true)
-					Name = "animation_" + address.ToString("X8");
+				Name = name;
+				
+				if (int.TryParse(Name, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out _))
+				{
+					Name = $"animation_{address:X8}";
+				}
 			}
 			else
-				Name = "animation_" + address.ToString("X8");
-			if (address > file.Length - 12) return;
+			{
+				Name = $"animation_{address:X8}";
+			}
+
+			if (address > file.Length - 12)
+			{
+				return;
+			}
+
 			Frames = ByteConverter.ToInt32(file, address + 4);
-			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
-			ushort tmp = ByteConverter.ToUInt16(file, address + 10);
-			switch ((StructEnums.NJD_MTYPE_FN)tmp & StructEnums.NJD_MTYPE_FN.NJD_MTYPE_MASK)
+			var animType = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
+			var tmp = ByteConverter.ToUInt16(file, address + 10);
+
+			InterpolationMode = ((StructEnums.NJD_MTYPE_FN)tmp & StructEnums.NJD_MTYPE_FN.NJD_MTYPE_MASK) switch
 			{
-				case StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER:
-					InterpolationMode = InterpolationMode.Linear;
-					break;
-				case StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE:
-					InterpolationMode = InterpolationMode.Spline;
-					break;
-				case StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER:
-					InterpolationMode = InterpolationMode.User;
-					break;
-			}
-			ShortRot = shortrot;
-			int framesize = (tmp & 0xF) * 8;
+				StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER => InterpolationMode.Linear,
+				StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE => InterpolationMode.Spline,
+				StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER => InterpolationMode.User,
+				_ => InterpolationMode
+			};
+			
+			ShortRot = shortRot;
 			address = (int)(ByteConverter.ToUInt32(file, address) - imageBase);
-			if (labels != null && labels.ContainsKey(address))
-				MdataName = labels[address];
-			else
-				MdataName = Name + "_mdat_" + address.ToString("X8");
-			for (int i = 0; i < nummodels; i++)
+			
+			if (labels != null && labels.TryGetValue(address, out var mDataName))
 			{
-				AnimModelData data = new AnimModelData();
-				bool hasdata = false;
-				uint posoff = 0;
-				if (address > file.Length - 4) continue;
-				if (animtype.HasFlag(AnimFlags.Position))
+				MdataName = mDataName;
+			}
+			else
+			{
+				MdataName = $"{Name}_mdat_{address:X8}";
+			}
+
+			for (var i = 0; i < numModels; i++)
+			{
+				var data = new AnimModelData();
+				var hasData = BitOperations.PopCount((uint)animType) > 0;
+				
+				if (address > file.Length - 4)
 				{
-					posoff = ByteConverter.ToUInt32(file, address);
-					if (posoff > 0)
-						posoff -= imageBase;
-					address += 4;
+					continue;
 				}
-				uint rotoff = 0;
-				if (animtype.HasFlag(AnimFlags.Rotation))
+				
+				var posOffset = CalculateOffset(animType, AnimFlags.Position, imageBase, ref file, ref address);
+				var rotOffset = CalculateOffset(animType, AnimFlags.Rotation, imageBase, ref file, ref address);
+				var sclOffset = CalculateOffset(animType, AnimFlags.Scale, imageBase, ref file, ref address);
+				var vecOffset = CalculateOffset(animType, AnimFlags.Vector, imageBase, ref file, ref address);
+				var vertOffset = CalculateOffset(animType, AnimFlags.Vertex, imageBase, ref file, ref address);
+				var normOffset = CalculateOffset(animType, AnimFlags.Normal, imageBase, ref file, ref address);
+				var targOffset = CalculateOffset(animType, AnimFlags.Target, imageBase, ref file, ref address);
+				var rollOffset = CalculateOffset(animType, AnimFlags.Roll, imageBase, ref file, ref address);
+				var angOffset = CalculateOffset(animType, AnimFlags.Angle, imageBase, ref file, ref address);
+				var colOffset = CalculateOffset(animType, AnimFlags.Color, imageBase, ref file, ref address);
+				var intOffset = CalculateOffset(animType, AnimFlags.Intensity, imageBase, ref file, ref address);
+				var spotOffset = CalculateOffset(animType, AnimFlags.Spot, imageBase, ref file, ref address);
+				var pntOffset = CalculateOffset(animType, AnimFlags.Point, imageBase, ref file, ref address);
+				var quatOffset = CalculateOffset(animType, AnimFlags.Quaternion, imageBase, ref file, ref address);
+				
+				if (animType.HasFlag(AnimFlags.Position))
 				{
-					rotoff = ByteConverter.ToUInt32(file, address);
-					if (rotoff > 0)
-						rotoff -= imageBase;
-					address += 4;
-				}
-				uint scloff = 0;
-				if (animtype.HasFlag(AnimFlags.Scale))
-				{
-					scloff = ByteConverter.ToUInt32(file, address);
-					if (scloff > 0)
-						scloff -= imageBase;
-					address += 4;
-				}
-				uint vecoff = 0;
-				if (animtype.HasFlag(AnimFlags.Vector))
-				{
-					vecoff = ByteConverter.ToUInt32(file, address);
-					if (vecoff > 0)
-						vecoff -= imageBase;
-					address += 4;
-				}
-				uint vertoff = 0;
-				if (animtype.HasFlag(AnimFlags.Vertex))
-				{
-					vertoff = ByteConverter.ToUInt32(file, address);
-					if (vertoff > 0)
-						vertoff -= imageBase;
-					address += 4;
-				}
-				uint normoff = 0;
-				if (animtype.HasFlag(AnimFlags.Normal))
-				{
-					normoff = ByteConverter.ToUInt32(file, address);
-					if (normoff > 0)
-						normoff -= imageBase;
-					address += 4;
-				}
-				uint targoff = 0;
-				if (animtype.HasFlag(AnimFlags.Target))
-				{
-					targoff = ByteConverter.ToUInt32(file, address);
-					if (targoff > 0)
-						targoff -= imageBase;
-					address += 4;
-				}
-				uint rolloff = 0;
-				if (animtype.HasFlag(AnimFlags.Roll))
-				{
-					rolloff = ByteConverter.ToUInt32(file, address);
-					if (rolloff > 0)
-						rolloff -= imageBase;
-					address += 4;
-				}
-				uint angoff = 0;
-				if (animtype.HasFlag(AnimFlags.Angle))
-				{
-					angoff = ByteConverter.ToUInt32(file, address);
-					if (angoff > 0)
-						angoff -= imageBase;
-					address += 4;
-				}
-				uint coloff = 0;
-				if (animtype.HasFlag(AnimFlags.Color))
-				{
-					coloff = ByteConverter.ToUInt32(file, address);
-					if (coloff > 0)
-						coloff -= imageBase;
-					address += 4;
-				}
-				uint intoff = 0;
-				if (animtype.HasFlag(AnimFlags.Intensity))
-				{
-					intoff = ByteConverter.ToUInt32(file, address);
-					if (intoff > 0)
-						intoff -= imageBase;
-					address += 4;
-				}
-				uint spotoff = 0;
-				if (animtype.HasFlag(AnimFlags.Spot))
-				{
-					spotoff = ByteConverter.ToUInt32(file, address);
-					if (spotoff > 0)
-						spotoff -= imageBase;
-					address += 4;
-				}
-				uint pntoff = 0;
-				if (animtype.HasFlag(AnimFlags.Point))
-				{
-					pntoff = ByteConverter.ToUInt32(file, address);
-					if (pntoff > 0)
-						pntoff -= imageBase;
-					address += 4;
-				}
-				uint quatoff = 0;
-				if (animtype.HasFlag(AnimFlags.Quaternion))
-				{
-					quatoff = ByteConverter.ToUInt32(file, address);
-					if (quatoff > 0)
-						quatoff -= imageBase;
-					address += 4;
-				}
-				int tmpaddr;
-				if (animtype.HasFlag(AnimFlags.Position))
-				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (posoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (posOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)posoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.PositionName = labels[tmpaddr];
-						else data.PositionName = Name + "_mkey_" + i.ToString() + "_pos_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(posOffset, out var positionName))
 						{
-							data.Position.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
-							tmpaddr += 16;
+							data.PositionName = positionName;
+						}
+						else
+						{
+							data.PositionName = $"{Name}_mkey_{i}_pos_{posOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Position.Add(ByteConverter.ToInt32(file, posOffset), new Vertex(file, posOffset + 4));
+							posOffset += 16;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Rotation))
+				
+				if (animType.HasFlag(AnimFlags.Rotation))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (rotoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (rotOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)rotoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.RotationName = labels[tmpaddr];
-						else data.RotationName = Name + "_mkey_" + i.ToString() + "_rot_" + tmpaddr.ToString("X8");
-						if (shortcheck)
+						if (labels != null && labels.TryGetValue(rotOffset, out var rotationName))
+						{
+							data.RotationName = rotationName;
+						}
+						else
+						{
+							data.RotationName = $"{Name}_mkey_{i}_rot_{rotOffset:X8}";
+						}
+
+						if (shortCheck)
 						{
 							// Check if the animation uses short rotation or not
-							for (int j = 0; j < frames; j++)
+							for (var j = 0; j < frames; j++)
 							{
 								// If any of the rotation frames go outside the file, assume it uses shorts
-								if (tmpaddr + 4 + 12 > file.Length)
+								if (rotOffset + 4 + 12 > file.Length)
 								{
 									ShortRot = true;
 									break;
 								}
+								
 								// If any of the rotation frames isn't in the range from -65535 to 65535, assume it uses shorts
-								Rotation rot = new Rotation(file, tmpaddr + 4);
+								var rot = new Rotation(file, rotOffset + 4);
 								if (rot.X > 65535 || rot.X < -65535 ||
 									rot.Y > 65535 || rot.Y < -65535 ||
 									rot.Z > 65535 || rot.Z < -65535)
@@ -390,313 +348,463 @@ namespace SAModel
 								}
 							}
 						}
+						
 						// Read rotation values
-						for (int j = 0; j < frames; j++)
+						for (var j = 0; j < frames; j++)
 						{
 							if (ShortRot)
 							{
-								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, tmpaddr)))
-									data.Rotation.Add(ByteConverter.ToInt16(file, tmpaddr), new Rotation(ByteConverter.ToInt16(file, tmpaddr + 2), ByteConverter.ToInt16(file, tmpaddr + 4), ByteConverter.ToInt16(file, tmpaddr + 6)));
-								tmpaddr += 8;
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt16(file, rotOffset)))
+								{
+									data.Rotation.Add(ByteConverter.ToInt16(file, rotOffset), new Rotation(ByteConverter.ToInt16(file, rotOffset + 2), ByteConverter.ToInt16(file, rotOffset + 4), ByteConverter.ToInt16(file, rotOffset + 6)));
+								}
+
+								rotOffset += 8;
 							}
 							else
 							{
-								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, tmpaddr)))
-									data.Rotation.Add(ByteConverter.ToInt32(file, tmpaddr), new Rotation(file, tmpaddr + 4));
-								tmpaddr += 16;
+								if (!data.Rotation.ContainsKey(ByteConverter.ToInt32(file, rotOffset)))
+								{
+									data.Rotation.Add(ByteConverter.ToInt32(file, rotOffset), new Rotation(file, rotOffset + 4));
+								}
+
+								rotOffset += 16;
 							}
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Scale))
+				
+				if (animType.HasFlag(AnimFlags.Scale))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (scloff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (sclOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)scloff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.ScaleName = labels[tmpaddr];
-						else data.ScaleName = Name + "_mkey_" + i.ToString() + "_scl_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(sclOffset, out var scaleName))
 						{
-							data.Scale.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
-							tmpaddr += 16;
+							data.ScaleName = scaleName;
+						}
+						else
+						{
+							data.ScaleName = $"{Name}_mkey_{i}_scl_{sclOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Scale.Add(ByteConverter.ToInt32(file, sclOffset), new Vertex(file, sclOffset + 4));
+							sclOffset += 16;
+						}
+					}
+					
+					address += 4;
+				}
+				
+				if (animType.HasFlag(AnimFlags.Vector))
+				{
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (vecOffset != 0 && frames > 0)
+					{
+						if (labels != null && labels.TryGetValue(vecOffset, out var vectorName))
+						{
+							data.VectorName = vectorName;
+						}
+						else
+						{
+							data.VectorName = $"{Name}_mkey_{i}_vec_{vecOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Vector.Add(ByteConverter.ToInt32(file, vecOffset), new Vertex(file, vecOffset + 4));
+							vecOffset += 16;
 						}
 					}
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Vector))
+				
+				var vertexCount = -1;
+				
+				if (animType.HasFlag(AnimFlags.Vertex))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (vecoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (vertOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)vecoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.VectorName = labels[tmpaddr];
-						else data.VectorName = Name + "_mkey_" + i.ToString() + "_vec_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						var tempAddress = vertOffset;
+						if (labels != null && labels.TryGetValue(tempAddress, out var vertexName))
 						{
-							data.Vector.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
-							tmpaddr += 16;
+							data.VertexName = vertexName;
 						}
-					}
-					address += 4;
-				}
-				int vtxcount = -1;
-				if (animtype.HasFlag(AnimFlags.Vertex))
-				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (vertoff != 0 && frames > 0)
-					{
-						hasdata = true;
-						tmpaddr = (int)vertoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.VertexName = labels[tmpaddr];
-						else data.VertexName = Name + "_mkey_" + i.ToString() + "_vert_" + tmpaddr.ToString("X8");
-						List<int> ptrs = new List<int>();
+						else
+						{
+							data.VertexName = $"{Name}_mkey_{i}_vert_{tempAddress:X8}";
+						}
+
+						var ptrs = new List<int>();
 						data.VertexItemName = new string[frames];
-						for (int j = 0; j < frames; j++)
+						for (var j = 0; j < frames; j++)
 						{
-							ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-							int itemaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							if (labels != null && labels.ContainsKey(itemaddr))
-								data.VertexItemName[j] = labels[itemaddr];
-							else data.VertexItemName[j] = Name + "_" + i.ToString() + "_vtx_" + j.ToString() + "_" + itemaddr.ToString("X8");
-							tmpaddr += 8;
+							ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tempAddress + 4) - imageBase));
+							var itemaddr = (int)(ByteConverter.ToUInt32(file, tempAddress + 4) - imageBase);
+							
+							if (labels != null && labels.TryGetValue(itemaddr, out var verterxItemName))
+							{
+								data.VertexItemName[j] = verterxItemName;
+							}
+							else
+							{
+								data.VertexItemName[j] = $"{Name}_{i}_vtx_{j}_{itemaddr:X8}";
+							}
+
+							tempAddress += 8;
 						}
+						
 						// Use vertex counts specified in split if available
-						if (numverts != null && numverts.Length > 0)
-							vtxcount = numverts[i];
+						if (numVerts != null && numVerts.Length > 0)
+						{
+							vertexCount = numVerts[i];
+						}
 						else
 						{
 							if (ptrs.Count > 1)
 							{
 								ptrs.Sort();
-								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+								vertexCount = (ptrs[1] - ptrs[0]) / Vertex.Size;
 							}
 							else
-								vtxcount = ((int)vertoff - ptrs[0]) / Vertex.Size;
+							{
+								vertexCount = (tempAddress - ptrs[0]) / Vertex.Size;
+							}
 						}
-						tmpaddr = (int)vertoff;
-						for (int j = 0; j < frames; j++)
+						
+						tempAddress = vertOffset;
+						for (var j = 0; j < frames; j++)
 						{
-							Vertex[] verts = new Vertex[vtxcount];
-							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							for (int k = 0; k < verts.Length; k++)
+							var verts = new Vertex[vertexCount];
+							var newaddr = (int)(ByteConverter.ToUInt32(file, tempAddress + 4) - imageBase);
+							for (var k = 0; k < verts.Length; k++)
 							{
 								verts[k] = new Vertex(file, newaddr);
 								newaddr += Vertex.Size;
 							}
-							if (!data.Vertex.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) data.Vertex.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
-							tmpaddr += 8;
+							if (!data.Vertex.ContainsKey(ByteConverter.ToInt32(file, tempAddress)))
+							{
+								data.Vertex.Add(ByteConverter.ToInt32(file, tempAddress), verts);
+							}
+
+							tempAddress += 8;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Normal))
+				
+				if (animType.HasFlag(AnimFlags.Normal))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (normoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (normOffset != 0 && frames > 0)
 					{
-						hasdata = true;
 						data.NormalItemName = new string[frames];
+						
 						// Use vertex counts specified in split if available
-						if (numverts != null && numverts.Length > 0)
-							vtxcount = numverts[i];
-						else if (vtxcount < 0)
+						if (numVerts != null && numVerts.Length > 0)
 						{
-							tmpaddr = (int)normoff;
-							List<int> ptrs = new List<int>();
-							for (int j = 0; j < frames; j++)
+							vertexCount = numVerts[i];
+						}
+						else if (vertexCount < 0)
+						{
+							var tempAddress = normOffset;
+							var ptrs = new List<int>();
+							
+							for (var j = 0; j < frames; j++)
 							{
-								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase));
-								tmpaddr += 8;
+								ptrs.AddUnique((int)(ByteConverter.ToUInt32(file, tempAddress + 4) - imageBase));
+								tempAddress += 8;
 							}
+							
 							if (ptrs.Count > 1)
 							{
 								ptrs.Sort();
-								vtxcount = (ptrs[1] - ptrs[0]) / Vertex.Size;
+								vertexCount = (ptrs[1] - ptrs[0]) / Vertex.Size;
 							}
 							else
-								vtxcount = ((int)normoff - ptrs[0]) / Vertex.Size;
-						}
-						tmpaddr = (int)normoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.NormalName = labels[tmpaddr];
-						else data.NormalName = Name + "_mkey_" + i.ToString() + "_norm_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
-						{
-							Vertex[] verts = new Vertex[vtxcount];
-							int newaddr = (int)(ByteConverter.ToUInt32(file, tmpaddr + 4) - imageBase);
-							if (labels != null && labels.ContainsKey(newaddr))
-								data.NormalItemName[j] = labels[newaddr];
-							else data.NormalItemName[j] = Name + "_" + i.ToString() + "_nrm_" + j.ToString() + "_" + newaddr.ToString("X8");
-							for (int k = 0; k < verts.Length; k++)
 							{
-								verts[k] = new Vertex(file, newaddr);
-								newaddr += Vertex.Size;
+								vertexCount = (normOffset - ptrs[0]) / Vertex.Size;
 							}
-							if (!data.Normal.ContainsKey(ByteConverter.ToInt32(file, tmpaddr))) data.Normal.Add(ByteConverter.ToInt32(file, tmpaddr), verts);
-							tmpaddr += 8;
 						}
-					}
-					address += 4;
-				}
-				if (animtype.HasFlag(AnimFlags.Target))
-				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (targoff != 0 && frames > 0)
-					{
-						hasdata = true;
-						tmpaddr = (int)targoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.TargetName = labels[tmpaddr];
-						else data.TargetName = Name + "_mkey_" + i.ToString() + "_target_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						
+						if (labels != null && labels.TryGetValue(normOffset, out var normalName))
 						{
-							data.Target.Add(ByteConverter.ToInt32(file, tmpaddr), new Vertex(file, tmpaddr + 4));
-							tmpaddr += 16;
+							data.NormalName = normalName;
 						}
-					}
-					address += 4;
-				}
-				if (animtype.HasFlag(AnimFlags.Roll))
-				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (rolloff != 0 && frames > 0)
-					{
-						hasdata = true;
-						tmpaddr = (int)rolloff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.RollName = labels[tmpaddr];
-						else data.RollName = Name + "_mkey_" + i.ToString() + "_roll_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						else
 						{
-							data.Roll.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
-							tmpaddr += 8;
+							data.NormalName = $"{Name}_mkey_{i}_norm_{normOffset:X8}";
 						}
-					}
-					address += 4;
-				}
-				if (animtype.HasFlag(AnimFlags.Angle))
-				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (angoff != 0 && frames > 0)
-					{
-						hasdata = true;
-						tmpaddr = (int)angoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.AngleName = labels[tmpaddr];
-						else data.AngleName = Name + "_mkey_" + i.ToString() + "_ang_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+
+						for (var j = 0; j < frames; j++)
 						{
-							data.Angle.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToInt32(file, tmpaddr + 4));
-							tmpaddr += 8;
+							var verts = new Vertex[vertexCount];
+							var newAddress = (int)(ByteConverter.ToUInt32(file, normOffset + 4) - imageBase);
+							
+							if (labels != null && labels.TryGetValue(newAddress, out var normalItemName))
+							{
+								data.NormalItemName[j] = normalItemName;
+							}
+							else
+							{
+								data.NormalItemName[j] = $"{Name}_{i}_nrm_{j}_{newAddress:X8}";
+							}
+
+							for (var k = 0; k < verts.Length; k++)
+							{
+								verts[k] = new Vertex(file, newAddress);
+								newAddress += Vertex.Size;
+							}
+							if (!data.Normal.ContainsKey(ByteConverter.ToInt32(file, normOffset)))
+							{
+								data.Normal.Add(ByteConverter.ToInt32(file, normOffset), verts);
+							}
+
+							normOffset += 8;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Color))
+				
+				if (animType.HasFlag(AnimFlags.Target))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (coloff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (targOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)coloff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.ColorName = labels[tmpaddr];
-						else data.ColorName = Name + "_mkey_" + i.ToString() + "_col_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(targOffset, out var targetName))
 						{
-							data.Color.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToUInt32(file, tmpaddr + 4));
-							tmpaddr += 8;
+							data.TargetName = targetName;
+						}
+						else
+						{
+							data.TargetName = $"{Name}_mkey_{i}_target_{targOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Target.Add(ByteConverter.ToInt32(file, targOffset), new Vertex(file, targOffset + 4));
+							targOffset += 16;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Intensity))
+				
+				if (animType.HasFlag(AnimFlags.Roll))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (intoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (rollOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)intoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.IntensityName = labels[tmpaddr];
-						else data.IntensityName = Name + "_mkey_" + i.ToString() + "_int_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(rollOffset, out var rollName))
 						{
-							data.Intensity.Add(ByteConverter.ToInt32(file, tmpaddr), ByteConverter.ToSingle(file, tmpaddr + 4));
-							tmpaddr += 8;
+							data.RollName = rollName;
+						}
+						else
+						{
+							data.RollName = $"{Name}_mkey_{i}_roll_{rollOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Roll.Add(ByteConverter.ToInt32(file, rollOffset), ByteConverter.ToInt32(file, rollOffset + 4));
+							rollOffset += 8;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Spot))
+				
+				if (animType.HasFlag(AnimFlags.Angle))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (spotoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (angOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)spotoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.SpotName = labels[tmpaddr];
-						else data.SpotName = Name + "_mkey_" + i.ToString() + "_spot_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(angOffset, out var angleName))
 						{
-							data.Spot.Add(ByteConverter.ToInt32(file, tmpaddr), new Spotlight(file, tmpaddr + 4));
-							tmpaddr += 20;
+							data.AngleName = angleName;
+						}
+						else
+						{
+							data.AngleName = $"{Name}_mkey_{i}_ang_{angOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Angle.Add(ByteConverter.ToInt32(file, angOffset), ByteConverter.ToInt32(file, angOffset + 4));
+							angOffset += 8;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Point))
+				
+				if (animType.HasFlag(AnimFlags.Color))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (pntoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (colOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)pntoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.PointName = labels[tmpaddr];
-						else data.PointName = Name + "_mkey_" + i.ToString() + "_point_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(colOffset, out var colorName))
 						{
-							data.Point.Add(ByteConverter.ToInt32(file, tmpaddr), new float[] { ByteConverter.ToSingle(file, tmpaddr + 4), ByteConverter.ToSingle(file, tmpaddr + 8) });
-							tmpaddr += 12;
+							data.ColorName = colorName;
+						}
+						else
+						{
+							data.ColorName = $"{Name}_mkey_{i}_col_{colOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Color.Add(ByteConverter.ToInt32(file, colOffset), ByteConverter.ToUInt32(file, colOffset + 4));
+							colOffset += 8;
 						}
 					}
+					
 					address += 4;
 				}
-				if (animtype.HasFlag(AnimFlags.Quaternion))
+				
+				if (animType.HasFlag(AnimFlags.Intensity))
 				{
-					int frames = ByteConverter.ToInt32(file, address);
-					if (quatoff != 0 && frames > 0)
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (intOffset != 0 && frames > 0)
 					{
-						hasdata = true;
-						tmpaddr = (int)quatoff;
-						if (labels != null && labels.ContainsKey(tmpaddr))
-							data.QuaternionName = labels[tmpaddr];
-						else data.QuaternionName = Name + "_mkey_" + i.ToString() + "_quat_" + tmpaddr.ToString("X8");
-						for (int j = 0; j < frames; j++)
+						if (labels != null && labels.TryGetValue(intOffset, out var intensityName))
 						{
-							//WXYZ order
-							data.Quaternion.Add(ByteConverter.ToInt32(file, tmpaddr), new float[] { ByteConverter.ToSingle(file, tmpaddr + 4), ByteConverter.ToSingle(file, tmpaddr + 8), ByteConverter.ToSingle(file, tmpaddr + 12), ByteConverter.ToSingle(file, tmpaddr + 16) });
-							tmpaddr += 20;
+							data.IntensityName = intensityName;
+						}
+						else
+						{
+							data.IntensityName = $"{Name}_mkey_{i}_int_{intOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Intensity.Add(ByteConverter.ToInt32(file, intOffset), ByteConverter.ToSingle(file, intOffset + 4));
+							intOffset += 8;
 						}
 					}
+					
 					address += 4;
 				}
-				if (hasdata)
+				
+				if (animType.HasFlag(AnimFlags.Spot))
+				{
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (spotOffset != 0 && frames > 0)
+					{
+						if (labels != null && labels.TryGetValue(spotOffset, out var spotName))
+						{
+							data.SpotName = spotName;
+						}
+						else
+						{
+							data.SpotName = $"{Name}_mkey_{i}_spot_{spotOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Spot.Add(ByteConverter.ToInt32(file, spotOffset), new Spotlight(file, spotOffset + 4));
+							spotOffset += 20;
+						}
+					}
+					
+					address += 4;
+				}
+				
+				if (animType.HasFlag(AnimFlags.Point))
+				{
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (pntOffset != 0 && frames > 0)
+					{
+						if (labels != null && labels.TryGetValue(pntOffset, out var pointName))
+						{
+							data.PointName = pointName;
+						}
+						else
+						{
+							data.PointName = $"{Name}_mkey_{i}_point_{pntOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							data.Point.Add(ByteConverter.ToInt32(file, pntOffset), [ByteConverter.ToSingle(file, pntOffset + 4), ByteConverter.ToSingle(file, pntOffset + 8)]);
+							pntOffset += 12;
+						}
+					}
+					
+					address += 4;
+				}
+				
+				if (animType.HasFlag(AnimFlags.Quaternion))
+				{
+					var frames = ByteConverter.ToInt32(file, address);
+					
+					if (quatOffset != 0 && frames > 0)
+					{
+						if (labels != null && labels.TryGetValue(quatOffset, out var quaternionName))
+						{
+							data.QuaternionName = quaternionName;
+						}
+						else
+						{
+							data.QuaternionName = $"{Name}_mkey_{i}_quat_{quatOffset:X8}";
+						}
+
+						for (var j = 0; j < frames; j++)
+						{
+							// WXYZ order
+							data.Quaternion.Add(ByteConverter.ToInt32(file, quatOffset), [ByteConverter.ToSingle(file, quatOffset + 4), ByteConverter.ToSingle(file, quatOffset + 8), ByteConverter.ToSingle(file, quatOffset + 12), ByteConverter.ToSingle(file, quatOffset + 16)]);
+							quatOffset += 20;
+						}
+					}
+					
+					address += 4;
+				}
+				
+				if (hasData)
 				{
 					data.NbKeyframes = Frames;
 					Models.Add(i, data);
 				}
 			}
-			ModelParts = nummodels;
+			
+			ModelParts = numModels;
+		}
+
+		private static int CalculateOffset(AnimFlags animType, AnimFlags flag, uint imageBase, ref byte[] file, ref int address)
+		{
+			uint offset = 0;
+			
+			if (animType.HasFlag(flag))
+			{
+				offset = ByteConverter.ToUInt32(file, address);
+
+				if (offset > 0)
+				{
+					offset -= imageBase;
+				}
+				
+				address += 4;
+			}
+			
+			return (int)offset;
 		}
 
 		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, Attach> attaches)
@@ -704,59 +812,62 @@ namespace SAModel
 			return ReadHeader(file, address, imageBase, format, new Dictionary<int, string>(), attaches);
 		}
 
-		public static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format,
-			Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
+		private static NJS_MOTION ReadHeader(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
 		{
-			NJS_OBJECT Model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
-			return new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
-				Model.CountAnimated(), labels);
+			var model = new NJS_OBJECT(file, (int)(ByteConverter.ToUInt32(file, address) - imageBase), imageBase, format, attaches);
+			return new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase, model.CountAnimated(), labels);
 		}
 
-		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, Attach> attaches, bool shortrot = false)
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionAddress, uint imageBase, Dictionary<int, Attach> attaches, bool shortRot = false)
 		{
-			return ReadDirect(file, count, motionaddress, imageBase, new Dictionary<int, string>(), attaches, shortrot);
+			return ReadDirect(file, count, motionAddress, imageBase, new Dictionary<int, string>(), attaches, shortRot);
 		}
 
-		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionaddress, uint imageBase, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool shortrot = false)
+		public static NJS_MOTION ReadDirect(byte[] file, int count, int motionAddress, uint imageBase, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, bool shortRot = false)
 		{
-			return new NJS_MOTION(file, motionaddress, imageBase,
-				count, labels, shortrot);
+			return new NJS_MOTION(file, motionAddress, imageBase, count, labels, shortRot);
 		}
 
-		public static NJS_MOTION Load(string filename, int nummodels = -1)
+		public static NJS_MOTION Load(string filename, int numModels = -1)
 		{
-			bool be = ByteConverter.BigEndian;
+			var be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			byte[] file = File.ReadAllBytes(filename);
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			var file = File.ReadAllBytes(filename);
+			var magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			
 			if (magic == SAANIM)
 			{
-				byte version = file[7];
+				var version = file[7];
+				
 				if (version > CurrentVersion)
 				{
 					ByteConverter.BigEndian = be;
 					throw new FormatException("Not a valid SAANIM file.");
 				}
+				
 				string description = null;
 				string actionName = null;
 				string objectName = null;
-				int aniaddr = ByteConverter.ToInt32(file, 8);
-				Dictionary<int, string> labels = new Dictionary<int, string>();
-				int tmpaddr = BitConverter.ToInt32(file, 0xC);
+				
+				var aniaddr = ByteConverter.ToInt32(file, 8);
+				var labels = new Dictionary<int, string>();
+				var tmpaddr = BitConverter.ToInt32(file, 0xC);
+				
 				if (version >= 2)
 				{
 					if (tmpaddr != 0)
 					{
-						bool finished = false;
+						var finished = false;
 						while (!finished)
 						{
-							ChunkTypes type = (ChunkTypes)ByteConverter.ToUInt32(file, tmpaddr);
-							int chunksz = ByteConverter.ToInt32(file, tmpaddr + 4);
-							int nextchunk = tmpaddr + 8 + chunksz;
+							var type = (ChunkTypes)ByteConverter.ToUInt32(file, tmpaddr);
+							var chunksz = ByteConverter.ToInt32(file, tmpaddr + 4);
+							var nextchunk = tmpaddr + 8 + chunksz;
 							tmpaddr += 8;
-							byte[] chunk = new byte[chunksz];
+							var chunk = new byte[chunksz];
 							Array.Copy(file, tmpaddr, chunk, 0, chunksz);
-							int chunkaddr = 0;
+							var chunkaddr = 0;
+							
 							switch (type)
 							{
 								case ChunkTypes.Label:
@@ -787,136 +898,118 @@ namespace SAModel
 				else
 				{
 					if (tmpaddr != 0)
+					{
 						labels.Add(aniaddr, file.GetCString(tmpaddr));
+					}
 				}
 				if (version > 0)
-					nummodels = BitConverter.ToInt32(file, 0x10);
-				else if (nummodels == -1)
+				{
+					numModels = BitConverter.ToInt32(file, 0x10);
+				}
+				else if (numModels == -1)
 				{
 					ByteConverter.BigEndian = be;
 					throw new NotImplementedException("Cannot open version 0 animations without a model!");
 				}
-				NJS_MOTION anim = new NJS_MOTION(file, aniaddr, 0, nummodels & int.MaxValue, labels, nummodels < 0, shortcheck: false) { Description = description, ActionName = actionName, ObjectName = objectName };
+				
+				var anim = new NJS_MOTION(file, aniaddr, 0, numModels & int.MaxValue, labels, numModels < 0, shortCheck: false) { Description = description, ActionName = actionName, ObjectName = objectName };
 				ByteConverter.BigEndian = be;
 				return anim;
 			}
+			
 			ByteConverter.BigEndian = be;
 			throw new FormatException("Not a valid SAANIM file.");
 		}
 
 		public static bool CheckAnimationFile(string filename)
 		{
-			bool be = ByteConverter.BigEndian;
+			var be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			byte[] file = File.ReadAllBytes(filename);
-			ulong magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
+			var file = File.ReadAllBytes(filename);
+			var magic = ByteConverter.ToUInt64(file, 0) & FormatMask;
 			ByteConverter.BigEndian = be;
+			
 			if (magic == SAANIM)
+			{
 				return file[7] <= CurrentVersion;
+			}
+
 			return false;
+		}
+		
+		public struct Data(uint offset, int frame)
+		{
+			public uint Offset = offset;
+			public int Frame = frame;
 		}
 
 		public byte[] GetBytes(uint imageBase, Dictionary<string, uint> labels, out uint address, bool useNMDM = false)
 		{
-			List<byte> result = new List<byte>();
-			List<byte> parameterData = new List<byte>();
-			List<uint> pofOffsets = new List<uint>();
-			uint[] posoffs = new uint[ModelParts];
-			int[] posframes = new int[ModelParts];
-			bool hasPos = false;
-			uint[] rotoffs = new uint[ModelParts];
-			int[] rotframes = new int[ModelParts];
-			bool hasRot = false;
-			uint[] scloffs = new uint[ModelParts];
-			int[] sclframes = new int[ModelParts];
-			bool hasScl = false;
-			uint[] vecoffs = new uint[ModelParts];
-			int[] vecframes = new int[ModelParts];
-			bool hasVec = false;
-			uint[] vertoffs = new uint[ModelParts];
-			int[] vertframes = new int[ModelParts];
-			bool hasVert = false;
-			uint[] normoffs = new uint[ModelParts];
-			int[] normframes = new int[ModelParts];
-			bool hasNorm = false;
-			uint[] targoffs = new uint[ModelParts];
-			int[] targframes = new int[ModelParts];
-			bool hasTarg = false;
-			uint[] rolloffs = new uint[ModelParts];
-			int[] rollframes = new int[ModelParts];
-			bool hasRoll = false;
-			uint[] angoffs = new uint[ModelParts];
-			int[] angframes = new int[ModelParts];
-			bool hasAng = false;
-			uint[] coloffs = new uint[ModelParts];
-			int[] colframes = new int[ModelParts];
-			bool hasCol = false;
-			uint[] intoffs = new uint[ModelParts];
-			int[] intframes = new int[ModelParts];
-			bool hasInt = false;
-			uint[] spotoffs = new uint[ModelParts];
-			int[] spotframes = new int[ModelParts];
-			bool hasSpot = false;
-			uint[] pntoffs = new uint[ModelParts];
-			int[] pntframes = new int[ModelParts];
-			bool hasPnt = false;
-			uint[] quatoffs = new uint[ModelParts];
-			int[] quatframes = new int[ModelParts];
-			bool hasQuat = false;
+			var result = new List<byte>();
+			var parameterData = new List<byte>();
+			var pofOffsets = new List<uint>();
+			AnimFlags flags = 0;
+
+			var data = new Dictionary<AnimFlags, Data[]>();
 
 			pofOffsets.Add(0); // First offset in the motion
 
-			foreach (KeyValuePair<int, AnimModelData> model in Models)
+			foreach (var model in Models)
 			{
 				if (model.Value.Position.Count > 0)
 				{
-					hasPos = true;
+					var posData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Position;
 					result.Align(4);
-					posoffs[model.Key] = imageBase + (uint)result.Count;
+					posData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(posoffs[model.Key]) && model.Value.PositionName != null)
+					if (!labels.ContainsValue(posData[model.Key].Offset) && model.Value.PositionName != null)
 					{
-						if (!labels.ContainsKey(model.Value.PositionName))
-							labels.Add(model.Value.PositionName, posoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.PositionName, posData[model.Key].Offset))
 						{
-							string newname = model.Value.PositionName;
+							var newName = model.Value.PositionName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, posoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, posData[model.Key].Offset);
 						}
 					}
-					posframes[model.Key] = model.Value.Position.Count;
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
+					
+					posData[model.Key].Frame = model.Value.Position.Count;
+					foreach (var item in model.Value.Position)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(item.Value.GetBytes());
 					}
+
+					data[AnimFlags.Position] = posData;
 				}
+				
 				if (model.Value.Rotation.Count > 0)
 				{
-					hasRot = true;
+					var rotData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Rotation;
 					result.Align(4);
-					rotoffs[model.Key] = imageBase + (uint)result.Count;
+					rotData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(rotoffs[model.Key]) && model.Value.RotationName != null)
+					if (!labels.ContainsValue(rotData[model.Key].Offset) && model.Value.RotationName != null)
 					{
-						if (!labels.ContainsKey(model.Value.RotationName))
-							labels.Add(model.Value.RotationName, rotoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.RotationName, rotData[model.Key].Offset))
 						{
-							string newname = model.Value.RotationName;
+							var newName = model.Value.RotationName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, rotoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, rotData[model.Key].Offset);
 						}
 					}
-					rotframes[model.Key] = model.Value.Rotation.Count;
-					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
+					
+					rotData[model.Key].Frame = model.Value.Rotation.Count;
+					foreach (var item in model.Value.Rotation)
 					{
 						if (ShortRot)
 						{
@@ -931,401 +1024,486 @@ namespace SAModel
 							result.AddRange(item.Value.GetBytes());
 						}
 					}
+					
+					data[AnimFlags.Rotation] = rotData;
 				}
+				
 				if (model.Value.Scale.Count > 0)
 				{
-					hasScl = true;
+					var sclData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Scale;
 					result.Align(4);
-					scloffs[model.Key] = imageBase + (uint)result.Count;
+					sclData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(scloffs[model.Key]) && model.Value.ScaleName != null)
+					if (!labels.ContainsValue(sclData[model.Key].Offset) && model.Value.ScaleName != null)
 					{
-						if (!labels.ContainsKey(model.Value.ScaleName))
-							labels.Add(model.Value.ScaleName, scloffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.ScaleName, sclData[model.Key].Offset))
 						{
-							string newname = model.Value.ScaleName;
+							var newName = model.Value.ScaleName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, scloffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, sclData[model.Key].Offset);
 						}
 					}
-					sclframes[model.Key] = model.Value.Scale.Count;
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
+					
+					sclData[model.Key].Frame = model.Value.Scale.Count;
+					foreach (var item in model.Value.Scale)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(item.Value.GetBytes());
 					}
+					
+					data[AnimFlags.Scale] = sclData;
 				}
+				
 				if (model.Value.Vector.Count > 0)
 				{
-					hasVec = true;
+					var vecData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Vector;
 					result.Align(4);
-					vecoffs[model.Key] = imageBase + (uint)result.Count;
+					vecData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(vecoffs[model.Key]) && model.Value.VectorName != null)
+					if (!labels.ContainsValue(vecData[model.Key].Offset) && model.Value.VectorName != null)
 					{
-						if (!labels.ContainsKey(model.Value.VectorName))
-							labels.Add(model.Value.VectorName, vecoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.VectorName, vecData[model.Key].Offset))
 						{
-							string newname = model.Value.VectorName;
+							var newName = model.Value.VectorName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, vecoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, vecData[model.Key].Offset);
 						}
 					}
-					vecframes[model.Key] = model.Value.Vector.Count;
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
+					
+					vecData[model.Key].Frame = model.Value.Vector.Count;
+					foreach (var item in model.Value.Vector)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(item.Value.GetBytes());
 					}
+
+					data[AnimFlags.Vector] = vecData;
 				}
+				
 				if (model.Value.Vertex.Count > 0)
 				{
-					hasVert = true;
+					var vertData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Vertex;
 					result.Align(4);
-					List<uint> offs = new List<uint>();
-					List<(Vertex[] vlist, uint off)> voffs = new List<(Vertex[] vlist, uint off)>();
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
+					var offs = new List<uint>();
+					var voffs = new List<(Vertex[] vlist, uint off)>();
+					
+					foreach (var item in model.Value.Vertex)
 					{
-						bool found = false;
+						var found = false;
 						foreach (var (vlist, off) in voffs)
+						{
 							if (item.Value.SequenceEqual(vlist))
 							{
 								offs.Add(off);
 								found = true;
 								break;
 							}
-						if (optimizeMotions && found) continue;
+						}
+
+						if (optimizeMotions && found)
+						{
+							continue;
+						}
+
 						result.Align(4);
 						offs.Add(imageBase + (uint)result.Count);
-						if (optimizeMotions) voffs.Add((item.Value, imageBase + (uint)result.Count));
-						foreach (Vertex v in item.Value)
-							result.AddRange(v.GetBytes());
-					}
-					vertoffs[model.Key] = imageBase + (uint)result.Count;
-
-					if (!labels.ContainsValue(vertoffs[model.Key]) && model.Value.VertexName != null)
-					{
-						if (!labels.ContainsKey(model.Value.VertexName))
-							labels.Add(model.Value.VertexName, vertoffs[model.Key]);
-						else
+						if (optimizeMotions)
 						{
-							string newname = model.Value.VertexName;
-							do
-							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, vertoffs[model.Key]);
+							voffs.Add((item.Value, imageBase + (uint)result.Count));
+						}
+
+						foreach (var v in item.Value)
+						{
+							result.AddRange(v.GetBytes());
 						}
 					}
-					vertframes[model.Key] = model.Value.Vertex.Count;
-					int i = 0;
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
+					
+					vertData[model.Key].Offset = imageBase + (uint)result.Count;
+
+					if (!labels.ContainsValue(vertData[model.Key].Offset) && model.Value.VertexName != null)
+					{
+						if (!labels.TryAdd(model.Value.VertexName, vertData[model.Key].Offset))
+						{
+							var newName = model.Value.VertexName;
+							do
+							{
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, vertData[model.Key].Offset);
+						}
+					}
+					
+					vertData[model.Key].Frame = model.Value.Vertex.Count;
+					var i = 0;
+					
+					foreach (var item in model.Value.Vertex)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(offs[i++]));
 					}
-					for (int u = 0; u < model.Value.Vertex.Count; u++)
+					
+					for (var u = 0; u < model.Value.Vertex.Count; u++)
 					{
 						if (!labels.ContainsValue(offs[u]) && model.Value.VertexItemName[u] != null)
 						{
 							if (!labels.ContainsKey(model.Value.VertexItemName[u]))
+							{
 								labels.Add(model.Value.VertexItemName[u], offs[u]);
+							}
 							else
 							{
-								string newname = model.Value.VertexItemName[u];
+								var newName = model.Value.VertexItemName[u];
 								do
 								{
-									newname += "_dup";
-								} while (labels.ContainsKey(newname));
-								labels.Add(newname, offs[u]);
+									newName += "_dup";
+								} while (labels.ContainsKey(newName));
+								labels.Add(newName, offs[u]);
 							}
 						}
 					}
+
+					data[AnimFlags.Vertex] = vertData;
 				}
+				
 				if (model.Value.Normal.Count > 0)
 				{
-					hasNorm = true;
+					var normData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Normal;
 					result.Align(4);
-					List<uint> offs = new List<uint>();
-					List<(Vertex[] vlist, uint off)> voffs = new List<(Vertex[] vlist, uint off)>();
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
+					var offs = new List<uint>();
+					var voffs = new List<(Vertex[] vlist, uint off)>();
+					foreach (var item in model.Value.Normal)
 					{
-						bool found = false;
+						var found = false;
 						foreach (var (vlist, off) in voffs)
+						{
 							if (item.Value.SequenceEqual(vlist))
 							{
 								offs.Add(off);
 								found = true;
 								break;
 							}
-						if (optimizeMotions && found) continue;
+						}
+
+						if (optimizeMotions && found)
+						{
+							continue;
+						}
+
 						result.Align(4);
 						offs.Add(imageBase + (uint)result.Count);
-						if (optimizeMotions) voffs.Add((item.Value, imageBase + (uint)result.Count));
-						foreach (Vertex v in item.Value)
-							result.AddRange(v.GetBytes());
-					}
-					normoffs[model.Key] = imageBase + (uint)result.Count;
-
-					if (!labels.ContainsValue(normoffs[model.Key]) && model.Value.NormalName != null)
-					{
-						if (!labels.ContainsKey(model.Value.NormalName))
-							labels.Add(model.Value.NormalName, normoffs[model.Key]);
-						else
+						if (optimizeMotions)
 						{
-							string newname = model.Value.NormalName;
-							do
-							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, normoffs[model.Key]);
+							voffs.Add((item.Value, imageBase + (uint)result.Count));
+						}
+
+						foreach (var v in item.Value)
+						{
+							result.AddRange(v.GetBytes());
 						}
 					}
-					normframes[model.Key] = model.Value.Normal.Count;
-					int i = 0;
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
+					
+					normData[model.Key].Offset = imageBase + (uint)result.Count;
+
+					if (!labels.ContainsValue(normData[model.Key].Offset) && model.Value.NormalName != null)
+					{
+						if (!labels.TryAdd(model.Value.NormalName, normData[model.Key].Offset))
+						{
+							var newName = model.Value.NormalName;
+							do
+							{
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, normData[model.Key].Offset);
+						}
+					}
+					
+					normData[model.Key].Frame = model.Value.Normal.Count;
+					
+					var i = 0;
+					foreach (var item in model.Value.Normal)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(offs[i++]));
 					}
-					for (int u = 0; u < model.Value.Normal.Count; u++)
+					
+					for (var u = 0; u < model.Value.Normal.Count; u++)
 					{
 						if (!labels.ContainsValue(offs[u]) && model.Value.NormalItemName[u] != null)
 						{
 							if (!labels.ContainsKey(model.Value.NormalItemName[u]))
+							{
 								labels.Add(model.Value.NormalItemName[u], offs[u]);
+							}
 							else
 							{
-								string newname = model.Value.NormalItemName[u];
+								var newName = model.Value.NormalItemName[u];
 								do
 								{
-									newname += "_dup";
-								} while (labels.ContainsKey(newname));
-								labels.Add(newname, offs[u]);
+									newName += "_dup";
+								} while (labels.ContainsKey(newName));
+								labels.Add(newName, offs[u]);
 							}
 						}
 					}
+					
+					data[AnimFlags.Normal] = normData;
 				}
+				
 				if (model.Value.Target.Count > 0)
 				{
-					hasTarg = true;
+					var targData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Target;
 					result.Align(4);
-					targoffs[model.Key] = imageBase + (uint)result.Count;
+					targData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(targoffs[model.Key]) && model.Value.TargetName != null)
+					if (!labels.ContainsValue(targData[model.Key].Offset) && model.Value.TargetName != null)
 					{
-						if (!labels.ContainsKey(model.Value.TargetName))
-							labels.Add(model.Value.TargetName, targoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.TargetName, targData[model.Key].Offset))
 						{
-							string newname = model.Value.TargetName;
+							var newName = model.Value.TargetName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, targoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, targData[model.Key].Offset);
 						}
 					}
-					targframes[model.Key] = model.Value.Target.Count;
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
+					
+					targData[model.Key].Frame = model.Value.Target.Count;
+					foreach (var item in model.Value.Target)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(item.Value.GetBytes());
 					}
+					
+					data[AnimFlags.Target] = targData;
 				}
+				
 				if (model.Value.Roll.Count > 0)
 				{
-					hasRoll = true;
+					var rollData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Roll;
 					result.Align(4);
-					rolloffs[model.Key] = imageBase + (uint)result.Count;
+					rollData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(rolloffs[model.Key]) && model.Value.RollName != null)
+					if (!labels.ContainsValue(rollData[model.Key].Offset) && model.Value.RollName != null)
 					{
-						if (!labels.ContainsKey(model.Value.RollName))
-							labels.Add(model.Value.RollName, rolloffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.RollName, rollData[model.Key].Offset))
 						{
-							string newname = model.Value.RollName;
+							var newName = model.Value.RollName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, rolloffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, rollData[model.Key].Offset);
 						}
 					}
-					rollframes[model.Key] = model.Value.Roll.Count;
-					foreach (KeyValuePair<int, int> item in model.Value.Roll)
+					
+					rollData[model.Key].Frame = model.Value.Roll.Count;
+					foreach (var item in model.Value.Roll)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(item.Value));
 					}
+					
+					data[AnimFlags.Roll] = rollData;
 				}
+				
 				if (model.Value.Angle.Count > 0)
 				{
-					hasAng = true;
+					var angData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Angle;
 					result.Align(4);
-					angoffs[model.Key] = imageBase + (uint)result.Count;
+					angData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(angoffs[model.Key]) && model.Value.AngleName != null)
+					if (!labels.ContainsValue(angData[model.Key].Offset) && model.Value.AngleName != null)
 					{
-						if (!labels.ContainsKey(model.Value.AngleName))
-							labels.Add(model.Value.AngleName, angoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.AngleName, angData[model.Key].Offset))
 						{
-							string newname = model.Value.AngleName;
+							var newName = model.Value.AngleName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, angoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, angData[model.Key].Offset);
 						}
 					}
-					angframes[model.Key] = model.Value.Angle.Count;
-					foreach (KeyValuePair<int, int> item in model.Value.Angle)
+					
+					angData[model.Key].Frame = model.Value.Angle.Count;
+					foreach (var item in model.Value.Angle)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(item.Value));
 					}
+
+					data[AnimFlags.Angle] = angData;
 				}
+				
 				if (model.Value.Color.Count > 0)
 				{
-					hasCol = true;
+					var colData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Color;
 					result.Align(4);
-					coloffs[model.Key] = imageBase + (uint)result.Count;
+					colData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(coloffs[model.Key]) && model.Value.ColorName != null)
+					if (!labels.ContainsValue(colData[model.Key].Offset) && model.Value.ColorName != null)
 					{
-						if (!labels.ContainsKey(model.Value.ColorName))
-							labels.Add(model.Value.ColorName, coloffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.ColorName, colData[model.Key].Offset))
 						{
-							string newname = model.Value.ColorName;
+							var newName = model.Value.ColorName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, coloffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, colData[model.Key].Offset);
 						}
 					}
-					colframes[model.Key] = model.Value.Color.Count;
-					foreach (KeyValuePair<int, uint> item in model.Value.Color)
+					
+					colData[model.Key].Frame = model.Value.Color.Count;
+					foreach (var item in model.Value.Color)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(item.Value));
 					}
+					
+					data[AnimFlags.Color] = colData;
 				}
+				
 				if (model.Value.Intensity.Count > 0)
 				{
-					hasInt = true;
+					var intData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Intensity;
 					result.Align(4);
-					intoffs[model.Key] = imageBase + (uint)result.Count;
+					intData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(intoffs[model.Key]) && model.Value.IntensityName != null)
+					if (!labels.ContainsValue(intData[model.Key].Offset) && model.Value.IntensityName != null)
 					{
-						if (!labels.ContainsKey(model.Value.IntensityName))
-							labels.Add(model.Value.IntensityName, intoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.IntensityName, intData[model.Key].Offset))
 						{
-							string newname = model.Value.IntensityName;
+							var newName = model.Value.IntensityName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, intoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, intData[model.Key].Offset);
 						}
 					}
-					intframes[model.Key] = model.Value.Intensity.Count;
-					foreach (KeyValuePair<int, float> item in model.Value.Intensity)
+					
+					intData[model.Key].Frame = model.Value.Intensity.Count;
+					foreach (var item in model.Value.Intensity)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(item.Value));
 					}
+
+					data[AnimFlags.Intensity] = intData;
 				}
+				
 				if (model.Value.Spot.Count > 0)
 				{
-					hasSpot = true;
+					var spotData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Spot;
 					result.Align(4);
-					spotoffs[model.Key] = imageBase + (uint)result.Count;
+					spotData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(spotoffs[model.Key]) && model.Value.SpotName != null)
+					if (!labels.ContainsValue(spotData[model.Key].Offset) && model.Value.SpotName != null)
 					{
-						if (!labels.ContainsKey(model.Value.SpotName))
-							labels.Add(model.Value.SpotName, spotoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.SpotName, spotData[model.Key].Offset))
 						{
-							string newname = model.Value.SpotName;
+							var newName = model.Value.SpotName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, spotoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, spotData[model.Key].Offset);
 						}
 					}
-					spotframes[model.Key] = model.Value.Spot.Count;
-					foreach (KeyValuePair<int, Spotlight> item in model.Value.Spot)
+					
+					spotData[model.Key].Frame = model.Value.Spot.Count;
+					foreach (var item in model.Value.Spot)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(item.Value.GetBytes());
 					}
+					
+					data[AnimFlags.Spot] = spotData;
 				}
+				
 				if (model.Value.Point.Count > 0)
 				{
-					hasPnt = true;
+					var pntData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Point;
 					result.Align(4);
-					pntoffs[model.Key] = imageBase + (uint)result.Count;
+					pntData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(pntoffs[model.Key]) && model.Value.PointName != null)
+					if (!labels.ContainsValue(pntData[model.Key].Offset) && model.Value.PointName != null)
 					{
-						if (!labels.ContainsKey(model.Value.PointName))
-							labels.Add(model.Value.PointName, pntoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.PointName, pntData[model.Key].Offset))
 						{
-							string newname = model.Value.PointName;
+							var newName = model.Value.PointName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, pntoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, pntData[model.Key].Offset);
 						}
 					}
-					pntframes[model.Key] = model.Value.Point.Count;
-					foreach (KeyValuePair<int, float[]> item in model.Value.Point)
+					
+					pntData[model.Key].Frame = model.Value.Point.Count;
+					foreach (var item in model.Value.Point)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(item.Value[0]));
 						result.AddRange(ByteConverter.GetBytes(item.Value[1]));
 					}
+
+					data[AnimFlags.Point] = pntData;
 				}
+				
 				if (model.Value.Quaternion.Count > 0)
 				{
-					hasQuat = true;
+					var quatData = new Data[ModelParts];
+					
+					flags |= AnimFlags.Quaternion;
 					result.Align(4);
-					quatoffs[model.Key] = imageBase + (uint)result.Count;
+					quatData[model.Key].Offset = imageBase + (uint)result.Count;
 
-					if (!labels.ContainsValue(quatoffs[model.Key]) && model.Value.QuaternionName != null)
+					if (!labels.ContainsValue(quatData[model.Key].Offset) && model.Value.QuaternionName != null)
 					{
-						if (!labels.ContainsKey(model.Value.QuaternionName))
-							labels.Add(model.Value.QuaternionName, quatoffs[model.Key]);
-						else
+						if (!labels.TryAdd(model.Value.QuaternionName, quatData[model.Key].Offset))
 						{
-							string newname = model.Value.QuaternionName;
+							var newName = model.Value.QuaternionName;
 							do
 							{
-								newname += "_dup";
-							} while (labels.ContainsKey(newname));
-							labels.Add(newname, quatoffs[model.Key]);
+								newName += "_dup";
+							} while (labels.ContainsKey(newName));
+							labels.Add(newName, quatData[model.Key].Offset);
 						}
 					}
-					quatframes[model.Key] = model.Value.Quaternion.Count;
-					foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
+					
+					quatData[model.Key].Frame = model.Value.Quaternion.Count;
+					foreach (var item in model.Value.Quaternion)
 					{
 						result.AddRange(ByteConverter.GetBytes(item.Key));
 						result.AddRange(ByteConverter.GetBytes(item.Value[0]));
@@ -1333,271 +1511,124 @@ namespace SAModel
 						result.AddRange(ByteConverter.GetBytes(item.Value[2]));
 						result.AddRange(ByteConverter.GetBytes(item.Value[3]));
 					}
+
+					data[AnimFlags.Quaternion] = quatData;
 				}
 			}
+			
 			result.Align(4);
-			AnimFlags flags = 0;
-			ushort numpairs = 0;
-			if (hasPos)
-			{
-				flags |= AnimFlags.Position;
-				numpairs++;
-			}
-			if (hasRot)
-			{
-				flags |= AnimFlags.Rotation;
-				numpairs++;
-			}
-			if (hasScl)
-			{
-				flags |= AnimFlags.Scale;
-				numpairs++;
-			}
-			if (hasVec)
-			{
-				flags |= AnimFlags.Vector;
-				numpairs++;
-			}
-			if (hasVert)
-			{
-				flags |= AnimFlags.Vertex;
-				numpairs++;
-			}
-			if (hasNorm)
-			{
-				flags |= AnimFlags.Normal;
-				numpairs++;
-			}
-			if (hasTarg)
-			{
-				flags |= AnimFlags.Target;
-				numpairs++;
-			}
-			if (hasRoll)
-			{
-				flags |= AnimFlags.Roll;
-				numpairs++;
-			}
-			if (hasAng)
-			{
-				flags |= AnimFlags.Angle;
-				numpairs++;
-			}
-			if (hasCol)
-			{
-				flags |= AnimFlags.Color;
-				numpairs++;
-			}
-			if (hasInt)
-			{
-				flags |= AnimFlags.Intensity;
-				numpairs++;
-			}
-			if (hasSpot)
-			{
-				flags |= AnimFlags.Spot;
-				numpairs++;
-			}
-			if (hasPnt)
-			{
-				flags |= AnimFlags.Point;
-				numpairs++;
-			}
-			if (hasQuat)
-			{
-				flags |= AnimFlags.Quaternion;
-				numpairs++;
-			}
+
+			var numPairs = BitOperations.PopCount((uint)flags);
+			
 			switch (flags)
 			{
 				case AnimFlags.Position:
 				case AnimFlags.Rotation:
-					hasPos = true;
-					hasRot = true;
 					flags = AnimFlags.Position | AnimFlags.Rotation;
-					numpairs = 2;
+					numPairs = 2;
 					break;
 				case AnimFlags.Scale:
-					hasRot = true;
 					flags |= AnimFlags.Rotation;
-					numpairs++;
+					numPairs++;
 					break;
 				case AnimFlags.Vertex:
 				case AnimFlags.Normal:
-					hasVert = true;
-					hasNorm = true;
 					flags = AnimFlags.Vertex | AnimFlags.Normal;
-					numpairs = 2;
+					numPairs = 2;
 					break;
 			}
-			uint modeldata = imageBase + (uint)result.Count;
-			//Dealing with uninitialized data. 
-			//This is to avoid MDATA and MOTIONS sharing the same address, which interferes with labels.
-			if (result.Count == 0 && numpairs == 0 && Models.Count == 0 && flags == 0)
+			
+			var modelData = imageBase + (uint)result.Count;
+			
+			// Dealing with uninitialized data. 
+			// This is to avoid MDATA and MOTIONS sharing the same address, which interferes with labels.
+			if (result.Count == 0 && numPairs == 0 && Models.Count == 0 && flags == 0)
 			{
-				hasPos = true;
+				flags |= AnimFlags.Position;
 				result.Align(4);
-				posoffs[0] = imageBase + (uint)result.Count;
-				posframes[0] = 1;
+
+				data[AnimFlags.Position][0] = new Data(imageBase + (uint)result.Count, 1);
+				
 				result.AddRange(ByteConverter.GetBytes(0));
-				Vertex temp = new Vertex(0.0f, 0.0f, 0.0f);
+				var temp = new Vertex(0.0f, 0.0f, 0.0f);
 				result.AddRange(temp.GetBytes());
 			}
-			if (!labels.ContainsValue(modeldata) && MdataName != null)
+			
+			if (!labels.ContainsValue(modelData) && MdataName != null)
 			{
-				if (!labels.ContainsKey(MdataName)) labels.Add(MdataName, modeldata);
-				else
+				if (!labels.TryAdd(MdataName, modelData))
 				{
-					string newname = MdataName;
+					var newName = MdataName;
 					do
 					{
-						newname += "_dup";
-					} while (labels.ContainsKey(newname));
-					labels.Add(newname, modeldata);
+						newName += "_dup";
+					} while (labels.ContainsKey(newName));
+					labels.Add(newName, modelData);
 				}
 			}
-			for (int i = 0; i < ModelParts; i++)
+			
+			for (var i = 0; i < ModelParts; i++)
 			{
-				//Offsets
-				if (hasPos)
+				// TODO: Avoid double iteration
+				
+				foreach (var value in Enum.GetValues<AnimFlags>())
 				{
-					result.AddRange(ByteConverter.GetBytes(posoffs[i]));
-					pofOffsets.Add(posoffs[i]);
+					if (flags.HasFlag(value))
+					{
+						var offset = data[value][i].Offset;
+						result.AddRange(ByteConverter.GetBytes(offset));
+						pofOffsets.Add(offset);
+					}
 				}
-				if (hasRot)
+				
+				foreach (var value in Enum.GetValues<AnimFlags>())
 				{
-					result.AddRange(ByteConverter.GetBytes(rotoffs[i]));
-					pofOffsets.Add(rotoffs[i]);
+					if (flags.HasFlag(value))
+					{
+						var frame = data[value][i].Frame;
+						result.AddRange(ByteConverter.GetBytes(frame));
+					}
 				}
-				if (hasScl)
-				{
-					result.AddRange(ByteConverter.GetBytes(scloffs[i]));
-					pofOffsets.Add(scloffs[i]);
-				}
-				if (hasVec)
-				{
-					result.AddRange(ByteConverter.GetBytes(vecoffs[i]));
-					pofOffsets.Add(vecoffs[i]);
-				}
-				if (hasVert)
-				{
-					result.AddRange(ByteConverter.GetBytes(vertoffs[i]));
-					pofOffsets.Add(vertoffs[i]);
-				}
-				if (hasNorm)
-				{
-					result.AddRange(ByteConverter.GetBytes(normoffs[i]));
-					pofOffsets.Add(normoffs[i]);
-				}
-				if (hasTarg)
-				{
-					result.AddRange(ByteConverter.GetBytes(targoffs[i]));
-					pofOffsets.Add(targoffs[i]);
-				}
-				if (hasRoll)
-				{
-					result.AddRange(ByteConverter.GetBytes(rolloffs[i]));
-					pofOffsets.Add(rolloffs[i]);
-				}
-				if (hasAng)
-				{
-					result.AddRange(ByteConverter.GetBytes(angoffs[i]));
-					pofOffsets.Add(angoffs[i]);
-				}
-				if (hasCol)
-				{
-					result.AddRange(ByteConverter.GetBytes(coloffs[i]));
-					pofOffsets.Add(coloffs[i]);
-				}
-				if (hasInt)
-				{
-					result.AddRange(ByteConverter.GetBytes(intoffs[i]));
-					pofOffsets.Add(intoffs[i]);
-				}
-				if (hasSpot)
-				{
-					result.AddRange(ByteConverter.GetBytes(spotoffs[i]));
-					pofOffsets.Add(spotoffs[i]);
-				}
-				if (hasPnt)
-				{
-					result.AddRange(ByteConverter.GetBytes(pntoffs[i]));
-					pofOffsets.Add(pntoffs[i]);
-				}
-				if (hasQuat)
-				{
-					result.AddRange(ByteConverter.GetBytes(quatoffs[i]));
-					pofOffsets.Add(quatoffs[i]);
-				}
-
-				//Frame count
-				if (hasPos)
-					result.AddRange(ByteConverter.GetBytes(posframes[i]));
-				if (hasRot)
-					result.AddRange(ByteConverter.GetBytes(rotframes[i]));
-				if (hasScl)
-					result.AddRange(ByteConverter.GetBytes(sclframes[i]));
-				if (hasVec)
-					result.AddRange(ByteConverter.GetBytes(vecframes[i]));
-				if (hasVert)
-					result.AddRange(ByteConverter.GetBytes(vertframes[i]));
-				if (hasNorm)
-					result.AddRange(ByteConverter.GetBytes(normframes[i]));
-				if (hasTarg)
-					result.AddRange(ByteConverter.GetBytes(targframes[i]));
-				if (hasRoll)
-					result.AddRange(ByteConverter.GetBytes(rollframes[i]));
-				if (hasAng)
-					result.AddRange(ByteConverter.GetBytes(angframes[i]));
-				if (hasCol)
-					result.AddRange(ByteConverter.GetBytes(colframes[i]));
-				if (hasInt)
-					result.AddRange(ByteConverter.GetBytes(intframes[i]));
-				if (hasSpot)
-					result.AddRange(ByteConverter.GetBytes(spotframes[i]));
-				if (hasPnt)
-					result.AddRange(ByteConverter.GetBytes(pntframes[i]));
-				if (hasQuat)
-					result.AddRange(ByteConverter.GetBytes(quatframes[i]));
 			}
+			
 			result.Align(4);
 			address = (uint)result.Count;
 
-			parameterData.AddRange(ByteConverter.GetBytes(modeldata));
+			parameterData.AddRange(ByteConverter.GetBytes(modelData));
 			parameterData.AddRange(ByteConverter.GetBytes(Frames));
 			parameterData.AddRange(ByteConverter.GetBytes((ushort)flags));
-			switch (InterpolationMode)
+
+			numPairs |= (ushort)(InterpolationMode switch
 			{
-				case InterpolationMode.Linear:
-					numpairs |= (ushort)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER;
-					break;
-				case InterpolationMode.Spline:
-					numpairs |= (ushort)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE;
-					break;
-				case InterpolationMode.User:
-					numpairs |= (ushort)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER;
-					break;
-			}
-			parameterData.AddRange(ByteConverter.GetBytes(numpairs));
+				InterpolationMode.Linear => StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER,
+				InterpolationMode.Spline => StructEnums.NJD_MTYPE_FN.NJD_MTYPE_SPLINE,
+				InterpolationMode.User => StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER,
+			});
+			
+			parameterData.AddRange(ByteConverter.GetBytes(numPairs));
+			
 			if (!labels.ContainsValue(address + imageBase) && Name != null)
 			{
-				if (!labels.ContainsKey(Name)) labels.Add(Name, address + imageBase);
+				if (!labels.ContainsKey(Name))
+				{
+					labels.Add(Name, address + imageBase);
+				}
 				else
 				{
-					string newname = Name;
+					var newName = Name;
 					do
 					{
-						newname += "_dup";
-					} while (labels.ContainsKey(newname));
-					labels.Add(newname, address + imageBase);
+						newName += "_dup";
+					} while (labels.ContainsKey(newName));
+					labels.Add(newName, address + imageBase);
 				}
 			}
 
 			if (useNMDM)
 			{
 				result.InsertRange(0, parameterData.ToArray());
-				result.InsertRange(0, BitConverter.GetBytes(result.Count())); //This int is always little endian!
-				result.InsertRange(0, new byte[] { 0x4E, 0x4D, 0x44, 0x4D }); //NMDM Magic
+				result.InsertRange(0, BitConverter.GetBytes(result.Count)); // This int is always little endian!
+				result.InsertRange(0, "NMDM"u8.ToArray()); // NMDM Magic
 				result.AddRange(POF0Helper.GetPOFData(pofOffsets));
 			}
 			else
@@ -1613,31 +1644,29 @@ namespace SAModel
 			return GetBytes(imageBase, new Dictionary<string, uint>(), out address);
 		}
 
-		public byte[] GetBytes(uint imageBase)
-		{
-			return GetBytes(imageBase, out _);
-		}
-
 		public void ToStructVariables(TextWriter writer, List<string> labels = null)
 		{
-			bool hasPos = false;
-			bool hasRot = false;
-			bool hasScl = false;
-			bool hasVec = false;
-			bool hasVert = false;
-			bool hasNorm = false;
-			bool hasTarg = false;
-			bool hasRoll = false;
-			bool hasAng = false;
-			bool hasCol = false;
-			bool hasInt = false;
-			bool hasSpot = false;
-			bool hasPnt = false;
-			bool hasQuat = false;
-			string id = Name.MakeIdentifier();
-			if (labels == null) 
+			var hasPos = false;
+			var hasRot = false;
+			var hasScl = false;
+			var hasVec = false;
+			var hasVert = false;
+			var hasNorm = false;
+			var hasTarg = false;
+			var hasRoll = false;
+			var hasAng = false;
+			var hasCol = false;
+			var hasInt = false;
+			var hasSpot = false;
+			var hasPnt = false;
+			var hasQuat = false;
+			var id = Name.MakeIdentifier();
+			if (labels == null)
+			{
 				labels = new List<string>();
-			foreach (KeyValuePair<int, AnimModelData> model in Models)
+			}
+
+			foreach (var model in Models)
 			{
 				if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 				{
@@ -1645,10 +1674,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_F ");
 					writer.Write(model.Value.PositionName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Position.Count);
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Position.Count);
+					foreach (var item in model.Value.Position)
+					{
+						lines.Add(
+							$"\t{{ {item.Key}, {item.Value.X.ToC()}, {item.Value.Y.ToC()}, {item.Value.Z.ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.PositionName);
@@ -1657,20 +1690,31 @@ namespace SAModel
 				{
 					hasRot = true;
 					if (ShortRot)
+					{
 						writer.Write("NJS_MKEY_SA ");
+					}
 					else
+					{
 						writer.Write("NJS_MKEY_A ");
+					}
+
 					writer.Write(model.Value.RotationName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Rotation.Count);
-					foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
+					var lines = new List<string>(model.Value.Rotation.Count);
+					foreach (var item in model.Value.Rotation)
 					{
 						if (ShortRot)
-							lines.Add("\t{ " + item.Key + ", " + ((short)item.Value.X).ToCHex() + ", " + ((short)item.Value.Y).ToCHex() + ", " + ((short)item.Value.Z).ToCHex() + " }");
+						{
+							lines.Add(
+								$"\t{{ {item.Key}, {((short)item.Value.X).ToCHex()}, {((short)item.Value.Y).ToCHex()}, {((short)item.Value.Z).ToCHex()} }}");
+						}
 						else
-							lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToCHex() + ", " + item.Value.Y.ToCHex() + ", " + item.Value.Z.ToCHex() + " }");
+						{
+							lines.Add(
+								$"\t{{ {item.Key}, {item.Value.X.ToCHex()}, {item.Value.Y.ToCHex()}, {item.Value.Z.ToCHex()} }}");
+						}
 					}
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.RotationName);
@@ -1681,10 +1725,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_F ");
 					writer.Write(model.Value.ScaleName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Scale.Count);
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Scale.Count);
+					foreach (var item in model.Value.Scale)
+					{
+						lines.Add(
+							$"\t{{ {item.Key}, {item.Value.X.ToC()}, {item.Value.Y.ToC()}, {item.Value.Z.ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.ScaleName);
@@ -1695,10 +1743,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_F ");
 					writer.Write(model.Value.VectorName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Vector.Count);
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Vector.Count);
+					foreach (var item in model.Value.Vector)
+					{
+						lines.Add(
+							$"\t{{ {item.Key}, {item.Value.X.ToC()}, {item.Value.Y.ToC()}, {item.Value.Z.ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.VectorName);
@@ -1706,18 +1758,21 @@ namespace SAModel
 				if (model.Value.Vertex.Count > 0 && !labels.Contains(model.Value.VertexName))
 				{
 					hasVert = true;
-					int z = 0;
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
+					var z = 0;
+					foreach (var item in model.Value.Vertex)
 					{
 						if (!labels.Contains(model.Value.VertexItemName[z]))
 						{
 							writer.Write("NJS_VECTOR ");
 							writer.Write(model.Value.VertexItemName[z].MakeIdentifier());
 							writer.WriteLine("[] = {");
-							List<string> l2 = new List<string>(item.Value.Length);
-							foreach (Vertex v in item.Value)
-								l2.Add("\t" + v.ToStruct());
-							writer.WriteLine(string.Join("," + Environment.NewLine, l2.ToArray()));
+							var l2 = new List<string>(item.Value.Length);
+							foreach (var v in item.Value)
+							{
+								l2.Add($"\t{v.ToStruct()}");
+							}
+
+							writer.WriteLine(string.Join($",{Environment.NewLine}", l2.ToArray()));
 							writer.WriteLine("};");
 							writer.WriteLine();
 							labels.Add(model.Value.VertexItemName[z]);
@@ -1727,11 +1782,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_P ");
 					writer.Write(model.Value.VertexName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Vertex.Count);
-					int v_c = 0;
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						lines.Add("\t{ " + item.Key + ", " + model.Value.VertexItemName[v_c++].MakeIdentifier() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Vertex.Count);
+					var v_c = 0;
+					foreach (var item in model.Value.Vertex)
+					{
+						lines.Add($"\t{{ {item.Key}, {model.Value.VertexItemName[v_c++].MakeIdentifier()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.VertexName);
@@ -1739,18 +1797,21 @@ namespace SAModel
 				if (model.Value.Normal.Count > 0 && !labels.Contains(model.Value.NormalName))
 				{
 					hasNorm = true;
-					int z = 0;
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
+					var z = 0;
+					foreach (var item in model.Value.Normal)
 					{
 						if (!labels.Contains(model.Value.NormalItemName[z]))
 						{
 							writer.Write("NJS_VECTOR ");
 							writer.Write(model.Value.NormalItemName[z].MakeIdentifier());
 							writer.WriteLine("[] = {");
-							List<string> l2 = new List<string>(item.Value.Length);
-							foreach (Vertex v in item.Value)
-								l2.Add("\t" + v.ToStruct());
-							writer.WriteLine(string.Join("," + Environment.NewLine, l2.ToArray()));
+							var l2 = new List<string>(item.Value.Length);
+							foreach (var v in item.Value)
+							{
+								l2.Add($"\t{v.ToStruct()}");
+							}
+
+							writer.WriteLine(string.Join($",{Environment.NewLine}", l2.ToArray()));
 							writer.WriteLine("};");
 							writer.WriteLine();
 							labels.Add(model.Value.NormalItemName[z]);
@@ -1760,11 +1821,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_P ");
 					writer.Write(model.Value.NormalName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Vertex.Count);
-					int v_c = 0;
-					foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-						lines.Add("\t{ " + item.Key + ", " + model.Value.NormalItemName[v_c++].MakeIdentifier() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Vertex.Count);
+					var v_c = 0;
+					foreach (var item in model.Value.Vertex)
+					{
+						lines.Add($"\t{{ {item.Key}, {model.Value.NormalItemName[v_c++].MakeIdentifier()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.NormalName);
@@ -1775,10 +1839,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_F ");
 					writer.Write(model.Value.TargetName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Target.Count);
-					foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.X.ToC() + ", " + item.Value.Y.ToC() + ", " + item.Value.Z.ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Target.Count);
+					foreach (var item in model.Value.Target)
+					{
+						lines.Add(
+							$"\t{{ {item.Key}, {item.Value.X.ToC()}, {item.Value.Y.ToC()}, {item.Value.Z.ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.TargetName);
@@ -1789,10 +1857,13 @@ namespace SAModel
 					writer.Write("NJS_MKEY_A1 ");
 					writer.Write(model.Value.RollName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Roll.Count);
-					foreach (KeyValuePair<int, int> item in model.Value.Roll)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.ToCHex() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Roll.Count);
+					foreach (var item in model.Value.Roll)
+					{
+						lines.Add($"\t{{ {item.Key}, {item.Value.ToCHex()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.RollName);
@@ -1803,10 +1874,13 @@ namespace SAModel
 					writer.Write("NJS_MKEY_A1 ");
 					writer.Write(model.Value.AngleName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Angle.Count);
-					foreach (KeyValuePair<int, int> item in model.Value.Angle)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.ToCHex() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Angle.Count);
+					foreach (var item in model.Value.Angle)
+					{
+						lines.Add($"\t{{ {item.Key}, {item.Value.ToCHex()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.AngleName);
@@ -1817,10 +1891,13 @@ namespace SAModel
 					writer.Write("NJS_MKEY_UI32 ");
 					writer.Write(model.Value.ColorName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Color.Count);
-					foreach (KeyValuePair<int, uint> item in model.Value.Color)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.ToCHex() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Color.Count);
+					foreach (var item in model.Value.Color)
+					{
+						lines.Add($"\t{{ {item.Key}, {item.Value.ToCHex()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.ColorName);
@@ -1831,10 +1908,13 @@ namespace SAModel
 					writer.Write("NJS_MKEY_F1 ");
 					writer.Write(model.Value.IntensityName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Intensity.Count);
-					foreach (KeyValuePair<int, float> item in model.Value.Intensity)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Intensity.Count);
+					foreach (var item in model.Value.Intensity)
+					{
+						lines.Add($"\t{{ {item.Key}, {item.Value.ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.IntensityName);
@@ -1845,10 +1925,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_SPOT ");
 					writer.Write(model.Value.SpotName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Spot.Count);
-					foreach (KeyValuePair<int, Spotlight> item in model.Value.Spot)
-						lines.Add("\t{ " + item.Key + ", " + item.Value.Near.ToC() + ", " + item.Value.Far.ToC() + ", " + item.Value.InsideAngle.ToCHex() + ", " + item.Value.OutsideAngle.ToCHex() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Spot.Count);
+					foreach (var item in model.Value.Spot)
+					{
+						lines.Add(
+							$"\t{{ {item.Key}, {item.Value.Near.ToC()}, {item.Value.Far.ToC()}, {item.Value.InsideAngle.ToCHex()}, {item.Value.OutsideAngle.ToCHex()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.SpotName);
@@ -1859,10 +1943,13 @@ namespace SAModel
 					writer.Write("NJS_MKEY_F2 ");
 					writer.Write(model.Value.PointName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Point.Count);
-					foreach (KeyValuePair<int, float[]> item in model.Value.Point)
-						lines.Add("\t{ " + item.Key + ", " + item.Value[0].ToC() + ", " + item.Value[1].ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Point.Count);
+					foreach (var item in model.Value.Point)
+					{
+						lines.Add($"\t{{ {item.Key}, {item.Value[0].ToC()}, {item.Value[1].ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.PointName);
@@ -1873,10 +1960,14 @@ namespace SAModel
 					writer.Write("NJS_MKEY_QUAT ");
 					writer.Write(model.Value.QuaternionName.MakeIdentifier());
 					writer.WriteLine("[] = {");
-					List<string> lines = new List<string>(model.Value.Quaternion.Count);
-					foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
-						lines.Add("\t{ " + item.Key + ", " + item.Value[0].ToC() + ", " + item.Value[1].ToC() + item.Value[2].ToC() + item.Value[3].ToC() + " }");
-					writer.WriteLine(string.Join("," + Environment.NewLine, lines.ToArray()));
+					var lines = new List<string>(model.Value.Quaternion.Count);
+					foreach (var item in model.Value.Quaternion)
+					{
+						lines.Add(
+							$"\t{{ {item.Key}, {item.Value[0].ToC()}, {item.Value[1].ToC()}{item.Value[2].ToC()}{item.Value[3].ToC()} }}");
+					}
+
+					writer.WriteLine(string.Join($",{Environment.NewLine}", lines.ToArray()));
 					writer.WriteLine("};");
 					writer.WriteLine();
 					labels.Add(model.Value.QuaternionName);
@@ -1979,218 +2070,338 @@ namespace SAModel
 			if (!labels.Contains(MdataName))
 			{
 				writer.Write("NJS_MDATA");
-				if (numpairs == 0) writer.Write(2);
-				else writer.Write(numpairs);
+				if (numpairs == 0)
+				{
+					writer.Write(2);
+				}
+				else
+				{
+					writer.Write(numpairs);
+				}
+
 				writer.Write(" ");
 				writer.Write(MdataName.MakeIdentifier());
 				writer.WriteLine("[] = {");
-				List<string> mdats = new List<string>(ModelParts);
-				for (int i = 0; i < ModelParts; i++)
+				var mdats = new List<string>(ModelParts);
+				for (var i = 0; i < ModelParts; i++)
 				{
-					List<string> elems = new List<string>(numpairs * 2);
+					var elems = new List<string>(numpairs * 2);
 					if (hasPos)
 					{
 						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+						{
 							elems.Add(Models[i].PositionName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasRot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+						{
 							elems.Add(Models[i].RotationName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasScl)
 					{
 						if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+						{
 							elems.Add(Models[i].ScaleName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasVec)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
+						{
 							elems.Add(Models[i].VectorName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasVert)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
+						{
 							elems.Add(Models[i].VertexName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasNorm)
 					{
 						if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
+						{
 							elems.Add(Models[i].NormalName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasTarg)
 					{
 						if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
+						{
 							elems.Add(Models[i].TargetName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasRoll)
 					{
 						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
+						{
 							elems.Add(Models[i].RollName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasAng)
 					{
 						if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
+						{
 							elems.Add(Models[i].AngleName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasCol)
 					{
 						if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
+						{
 							elems.Add(Models[i].ColorName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasInt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
+						{
 							elems.Add(Models[i].IntensityName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasSpot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
+						{
 							elems.Add(Models[i].SpotName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasPnt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
+						{
 							elems.Add(Models[i].PointName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasQuat)
 					{
 						if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
+						{
 							elems.Add(Models[i].QuaternionName.MakeIdentifier());
+						}
 						else
+						{
 							elems.Add("NULL");
+						}
 					}
 					if (hasPos)
 					{
 						if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PositionName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].PositionName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasRot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RotationName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].RotationName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasScl)
 					{
 						if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ScaleName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].ScaleName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasVec)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VectorName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].VectorName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasVert)
 					{
 						if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].VertexName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].VertexName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasNorm)
 					{
 						if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].NormalName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].NormalName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasTarg)
 					{
 						if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].TargetName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].TargetName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasRoll)
 					{
 						if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].RollName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].RollName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasAng)
 					{
 						if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].AngleName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].AngleName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasCol)
 					{
 						if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].ColorName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].ColorName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasInt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].IntensityName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].IntensityName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasSpot)
 					{
 						if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].SpotName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].SpotName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasPnt)
 					{
 						if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].PointName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].PointName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
 					if (hasQuat)
 					{
 						if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
-							elems.Add(string.Format("LengthOfArray<Uint32>({0})", Models[i].QuaternionName.MakeIdentifier()));
+						{
+							elems.Add($"LengthOfArray<Uint32>({Models[i].QuaternionName.MakeIdentifier()})");
+						}
 						else
+						{
 							elems.Add("0");
+						}
 					}
-					mdats.Add("\t{ " + string.Join(", ", elems.ToArray()) + " }");
+					mdats.Add($"\t{{ {string.Join(", ", elems.ToArray())} }}");
 				}
-				writer.WriteLine(string.Join("," + Environment.NewLine, mdats.ToArray()));
+				writer.WriteLine(string.Join($",{Environment.NewLine}", mdats.ToArray()));
 				writer.WriteLine("};");
 				writer.WriteLine();
 				labels.Add(MdataName);
 			}
+			
 			if (!labels.Contains(Name))
 			{
 				writer.Write("NJS_MOTION ");
@@ -2201,6 +2412,7 @@ namespace SAModel
 				writer.Write(", ");
 				writer.Write(((StructEnums.NJD_MTYPE)flags).ToString().Replace(", ", " | "));
 				writer.Write(", ");
+				
 				switch (InterpolationMode)
 				{
 					case InterpolationMode.Linear:
@@ -2213,10 +2425,12 @@ namespace SAModel
 						writer.Write("{0} | ", StructEnums.NJD_MTYPE_FN.NJD_MTYPE_USER);
 						break;
 				}
+				
 				writer.Write(numpairs);
 				writer.WriteLine(" };");
 				labels.Add(Name);
 			}
+			
 			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName) && !labels.Contains(ActionName))
 			{
 				writer.WriteLine();
@@ -2233,37 +2447,39 @@ namespace SAModel
 
 		public string ToStructVariables(List<string> labels = null)
 		{
-			using (StringWriter sw = new StringWriter())
-			{
-				ToStructVariables(sw, labels);
-				return sw.ToString();
-			}
+			using var sw = new StringWriter();
+			ToStructVariables(sw, labels);
+			return sw.ToString();
 		}
 
 		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false)
 		{
-			bool hasPos = false;
-			bool hasRot = false;
-			bool hasScl = false;
-			bool hasVec = false;
-			bool hasVert = false;
-			bool hasNorm = false;
-			bool hasTarg = false;
-			bool hasRoll = false;
-			bool hasAng = false;
-			bool hasCol = false;
-			bool hasInt = false;
-			bool hasSpot = false;
-			bool hasPnt = false;
-			bool hasQuat = false;
-			string id = Name.MakeIdentifier();
+			var hasPos = false;
+			var hasRot = false;
+			var hasScl = false;
+			var hasVec = false;
+			var hasVert = false;
+			var hasNorm = false;
+			var hasTarg = false;
+			var hasRoll = false;
+			var hasAng = false;
+			var hasCol = false;
+			var hasInt = false;
+			var hasSpot = false;
+			var hasPnt = false;
+			var hasQuat = false;
+			
 			if (labels == null)
+			{
 				labels = new List<string>();
+			}
+
 			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START" : "MOTION_START");
 			if (!isDum)
 			{
 				writer.WriteLine();
-				foreach (KeyValuePair<int, AnimModelData> model in Models)
+				
+				foreach (var model in Models)
 				{
 					// Not implemented: Target, Roll, Angle, Color, Intensity, Spot, Point
 					if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
@@ -2271,8 +2487,12 @@ namespace SAModel
 						hasPos = true;
 						writer.WriteLine("POSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 						writer.WriteLine("START");
-						foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
-							writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+						
+						foreach (var item in model.Value.Position)
+						{
+							writer.WriteLine($"         MKEYF( {item.Key},   {item.Value.X.ToNJA()}, {item.Value.Y.ToNJA()}, {item.Value.Z.ToNJA()} ),");
+						}
+
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.PositionName);
@@ -2280,21 +2500,32 @@ namespace SAModel
 					if (model.Value.Rotation.Count > 0 && !labels.Contains(model.Value.RotationName))
 					{
 						hasRot = true;
+						
 						if (ShortRot)
+						{
 							writer.Write("SROTATION ");
+						}
 						else
+						{
 							writer.Write("ROTATION ");
+						}
+
 						writer.Write(model.Value.RotationName.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
-						foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
+						
+						foreach (var item in model.Value.Rotation)
 						{
-
 							if (ShortRot)
-								writer.WriteLine("         MKEYSA( " + item.Key + ",   " + (((short)item.Value.X) / 182.044f).ToNJA() + ", " + (((short)item.Value.Y) / 182.044f).ToNJA() + ", " + (((short)item.Value.Z) / 182.044f).ToNJA() + " ),");
+							{
+								writer.WriteLine($"         MKEYSA( {item.Key},   {(((short)item.Value.X) / 182.044f).ToNJA()}, {(((short)item.Value.Y) / 182.044f).ToNJA()}, {(((short)item.Value.Z) / 182.044f).ToNJA()} ),");
+							}
 							else
-								writer.WriteLine("         MKEYA( " + item.Key + ",   " + (item.Value.X / 182.044f).ToNJA() + ", " + (item.Value.Y / 182.044f).ToNJA() + ", " + (item.Value.Z / 182.044f).ToNJA() + " ),");
+							{
+								writer.WriteLine($"         MKEYA( {item.Key},   {(item.Value.X / 182.044f).ToNJA()}, {(item.Value.Y / 182.044f).ToNJA()}, {(item.Value.Z / 182.044f).ToNJA()} ),");
+							}
 						}
+						
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.RotationName);
@@ -2304,8 +2535,12 @@ namespace SAModel
 						hasScl = true;
 						writer.WriteLine("SCALE {0}[]", model.Value.ScaleName.MakeIdentifier());
 						writer.WriteLine("START");
-						foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
-							writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+						
+						foreach (var item in model.Value.Scale)
+						{
+							writer.WriteLine($"         MKEYF( {item.Key},   {item.Value.X.ToNJA()}, {item.Value.Y.ToNJA()}, {item.Value.Z.ToNJA()} ),");
+						}
+
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.ScaleName);
@@ -2315,8 +2550,12 @@ namespace SAModel
 						hasVec = true;
 						writer.WriteLine("VECTOR {0}[]", model.Value.VectorName.MakeIdentifier());
 						writer.WriteLine("START");
-						foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
-							writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+						
+						foreach (var item in model.Value.Vector)
+						{
+							writer.WriteLine($"         MKEYF( {item.Key},   {item.Value.X.ToNJA()}, {item.Value.Y.ToNJA()}, {item.Value.Z.ToNJA()} ),");
+						}
+
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.VectorName);
@@ -2324,73 +2563,98 @@ namespace SAModel
 					if (model.Value.Vertex.Count > 0 && !labels.Contains(model.Value.VertexName))
 					{
 						hasVert = true;
-						int z = 0;
-						foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
+						
+						var z = 0;
+						foreach (var item in model.Value.Vertex)
 						{
 							if (!labels.Contains(model.Value.VertexItemName[z]))
 							{
 								writer.WriteLine("POINT    {0}[]", model.Value.VertexItemName[z].MakeIdentifier());
 								writer.WriteLine("START");
-								List<string> l2 = new List<string>(item.Value.Length);
-								foreach (Vertex v in item.Value)
+
+								foreach (var v in item.Value)
+								{
 									writer.WriteLine("         VERT{0},", v.ToNJA());
+								}
+
 								writer.WriteLine("END");
 								writer.WriteLine();
 								labels.Add(model.Value.VertexItemName[z]);
 							}
 							z++;
 						}
+						
 						writer.WriteLine();
 						writer.WriteLine("POINTER    {0}[]", model.Value.VertexName.MakeIdentifier());
 						writer.WriteLine("START");
-						List<string> lines = new List<string>(model.Value.Vertex.Count);
-						int v_c = 0;
-						foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
-							writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.VertexItemName[v_c++].MakeIdentifier() + "),");
+						
+						var v_c = 0;
+						foreach (var item in model.Value.Vertex)
+						{
+							writer.WriteLine($"         MKEYP( {item.Key}, {model.Value.VertexItemName[v_c++].MakeIdentifier()}),");
+						}
+
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.VertexName);
 					}
+					
 					if (model.Value.Normal.Count > 0 && !labels.Contains(model.Value.NormalName))
 					{
 						hasNorm = true;
-						int z = 0;
-						foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
+						
+						var z = 0;
+						foreach (var item in model.Value.Normal)
 						{
 							if (!labels.Contains(model.Value.NormalItemName[z]))
 							{
 								writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z].MakeIdentifier());
 								writer.WriteLine("START");
-								foreach (Vertex v in item.Value)
+								
+								foreach (var v in item.Value)
+								{
 									writer.WriteLine("         NORM{0},", v.ToNJA());
+								}
+
 								writer.WriteLine("END");
 								writer.WriteLine();
 								labels.Add(model.Value.NormalItemName[z]);
 							}
 							z++;
 						}
+						
 						writer.WriteLine();
 						writer.WriteLine("POINTER    {0}[]", model.Value.NormalName.MakeIdentifier());
 						writer.WriteLine("START");
-						int v_c = 0;
-						foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
-							writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.NormalItemName[v_c++].MakeIdentifier() + "),");
+						
+						var v_c = 0;
+						foreach (var item in model.Value.Normal)
+						{
+							writer.WriteLine($"         MKEYP( {item.Key}, {model.Value.NormalItemName[v_c++].MakeIdentifier()}),");
+						}
+
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.NormalName);
 					}
+					
 					if (model.Value.Quaternion.Count > 0 && !labels.Contains(model.Value.QuaternionName))
 					{
 						hasQuat = true;
 						writer.WriteLine("QROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
 						writer.WriteLine("START");
-						foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
-							writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + ", " + item.Value[2].ToNJA() + ", " + item.Value[3].ToNJA() + " ),");
+						
+						foreach (var item in model.Value.Quaternion)
+						{
+							writer.WriteLine($"         MKEYQ( {item.Key},   {item.Value[0].ToNJA()}, {item.Value[1].ToNJA()}, {item.Value[2].ToNJA()}, {item.Value[3].ToNJA()} ),");
+						}
+
 						writer.WriteLine("END");
 						writer.WriteLine();
 						labels.Add(model.Value.QuaternionName);
 					}
 				}
+				
 				AnimFlags flags = 0;
 				ushort numpairs = 0;
 				if (hasPos)
@@ -2463,6 +2727,7 @@ namespace SAModel
 					flags |= AnimFlags.Quaternion;
 					numpairs++;
 				}
+				
 				switch (flags)
 				{
 					case AnimFlags.Position:
@@ -2485,227 +2750,358 @@ namespace SAModel
 						numpairs = 2;
 						break;
 				}
+				
 				if (!labels.Contains(MdataName))
 				{
 					writer.Write("MDATA");
+					
 					if (numpairs == 0)
+					{
 						writer.Write(2);
+					}
 					else
+					{
 						writer.Write(numpairs);
+					}
+
 					writer.Write(" ");
 					writer.Write(MdataName.MakeIdentifier());
 					writer.WriteLine("[]");
 					writer.WriteLine("START");
-					List<string> mdats = new List<string>(ModelParts);
-					for (int i = 0; i < ModelParts; i++)
+					var mdats = new List<string>(ModelParts);
+					
+					for (var i = 0; i < ModelParts; i++)
 					{
-						List<string> elems = new List<string>(numpairs * 2);
+						var elems = new List<string>(numpairs * 2);
 						if (hasPos)
 						{
 							if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+							{
 								elems.Add(Models[i].PositionName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasRot)
 						{
 							if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+							{
 								elems.Add(Models[i].RotationName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasScl)
 						{
 							if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+							{
 								elems.Add(Models[i].ScaleName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasVec)
 						{
 							if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
+							{
 								elems.Add(Models[i].VectorName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasVert)
 						{
 							if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
+							{
 								elems.Add(Models[i].VertexName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasNorm)
 						{
 							if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
+							{
 								elems.Add(Models[i].NormalName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasTarg)
 						{
 							if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
+							{
 								elems.Add(Models[i].TargetName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasRoll)
 						{
 							if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
+							{
 								elems.Add(Models[i].PointName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasAng)
 						{
 							if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
+							{
 								elems.Add(Models[i].AngleName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasCol)
 						{
 							if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
+							{
 								elems.Add(Models[i].ColorName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasInt)
 						{
 							if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
+							{
 								elems.Add(Models[i].IntensityName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasSpot)
 						{
 							if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
+							{
 								elems.Add(Models[i].SpotName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasPnt)
 						{
 							if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
+							{
 								elems.Add(Models[i].PointName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasQuat)
 						{
 							if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
+							{
 								elems.Add(Models[i].QuaternionName.MakeIdentifier());
+							}
 							else
+							{
 								elems.Add("NULL");
+							}
 						}
 						if (hasPos)
 						{
 							if (Models.ContainsKey(i) && Models[i].Position.Count > 0)
+							{
 								elems.Add(Models[i].Position.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasRot)
 						{
 							if (Models.ContainsKey(i) && Models[i].Rotation.Count > 0)
+							{
 								elems.Add(Models[i].Rotation.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasScl)
 						{
 							if (Models.ContainsKey(i) && Models[i].Scale.Count > 0)
+							{
 								elems.Add(Models[i].Scale.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasVec)
 						{
 							if (Models.ContainsKey(i) && Models[i].Vector.Count > 0)
+							{
 								elems.Add(Models[i].Vector.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasVert)
 						{
 							if (Models.ContainsKey(i) && Models[i].Vertex.Count > 0)
+							{
 								elems.Add(Models[i].Vertex.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasNorm)
 						{
 							if (Models.ContainsKey(i) && Models[i].Normal.Count > 0)
+							{
 								elems.Add(Models[i].Normal.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasTarg)
 						{
 							if (Models.ContainsKey(i) && Models[i].Target.Count > 0)
+							{
 								elems.Add(Models[i].Target.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasRoll)
 						{
 							if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
+							{
 								elems.Add(Models[i].Roll.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasAng)
 						{
 							if (Models.ContainsKey(i) && Models[i].Angle.Count > 0)
+							{
 								elems.Add(Models[i].Angle.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
 						if (hasCol)
 						{
 							if (Models.ContainsKey(i) && Models[i].Color.Count > 0)
+							{
 								elems.Add(Models[i].Color.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
+						
 						if (hasInt)
 						{
-							if (Models.ContainsKey(i) && Models[i].Intensity.Count > 0)
-								elems.Add(Models[i].Intensity.Count.ToString());
+							if (Models.TryGetValue(i, out var data) && data.Intensity.Count > 0)
+							{
+								elems.Add(data.Intensity.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
+						
 						if (hasSpot)
 						{
-							if (Models.ContainsKey(i) && Models[i].Spot.Count > 0)
-								elems.Add(Models[i].Spot.Count.ToString());
+							if (Models.TryGetValue(i, out var data) && data.Spot.Count > 0)
+							{
+								elems.Add(data.Spot.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
+						
 						if (hasPnt)
 						{
-							if (Models.ContainsKey(i) && Models[i].Point.Count > 0)
-								elems.Add(Models[i].Point.Count.ToString());
+							if (Models.TryGetValue(i, out var data) && data.Point.Count > 0)
+							{
+								elems.Add(data.Point.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
+						
 						if (hasQuat)
 						{
-							if (Models.ContainsKey(i) && Models[i].Quaternion.Count > 0)
-								elems.Add(Models[i].Quaternion.Count.ToString());
+							if (Models.TryGetValue(i, out var data) && data.Quaternion.Count > 0)
+							{
+								elems.Add(data.Quaternion.Count.ToString());
+							}
 							else
+							{
 								elems.Add("0");
+							}
 						}
+						
 						if (elems.Count > 0)
-							mdats.Add("    " + string.Join(", ", elems.ToArray()));
+						{
+							mdats.Add($"    {string.Join(", ", elems.ToArray())}");
+						}
 						else
+						{
 							mdats.Add("    NULL, NULL, NULL, 0, 0, 0");
+						}
 					}
-					writer.WriteLine(string.Join("," + Environment.NewLine, mdats.ToArray()) + ",");
+					
+					writer.WriteLine($"{string.Join($",{Environment.NewLine}", mdats.ToArray())},");
 					writer.WriteLine("END");
 					writer.WriteLine();
 					labels.Add(MdataName);
 				}
+				
 				if (!labels.Contains(Name))
 				{
 					writer.Write("MOTION ");
@@ -2715,7 +3111,8 @@ namespace SAModel
 					writer.WriteLine("MdataArray     {0}, ", MdataName.MakeIdentifier());
 					writer.WriteLine("MFrameNum      {0},", Frames);
 					writer.WriteLine("MotionBit      0x{0},", ((int)flags).ToString("X"));
-					int interpol = numpairs > 0 ? numpairs : 2;
+					var interpol = numpairs > 0 ? numpairs : 2;
+					
 					switch (InterpolationMode)
 					{
 						case InterpolationMode.Spline:
@@ -2729,65 +3126,60 @@ namespace SAModel
 							//interpol = (interpol | (int)StructEnums.NJD_MTYPE_FN.NJD_MTYPE_LINER);
 							//break;
 					}
+					
 					writer.WriteLine("InterpolFct    0x{0},", ((int)interpol).ToString("X"));
 					writer.WriteLine("END");
 					writer.WriteLine();
 				}
 			}
+			
 			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
 			{
 				writer.WriteLine();
 				writer.WriteLine("ACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
 				writer.WriteLine("ObjectHead      {0},", ObjectName.MakeIdentifier());
-				writer.WriteLine("Motion          " + Name.MakeIdentifier());
+				writer.WriteLine($"Motion          {Name.MakeIdentifier()}");
 				writer.WriteLine("END");
 			}
+			
 			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END");
 			writer.WriteLine();
 			writer.WriteLine("DEFAULT_START");
 			writer.WriteLine();
-			writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
-			writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
+			writer.WriteLine($"#ifndef DEFAULT_{(IsShapeMotion() ? "SHAPE" : "MOTION")}_NAME");
+			writer.WriteLine($"#define DEFAULT_{(IsShapeMotion() ? "SHAPE" : "MOTION")}_NAME {Name.MakeIdentifier()}");
 			writer.WriteLine("#endif");
+			
 			if (!string.IsNullOrEmpty(ActionName))
 			{
 				writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
-				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName.MakeIdentifier());
+				writer.WriteLine($"#define DEFAULT_ACTION_NAME {ActionName.MakeIdentifier()}");
 				writer.WriteLine("#endif");
 			}
+			
 			writer.WriteLine();
 			writer.WriteLine("DEFAULT_END");
 		}
 
-		public byte[] WriteHeader(uint imageBase, uint modeladdr, Dictionary<string, uint> labels, out uint address)
+		public byte[] WriteHeader(uint imageBase, uint modelAddress, Dictionary<string, uint> labels, out uint address)
 		{
-			List<byte> result = new List<byte>();
-			result.AddRange(GetBytes(imageBase, labels, out uint head2));
+			var result = new List<byte>();
+			result.AddRange(GetBytes(imageBase, labels, out var head2));
 			address = (uint)result.Count;
-			result.AddRange(ByteConverter.GetBytes(modeladdr));
+			result.AddRange(ByteConverter.GetBytes(modelAddress));
 			result.AddRange(ByteConverter.GetBytes(head2 + imageBase));
 			return result.ToArray();
 		}
 
-		public byte[] WriteHeader(uint imageBase, uint modeladdr, out uint address)
-		{
-			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out address);
-		}
-
-		public byte[] WriteHeader(uint imageBase, uint modeladdr)
-		{
-			return WriteHeader(imageBase, modeladdr, new Dictionary<string, uint>(), out _);
-		}
-
 		public void Save(string filename, bool nometa = false)
 		{
-			bool be = ByteConverter.BigEndian;
+			var be = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = false;
-			List<byte> file = new List<byte>();
+			var file = new List<byte>();
 			file.AddRange(ByteConverter.GetBytes(SAANIMVer));
-			Dictionary<string, uint> labels = new Dictionary<string, uint>();
-			byte[] anim = GetBytes(0x14, labels, out uint addr);
+			var labels = new Dictionary<string, uint>();
+			var anim = GetBytes(0x14, labels, out var addr);
 			file.AddRange(ByteConverter.GetBytes(addr + 0x14));
 			file.Align(0x10);
 			file.AddRange(ByteConverter.GetBytes(ModelParts | (ShortRot ? int.MinValue : 0)));
@@ -2796,12 +3188,14 @@ namespace SAModel
 			file.Align(4);
 			file.RemoveRange(0xC, 4);
 			file.InsertRange(0xC, ByteConverter.GetBytes(file.Count + 4));
+			
 			if (labels.Count > 0 && !nometa)
 			{
-				List<byte> chunk = new List<byte>((labels.Count * 8) + 8);
-				int straddr = (labels.Count * 8) + 8;
-				List<byte> strbytes = new List<byte>();
-				foreach (KeyValuePair<string, uint> label in labels)
+				var chunk = new List<byte>((labels.Count * 8) + 8);
+				var straddr = (labels.Count * 8) + 8;
+				var strbytes = new List<byte>();
+				
+				foreach (var label in labels)
 				{
 					chunk.AddRange(ByteConverter.GetBytes(label.Value));
 					chunk.AddRange(ByteConverter.GetBytes(straddr + strbytes.Count));
@@ -2809,14 +3203,16 @@ namespace SAModel
 					strbytes.Add(0);
 					strbytes.Align(4);
 				}
+				
 				chunk.AddRange(ByteConverter.GetBytes(-1L));
 				chunk.AddRange(strbytes);
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.Label));
 				file.AddRange(ByteConverter.GetBytes(chunk.Count));
 				file.AddRange(chunk);
+				
 				if (!string.IsNullOrEmpty(Description))
 				{
-					List<byte> chunkd = new List<byte>(Description.Length + 1);
+					var chunkd = new List<byte>(Description.Length + 1);
 					chunkd.AddRange(Encoding.UTF8.GetBytes(Description));
 					chunkd.Add(0);
 					chunkd.Align(4);
@@ -2824,9 +3220,10 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
 					file.AddRange(chunkd);
 				}
+				
 				if (!string.IsNullOrEmpty(ActionName))
 				{
-					List<byte> chunkd = new List<byte>(ActionName.Length + 1);
+					var chunkd = new List<byte>(ActionName.Length + 1);
 					chunkd.AddRange(Encoding.UTF8.GetBytes(ActionName));
 					chunkd.Add(0);
 					chunkd.Align(4);
@@ -2834,9 +3231,10 @@ namespace SAModel
 					file.AddRange(ByteConverter.GetBytes(chunkd.Count));
 					file.AddRange(chunkd);
 				}
+				
 				if (!string.IsNullOrEmpty(ObjectName))
 				{
-					List<byte> chunkd = new List<byte>(ObjectName.Length + 1);
+					var chunkd = new List<byte>(ObjectName.Length + 1);
 					chunkd.AddRange(Encoding.UTF8.GetBytes(ObjectName));
 					chunkd.Add(0);
 					chunkd.Align(4);
@@ -2845,6 +3243,7 @@ namespace SAModel
 					file.AddRange(chunkd);
 				}
 			}
+			
 			file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 			file.AddRange(new byte[4]);
 			File.WriteAllBytes(filename, file.ToArray());
@@ -2854,20 +3253,20 @@ namespace SAModel
 
 	public class AnimModelData
 	{
-		public Dictionary<int, Vertex> Position = new Dictionary<int, Vertex>();
-		public Dictionary<int, Rotation> Rotation = new Dictionary<int, Rotation>();
-		public Dictionary<int, Vertex> Scale = new Dictionary<int, Vertex>();
-		public Dictionary<int, Vertex> Vector = new Dictionary<int, Vertex>();
-		public Dictionary<int, Vertex[]> Vertex = new Dictionary<int, Vertex[]>();
-		public Dictionary<int, Vertex[]> Normal = new Dictionary<int, Vertex[]>();
-		public Dictionary<int, Vertex> Target = new Dictionary<int, Vertex>();
-		public Dictionary<int, int> Roll = new Dictionary<int, int>();
-		public Dictionary<int, int> Angle = new Dictionary<int, int>();
-		public Dictionary<int, uint> Color = new Dictionary<int, uint>();
-		public Dictionary<int, float> Intensity = new Dictionary<int, float>();
-		public Dictionary<int, Spotlight> Spot = new Dictionary<int, Spotlight>();
-		public Dictionary<int, float[]> Point = new Dictionary<int, float[]>();
-		public Dictionary<int, float[]> Quaternion = new Dictionary<int, float[]>();
+		public readonly Dictionary<int, Vertex> Position = new();
+		public readonly Dictionary<int, Rotation> Rotation = new();
+		public readonly Dictionary<int, Vertex> Scale = new();
+		public readonly Dictionary<int, Vertex> Vector = new();
+		public readonly Dictionary<int, Vertex[]> Vertex = new();
+		public readonly Dictionary<int, Vertex[]> Normal = new();
+		public readonly Dictionary<int, Vertex> Target = new();
+		public readonly Dictionary<int, int> Roll = new();
+		public readonly Dictionary<int, int> Angle = new();
+		public readonly Dictionary<int, uint> Color = new();
+		public readonly Dictionary<int, float> Intensity = new();
+		public readonly Dictionary<int, Spotlight> Spot = new();
+		public readonly Dictionary<int, float[]> Point = new();
+		public readonly Dictionary<int, float[]> Quaternion = new();
 		public string PositionName;
 		public string RotationName;
 		public string ScaleName;
@@ -2885,269 +3284,394 @@ namespace SAModel
 		public string PointName;
 		public string QuaternionName;
 		public int NbKeyframes;
-		public AnimModelData()
-		{
-		}
 
 		public Vertex GetPosition(float frame)
 		{
 			if (Math.Floor(frame) == frame && Position.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Position[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Position.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Position.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Position.Count; i++)
+			}
+
+			for (var i = 0; i < Position.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Position.Count - 1; i >= 0; i--)
+			
+			for (var i = Position.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Vertex val = new Vertex()
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var val = new Vertex()
 			{
 				X = ((Position[f2z].X - Position[f1].X) / diff * (frame - f1)) + Position[f1].X,
 				Y = ((Position[f2z].Y - Position[f1].Y) / diff * (frame - f1)) + Position[f1].Y,
 				Z = ((Position[f2z].Z - Position[f1].Z) / diff * (frame - f1)) + Position[f1].Z
 			};
+			
 			return val;
 		}
 
 		public Rotation GetRotation(float frame)
 		{
 			if (Math.Floor(frame) == frame && Rotation.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Rotation[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Rotation.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Rotation.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Rotation.Count; i++)
+			}
+
+			for (var i = 0; i < Rotation.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Rotation.Count - 1; i >= 0; i--)
+			
+			for (var i = Rotation.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Rotation val = new Rotation()
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var val = new Rotation()
 			{
 				X = (int)Math.Round(((Rotation[f2z].X - Rotation[f1].X) / (double)diff * (frame - f1)) + Rotation[f1].X, MidpointRounding.AwayFromZero),
 				Y = (int)Math.Round(((Rotation[f2z].Y - Rotation[f1].Y) / (double)diff * (frame - f1)) + Rotation[f1].Y, MidpointRounding.AwayFromZero),
 				Z = (int)Math.Round(((Rotation[f2z].Z - Rotation[f1].Z) / (double)diff * (frame - f1)) + Rotation[f1].Z, MidpointRounding.AwayFromZero)
 			};
+			
 			return val;
 		}
 
 		public Vertex GetScale(float frame)
 		{
 			if (Math.Floor(frame) == frame && Scale.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Scale[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Scale.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Scale.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Scale.Count; i++)
+			}
+
+			for (var i = 0; i < Scale.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Scale.Count - 1; i >= 0; i--)
+			
+			for (var i = Scale.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Vertex val = new Vertex()
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var val = new Vertex
 			{
 				X = ((Scale[f2z].X - Scale[f1].X) / diff * (frame - f1)) + Scale[f1].X,
 				Y = ((Scale[f2z].Y - Scale[f1].Y) / diff * (frame - f1)) + Scale[f1].Y,
 				Z = ((Scale[f2z].Z - Scale[f1].Z) / diff * (frame - f1)) + Scale[f1].Z
 			};
+			
 			return val;
 		}
 
 		public Vertex GetVector(float frame)
 		{
 			if (Math.Floor(frame) == frame && Vector.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Vector[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Vector.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Vector.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Vector.Count; i++)
+			}
+
+			for (var i = 0; i < Vector.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Vector.Count - 1; i >= 0; i--)
+			
+			for (var i = Vector.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Vertex val = new Vertex()
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var val = new Vertex
 			{
 				X = ((Vector[f2z].X - Vector[f1].X) / diff * (frame - f1)) + Vector[f1].X,
 				Y = ((Vector[f2z].Y - Vector[f1].Y) / diff * (frame - f1)) + Vector[f1].Y,
 				Z = ((Vector[f2z].Z - Vector[f1].Z) / diff * (frame - f1)) + Vector[f1].Z
 			};
+			
 			return val;
 		}
 
 		public Vertex[] GetVertex(float frame)
 		{
 			if (Math.Floor(frame) == frame && Vertex.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Vertex[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Vertex.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Vertex.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Vertex.Count; i++)
+			}
+
+			for (var i = 0; i < Vertex.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Vertex.Count - 1; i >= 0; i--)
+			
+			for (var i = Vertex.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Vertex[] result = new Vertex[Vertex[f1].Length];
-			for (int i = 0; i < Vertex[f1].Length; i++)
-				result[i] = new Vertex()
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var result = new Vertex[Vertex[f1].Length];
+			
+			for (var i = 0; i < Vertex[f1].Length; i++)
+			{
+				result[i] = new Vertex
 				{
 					X = ((Vertex[f2z][i].X - Vertex[f1][i].X) / diff * (frame - f1)) + Vertex[f1][i].X,
 					Y = ((Vertex[f2z][i].Y - Vertex[f1][i].Y) / diff * (frame - f1)) + Vertex[f1][i].Y,
 					Z = ((Vertex[f2z][i].Z - Vertex[f1][i].Z) / diff * (frame - f1)) + Vertex[f1][i].Z
 				};
+			}
+
 			return result;
 		}
 
 		public Vertex[] GetNormal(float frame)
 		{
 			if (Math.Floor(frame) == frame && Normal.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Normal[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Normal.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Normal.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Normal.Count; i++)
+			}
+
+			for (var i = 0; i < Normal.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Normal.Count - 1; i >= 0; i--)
+			
+			for (var i = Normal.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Vertex[] result = new Vertex[Normal[f1].Length];
-			for (int i = 0; i < Normal[f1].Length; i++)
-				result[i] = new Vertex()
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var result = new Vertex[Normal[f1].Length];
+			
+			for (var i = 0; i < Normal[f1].Length; i++)
+			{
+				result[i] = new Vertex
 				{
 					X = ((Normal[f2z][i].X - Normal[f1][i].X) / diff * (frame - f1)) + Normal[f1][i].X,
 					Y = ((Normal[f2z][i].Y - Normal[f1][i].Y) / diff * (frame - f1)) + Normal[f1][i].Y,
 					Z = ((Normal[f2z][i].Z - Normal[f1][i].Z) / diff * (frame - f1)) + Normal[f1][i].Z
 				};
+			}
+
 			return result;
 		}
 
 		public Vertex GetTarget(float frame)
 		{
 			if (Math.Floor(frame) == frame && Target.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Target[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Target.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Target.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Target.Count; i++)
+			}
+
+			for (var i = 0; i < Target.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Target.Count - 1; i >= 0; i--)
+			
+			for (var i = Target.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
-			Vertex val = new Vertex()
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
+			var val = new Vertex
 			{
 				X = ((Target[f2z].X - Target[f1].X) / diff * (frame - f1)) + Target[f1].X,
 				Y = ((Target[f2z].Y - Target[f1].Y) / diff * (frame - f1)) + Target[f1].Y,
 				Z = ((Target[f2z].Z - Target[f1].Z) / diff * (frame - f1)) + Target[f1].Z
 			};
+			
 			return val;
 		}
 
 		public int GetRoll(float frame)
 		{
 			if (Math.Floor(frame) == frame && Roll.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Roll[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Roll.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Roll.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Roll.Count; i++)
+			}
+
+			for (var i = 0; i < Roll.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Roll.Count - 1; i >= 0; i--)
+			
+			for (var i = Roll.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
 			return (int)Math.Round((((Roll[f2z] - Roll[f1]) / (double)diff) * (frame - f1)) + Roll[f1], MidpointRounding.AwayFromZero);
 		}
 
 		public int GetAngle(float frame)
 		{
 			if (Math.Floor(frame) == frame && Angle.ContainsKey((int)Math.Floor(frame)))
+			{
 				return Angle[(int)Math.Floor(frame)];
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Angle.Keys)
+			}
+
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			
+			foreach (var k in Angle.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Angle.Count; i++)
+			}
+
+			for (var i = 0; i < Angle.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Angle.Count - 1; i >= 0; i--)
+			
+			for (var i = Angle.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
 			return (int)Math.Round((((Angle[f2z] - Angle[f1]) / (double)diff) * (frame - f1)) + Angle[f1], MidpointRounding.AwayFromZero);
 		}
 
@@ -3157,68 +3681,79 @@ namespace SAModel
 			{
 				return RotFromQuat(FloatsAsQuat(Quaternion[(int)Math.Floor(frame)]));
 			}
-			int f1 = 0;
-			int f2 = 0;
-			List<int> keys = new List<int>();
-			foreach (int k in Quaternion.Keys)
+			var f1 = 0;
+			var f2 = 0;
+			var keys = new List<int>();
+			foreach (var k in Quaternion.Keys)
+			{
 				keys.Add(k);
-			for (int i = 0; i < Quaternion.Count; i++)
+			}
+
+			for (var i = 0; i < Quaternion.Count; i++)
 			{
 				if (keys[i] < frame)
+				{
 					f1 = keys[i];
+				}
 			}
-			for (int i = Quaternion.Count - 1; i >= 0; i--)
+			
+			for (var i = Quaternion.Count - 1; i >= 0; i--)
 			{
 				if (keys[i] > frame)
+				{
 					f2 = keys[i];
+				}
 			}
-			int diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
-			int f2z = f2 != 0 ? f2 : keys[0];
+			
+			var diff = f2 != 0 ? (f2 - f1) : NbKeyframes - f1 + keys[0];
+			var f2z = f2 != 0 ? f2 : keys[0];
 
 			return RotFromQuat(System.Numerics.Quaternion.Slerp(FloatsAsQuat(Quaternion[f1]), FloatsAsQuat(Quaternion[f2z]), diff * (frame - f1)));
 		}
 
-		public System.Numerics.Quaternion FloatsAsQuat(float[] ninjaQuats)
+		private static Quaternion FloatsAsQuat(float[] ninjaQuats)
 		{
-			return new System.Numerics.Quaternion(ninjaQuats[1], ninjaQuats[2], ninjaQuats[3], ninjaQuats[0]);
+			return new Quaternion(ninjaQuats[1], ninjaQuats[2], ninjaQuats[3], ninjaQuats[0]);
 		}
 
-		public Rotation RotFromQuat(System.Numerics.Quaternion quat)
+		private static Rotation RotFromQuat(Quaternion quat)
 		{
-			float X;
-			float Y;
-			float Z;
+			// Roll (x-axis rotation)
+			double sinRollCos = 2 * (quat.W * quat.X + quat.Y * quat.Z);
+			double cosRollCos = 1 - 2 * (quat.X * quat.X + quat.Y * quat.Y);
+			var x = (float)Math.Atan2(sinRollCos, cosRollCos);
 
-			// roll (x-axis rotation)
-			double sinr_cosp = 2 * (quat.W * quat.X + quat.Y * quat.Z);
-			double cosr_cosp = 1 - 2 * (quat.X * quat.X + quat.Y * quat.Y);
-			X = (float)Math.Atan2(sinr_cosp, cosr_cosp);
-
-			// pitch (y-axis rotation)
-			double sinp = 2 * (quat.W * quat.Y - quat.Z * quat.X);
-			if (Math.Abs(sinp) >= 1)
-				Y = (float)CopySign(Math.PI / 2, sinp); // use 90 degrees if out of range
+			// Pitch (y-axis rotation)
+			double sinPitch = 2 * (quat.W * quat.Y - quat.Z * quat.X);
+			float y;
+			
+			if (Math.Abs(sinPitch) >= 1)
+			{
+				y = (float)CopySign(Math.PI / 2, sinPitch); // use 90 degrees if out of range
+			}
 			else
-				Y = (float)Math.Asin(sinp);
+			{
+				y = (float)Math.Asin(sinPitch);
+			}
 
-			// yaw (z-axis rotation)
-			double siny_cosp = 2 * (quat.W * quat.Z + quat.X * quat.Y);
-			double cosy_cosp = 1 - 2 * (quat.Y * quat.Y + quat.Z * quat.Z);
-			Z = (float)Math.Atan2(siny_cosp, cosy_cosp);
+			// Yaw (z-axis rotation)
+			double sinYawCos = 2 * (quat.W * quat.Z + quat.X * quat.Y);
+			double cosYawCos = 1 - 2 * (quat.Y * quat.Y + quat.Z * quat.Z);
+			var z = (float)Math.Atan2(sinYawCos, cosYawCos);
 
-			return new Rotation(SAModel.Rotation.RadToBAMS(X), SAModel.Rotation.RadToBAMS(Y), SAModel.Rotation.RadToBAMS(Z));
+			return new Rotation(SAModel.Rotation.RadToBAMS(x), SAModel.Rotation.RadToBAMS(y), SAModel.Rotation.RadToBAMS(z));
 		}
-		public static double CopySign(double valMain, double valSign)
+		
+		private static double CopySign(double valMain, double valSign)
 		{
-			double final = Math.Abs(valMain);
+			var final = Math.Abs(valMain);
+			
 			if (valSign >= 0)
 			{
 				return final;
 			}
-			else
-			{
-				return -final;
-			}
+
+			return -final;
 		}
 	}
 
@@ -3228,9 +3763,7 @@ namespace SAModel
 		public float Far { get; set; }
 		public int InsideAngle { get; set; }
 		public int OutsideAngle { get; set; }
-
-		public Spotlight() { }
-
+		
 		public Spotlight(byte[] file, int address)
 		{
 			Near = ByteConverter.ToSingle(file, address);
@@ -3241,7 +3774,7 @@ namespace SAModel
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>(16);
+			var result = new List<byte>(16);
 			result.AddRange(ByteConverter.GetBytes(Near));
 			result.AddRange(ByteConverter.GetBytes(Far));
 			result.AddRange(ByteConverter.GetBytes(InsideAngle));

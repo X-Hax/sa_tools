@@ -189,7 +189,7 @@ namespace SplitTools.SAArc
 						var aniaddr = ByteConverter.ToInt32(anifile, address + 4);
 						if (!processedanims.ContainsKey(aniaddr))
 						{
-							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2), shortrot: false, shortcheck: false);
+							anims[i] = new NJS_MOTION(anifile, ByteConverter.ToInt32(anifile, address + 4), 0, ByteConverter.ToInt16(anifile, address + 2), shortRot: false, shortCheck: false);
 							animfns[i] = Path.Combine(anifilename, i.ToString(NumberFormatInfo.InvariantInfo) + ".saanim");
 							anims[i].Description = animmeta;
 							anims[i].ShortRot = false;

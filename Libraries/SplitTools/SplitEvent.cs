@@ -2703,7 +2703,7 @@ namespace SplitTools.SAArc
 				var ptr3 = fc.GetPointer(address, key);
 				if (ptr3 != 0)
 				{
-					mtn = new(fc, ptr3, key, cnt, shortrot: false, shortcheck: false);
+					mtn = new(fc, ptr3, key, cnt, shortRot: false, shortCheck: false);
 					mtn.ShortRot = false;
 					mtn.Description = meta;
 					mtn.OptimizeShape();
@@ -2854,7 +2854,7 @@ namespace SplitTools.SAArc
 				}
 				else
 				{
-					mtn = new(fc, ptr, 0, nummdl, shortrot: false, shortcheck: false);
+					mtn = new(fc, ptr, 0, nummdl, shortRot: false, shortCheck: false);
 					mtn.OptimizeShape();
 					motions.Add(mtn);
 					if (nummdl == 1 && camcheck2 == 0x1C10004)
@@ -2918,7 +2918,7 @@ namespace SplitTools.SAArc
 				}
 				else
 				{
-					mtn = new NJS_MOTION(fc, ptr, 0, nummdl, shortrot: false, shortcheck: false).Name;
+					mtn = new NJS_MOTION(fc, ptr, 0, nummdl, shortRot: false, shortCheck: false).Name;
 					motions.Add(i, mtn);
 					if (nummdl == 1 && camcheck2 == 0x1C10004)
 					{
