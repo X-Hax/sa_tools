@@ -129,7 +129,7 @@ namespace SAModel.Direct3D
 				device.Material = new Material
 				{
 					Diffuse = material.DiffuseColor.ToRawColor4(),
-					Ambient = material.AmbientColor.ToRawColor4(),
+					Ambient = material.DiffuseColor.ToRawColor4(),
 					Specular = (material.IgnoreSpecular ? Color.Transparent : material.SpecularColor).ToRawColor4(),
 					Power = material.Exponent
 				};
