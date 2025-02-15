@@ -32,8 +32,14 @@ namespace SAModel
 			{
 				U = ByteConverter.ToSingle(file, address);
 				V = ByteConverter.ToSingle(file, address + 4);
-			} //"Reverse" is for the order used in SADX Gamecube
-			else if (ByteConverter.Reverse || !ByteConverter.BigEndian || chunk)
+			}
+			else if (chunk)
+			{
+				U = ByteConverter.ToInt16(file, address) / (UVH ? 1024.0 : 256.0);
+				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1024.0 : 256.0);
+			}
+			//"Reverse" is for the order used in SADX Gamecube
+			else if (ByteConverter.Reverse || !ByteConverter.BigEndian)
 			{
 				U = ByteConverter.ToInt16(file, address) / (UVH ? 1023.0 : 255.0);
 				V = ByteConverter.ToInt16(file, address + 2) / (UVH ? 1023.0 : 255.0);
@@ -63,11 +69,19 @@ namespace SAModel
 			return GetBytes(false);
 		}
 
-		public byte[] GetBytes(bool UVH)
+		public byte[] GetBytes(bool UVH, bool chunk = false)
 		{
+			// This change will only apply for Chunk models until it's confirmed for Basic as well.
+			double uvhdiv = 1023.0;
+			double uvdiv = 255.0;
+			if (chunk)
+			{
+				uvhdiv = 1024.0;
+				uvdiv = 256.0;
+			}
 			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? 1023.0 : 255.0))));
-			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? 1023.0 : 255.0))));
+			result.AddRange(ByteConverter.GetBytes((short)(U * (UVH ? uvhdiv : uvdiv))));
+			result.AddRange(ByteConverter.GetBytes((short)(V * (UVH ? uvhdiv : uvdiv))));
 			return result.ToArray();
 		}
 

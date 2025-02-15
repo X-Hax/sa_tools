@@ -1575,12 +1575,12 @@ namespace SAModel
 						case ChunkType.Strip_StripUVN:
 						case ChunkType.Strip_StripUVNColor:
 						case ChunkType.Strip_StripUVN2:
-							result.AddRange(UVs[i].GetBytes(false));
+							result.AddRange(UVs[i].GetBytes(false, true));
 							break;
 						case ChunkType.Strip_StripUVH:
 						case ChunkType.Strip_StripUVHColor:
 						case ChunkType.Strip_StripUVH2:
-							result.AddRange(UVs[i].GetBytes(true));
+							result.AddRange(UVs[i].GetBytes(true, true));
 							break;
 					}
 					switch (type)
@@ -1594,10 +1594,10 @@ namespace SAModel
 					switch (type)
 					{
 						case ChunkType.Strip_StripUVN2:
-							result.AddRange(UVs2[i].GetBytes(false));
+							result.AddRange(UVs2[i].GetBytes(false, true));
 							break;
 						case ChunkType.Strip_StripUVH2:
-							result.AddRange(UVs2[i].GetBytes(true));
+							result.AddRange(UVs2[i].GetBytes(true, true));
 							break;
 					}
 					if (i > 1)
@@ -1632,13 +1632,13 @@ namespace SAModel
 						writer.Write("\t" + Indexes[i].ToString() + ",");
 
 						if (UVs != null)
-							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
+							writer.Write(" \tUvn( " + ((short)(UVs[i].U * (UVH ? 1024.0 : 256.0))).ToString() + ", " + ((short)(UVs[i].V * (UVH ? 1024.0 : 256.0))).ToString() + " ),");
 
 						if (VColors != null)
 							writer.Write(" \tD8888(" + VColors[i].A.ToString() + ", " + VColors[i].R.ToString() + ", " + VColors[i].G.ToString() + ", " + VColors[i].B.ToString() + "),");
 
 						if (UVs2 != null)
-							writer.Write(" \tUvn( " + ((short)(UVs2[i].U * (UVH ? 1023.0 : 255.0))).ToString() + ", " + ((short)(UVs2[i].V * (UVH ? 1023.0 : 255.0))).ToString() + " ),");
+							writer.Write(" \tUvn( " + ((short)(UVs2[i].U * (UVH ? 1024.0 : 256.0))).ToString() + ", " + ((short)(UVs2[i].V * (UVH ? 1024.0 : 256.0))).ToString() + " ),");
 
 						if (UserFlags1 != null && i > 1)
 						{
