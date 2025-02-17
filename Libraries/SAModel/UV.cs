@@ -32,7 +32,7 @@ namespace SAModel
 			{
 				U = ByteConverter.ToSingle(file, address);
 				V = ByteConverter.ToSingle(file, address + 4);
-			}
+			}// This change will only apply for Chunk models until it's confirmed for Basic as well.
 			else if (chunk)
 			{
 				U = ByteConverter.ToInt16(file, address) / (UVH ? 1024.0 : 256.0);

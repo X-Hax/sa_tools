@@ -1414,15 +1414,15 @@ namespace SAModel.SAEditorCommon.StructConverter
 								else
 								{
 									SA2CreditsTextListEntry[] list = SA2CreditsTextList.Load(data.Filename);
-									writer.WriteLine("SA2CreditsEntry {0}_list[] = {{", name);
+									writer.WriteLine("CreditsEntry {0}_list[] = {{", name);
 									List<string> objs = new List<string>(list.Length);
 									foreach (SA2CreditsTextListEntry obj in list)
 										objs.Add(obj.ToStruct());
 									writer.WriteLine("\t" + string.Join("," + Environment.NewLine + "\t", objs.ToArray()));
 									writer.WriteLine("};");
 									writer.WriteLine();
-									writer.WriteLine("SA2CreditsList {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
-									initlines.Add(string.Format("*(SA2CreditsList*)0x{0:X} = {1};", data.Address + imagebase, name));
+									writer.WriteLine("CreditsList {0} = {{ arrayptrandlengthT({0}_list, int) }};", name);
+									initlines.Add(string.Format("*(CreditsList*)0x{0:X} = {1};", data.Address + imagebase, name));
 								}
 							}
 							break;

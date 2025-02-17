@@ -1590,14 +1590,14 @@ namespace SplitTools
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(Filename))
 			{
-				sb.Append(Filename ?? "nullptr");
+				sb.Append(Filename.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(SoundList))
 			{
-				sb.Append(SoundList ?? "nullptr");
+				sb.Append(SoundList.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
@@ -1676,21 +1676,21 @@ namespace SplitTools
 			sb.AppendFormat(", ");
 			if (!string.IsNullOrEmpty(JPFilename))
 			{
-				sb.AppendFormat(JPFilename ?? "nullptr");
+				sb.AppendFormat(JPFilename.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(ENFilename))
 			{
-				sb.AppendFormat(ENFilename ?? "nullptr");
+				sb.AppendFormat(ENFilename.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(SoundList))
 			{
-				sb.AppendFormat(SoundList ?? "nullptr");
+				sb.AppendFormat(SoundList.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
@@ -4615,14 +4615,14 @@ namespace SplitTools
 			sb.Append(TextColorA);
 			sb.AppendFormat(", ");
 			sb.Append(TextColorR);
-			sb.Append(", ");
+			sb.AppendFormat(", ");
 			sb.Append(TextColorG);
 			sb.AppendFormat(", ");
 			sb.Append(TextColorB);
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(Text))
 			{
-				sb.AppendFormat(Text ?? "nullptr");
+				sb.AppendFormat(Text.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
