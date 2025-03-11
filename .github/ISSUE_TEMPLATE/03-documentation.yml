@@ -1,0 +1,24 @@
+name: Documentation
+description: Report an issue with (or a lack of) documentation pertaining to the SA Tools.
+title: "[Documentation]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+          In the fields below, please provide what information you can regarding the issue with documentation you have found.
+  - type: input
+    id: link
+    attributes:
+      label: Documentation Source
+      description: If your issue is with existing documentation, please provide a link to the relevant documentation below.
+      placeholder: e.g. https://github.com/X-Hax/sa_tools/wiki/SA-Tools-Hub
+    validations:
+      required: false
+  - type: textarea
+    id: issue
+    attributes:
+      label: Documentation Issue
+      description: Please provide information regarding what is wrong with the documentation or where the documentation may be lacking.
+    validations:
+      required: true
