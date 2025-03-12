@@ -63,7 +63,7 @@
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(230, 277);
+			flagsGroupBox.Size = new System.Drawing.Size(266, 306);
 			flagsGroupBox.TabIndex = 8;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
@@ -71,7 +71,7 @@
 			// ignoreLightCheck
 			// 
 			ignoreLightCheck.AutoSize = true;
-			ignoreLightCheck.Location = new System.Drawing.Point(10, 193);
+			ignoreLightCheck.Location = new System.Drawing.Point(10, 203);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
 			ignoreLightCheck.Size = new System.Drawing.Size(159, 29);
@@ -84,7 +84,7 @@
 			// flatShadeCheck
 			// 
 			flatShadeCheck.AutoSize = true;
-			flatShadeCheck.Location = new System.Drawing.Point(10, 129);
+			flatShadeCheck.Location = new System.Drawing.Point(10, 135);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
 			flatShadeCheck.Size = new System.Drawing.Size(131, 29);
@@ -97,7 +97,7 @@
 			// doubleSideCheck
 			// 
 			doubleSideCheck.AutoSize = true;
-			doubleSideCheck.Location = new System.Drawing.Point(10, 97);
+			doubleSideCheck.Location = new System.Drawing.Point(10, 101);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doubleSideCheck.Name = "doubleSideCheck";
 			doubleSideCheck.Size = new System.Drawing.Size(146, 29);
@@ -110,7 +110,7 @@
 			// envMapCheck
 			// 
 			envMapCheck.AutoSize = true;
-			envMapCheck.Location = new System.Drawing.Point(10, 65);
+			envMapCheck.Location = new System.Drawing.Point(10, 67);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
 			envMapCheck.Size = new System.Drawing.Size(215, 29);
@@ -136,7 +136,7 @@
 			// ignoreSpecCheck
 			// 
 			ignoreSpecCheck.AutoSize = true;
-			ignoreSpecCheck.Location = new System.Drawing.Point(10, 225);
+			ignoreSpecCheck.Location = new System.Drawing.Point(10, 237);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
 			ignoreSpecCheck.Size = new System.Drawing.Size(162, 29);
@@ -149,19 +149,20 @@
 			// ignoreAmbiCheck
 			// 
 			ignoreAmbiCheck.AutoSize = true;
-			ignoreAmbiCheck.Location = new System.Drawing.Point(10, 160);
+			ignoreAmbiCheck.Location = new System.Drawing.Point(10, 168);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
 			ignoreAmbiCheck.Size = new System.Drawing.Size(163, 29);
 			ignoreAmbiCheck.TabIndex = 0;
 			ignoreAmbiCheck.Text = "Ignore Ambient";
+			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will not use its ambient settings.");
 			ignoreAmbiCheck.UseVisualStyleBackColor = true;
 			ignoreAmbiCheck.Click += ignoreAmbiCheck_Click;
 			// 
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(189, 312);
+			doneButton.Location = new System.Drawing.Point(175, 351);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
@@ -179,7 +180,7 @@
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(30, 312);
+			resetButton.Location = new System.Drawing.Point(16, 351);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
 			resetButton.Size = new System.Drawing.Size(132, 40);
@@ -195,7 +196,7 @@
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(336, 373);
+			ClientSize = new System.Drawing.Size(322, 412);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(doneButton);
