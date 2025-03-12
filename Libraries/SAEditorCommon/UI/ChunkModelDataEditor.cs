@@ -100,7 +100,7 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkStrip pcs;
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
-			int index = selectedObj.IndexOf(selectedMesh);
+			//int index = selectedObj.IndexOf(selectedMesh);
 			if (polytype.StartsWith("Strip"))
 			{
 				using (ChunkModelStripDataEditor de = new ChunkModelStripDataEditor(selectedObj[matID]))
@@ -296,11 +296,12 @@ namespace SAModel.SAEditorCommon.UI
 		private void BuildVertexDataList()
 		{
 			listViewVertices.Items.Clear();
-			groupBoxVertList.Enabled = editedModel != null;
+			groupBoxVertList.Enabled = false;
 			if (editedModel is ChunkAttach catt)
 			{
 				if (catt.Vertex != null)
 				{
+					groupBoxVertList.Enabled = true;
 					Dictionary<int, VertexChunk> chunks = new Dictionary<int, VertexChunk>();
 					for (int i = 0; i < catt.Vertex.Count; i++)
 					{
@@ -398,13 +399,14 @@ namespace SAModel.SAEditorCommon.UI
 		private void BuildPolyChunkList()
 		{
 			listViewMeshes.Items.Clear();
-			groupBoxMeshList.Enabled = editedModel != null;
+			groupBoxMeshList.Enabled = false;
 			if (editedModel is ChunkAttach catt)
 			{
 				//editedHierarchy.StripPolyCache();
 				Dictionary<int, PolyChunk> chunks = new Dictionary<int, PolyChunk>();
 				if (catt.Poly != null)
 				{
+					groupBoxMeshList.Enabled = true;
 					for (int i = 0; i < catt.Poly.Count; i++)
 					{
 						chunks.Add(i, catt.Poly[i]);
@@ -710,9 +712,9 @@ namespace SAModel.SAEditorCommon.UI
 				buttonCloneMesh.Enabled = false;
 			else
 				buttonCloneMesh.Enabled = true;
-			editPCMatToolStripMenuItem.Enabled = polytype.Contains("Material");
-			editTextureIDToolStripMenuItem.Enabled = polytype.StartsWith("Tiny");
-			editStripAlphaToolStripMenuItem.Enabled = polytype.StartsWith("Strip");
+			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material");
+			editTextureIDToolStripMenuItem.Enabled = editTextureIDToolStripMenuItem.Visible = polytype.StartsWith("Tiny");
+			editStripAlphaToolStripMenuItem.Enabled = editStripAlphaToolStripMenuItem.Visible =  polytype.StartsWith("Strip");
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
 			if (prevmatstart.StartsWith("Bits"))
@@ -728,10 +730,110 @@ namespace SAModel.SAEditorCommon.UI
 				}
 				pdata += listViewMeshes.SelectedItems[0].SubItems[2].Text;
 			}
+			string ptype = selectedMesh.Type.ToString();
+			string pdata2 = "";
+			switch (selectedMesh)
+			{
+				case PolyChunkMaterial pcm:
+					if (pcm.Diffuse.HasValue)
+						pdata2 += ", D(" + pcm.Diffuse.Value.A + ", " + pcm.Diffuse.Value.R + ", " + pcm.Diffuse.Value.G + ", " + pcm.Diffuse.Value.B + ")";
+					if (pcm.Ambient.HasValue)
+					{
+						pdata2 += ", A(" + pcm.Ambient.Value.A + ", " + pcm.Ambient.Value.R + ", " + pcm.Ambient.Value.G + ", " + pcm.Ambient.Value.B + ")";
+					}
+					if (pcm.Specular.HasValue)
+					{
+						pdata2 += ", S(" + pcm.Specular.Value.A + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")" + ", Exp " + pcm.SpecularExponent.ToString();
+					}
+					pdata2 += ", Src Alpha:" + pcm.SourceAlpha.ToString() + ", ";
+					pdata2 += "Dst Alpha:" + pcm.DestinationAlpha.ToString();
+					break;
+				case PolyChunkTinyTextureID pct:
+					float mip = pct.MipmapDAdjust;
+					string clamp = ", Clamp ";
+					string flip = ", Flip ";
+					string mipd = ", Mipmap 'D' Adjust ";
+					pdata2 += ", Tex ID " + pct.TextureID;
+					switch (pct.Flags & 0xF)
+					{
+						case 0:
+						default:
+							mipd += "000";
+							break;
+						case 1:
+							mipd += "025";
+							break;
+						case 2:
+							mipd += "050";
+							break;
+						case 3:
+							mipd += "075";
+							break;
+						case 4:
+							mipd += "100";
+							break;
+						case 5:
+							mipd += "125";
+							break;
+						case 6:
+							mipd += "150";
+							break;
+						case 7:
+							mipd += "175";
+							break;
+						case 8:
+							mipd += "200";
+							break;
+						case 9:
+							mipd += "225";
+							break;
+						case 10:
+							mipd += "250";
+							break;
+						case 11:
+							mipd += "275";
+							break;
+						case 12:
+							mipd += "300";
+							break;
+						case 13:
+							mipd += "325";
+							break;
+						case 14:
+							mipd += "350";
+							break;
+						case 15:
+							mipd += "375";
+							break;
+					}
+					if ((pct.Flags & 0xF) != 0)
+						pdata2 += mipd;
+					pdata2 += pct.SuperSample ? ", SuperSample" : "";
+					clamp += pct.ClampU ? "U" : "";
+					clamp += pct.ClampV ? "V" : "";
+					if (pct.ClampU || pct.ClampV)
+						pdata2 += clamp;
+					flip += pct.FlipU ? "U" : "";
+					flip += pct.FlipV ? "V" : "";
+					if (pct.FlipU || pct.FlipV)
+						pdata2 += flip;
+					pdata2 += ", " + pct.FilterMode.ToString();
+					break;
+				case PolyChunkStrip pcs:
+					string stripflags = "";
+					stripflags += pcs.UseAlpha ? ", Use Alpha" : "";
+					stripflags += pcs.DoubleSide ? ", Double Side" : "";
+					stripflags += pcs.EnvironmentMapping ? ", Environment Map" : "";
+					stripflags += pcs.FlatShading ? ", Flat Shading" : "";
+					stripflags += pcs.IgnoreLight ? ", Ignore Light" : "";
+					stripflags += pcs.IgnoreAmbient ? ", Ignore Ambient" : "";
+					stripflags += pcs.IgnoreSpecular ? ", Ignore Specular" : "";
+					pdata2 += stripflags;
+					break;
+			}
 			// Status bar
-			string bardata = polytype;
-			if (pdata != null || pdata != "")
-				bardata += pdata;
+			string bardata = ptype;
+			bardata += pdata2;
 			StringBuilder sb = new StringBuilder();
 			sb.Append("Attributes: ");
 			sb.Append(bardata);
@@ -815,14 +917,26 @@ namespace SAModel.SAEditorCommon.UI
 				return;
 			}
 			showVertexCollectionToolStripMenuItem.Enabled = true;
-			string verttype = listViewVertices.SelectedItems[0].SubItems[1].Text;
-			string vdata = listViewVertices.SelectedItems[0].SubItems[2].Text;
-			string bardata = verttype;
-			if (vdata != null)
-				bardata += ", " + vdata;
+			VertexChunk vchunk = ((ChunkAttach)editedModel).Vertex[listViewVertices.SelectedIndices[0]];
+			string verttype = vchunk.Type.ToString();
+			string vflags = vchunk.Flags.ToString();
+			string vweight = vchunk.WeightStatus.ToString();
+			string vsize = vchunk.Size.ToString();
+			string vcount = vchunk.VertexCount.ToString();
 			StringBuilder sb = new StringBuilder();
 			sb.Append("Attributes: ");
-			sb.Append(bardata);
+			sb.Append(verttype);
+			sb.Append(", Flags:");
+			sb.Append(vflags);
+			if (vchunk.HasWeight)
+			{
+				sb.Append(", Weight Status:");
+				sb.Append(vweight);
+			}
+			sb.Append(", Size:");
+			sb.Append(vsize);
+			sb.Append(", Count:");
+			sb.Append(vcount);
 			toolStripStatusLabelInfo.Text = sb.ToString();
 		}
 	}

@@ -448,14 +448,54 @@ namespace SAModel.GC
 			var normals = VertexData.Find(x => x.Attribute == GCVertexAttribute.Normal)?.Data;
 			var colors = VertexData.Find(x => x.Attribute == GCVertexAttribute.Color0)?.Data;
 			var uvs = VertexData.Find(x => x.Attribute == GCVertexAttribute.Tex0)?.Data;
+			GCUVScale ouvscale = GCUVScale.Default;
+			List<VtxAttrFmtParameter> ovtxparams = new List<VtxAttrFmtParameter>();
+			List<VtxAttrFmtParameter> tvtxparams = new List<VtxAttrFmtParameter>();
+			if (OpaqueMeshes.Count > 0)
+			{
+				var oparams = OpaqueMeshes[0].Parameters;
+				for (int i = 0; i < oparams.Count; i++)
+				{
+					if (oparams[i].Type == ParameterType.VtxAttrFmt)
+					{
+						ovtxparams.Add((VtxAttrFmtParameter)oparams[i]);
+					}
+				}
+				for (int i = 0; i < ovtxparams.Count; i++)
+				{
+					if (ovtxparams[i].VertexAttribute == GCVertexAttribute.Tex0)
+					{
+						ouvscale = ovtxparams[i].UVScale;
+					}
+				}
+			}
+			GCUVScale tuvscale = GCUVScale.Default;
+			if (TranslucentMeshes.Count > 0)
+			{
+				var tparams = TranslucentMeshes[0].Parameters;
+				for (int i = 0; i < tparams.Count; i++)
+				{
+					if (tparams[i].Type == ParameterType.VtxAttrFmt)
+					{
+						tvtxparams.Add((VtxAttrFmtParameter)tparams[i]);
+					}
+				}
+				for (int i = 0; i < tvtxparams.Count; i++)
+				{
+					if (tvtxparams[i].VertexAttribute == GCVertexAttribute.Tex0)
+					{
+						tuvscale = tvtxparams[i].UVScale;
+					}
+				}
+			}
 
 			var mat = new NJS_MATERIAL();
 
 			mat.UseAlpha = false;
-			var meshInfo = OpaqueMeshes.Select(m => m.Process(mat, positions, normals, colors, uvs)).ToList();
+			var meshInfo = OpaqueMeshes.Select(m => m.Process(mat, positions, normals, colors, uvs, ouvscale)).ToList();
 
 			mat.UseAlpha = true;
-			meshInfo.AddRange(TranslucentMeshes.Select(m => m.Process(mat, positions, normals, colors, uvs)));
+			meshInfo.AddRange(TranslucentMeshes.Select(m => m.Process(mat, positions, normals, colors, uvs, tuvscale)));
 
 			MeshInfo = meshInfo.ToArray();
 		}

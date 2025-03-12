@@ -371,14 +371,6 @@ namespace SAModel.GC
 		public GCVertexSet Clone()
 		{
 			var result = (GCVertexSet)MemberwiseClone();
-			//result.data = new List<IOVtx>(data.Count);
-			//foreach (IOVtx item in data)
-				//result.data.Add(item.Clone());
-			//result.Normals = new List<Vector3>(Normals.Count);
-			//foreach (Vector3 item in Normals)
-			//	result.Normals.Add(item.Clone());
-			//result.Colors = new List<Color>(Colors);
-			//result.UVs = new List<UV>(UVs);
 			return result;
 		}
 	}

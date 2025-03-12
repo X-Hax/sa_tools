@@ -259,9 +259,13 @@ namespace SA2EventViewer
 				else
 					bigmeshes.Add(null);
 			}
-			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.prs";
+			TexturePackName = Path.GetFileNameWithoutExtension(filename) + "texture.pak";
 			if (!File.Exists(TexturePackName))
-				TexturePackName = Path.GetFileNameWithoutExtension(filename) + ".pvm";
+			{
+				TexturePackName = Path.GetFileNameWithoutExtension(filename) + ".prs";
+				if (!File.Exists(TexturePackName))
+					TexturePackName = Path.GetFileNameWithoutExtension(filename) + ".pvm";
+			}
 			TextureInfo = TextureArchive.GetTextures(TexturePackName, out bool hasNames);
 
 			Textures = new Texture[TextureInfo.Length];

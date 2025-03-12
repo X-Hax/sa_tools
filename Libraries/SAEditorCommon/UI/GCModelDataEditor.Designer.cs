@@ -28,532 +28,661 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GCModelDataEditor));
-            this.buttonMoveMeshUp = new System.Windows.Forms.Button();
-            this.buttonMoveMeshDown = new System.Windows.Forms.Button();
-            this.listViewMeshes = new System.Windows.Forms.ListView();
-            this.columnHeaderIndex = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderMatID = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderType = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderPoly = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderUV = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderVcolor = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderPolynormals = new System.Windows.Forms.ColumnHeader();
-            this.columnHeaderTrans = new System.Windows.Forms.ColumnHeader();
-            this.buttonCloneMesh = new System.Windows.Forms.Button();
-            this.buttonDeleteMesh = new System.Windows.Forms.Button();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabelInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.labelModelName = new System.Windows.Forms.Label();
-            this.labelMeshsetName = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxVertexName = new System.Windows.Forms.TextBox();
-            this.textBoxOPolyName = new System.Windows.Forms.TextBox();
-            this.textBoxModelName = new System.Windows.Forms.TextBox();
-            this.textBoxModelY = new System.Windows.Forms.TextBox();
-            this.textBoxModelZ = new System.Windows.Forms.TextBox();
-            this.textBoxModelX = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.groupBoxLabels = new System.Windows.Forms.GroupBox();
-            this.textBoxObjectName = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBoxTPolyName = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.groupBoxBounds = new System.Windows.Forms.GroupBox();
-            this.textBoxModelRadius = new System.Windows.Forms.TextBox();
-            this.labelR = new System.Windows.Forms.Label();
-            this.groupBoxMeshList = new System.Windows.Forms.GroupBox();
-            this.buttonResetMeshes = new System.Windows.Forms.Button();
-            this.buttonClose = new System.Windows.Forms.Button();
-            this.contextMenuStripLabels = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemEditMaterialID = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItemEditPolyName = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemEditUVName = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemEditVcolorName = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemEditPolynormalName = new System.Windows.Forms.ToolStripMenuItem();
-            this.comboBoxNode = new System.Windows.Forms.ComboBox();
-            this.statusStrip1.SuspendLayout();
-            this.groupBoxLabels.SuspendLayout();
-            this.groupBoxBounds.SuspendLayout();
-            this.groupBoxMeshList.SuspendLayout();
-            this.contextMenuStripLabels.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // buttonMoveMeshUp
-            // 
-            this.buttonMoveMeshUp.Enabled = false;
-            this.buttonMoveMeshUp.Location = new System.Drawing.Point(714, 21);
-            this.buttonMoveMeshUp.Name = "buttonMoveMeshUp";
-            this.buttonMoveMeshUp.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshUp.TabIndex = 12;
-            this.buttonMoveMeshUp.Text = "↑";
-            this.buttonMoveMeshUp.UseVisualStyleBackColor = true;
-            this.buttonMoveMeshUp.Click += new System.EventHandler(this.buttonMoveMeshUp_Click);
-            // 
-            // buttonMoveMeshDown
-            // 
-            this.buttonMoveMeshDown.Enabled = false;
-            this.buttonMoveMeshDown.Location = new System.Drawing.Point(714, 51);
-            this.buttonMoveMeshDown.Name = "buttonMoveMeshDown";
-            this.buttonMoveMeshDown.Size = new System.Drawing.Size(24, 24);
-            this.buttonMoveMeshDown.TabIndex = 13;
-            this.buttonMoveMeshDown.Text = "↓";
-            this.buttonMoveMeshDown.UseVisualStyleBackColor = true;
-            this.buttonMoveMeshDown.Click += new System.EventHandler(this.buttonMoveMeshDown_Click);
-            // 
-            // listViewMeshes
-            // 
-            this.listViewMeshes.AutoArrange = false;
-            this.listViewMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeaderIndex,
-            this.columnHeaderMatID,
-            this.columnHeaderType,
-            this.columnHeaderPoly,
-            this.columnHeaderUV,
-            this.columnHeaderVcolor,
-            this.columnHeaderPolynormals,
-            this.columnHeaderTrans});
-            this.listViewMeshes.FullRowSelect = true;
-            this.listViewMeshes.GridLines = true;
-            this.listViewMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listViewMeshes.HideSelection = false;
-            this.listViewMeshes.Location = new System.Drawing.Point(5, 19);
-            this.listViewMeshes.MultiSelect = false;
-            this.listViewMeshes.Name = "listViewMeshes";
-            this.listViewMeshes.ShowGroups = false;
-            this.listViewMeshes.Size = new System.Drawing.Size(703, 236);
-            this.listViewMeshes.TabIndex = 11;
-            this.listViewMeshes.UseCompatibleStateImageBehavior = false;
-            this.listViewMeshes.View = System.Windows.Forms.View.Details;
-            this.listViewMeshes.SelectedIndexChanged += new System.EventHandler(this.listViewMeshes_SelectedIndexChanged);
-            this.listViewMeshes.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewMeshes_MouseClick);
-            // 
-            // columnHeaderIndex
-            // 
-            this.columnHeaderIndex.Text = "Index";
-            // 
-            // columnHeaderMatID
-            // 
-            this.columnHeaderMatID.Text = "Material";
-            // 
-            // columnHeaderType
-            // 
-            this.columnHeaderType.Text = "Type";
-            // 
-            // columnHeaderPoly
-            // 
-            this.columnHeaderPoly.Text = "Polys";
-            // 
-            // columnHeaderUV
-            // 
-            this.columnHeaderUV.Text = "UVs";
-            // 
-            // columnHeaderVcolor
-            // 
-            this.columnHeaderVcolor.Text = "Vertex Colors";
-            // 
-            // columnHeaderPolynormals
-            // 
-            this.columnHeaderPolynormals.Text = "Polynormals";
-            // 
-            // columnHeaderTrans
-            // 
-            this.columnHeaderTrans.Text = "Uses Alpha?";
-            // 
-            // buttonCloneMesh
-            // 
-            this.buttonCloneMesh.Enabled = false;
-            this.buttonCloneMesh.Location = new System.Drawing.Point(5, 261);
-            this.buttonCloneMesh.Name = "buttonCloneMesh";
-            this.buttonCloneMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonCloneMesh.TabIndex = 14;
-            this.buttonCloneMesh.Text = "Clone Mesh";
-            this.buttonCloneMesh.UseVisualStyleBackColor = true;
-            this.buttonCloneMesh.Click += new System.EventHandler(this.buttonCloneMesh_Click);
-            // 
-            // buttonDeleteMesh
-            // 
-            this.buttonDeleteMesh.Enabled = false;
-            this.buttonDeleteMesh.Location = new System.Drawing.Point(100, 261);
-            this.buttonDeleteMesh.Name = "buttonDeleteMesh";
-            this.buttonDeleteMesh.Size = new System.Drawing.Size(90, 24);
-            this.buttonDeleteMesh.TabIndex = 15;
-            this.buttonDeleteMesh.Text = "Delete Mesh";
-            this.buttonDeleteMesh.UseVisualStyleBackColor = true;
-            this.buttonDeleteMesh.Click += new System.EventHandler(this.buttonDeleteMesh_Click);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabelInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 487);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(758, 22);
-            this.statusStrip1.SizingGrip = false;
-            this.statusStrip1.TabIndex = 11;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabelInfo
-            // 
-            this.toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-            this.toolStripStatusLabelInfo.Size = new System.Drawing.Size(343, 17);
-            this.toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
-            // 
-            // labelModelName
-            // 
-            this.labelModelName.AutoSize = true;
-            this.labelModelName.Location = new System.Drawing.Point(8, 48);
-            this.labelModelName.Name = "labelModelName";
-            this.labelModelName.Size = new System.Drawing.Size(79, 15);
-            this.labelModelName.TabIndex = 12;
-            this.labelModelName.Text = "Model Name:";
-            // 
-            // labelMeshsetName
-            // 
-            this.labelMeshsetName.AutoSize = true;
-            this.labelMeshsetName.Location = new System.Drawing.Point(242, 48);
-            this.labelMeshsetName.Name = "labelMeshsetName";
-            this.labelMeshsetName.Size = new System.Drawing.Size(113, 15);
-            this.labelMeshsetName.TabIndex = 13;
-            this.labelMeshsetName.Text = "Opaque Poly Name:";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(270, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 15);
-            this.label1.TabIndex = 15;
-            this.label1.Text = "Vertices Name:";
-            // 
-            // textBoxVertexName
-            // 
-            this.textBoxVertexName.Location = new System.Drawing.Point(360, 18);
-            this.textBoxVertexName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxVertexName.Name = "textBoxVertexName";
-            this.textBoxVertexName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxVertexName.TabIndex = 3;
-            this.textBoxVertexName.TextChanged += new System.EventHandler(this.textBoxVertexName_TextChanged);
-            // 
-            // textBoxOPolyName
-            // 
-            this.textBoxOPolyName.Location = new System.Drawing.Point(360, 45);
-            this.textBoxOPolyName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxOPolyName.Name = "textBoxOPolyName";
-            this.textBoxOPolyName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxOPolyName.TabIndex = 4;
-            this.textBoxOPolyName.TextChanged += new System.EventHandler(this.textBoxOPolyName_TextChanged);
-            // 
-            // textBoxModelName
-            // 
-            this.textBoxModelName.Location = new System.Drawing.Point(92, 45);
-            this.textBoxModelName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelName.Name = "textBoxModelName";
-            this.textBoxModelName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxModelName.TabIndex = 2;
-            this.textBoxModelName.TextChanged += new System.EventHandler(this.textBoxModelName_TextChanged);
-            // 
-            // textBoxModelY
-            // 
-            this.textBoxModelY.Location = new System.Drawing.Point(36, 45);
-            this.textBoxModelY.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelY.Name = "textBoxModelY";
-            this.textBoxModelY.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelY.TabIndex = 8;
-            this.textBoxModelY.TextChanged += new System.EventHandler(this.textBoxModelY_TextChanged);
-            // 
-            // textBoxModelZ
-            // 
-            this.textBoxModelZ.Location = new System.Drawing.Point(36, 72);
-            this.textBoxModelZ.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelZ.Name = "textBoxModelZ";
-            this.textBoxModelZ.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelZ.TabIndex = 9;
-            this.textBoxModelZ.TextChanged += new System.EventHandler(this.textBoxModelZ_TextChanged);
-            // 
-            // textBoxModelX
-            // 
-            this.textBoxModelX.Location = new System.Drawing.Point(36, 18);
-            this.textBoxModelX.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelX.Name = "textBoxModelX";
-            this.textBoxModelX.Size = new System.Drawing.Size(80, 23);
-            this.textBoxModelX.TabIndex = 7;
-            this.textBoxModelX.TextChanged += new System.EventHandler(this.textBoxModelX_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(14, 21);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(17, 15);
-            this.label4.TabIndex = 23;
-            this.label4.Text = "X:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(14, 48);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(17, 15);
-            this.label5.TabIndex = 24;
-            this.label5.Text = "Y:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(14, 75);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(17, 15);
-            this.label6.TabIndex = 25;
-            this.label6.Text = "Z:";
-            // 
-            // groupBoxLabels
-            // 
-            this.groupBoxLabels.Controls.Add(this.textBoxObjectName);
-            this.groupBoxLabels.Controls.Add(this.label7);
-            this.groupBoxLabels.Controls.Add(this.textBoxTPolyName);
-            this.groupBoxLabels.Controls.Add(this.label2);
-            this.groupBoxLabels.Controls.Add(this.textBoxModelName);
-            this.groupBoxLabels.Controls.Add(this.labelModelName);
-            this.groupBoxLabels.Controls.Add(this.labelMeshsetName);
-            this.groupBoxLabels.Controls.Add(this.label1);
-            this.groupBoxLabels.Controls.Add(this.textBoxVertexName);
-            this.groupBoxLabels.Controls.Add(this.textBoxOPolyName);
-            this.groupBoxLabels.Location = new System.Drawing.Point(8, 40);
-            this.groupBoxLabels.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBoxLabels.Name = "groupBoxLabels";
-            this.groupBoxLabels.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxLabels.Size = new System.Drawing.Size(509, 104);
-            this.groupBoxLabels.TabIndex = 26;
-            this.groupBoxLabels.TabStop = false;
-            this.groupBoxLabels.Text = "Labels";
-            // 
-            // textBoxObjectName
-            // 
-            this.textBoxObjectName.Location = new System.Drawing.Point(92, 18);
-            this.textBoxObjectName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxObjectName.Name = "textBoxObjectName";
-            this.textBoxObjectName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxObjectName.TabIndex = 1;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(7, 21);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(80, 15);
-            this.label7.TabIndex = 23;
-            this.label7.Text = "Object Name:";
-            // 
-            // textBoxTPolyName
-            // 
-            this.textBoxTPolyName.Location = new System.Drawing.Point(360, 72);
-            this.textBoxTPolyName.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxTPolyName.Name = "textBoxTPolyName";
-            this.textBoxTPolyName.Size = new System.Drawing.Size(145, 23);
-            this.textBoxTPolyName.TabIndex = 5;
-            this.textBoxTPolyName.TextChanged += new System.EventHandler(this.textBoxTPolyName_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(224, 75);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(131, 15);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "Translucent Poly Name:";
-            // 
-            // groupBoxBounds
-            // 
-            this.groupBoxBounds.Controls.Add(this.textBoxModelRadius);
-            this.groupBoxBounds.Controls.Add(this.labelR);
-            this.groupBoxBounds.Controls.Add(this.textBoxModelX);
-            this.groupBoxBounds.Controls.Add(this.textBoxModelY);
-            this.groupBoxBounds.Controls.Add(this.label6);
-            this.groupBoxBounds.Controls.Add(this.textBoxModelZ);
-            this.groupBoxBounds.Controls.Add(this.label5);
-            this.groupBoxBounds.Controls.Add(this.label4);
-            this.groupBoxBounds.Location = new System.Drawing.Point(522, 40);
-            this.groupBoxBounds.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBoxBounds.Name = "groupBoxBounds";
-            this.groupBoxBounds.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxBounds.Size = new System.Drawing.Size(232, 104);
-            this.groupBoxBounds.TabIndex = 27;
-            this.groupBoxBounds.TabStop = false;
-            this.groupBoxBounds.Text = "Model Bounds";
-            // 
-            // textBoxModelRadius
-            // 
-            this.textBoxModelRadius.Location = new System.Drawing.Point(128, 45);
-            this.textBoxModelRadius.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxModelRadius.Name = "textBoxModelRadius";
-            this.textBoxModelRadius.Size = new System.Drawing.Size(93, 23);
-            this.textBoxModelRadius.TabIndex = 10;
-            this.textBoxModelRadius.TextChanged += new System.EventHandler(this.textBoxModelRadius_TextChanged);
-            // 
-            // labelR
-            // 
-            this.labelR.AutoSize = true;
-            this.labelR.Location = new System.Drawing.Point(128, 21);
-            this.labelR.Name = "labelR";
-            this.labelR.Size = new System.Drawing.Size(45, 15);
-            this.labelR.TabIndex = 31;
-            this.labelR.Text = "Radius:";
-            // 
-            // groupBoxMeshList
-            // 
-            this.groupBoxMeshList.Controls.Add(this.buttonResetMeshes);
-            this.groupBoxMeshList.Controls.Add(this.buttonMoveMeshUp);
-            this.groupBoxMeshList.Controls.Add(this.buttonMoveMeshDown);
-            this.groupBoxMeshList.Controls.Add(this.listViewMeshes);
-            this.groupBoxMeshList.Controls.Add(this.buttonDeleteMesh);
-            this.groupBoxMeshList.Controls.Add(this.buttonCloneMesh);
-            this.groupBoxMeshList.Location = new System.Drawing.Point(8, 160);
-            this.groupBoxMeshList.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBoxMeshList.Name = "groupBoxMeshList";
-            this.groupBoxMeshList.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBoxMeshList.Size = new System.Drawing.Size(745, 294);
-            this.groupBoxMeshList.TabIndex = 28;
-            this.groupBoxMeshList.TabStop = false;
-            this.groupBoxMeshList.Text = "Mesh List";
-            // 
-            // buttonResetMeshes
-            // 
-            this.buttonResetMeshes.Location = new System.Drawing.Point(618, 261);
-            this.buttonResetMeshes.Name = "buttonResetMeshes";
-            this.buttonResetMeshes.Size = new System.Drawing.Size(90, 24);
-            this.buttonResetMeshes.TabIndex = 16;
-            this.buttonResetMeshes.Text = "Reset Meshes";
-            this.buttonResetMeshes.UseVisualStyleBackColor = true;
-            this.buttonResetMeshes.Click += new System.EventHandler(this.buttonResetMeshes_Click);
-            // 
-            // buttonClose
-            // 
-            this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonClose.Location = new System.Drawing.Point(670, 458);
-            this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(84, 24);
-            this.buttonClose.TabIndex = 17;
-            this.buttonClose.Text = "Close";
-            this.buttonClose.UseVisualStyleBackColor = true;
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
-            // 
-            // contextMenuStripLabels
-            // 
-            this.contextMenuStripLabels.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.contextMenuStripLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemEditMaterialID,
-            this.toolStripSeparator1,
-            this.toolStripMenuItemEditPolyName,
-            this.toolStripMenuItemEditUVName,
-            this.toolStripMenuItemEditVcolorName,
-            this.toolStripMenuItemEditPolynormalName});
-            this.contextMenuStripLabels.Name = "contextMenuStripLabels";
-            this.contextMenuStripLabels.Size = new System.Drawing.Size(203, 120);
-            // 
-            // toolStripMenuItemEditMaterialID
-            // 
-            this.toolStripMenuItemEditMaterialID.Name = "toolStripMenuItemEditMaterialID";
-            this.toolStripMenuItemEditMaterialID.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditMaterialID.Text = "Edit Material ID...";
-            this.toolStripMenuItemEditMaterialID.Click += new System.EventHandler(this.toolStripMenuItemEditMaterialID_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(199, 6);
-            // 
-            // toolStripMenuItemEditPolyName
-            // 
-            this.toolStripMenuItemEditPolyName.Name = "toolStripMenuItemEditPolyName";
-            this.toolStripMenuItemEditPolyName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditPolyName.Text = "Edit Polys Name...";
-            this.toolStripMenuItemEditPolyName.Click += new System.EventHandler(this.toolStripMenuItemEditPolyName_Click);
-            // 
-            // toolStripMenuItemEditUVName
-            // 
-            this.toolStripMenuItemEditUVName.Name = "toolStripMenuItemEditUVName";
-            this.toolStripMenuItemEditUVName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditUVName.Text = "Edit UVs Name...";
-            this.toolStripMenuItemEditUVName.Click += new System.EventHandler(this.toolStripMenuItemEditUVName_Click);
-            // 
-            // toolStripMenuItemEditVcolorName
-            // 
-            this.toolStripMenuItemEditVcolorName.Name = "toolStripMenuItemEditVcolorName";
-            this.toolStripMenuItemEditVcolorName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditVcolorName.Text = "Edit VColor Name...";
-            this.toolStripMenuItemEditVcolorName.Click += new System.EventHandler(this.toolStripMenuItemEditVcolorName_Click);
-            // 
-            // toolStripMenuItemEditPolynormalName
-            // 
-            this.toolStripMenuItemEditPolynormalName.Name = "toolStripMenuItemEditPolynormalName";
-            this.toolStripMenuItemEditPolynormalName.Size = new System.Drawing.Size(202, 22);
-            this.toolStripMenuItemEditPolynormalName.Text = "Edit Polynormal Name...";
-            this.toolStripMenuItemEditPolynormalName.Click += new System.EventHandler(this.toolStripMenuItemEditPolynormalName_Click);
-            // 
-            // comboBoxNode
-            // 
-            this.comboBoxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxNode.FormattingEnabled = true;
-            this.comboBoxNode.Location = new System.Drawing.Point(8, 12);
-            this.comboBoxNode.Name = "comboBoxNode";
-            this.comboBoxNode.Size = new System.Drawing.Size(355, 23);
-            this.comboBoxNode.TabIndex = 0;
-            this.comboBoxNode.SelectedIndexChanged += new System.EventHandler(this.comboBoxNode_SelectedIndexChanged);
-            // 
-            // GCModelDataEditor
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(758, 509);
-            this.Controls.Add(this.comboBoxNode);
-            this.Controls.Add(this.buttonClose);
-            this.Controls.Add(this.groupBoxMeshList);
-            this.Controls.Add(this.groupBoxBounds);
-            this.Controls.Add(this.groupBoxLabels);
-            this.Controls.Add(this.statusStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "GCModelDataEditor";
-            this.ShowInTaskbar = false;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Model Data Editor";
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.groupBoxLabels.ResumeLayout(false);
-            this.groupBoxLabels.PerformLayout();
-            this.groupBoxBounds.ResumeLayout(false);
-            this.groupBoxBounds.PerformLayout();
-            this.groupBoxMeshList.ResumeLayout(false);
-            this.contextMenuStripLabels.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+			components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GCModelDataEditor));
+			buttonMoveTMeshUp = new System.Windows.Forms.Button();
+			buttonMoveTMeshDown = new System.Windows.Forms.Button();
+			listViewOMeshes = new System.Windows.Forms.ListView();
+			columnHeaderIndex = new System.Windows.Forms.ColumnHeader();
+			columnHeaderEntries = new System.Windows.Forms.ColumnHeader();
+			columnHeaderPrim = new System.Windows.Forms.ColumnHeader();
+			statusStrip1 = new System.Windows.Forms.StatusStrip();
+			toolStripStatusLabelInfo = new System.Windows.Forms.ToolStripStatusLabel();
+			labelModelName = new System.Windows.Forms.Label();
+			labelMeshsetName = new System.Windows.Forms.Label();
+			label1 = new System.Windows.Forms.Label();
+			textBoxVertexName = new System.Windows.Forms.TextBox();
+			textBoxOPolyName = new System.Windows.Forms.TextBox();
+			textBoxModelName = new System.Windows.Forms.TextBox();
+			textBoxModelY = new System.Windows.Forms.TextBox();
+			textBoxModelZ = new System.Windows.Forms.TextBox();
+			textBoxModelX = new System.Windows.Forms.TextBox();
+			label4 = new System.Windows.Forms.Label();
+			label5 = new System.Windows.Forms.Label();
+			label6 = new System.Windows.Forms.Label();
+			groupBoxLabels = new System.Windows.Forms.GroupBox();
+			textBoxObjectName = new System.Windows.Forms.TextBox();
+			label7 = new System.Windows.Forms.Label();
+			textBoxTPolyName = new System.Windows.Forms.TextBox();
+			label2 = new System.Windows.Forms.Label();
+			groupBoxBounds = new System.Windows.Forms.GroupBox();
+			textBoxModelRadius = new System.Windows.Forms.TextBox();
+			labelR = new System.Windows.Forms.Label();
+			groupBoxMeshList = new System.Windows.Forms.GroupBox();
+			groupBoxTrans = new System.Windows.Forms.GroupBox();
+			listViewTMeshes = new System.Windows.Forms.ListView();
+			columnHeader5 = new System.Windows.Forms.ColumnHeader();
+			columnHeader6 = new System.Windows.Forms.ColumnHeader();
+			columnHeader9 = new System.Windows.Forms.ColumnHeader();
+			buttonResetTMeshes = new System.Windows.Forms.Button();
+			buttonDeleteTMesh = new System.Windows.Forms.Button();
+			buttonCloneTMesh = new System.Windows.Forms.Button();
+			groupBoxOpaque = new System.Windows.Forms.GroupBox();
+			buttonMoveOMeshUp = new System.Windows.Forms.Button();
+			buttonMoveOMeshDown = new System.Windows.Forms.Button();
+			buttonResetOMeshes = new System.Windows.Forms.Button();
+			buttonDeleteOMesh = new System.Windows.Forms.Button();
+			buttonCloneOMesh = new System.Windows.Forms.Button();
+			buttonClose = new System.Windows.Forms.Button();
+			contextMenuStripParamEdit = new System.Windows.Forms.ContextMenuStrip(components);
+			openOParameterViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			openTParameterViewerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			comboBoxNode = new System.Windows.Forms.ComboBox();
+			groupBoxVertexList = new System.Windows.Forms.GroupBox();
+			listViewVertices = new System.Windows.Forms.ListView();
+			columnHeader1 = new System.Windows.Forms.ColumnHeader();
+			columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			columnHeader3 = new System.Windows.Forms.ColumnHeader();
+			columnHeader4 = new System.Windows.Forms.ColumnHeader();
+			contextMenuStripVertData = new System.Windows.Forms.ContextMenuStrip(components);
+			viewVertexDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			statusStrip1.SuspendLayout();
+			groupBoxLabels.SuspendLayout();
+			groupBoxBounds.SuspendLayout();
+			groupBoxMeshList.SuspendLayout();
+			groupBoxTrans.SuspendLayout();
+			groupBoxOpaque.SuspendLayout();
+			contextMenuStripParamEdit.SuspendLayout();
+			groupBoxVertexList.SuspendLayout();
+			contextMenuStripVertData.SuspendLayout();
+			SuspendLayout();
+			// 
+			// buttonMoveTMeshUp
+			// 
+			buttonMoveTMeshUp.Enabled = false;
+			buttonMoveTMeshUp.Location = new System.Drawing.Point(317, 28);
+			buttonMoveTMeshUp.Margin = new System.Windows.Forms.Padding(4);
+			buttonMoveTMeshUp.Name = "buttonMoveTMeshUp";
+			buttonMoveTMeshUp.Size = new System.Drawing.Size(36, 36);
+			buttonMoveTMeshUp.TabIndex = 12;
+			buttonMoveTMeshUp.Text = "↑";
+			buttonMoveTMeshUp.UseVisualStyleBackColor = true;
+			buttonMoveTMeshUp.Click += buttonMoveTMeshUp_Click;
+			// 
+			// buttonMoveTMeshDown
+			// 
+			buttonMoveTMeshDown.Enabled = false;
+			buttonMoveTMeshDown.Location = new System.Drawing.Point(317, 72);
+			buttonMoveTMeshDown.Margin = new System.Windows.Forms.Padding(4);
+			buttonMoveTMeshDown.Name = "buttonMoveTMeshDown";
+			buttonMoveTMeshDown.Size = new System.Drawing.Size(36, 36);
+			buttonMoveTMeshDown.TabIndex = 13;
+			buttonMoveTMeshDown.Text = "↓";
+			buttonMoveTMeshDown.UseVisualStyleBackColor = true;
+			buttonMoveTMeshDown.Click += buttonMoveTMeshDown_Click;
+			// 
+			// listViewOMeshes
+			// 
+			listViewOMeshes.AutoArrange = false;
+			listViewOMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderIndex, columnHeaderEntries, columnHeaderPrim });
+			listViewOMeshes.FullRowSelect = true;
+			listViewOMeshes.GridLines = true;
+			listViewOMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewOMeshes.Location = new System.Drawing.Point(7, 28);
+			listViewOMeshes.Margin = new System.Windows.Forms.Padding(4);
+			listViewOMeshes.MultiSelect = false;
+			listViewOMeshes.Name = "listViewOMeshes";
+			listViewOMeshes.ShowGroups = false;
+			listViewOMeshes.Size = new System.Drawing.Size(303, 324);
+			listViewOMeshes.TabIndex = 11;
+			listViewOMeshes.UseCompatibleStateImageBehavior = false;
+			listViewOMeshes.View = System.Windows.Forms.View.Details;
+			listViewOMeshes.SelectedIndexChanged += listViewOMeshes_SelectedIndexChanged;
+			listViewOMeshes.MouseClick += listViewOMeshes_MouseClick;
+			// 
+			// columnHeaderIndex
+			// 
+			columnHeaderIndex.Text = "Index";
+			// 
+			// columnHeaderEntries
+			// 
+			columnHeaderEntries.Text = "Param Entries";
+			// 
+			// columnHeaderPrim
+			// 
+			columnHeaderPrim.Text = "Prim Count";
+			// 
+			// statusStrip1
+			// 
+			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
+			statusStrip1.Location = new System.Drawing.Point(0, 732);
+			statusStrip1.Name = "statusStrip1";
+			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
+			statusStrip1.Size = new System.Drawing.Size(1137, 32);
+			statusStrip1.SizingGrip = false;
+			statusStrip1.TabIndex = 11;
+			statusStrip1.Text = "statusStrip1";
+			// 
+			// toolStripStatusLabelInfo
+			// 
+			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
+			toolStripStatusLabelInfo.Size = new System.Drawing.Size(514, 25);
+			toolStripStatusLabelInfo.Text = "Click a mesh to display its information. Right click to edit labels.";
+			// 
+			// labelModelName
+			// 
+			labelModelName.AutoSize = true;
+			labelModelName.Location = new System.Drawing.Point(12, 72);
+			labelModelName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			labelModelName.Name = "labelModelName";
+			labelModelName.Size = new System.Drawing.Size(119, 25);
+			labelModelName.TabIndex = 12;
+			labelModelName.Text = "Model Name:";
+			// 
+			// labelMeshsetName
+			// 
+			labelMeshsetName.AutoSize = true;
+			labelMeshsetName.Location = new System.Drawing.Point(363, 72);
+			labelMeshsetName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			labelMeshsetName.Name = "labelMeshsetName";
+			labelMeshsetName.Size = new System.Drawing.Size(170, 25);
+			labelMeshsetName.TabIndex = 13;
+			labelMeshsetName.Text = "Opaque Poly Name:";
+			// 
+			// label1
+			// 
+			label1.AutoSize = true;
+			label1.Location = new System.Drawing.Point(405, 32);
+			label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			label1.Name = "label1";
+			label1.Size = new System.Drawing.Size(128, 25);
+			label1.TabIndex = 15;
+			label1.Text = "Vertices Name:";
+			// 
+			// textBoxVertexName
+			// 
+			textBoxVertexName.Location = new System.Drawing.Point(540, 27);
+			textBoxVertexName.Name = "textBoxVertexName";
+			textBoxVertexName.Size = new System.Drawing.Size(216, 31);
+			textBoxVertexName.TabIndex = 3;
+			textBoxVertexName.TextChanged += textBoxVertexName_TextChanged;
+			// 
+			// textBoxOPolyName
+			// 
+			textBoxOPolyName.Location = new System.Drawing.Point(540, 68);
+			textBoxOPolyName.Name = "textBoxOPolyName";
+			textBoxOPolyName.Size = new System.Drawing.Size(216, 31);
+			textBoxOPolyName.TabIndex = 4;
+			textBoxOPolyName.TextChanged += textBoxOPolyName_TextChanged;
+			// 
+			// textBoxModelName
+			// 
+			textBoxModelName.Location = new System.Drawing.Point(138, 68);
+			textBoxModelName.Name = "textBoxModelName";
+			textBoxModelName.Size = new System.Drawing.Size(216, 31);
+			textBoxModelName.TabIndex = 2;
+			textBoxModelName.TextChanged += textBoxModelName_TextChanged;
+			// 
+			// textBoxModelY
+			// 
+			textBoxModelY.Location = new System.Drawing.Point(54, 68);
+			textBoxModelY.Name = "textBoxModelY";
+			textBoxModelY.Size = new System.Drawing.Size(118, 31);
+			textBoxModelY.TabIndex = 8;
+			textBoxModelY.TextChanged += textBoxModelY_TextChanged;
+			// 
+			// textBoxModelZ
+			// 
+			textBoxModelZ.Location = new System.Drawing.Point(54, 108);
+			textBoxModelZ.Name = "textBoxModelZ";
+			textBoxModelZ.Size = new System.Drawing.Size(118, 31);
+			textBoxModelZ.TabIndex = 9;
+			textBoxModelZ.TextChanged += textBoxModelZ_TextChanged;
+			// 
+			// textBoxModelX
+			// 
+			textBoxModelX.Location = new System.Drawing.Point(54, 27);
+			textBoxModelX.Name = "textBoxModelX";
+			textBoxModelX.Size = new System.Drawing.Size(118, 31);
+			textBoxModelX.TabIndex = 7;
+			textBoxModelX.TextChanged += textBoxModelX_TextChanged;
+			// 
+			// label4
+			// 
+			label4.AutoSize = true;
+			label4.Location = new System.Drawing.Point(21, 32);
+			label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			label4.Name = "label4";
+			label4.Size = new System.Drawing.Size(27, 25);
+			label4.TabIndex = 23;
+			label4.Text = "X:";
+			// 
+			// label5
+			// 
+			label5.AutoSize = true;
+			label5.Location = new System.Drawing.Point(21, 72);
+			label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			label5.Name = "label5";
+			label5.Size = new System.Drawing.Size(26, 25);
+			label5.TabIndex = 24;
+			label5.Text = "Y:";
+			// 
+			// label6
+			// 
+			label6.AutoSize = true;
+			label6.Location = new System.Drawing.Point(21, 112);
+			label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			label6.Name = "label6";
+			label6.Size = new System.Drawing.Size(26, 25);
+			label6.TabIndex = 25;
+			label6.Text = "Z:";
+			// 
+			// groupBoxLabels
+			// 
+			groupBoxLabels.Controls.Add(textBoxObjectName);
+			groupBoxLabels.Controls.Add(label7);
+			groupBoxLabels.Controls.Add(textBoxTPolyName);
+			groupBoxLabels.Controls.Add(label2);
+			groupBoxLabels.Controls.Add(textBoxModelName);
+			groupBoxLabels.Controls.Add(labelModelName);
+			groupBoxLabels.Controls.Add(labelMeshsetName);
+			groupBoxLabels.Controls.Add(label1);
+			groupBoxLabels.Controls.Add(textBoxVertexName);
+			groupBoxLabels.Controls.Add(textBoxOPolyName);
+			groupBoxLabels.Location = new System.Drawing.Point(12, 60);
+			groupBoxLabels.Name = "groupBoxLabels";
+			groupBoxLabels.Size = new System.Drawing.Size(764, 156);
+			groupBoxLabels.TabIndex = 26;
+			groupBoxLabels.TabStop = false;
+			groupBoxLabels.Text = "Labels";
+			// 
+			// textBoxObjectName
+			// 
+			textBoxObjectName.Location = new System.Drawing.Point(138, 27);
+			textBoxObjectName.Name = "textBoxObjectName";
+			textBoxObjectName.Size = new System.Drawing.Size(216, 31);
+			textBoxObjectName.TabIndex = 1;
+			// 
+			// label7
+			// 
+			label7.AutoSize = true;
+			label7.Location = new System.Drawing.Point(10, 32);
+			label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			label7.Name = "label7";
+			label7.Size = new System.Drawing.Size(120, 25);
+			label7.TabIndex = 23;
+			label7.Text = "Object Name:";
+			// 
+			// textBoxTPolyName
+			// 
+			textBoxTPolyName.Location = new System.Drawing.Point(540, 108);
+			textBoxTPolyName.Name = "textBoxTPolyName";
+			textBoxTPolyName.Size = new System.Drawing.Size(216, 31);
+			textBoxTPolyName.TabIndex = 5;
+			textBoxTPolyName.TextChanged += textBoxTPolyName_TextChanged;
+			// 
+			// label2
+			// 
+			label2.AutoSize = true;
+			label2.Location = new System.Drawing.Point(336, 112);
+			label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			label2.Name = "label2";
+			label2.Size = new System.Drawing.Size(193, 25);
+			label2.TabIndex = 19;
+			label2.Text = "Translucent Poly Name:";
+			// 
+			// groupBoxBounds
+			// 
+			groupBoxBounds.Controls.Add(textBoxModelRadius);
+			groupBoxBounds.Controls.Add(labelR);
+			groupBoxBounds.Controls.Add(textBoxModelX);
+			groupBoxBounds.Controls.Add(textBoxModelY);
+			groupBoxBounds.Controls.Add(label6);
+			groupBoxBounds.Controls.Add(textBoxModelZ);
+			groupBoxBounds.Controls.Add(label5);
+			groupBoxBounds.Controls.Add(label4);
+			groupBoxBounds.Location = new System.Drawing.Point(783, 60);
+			groupBoxBounds.Name = "groupBoxBounds";
+			groupBoxBounds.Size = new System.Drawing.Size(348, 156);
+			groupBoxBounds.TabIndex = 27;
+			groupBoxBounds.TabStop = false;
+			groupBoxBounds.Text = "Model Bounds";
+			// 
+			// textBoxModelRadius
+			// 
+			textBoxModelRadius.Location = new System.Drawing.Point(192, 68);
+			textBoxModelRadius.Name = "textBoxModelRadius";
+			textBoxModelRadius.Size = new System.Drawing.Size(138, 31);
+			textBoxModelRadius.TabIndex = 10;
+			textBoxModelRadius.TextChanged += textBoxModelRadius_TextChanged;
+			// 
+			// labelR
+			// 
+			labelR.AutoSize = true;
+			labelR.Location = new System.Drawing.Point(192, 32);
+			labelR.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			labelR.Name = "labelR";
+			labelR.Size = new System.Drawing.Size(69, 25);
+			labelR.TabIndex = 31;
+			labelR.Text = "Radius:";
+			// 
+			// groupBoxMeshList
+			// 
+			groupBoxMeshList.Controls.Add(groupBoxTrans);
+			groupBoxMeshList.Controls.Add(groupBoxOpaque);
+			groupBoxMeshList.Location = new System.Drawing.Point(382, 240);
+			groupBoxMeshList.Name = "groupBoxMeshList";
+			groupBoxMeshList.Size = new System.Drawing.Size(748, 441);
+			groupBoxMeshList.TabIndex = 28;
+			groupBoxMeshList.TabStop = false;
+			groupBoxMeshList.Text = "Mesh Data";
+			// 
+			// groupBoxTrans
+			// 
+			groupBoxTrans.Controls.Add(listViewTMeshes);
+			groupBoxTrans.Controls.Add(buttonMoveTMeshUp);
+			groupBoxTrans.Controls.Add(buttonResetTMeshes);
+			groupBoxTrans.Controls.Add(buttonMoveTMeshDown);
+			groupBoxTrans.Controls.Add(buttonDeleteTMesh);
+			groupBoxTrans.Controls.Add(buttonCloneTMesh);
+			groupBoxTrans.Location = new System.Drawing.Point(375, 25);
+			groupBoxTrans.Name = "groupBoxTrans";
+			groupBoxTrans.Size = new System.Drawing.Size(361, 406);
+			groupBoxTrans.TabIndex = 19;
+			groupBoxTrans.TabStop = false;
+			groupBoxTrans.Text = "Translucent";
+			// 
+			// listViewTMeshes
+			// 
+			listViewTMeshes.AutoArrange = false;
+			listViewTMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeader5, columnHeader6, columnHeader9 });
+			listViewTMeshes.FullRowSelect = true;
+			listViewTMeshes.GridLines = true;
+			listViewTMeshes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewTMeshes.Location = new System.Drawing.Point(7, 28);
+			listViewTMeshes.Margin = new System.Windows.Forms.Padding(4);
+			listViewTMeshes.MultiSelect = false;
+			listViewTMeshes.Name = "listViewTMeshes";
+			listViewTMeshes.ShowGroups = false;
+			listViewTMeshes.Size = new System.Drawing.Size(303, 324);
+			listViewTMeshes.TabIndex = 17;
+			listViewTMeshes.UseCompatibleStateImageBehavior = false;
+			listViewTMeshes.View = System.Windows.Forms.View.Details;
+			listViewTMeshes.SelectedIndexChanged += listViewTMeshes_SelectedIndexChanged;
+			listViewTMeshes.MouseClick += listViewTMeshes_MouseClick;
+			// 
+			// columnHeader5
+			// 
+			columnHeader5.Text = "Index";
+			// 
+			// columnHeader6
+			// 
+			columnHeader6.Text = "Param Entries";
+			// 
+			// columnHeader9
+			// 
+			columnHeader9.Text = "Prim Count";
+			// 
+			// buttonResetTMeshes
+			// 
+			buttonResetTMeshes.Location = new System.Drawing.Point(206, 360);
+			buttonResetTMeshes.Margin = new System.Windows.Forms.Padding(4);
+			buttonResetTMeshes.Name = "buttonResetTMeshes";
+			buttonResetTMeshes.Size = new System.Drawing.Size(135, 36);
+			buttonResetTMeshes.TabIndex = 16;
+			buttonResetTMeshes.Text = "Reset Meshes";
+			buttonResetTMeshes.UseVisualStyleBackColor = true;
+			buttonResetTMeshes.Click += buttonResetTMeshes_Click;
+			// 
+			// buttonDeleteTMesh
+			// 
+			buttonDeleteTMesh.Enabled = false;
+			buttonDeleteTMesh.Location = new System.Drawing.Point(104, 360);
+			buttonDeleteTMesh.Margin = new System.Windows.Forms.Padding(4);
+			buttonDeleteTMesh.Name = "buttonDeleteTMesh";
+			buttonDeleteTMesh.Size = new System.Drawing.Size(94, 36);
+			buttonDeleteTMesh.TabIndex = 15;
+			buttonDeleteTMesh.Text = "Delete";
+			buttonDeleteTMesh.UseVisualStyleBackColor = true;
+			buttonDeleteTMesh.Click += buttonDeleteTMesh_Click;
+			// 
+			// buttonCloneTMesh
+			// 
+			buttonCloneTMesh.Enabled = false;
+			buttonCloneTMesh.Location = new System.Drawing.Point(7, 360);
+			buttonCloneTMesh.Margin = new System.Windows.Forms.Padding(4);
+			buttonCloneTMesh.Name = "buttonCloneTMesh";
+			buttonCloneTMesh.Size = new System.Drawing.Size(89, 36);
+			buttonCloneTMesh.TabIndex = 14;
+			buttonCloneTMesh.Text = "Clone";
+			buttonCloneTMesh.UseVisualStyleBackColor = true;
+			buttonCloneTMesh.Click += buttonCloneTMesh_Click;
+			// 
+			// groupBoxOpaque
+			// 
+			groupBoxOpaque.Controls.Add(buttonMoveOMeshUp);
+			groupBoxOpaque.Controls.Add(buttonMoveOMeshDown);
+			groupBoxOpaque.Controls.Add(buttonResetOMeshes);
+			groupBoxOpaque.Controls.Add(buttonDeleteOMesh);
+			groupBoxOpaque.Controls.Add(listViewOMeshes);
+			groupBoxOpaque.Controls.Add(buttonCloneOMesh);
+			groupBoxOpaque.Location = new System.Drawing.Point(8, 25);
+			groupBoxOpaque.Name = "groupBoxOpaque";
+			groupBoxOpaque.Size = new System.Drawing.Size(361, 406);
+			groupBoxOpaque.TabIndex = 18;
+			groupBoxOpaque.TabStop = false;
+			groupBoxOpaque.Text = "Opaque";
+			// 
+			// buttonMoveOMeshUp
+			// 
+			buttonMoveOMeshUp.Enabled = false;
+			buttonMoveOMeshUp.Location = new System.Drawing.Point(317, 28);
+			buttonMoveOMeshUp.Margin = new System.Windows.Forms.Padding(4);
+			buttonMoveOMeshUp.Name = "buttonMoveOMeshUp";
+			buttonMoveOMeshUp.Size = new System.Drawing.Size(36, 36);
+			buttonMoveOMeshUp.TabIndex = 14;
+			buttonMoveOMeshUp.Text = "↑";
+			buttonMoveOMeshUp.UseVisualStyleBackColor = true;
+			buttonMoveOMeshUp.Click += buttonMoveOMeshUp_Click;
+			// 
+			// buttonMoveOMeshDown
+			// 
+			buttonMoveOMeshDown.Enabled = false;
+			buttonMoveOMeshDown.Location = new System.Drawing.Point(317, 72);
+			buttonMoveOMeshDown.Margin = new System.Windows.Forms.Padding(4);
+			buttonMoveOMeshDown.Name = "buttonMoveOMeshDown";
+			buttonMoveOMeshDown.Size = new System.Drawing.Size(36, 36);
+			buttonMoveOMeshDown.TabIndex = 15;
+			buttonMoveOMeshDown.Text = "↓";
+			buttonMoveOMeshDown.UseVisualStyleBackColor = true;
+			buttonMoveOMeshDown.Click += buttonMoveOMeshDown_Click;
+			// 
+			// buttonResetOMeshes
+			// 
+			buttonResetOMeshes.Location = new System.Drawing.Point(196, 360);
+			buttonResetOMeshes.Margin = new System.Windows.Forms.Padding(4);
+			buttonResetOMeshes.Name = "buttonResetOMeshes";
+			buttonResetOMeshes.Size = new System.Drawing.Size(135, 36);
+			buttonResetOMeshes.TabIndex = 16;
+			buttonResetOMeshes.Text = "Reset Meshes";
+			buttonResetOMeshes.UseVisualStyleBackColor = true;
+			buttonResetOMeshes.Click += buttonResetOMeshes_Click;
+			// 
+			// buttonDeleteOMesh
+			// 
+			buttonDeleteOMesh.Enabled = false;
+			buttonDeleteOMesh.Location = new System.Drawing.Point(99, 360);
+			buttonDeleteOMesh.Margin = new System.Windows.Forms.Padding(4);
+			buttonDeleteOMesh.Name = "buttonDeleteOMesh";
+			buttonDeleteOMesh.Size = new System.Drawing.Size(89, 36);
+			buttonDeleteOMesh.TabIndex = 15;
+			buttonDeleteOMesh.Text = "Delete";
+			buttonDeleteOMesh.UseVisualStyleBackColor = true;
+			buttonDeleteOMesh.Click += buttonDeleteOMesh_Click;
+			// 
+			// buttonCloneOMesh
+			// 
+			buttonCloneOMesh.Enabled = false;
+			buttonCloneOMesh.Location = new System.Drawing.Point(7, 360);
+			buttonCloneOMesh.Margin = new System.Windows.Forms.Padding(4);
+			buttonCloneOMesh.Name = "buttonCloneOMesh";
+			buttonCloneOMesh.Size = new System.Drawing.Size(84, 36);
+			buttonCloneOMesh.TabIndex = 14;
+			buttonCloneOMesh.Text = "Clone";
+			buttonCloneOMesh.UseVisualStyleBackColor = true;
+			buttonCloneOMesh.Click += buttonCloneOMesh_Click;
+			// 
+			// buttonClose
+			// 
+			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
+			buttonClose.Location = new System.Drawing.Point(1005, 687);
+			buttonClose.Name = "buttonClose";
+			buttonClose.Size = new System.Drawing.Size(126, 36);
+			buttonClose.TabIndex = 17;
+			buttonClose.Text = "Close";
+			buttonClose.UseVisualStyleBackColor = true;
+			buttonClose.Click += buttonClose_Click;
+			// 
+			// contextMenuStripParamEdit
+			// 
+			contextMenuStripParamEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripParamEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openOParameterViewerToolStripMenuItem, openTParameterViewerToolStripMenuItem });
+			contextMenuStripParamEdit.Name = "contextMenuStripLabels";
+			contextMenuStripParamEdit.Size = new System.Drawing.Size(362, 68);
+			// 
+			// openOParameterViewerToolStripMenuItem
+			// 
+			openOParameterViewerToolStripMenuItem.Name = "openOParameterViewerToolStripMenuItem";
+			openOParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(361, 32);
+			openOParameterViewerToolStripMenuItem.Text = "Open Opaque Parameter Viewer";
+			openOParameterViewerToolStripMenuItem.Click += openOParameterViewerToolStripMenuItem_Click;
+			// 
+			// openTParameterViewerToolStripMenuItem
+			// 
+			openTParameterViewerToolStripMenuItem.Name = "openTParameterViewerToolStripMenuItem";
+			openTParameterViewerToolStripMenuItem.Size = new System.Drawing.Size(361, 32);
+			openTParameterViewerToolStripMenuItem.Text = "Open Translucent Parameter Viewer";
+			openTParameterViewerToolStripMenuItem.Click += openTParameterViewerToolStripMenuItem_Click;
+			// 
+			// comboBoxNode
+			// 
+			comboBoxNode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			comboBoxNode.FormattingEnabled = true;
+			comboBoxNode.Location = new System.Drawing.Point(12, 18);
+			comboBoxNode.Margin = new System.Windows.Forms.Padding(4);
+			comboBoxNode.Name = "comboBoxNode";
+			comboBoxNode.Size = new System.Drawing.Size(530, 33);
+			comboBoxNode.TabIndex = 0;
+			comboBoxNode.SelectedIndexChanged += comboBoxNode_SelectedIndexChanged;
+			// 
+			// groupBoxVertexList
+			// 
+			groupBoxVertexList.Controls.Add(listViewVertices);
+			groupBoxVertexList.Location = new System.Drawing.Point(12, 240);
+			groupBoxVertexList.Name = "groupBoxVertexList";
+			groupBoxVertexList.Size = new System.Drawing.Size(364, 441);
+			groupBoxVertexList.TabIndex = 29;
+			groupBoxVertexList.TabStop = false;
+			groupBoxVertexList.Text = "Vertex Data";
+			// 
+			// listViewVertices
+			// 
+			listViewVertices.AutoArrange = false;
+			listViewVertices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
+			listViewVertices.FullRowSelect = true;
+			listViewVertices.GridLines = true;
+			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			listViewVertices.Location = new System.Drawing.Point(8, 31);
+			listViewVertices.Margin = new System.Windows.Forms.Padding(4);
+			listViewVertices.MultiSelect = false;
+			listViewVertices.Name = "listViewVertices";
+			listViewVertices.ShowGroups = false;
+			listViewVertices.Size = new System.Drawing.Size(346, 352);
+			listViewVertices.TabIndex = 11;
+			listViewVertices.UseCompatibleStateImageBehavior = false;
+			listViewVertices.View = System.Windows.Forms.View.Details;
+			listViewVertices.SelectedIndexChanged += listViewVertices_SelectedIndexChanged;
+			listViewVertices.MouseClick += listViewVertices_MouseClick;
+			// 
+			// columnHeader1
+			// 
+			columnHeader1.Text = "Index";
+			// 
+			// columnHeader2
+			// 
+			columnHeader2.Text = "Type";
+			// 
+			// columnHeader3
+			// 
+			columnHeader3.Text = "Points";
+			// 
+			// columnHeader4
+			// 
+			columnHeader4.Text = "Format";
+			// 
+			// contextMenuStripVertData
+			// 
+			contextMenuStripVertData.ImageScalingSize = new System.Drawing.Size(24, 24);
+			contextMenuStripVertData.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { viewVertexDataToolStripMenuItem });
+			contextMenuStripVertData.Name = "contextMenuStripVertData";
+			contextMenuStripVertData.Size = new System.Drawing.Size(241, 69);
+			// 
+			// viewVertexDataToolStripMenuItem
+			// 
+			viewVertexDataToolStripMenuItem.Name = "viewVertexDataToolStripMenuItem";
+			viewVertexDataToolStripMenuItem.Size = new System.Drawing.Size(240, 32);
+			viewVertexDataToolStripMenuItem.Text = "View Vertex Data";
+			viewVertexDataToolStripMenuItem.Click += viewVertexDataToolStripMenuItem_Click;
+			// 
+			// GCModelDataEditor
+			// 
+			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			ClientSize = new System.Drawing.Size(1137, 764);
+			Controls.Add(groupBoxVertexList);
+			Controls.Add(comboBoxNode);
+			Controls.Add(buttonClose);
+			Controls.Add(groupBoxMeshList);
+			Controls.Add(groupBoxBounds);
+			Controls.Add(groupBoxLabels);
+			Controls.Add(statusStrip1);
+			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+			Margin = new System.Windows.Forms.Padding(4);
+			MaximizeBox = false;
+			MinimizeBox = false;
+			Name = "GCModelDataEditor";
+			ShowInTaskbar = false;
+			SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			Text = "Model Data Editor";
+			statusStrip1.ResumeLayout(false);
+			statusStrip1.PerformLayout();
+			groupBoxLabels.ResumeLayout(false);
+			groupBoxLabels.PerformLayout();
+			groupBoxBounds.ResumeLayout(false);
+			groupBoxBounds.PerformLayout();
+			groupBoxMeshList.ResumeLayout(false);
+			groupBoxTrans.ResumeLayout(false);
+			groupBoxOpaque.ResumeLayout(false);
+			contextMenuStripParamEdit.ResumeLayout(false);
+			groupBoxVertexList.ResumeLayout(false);
+			contextMenuStripVertData.ResumeLayout(false);
+			ResumeLayout(false);
+			PerformLayout();
 		}
 
 		#endregion
-		private System.Windows.Forms.Button buttonMoveMeshUp;
-		private System.Windows.Forms.Button buttonMoveMeshDown;
-		private System.Windows.Forms.ListView listViewMeshes;
+		private System.Windows.Forms.Button buttonMoveTMeshUp;
+		private System.Windows.Forms.Button buttonMoveTMeshDown;
+		private System.Windows.Forms.ListView listViewOMeshes;
 		private System.Windows.Forms.ColumnHeader columnHeaderIndex;
-		private System.Windows.Forms.ColumnHeader columnHeaderType;
 		private System.Windows.Forms.ColumnHeader columnHeaderUV;
 		private System.Windows.Forms.ColumnHeader columnHeaderVcolor;
 		private System.Windows.Forms.ColumnHeader columnHeaderPolynormals;
-		private System.Windows.Forms.Button buttonCloneMesh;
-		private System.Windows.Forms.Button buttonDeleteMesh;
 		private System.Windows.Forms.ColumnHeader columnHeaderMatID;
-		private System.Windows.Forms.ColumnHeader columnHeaderTrans;
+		private System.Windows.Forms.ColumnHeader columnHeaderEntries;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelInfo;
 		private System.Windows.Forms.Label labelModelName;
@@ -571,22 +700,42 @@
 		private System.Windows.Forms.GroupBox groupBoxLabels;
 		private System.Windows.Forms.GroupBox groupBoxBounds;
 		private System.Windows.Forms.GroupBox groupBoxMeshList;
-		private System.Windows.Forms.Button buttonResetMeshes;
+		private System.Windows.Forms.Button buttonResetTMeshes;
 		private System.Windows.Forms.Button buttonClose;
 		private System.Windows.Forms.TextBox textBoxModelRadius;
 		private System.Windows.Forms.Label labelR;
 		private System.Windows.Forms.TextBox textBoxTPolyName;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ColumnHeader columnHeaderPoly;
-		private System.Windows.Forms.ContextMenuStrip contextMenuStripLabels;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditPolyName;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditUVName;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditVcolorName;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditPolynormalName;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripParamEdit;
 		private System.Windows.Forms.TextBox textBoxObjectName;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.ComboBox comboBoxNode;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemEditMaterialID;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.Button buttonDeleteTMesh;
+		private System.Windows.Forms.Button buttonCloneTMesh;
+		private System.Windows.Forms.GroupBox groupBoxVertexList;
+		private System.Windows.Forms.ListView listViewVertices;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.ColumnHeader columnHeader2;
+		private System.Windows.Forms.ColumnHeader columnHeader3;
+		private System.Windows.Forms.ColumnHeader columnHeader4;
+		private System.Windows.Forms.ColumnHeader columnHeader5;
+		private System.Windows.Forms.ColumnHeader columnHeader6;
+		private System.Windows.Forms.ColumnHeader columnHeader7;
+		private System.Windows.Forms.ColumnHeader columnHeader8;
+		private System.Windows.Forms.GroupBox groupBoxTrans;
+		private System.Windows.Forms.GroupBox groupBoxOpaque;
+		private System.Windows.Forms.ListView listViewTMeshes;
+		private System.Windows.Forms.Button buttonMoveOMeshUp;
+		private System.Windows.Forms.Button buttonMoveOMeshDown;
+		private System.Windows.Forms.ColumnHeader columnHeaderPrim;
+		private System.Windows.Forms.ColumnHeader columnHeader9;
+		private System.Windows.Forms.Button buttonResetOMeshes;
+		private System.Windows.Forms.Button buttonDeleteOMesh;
+		private System.Windows.Forms.Button buttonCloneOMesh;
+		private System.Windows.Forms.ToolStripMenuItem openOParameterViewerToolStripMenuItem;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStripVertData;
+		private System.Windows.Forms.ToolStripMenuItem viewVertexDataToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem openTParameterViewerToolStripMenuItem;
 	}
 }

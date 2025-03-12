@@ -25,7 +25,7 @@ namespace SAModel.GC
 	/// Used to store geometry information (like materials).
 	/// </summary>
 	[Serializable]
-	public abstract class GCParameter
+	public abstract class GCParameter : ICloneable
 	{
 		/// <summary>
 		/// The type of parameter
@@ -35,7 +35,7 @@ namespace SAModel.GC
 		/// <summary>
 		/// All parameter data is stored in these 4 bytes
 		/// </summary>
-		protected uint Data;
+		public uint Data;
 
 		/// <summary>
 		/// Base constructor for an empty parameter. <br/>
@@ -110,6 +110,13 @@ namespace SAModel.GC
 			
 			return result.ToString();
 		}
+		object ICloneable.Clone() => Clone();
+
+		public GCParameter Clone()
+		{
+			GCParameter result = (GCParameter)MemberwiseClone();
+			return result;
+		}
 
 		public void ToNJA(TextWriter writer)
 		{
@@ -180,6 +187,19 @@ namespace SAModel.GC
 			{
 				Data &= 0xFFFF0000;
 				Data |= value;
+			}
+		}
+		/// <summary>
+		/// An enum that determines the scaling for the mesh's UVs. <br/>
+		/// This is necessary for meshes that use UVs.
+		/// </summary>
+		public GCUVScale UVScale
+		{
+			get => (GCUVScale)(Data & 0xFF);
+			set
+			{
+				Data &= 0xFFFFFF00;
+				Data |= (byte)value;
 			}
 		}
 

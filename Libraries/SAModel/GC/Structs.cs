@@ -18,6 +18,8 @@ namespace SAModel.GC
 		/// <param name="structType"></param>
 		void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType);
 		public byte[] GetBytes();
+		public string ToStruct();
+		public string ToGCMDEStruct();
 		void ToNJA(TextWriter writer, string vtype);
 	}
 
@@ -63,6 +65,18 @@ namespace SAModel.GC
 			
 			return result.ToString();
 		}
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder();
+
+			result.Append(X.ToC());
+			result.Append(", ");
+			result.Append(Y.ToC());
+			result.Append(", ");
+			result.Append(Z.ToC());
+
+			return result.ToString();
+		}
 		public void ToNJA(TextWriter writer, string vtype)
 		{
 			writer.WriteLine($"\t{vtype}( {X.ToNJA()}, {Y.ToNJA()}, {Z.ToNJA()} ),");
@@ -99,10 +113,10 @@ namespace SAModel.GC
 			YF = y;
 		}
 
-		public UV(byte[] file, int address)
+		public UV(byte[] file, int address, GCUVScale scale = GCUVScale.Default)
 		{
-			X = ByteConverter.ToInt16(file, address);
-			Y = ByteConverter.ToInt16(file, address + 2);
+			X = (short)(ByteConverter.ToInt16(file, address));
+			Y = (short)(ByteConverter.ToInt16(file, address + 2));
 		}
 
 		public void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType)
@@ -132,7 +146,17 @@ namespace SAModel.GC
 			
 			return result.ToString();
 		}
-		
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder();
+
+			result.Append(X);
+			result.Append(", ");
+			result.Append(Y);
+
+			return result.ToString();
+		}
+
 		public void ToNJA(TextWriter writer, string vtype)
 		{
 			writer.WriteLine($"\t{vtype}( {X}, {Y} ),");
@@ -388,7 +412,13 @@ namespace SAModel.GC
 			
 			return result.ToString();
 		}
-		
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder();
+			result.Append($"A{Red}, R{Green}, G{Blue}, B{Alpha}");
+			return result.ToString();
+		}
+
 		public void ToNJA(TextWriter writer, string vtype)
 		{
 			writer.WriteLine($"\t{vtype}( {Red}, {Green}, {Blue}, {Alpha} ),");

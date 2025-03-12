@@ -15,6 +15,7 @@ namespace SAModel
 		public bool HasUV { get; private set; }
 		public bool HasVC { get; private set; }
 		public bool IsMod { get; private set; }
+		public int GCUVScaleType { get; private set; }
 
 		public MeshInfo(NJS_MATERIAL material, Poly[] polys, VertexData[] vertices, bool hasUV, bool hasVC, bool isMod = false)
 		{
@@ -92,7 +93,7 @@ namespace SAModel
 			UV = uv;
 		}
 
-		public VertexData(GC.Vector3 position, GC.Vector3 normal, GC.Color color, GC.UV uv)
+		public VertexData(GC.Vector3 position, GC.Vector3 normal, GC.Color color, GC.UV uv, GC.GCUVScale scale = GC.GCUVScale.Default)
 		{
 			Position = new Vertex(position.X, position.Y, position.Z);
 			Normal = new Vertex(normal.X, normal.Y, normal.Z) ?? Vertex.UpNormal;
@@ -104,7 +105,37 @@ namespace SAModel
 			Color = System.Drawing.Color.FromArgb(color.Red, color.Alpha, color.Blue, color.Green);
 
 			//Color = color;
-			UV = new UV() { U = uv.XF, V = uv.YF };
+			short divider;
+			switch (scale)
+			{
+				default:
+				case GC.GCUVScale.Default:
+				case GC.GCUVScale.Scale1:
+					divider = 1;
+					break;
+				case GC.GCUVScale.Scale2:
+					divider = 2;
+					break;
+				case GC.GCUVScale.Scale3:
+					divider = 4;
+					break;
+				case GC.GCUVScale.Scale4:
+					divider = 8;
+					break;
+				case GC.GCUVScale.Scale5:
+					divider = 16;
+					break;
+				case GC.GCUVScale.Scale6:
+					divider = 32;
+					break;
+				case GC.GCUVScale.Scale7:
+					divider = 64;
+					break;
+				case GC.GCUVScale.Scale8:
+					divider = 128;
+					break;
+			}
+			UV = new UV() { U = uv.XF / divider, V = uv.YF / divider };
 		}
 
 		public override bool Equals(object obj)

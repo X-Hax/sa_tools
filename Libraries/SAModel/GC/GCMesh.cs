@@ -49,6 +49,7 @@ namespace SAModel.GC
 		/// The amount of bytes which have been written for the primitives
 		/// </summary>
 		private uint _primitiveSize;
+		public uint PrimitiveSize;
 
 		/// <summary>
 		/// Create an empty mesh
@@ -148,6 +149,7 @@ namespace SAModel.GC
 			}
 			
 			_primitiveSize = primitivesSize;
+			PrimitiveSize = _primitiveSize;
 		}
 
 		/// <summary>
@@ -248,14 +250,20 @@ namespace SAModel.GC
 		/// <param name="normals">The normal data</param>
 		/// <param name="colors">The color data</param>
 		/// <param name="uvs">The uv data</param>
+		/// <param name="scale">The uv scale data</param>
 		/// <returns>A mesh info for the mesh</returns>
-		public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs)
+		public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs, GCUVScale scale)
 		{
 			// Setting the material properties according to the parameters
 			foreach (var param in Parameters)
 			{
 				switch (param.Type)
-				{ 
+				{
+					case ParameterType.VtxAttrFmt:
+						var attrfmt = param as VtxAttrFmtParameter;
+						if (attrfmt.VertexAttribute == GCVertexAttribute.Tex0)
+							scale = (GCUVScale)(byte)attrfmt.UVScale;
+						break;
 					case ParameterType.BlendAlpha: 
 						var blend = param as BlendAlphaParameter; 
 						material.SourceAlpha = blend.NJSourceAlpha; 
@@ -346,7 +354,8 @@ namespace SAModel.GC
 					(Vector3)positions[l.PositionIndex],
 					hasNormals ? (Vector3)normals[l.NormalIndex] : new Vector3(0, 1, 0),
 					hasColors ? (Color)colors[l.Color0Index] : new Color(255, 255, 255, 255),
-					hasUVs ? (UV)uvs[l.UV0Index] : new UV(0, 0)
+					hasUVs ? (UV)uvs[l.UV0Index] : new UV(0, 0),
+					hasUVs ? scale : GCUVScale.Default
 					);
 			}
 
@@ -355,18 +364,19 @@ namespace SAModel.GC
 
 		public GCMesh Clone()
 		{
-			//throw new NotImplementedException();
 			var result = (GCMesh)MemberwiseClone();
-			//result.Vertices = new List<Vertex>(Vertices.Count);
-			//foreach (Vertex item in Vertices)
-			//	result.Vertices.Add(item.Clone());
-			//result.Normals = new List<Vertex>(Normals.Count);
-			//foreach (Vertex item in Normals)
-			//	result.Normals.Add(item.Clone());
-			//result.Diffuse = new List<Color>(Diffuse);
-			//result.Specular = new List<Color>(Specular);
-			//result.UserFlags = new List<uint>(UserFlags);
-			//result.NinjaFlags = new List<uint>(NinjaFlags);
+			if (Parameters != null)
+			{
+				result.Parameters = new List<GCParameter>(Parameters.Count);
+				foreach (GCParameter item in Parameters)
+					result.Parameters.Add(item.Clone());
+			}
+			if (Primitives != null)
+			{
+				result.Primitives = new List<GCPrimitive>(Primitives.Count);
+				foreach (GCPrimitive item in Primitives)
+					result.Primitives.Add(item.Clone());
+			}
 			return result;
 		}
 	}

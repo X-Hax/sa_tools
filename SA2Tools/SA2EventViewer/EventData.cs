@@ -204,7 +204,9 @@ namespace SA2EventViewer
 		public NJS_OBJECT ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
+		[Description("The properties that apply to the model(s) contained within this entity. Draw methods can also be determined here.")]
 		public SA2CutsceneEntityFlags Flags { get; set; }
+		[Description("Determines the order in which entities are drawn onscreen, with 0 being the earliest. Valid entries are 0-4 inclusive. (SA2B Events Only)")]
 		public uint Layer { get; set; }
 
 		public static int Size(bool battle) => battle ? 44 : 32;

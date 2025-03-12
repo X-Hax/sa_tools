@@ -47,7 +47,7 @@ namespace SAModel.GC
 	/// A collection of polygons
 	/// </summary>
 	[Serializable]
-	public class GCPrimitive
+	public class GCPrimitive : ICloneable
 	{
 		/// <summary>
 		/// The way in which triangles are being stored
@@ -275,7 +275,15 @@ namespace SAModel.GC
 			
 			return result.ToString();
 		}
-		
+
+		object ICloneable.Clone() => Clone();
+
+		public GCPrimitive Clone()
+		{
+			GCPrimitive result = (GCPrimitive)MemberwiseClone();
+			return result;
+		}
+
 		public void ToNJA(TextWriter writer)
 		{
 			var primtype = PrimitiveType switch

@@ -241,6 +241,7 @@
 			// textureIDNumeric
 			// 
 			textureIDNumeric.Location = new System.Drawing.Point(110, 254);
+			textureIDNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			textureIDNumeric.Name = "textureIDNumeric";
 			textureIDNumeric.Size = new System.Drawing.Size(66, 31);
 			textureIDNumeric.TabIndex = 10;

@@ -4424,13 +4424,17 @@ namespace SAModel.SAMDL
 					break;
 				case GC.GCAttach:
 					{
-						GCModelDataEditor me = new GCModelDataEditor(model, idx);
+						GCModelDataEditor me = new GCModelDataEditor(model, TextureInfoCurrent, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();
+							model.FixParents();
+							model.FixSiblings();
 							RebuildModelCache();
 							NeedRedraw = true;
 							unsavedChanges = true;
+							selectedObject = model.GetObjects()[idx];
+							SelectedItemChanged();
 						}
 					}
 					break;

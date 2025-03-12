@@ -53,7 +53,6 @@ namespace SAModel.SAEditorCommon.UI
 				diffuseRUpDown.Value = pcm.Diffuse.Value.R;
 				diffuseGUpDown.Value = pcm.Diffuse.Value.G;
 				diffuseBUpDown.Value = pcm.Diffuse.Value.B;
-				//diffuseColorBox.BackColor = pcm.Diffuse.Value;
 				alphaDiffuseNumeric.Value = pcm.Diffuse.Value.A;
 			}
 			if (pcm.Ambient.HasValue)
@@ -61,14 +60,12 @@ namespace SAModel.SAEditorCommon.UI
 				ambientRUpDown.Value = pcm.Ambient.Value.R;
 				ambientGUpDown.Value = pcm.Ambient.Value.G;
 				ambientBUpDown.Value = pcm.Ambient.Value.B;
-				//ambientColorBox.BackColor = pcm.Ambient.Value;
 			}
 			if (pcm.Specular.HasValue)
 			{
 				specularRUpDown.Value = pcm.Specular.Value.R;
 				specularGUpDown.Value = pcm.Specular.Value.G;
 				specularBUpDown.Value = pcm.Specular.Value.B;
-				//specColorBox.BackColor = pcm.Specular.Value;
 				alphaSpecularNumeric.Value = pcm.Specular.Value.A;
 				exponentTextBox.Text = pcm.SpecularExponent.ToString();
 			}
@@ -239,7 +236,6 @@ namespace SAModel.SAEditorCommon.UI
 
 		void SetDiffuseFromNumerics()
 		{
-			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
 			diffuseColorBox.BackColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, (int)diffuseRUpDown.Value, (int)diffuseGUpDown.Value, (int)diffuseBUpDown.Value);
 			//diffuseColorBox.BackColor = pcm.Diffuse.Value;
 			RaiseFormUpdated();
