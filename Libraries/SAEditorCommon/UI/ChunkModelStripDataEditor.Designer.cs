@@ -66,7 +66,7 @@ namespace SAModel.SAEditorCommon.UI
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(266, 306);
+			flagsGroupBox.Size = new System.Drawing.Size(302, 306);
 			flagsGroupBox.TabIndex = 8;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
@@ -76,7 +76,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreLightCheck.Location = new System.Drawing.Point(20, 219);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
-			ignoreLightCheck.Size = new System.Drawing.Size(159, 29);
+			ignoreLightCheck.Size = new System.Drawing.Size(232, 29);
 			ignoreLightCheck.TabIndex = 12;
 			ignoreLightCheck.Text = "Ignore Lighting";
 			toolTip.SetToolTip(ignoreLightCheck, "If checked, the mesh will not have any lighting applied.");
@@ -88,7 +88,7 @@ namespace SAModel.SAEditorCommon.UI
 			flatShadeCheck.Location = new System.Drawing.Point(20, 147);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
-			flatShadeCheck.Size = new System.Drawing.Size(131, 29);
+			flatShadeCheck.Size = new System.Drawing.Size(215, 29);
 			flatShadeCheck.TabIndex = 11;
 			flatShadeCheck.Text = "Flat Shaded";
 			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die. This flag does nothing in SADX, or SA2B without the Render Fix mod.");
@@ -100,10 +100,9 @@ namespace SAModel.SAEditorCommon.UI
 			doubleSideCheck.Location = new System.Drawing.Point(20, 111);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doubleSideCheck.Name = "doubleSideCheck";
-			doubleSideCheck.Size = new System.Drawing.Size(146, 29);
+			doubleSideCheck.Size = new System.Drawing.Size(215, 29);
 			doubleSideCheck.TabIndex = 10;
 			doubleSideCheck.Text = "Double Sided";
-			toolTip.SetToolTip(doubleSideCheck, "If enabled, both sides of a mesh will be drawn - hence \"double sided\". When disabled, only the front faces of the mesh are drawn, with the back faces being culled. This flag does nothing in SA1 / SADX, or SA2B without the Render Fix mod.");
 			doubleSideCheck.UseVisualStyleBackColor = true;
 			doubleSideCheck.Click += doubleSideCheck_Click;
 			// 
@@ -112,7 +111,7 @@ namespace SAModel.SAEditorCommon.UI
 			envMapCheck.Location = new System.Drawing.Point(20, 75);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
-			envMapCheck.Size = new System.Drawing.Size(215, 29);
+			envMapCheck.Size = new System.Drawing.Size(260, 29);
 			envMapCheck.TabIndex = 9;
 			envMapCheck.Text = "Environment Mapping";
 			toolTip.SetToolTip(envMapCheck, "If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.");
@@ -124,7 +123,7 @@ namespace SAModel.SAEditorCommon.UI
 			useAlphaCheck.Location = new System.Drawing.Point(20, 39);
 			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useAlphaCheck.Name = "useAlphaCheck";
-			useAlphaCheck.Size = new System.Drawing.Size(118, 29);
+			useAlphaCheck.Size = new System.Drawing.Size(215, 29);
 			useAlphaCheck.TabIndex = 7;
 			useAlphaCheck.Text = "Use Alpha";
 			toolTip.SetToolTip(useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transparency). ");
@@ -136,7 +135,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreSpecCheck.Location = new System.Drawing.Point(20, 255);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
-			ignoreSpecCheck.Size = new System.Drawing.Size(162, 29);
+			ignoreSpecCheck.Size = new System.Drawing.Size(215, 29);
 			ignoreSpecCheck.TabIndex = 6;
 			ignoreSpecCheck.Text = "Ignore Specular";
 			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX or SA2B.");
@@ -148,7 +147,7 @@ namespace SAModel.SAEditorCommon.UI
 			ignoreAmbiCheck.Location = new System.Drawing.Point(20, 182);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
-			ignoreAmbiCheck.Size = new System.Drawing.Size(163, 29);
+			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 29);
 			ignoreAmbiCheck.TabIndex = 0;
 			ignoreAmbiCheck.Text = "Ignore Ambient";
 			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source. In other words, the ambient light will be treated as black, darkening the model. This flag does nothing in SA2B without the Render Fix mod.");
@@ -159,7 +158,7 @@ namespace SAModel.SAEditorCommon.UI
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(175, 351);
+			doneButton.Location = new System.Drawing.Point(185, 351);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
@@ -177,7 +176,7 @@ namespace SAModel.SAEditorCommon.UI
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(16, 351);
+			resetButton.Location = new System.Drawing.Point(26, 351);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
 			resetButton.Size = new System.Drawing.Size(132, 40);
@@ -193,7 +192,7 @@ namespace SAModel.SAEditorCommon.UI
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(322, 412);
+			ClientSize = new System.Drawing.Size(332, 412);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(doneButton);
