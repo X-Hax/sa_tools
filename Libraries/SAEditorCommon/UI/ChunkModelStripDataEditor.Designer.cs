@@ -1,4 +1,7 @@
-﻿namespace SAModel.SAEditorCommon.UI
+﻿using SharpDX.Direct3D9;
+using System.Net.NetworkInformation;
+
+namespace SAModel.SAEditorCommon.UI
 {
     partial class ChunkModelStripDataEditor
     {
@@ -70,8 +73,7 @@
 			// 
 			// ignoreLightCheck
 			// 
-			ignoreLightCheck.AutoSize = true;
-			ignoreLightCheck.Location = new System.Drawing.Point(10, 203);
+			ignoreLightCheck.Location = new System.Drawing.Point(20, 219);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
 			ignoreLightCheck.Size = new System.Drawing.Size(159, 29);
@@ -83,34 +85,31 @@
 			// 
 			// flatShadeCheck
 			// 
-			flatShadeCheck.AutoSize = true;
-			flatShadeCheck.Location = new System.Drawing.Point(10, 135);
+			flatShadeCheck.Location = new System.Drawing.Point(20, 147);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
 			flatShadeCheck.Size = new System.Drawing.Size(131, 29);
 			flatShadeCheck.TabIndex = 11;
 			flatShadeCheck.Text = "Flat Shaded";
-			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die. This flag does nothing in SADX.");
+			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die. This flag does nothing in SADX, or SA2B without the Render Fix mod.");
 			flatShadeCheck.UseVisualStyleBackColor = true;
 			flatShadeCheck.Click += flatShadeCheck_Click;
 			// 
 			// doubleSideCheck
 			// 
-			doubleSideCheck.AutoSize = true;
-			doubleSideCheck.Location = new System.Drawing.Point(10, 101);
+			doubleSideCheck.Location = new System.Drawing.Point(20, 111);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doubleSideCheck.Name = "doubleSideCheck";
 			doubleSideCheck.Size = new System.Drawing.Size(146, 29);
 			doubleSideCheck.TabIndex = 10;
 			doubleSideCheck.Text = "Double Sided";
-			toolTip.SetToolTip(doubleSideCheck, "Doesn't do anything, since Sonic Adventure does not support backface cull.");
+			toolTip.SetToolTip(doubleSideCheck, "If enabled, both sides of a mesh will be drawn - hence \"double sided\". When disabled, only the front faces of the mesh are drawn, with the back faces being culled. This flag does nothing in SA1 / SADX, or SA2B without the Render Fix mod.");
 			doubleSideCheck.UseVisualStyleBackColor = true;
 			doubleSideCheck.Click += doubleSideCheck_Click;
 			// 
 			// envMapCheck
 			// 
-			envMapCheck.AutoSize = true;
-			envMapCheck.Location = new System.Drawing.Point(10, 67);
+			envMapCheck.Location = new System.Drawing.Point(20, 75);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
 			envMapCheck.Size = new System.Drawing.Size(215, 29);
@@ -122,8 +121,7 @@
 			// 
 			// useAlphaCheck
 			// 
-			useAlphaCheck.AutoSize = true;
-			useAlphaCheck.Location = new System.Drawing.Point(10, 33);
+			useAlphaCheck.Location = new System.Drawing.Point(20, 39);
 			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useAlphaCheck.Name = "useAlphaCheck";
 			useAlphaCheck.Size = new System.Drawing.Size(118, 29);
@@ -135,28 +133,27 @@
 			// 
 			// ignoreSpecCheck
 			// 
-			ignoreSpecCheck.AutoSize = true;
-			ignoreSpecCheck.Location = new System.Drawing.Point(10, 237);
+			ignoreSpecCheck.Location = new System.Drawing.Point(20, 255);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
 			ignoreSpecCheck.Size = new System.Drawing.Size(162, 29);
 			ignoreSpecCheck.TabIndex = 6;
 			ignoreSpecCheck.Text = "Ignore Specular";
-			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX. In SA1 DC it is used for specular palette selection.");
+			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX or SA2B.");
 			ignoreSpecCheck.UseVisualStyleBackColor = true;
 			ignoreSpecCheck.Click += ignoreSpecCheck_Click;
 			// 
 			// ignoreAmbiCheck
 			// 
-			ignoreAmbiCheck.AutoSize = true;
-			ignoreAmbiCheck.Location = new System.Drawing.Point(10, 168);
+			ignoreAmbiCheck.Location = new System.Drawing.Point(20, 182);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
 			ignoreAmbiCheck.Size = new System.Drawing.Size(163, 29);
 			ignoreAmbiCheck.TabIndex = 0;
 			ignoreAmbiCheck.Text = "Ignore Ambient";
-			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will not use its ambient settings.");
+			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source. In other words, the ambient light will be treated as black, darkening the model. This flag does nothing in SA2B without the Render Fix mod.");
 			ignoreAmbiCheck.UseVisualStyleBackColor = true;
+			ignoreAmbiCheck.CheckedChanged += ignoreAmbiCheck_CheckedChanged;
 			ignoreAmbiCheck.Click += ignoreAmbiCheck_Click;
 			// 
 			// doneButton
@@ -213,7 +210,6 @@
 			Text = "Strip Data Editor";
 			Load += MaterialEditor_Load;
 			flagsGroupBox.ResumeLayout(false);
-			flagsGroupBox.PerformLayout();
 			ResumeLayout(false);
 		}
 

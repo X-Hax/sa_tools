@@ -172,5 +172,10 @@ namespace SAModel.SAEditorCommon.UI
 		{
 
 		}
+
+		private void ignoreAmbiCheck_CheckedChanged(object sender, EventArgs e)
+		{
+
+		}
 	}
 }
