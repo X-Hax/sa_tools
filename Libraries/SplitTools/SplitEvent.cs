@@ -3176,6 +3176,8 @@ namespace SplitTools.SAArc
 		public int Instances { get; }
 		public List<ReflectionMatrixData> ReflectData { get; }
 
+		public ReflectionInfo() { }
+
 		public ReflectionInfo(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null)
 		{
 			if (labels != null && labels.TryGetValue(address, out var name))
