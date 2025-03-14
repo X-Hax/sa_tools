@@ -3169,12 +3169,12 @@ namespace SplitTools.SAArc
 		public int TexAnimDataEntries { get; set; }
 		public List<string> TexAnimPointers { get; } = [];
 	}
-
+	[Serializable]
 	public class ReflectionInfo
 	{
 		public string Name { get; set; }
-		public int Instances { get; }
-		public List<ReflectionMatrixData> ReflectData { get; }
+		public int Instances { get; set; }
+		public List<ReflectionMatrixData> ReflectData { get; set; }
 
 		public ReflectionInfo() { }
 
