@@ -233,7 +233,7 @@ namespace SAModel
 							// Add a label so that all motions aren't called "motion_00000000"
 							Dictionary<int, string> shapeLabels = [];
 							shapeLabels.Add(0, $"shape_{chunk.ImageBase:X8}");
-							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelCount - 1].CountAnimated() : -1, shapeLabels, numverts: Models[modelCount].GetVertexCounts()));
+							Motions.Add(new NJS_MOTION(chunk.Data, 0, (uint)chunk.ImageBase, Models.Count > 0 ? Models[modelCount - 1].CountAnimated() : -1, shapeLabels, numVerts: Models[modelCount].GetVertexCounts()));
 						}
 						catch (Exception ex)
 						{
