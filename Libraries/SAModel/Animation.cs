@@ -106,7 +106,7 @@ namespace SAModel
 			MdataName = Name + "_mdat";
 		}
 
-		public int CalculateModelParts(byte[] file, int address, uint imageBase)
+		public static int CalculateModelParts(byte[] file, int address, uint imageBase)
 		{
 			int mdatap = ByteConverter.ToInt32(file, address);
 			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
