@@ -62,7 +62,7 @@ namespace SAModel
 		{
 		}
 
-		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels)
+		public LandTable(byte[] file, int address, uint imageBase, LandTableFormat format, Dictionary<int, string> labels, uint offset = 0)
 		{
 			Format = format;
 			if (labels.ContainsKey(address))
@@ -114,7 +114,7 @@ namespace SAModel
 					tmpaddr = ByteConverter.ToInt32(file, address + 0x14);
 					if (tmpaddr != 0)
 					{
-						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
+						tmpaddr = (int)unchecked((uint)tmpaddr - imageBase + offset);
 						TextureFileName = file.GetCString(tmpaddr, Encoding.ASCII);
 					}
 					TextureList = ByteConverter.ToUInt32(file, address + 0x18);

@@ -234,7 +234,7 @@ namespace SplitTools.Split
 				case "landtable":
 					if (data.CustomProperties.ContainsKey("format"))
 						landfmt_def = (LandTableFormat)Enum.Parse(typeof(LandTableFormat), data.CustomProperties["format"]);
-					LandTable lt = new LandTable(datafile, address, imageBase, landfmt_def, labels) { Description = itemName };
+					LandTable lt = new LandTable(datafile, address, imageBase, landfmt_def, labels, offset) { Description = itemName };
 					if (splitFlags.HasFlag(SplitFlags.NoMeta))
 					{
 						lt.TextureList = 0;
