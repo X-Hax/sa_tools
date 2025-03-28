@@ -337,7 +337,9 @@ namespace SAModel.Direct3D
 		public override void DrawSubset(Device device, int subset)
 		{
 			device.VertexFormat = vertexBuffer[0].GetFormat();
-			device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.Index16, vertexBuffer);
+			// If check run to make sure the length of the indexBuffer is bigger than the subset. Prevents a bug that can occur if data is invalid.
+			if (indexBuffer.Length > subset)
+				device.DrawIndexedUserPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.Length, indexBuffer[subset].Length / 3, indexBuffer[subset], Format.Index16, vertexBuffer);
 		}
 
 		public override void DrawAll(Device device)
