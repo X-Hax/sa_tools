@@ -680,9 +680,17 @@ namespace SAModel.SAMDL
 							file = FraGag.Compression.Prs.Decompress(file);
 						ByteConverter.BigEndian = false;
 						modelinfo.CheckFilename(filename);
-						uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
-						if (baseaddr.HasValue)
-							modelinfo.numericUpDownKey.Value = baseaddr.Value;
+						if (file.Length != 90922000) // SADX Steam exception
+						{
+							uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
+							if (baseaddr.HasValue)
+								modelinfo.numericUpDownKey.Value = baseaddr.Value;
+						}
+						else
+						{
+							modelinfo.numericUpDownKey.Value = 0x401A00;
+							modelinfo.comboBoxBinaryFileType.SelectedIndex = 10;
+						}
 						modelinfo.ShowDialog(this);
 						if (modelinfo.DialogResult == DialogResult.OK)
 						{
