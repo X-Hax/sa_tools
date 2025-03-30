@@ -11,6 +11,7 @@
 		<ApplicationIcon>ico_samdl.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
 		<Platforms>AnyCPU;x86;x64</Platforms>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 	  <DefineConstants>TRACE</DefineConstants>
