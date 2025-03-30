@@ -65,7 +65,7 @@ namespace SplitTools.Split
 				if (Path.GetExtension(datafilename).ToLowerInvariant() == ".prs" || (inifile.Compressed && Path.GetExtension(datafilename).ToLowerInvariant() != ".bin"))
 					datafile = FraGag.Compression.Prs.Decompress(datafile);
 				// Get binary key
-				uint imageBase = HelperFunctions.SetupEXE(ref datafile) ?? inifile.ImageBase.Value;
+				uint imageBase = inifile.ImageBase ?? HelperFunctions.SetupEXE(ref datafile) ?? 0x400000;
 				// Decompress REL
 				if (Path.GetExtension(datafilename).Equals(".rel", StringComparison.OrdinalIgnoreCase) || (inifile.CompressedREL && Path.GetExtension(datafilename).ToLowerInvariant() == ".prs"))
 				{
