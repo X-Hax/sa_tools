@@ -109,6 +109,8 @@ namespace SAModel
 		public static int CalculateModelParts(byte[] file, int address, uint imageBase)
 		{
 			int mdatap = ByteConverter.ToInt32(file, address);
+			if (mdatap < imageBase)
+				return 0;
 			AnimFlags animtype = (AnimFlags)ByteConverter.ToUInt16(file, address + 8);
 			if (animtype == 0) return 0;
 			int mdata = 0;
@@ -154,6 +156,8 @@ namespace SAModel
 				for (int m = 0; m < mdata; m++)
 				{
 					if (lost) continue;
+					if (mdatap - (int)imageBase + mdatasize * u + 4 * m > file.Length)
+						return 0;
 					uint pointer = ByteConverter.ToUInt32(file, mdatap - (int)imageBase + mdatasize * u + 4 * m);
 					if (pointer != 0 && (pointer < imageBase || pointer - (int)imageBase >= file.Length - 36))
 						lost = true;
