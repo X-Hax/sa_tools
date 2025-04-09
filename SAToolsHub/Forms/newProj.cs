@@ -412,7 +412,7 @@ namespace SAToolsHub
 			foreach (string objdef in files)
 			{
 				System.IO.FileInfo objdefFileInfo = new System.IO.FileInfo(objdef);
-				if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj")) continue;
+				if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj") || objdefFileInfo.Name.Equals("SA2ObjectDefinitions.csproj")) continue;
 
 				// copy
 				string filePath = Path.Combine(sourceFolder, objdefFileInfo.Name);
@@ -513,8 +513,14 @@ namespace SAToolsHub
 			if (File.Exists(Path.Combine(iniFolder, "sa2lvl.ini")))
 			{
 				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory(true);
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+				string objdefsinifolder = Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
+				// objdefs INI folder
+				if (!Directory.Exists(objdefsinifolder))
+					objdefsinifolder = Path.Combine(appPath, "..\\GameConfig", dataFolder, "objdefs");
+				CopyFolder(objdefsinifolder, outputObjdefsPath);
+				// objdefs CS folder
+				string objdefsPath = GetObjDefsDirectory(true);
 				if (Directory.Exists(objdefsPath))
 					CopyFolder(objdefsPath, outputObjdefsPath);
 				progress.SetTask("Finalizing SALVL Supported Setup");

@@ -53,8 +53,6 @@
 			generalSettingBox = new System.Windows.Forms.GroupBox();
 			ambientColorBox = new System.Windows.Forms.Panel();
 			ambientLabel = new System.Windows.Forms.Label();
-			alphaSpecularNumeric = new System.Windows.Forms.NumericUpDown();
-			label3 = new System.Windows.Forms.Label();
 			labelAlpha = new System.Windows.Forms.Label();
 			alphaDiffuseNumeric = new System.Windows.Forms.NumericUpDown();
 			dstAlphaCombo = new System.Windows.Forms.ComboBox();
@@ -78,7 +76,6 @@
 			flagsGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)userFlagsNumeric).BeginInit();
 			generalSettingBox.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)alphaSpecularNumeric).BeginInit();
 			((System.ComponentModel.ISupportInitialize)alphaDiffuseNumeric).BeginInit();
 			((System.ComponentModel.ISupportInitialize)textureBox).BeginInit();
 			SuspendLayout();
@@ -130,7 +127,7 @@
 			flagsGroupBox.Controls.Add(clampUCheck);
 			flagsGroupBox.Controls.Add(superSampleCheck);
 			flagsGroupBox.Controls.Add(pickStatusCheck);
-			flagsGroupBox.Location = new System.Drawing.Point(596, 68);
+			flagsGroupBox.Location = new System.Drawing.Point(552, 68);
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
@@ -365,8 +362,6 @@
 			// 
 			generalSettingBox.Controls.Add(ambientColorBox);
 			generalSettingBox.Controls.Add(ambientLabel);
-			generalSettingBox.Controls.Add(alphaSpecularNumeric);
-			generalSettingBox.Controls.Add(label3);
 			generalSettingBox.Controls.Add(labelAlpha);
 			generalSettingBox.Controls.Add(alphaDiffuseNumeric);
 			generalSettingBox.Controls.Add(dstAlphaCombo);
@@ -386,7 +381,7 @@
 			generalSettingBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			generalSettingBox.Name = "generalSettingBox";
 			generalSettingBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			generalSettingBox.Size = new System.Drawing.Size(561, 386);
+			generalSettingBox.Size = new System.Drawing.Size(516, 386);
 			generalSettingBox.TabIndex = 7;
 			generalSettingBox.TabStop = false;
 			generalSettingBox.Text = "General";
@@ -414,26 +409,6 @@
 			ambientLabel.TabIndex = 16;
 			ambientLabel.Text = "Ambient Color:";
 			ambientLabel.Click += label1_Click;
-			// 
-			// alphaSpecularNumeric
-			// 
-			alphaSpecularNumeric.Location = new System.Drawing.Point(303, 111);
-			alphaSpecularNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			alphaSpecularNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
-			alphaSpecularNumeric.Name = "alphaSpecularNumeric";
-			alphaSpecularNumeric.Size = new System.Drawing.Size(73, 31);
-			alphaSpecularNumeric.TabIndex = 4;
-			alphaSpecularNumeric.ValueChanged += alphaSpecularNumeric_ValueChanged;
-			// 
-			// label3
-			// 
-			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(229, 113);
-			label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(62, 25);
-			label3.TabIndex = 15;
-			label3.Text = "Alpha:";
 			// 
 			// labelAlpha
 			// 
@@ -505,7 +480,7 @@
 			// 
 			// exponentTextBox
 			// 
-			exponentTextBox.Location = new System.Drawing.Point(488, 111);
+			exponentTextBox.Location = new System.Drawing.Point(326, 111);
 			exponentTextBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			exponentTextBox.Name = "exponentTextBox";
 			exponentTextBox.Size = new System.Drawing.Size(61, 31);
@@ -575,7 +550,7 @@
 			// exponentLabel
 			// 
 			exponentLabel.AutoSize = true;
-			exponentLabel.Location = new System.Drawing.Point(388, 113);
+			exponentLabel.Location = new System.Drawing.Point(226, 113);
 			exponentLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			exponentLabel.Name = "exponentLabel";
 			exponentLabel.Size = new System.Drawing.Size(90, 25);
@@ -605,7 +580,7 @@
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(886, 405);
+			doneButton.Location = new System.Drawing.Point(842, 405);
 			doneButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
@@ -664,7 +639,7 @@
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(1033, 465);
+			ClientSize = new System.Drawing.Size(989, 465);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(deleteButton);
@@ -691,7 +666,6 @@
 			((System.ComponentModel.ISupportInitialize)userFlagsNumeric).EndInit();
 			generalSettingBox.ResumeLayout(false);
 			generalSettingBox.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)alphaSpecularNumeric).EndInit();
 			((System.ComponentModel.ISupportInitialize)alphaDiffuseNumeric).EndInit();
 			((System.ComponentModel.ISupportInitialize)textureBox).EndInit();
 			ResumeLayout(false);
@@ -739,8 +713,6 @@
 		private System.Windows.Forms.ToolTip toolTip;
 		private System.Windows.Forms.Label labelFlags;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.NumericUpDown alphaSpecularNumeric;
-		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Button cloneButton;
 		private System.Windows.Forms.Button deleteButton;
 		private System.Windows.Forms.Button resetButton;

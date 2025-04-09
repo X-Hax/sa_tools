@@ -43,8 +43,6 @@
 			diffuseLabel = new System.Windows.Forms.Label();
 			ambientColorBox = new System.Windows.Forms.Panel();
 			ambientLabel = new System.Windows.Forms.Label();
-			alphaSpecularNumeric = new System.Windows.Forms.NumericUpDown();
-			label3 = new System.Windows.Forms.Label();
 			dstAlphaCombo = new System.Windows.Forms.ComboBox();
 			specColorBox = new System.Windows.Forms.Panel();
 			destinationAlphaLabel = new System.Windows.Forms.Label();
@@ -76,7 +74,6 @@
 			((System.ComponentModel.ISupportInitialize)diffuseGUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)diffuseRUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)alphaDiffuseNumeric).BeginInit();
-			((System.ComponentModel.ISupportInitialize)alphaSpecularNumeric).BeginInit();
 			ambientSettingBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)ambientBUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)ambientGUpDown).BeginInit();
@@ -238,26 +235,6 @@
 			ambientLabel.Text = "Color:";
 			ambientLabel.Click += label1_Click;
 			// 
-			// alphaSpecularNumeric
-			// 
-			alphaSpecularNumeric.Location = new System.Drawing.Point(230, 34);
-			alphaSpecularNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			alphaSpecularNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
-			alphaSpecularNumeric.Name = "alphaSpecularNumeric";
-			alphaSpecularNumeric.Size = new System.Drawing.Size(73, 31);
-			alphaSpecularNumeric.TabIndex = 4;
-			alphaSpecularNumeric.ValueChanged += alphaSpecularNumeric_ValueChanged;
-			// 
-			// label3
-			// 
-			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(163, 36);
-			label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(62, 25);
-			label3.TabIndex = 15;
-			label3.Text = "Alpha:";
-			// 
 			// dstAlphaCombo
 			// 
 			dstAlphaCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -294,7 +271,7 @@
 			// 
 			// exponentTextBox
 			// 
-			exponentTextBox.Location = new System.Drawing.Point(253, 130);
+			exponentTextBox.Location = new System.Drawing.Point(248, 33);
 			exponentTextBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			exponentTextBox.Name = "exponentTextBox";
 			exponentTextBox.Size = new System.Drawing.Size(61, 31);
@@ -326,7 +303,7 @@
 			// exponentLabel
 			// 
 			exponentLabel.AutoSize = true;
-			exponentLabel.Location = new System.Drawing.Point(161, 133);
+			exponentLabel.Location = new System.Drawing.Point(156, 36);
 			exponentLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			exponentLabel.Name = "exponentLabel";
 			exponentLabel.Size = new System.Drawing.Size(90, 25);
@@ -458,8 +435,6 @@
 			specularSettingBox.Controls.Add(label10);
 			specularSettingBox.Controls.Add(specColorLabel);
 			specularSettingBox.Controls.Add(specColorBox);
-			specularSettingBox.Controls.Add(label3);
-			specularSettingBox.Controls.Add(alphaSpecularNumeric);
 			specularSettingBox.Controls.Add(exponentLabel);
 			specularSettingBox.Controls.Add(exponentTextBox);
 			specularSettingBox.Location = new System.Drawing.Point(347, 155);
@@ -570,7 +545,6 @@
 			((System.ComponentModel.ISupportInitialize)diffuseGUpDown).EndInit();
 			((System.ComponentModel.ISupportInitialize)diffuseRUpDown).EndInit();
 			((System.ComponentModel.ISupportInitialize)alphaDiffuseNumeric).EndInit();
-			((System.ComponentModel.ISupportInitialize)alphaSpecularNumeric).EndInit();
 			ambientSettingBox.ResumeLayout(false);
 			ambientSettingBox.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)ambientBUpDown).EndInit();
@@ -603,8 +577,6 @@
 		private System.Windows.Forms.NumericUpDown alphaDiffuseNumeric;
 		private System.Windows.Forms.Label labelAlpha;
 		private System.Windows.Forms.ToolTip toolTip;
-		private System.Windows.Forms.NumericUpDown alphaSpecularNumeric;
-		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label ambientLabel;
 		private System.Windows.Forms.Panel ambientColorBox;
 		private System.Windows.Forms.Button resetButton;

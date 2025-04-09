@@ -54,6 +54,10 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			modelchunks[chunkID] = mat;
 		}
+		private void updateBlendAlphaData(List<PolyChunk> modelchunks, int chunkID, PolyChunkBitsBlendAlpha mat)
+		{
+			modelchunks[chunkID] = mat;
+		}
 		private void editDiffuseToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			string polydata = listViewMeshes.SelectedItems[0].SubItems[1].Text;
@@ -68,6 +72,25 @@ namespace SAModel.SAEditorCommon.UI
 				{
 					mat = (PolyChunkMaterial)selectedObj[matID];
 					de.FormUpdated += (s, ev) => updateMaterialData(selectedObj, matID, mat);
+					de.ShowDialog(this);
+				}
+			}
+			BuildPolyChunkList();
+		}
+		private void editBlendAlphaToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			string polydata = listViewMeshes.SelectedItems[0].SubItems[1].Text;
+			int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+			PolyChunkBitsBlendAlpha mat;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+			int index = selectedObj.IndexOf(selectedMesh);
+			if (polydata == "Bits_BA")
+			{
+				using (ChunkModelBlendAlphaDataEditor de = new ChunkModelBlendAlphaDataEditor(selectedObj[matID]))
+				{
+					mat = (PolyChunkBitsBlendAlpha)selectedObj[matID];
+					de.FormUpdated += (s, ev) => updateBlendAlphaData(selectedObj, matID, mat);
 					de.ShowDialog(this);
 				}
 			}
@@ -100,7 +123,6 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkStrip pcs;
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
-			//int index = selectedObj.IndexOf(selectedMesh);
 			if (polytype.StartsWith("Strip"))
 			{
 				using (ChunkModelStripDataEditor de = new ChunkModelStripDataEditor(selectedObj[matID]))
@@ -451,7 +473,7 @@ namespace SAModel.SAEditorCommon.UI
 									{
 										ambient = ", ";
 									}
-									ambient += "A(" + pcm.Ambient.Value.A + ", " + pcm.Ambient.Value.R + ", " + pcm.Ambient.Value.G + ", " + pcm.Ambient.Value.B + ")";
+									ambient += "A(" + pcm.Ambient.Value.R + ", " + pcm.Ambient.Value.G + ", " + pcm.Ambient.Value.B + ")";
 								}
 								if (pcm.Specular.HasValue)
 								{
@@ -459,7 +481,7 @@ namespace SAModel.SAEditorCommon.UI
 									{
 										specular = ", ";
 									}
-									specular += "S(" + pcm.Specular.Value.A + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")" + ", Exp " + pcm.SpecularExponent.ToString();
+									specular += "S(" + "Exp " + pcm.SpecularExponent.ToString() + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")";
 								}
 								string sourcealpha = ", BS_";
 								string destalpha = ", BD_";
@@ -676,8 +698,68 @@ namespace SAModel.SAEditorCommon.UI
 								newmesh.SubItems.Add(striptype);
 								newmesh.SubItems.Add(stripflags);
 								break;
+							case PolyChunkBitsBlendAlpha pba:
+								newmesh.SubItems.Add("Bits_BA");
+								string sourcealphapba = "BS_";
+								string destalphapba = ", BD_";
+								switch (pba.SourceAlpha)
+								{
+									case AlphaInstruction.Zero:
+										sourcealphapba += "ZER";
+										break;
+									case AlphaInstruction.One:
+										sourcealphapba += "ONE";
+										break;
+									case AlphaInstruction.OtherColor:
+										sourcealphapba += "OC";
+										break;
+									case AlphaInstruction.InverseOtherColor:
+										sourcealphapba += "IOC";
+										break;
+									case AlphaInstruction.SourceAlpha:
+										sourcealphapba += "SA";
+										break;
+									case AlphaInstruction.InverseSourceAlpha:
+										sourcealphapba += "ISA";
+										break;
+									case AlphaInstruction.DestinationAlpha:
+										sourcealphapba += "DA";
+										break;
+									case AlphaInstruction.InverseDestinationAlpha:
+										sourcealphapba += "IDA";
+										break;
+								}
+								switch (pba.DestinationAlpha)
+								{
+									case AlphaInstruction.Zero:
+										destalphapba += "ZER";
+										break;
+									case AlphaInstruction.One:
+										destalphapba += "ONE";
+										break;
+									case AlphaInstruction.OtherColor:
+										destalphapba += "OC";
+										break;
+									case AlphaInstruction.InverseOtherColor:
+										destalphapba += "IOC";
+										break;
+									case AlphaInstruction.SourceAlpha:
+										destalphapba += "SA";
+										break;
+									case AlphaInstruction.InverseSourceAlpha:
+										destalphapba += "ISA";
+										break;
+									case AlphaInstruction.DestinationAlpha:
+										destalphapba += "DA";
+										break;
+									case AlphaInstruction.InverseDestinationAlpha:
+										destalphapba += "IDA";
+										break;
+								}
+								newmesh.SubItems.Add(sourcealphapba + destalphapba);
+								break;
 							default:
-								newmesh.SubItems.Add("WHAT");
+								newmesh.SubItems.Add("Undefined Type");
 								break;
 						}
 						listViewMeshes.Items.Add(newmesh);
@@ -705,31 +787,23 @@ namespace SAModel.SAEditorCommon.UI
 			string prevmatstart = "";
 			if (listViewMeshes.Items.Count > 1)
 				prevmatstart = listViewMeshes.Items[prevIndex].SubItems[1].Text;
-			string pdata = "";
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			PolyChunk selectedMesh = selectedObj[matID];
-			if (polytype == "Null" || polytype.StartsWith("Bits"))
+			if (polytype == "Null" || (polytype.StartsWith("Bits") && polytype != "Bits_BA"))
 				buttonCloneMesh.Enabled = false;
 			else
 				buttonCloneMesh.Enabled = true;
 			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material");
 			editTextureIDToolStripMenuItem.Enabled = editTextureIDToolStripMenuItem.Visible = polytype.StartsWith("Tiny");
 			editStripAlphaToolStripMenuItem.Enabled = editStripAlphaToolStripMenuItem.Visible =  polytype.StartsWith("Strip");
+			editAlphaBlendDataToolStripMenuItem.Enabled = editAlphaBlendDataToolStripMenuItem.Visible = polytype == "Bits_BA";
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
-			if (prevmatstart.StartsWith("Bits"))
+			if (prevmatstart.StartsWith("Bits") && prevmatstart != "Bits_BA")
 				buttonMoveMeshUp.Enabled = false;
 			buttonMoveMeshDown.Enabled = matID + 1 < selectedObj.Count;
-			if (polytype.StartsWith("Bits"))
+			if (polytype.StartsWith("Bits") && polytype != "Bits_BA")
 				buttonMoveMeshDown.Enabled = false;
-			if (polytype.StartsWith("Material") || polytype.StartsWith("Tiny") || polytype.StartsWith("Strip"))
-			{
-				if (listViewMeshes.SelectedItems[0].SubItems[2].Text != "")
-				{
-					pdata += ", ";
-				}
-				pdata += listViewMeshes.SelectedItems[0].SubItems[2].Text;
-			}
 			string ptype = selectedMesh.Type.ToString();
 			string pdata2 = "";
 			switch (selectedMesh)
@@ -739,11 +813,11 @@ namespace SAModel.SAEditorCommon.UI
 						pdata2 += ", D(" + pcm.Diffuse.Value.A + ", " + pcm.Diffuse.Value.R + ", " + pcm.Diffuse.Value.G + ", " + pcm.Diffuse.Value.B + ")";
 					if (pcm.Ambient.HasValue)
 					{
-						pdata2 += ", A(" + pcm.Ambient.Value.A + ", " + pcm.Ambient.Value.R + ", " + pcm.Ambient.Value.G + ", " + pcm.Ambient.Value.B + ")";
+						pdata2 += ", A(" + pcm.Ambient.Value.R + ", " + pcm.Ambient.Value.G + ", " + pcm.Ambient.Value.B + ")";
 					}
 					if (pcm.Specular.HasValue)
 					{
-						pdata2 += ", S(" + pcm.Specular.Value.A + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")" + ", Exp " + pcm.SpecularExponent.ToString();
+						pdata2 += ", S(" + "Exp " + pcm.SpecularExponent.ToString() + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")";
 					}
 					pdata2 += ", Src Alpha:" + pcm.SourceAlpha.ToString() + ", ";
 					pdata2 += "Dst Alpha:" + pcm.DestinationAlpha.ToString();
@@ -829,6 +903,11 @@ namespace SAModel.SAEditorCommon.UI
 					stripflags += pcs.IgnoreAmbient ? ", Ignore Ambient" : "";
 					stripflags += pcs.IgnoreSpecular ? ", Ignore Specular" : "";
 					pdata2 += stripflags;
+					break;
+				case PolyChunkBitsBlendAlpha pba:
+					ptype += "_BlendAlpha";
+					pdata2 += ", Src Alpha:" + pba.SourceAlpha.ToString() + ", ";
+					pdata2 += "Dst Alpha:" + pba.DestinationAlpha.ToString();
 					break;
 			}
 			// Status bar

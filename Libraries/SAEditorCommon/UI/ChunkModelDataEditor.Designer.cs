@@ -66,6 +66,7 @@
 			editPCMatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editTextureIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editStripAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			editAlphaBlendDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			groupBoxVertList = new System.Windows.Forms.GroupBox();
 			listViewVertices = new System.Windows.Forms.ListView();
 			columnHeaderVertID = new System.Windows.Forms.ColumnHeader();
@@ -408,31 +409,38 @@
 			// contextMenuStripMatEdit
 			// 
 			contextMenuStripMatEdit.ImageScalingSize = new System.Drawing.Size(24, 24);
-			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem });
+			contextMenuStripMatEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { editPCMatToolStripMenuItem, editTextureIDToolStripMenuItem, editStripAlphaToolStripMenuItem, editAlphaBlendDataToolStripMenuItem });
 			contextMenuStripMatEdit.Name = "contextMenuStripMatEdit";
-			contextMenuStripMatEdit.Size = new System.Drawing.Size(225, 100);
+			contextMenuStripMatEdit.Size = new System.Drawing.Size(257, 132);
 			contextMenuStripMatEdit.Opening += contextMenuStrip2_Opening;
 			// 
 			// editPCMatToolStripMenuItem
 			// 
 			editPCMatToolStripMenuItem.Name = "editPCMatToolStripMenuItem";
-			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(224, 32);
+			editPCMatToolStripMenuItem.Size = new System.Drawing.Size(256, 32);
 			editPCMatToolStripMenuItem.Text = "Edit Material Data";
 			editPCMatToolStripMenuItem.Click += editDiffuseToolStripMenuItem_Click;
 			// 
 			// editTextureIDToolStripMenuItem
 			// 
 			editTextureIDToolStripMenuItem.Name = "editTextureIDToolStripMenuItem";
-			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(224, 32);
+			editTextureIDToolStripMenuItem.Size = new System.Drawing.Size(256, 32);
 			editTextureIDToolStripMenuItem.Text = "Edit Texture Data";
 			editTextureIDToolStripMenuItem.Click += editTextureIDToolStripMenuItem_Click;
 			// 
 			// editStripAlphaToolStripMenuItem
 			// 
 			editStripAlphaToolStripMenuItem.Name = "editStripAlphaToolStripMenuItem";
-			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(224, 32);
+			editStripAlphaToolStripMenuItem.Size = new System.Drawing.Size(256, 32);
 			editStripAlphaToolStripMenuItem.Text = "Edit Strip Data";
 			editStripAlphaToolStripMenuItem.Click += editStripAlphaToolStripMenuItem_Click;
+			// 
+			// editAlphaBlendDataToolStripMenuItem
+			// 
+			editAlphaBlendDataToolStripMenuItem.Name = "editAlphaBlendDataToolStripMenuItem";
+			editAlphaBlendDataToolStripMenuItem.Size = new System.Drawing.Size(256, 32);
+			editAlphaBlendDataToolStripMenuItem.Text = "Edit Blend Alpha Data";
+			editAlphaBlendDataToolStripMenuItem.Click += editBlendAlphaToolStripMenuItem_Click;
 			// 
 			// groupBoxVertList
 			// 
@@ -568,5 +576,6 @@
 		private System.Windows.Forms.ColumnHeader columnHeaderVertData;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripVertCol;
 		private System.Windows.Forms.ToolStripMenuItem showVertexCollectionToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem editAlphaBlendDataToolStripMenuItem;
 	}
 }

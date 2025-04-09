@@ -81,7 +81,6 @@ namespace SAModel.SAEditorCommon.UI
 			alphaDiffuseNumeric.Value = materials[index].DiffuseColor.A;
 			ambientColorBox.BackColor = materials[index].AmbientColor;
 			specColorBox.BackColor = materials[index].SpecularColor;
-			alphaSpecularNumeric.Value = materials[index].SpecularColor.A;
 			if (textures != null && materials[index].TextureID < textures.Length) textureBox.Image = DrawPreviewImage(textures[materials[index].TextureID].Image);
 			exponentTextBox.Text = materials[index].Exponent.ToString();
 			filterModeDropDown.SelectedIndex = (int)materials[index].FilterMode;
@@ -229,7 +228,7 @@ namespace SAModel.SAEditorCommon.UI
 			colorDialog.Color = materials[comboMaterial.SelectedIndex].SpecularColor;
 			if (colorDialog.ShowDialog() == DialogResult.OK)
 			{
-				materials[comboMaterial.SelectedIndex].SpecularColor = Color.FromArgb((int)alphaSpecularNumeric.Value, colorDialog.Color);
+				materials[comboMaterial.SelectedIndex].SpecularColor = Color.FromArgb(255, colorDialog.Color);
 				specColorBox.BackColor = materials[comboMaterial.SelectedIndex].SpecularColor;
 				RaiseFormUpdated();
 			}
@@ -266,13 +265,6 @@ namespace SAModel.SAEditorCommon.UI
 		{
 			materials[comboMaterial.SelectedIndex].DiffuseColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, materials[comboMaterial.SelectedIndex].DiffuseColor);
 			diffuseColorBox.BackColor = materials[comboMaterial.SelectedIndex].DiffuseColor;
-			RaiseFormUpdated();
-		}
-
-		private void alphaSpecularNumeric_ValueChanged(object sender, EventArgs e)
-		{
-			materials[comboMaterial.SelectedIndex].SpecularColor = Color.FromArgb((int)alphaSpecularNumeric.Value, materials[comboMaterial.SelectedIndex].SpecularColor);
-			specColorBox.BackColor = materials[comboMaterial.SelectedIndex].SpecularColor;
 			RaiseFormUpdated();
 		}
 

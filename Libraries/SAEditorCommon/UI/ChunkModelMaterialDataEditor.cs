@@ -66,7 +66,6 @@ namespace SAModel.SAEditorCommon.UI
 				specularRUpDown.Value = pcm.Specular.Value.R;
 				specularGUpDown.Value = pcm.Specular.Value.G;
 				specularBUpDown.Value = pcm.Specular.Value.B;
-				alphaSpecularNumeric.Value = pcm.Specular.Value.A;
 				exponentTextBox.Text = pcm.SpecularExponent.ToString();
 			}
 			//DisplayFlags(index);
@@ -124,7 +123,7 @@ namespace SAModel.SAEditorCommon.UI
 			colorDialog.Color = pcm.Specular.Value;
 			if (colorDialog.ShowDialog() == DialogResult.OK)
 			{
-				pcm.Specular = Color.FromArgb((int)alphaSpecularNumeric.Value, colorDialog.Color);
+				pcm.Specular = Color.FromArgb(255, colorDialog.Color);
 				specColorBox.BackColor = pcm.Specular.Value;
 				specularRUpDown.Value = pcm.Specular.Value.R;
 				specularGUpDown.Value = pcm.Specular.Value.G;
@@ -250,7 +249,7 @@ namespace SAModel.SAEditorCommon.UI
 		void SetSpecularFromNumerics()
 		{
 			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
-			specColorBox.BackColor = Color.FromArgb((int)alphaSpecularNumeric.Value, (int)specularRUpDown.Value, (int)specularGUpDown.Value, (int)specularBUpDown.Value);
+			specColorBox.BackColor = Color.FromArgb(0xFF, (int)specularRUpDown.Value, (int)specularGUpDown.Value, (int)specularBUpDown.Value);
 			//specColorBox.BackColor = pcm.Specular.Value;
 			RaiseFormUpdated();
 		}

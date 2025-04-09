@@ -450,6 +450,7 @@ namespace SAModel.GC
 			var uvs = VertexData.Find(x => x.Attribute == GCVertexAttribute.Tex0)?.Data;
 			GCUVScale ouvscale = GCUVScale.Default;
 			List<VtxAttrFmtParameter> ovtxparams = new List<VtxAttrFmtParameter>();
+			List<VtxAttrFmtParameter> ovtxparamsCheck = new List<VtxAttrFmtParameter>();
 			List<VtxAttrFmtParameter> tvtxparams = new List<VtxAttrFmtParameter>();
 			if (OpaqueMeshes.Count > 0)
 			{
@@ -466,6 +467,30 @@ namespace SAModel.GC
 					if (ovtxparams[i].VertexAttribute == GCVertexAttribute.Tex0)
 					{
 						ouvscale = ovtxparams[i].UVScale;
+						ovtxparamsCheck.Add(ovtxparams[i]);
+					}
+				}
+				if (OpaqueMeshes.Count > 1)
+				{
+					//For Cannon's Core (Rouge)
+					var oparams2 = OpaqueMeshes[1].Parameters;
+					if (ovtxparamsCheck.Count < 1)
+					{
+						for (int i = 0; i < oparams2.Count; i++)
+						{
+							if (oparams2[i].Type == ParameterType.VtxAttrFmt)
+							{
+								ovtxparams.Add((VtxAttrFmtParameter)oparams2[i]);
+							}
+						}
+						for (int i = 0; i < ovtxparams.Count; i++)
+						{
+							if (ovtxparams[i].VertexAttribute == GCVertexAttribute.Tex0)
+							{
+								ouvscale = ovtxparams[i].UVScale;
+								ovtxparamsCheck.Add(ovtxparams[i]);
+							}
+						}
 					}
 				}
 			}

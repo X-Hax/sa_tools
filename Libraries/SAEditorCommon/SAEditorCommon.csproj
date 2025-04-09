@@ -12,6 +12,9 @@
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Update="UI\ChunkModelBlendAlphaDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
 		<Compile Update="UI\GCModelVertexDataEditor.cs">
 		  <SubType>Form</SubType>
 		</Compile>
