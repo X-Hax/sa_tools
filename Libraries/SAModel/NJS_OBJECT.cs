@@ -621,17 +621,29 @@ namespace SAModel
 				if (Attach is BasicAttach)
 				{
 					BasicAttach basicattach = Attach as BasicAttach;
-					basicattach.ToNJA(writer, labels, textures);
+					if (!labels.Contains(basicattach.Name))
+					{
+						basicattach.ToNJA(writer, labels, textures);
+						labels.Add(basicattach.Name);
+					}
 				}
 				else if (Attach is ChunkAttach)
 				{
 					ChunkAttach ChunkAttach = Attach as ChunkAttach;
-					ChunkAttach.ToNJA(writer, labels, textures);
+					if (!labels.Contains(ChunkAttach.Name))
+					{
+						ChunkAttach.ToNJA(writer, labels, textures);
+						labels.Add(ChunkAttach.Name);
+					}
 				}
 				else if (Attach is GCAttach)
 				{
 					GCAttach gcattach = Attach as GCAttach;
-					gcattach.ToNJA(writer, labels, textures);
+					if (!labels.Contains(gcattach.Name))
+					{
+						gcattach.ToNJA(writer, labels, textures);
+						labels.Add(gcattach.Name);
+					}
 				}
 				else if (Attach is XJ.XJAttach)
 				{
