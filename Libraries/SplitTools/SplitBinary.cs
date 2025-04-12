@@ -17,6 +17,7 @@ namespace SplitTools.Split
 		Overwrite = 0x4, // Overwrite existing files
 		Log = 0x8, // Enable output log
 		NJA = 0x10, // Output NJA instead of SAModel
+		ForceBinary = 0x20 // Use SplitBinary instead of SplitDLL for DLL files
 	}
 
 	public static class SplitBinary

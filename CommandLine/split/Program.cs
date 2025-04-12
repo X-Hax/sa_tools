@@ -50,7 +50,11 @@ namespace Split
 					splitFlags |= SplitFlags.NoLabels;
 					Console.WriteLine("Labels are disabled");
 				}
-
+				if (args[u] == "-binary")
+				{
+					splitFlags |= SplitFlags.ForceBinary;
+					Console.WriteLine("Using SplitBinary for DLLs");
+				}
 			}
 			mode = args[0];
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
@@ -79,7 +83,7 @@ namespace Split
                         fullpath_out = Path.GetFullPath(fullpath_out);
                     }
                     Console.WriteLine("Output folder: {0}", fullpath_out);
-					if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll")
+					if (Path.GetExtension(args[1]).ToLowerInvariant() == ".dll" && !splitFlags.HasFlag(SplitFlags.ForceBinary))
                         SplitTools.SplitDLL.SplitDLL.SplitDLLFile(fullpath_bin, fullpath_ini, fullpath_out, splitFlags);
                     else
 						SplitTools.Split.SplitBinary.SplitFile(fullpath_bin, fullpath_ini, fullpath_out, splitFlags);
