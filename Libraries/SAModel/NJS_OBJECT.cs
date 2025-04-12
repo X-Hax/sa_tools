@@ -605,15 +605,17 @@ namespace SAModel
 				isXinja = root.GetObjects().FirstOrDefault(o => o.Attach != null)?.Attach is XJ.XJAttach;
 			}
 
-			if (isBasic)
-				writer.WriteLine("OBJECT_START" + Environment.NewLine);
-			else if (isChunk)
-				writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
-			else if (isGinja)
-				writer.WriteLine("GCOBJECT_START" + Environment.NewLine);
-			else if (isXinja)
-				writer.WriteLine("XBOBJECT_START" + Environment.NewLine);
-
+			if (!Name.StartsWith("DO_NOT_EXPORT"))
+			{
+				if (isBasic)
+					writer.WriteLine("OBJECT_START" + Environment.NewLine);
+				else if (isChunk)
+					writer.WriteLine("CNKOBJECT_START" + Environment.NewLine);
+				else if (isGinja)
+					writer.WriteLine("GCOBJECT_START" + Environment.NewLine);
+				else if (isXinja)
+					writer.WriteLine("XBOBJECT_START" + Environment.NewLine);
+			}
 			if (!isDup)
 			{
 				if (Attach is BasicAttach)
@@ -637,51 +639,53 @@ namespace SAModel
 					//ChunkAttach.ToNJA(writer, labels, textures);
 				}
 			}
-
-			if (isBasic)
-				writer.Write("OBJECT      ");
-			else if (isChunk)
-				writer.Write("CNKOBJECT  ");
-			else if (isGinja)
-				writer.Write("GCOBJECT    ");
-			else if (isXinja)
-				writer.Write("XBOBJECT    ");
-
-			writer.Write(Name.MakeIdentifier());
-			writer.WriteLine("[]");
-			writer.WriteLine("START");
-			writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
-			if (isBasic)
-				writer.WriteLine("Model       " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
-			else if (isChunk)
-				writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
-			else if (isGinja)
-				writer.WriteLine("GINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
-			else if (isXinja)
-				writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("OPosition  {0},", Position.ToNJA());
-			writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
-			writer.WriteLine("OScale     {0},", Scale.ToNJA());
-			writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL") + ",");
-			writer.WriteLine("END" + Environment.NewLine);
-			
-			if (isBasic)
-				writer.WriteLine("OBJECT_END");
-			else if (isChunk)
-				writer.WriteLine("CNKOBJECT_END");
-			else if (isGinja)
-				writer.WriteLine("GCOBJECT_END");
-			else if (isXinja)
-				writer.WriteLine("XBOBJECT_END");
-
-			if (Parent == null)
+			if (!Name.StartsWith("DO_NOT_EXPORT"))
 			{
-				writer.WriteLine(Environment.NewLine + "DEFAULT_START");
-				writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
-				writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
-				writer.WriteLine("#endif");
-				writer.WriteLine(Environment.NewLine + "DEFAULT_END");
+				if (isBasic)
+					writer.Write("OBJECT      ");
+				else if (isChunk)
+					writer.Write("CNKOBJECT  ");
+				else if (isGinja)
+					writer.Write("GCOBJECT    ");
+				else if (isXinja)
+					writer.Write("XBOBJECT    ");
+
+				writer.Write(Name.MakeIdentifier());
+				writer.WriteLine("[]");
+				writer.WriteLine("START");
+				writer.WriteLine("EvalFlags ( 0x" + ((int)GetFlags()).ToString("x8") + " ),");
+				if (isBasic)
+					writer.WriteLine("Model       " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				else if (isChunk)
+					writer.WriteLine("CNKModel   " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				else if (isGinja)
+					writer.WriteLine("GINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				else if (isXinja)
+					writer.WriteLine("XINJAModel " + (Attach != null ? Attach.Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine("OPosition  {0},", Position.ToNJA());
+				writer.WriteLine("OAngle     ( " + ((float)Rotation.X / 182.044f).ToNJA() + ", " + ((float)Rotation.Y / 182.044f).ToNJA() + ", " + ((float)Rotation.Z / 182.044f).ToNJA() + " ),");
+				writer.WriteLine("OScale     {0},", Scale.ToNJA());
+				writer.WriteLine("Child       " + (Children.Count > 0 ? Children[0].Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine("Sibling     " + (Sibling != null ? Sibling.Name.MakeIdentifier() : "NULL") + ",");
+				writer.WriteLine("END" + Environment.NewLine);
+
+				if (isBasic)
+					writer.WriteLine("OBJECT_END");
+				else if (isChunk)
+					writer.WriteLine("CNKOBJECT_END");
+				else if (isGinja)
+					writer.WriteLine("GCOBJECT_END");
+				else if (isXinja)
+					writer.WriteLine("XBOBJECT_END");
+
+				if (Parent == null)
+				{
+					writer.WriteLine(Environment.NewLine + "DEFAULT_START");
+					writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
+					writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
+					writer.WriteLine("#endif");
+					writer.WriteLine(Environment.NewLine + "DEFAULT_END");
+				}
 			}
 		}
 
