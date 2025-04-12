@@ -2263,12 +2263,17 @@ namespace SAModel
 			string id = Name.MakeIdentifier();
 			if (labels == null)
 				labels = new List<string>();
-			if (!labels.Contains(Name))
+			// Start is always written
+			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START\n" : "MOTION_START\n");
+			// Write motion data if false
+			bool ignoreMotion = labels.Contains(Name);
+			// Write action data if false
+			bool ignoreAction = string.IsNullOrEmpty(ActionName) || labels.Contains(ActionName);
+			// Write motion data
+			if (!ignoreMotion)
 			{
-				writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START" : "MOTION_START");
 				if (!isDum)
 				{
-					writer.WriteLine();
 					foreach (KeyValuePair<int, AnimModelData> model in Models)
 					{
 						// Not implemented: Target, Roll, Angle, Color, Intensity, Spot, Point
@@ -2738,36 +2743,46 @@ namespace SAModel
 						writer.WriteLine("InterpolFct    0x{0},", ((int)interpol).ToString("X"));
 						writer.WriteLine("END");
 						writer.WriteLine();
+						labels.Add(Name);
 					}
 				}
 			}
-			if (!labels.Contains(ActionName) && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
+			// Write action data
+			if (!ignoreAction && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
 			{
-				writer.WriteLine();
 				writer.WriteLine("ACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
 				writer.WriteLine("ObjectHead      {0},", ObjectName.MakeIdentifier());
 				writer.WriteLine("Motion          " + Name.MakeIdentifier());
 				writer.WriteLine("END");
 			}
-			if (!labels.Contains(Name))
+			// End is always written
+			writer.WriteLine(IsShapeMotion() ? "\nSHAPE_MOTION_END" : "\nMOTION_END");
+			// Write default start
+			if (!ignoreMotion || !ignoreAction)
 			{
-				writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END");
-				writer.WriteLine();
-				writer.WriteLine("DEFAULT_START");
-				writer.WriteLine();
+				writer.WriteLine("\nDEFAULT_START\n");
+			}
+			// Write default motion
+			if (!ignoreMotion)
+			{
 				writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
 				writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
 				writer.WriteLine("#endif");
 			}
-			if (!labels.Contains(ActionName) && !string.IsNullOrEmpty(ActionName))
+			// Write default action
+			if (!ignoreAction)
 			{
 				writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
 				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName.MakeIdentifier());
 				writer.WriteLine("#endif");
+				labels.Add(ActionName);
 			}
-			writer.WriteLine();
-			writer.WriteLine("DEFAULT_END");
+			// Write default end
+			if (!ignoreMotion || !ignoreAction)
+			{
+				writer.Write("\nDEFAULT_END");
+			}
 		}
 
 		public byte[] WriteHeader(uint imageBase, uint modeladdr, Dictionary<string, uint> labels, out uint address)
