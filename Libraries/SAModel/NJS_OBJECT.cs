@@ -140,6 +140,8 @@ namespace SAModel
 			int tmpaddr = ByteConverter.ToInt32(file, address + 4);
 			if (tmpaddr != 0)
 			{
+				if ((uint)tmpaddr < imageBase)
+					return;
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				if(attaches != null && attaches.ContainsKey(tmpaddr))
 				{
@@ -163,6 +165,8 @@ namespace SAModel
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x2C);
 			if (tmpaddr != 0)
 			{
+				if ((uint)tmpaddr < imageBase)
+					return;
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				child = new NJS_OBJECT(file, tmpaddr, imageBase, format, this, labels, attaches);
 			}
@@ -174,6 +178,8 @@ namespace SAModel
 			tmpaddr = ByteConverter.ToInt32(file, address + 0x30);
 			if (tmpaddr != 0)
 			{
+				if ((uint)tmpaddr < imageBase)
+					return;
 				tmpaddr = (int)unchecked((uint)tmpaddr - imageBase);
 				Sibling = new NJS_OBJECT(file, tmpaddr, imageBase, format, parent, labels, attaches);
 			}
@@ -422,6 +428,16 @@ namespace SAModel
             }
           
         }
+
+		public int CountAll()
+		{
+			int result = 1;
+			foreach (NJS_OBJECT item in Children)
+				result += item.CountAll();
+			if (Parent == null && Sibling != null)
+				result += Sibling.CountAll();
+			return result;
+		}
 
 		public int CountAnimated()
 		{
