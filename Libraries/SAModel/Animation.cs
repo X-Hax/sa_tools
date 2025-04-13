@@ -2742,7 +2742,6 @@ namespace SAModel
 						}
 						writer.WriteLine("InterpolFct    0x{0},", ((int)interpol).ToString("X"));
 						writer.WriteLine("END");
-						writer.WriteLine();
 						labels.Add(Name);
 					}
 				}
@@ -2771,7 +2770,7 @@ namespace SAModel
 				writer.WriteLine("#endif");
 			}
 			// Write default action
-			if (!ignoreAction)
+			if (!ignoreAction && !string.IsNullOrEmpty(ObjectName))
 			{
 				writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
 				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName.MakeIdentifier());

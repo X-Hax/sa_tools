@@ -696,7 +696,7 @@ namespace SAModel
 					writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");
 					writer.WriteLine("#define DEFAULT_OBJECT_NAME " + Name.MakeIdentifier());
 					writer.WriteLine("#endif");
-					writer.WriteLine(Environment.NewLine + "DEFAULT_END");
+					writer.Write(Environment.NewLine + "DEFAULT_END");
 				}
 			}
 		}
