@@ -570,7 +570,7 @@ namespace SAModel
 			return result.ToString();
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false)
+		public void ToNJA(TextWriter writer, List<string> labels, string[] textures = null, bool isDup = false, bool exportDefaults = true)
 		{
 			for (int i = 1; i < Children.Count; i++)
 				Children[i - 1].Sibling = Children[i];
@@ -690,7 +690,7 @@ namespace SAModel
 				else if (isXinja)
 					writer.WriteLine("XBOBJECT_END");
 
-				if (Parent == null)
+				if (exportDefaults && Parent == null)
 				{
 					writer.WriteLine(Environment.NewLine + "DEFAULT_START");
 					writer.WriteLine(Environment.NewLine + "#ifndef DEFAULT_OBJECT_NAME");

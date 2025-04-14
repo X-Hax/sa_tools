@@ -2244,7 +2244,7 @@ namespace SAModel
 			}
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false)
+		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -2758,29 +2758,32 @@ namespace SAModel
 			// End is always written
 			writer.WriteLine(IsShapeMotion() ? "\nSHAPE_MOTION_END" : "\nMOTION_END");
 			// Write default start
-			if (!ignoreMotion || !ignoreAction)
+			if (exportDefaults)
 			{
-				writer.WriteLine("\nDEFAULT_START\n");
-			}
-			// Write default motion
-			if (!ignoreMotion)
-			{
-				writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
-				writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
-				writer.WriteLine("#endif");
-			}
-			// Write default action
-			if (!ignoreAction && !string.IsNullOrEmpty(ObjectName))
-			{
-				writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
-				writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName.MakeIdentifier());
-				writer.WriteLine("#endif");
-				labels.Add(ActionName);
-			}
-			// Write default end
-			if (!ignoreMotion || !ignoreAction)
-			{
-				writer.Write("\nDEFAULT_END");
+				if (!ignoreMotion || !ignoreAction)
+				{
+					writer.WriteLine("\nDEFAULT_START\n");
+				}
+				// Write default motion
+				if (!ignoreMotion)
+				{
+					writer.WriteLine("#ifndef DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME");
+					writer.WriteLine("#define DEFAULT_" + (IsShapeMotion() ? "SHAPE" : "MOTION") + "_NAME " + Name.MakeIdentifier());
+					writer.WriteLine("#endif");
+				}
+				// Write default action
+				if (!ignoreAction && !string.IsNullOrEmpty(ObjectName))
+				{
+					writer.WriteLine("#ifndef DEFAULT_ACTION_NAME");
+					writer.WriteLine("#define DEFAULT_ACTION_NAME " + ActionName.MakeIdentifier());
+					writer.WriteLine("#endif");
+					labels.Add(ActionName);
+				}
+				// Write default end
+				if (!ignoreMotion || !ignoreAction)
+				{
+					writer.Write("\nDEFAULT_END");
+				}
 			}
 		}
 
