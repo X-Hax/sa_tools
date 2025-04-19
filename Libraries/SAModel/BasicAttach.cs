@@ -578,7 +578,7 @@ namespace SAModel
 			}
 			if (Normal != null && !labels.Contains(NormalName))
 			{
-				labels.Add(VertexName);
+				labels.Add(NormalName);
 				writer.Write("NORMAL      ");
 				writer.Write(NormalName.MakeIdentifier());
 				writer.WriteLine("[]");
