@@ -577,6 +577,35 @@ namespace SplitTools.Split
 						numverts = refmdl.GetVertexCounts();
 						numparts = refmdl.CountAnimated();
 					}
+					else if (customProperties.ContainsKey("refaddr"))
+					{
+						ModelFormat fmt = ModelFormat.BasicDX;
+						if (customProperties.ContainsKey("format"))
+						{
+							switch (customProperties["format"].ToLowerInvariant())
+							{
+								case "chunk":
+									fmt = ModelFormat.Chunk;
+									break;
+								case "gc":
+									fmt = ModelFormat.GC;
+									break;
+								case "xj":
+									fmt = ModelFormat.XJ;
+									break;
+								case "basic":
+									fmt = ModelFormat.Basic;
+									break;
+								case "basicdx":
+								default:
+									fmt = ModelFormat.BasicDX;
+									break;
+							}
+						}						
+						NJS_OBJECT refmdl = new NJS_OBJECT(datafile, int.Parse(customProperties["refaddr"], NumberStyles.HexNumber), imageBase, fmt, new Dictionary<int, string>(), new Dictionary<int, Attach>());
+						numparts = refmdl.CountAnimated();
+						numverts = refmdl.GetVertexCounts();
+					}
 					else
 					{
 						if (customProperties.ContainsKey("numparts"))
