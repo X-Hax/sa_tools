@@ -2264,7 +2264,7 @@ namespace SAModel
 			if (labels == null)
 				labels = new List<string>();
 			// Start is always written
-			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START\n" : "MOTION_START\n");
+			writer.WriteLine(IsShapeMotion() ? "SHAPE_MOTION_START" : "MOTION_START");
 			// Write motion data if false
 			bool ignoreMotion = labels.Contains(Name);
 			// Write action data if false
@@ -2280,21 +2280,20 @@ namespace SAModel
 						if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 						{
 							hasPos = true;
-							writer.WriteLine("POSITION {0}[]", model.Value.PositionName.MakeIdentifier());
+							writer.WriteLine("\nPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.PositionName);
 						}
 						if (model.Value.Rotation.Count > 0 && !labels.Contains(model.Value.RotationName))
 						{
 							hasRot = true;
 							if (ShortRot)
-								writer.Write("SROTATION ");
+								writer.Write("\nSROTATION ");
 							else
-								writer.Write("ROTATION ");
+								writer.Write("\nROTATION ");
 							writer.Write(model.Value.RotationName.MakeIdentifier());
 							writer.WriteLine("[]");
 							writer.WriteLine("START");
@@ -2307,29 +2306,26 @@ namespace SAModel
 									writer.WriteLine("         MKEYA( " + item.Key + ",   " + (item.Value.X / 182.044f).ToNJA() + ", " + (item.Value.Y / 182.044f).ToNJA() + ", " + (item.Value.Z / 182.044f).ToNJA() + " ),");
 							}
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.RotationName);
 						}
 						if (model.Value.Scale.Count > 0 && !labels.Contains(model.Value.ScaleName))
 						{
 							hasScl = true;
-							writer.WriteLine("SCALE {0}[]", model.Value.ScaleName.MakeIdentifier());
+							writer.WriteLine("\nSCALE {0}[]", model.Value.ScaleName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.ScaleName);
 						}
 						if (model.Value.Vector.Count > 0 && !labels.Contains(model.Value.VectorName))
 						{
 							hasVec = true;
-							writer.WriteLine("VECTOR {0}[]", model.Value.VectorName.MakeIdentifier());
+							writer.WriteLine("\nVECTOR {0}[]", model.Value.VectorName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.VectorName);
 						}
 						if (model.Value.Vertex.Count > 0 && !labels.Contains(model.Value.VertexName))
@@ -2340,26 +2336,24 @@ namespace SAModel
 							{
 								if (!labels.Contains(model.Value.VertexItemName[z]))
 								{
-									writer.WriteLine("POINT    {0}[]", model.Value.VertexItemName[z].MakeIdentifier());
+									writer.WriteLine("\nPOINT    {0}[]", model.Value.VertexItemName[z].MakeIdentifier());
 									writer.WriteLine("START");
 									List<string> l2 = new List<string>(item.Value.Length);
 									foreach (Vertex v in item.Value)
 										writer.WriteLine("         VERT{0},", v.ToNJA());
 									writer.WriteLine("END");
-									writer.WriteLine();
 									labels.Add(model.Value.VertexItemName[z]);
 								}
 								z++;
 							}
 							writer.WriteLine();
-							writer.WriteLine("POINTER    {0}[]", model.Value.VertexName.MakeIdentifier());
+							writer.WriteLine("\nPOINTER    {0}[]", model.Value.VertexName.MakeIdentifier());
 							writer.WriteLine("START");
 							List<string> lines = new List<string>(model.Value.Vertex.Count);
 							int v_c = 0;
 							foreach (KeyValuePair<int, Vertex[]> item in model.Value.Vertex)
 								writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.VertexItemName[v_c++].MakeIdentifier() + "),");
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.VertexName);
 						}
 						if (model.Value.Normal.Count > 0 && !labels.Contains(model.Value.NormalName))
@@ -2370,35 +2364,32 @@ namespace SAModel
 							{
 								if (!labels.Contains(model.Value.NormalItemName[z]))
 								{
-									writer.WriteLine("NORMAL    {0}[]", model.Value.NormalItemName[z].MakeIdentifier());
+									writer.WriteLine("\nNORMAL    {0}[]", model.Value.NormalItemName[z].MakeIdentifier());
 									writer.WriteLine("START");
 									foreach (Vertex v in item.Value)
 										writer.WriteLine("         NORM{0},", v.ToNJA());
 									writer.WriteLine("END");
-									writer.WriteLine();
 									labels.Add(model.Value.NormalItemName[z]);
 								}
 								z++;
 							}
 							writer.WriteLine();
-							writer.WriteLine("POINTER    {0}[]", model.Value.NormalName.MakeIdentifier());
+							writer.WriteLine("\nPOINTER    {0}[]", model.Value.NormalName.MakeIdentifier());
 							writer.WriteLine("START");
 							int v_c = 0;
 							foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
 								writer.WriteLine("         MKEYP( " + item.Key + ", " + model.Value.NormalItemName[v_c++].MakeIdentifier() + "),");
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.NormalName);
 						}
 						if (model.Value.Quaternion.Count > 0 && !labels.Contains(model.Value.QuaternionName))
 						{
 							hasQuat = true;
-							writer.WriteLine("QROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
+							writer.WriteLine("\nQROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
 								writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + ", " + item.Value[2].ToNJA() + ", " + item.Value[3].ToNJA() + " ),");
 							writer.WriteLine("END");
-							writer.WriteLine();
 							labels.Add(model.Value.QuaternionName);
 						}
 					}
@@ -2498,7 +2489,7 @@ namespace SAModel
 					}
 					if (!labels.Contains(MdataName))
 					{
-						writer.Write("MDATA");
+						writer.Write("\nMDATA");
 						if (numpairs == 0)
 							writer.Write(2);
 						else
@@ -2714,12 +2705,11 @@ namespace SAModel
 						}
 						writer.WriteLine(string.Join("," + Environment.NewLine, mdats.ToArray()) + ",");
 						writer.WriteLine("END");
-						writer.WriteLine();
 						labels.Add(MdataName);
 					}
 					if (!labels.Contains(Name))
 					{
-						writer.Write("MOTION ");
+						writer.Write("\nMOTION ");
 						writer.Write(Name.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
@@ -2747,9 +2737,9 @@ namespace SAModel
 				}
 			}
 			// Write action data
-			if (!ignoreAction && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
+			if (!IsShapeMotion() && !ignoreAction && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
 			{
-				writer.WriteLine("ACTION {0}[]", ActionName.MakeIdentifier());
+				writer.WriteLine("\nACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
 				writer.WriteLine("ObjectHead      {0},", ObjectName.MakeIdentifier());
 				writer.WriteLine("Motion          " + Name.MakeIdentifier());
