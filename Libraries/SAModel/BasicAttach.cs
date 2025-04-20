@@ -599,7 +599,7 @@ namespace SAModel
 			writer.WriteLine("Normal      " + NormalName.MakeIdentifier() + ",");
 			writer.WriteLine("PointNum    " + Vertex.Length + ",");
 			writer.WriteLine("Meshset     " + MeshName.MakeIdentifier() + ",");
-			writer.WriteLine("Materials   " + MaterialName.MakeIdentifier() + ",");
+			writer.WriteLine("Materials   " + (Material.Count > 0 ? MaterialName.MakeIdentifier() + "," : "NULL,"));
 			writer.WriteLine("MeshsetNum  " + Mesh.Count + ",");
 			writer.WriteLine("MatNum      " + Material.Count + ",");
 			writer.WriteLine("Center      " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
