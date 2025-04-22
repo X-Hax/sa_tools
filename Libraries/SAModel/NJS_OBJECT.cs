@@ -579,14 +579,14 @@ namespace SAModel
 				if (!labels.Contains(Children[i].Name))
 				{
 					labels.Add(Children[i].Name);
-					Children[i].ToNJA(writer, labels, textures);
+					Children[i].ToNJA(writer, labels, textures, exportDefaults: exportDefaults);
 					writer.WriteLine();
 				}
 			}
 			if (Parent == null && Sibling != null && !labels.Contains(Sibling.Name))
 			{
 				labels.Add(Sibling.Name);
-				Sibling.ToNJA(writer, labels, textures);
+				Sibling.ToNJA(writer, labels, textures, exportDefaults: exportDefaults);
 				writer.WriteLine();
 			}
 
