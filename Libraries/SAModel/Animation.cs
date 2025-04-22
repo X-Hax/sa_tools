@@ -2245,7 +2245,7 @@ namespace SAModel
 			}
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, string camera = null)
+		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, string camera = null, ushort mdatatype = 0)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -2303,7 +2303,6 @@ namespace SAModel
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Rotation> item in model.Value.Rotation)
 							{
-
 								if (ShortRot)
 									writer.WriteLine("         MKEYSA( " + item.Key + ",   " + (((short)item.Value.X) / 182.044f).ToNJA() + ", " + (((short)item.Value.Y) / 182.044f).ToNJA() + ", " + (((short)item.Value.Z) / 182.044f).ToNJA() + " ),");
 								else
@@ -2507,27 +2506,40 @@ namespace SAModel
 						flags |= AnimFlags.Quaternion;
 						numpairs++;
 					}
-					switch (flags)
+					// Build the MDATA
+					if (flags.HasFlag(AnimFlags.Position) || flags.HasFlag(AnimFlags.Rotation))
 					{
-						case AnimFlags.Position:
-						case AnimFlags.Rotation:
+						hasPos = true;
+						hasRot = true;
+						flags = AnimFlags.Position | AnimFlags.Rotation;
+						numpairs = 2;
+					}
+					if (flags.HasFlag(AnimFlags.Scale))
+					{
+						hasScl = true;
+						flags |= AnimFlags.Scale;
+						numpairs++;
+					}
+					if (flags.HasFlag(AnimFlags.Vertex) || flags.HasFlag(AnimFlags.Normal))
+					{
+						hasVert = true;
+						hasNorm = true;
+						flags = AnimFlags.Vertex | AnimFlags.Normal;
+						numpairs = 2;
+					}
+					// Force MDATA3 for motions that don't have data in one field but still are MDATA3
+					// Example: motion_aamu05_cyl40 sonic.exe at 0x15E14B8
+					if (mdatatype != 0)
+					{
+						numpairs = mdatatype;
+						// Force MDATA3 for motions that don't have data in one field and ALSO have wrong flags
+						// Example: motion_w_w7777_wing sonic.exe at 0x2DB0538
+						if (numpairs == 3)
+						{
 							hasPos = true;
 							hasRot = true;
-							flags = AnimFlags.Position | AnimFlags.Rotation;
-							numpairs = 2;
-							break;
-						case AnimFlags.Scale:
-							hasRot = true;
-							flags |= AnimFlags.Rotation;
-							numpairs++;
-							break;
-						case AnimFlags.Vertex:
-						case AnimFlags.Normal:
-							hasVert = true;
-							hasNorm = true;
-							flags = AnimFlags.Vertex | AnimFlags.Normal;
-							numpairs = 2;
-							break;
+							hasScl = true;
+						}
 					}
 					if (!labels.Contains(MdataName))
 					{
