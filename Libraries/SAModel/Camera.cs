@@ -8,8 +8,6 @@ namespace SAModel
 	public class NinjaCamera
 	{
 		public string Name; // NJS_CAMERA name
-		public string ActionName { get; set; } // NJS_CACTION name
-		public string MotionName { get; set; } // NJS_MOTION name
 		public Vertex Position { get; set; } // Camera position
 		public Vertex Vector { get; set; } // Camera vector in unit direction[Local Z axis]
 		public int Roll { get; set; } // Camera roll
@@ -65,14 +63,6 @@ namespace SAModel
 			writer.WriteLine("CNearClip    " + "( " + NearClip.ToNJA() + " ),");
 			writer.WriteLine("CFarClip     " + "( " + FarClip.ToNJA() + " ),");
 			writer.WriteLine("CAMERA_END");
-			if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(MotionName))
-			{
-				writer.WriteLine("\nCAMERA_ACTION {0}[]", ActionName.MakeIdentifier());
-				writer.WriteLine("START");
-				writer.WriteLine("CameraObj       {0},", Name.MakeIdentifier());
-				writer.WriteLine("Motion          " + MotionName.MakeIdentifier());
-				writer.Write("END");
-			}
 		}
 	}
 
@@ -97,11 +87,8 @@ namespace SAModel
 
 		public void ToNJA(TextWriter writer, List<string> labels = null)
 		{
-			Camera.ActionName = Name;
-			Camera.MotionName = Motion.Name;
-			Motion.ToNJA(writer, labels, camera: true, exportDefaults: false);
-			writer.WriteLine();
-			Camera.ToNJA(writer, labels);
+			Motion.ActionName = Name;
+			Motion.ToNJA(writer, labels, camera: Camera.Name, exportDefaults: false);
 		}
 	}
 }

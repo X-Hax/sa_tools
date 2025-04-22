@@ -17,7 +17,7 @@ namespace SAModel
 		{
 		}
 
-		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches)
+		public NJS_ACTION(byte[] file, int address, uint imageBase, ModelFormat format, Dictionary<int, string> labels, Dictionary<int, Attach> attaches, int numparts = 0)
 		{
 			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
@@ -46,7 +46,8 @@ namespace SAModel
 			}
 			else
 				Animation = new NJS_MOTION(file, (int)(ByteConverter.ToUInt32(file, address + 4) - imageBase), imageBase,
-					Model.CountAnimated(), labels, false, Model.GetVertexCounts(), Name, Model.Name);
+					numparts == 0 ? Model.CountAnimated() : numparts, labels, false, Model.GetVertexCounts(), Name, Model.Name);
+			// The numparts thing is necessary to rip actions that use motions with wrong MDATA count, e.g. action_edv_f_futa (sonic.exe 0x0258AB44)
 		}
 
 		public NJS_ACTION(NJS_OBJECT model, NJS_MOTION animation)
@@ -2244,7 +2245,7 @@ namespace SAModel
 			}
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, bool camera = false)
+		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, string camera = null)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -2280,7 +2281,7 @@ namespace SAModel
 						if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 						{
 							hasPos = true;
-							if (camera)
+							if (!string.IsNullOrEmpty(camera))
 								writer.WriteLine("\nCPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 							else
 								writer.WriteLine("\nPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
@@ -2783,6 +2784,14 @@ namespace SAModel
 				writer.WriteLine("\nACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
 				writer.WriteLine("ObjectHead      {0},", ObjectName.MakeIdentifier());
+				writer.WriteLine("Motion          " + Name.MakeIdentifier());
+				writer.WriteLine("END");
+			}
+			else if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(camera))
+			{
+				writer.WriteLine("\nCAMERA_ACTION {0}[]", ActionName.MakeIdentifier());
+				writer.WriteLine("START");
+				writer.WriteLine("CameraObj       {0},", camera.MakeIdentifier());
 				writer.WriteLine("Motion          " + Name.MakeIdentifier());
 				writer.WriteLine("END");
 			}
