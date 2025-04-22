@@ -1490,7 +1490,7 @@ namespace SplitTools.Split
 					break;
 				case "camera":
 					NinjaCamera cam = new NinjaCamera(datafile, address);
-					cam.Save(fileOutputPath);
+					IniSerializer.Serialize(cam, fileOutputPath);
 					break;
 				case "missiontutorial":
 					Languages lang = Languages.Japanese;

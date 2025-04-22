@@ -5613,59 +5613,6 @@ namespace SplitTools
 		}
 	}
 
-	public class NinjaCamera
-	{
-		public Vertex Position { get; set; } // Camera position
-		public Vertex Vector { get; set; } // Camera vector in unit direction[Local Z axis]
-		//[TypeConverter(typeof(UInt32HexConverter))]
-		public int Roll { get; set; } // Camera roll
-		//[TypeConverter(typeof(UInt32HexConverter))]
-		public int Angle { get; set; } // Camera angle
-		public float NearClip { get; set; } // Near clip 
-		public float FarClip { get; set; } // Far clip
-		public Vertex LocalX { get; set; } // Camera local X axis
-		public Vertex LocalY { get; set; } //Camera local Y axis
-
-		public NinjaCamera(byte[] file, int address)
-		{
-			Position = new Vertex(file, address);
-			Vector = new Vertex(file, address + 12);
-			Roll = ByteConverter.ToInt32(file, address + 24);
-			Angle = ByteConverter.ToInt32(file, address + 28);
-			NearClip = ByteConverter.ToSingle(file, address + 32);
-			FarClip = ByteConverter.ToSingle(file, address + 36);
-			LocalX = new Vertex(file, address + 40);
-			LocalY = new Vertex(file, address + 52);
-		}
-
-		public void Save(string fileOutputPath)
-		{
-			IniSerializer.Serialize(this, fileOutputPath);
-		}
-		public static NinjaCamera Load(string filename)
-		{
-			return IniSerializer.Deserialize<NinjaCamera>(filename);
-		}
-		public NinjaCamera() { }
-
-		public static int Size { get { return 0x40; } }
-
-		public byte[] GetBytes()
-		{
-			List<byte> result = new List<byte>(Size);
-			result.AddRange(Position.GetBytes());
-			result.AddRange(Vector.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Roll));
-			result.AddRange(ByteConverter.GetBytes(Angle));
-			result.AddRange(ByteConverter.GetBytes(NearClip));
-			result.AddRange(ByteConverter.GetBytes(FarClip));
-			result.AddRange(LocalX.GetBytes());
-			result.AddRange(LocalY.GetBytes());
-			result.Align(0x40);
-			return result.ToArray();
-		}
-	}
-
 	public class FogData
 	{
 		public float FogStart { get; set; }

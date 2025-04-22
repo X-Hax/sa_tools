@@ -1486,7 +1486,7 @@ namespace SplitTools.SplitDLL
 										return 0;
 									if (!Directory.Exists(Path.GetDirectoryName(outputFN)))
 										Directory.CreateDirectory(Path.GetDirectoryName(outputFN));
-									cam.Save(outputFN);
+									IniSerializer.Serialize(cam, outputFN);
 									//NJS_MOTION
 									uint motptr = BitConverter.ToUInt32(datafile, (int)(ptr + 4 - imageBase));
 									if (ptr != 0)

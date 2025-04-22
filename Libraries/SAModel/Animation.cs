@@ -2244,7 +2244,7 @@ namespace SAModel
 			}
 		}
 
-		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true)
+		public void ToNJA(TextWriter writer, List<string> labels = null, bool isDum = false, bool exportDefaults = true, bool camera = false)
 		{
 			bool hasPos = false;
 			bool hasRot = false;
@@ -2276,11 +2276,14 @@ namespace SAModel
 				{
 					foreach (KeyValuePair<int, AnimModelData> model in Models)
 					{
-						// Not implemented: Target, Roll, Angle, Color, Intensity, Spot, Point
+						// Not implemented: Color, Intensity, Spot, Point
 						if (model.Value.Position.Count > 0 && !labels.Contains(model.Value.PositionName))
 						{
 							hasPos = true;
-							writer.WriteLine("\nPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
+							if (camera)
+								writer.WriteLine("\nCPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
+							else
+								writer.WriteLine("\nPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2391,6 +2394,44 @@ namespace SAModel
 								writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + ", " + item.Value[2].ToNJA() + ", " + item.Value[3].ToNJA() + " ),");
 							writer.WriteLine("END");
 							labels.Add(model.Value.QuaternionName);
+						}
+						if (model.Value.Target.Count > 0 && !labels.Contains(model.Value.TargetName))
+						{
+							hasTarg = true;
+							writer.WriteLine("\nCTARGET {0}[]", model.Value.TargetName.MakeIdentifier());
+							writer.WriteLine("START");
+							foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
+								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
+							writer.WriteLine("END");
+							labels.Add(model.Value.TargetName);
+						}
+						if (model.Value.Roll.Count > 0 && !labels.Contains(model.Value.RollName))
+						{
+							hasRoll = true;
+							writer.Write("\nCROLL ");
+							writer.Write(model.Value.RollName.MakeIdentifier());
+							writer.WriteLine("[]");
+							writer.WriteLine("START");
+							foreach (KeyValuePair<int, int> item in model.Value.Roll)
+							{
+								writer.WriteLine("         MKEYA1( " + item.Key + ",   " + item.Value.ToString() + " ),");
+							}
+							writer.WriteLine("END");
+							labels.Add(model.Value.RollName);
+						}
+						if (model.Value.Angle.Count > 0 && !labels.Contains(model.Value.AngleName))
+						{
+							hasAng = true;
+							writer.Write("\nCANGLE ");
+							writer.Write(model.Value.AngleName.MakeIdentifier());
+							writer.WriteLine("[]");
+							writer.WriteLine("START");
+							foreach (KeyValuePair<int, int> item in model.Value.Angle)
+							{
+								writer.WriteLine("         MKEYA1( " + item.Key + ",   " + item.Value.ToString() + " ),");
+							}
+							writer.WriteLine("END");
+							labels.Add(model.Value.AngleName);
 						}
 					}
 					AnimFlags flags = 0;
@@ -2554,7 +2595,7 @@ namespace SAModel
 							if (hasRoll)
 							{
 								if (Models.ContainsKey(i) && Models[i].Roll.Count > 0)
-									elems.Add(Models[i].PointName.MakeIdentifier());
+									elems.Add(Models[i].RollName.MakeIdentifier());
 								else
 									elems.Add("NULL");
 							}
