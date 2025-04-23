@@ -2517,8 +2517,8 @@ namespace SAModel
 							numpairs = 2;
 							break;
 						case AnimFlags.Scale:
-							hasScl = true;
-							flags |= AnimFlags.Scale;
+							hasRot = true; // If an animation has Scale, it should have Rotation too
+							flags |= AnimFlags.Rotation;
 							numpairs++;
 							break;
 						case AnimFlags.Vertex:
