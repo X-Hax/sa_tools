@@ -2282,9 +2282,9 @@ namespace SAModel
 						{
 							hasPos = true;
 							if (!string.IsNullOrEmpty(camera))
-								writer.WriteLine("\nCPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
+								writer.WriteLine(System.Environment.NewLine + "CPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 							else
-								writer.WriteLine("\nPOSITION {0}[]", model.Value.PositionName.MakeIdentifier());
+								writer.WriteLine(System.Environment.NewLine + "POSITION {0}[]", model.Value.PositionName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Position)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2295,9 +2295,9 @@ namespace SAModel
 						{
 							hasRot = true;
 							if (ShortRot)
-								writer.Write("\nSROTATION ");
+								writer.Write(System.Environment.NewLine + "SROTATION ");
 							else
-								writer.Write("\nROTATION ");
+								writer.Write(System.Environment.NewLine + "ROTATION ");
 							writer.Write(model.Value.RotationName.MakeIdentifier());
 							writer.WriteLine("[]");
 							writer.WriteLine("START");
@@ -2314,7 +2314,7 @@ namespace SAModel
 						if (model.Value.Scale.Count > 0 && !labels.Contains(model.Value.ScaleName))
 						{
 							hasScl = true;
-							writer.WriteLine("\nSCALE {0}[]", model.Value.ScaleName.MakeIdentifier());
+							writer.WriteLine(System.Environment.NewLine + "SCALE {0}[]", model.Value.ScaleName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Scale)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2324,7 +2324,7 @@ namespace SAModel
 						if (model.Value.Vector.Count > 0 && !labels.Contains(model.Value.VectorName))
 						{
 							hasVec = true;
-							writer.WriteLine("\nVECTOR {0}[]", model.Value.VectorName.MakeIdentifier());
+							writer.WriteLine(System.Environment.NewLine + "VECTOR {0}[]", model.Value.VectorName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Vector)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2339,7 +2339,7 @@ namespace SAModel
 							{
 								if (!labels.Contains(model.Value.VertexItemName[z]))
 								{
-									writer.WriteLine("\nPOINT    {0}[]", model.Value.VertexItemName[z].MakeIdentifier());
+									writer.WriteLine(System.Environment.NewLine + "POINT    {0}[]", model.Value.VertexItemName[z].MakeIdentifier());
 									writer.WriteLine("START");
 									List<string> l2 = new List<string>(item.Value.Length);
 									foreach (Vertex v in item.Value)
@@ -2350,7 +2350,7 @@ namespace SAModel
 								z++;
 							}
 							writer.WriteLine();
-							writer.WriteLine("\nPOINTER    {0}[]", model.Value.VertexName.MakeIdentifier());
+							writer.WriteLine(System.Environment.NewLine + "POINTER    {0}[]", model.Value.VertexName.MakeIdentifier());
 							writer.WriteLine("START");
 							List<string> lines = new List<string>(model.Value.Vertex.Count);
 							int v_c = 0;
@@ -2367,7 +2367,7 @@ namespace SAModel
 							{
 								if (!labels.Contains(model.Value.NormalItemName[z]))
 								{
-									writer.WriteLine("\nNORMAL    {0}[]", model.Value.NormalItemName[z].MakeIdentifier());
+									writer.WriteLine(System.Environment.NewLine + "NORMAL    {0}[]", model.Value.NormalItemName[z].MakeIdentifier());
 									writer.WriteLine("START");
 									foreach (Vertex v in item.Value)
 										writer.WriteLine("         NORM{0},", v.ToNJA());
@@ -2377,7 +2377,7 @@ namespace SAModel
 								z++;
 							}
 							writer.WriteLine();
-							writer.WriteLine("\nPOINTER    {0}[]", model.Value.NormalName.MakeIdentifier());
+							writer.WriteLine(System.Environment.NewLine + "POINTER    {0}[]", model.Value.NormalName.MakeIdentifier());
 							writer.WriteLine("START");
 							int v_c = 0;
 							foreach (KeyValuePair<int, Vertex[]> item in model.Value.Normal)
@@ -2388,7 +2388,7 @@ namespace SAModel
 						if (model.Value.Quaternion.Count > 0 && !labels.Contains(model.Value.QuaternionName))
 						{
 							hasQuat = true;
-							writer.WriteLine("\nQROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
+							writer.WriteLine(System.Environment.NewLine + "QROTATION {0}[]", model.Value.QuaternionName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, float[]> item in model.Value.Quaternion)
 								writer.WriteLine("         MKEYQ( " + item.Key + ",   " + item.Value[0].ToNJA() + ", " + item.Value[1].ToNJA() + ", " + item.Value[2].ToNJA() + ", " + item.Value[3].ToNJA() + " ),");
@@ -2398,7 +2398,7 @@ namespace SAModel
 						if (model.Value.Target.Count > 0 && !labels.Contains(model.Value.TargetName))
 						{
 							hasTarg = true;
-							writer.WriteLine("\nCTARGET {0}[]", model.Value.TargetName.MakeIdentifier());
+							writer.WriteLine(System.Environment.NewLine + "CTARGET {0}[]", model.Value.TargetName.MakeIdentifier());
 							writer.WriteLine("START");
 							foreach (KeyValuePair<int, Vertex> item in model.Value.Target)
 								writer.WriteLine("         MKEYF( " + item.Key + ",   " + item.Value.X.ToNJA() + ", " + item.Value.Y.ToNJA() + ", " + item.Value.Z.ToNJA() + " ),");
@@ -2408,7 +2408,7 @@ namespace SAModel
 						if (model.Value.Roll.Count > 0 && !labels.Contains(model.Value.RollName))
 						{
 							hasRoll = true;
-							writer.Write("\nCROLL ");
+							writer.Write(System.Environment.NewLine + "CROLL ");
 							writer.Write(model.Value.RollName.MakeIdentifier());
 							writer.WriteLine("[]");
 							writer.WriteLine("START");
@@ -2422,7 +2422,7 @@ namespace SAModel
 						if (model.Value.Angle.Count > 0 && !labels.Contains(model.Value.AngleName))
 						{
 							hasAng = true;
-							writer.Write("\nCANGLE ");
+							writer.Write(System.Environment.NewLine + "CANGLE ");
 							writer.Write(model.Value.AngleName.MakeIdentifier());
 							writer.WriteLine("[]");
 							writer.WriteLine("START");
@@ -2545,7 +2545,7 @@ namespace SAModel
 					}
 					if (!labels.Contains(MdataName))
 					{
-						writer.Write("\nMDATA");
+						writer.Write(System.Environment.NewLine + "MDATA");
 						if (numpairs == 0)
 							writer.Write(2);
 						else
@@ -2765,7 +2765,7 @@ namespace SAModel
 					}
 					if (!labels.Contains(Name))
 					{
-						writer.Write("\nMOTION ");
+						writer.Write(System.Environment.NewLine + "MOTION ");
 						writer.Write(Name.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
@@ -2795,7 +2795,7 @@ namespace SAModel
 			// Write action data
 			if (!IsShapeMotion() && !ignoreAction && !string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(ObjectName))
 			{
-				writer.WriteLine("\nACTION {0}[]", ActionName.MakeIdentifier());
+				writer.WriteLine(System.Environment.NewLine + "ACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
 				writer.WriteLine("ObjectHead      {0},", ObjectName.MakeIdentifier());
 				writer.WriteLine("Motion          " + Name.MakeIdentifier());
@@ -2803,20 +2803,20 @@ namespace SAModel
 			}
 			else if (!string.IsNullOrEmpty(ActionName) && !string.IsNullOrEmpty(camera))
 			{
-				writer.WriteLine("\nCAMERA_ACTION {0}[]", ActionName.MakeIdentifier());
+				writer.WriteLine(System.Environment.NewLine + "CAMERA_ACTION {0}[]", ActionName.MakeIdentifier());
 				writer.WriteLine("START");
 				writer.WriteLine("CameraObj       {0},", camera.MakeIdentifier());
 				writer.WriteLine("Motion          " + Name.MakeIdentifier());
 				writer.WriteLine("END");
 			}
 			// End is always written
-			writer.WriteLine(IsShapeMotion() ? "\nSHAPE_MOTION_END" : "\nMOTION_END");
+			writer.WriteLine(System.Environment.NewLine + (IsShapeMotion() ? "SHAPE_MOTION_END" : "MOTION_END"));
 			// Write default start
 			if (exportDefaults)
 			{
 				if (!ignoreMotion || !ignoreAction)
 				{
-					writer.WriteLine("\nDEFAULT_START\n");
+					writer.WriteLine(System.Environment.NewLine + "DEFAULT_START" + System.Environment.NewLine);
 				}
 				// Write default motion
 				if (!ignoreMotion)
@@ -2836,7 +2836,7 @@ namespace SAModel
 				// Write default end
 				if (!ignoreMotion || !ignoreAction)
 				{
-					writer.Write("\nDEFAULT_END");
+					writer.Write(System.Environment.NewLine + "DEFAULT_END");
 				}
 			}
 		}
