@@ -2507,25 +2507,27 @@ namespace SAModel
 						numpairs++;
 					}
 					// Build the MDATA
-					if (flags.HasFlag(AnimFlags.Position) || flags.HasFlag(AnimFlags.Rotation))
+					switch (flags)
 					{
-						hasPos = true;
-						hasRot = true;
-						flags = AnimFlags.Position | AnimFlags.Rotation;
-						numpairs = 2;
-					}
-					if (flags.HasFlag(AnimFlags.Scale))
-					{
-						hasScl = true;
-						flags |= AnimFlags.Scale;
-						numpairs++;
-					}
-					if (flags.HasFlag(AnimFlags.Vertex) || flags.HasFlag(AnimFlags.Normal))
-					{
-						hasVert = true;
-						hasNorm = true;
-						flags = AnimFlags.Vertex | AnimFlags.Normal;
-						numpairs = 2;
+						case AnimFlags.Position:
+						case AnimFlags.Rotation:
+							hasPos = true;
+							hasRot = true;
+							flags = AnimFlags.Position | AnimFlags.Rotation;
+							numpairs = 2;
+							break;
+						case AnimFlags.Scale:
+							hasScl = true;
+							flags |= AnimFlags.Scale;
+							numpairs++;
+							break;
+						case AnimFlags.Vertex:
+						case AnimFlags.Normal:
+							hasVert = true;
+							hasNorm = true;
+							flags = AnimFlags.Vertex | AnimFlags.Normal;
+							numpairs = 2;
+							break;
 					}
 					// Force MDATA3 for motions that don't have data in one field but still are MDATA3
 					// Example: motion_aamu05_cyl40 sonic.exe at 0x15E14B8
