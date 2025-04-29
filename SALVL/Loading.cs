@@ -1480,7 +1480,7 @@ namespace SAModel.SALVL
 			selectedItems.SelectionChanged += SelectionChanged;
 			UseWaitCursor = false;
 			Enabled = true;
-
+			saveToolStripMenuItem.Enabled = false;
 			gizmoSpaceComboBox.Enabled = true;
 			if (gizmoSpaceComboBox.SelectedIndex == -1) gizmoSpaceComboBox.SelectedIndex = 0;
 			pivotComboBox.Enabled = true;

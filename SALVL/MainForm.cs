@@ -1934,7 +1934,6 @@ namespace SAModel.SALVL
 		{
 			ShowLevelSelect();
 		}
-
 		
 		private void loadLandtableToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
@@ -1964,6 +1963,7 @@ namespace SAModel.SALVL
 					LevelPath = fileDialog.FileName;
 					LoadStage("");
 					LoadLandtable();
+					UncheckMenuItems(changeLevelToolStripMenuItem);
 					UpdateMRUList(fileDialog.FileName);
 				}
 			}
