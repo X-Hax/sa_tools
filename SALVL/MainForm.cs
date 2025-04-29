@@ -35,6 +35,8 @@ namespace SAModel.SALVL
 		bool NeedRedraw;
 		bool NeedPropertyRefresh;
 		bool AnimationPlaying;
+		public bool IsLevelOnly = false;
+		public string LevelPath = string.Empty;
 
 		public enum ClipLevel
 		{
@@ -1595,6 +1597,9 @@ namespace SAModel.SALVL
 
 		private void JumpToStartPos()
 		{
+			if (IsLevelOnly)
+				return;
+
 			if (LevelData.Character < LevelData.StartPositions.Length)
 			{
 				cam.Position = new Vector3(LevelData.StartPositions[LevelData.Character].Position.X, LevelData.StartPositions[LevelData.Character].Position.Y + 10, LevelData.StartPositions[LevelData.Character].Position.Z);
@@ -1695,12 +1700,10 @@ namespace SAModel.SALVL
 			NeedRedraw = true;
 		}
 
-
 		private void MainForm_Deactivate(object sender, EventArgs e)
 		{
 			if (actionInputCollector != null) actionInputCollector.ReleaseKeys();
 		}
-
 
 		private void unloadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -1902,7 +1905,6 @@ namespace SAModel.SALVL
 			DeviceReset();
 		}
 
-
 		private void RenderPanel_SizeChanged(object sender, EventArgs e)
 		{
 			if (WindowState != LastWindowState)
@@ -1933,6 +1935,7 @@ namespace SAModel.SALVL
 			ShowLevelSelect();
 		}
 
+		
 		private void loadLandtableToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
@@ -1957,7 +1960,10 @@ namespace SAModel.SALVL
 						Set_SADXOptionsVisible(true);
 					}
 
-					LoadLandtable(fileDialog.FileName);
+					IsLevelOnly = true;
+					LevelPath = fileDialog.FileName;
+					LoadStage("");
+					LoadLandtable();
 					UpdateMRUList(fileDialog.FileName);
 				}
 			}

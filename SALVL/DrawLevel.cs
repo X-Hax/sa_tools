@@ -142,10 +142,13 @@ namespace SAModel.SALVL
 			#endregion
 
 			#region Adding splines
-			if (viewSplinesToolStripMenuItem.Checked)
+			if (LevelData.LevelSplines != null)
 			{
-				foreach (SplineData spline in LevelData.LevelSplines)
-					renderlist_set.AddRange(spline.Render(d3ddevice, cam, transform));
+				if (viewSplinesToolStripMenuItem.Checked)
+				{
+					foreach (SplineData spline in LevelData.LevelSplines)
+						renderlist_set.AddRange(spline.Render(d3ddevice, cam, transform));
+				}
 			}
 			#endregion
 
