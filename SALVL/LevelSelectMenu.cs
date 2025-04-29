@@ -11,8 +11,6 @@ namespace SAModel.SALVL
 	{
         private void ShowLevelSelect()
         {
-			IsLevelOnly = false;
-			LevelPath = string.Empty;
             string stageToLoad = string.Empty;
             using (LevelSelectDialog dialog = new LevelSelectDialog(levelNames))
             {

@@ -379,6 +379,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 			ClearSETItems();
 			ClearLevelGeoAnims();
 			ClearLevelGeometry();
+			StartPositions = null;
+			DeathZones = null;
+			leveleff = null;
+			LevelSplines = null;
+			InvalidateRenderState();
 
 			changes.Push("Clear Stage");
 		}

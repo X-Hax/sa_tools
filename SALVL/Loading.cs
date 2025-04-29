@@ -166,6 +166,12 @@ namespace SAModel.SALVL
 
 		private void LoadStage(string id)
 		{
+			if (id.Length > 0)
+			{
+				IsLevelOnly = false;
+				LevelPath = string.Empty;
+			}
+
 			if (!IsLevelOnly)
 			{
 				UseWaitCursor = true;
@@ -658,7 +664,7 @@ namespace SAModel.SALVL
 
 				#region Initialization and cleanup
 
-				if (isStageLoaded)
+				if (isStageLoaded || IsLevelOnly)
 				{
 					LevelData.Clear();
 					selectedItems = new EditorItemSelection();
