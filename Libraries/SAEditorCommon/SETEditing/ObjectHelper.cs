@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Color = System.Drawing.Color;
 using Mesh = SAModel.Direct3D.Mesh;
+using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.SETEditing
 {
@@ -79,6 +80,50 @@ namespace SAModel.SAEditorCommon.SETEditing
 						{
 							texlist.Add(texturebmps[b].Image.ToTexture(dev));
 							break;
+						}
+					}
+				}
+				return texlist.ToArray();
+			}
+		}
+		// This is primarily used for SA2 level objects that pull from multiple texture sources.
+		// Copied from pieces of SAMDL's code.
+		public static Texture[] GetTexturesMultiSource(List<string> name, SplitTools.NJS_TEXLIST texnames = null, Device dev = null)
+		{
+			Texture[] result = null;
+			if (texnames == null)
+				return result;
+			else
+			{
+				List<BMPInfo> texturedata = new List<BMPInfo>();
+				Direct3D.TextureSystem.BMPInfo[] texturebmps = null;
+				if (texturebmps != null && texturebmps.Length > 0)
+					texturedata.AddRange(texturebmps);
+				for (int i = 0; i < name.Count; i++)
+				{
+					if (LevelData.TextureBitmaps.ContainsKey(name[i]))
+						texturedata.AddRange(LevelData.TextureBitmaps[name[i]]);
+					else if (LevelData.TextureBitmaps.ContainsKey(name[i].ToUpperInvariant()))
+						texturedata.AddRange(LevelData.TextureBitmaps[name[i].ToUpperInvariant()]);
+					else if (LevelData.TextureBitmaps.ContainsKey(name[i].ToLowerInvariant()))
+						texturedata.AddRange(LevelData.TextureBitmaps[name[i].ToLowerInvariant()]);
+				}
+				texturebmps = texturedata.ToArray();
+				if (LevelData.TextureBitmaps == null || dev == null)
+					return result;
+				List<Texture> texlist = new List<Texture>();
+				List<BMPInfo> texinfo = new List<BMPInfo>();
+				List<string> dupnames = new List<string>();
+				for (int i = 0; i < texnames.TextureNames.Length; i++)
+				{
+					for (int b = 0; b < texturebmps.Length; b++)
+					{
+						if (string.IsNullOrEmpty(texnames.TextureNames[i]) || (texnames.TextureNames[i].ToLowerInvariant() == texturebmps[b].Name.ToLowerInvariant() && !dupnames.Contains(texnames.TextureNames[i].ToLowerInvariant())))
+						{
+							texinfo.Add(texturebmps[b]);
+							texlist.Add(texturebmps[b].Image.ToTexture(dev));
+							dupnames.Add(texturebmps[b].Name.ToLowerInvariant());
+							continue;
 						}
 					}
 				}

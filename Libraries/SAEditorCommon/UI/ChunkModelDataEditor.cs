@@ -638,7 +638,6 @@ namespace SAModel.SAEditorCommon.UI
 								clamp += pct.ClampV ? "V" : "";
 								if (pct.ClampU || pct.ClampV)
 									texdata += clamp + " )";
-								if (!pct.ClampU && !pct.ClampV)
 								flip += pct.FlipU ? "U" : "";
 								flip += pct.FlipV ? "V" : "";
 								if (pct.FlipU || pct.FlipV)
