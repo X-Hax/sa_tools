@@ -73,6 +73,7 @@
 			cloneButton = new System.Windows.Forms.Button();
 			deleteButton = new System.Windows.Forms.Button();
 			resetButton = new System.Windows.Forms.Button();
+			noAlphaTestCheck = new System.Windows.Forms.CheckBox();
 			flagsGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)userFlagsNumeric).BeginInit();
 			generalSettingBox.SuspendLayout();
@@ -110,6 +111,7 @@
 			// 
 			// flagsGroupBox
 			// 
+			flagsGroupBox.Controls.Add(noAlphaTestCheck);
 			flagsGroupBox.Controls.Add(labelFlags);
 			flagsGroupBox.Controls.Add(label2);
 			flagsGroupBox.Controls.Add(userFlagsLabel);
@@ -131,7 +133,7 @@
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(418, 315);
+			flagsGroupBox.Size = new System.Drawing.Size(436, 317);
 			flagsGroupBox.TabIndex = 8;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
@@ -139,7 +141,7 @@
 			// labelFlags
 			// 
 			labelFlags.AutoSize = true;
-			labelFlags.Location = new System.Drawing.Point(82, 270);
+			labelFlags.Location = new System.Drawing.Point(82, 266);
 			labelFlags.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			labelFlags.Name = "labelFlags";
 			labelFlags.Size = new System.Drawing.Size(60, 25);
@@ -149,7 +151,7 @@
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(10, 270);
+			label2.Location = new System.Drawing.Point(10, 266);
 			label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(57, 25);
@@ -159,7 +161,7 @@
 			// userFlagsLabel
 			// 
 			userFlagsLabel.AutoSize = true;
-			userFlagsLabel.Location = new System.Drawing.Point(195, 232);
+			userFlagsLabel.Location = new System.Drawing.Point(205, 266);
 			userFlagsLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			userFlagsLabel.Name = "userFlagsLabel";
 			userFlagsLabel.Size = new System.Drawing.Size(97, 25);
@@ -169,7 +171,7 @@
 			// userFlagsNumeric
 			// 
 			userFlagsNumeric.Hexadecimal = true;
-			userFlagsNumeric.Location = new System.Drawing.Point(304, 225);
+			userFlagsNumeric.Location = new System.Drawing.Point(314, 264);
 			userFlagsNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			userFlagsNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			userFlagsNumeric.Name = "userFlagsNumeric";
@@ -181,7 +183,7 @@
 			// ignoreLightCheck
 			// 
 			ignoreLightCheck.AutoSize = true;
-			ignoreLightCheck.Location = new System.Drawing.Point(182, 194);
+			ignoreLightCheck.Location = new System.Drawing.Point(182, 33);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
 			ignoreLightCheck.Size = new System.Drawing.Size(159, 29);
@@ -195,7 +197,7 @@
 			// flatShadeCheck
 			// 
 			flatShadeCheck.AutoSize = true;
-			flatShadeCheck.Location = new System.Drawing.Point(182, 160);
+			flatShadeCheck.Location = new System.Drawing.Point(182, 194);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
 			flatShadeCheck.Size = new System.Drawing.Size(131, 29);
@@ -209,7 +211,7 @@
 			// doubleSideCheck
 			// 
 			doubleSideCheck.AutoSize = true;
-			doubleSideCheck.Location = new System.Drawing.Point(182, 130);
+			doubleSideCheck.Location = new System.Drawing.Point(182, 161);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doubleSideCheck.Name = "doubleSideCheck";
 			doubleSideCheck.Size = new System.Drawing.Size(146, 29);
@@ -223,7 +225,7 @@
 			// envMapCheck
 			// 
 			envMapCheck.AutoSize = true;
-			envMapCheck.Location = new System.Drawing.Point(182, 98);
+			envMapCheck.Location = new System.Drawing.Point(182, 129);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
 			envMapCheck.Size = new System.Drawing.Size(215, 29);
@@ -237,7 +239,7 @@
 			// useTextureCheck
 			// 
 			useTextureCheck.AutoSize = true;
-			useTextureCheck.Location = new System.Drawing.Point(182, 64);
+			useTextureCheck.Location = new System.Drawing.Point(10, 33);
 			useTextureCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useTextureCheck.Name = "useTextureCheck";
 			useTextureCheck.Size = new System.Drawing.Size(127, 29);
@@ -251,7 +253,7 @@
 			// useAlphaCheck
 			// 
 			useAlphaCheck.AutoSize = true;
-			useAlphaCheck.Location = new System.Drawing.Point(182, 33);
+			useAlphaCheck.Location = new System.Drawing.Point(10, 65);
 			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useAlphaCheck.Name = "useAlphaCheck";
 			useAlphaCheck.Size = new System.Drawing.Size(118, 29);
@@ -265,7 +267,7 @@
 			// ignoreSpecCheck
 			// 
 			ignoreSpecCheck.AutoSize = true;
-			ignoreSpecCheck.Location = new System.Drawing.Point(10, 225);
+			ignoreSpecCheck.Location = new System.Drawing.Point(182, 97);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
 			ignoreSpecCheck.Size = new System.Drawing.Size(162, 29);
@@ -279,7 +281,7 @@
 			// flipVCheck
 			// 
 			flipVCheck.AutoSize = true;
-			flipVCheck.Location = new System.Drawing.Point(10, 194);
+			flipVCheck.Location = new System.Drawing.Point(10, 226);
 			flipVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flipVCheck.Name = "flipVCheck";
 			flipVCheck.Size = new System.Drawing.Size(103, 29);
@@ -293,7 +295,7 @@
 			// flipUCheck
 			// 
 			flipUCheck.AutoSize = true;
-			flipUCheck.Location = new System.Drawing.Point(10, 160);
+			flipUCheck.Location = new System.Drawing.Point(10, 193);
 			flipUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flipUCheck.Name = "flipUCheck";
 			flipUCheck.Size = new System.Drawing.Size(104, 29);
@@ -307,7 +309,7 @@
 			// clampVCheck
 			// 
 			clampVCheck.AutoSize = true;
-			clampVCheck.Location = new System.Drawing.Point(10, 130);
+			clampVCheck.Location = new System.Drawing.Point(10, 161);
 			clampVCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			clampVCheck.Name = "clampVCheck";
 			clampVCheck.Size = new System.Drawing.Size(105, 29);
@@ -321,7 +323,7 @@
 			// clampUCheck
 			// 
 			clampUCheck.AutoSize = true;
-			clampUCheck.Location = new System.Drawing.Point(10, 98);
+			clampUCheck.Location = new System.Drawing.Point(10, 129);
 			clampUCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			clampUCheck.Name = "clampUCheck";
 			clampUCheck.Size = new System.Drawing.Size(106, 29);
@@ -335,7 +337,7 @@
 			// superSampleCheck
 			// 
 			superSampleCheck.AutoSize = true;
-			superSampleCheck.Location = new System.Drawing.Point(10, 64);
+			superSampleCheck.Location = new System.Drawing.Point(10, 97);
 			superSampleCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			superSampleCheck.Name = "superSampleCheck";
 			superSampleCheck.Size = new System.Drawing.Size(148, 29);
@@ -348,7 +350,7 @@
 			// pickStatusCheck
 			// 
 			pickStatusCheck.AutoSize = true;
-			pickStatusCheck.Location = new System.Drawing.Point(10, 33);
+			pickStatusCheck.Location = new System.Drawing.Point(182, 65);
 			pickStatusCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			pickStatusCheck.Name = "pickStatusCheck";
 			pickStatusCheck.Size = new System.Drawing.Size(163, 29);
@@ -580,7 +582,7 @@
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(842, 405);
+			doneButton.Location = new System.Drawing.Point(872, 413);
 			doneButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
@@ -633,13 +635,26 @@
 			resetButton.UseVisualStyleBackColor = true;
 			resetButton.Click += resetButton_Click;
 			// 
+			// noAlphaTestCheck
+			// 
+			noAlphaTestCheck.AutoSize = true;
+			noAlphaTestCheck.Location = new System.Drawing.Point(182, 227);
+			noAlphaTestCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
+			noAlphaTestCheck.Name = "noAlphaTestCheck";
+			noAlphaTestCheck.Size = new System.Drawing.Size(247, 29);
+			noAlphaTestCheck.TabIndex = 17;
+			noAlphaTestCheck.Text = "No Alpha Test (SA2B Only)";
+			noAlphaTestCheck.UseVisualStyleBackColor = true;
+			noAlphaTestCheck.Click += noAlphaTestCheck_Click;
+			noAlphaTestCheck.KeyDown += onKeyDown;
+			// 
 			// ChunkMaterialEditor
 			// 
 			AcceptButton = doneButton;
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(989, 465);
+			ClientSize = new System.Drawing.Size(1019, 473);
 			ControlBox = false;
 			Controls.Add(resetButton);
 			Controls.Add(deleteButton);
@@ -718,5 +733,6 @@
 		private System.Windows.Forms.Button resetButton;
 		private System.Windows.Forms.Label ambientLabel;
 		private System.Windows.Forms.Panel ambientColorBox;
+		private System.Windows.Forms.CheckBox noAlphaTestCheck;
 	}
 }

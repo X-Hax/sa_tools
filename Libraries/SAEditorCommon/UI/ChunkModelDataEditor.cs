@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
-using System.DirectoryServices.ActiveDirectory;
 using SAModel.Direct3D.TextureSystem;
-using SAModel.GC;
-using static VrSharp.Xvr.DirectXTexUtility;
-using SharpDX.Direct3D9;
+using System.Drawing;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -19,12 +16,24 @@ namespace SAModel.SAEditorCommon.UI
 		private bool freeze;
 		private int previousNodeIndex;
 		private readonly BMPInfo[] textures;
+		private Rectangle vertdatagroupdyn;
+		private Rectangle polydatagroupdyn;
+		private Rectangle vertdatalistdyn;
+		private Rectangle polydatalistdyn;
+		private Rectangle polyclonebutton;
+		private Rectangle polyresetbutton;
+		private Rectangle polydeletebutton;
+		private Rectangle polyupbutton;
+		private Rectangle polydownbutton;
+		private Size OriginalSize;
 
 		public ChunkModelDataEditor(NJS_OBJECT objectOriginal, BMPInfo[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;
 			InitializeComponent();
+			this.Resize += ChunkModelDataEditor_Resize;
+			OriginalSize = this.Size;
 			freeze = true;
 			comboBoxNode.Items.Clear();
 			editedHierarchy = objectOriginal.Clone();
@@ -34,6 +43,15 @@ namespace SAModel.SAEditorCommon.UI
 			comboBoxNode.SelectedIndex = index;
 			BuildVertexDataList();
 			BuildPolyChunkList();
+			vertdatagroupdyn = new Rectangle(groupBoxVertList.Location, groupBoxVertList.Size);
+			polydatagroupdyn = new Rectangle(groupBoxMeshList.Location, groupBoxMeshList.Size);
+			vertdatalistdyn = new Rectangle(listViewVertices.Location, listViewVertices.Size);
+			polydatalistdyn = new Rectangle(listViewMeshes.Location, listViewMeshes.Size);
+			polyclonebutton = new Rectangle(buttonCloneMesh.Location, buttonCloneMesh.Size);
+			polydeletebutton = new Rectangle(buttonDeleteMesh.Location, buttonDeleteMesh.Size);
+			polyresetbutton = new Rectangle(buttonResetMeshes.Location, buttonResetMeshes.Size);
+			polyupbutton = new Rectangle(buttonMoveMeshUp.Location, buttonMoveMeshUp.Size);
+			polydownbutton = new Rectangle(buttonMoveMeshDown.Location, buttonMoveMeshDown.Size);
 			this.textures = textures;
 			freeze = false;
 		}
@@ -448,8 +466,17 @@ namespace SAModel.SAEditorCommon.UI
 							case PolyChunkBitsDrawPolygonList pcdp:
 								newmesh.SubItems.Add("Bits_DP");
 								break;
+							case PolyChunkBitsMipmapDAdjust pcda:
+								newmesh.SubItems.Add("Bits_DA");
+								break;
+							case PolyChunkBitsSpecularExponent pcse:
+								newmesh.SubItems.Add("Bits_SE");
+								break;
 							case PolyChunkVolume pcv:
 								newmesh.SubItems.Add(pcv.Type.ToString());
+								break;
+							case PolyChunkMaterialBump pcmb:
+								newmesh.SubItems.Add("Material_Bump");
 								break;
 							case PolyChunkMaterial pcm:
 								string mtype = "Material_";
@@ -483,8 +510,9 @@ namespace SAModel.SAEditorCommon.UI
 									}
 									specular += "S(" + "Exp " + pcm.SpecularExponent.ToString() + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")";
 								}
-								string sourcealpha = ", BS_";
-								string destalpha = ", BD_";
+								string blendmodes = ", BL( ";
+								string sourcealpha = "";
+								string destalpha = ", ";
 								switch (pcm.SourceAlpha)
 								{
 									case AlphaInstruction.Zero:
@@ -539,17 +567,17 @@ namespace SAModel.SAEditorCommon.UI
 										destalpha += "IDA";
 										break;
 								}
+								blendmodes += sourcealpha + destalpha + " )";
 
-								newmesh.SubItems.Add(diffuse + ambient + specular + sourcealpha + destalpha);
+								newmesh.SubItems.Add(diffuse + ambient + specular + blendmodes);
 								break;
 							case PolyChunkTinyTextureID pct:
-								float mip = pct.MipmapDAdjust;
 								string texdata = "";
-								string clamp = ", CL_";
-								string flip = ", FL_";
-								string filter = ", FM_";
-								string mipd = ", DA_";
-								texdata += "TID " + pct.TextureID;
+								string clamp = ", CL( ";
+								string flip = ", FL( ";
+								string filter = ", FM( ";
+								string mipd = ", DA( ";
+								texdata += "TID( " + pct.TextureID + " )";
 								switch (pct.Flags & 0xF)
 								{
 									case 0:
@@ -602,17 +630,19 @@ namespace SAModel.SAEditorCommon.UI
 										mipd += "375";
 										break;
 								}
+								mipd += " )";
 								if ((pct.Flags & 0xF) != 0)
 									texdata += mipd;
 								texdata += pct.SuperSample ? ", SS" : "";
 								clamp += pct.ClampU ? "U" : "";
 								clamp += pct.ClampV ? "V" : "";
 								if (pct.ClampU || pct.ClampV)
-									texdata += clamp;
+									texdata += clamp + " )";
+								if (!pct.ClampU && !pct.ClampV)
 								flip += pct.FlipU ? "U" : "";
 								flip += pct.FlipV ? "V" : "";
 								if (pct.FlipU || pct.FlipV)
-									texdata += flip;
+									texdata += flip + " )";
 								switch (pct.FilterMode)
 								{
 									case FilterMode.PointSampled:
@@ -625,6 +655,7 @@ namespace SAModel.SAEditorCommon.UI
 										filter += "TF";
 										break;
 								}
+								filter += " )";
 								texdata += filter;
 								newmesh.SubItems.Add(pct.Type.ToString());
 								newmesh.SubItems.Add(texdata);
@@ -632,6 +663,8 @@ namespace SAModel.SAEditorCommon.UI
 							case PolyChunkStrip pcs:
 								string stripflags = "";
 								string striptype = "Strip";
+								string stripstart = "FST( ";
+								string stripuserflags = ", UFO_" + pcs.UserFlags.ToString();
 								stripflags += pcs.UseAlpha ? "UA" : "";
 								if (!pcs.UseAlpha)
 									stripflags += pcs.DoubleSide ? "DB" : "";
@@ -657,7 +690,14 @@ namespace SAModel.SAEditorCommon.UI
 									stripflags += pcs.IgnoreSpecular ? "IS" : "";
 								else
 									stripflags += pcs.IgnoreSpecular ? ", IS" : "";
-								switch (pcs.Type)
+								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular))
+									stripflags += pcs.NoAlphaTest ? "NAT" : "";
+								else
+									stripflags += pcs.NoAlphaTest ? ", NAT" : "";
+								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular) && (!pcs.NoAlphaTest))
+									stripflags = "NONE";
+								stripflags += " )";
+									switch (pcs.Type)
 								{
 									case ChunkType.Strip_Strip:
 										break;
@@ -696,7 +736,7 @@ namespace SAModel.SAEditorCommon.UI
 										break;
 								}
 								newmesh.SubItems.Add(striptype);
-								newmesh.SubItems.Add(stripflags);
+								newmesh.SubItems.Add(stripstart + stripflags + stripuserflags);
 								break;
 							case PolyChunkBitsBlendAlpha pba:
 								newmesh.SubItems.Add("Bits_BA");
@@ -795,7 +835,7 @@ namespace SAModel.SAEditorCommon.UI
 				buttonCloneMesh.Enabled = true;
 			editPCMatToolStripMenuItem.Enabled = editPCMatToolStripMenuItem.Visible = polytype.Contains("Material");
 			editTextureIDToolStripMenuItem.Enabled = editTextureIDToolStripMenuItem.Visible = polytype.StartsWith("Tiny");
-			editStripAlphaToolStripMenuItem.Enabled = editStripAlphaToolStripMenuItem.Visible =  polytype.StartsWith("Strip");
+			editStripAlphaToolStripMenuItem.Enabled = editStripAlphaToolStripMenuItem.Visible = polytype.StartsWith("Strip");
 			editAlphaBlendDataToolStripMenuItem.Enabled = editAlphaBlendDataToolStripMenuItem.Visible = polytype == "Bits_BA";
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
@@ -894,6 +934,7 @@ namespace SAModel.SAEditorCommon.UI
 					pdata2 += ", " + pct.FilterMode.ToString();
 					break;
 				case PolyChunkStrip pcs:
+					string stripcount = ", Strips: " + pcs.StripCount.ToString();
 					string stripflags = "";
 					stripflags += pcs.UseAlpha ? ", Use Alpha" : "";
 					stripflags += pcs.DoubleSide ? ", Double Side" : "";
@@ -902,6 +943,9 @@ namespace SAModel.SAEditorCommon.UI
 					stripflags += pcs.IgnoreLight ? ", Ignore Light" : "";
 					stripflags += pcs.IgnoreAmbient ? ", Ignore Ambient" : "";
 					stripflags += pcs.IgnoreSpecular ? ", Ignore Specular" : "";
+					stripflags += pcs.NoAlphaTest ? ", No Alpha Test" : "";
+					stripflags += ", User Flags: " + pcs.UserFlags.ToString();
+					pdata2 += stripcount;
 					pdata2 += stripflags;
 					break;
 				case PolyChunkBitsBlendAlpha pba:
@@ -989,6 +1033,42 @@ namespace SAModel.SAEditorCommon.UI
 
 		}
 
+		private void resize_Control(Control c, Rectangle r, int type = 0)
+		{
+			float xRatio = (float)this.Width / (float)OriginalSize.Width;
+			float yRatio = (float)this.Height / (float)OriginalSize.Height;
+			float xSize = (float)(this.Width - OriginalSize.Width);
+			float ySize = (float)(this.Height - OriginalSize.Height);
+
+			int newX = (int)(r.X * xRatio);
+			int newY = (int)(r.Y * yRatio);
+
+			int newXLoc = (int)(r.X + xSize);
+			int newYLoc = (int)(r.Y + ySize);
+
+			int newWidth = (int)(r.Width * xRatio);
+			int newHeight = (int)(r.Height * yRatio);
+
+			int newXSize = (int)(r.Width + xSize);
+			int newYSize = (int)(r.Height + ySize);
+
+			switch (type)
+			{
+				case 0: // Buttons beside list (Moving poly sets up/down)
+				default:
+					c.Location = new Point(newXLoc, r.Y);
+					break;
+				case 1: // Vertex List and Group
+					c.Size = new Size(r.Width, newYSize);
+					break;
+				case 2: // Poly Data List
+					c.Size = new Size(newXSize, newYSize);
+					break;
+				case 3: // Buttons below list
+					c.Location = new Point(r.X, newYLoc);
+					break;
+			}
+		}
 		private void listViewVertices_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listViewVertices.SelectedIndices.Count == 0)
@@ -1017,6 +1097,19 @@ namespace SAModel.SAEditorCommon.UI
 			sb.Append(", Count:");
 			sb.Append(vcount);
 			toolStripStatusLabelInfo.Text = sb.ToString();
+		}
+
+		private void ChunkModelDataEditor_Resize(object sender, EventArgs e)
+		{
+			resize_Control(listViewMeshes, polydatalistdyn, 2);
+			resize_Control(listViewVertices, vertdatalistdyn, 1);
+			resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
+			resize_Control(groupBoxMeshList, polydatagroupdyn, 2);
+			resize_Control(buttonCloneMesh, polyclonebutton, 3);
+			resize_Control(buttonResetMeshes, polyresetbutton, 3);
+			resize_Control(buttonDeleteMesh, polydeletebutton, 3);
+			resize_Control(buttonMoveMeshUp, polyupbutton);
+			resize_Control(buttonMoveMeshDown, polydownbutton);
 		}
 	}
 }

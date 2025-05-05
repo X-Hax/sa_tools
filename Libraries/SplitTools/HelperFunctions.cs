@@ -905,7 +905,18 @@ namespace SplitTools
 		Shadow = 6,
 		Rouge = 7
 	}
+	public enum SA2DeathFlags
+	{
+		Normal,
+		Quicksand,
+		Water,
+		Wall = 4,
+		Normal2 = 8,
+		Quicksand2,
+		Water2,
+		Wall2 = 0xC
 
+	}
 	[Flags]
 	public enum SA2CharacterFlags
 	{

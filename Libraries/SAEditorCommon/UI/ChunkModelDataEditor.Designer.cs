@@ -86,7 +86,7 @@
 			// buttonMoveMeshUp
 			// 
 			buttonMoveMeshUp.Enabled = false;
-			buttonMoveMeshUp.Location = new System.Drawing.Point(544, 31);
+			buttonMoveMeshUp.Location = new System.Drawing.Point(672, 31);
 			buttonMoveMeshUp.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveMeshUp.Name = "buttonMoveMeshUp";
 			buttonMoveMeshUp.Size = new System.Drawing.Size(36, 36);
@@ -98,7 +98,7 @@
 			// buttonMoveMeshDown
 			// 
 			buttonMoveMeshDown.Enabled = false;
-			buttonMoveMeshDown.Location = new System.Drawing.Point(544, 75);
+			buttonMoveMeshDown.Location = new System.Drawing.Point(672, 75);
 			buttonMoveMeshDown.Margin = new System.Windows.Forms.Padding(4);
 			buttonMoveMeshDown.Name = "buttonMoveMeshDown";
 			buttonMoveMeshDown.Size = new System.Drawing.Size(36, 36);
@@ -109,7 +109,6 @@
 			// 
 			// listViewMeshes
 			// 
-			listViewMeshes.AutoArrange = false;
 			listViewMeshes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderMatID, columnHeaderCnkType, columnHeaderCnkData });
 			listViewMeshes.FullRowSelect = true;
 			listViewMeshes.GridLines = true;
@@ -119,7 +118,7 @@
 			listViewMeshes.MultiSelect = false;
 			listViewMeshes.Name = "listViewMeshes";
 			listViewMeshes.ShowGroups = false;
-			listViewMeshes.Size = new System.Drawing.Size(526, 352);
+			listViewMeshes.Size = new System.Drawing.Size(656, 352);
 			listViewMeshes.TabIndex = 11;
 			listViewMeshes.UseCompatibleStateImageBehavior = false;
 			listViewMeshes.View = System.Windows.Forms.View.Details;
@@ -170,7 +169,7 @@
 			statusStrip1.Location = new System.Drawing.Point(0, 732);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(1137, 32);
+			statusStrip1.Size = new System.Drawing.Size(1275, 32);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
@@ -368,8 +367,8 @@
 			groupBoxMeshList.Controls.Add(buttonCloneMesh);
 			groupBoxMeshList.Location = new System.Drawing.Point(539, 240);
 			groupBoxMeshList.Name = "groupBoxMeshList";
-			groupBoxMeshList.Size = new System.Drawing.Size(592, 441);
-			groupBoxMeshList.TabIndex = 28;
+			groupBoxMeshList.Size = new System.Drawing.Size(724, 441);
+			groupBoxMeshList.TabIndex = 29;
 			groupBoxMeshList.TabStop = false;
 			groupBoxMeshList.Text = "Poly Data";
 			// 
@@ -386,8 +385,9 @@
 			// 
 			// buttonClose
 			// 
+			buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(1005, 687);
+			buttonClose.Location = new System.Drawing.Point(1133, 687);
 			buttonClose.Name = "buttonClose";
 			buttonClose.Size = new System.Drawing.Size(126, 36);
 			buttonClose.TabIndex = 17;
@@ -448,7 +448,7 @@
 			groupBoxVertList.Location = new System.Drawing.Point(12, 240);
 			groupBoxVertList.Name = "groupBoxVertList";
 			groupBoxVertList.Size = new System.Drawing.Size(521, 441);
-			groupBoxVertList.TabIndex = 29;
+			groupBoxVertList.TabIndex = 28;
 			groupBoxVertList.TabStop = false;
 			groupBoxVertList.Text = "Vertex Data";
 			// 
@@ -500,7 +500,7 @@
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-			ClientSize = new System.Drawing.Size(1137, 764);
+			ClientSize = new System.Drawing.Size(1275, 764);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(comboBoxNode);
 			Controls.Add(buttonClose);
@@ -508,16 +508,15 @@
 			Controls.Add(groupBoxBounds);
 			Controls.Add(groupBoxLabels);
 			Controls.Add(statusStrip1);
-			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 			Margin = new System.Windows.Forms.Padding(4);
 			MaximizeBox = false;
 			MinimizeBox = false;
 			Name = "ChunkModelDataEditor";
 			ShowInTaskbar = false;
-			SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			Text = "Model Data Editor";
+			Resize += ChunkModelDataEditor_Resize;
 			statusStrip1.ResumeLayout(false);
 			statusStrip1.PerformLayout();
 			groupBoxLabels.ResumeLayout(false);

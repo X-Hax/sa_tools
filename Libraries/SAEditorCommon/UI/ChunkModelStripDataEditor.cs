@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -17,14 +14,37 @@ namespace SAModel.SAEditorCommon.UI
 
 		private PolyChunk PolyData; // Poly data that is being edited
 		private readonly PolyChunk PolyDataOriginal; // Original poly data at the time of opening the dialog
-
-		public ChunkModelStripDataEditor(PolyChunk mats, string matsName = null)
+		private PolyChunkStrip.Strip PolyStrip;
+		private PolyChunkStrip.Strip PolyStripOriginal;
+		private PolyChunkStrip.Strip[] PolyStripCollection;
+		private readonly PolyChunkStrip.Strip[] PolyStripCollectionOriginal;
+		public ChunkModelStripDataEditor(PolyChunk mats, string matsName = null, int index = 0)
 		{
 			PolyData = mats;
 			PolyDataOriginal = mats.Clone();
+			PolyStripCollectionOriginal = ((PolyChunkStrip)PolyDataOriginal).Strips.ToArray();
 			InitializeComponent();
+			stripSetComboBox.Items.Clear();
 			if (!string.IsNullOrEmpty(matsName))
 				this.Text = "Strip Data Editor: " + matsName;
+			BuildStripSetList(mats);
+			stripSetComboBox.SelectedIndex = index;
+			BuildUVDataList();
+			SetStripUserFlags();
+		}
+		private void BuildStripSetList(PolyChunk poly)
+		{
+			stripSetComboBox.Items.Clear();
+			PolyChunkStrip pcs = (PolyChunkStrip)poly;
+			PolyStripCollection = pcs.Strips.ToArray();
+			string stripwinding = "";
+			string stripcount = "";
+			for (int i = 0; i < PolyStripCollection.Length; i++)
+			{
+				stripwinding = "Strip" + (PolyStripCollection[i].Reversed ? "R(" : "L(");
+				stripcount = PolyStripCollection[i].Indexes.Length.ToString() + ")";
+				stripSetComboBox.Items.Add(i.ToString() + ": " + stripwinding + stripcount);
+			}
 		}
 
 		private void MaterialEditor_Load(object sender, EventArgs e)
@@ -51,12 +71,13 @@ namespace SAModel.SAEditorCommon.UI
 			doubleSideCheck.Checked = pcs.DoubleSide;
 			flatShadeCheck.Checked = pcs.FlatShading;
 			ignoreLightCheck.Checked = pcs.IgnoreLight;
+			userFlagsNumericUpDown.Value = pcs.UserFlags;
+			noAlphaTestCheck.Checked = pcs.NoAlphaTest;
 			//DisplayFlags(index);
 
 			// Material list controls
 			resetButton.Enabled = true;
 		}
-
 		private void RaiseFormUpdated()
 		{
 			FormUpdated?.Invoke(this, EventArgs.Empty);
@@ -66,7 +87,82 @@ namespace SAModel.SAEditorCommon.UI
 		//{
 		//	labelFlags.Text = String.Format("{0:X8}", materials[index].Flags);
 		//}
-
+		private void BuildUVDataList()
+		{
+			stripListView.Items.Clear();
+			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
+			bool hasUVs = false;
+			bool hasUV2s = false;
+			bool hasColor = false;
+			switch (pcs.Type)
+			{
+				case ChunkType.Strip_Strip:
+				case ChunkType.Strip_Strip2:
+				default:
+					break;
+				case ChunkType.Strip_StripColor:
+					hasColor = true;
+					break;
+				case ChunkType.Strip_StripUVN:
+				case ChunkType.Strip_StripUVH:
+				case ChunkType.Strip_StripUVN2:
+				case ChunkType.Strip_StripUVH2:
+				case ChunkType.Strip_StripUVNNormal:
+				case ChunkType.Strip_StripUVHNormal:
+				case ChunkType.Strip_StripUVNColor:
+				case ChunkType.Strip_StripUVHColor:
+					hasUVs = true;
+					switch (pcs.Type)
+					{
+						default:
+							break;
+						case ChunkType.Strip_StripUVN2:
+						case ChunkType.Strip_StripUVH2:
+							hasUV2s = true;
+							break;
+						case ChunkType.Strip_StripUVNColor:
+						case ChunkType.Strip_StripUVHColor:
+							hasColor = true;
+							break;
+					}
+					break;
+			}
+			for (int i = 0; i < PolyStrip.Indexes.Length; i++)
+			{
+				ListViewItem newstrip = new ListViewItem(i.ToString());
+				newstrip.SubItems.Add(PolyStrip.Indexes[i].ToString());
+				if (hasUVs)
+					newstrip.SubItems.Add(PolyStrip.UVs[i].ToStruct());
+				else
+					newstrip.SubItems.Add("N/A");
+				if (hasUV2s)
+					newstrip.SubItems.Add(PolyStrip.UVs2[i].ToStruct());
+				else
+					newstrip.SubItems.Add("N/A");
+				if (hasColor)
+					newstrip.SubItems.Add(PolyStrip.VColors[i].ToStruct());
+				else
+					newstrip.SubItems.Add("N/A");
+				stripListView.Items.Add(newstrip);
+			}
+			stripListView.SelectedIndices.Clear();
+			stripListView.SelectedItems.Clear();
+			//stripListView_SelectedIndexChanged(null, null);
+			stripListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
+		private void SetStripUserFlags()
+		{
+			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
+			userFlag1NumericUpDown.Enabled = false;
+			userFlag2NumericUpDown.Enabled = false;
+			userFlag3NumericUpDown.Enabled = false;
+			if (pcs.UserFlags > 0)
+			{
+				userFlag1NumericUpDown.Enabled = true;
+				userFlag2NumericUpDown.Enabled = true;
+				userFlag3NumericUpDown.Enabled = true;
+			}
+		}
 		#endregion
 		#region General Control Event Methods
 
@@ -90,12 +186,20 @@ namespace SAModel.SAEditorCommon.UI
 			pcs.IgnoreLight = ignoreLightCheck.Checked;
 			pcs.IgnoreAmbient = ignoreAmbiCheck.Checked;
 			pcs.IgnoreSpecular = ignoreSpecCheck.Checked;
+			pcs.NoAlphaTest = noAlphaTestCheck.Checked;
 		}
 
 		private void ignoreAmbiCheck_Click(object sender, EventArgs e)
 		{
 			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
 			pcs.IgnoreAmbient = ignoreAmbiCheck.Checked;
+			RaiseFormUpdated();
+		}
+
+		private void noAlphaTestCheck_Click(object sender, EventArgs e)
+		{
+			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
+			pcs.NoAlphaTest = noAlphaTestCheck.Checked;
 			RaiseFormUpdated();
 		}
 
@@ -159,23 +263,55 @@ namespace SAModel.SAEditorCommon.UI
 		private void resetButton_Click(object sender, EventArgs e)
 		{
 			SetControls(PolyDataOriginal);
+			BuildStripSetList(PolyDataOriginal);
+			stripSetComboBox.SelectedIndex = 0;
 			RaiseFormUpdated();
 		}
 		#endregion
 
-		private void generalSettingBox_Enter(object sender, EventArgs e)
+		private void stripSetComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-
+			int index = stripSetComboBox.SelectedIndex;
+			if (index == -1)
+				return;
+			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
+			PolyChunkStrip.Strip[] strips = pcs.Strips.ToArray();
+			PolyStrip = strips[index].Clone();
+			PolyStripOriginal = strips[index].Clone();
+			BuildUVDataList();
+			SetStripUserFlags();
 		}
 
-		private void label1_Click(object sender, EventArgs e)
+		private void flipAllWindingsButton_Click(object sender, EventArgs e)
 		{
-
+			for (int i = 0; i < PolyStripCollection.Length; i++)
+				PolyStripCollection[i].CMDEReversed = !PolyStripCollection[i].Reversed;
+			BuildStripSetList(PolyData);
+			stripSetComboBox.SelectedIndex = 0;
 		}
 
-		private void ignoreAmbiCheck_CheckedChanged(object sender, EventArgs e)
+		private void resetAllWindingsButton_Click(object sender, EventArgs e)
 		{
+			for (int i = 0; i < PolyStripCollectionOriginal.Length; i++)
+				PolyStripCollection[i].CMDEReversed = PolyStripCollectionOriginal[i].Reversed;
+			BuildStripSetList(PolyData);
+			stripSetComboBox.SelectedIndex = 0;
+		}
 
+		private void flipWindingButton_Click(object sender, EventArgs e)
+		{
+			int index = stripSetComboBox.SelectedIndex;
+			PolyStripCollection[index].CMDEReversed = !PolyStripCollection[index].Reversed;
+			BuildStripSetList(PolyData);
+			stripSetComboBox.SelectedIndex = index;
+		}
+
+		private void resetWindingButton_Click(object sender, EventArgs e)
+		{
+			int index = stripSetComboBox.SelectedIndex;
+			PolyStripCollection[index].CMDEReversed = PolyStripCollectionOriginal[index].Reversed;
+			BuildStripSetList(PolyData);
+			stripSetComboBox.SelectedIndex = index;
 		}
 	}
 }

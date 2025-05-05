@@ -101,6 +101,7 @@ namespace SAModel.SAEditorCommon.UI
 			doubleSideCheck.Checked = materials[index].DoubleSided;
 			flatShadeCheck.Checked = materials[index].FlatShading;
 			ignoreLightCheck.Checked = materials[index].IgnoreLighting;
+			noAlphaTestCheck.Checked = materials[index].NoAlphaTest;
 			userFlagsNumeric.Value = materials[index].UserFlags;
 
 			DisplayFlags(index);
@@ -275,6 +276,12 @@ namespace SAModel.SAEditorCommon.UI
 		private void pickStatusCheck_Click(object sender, EventArgs e)
 		{
 			materials[comboMaterial.SelectedIndex].IgnoreAmbient = pickStatusCheck.Checked;
+			RaiseFormUpdated();
+		}
+
+		private void noAlphaTestCheck_Click(object sender, EventArgs e)
+		{
+			materials[comboMaterial.SelectedIndex].NoAlphaTest = noAlphaTestCheck.Checked;
 			RaiseFormUpdated();
 		}
 

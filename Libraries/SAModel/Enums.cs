@@ -124,22 +124,22 @@ namespace SAModel
     [Flags]
 	public enum SA2SurfaceFlags : int
 	{
-		Solid			  = 0x1,
-		Water			  = 0x2,
+		Solid             = 0x1,
+		Water             = 0x2,
 		LowFriction       = 0x4,
 		HighFriction      = 0x8,
 		MediumFriction    = 0x10,
-		Diggable		  = 0x20,
+		Diggable          = 0x20,
 		Unknown40         = 0x40,
-		Unclimbable		  = 0x80,
-		Stairs			  = 0x100,
+		Unclimbable       = 0x80,
+		Stairs            = 0x100,
 		Unknown200        = 0x200,
-		Hurt			  = 0x400,
+		Hurt              = 0x400,
 		Footsteps         = 0x800,
-		CannotLand		  = 0x1000,
-		WaterSlowMove	  = 0x2000,
+		CannotLand        = 0x1000,
+		WaterSlowMove     = 0x2000,
 		Unknown4000       = 0x4000,
-		NoShadows		  = 0x8000,
+		NoShadows         = 0x8000,
 		Unknown10000      = 0x10000,
 		Unknown20000      = 0x20000,
 		Unknown40000      = 0x40000,
@@ -155,7 +155,7 @@ namespace SAModel
 		NoRotateCollision = 0x10000000,
 		SmallCollisionRad = 0x20000000,
 		TinyCollisionRad  = 0x40000000,
-		Visible			  = unchecked((int)0x80000000)
+		Visible           = unchecked((int)0x80000000)
 	}
 
 	[Flags]
