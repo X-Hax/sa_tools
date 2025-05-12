@@ -31,7 +31,6 @@
 			components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChunkModelVertexDataEditor));
 			statusStrip1 = new System.Windows.Forms.StatusStrip();
-			toolStripStatusLabelInfo = new System.Windows.Forms.ToolStripStatusLabel();
 			buttonClose = new System.Windows.Forms.Button();
 			contextMenuStripMatEdit = new System.Windows.Forms.ContextMenuStrip(components);
 			editPCMatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,10 +41,13 @@
 			buttonResetVertices = new System.Windows.Forms.Button();
 			listViewVertices = new System.Windows.Forms.ListView();
 			columnHeaderVertID = new System.Windows.Forms.ColumnHeader();
-			columnHeaderVertData = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertPos = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertNorm = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertColor = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertSpec = new System.Windows.Forms.ColumnHeader();
+			columnHeaderVertUF = new System.Windows.Forms.ColumnHeader();
 			contextMenuStripVertCol = new System.Windows.Forms.ContextMenuStrip(components);
 			showVertexCollectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			statusStrip1.SuspendLayout();
 			contextMenuStripMatEdit.SuspendLayout();
 			groupBoxVertList.SuspendLayout();
 			contextMenuStripVertCol.SuspendLayout();
@@ -54,26 +56,19 @@
 			// statusStrip1
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-			statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabelInfo });
-			statusStrip1.Location = new System.Drawing.Point(0, 519);
+			statusStrip1.Location = new System.Drawing.Point(0, 523);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(777, 32);
+			statusStrip1.Size = new System.Drawing.Size(1157, 28);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
-			// 
-			// toolStripStatusLabelInfo
-			// 
-			toolStripStatusLabelInfo.Name = "toolStripStatusLabelInfo";
-			toolStripStatusLabelInfo.Size = new System.Drawing.Size(713, 25);
-			toolStripStatusLabelInfo.Text = "Click a vertex piece to display its information here. Right-click to edit pieces, if applicable.";
 			// 
 			// buttonClose
 			// 
 			buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(645, 474);
+			buttonClose.Location = new System.Drawing.Point(1025, 474);
 			buttonClose.Name = "buttonClose";
 			buttonClose.Size = new System.Drawing.Size(126, 36);
 			buttonClose.TabIndex = 17;
@@ -111,14 +106,14 @@
 			groupBoxVertList.Controls.Add(listViewVertices);
 			groupBoxVertList.Location = new System.Drawing.Point(12, 22);
 			groupBoxVertList.Name = "groupBoxVertList";
-			groupBoxVertList.Size = new System.Drawing.Size(744, 443);
+			groupBoxVertList.Size = new System.Drawing.Size(1133, 443);
 			groupBoxVertList.TabIndex = 29;
 			groupBoxVertList.TabStop = false;
 			groupBoxVertList.Text = "Vertex Data";
 			// 
 			// buttonDeleteVertex
 			// 
-			buttonDeleteVertex.Location = new System.Drawing.Point(587, 392);
+			buttonDeleteVertex.Location = new System.Drawing.Point(972, 392);
 			buttonDeleteVertex.Name = "buttonDeleteVertex";
 			buttonDeleteVertex.Size = new System.Drawing.Size(140, 34);
 			buttonDeleteVertex.TabIndex = 13;
@@ -127,7 +122,7 @@
 			// 
 			// buttonResetVertices
 			// 
-			buttonResetVertices.Location = new System.Drawing.Point(439, 392);
+			buttonResetVertices.Location = new System.Drawing.Point(824, 392);
 			buttonResetVertices.Name = "buttonResetVertices";
 			buttonResetVertices.Size = new System.Drawing.Size(142, 34);
 			buttonResetVertices.TabIndex = 12;
@@ -137,7 +132,7 @@
 			// listViewVertices
 			// 
 			listViewVertices.AutoArrange = false;
-			listViewVertices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderVertID, columnHeaderVertData });
+			listViewVertices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeaderVertID, columnHeaderVertPos, columnHeaderVertNorm, columnHeaderVertColor, columnHeaderVertSpec, columnHeaderVertUF });
 			listViewVertices.FullRowSelect = true;
 			listViewVertices.GridLines = true;
 			listViewVertices.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
@@ -145,7 +140,7 @@
 			listViewVertices.MultiSelect = false;
 			listViewVertices.Name = "listViewVertices";
 			listViewVertices.ShowGroups = false;
-			listViewVertices.Size = new System.Drawing.Size(721, 352);
+			listViewVertices.Size = new System.Drawing.Size(1109, 352);
 			listViewVertices.TabIndex = 11;
 			listViewVertices.UseCompatibleStateImageBehavior = false;
 			listViewVertices.View = System.Windows.Forms.View.Details;
@@ -155,9 +150,25 @@
 			// 
 			columnHeaderVertID.Text = "ID";
 			// 
-			// columnHeaderVertData
+			// columnHeaderVertPos
 			// 
-			columnHeaderVertData.Text = "Data";
+			columnHeaderVertPos.Text = "Point";
+			// 
+			// columnHeaderVertNorm
+			// 
+			columnHeaderVertNorm.Text = "Normal";
+			// 
+			// columnHeaderVertColor
+			// 
+			columnHeaderVertColor.Text = "Color";
+			// 
+			// columnHeaderVertSpec
+			// 
+			columnHeaderVertSpec.Text = "Specular";
+			// 
+			// columnHeaderVertUF
+			// 
+			columnHeaderVertUF.Text = "User Flags";
 			// 
 			// contextMenuStripVertCol
 			// 
@@ -176,7 +187,7 @@
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-			ClientSize = new System.Drawing.Size(777, 551);
+			ClientSize = new System.Drawing.Size(1157, 551);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(buttonClose);
 			Controls.Add(statusStrip1);
@@ -190,8 +201,6 @@
 			SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			Text = "Vertex Data Editor";
-			statusStrip1.ResumeLayout(false);
-			statusStrip1.PerformLayout();
 			contextMenuStripMatEdit.ResumeLayout(false);
 			groupBoxVertList.ResumeLayout(false);
 			contextMenuStripVertCol.ResumeLayout(false);
@@ -207,7 +216,6 @@
 		private System.Windows.Forms.Button buttonDeleteMesh;
 		private System.Windows.Forms.ColumnHeader columnHeaderMatID;
 		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelInfo;
 		private System.Windows.Forms.Label labelModelName;
 		private System.Windows.Forms.Label labelMeshsetName;
 		private System.Windows.Forms.TextBox textBoxMeshsetName;
@@ -238,10 +246,14 @@
 		private System.Windows.Forms.GroupBox groupBoxVertList;
 		private System.Windows.Forms.ListView listViewVertices;
 		private System.Windows.Forms.ColumnHeader columnHeaderVertID;
-		private System.Windows.Forms.ColumnHeader columnHeaderVertData;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertPos;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripVertCol;
 		private System.Windows.Forms.ToolStripMenuItem showVertexCollectionToolStripMenuItem;
 		private System.Windows.Forms.Button buttonResetVertices;
 		private System.Windows.Forms.Button buttonDeleteVertex;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertNorm;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertColor;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertSpec;
+		private System.Windows.Forms.ColumnHeader columnHeaderVertUF;
 	}
 }

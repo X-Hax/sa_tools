@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -60,6 +58,7 @@ namespace SAModel.SAEditorCommon.UI
 				ambientRUpDown.Value = pcm.Ambient.Value.R;
 				ambientGUpDown.Value = pcm.Ambient.Value.G;
 				ambientBUpDown.Value = pcm.Ambient.Value.B;
+				ambientColorBox.BackColor = Color.FromArgb(255, (int)ambientRUpDown.Value, (int)ambientGUpDown.Value, (int)ambientBUpDown.Value);
 			}
 			if (pcm.Specular.HasValue)
 			{
@@ -67,6 +66,7 @@ namespace SAModel.SAEditorCommon.UI
 				specularGUpDown.Value = pcm.Specular.Value.G;
 				specularBUpDown.Value = pcm.Specular.Value.B;
 				exponentTextBox.Text = pcm.SpecularExponent.ToString();
+				specColorBox.BackColor = Color.FromArgb(255, (int)specularRUpDown.Value, (int)specularGUpDown.Value, (int)specularBUpDown.Value);
 			}
 			//DisplayFlags(index);
 
@@ -185,11 +185,6 @@ namespace SAModel.SAEditorCommon.UI
 			SetDiffuseFromNumerics();
 		}
 
-		private void alphaSpecularNumeric_ValueChanged(object sender, EventArgs e)
-		{
-			SetSpecularFromNumerics();
-		}
-
 		#endregion
 		#region Flag Check Event Methods
 
@@ -228,29 +223,19 @@ namespace SAModel.SAEditorCommon.UI
 
 		}
 
-		private void label1_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		void SetDiffuseFromNumerics()
 		{
 			diffuseColorBox.BackColor = Color.FromArgb((int)alphaDiffuseNumeric.Value, (int)diffuseRUpDown.Value, (int)diffuseGUpDown.Value, (int)diffuseBUpDown.Value);
-			//diffuseColorBox.BackColor = pcm.Diffuse.Value;
 			RaiseFormUpdated();
 		}
 		void SetAmbientFromNumerics()
 		{
-			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
-			ambientColorBox.BackColor = Color.FromArgb(0xFF, (int)ambientRUpDown.Value, (int)ambientGUpDown.Value, (int)ambientBUpDown.Value);
-			//ambientColorBox.BackColor = pcm.Ambient.Value;
+			ambientColorBox.BackColor = Color.FromArgb(255, (int)ambientRUpDown.Value, (int)ambientGUpDown.Value, (int)ambientBUpDown.Value);
 			RaiseFormUpdated();
 		}
 		void SetSpecularFromNumerics()
 		{
-			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
-			specColorBox.BackColor = Color.FromArgb(0xFF, (int)specularRUpDown.Value, (int)specularGUpDown.Value, (int)specularBUpDown.Value);
-			//specColorBox.BackColor = pcm.Specular.Value;
+			specColorBox.BackColor = Color.FromArgb(255, (int)specularRUpDown.Value, (int)specularGUpDown.Value, (int)specularBUpDown.Value);
 			RaiseFormUpdated();
 		}
 

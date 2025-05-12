@@ -2,12 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
-using System.DirectoryServices.ActiveDirectory;
-using SAModel.Direct3D.TextureSystem;
-using SAModel.GC;
-using static VrSharp.Xvr.DirectXTexUtility;
-using SharpDX.Direct3D9;
-using System.Runtime.Intrinsics.X86;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -101,11 +95,10 @@ namespace SAModel.SAEditorCommon.UI
 			List<uint> UserFlags = VertData.UserFlags;
 			List<uint> NinjaFlags = VertData.NinjaFlags;
 
-			string points = "";
-			string norms = "";
-			string diffspec = "";
-			string uf = "";
-			string nf = "";
+			string norms = "N/A";
+			string diff = "N/A";
+			string spec = "N/A";
+			string flags = "N/A";
 			groupBoxVertList.Enabled = true;
 			if (VertData != null)
 			{
@@ -113,30 +106,31 @@ namespace SAModel.SAEditorCommon.UI
 				{
 					ListViewItem newvert = new ListViewItem(i.ToString());
 					//Vertex points always exist
-					points = "VERT(" + Vertices[i].ToString() + ")";
+					newvert.SubItems.Add("VERT(" + Vertices[i].ToString() + ")");
 					switch (VertData.Type)
 					{
 						default:
 							break;
 						case ChunkType.Vertex_VertexDiffuse8:
-							diffspec = ", D8888(" + Diffuse[i].ToString() + ")"; 
+							diff = "D8888(" + Diffuse[i].ToString() + ")"; 
 							break;
 						case ChunkType.Vertex_VertexDiffuseSpecular16:
-							diffspec = ", D16(" + Diffuse[i].ToString() + "), S16(" + Specular[i].ToString() + ")";
+							diff = "D16(" + Diffuse[i].ToString() + ")";
+							spec = "S16(" + Specular[i].ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexDiffuseSpecular4:
-							diffspec = ", D4444(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-								+ "), S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
+							diff = "D4444(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
+							spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexDiffuseSpecular5:
-							diffspec = "D565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-								+ "), S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
+							diff = "D565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
+							spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 							break;
 						case ChunkType.Vertex_VertexNinjaFlags:
-							nf = ", NFlags(0x" + NinjaFlags[i].ToString("X8") + ")";
+							flags = "NFlags(0x" + NinjaFlags[i].ToString("X8") + ")";
 							break;
 						case ChunkType.Vertex_VertexUserFlags:
-							uf = ", UFlags(0x" + UserFlags[i].ToCHex() + ")";
+							flags = "UFlags(0x" + UserFlags[i].ToCHex() + ")";
 							break;
 						case ChunkType.Vertex_VertexNormal:
 						case ChunkType.Vertex_VertexNormalDiffuse8:
@@ -146,37 +140,41 @@ namespace SAModel.SAEditorCommon.UI
 						case ChunkType.Vertex_VertexNormalNinjaFlags:
 						case ChunkType.Vertex_VertexNormalUserFlags:
 							Normals = VertData.Normals;
-							norms = ", NORM(" + Normals[i].ToString() + ")";
+							norms = "NORM(" + Normals[i].ToString() + ")";
 							if (VertData.Type == ChunkType.Vertex_VertexNormalUserFlags)
 							{
 								UserFlags = VertData.UserFlags;
-								uf = ", UFlags(0x" + UserFlags[i].ToCHex() + ")";
+								flags = "UFlags(0x" + UserFlags[i].ToCHex() + ")";
 							}
 							if (VertData.Type == ChunkType.Vertex_VertexNormalNinjaFlags)
 							{
 								NinjaFlags = VertData.NinjaFlags;
-								nf = ", NFlags(0x" + NinjaFlags[i].ToString("X8") + ")";
+								flags = "NFlags(0x" + NinjaFlags[i].ToString("X8") + ")";
 							}
 							switch (VertData.Type)
 							{
 								case ChunkType.Vertex_VertexNormalDiffuse8:
-									diffspec = ", D8888(" + Diffuse[i].ToString() + ")";
+									diff = "D8888(" + Diffuse[i].ToString() + ")";
 									break;
 								case ChunkType.Vertex_VertexNormalDiffuseSpecular16:
-									diffspec = ", D16(" + Diffuse[i].ToString() + "), S16(" + Specular[i].ToString() + ")";
+									diff = "D16(" + Diffuse[i].ToString() + ")";
+									spec = "S16(" + Specular[i].ToString() + ")";
 									break;
 								case ChunkType.Vertex_VertexNormalDiffuseSpecular4:
-									diffspec = ", D4444(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-									+ "), S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
+									diff = "D4444(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
+									spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 									break;
 								case ChunkType.Vertex_VertexNormalDiffuseSpecular5:
-									diffspec = "D565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString()
-									+ "), S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
+									diff = "D565(" + Diffuse[i].R.ToString() + ", " + Diffuse[i].G.ToString() + ", " + Diffuse[i].B.ToString() + ")";
+									spec = "S565(" + Specular[i].R.ToString() + ", " + Specular[i].G.ToString() + ", " + Specular[i].B.ToString() + ")";
 									break;
 							}
 							break;
 					}
-					newvert.SubItems.Add(points + norms + diffspec + uf + nf);
+					newvert.SubItems.Add(norms);
+					newvert.SubItems.Add(diff);
+					newvert.SubItems.Add(spec);
+					newvert.SubItems.Add(flags);
 					listViewVertices.Items.Add(newvert);
 				}
 			}
@@ -198,17 +196,7 @@ namespace SAModel.SAEditorCommon.UI
 		}
 
 		private void listViewVertices_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			//contextMenuStripVertCol.Enabled;
-			//string verttype = listViewMeshes.SelectedItems[0].SubItems[1].Text;
-			//string vdata = listViewMeshes.SelectedItems[0].SubItems[2].Text;
-			//string bardata = verttype;
-			//if (vdata != null)
-			//	bardata += ", " + vdata;
-			StringBuilder sb = new StringBuilder();
-			sb.Append("Attributes: ");
-			//sb.Append(bardata);
-			toolStripStatusLabelInfo.Text = sb.ToString();
+		{ 
 		}
 	}
 }

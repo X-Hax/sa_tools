@@ -169,7 +169,7 @@
 			statusStrip1.Location = new System.Drawing.Point(0, 732);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(1275, 32);
+			statusStrip1.Size = new System.Drawing.Size(1328, 32);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
@@ -365,7 +365,7 @@
 			groupBoxMeshList.Controls.Add(listViewMeshes);
 			groupBoxMeshList.Controls.Add(buttonDeleteMesh);
 			groupBoxMeshList.Controls.Add(buttonCloneMesh);
-			groupBoxMeshList.Location = new System.Drawing.Point(539, 240);
+			groupBoxMeshList.Location = new System.Drawing.Point(572, 240);
 			groupBoxMeshList.Name = "groupBoxMeshList";
 			groupBoxMeshList.Size = new System.Drawing.Size(724, 441);
 			groupBoxMeshList.TabIndex = 29;
@@ -387,7 +387,7 @@
 			// 
 			buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
 			buttonClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			buttonClose.Location = new System.Drawing.Point(1133, 687);
+			buttonClose.Location = new System.Drawing.Point(1186, 687);
 			buttonClose.Name = "buttonClose";
 			buttonClose.Size = new System.Drawing.Size(126, 36);
 			buttonClose.TabIndex = 17;
@@ -445,7 +445,7 @@
 			// groupBoxVertList
 			// 
 			groupBoxVertList.Controls.Add(listViewVertices);
-			groupBoxVertList.Location = new System.Drawing.Point(12, 240);
+			groupBoxVertList.Location = new System.Drawing.Point(22, 240);
 			groupBoxVertList.Name = "groupBoxVertList";
 			groupBoxVertList.Size = new System.Drawing.Size(521, 441);
 			groupBoxVertList.TabIndex = 28;
@@ -500,7 +500,7 @@
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-			ClientSize = new System.Drawing.Size(1275, 764);
+			ClientSize = new System.Drawing.Size(1328, 764);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(comboBoxNode);
 			Controls.Add(buttonClose);

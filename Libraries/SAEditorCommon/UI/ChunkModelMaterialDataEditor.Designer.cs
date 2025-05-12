@@ -233,7 +233,6 @@
 			ambientLabel.Size = new System.Drawing.Size(59, 25);
 			ambientLabel.TabIndex = 16;
 			ambientLabel.Text = "Color:";
-			ambientLabel.Click += label1_Click;
 			// 
 			// dstAlphaCombo
 			// 

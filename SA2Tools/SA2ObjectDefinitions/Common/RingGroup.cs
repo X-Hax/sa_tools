@@ -73,11 +73,13 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				if (item.Rotation.X == 0)
-					transform.NJRotateObject(item.Rotation);
-				else if (item.Rotation.Z == 0)
-					transform.NJRotateZYX(item.Rotation);
-                double v5 = i * ((item.Scale.X + 10f) * -1);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
+				double v5 = i * ((item.Scale.X + 10f) * -1);
 				double v6 = ObjectHelper.NJSin(sine) * item.Scale.Y;
 				sine += 0x4000 / (int)item.Scale.Z;
 				Vector3 pos = Vector3.TransformCoordinate(new Vector3(0, (float)v6, (float)v5), transform.Top);
@@ -100,10 +102,12 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				if (item.Rotation.X == 0)
-					transform.NJRotateObject(item.Rotation);
-				else if (item.Rotation.Z == 0)
-					transform.NJRotateZYX(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				double v5 = i * ((item.Scale.X + 10f) * -1);
 				double v6 = ObjectHelper.NJSin(sine) * item.Scale.Y;
 				sine += 0x4000 / (int)item.Scale.Z;
@@ -127,10 +131,12 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				if (item.Rotation.X == 0)
-					transform.NJRotateObject(item.Rotation);
-				else if (item.Rotation.Z == 0)
-					transform.NJRotateZYX(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				double v5 = i * ((item.Scale.X + 10f) * -1);
 				double v6 = ObjectHelper.NJSin(sine) * item.Scale.Y;
 				sine += 0x4000 / (int)item.Scale.Z;
@@ -153,10 +159,12 @@ namespace SA2ObjectDefinitions.Common
 				transform.Push();
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				if (item.Rotation.X == 0)
-					transform.NJRotateObject(item.Rotation);
-				else if (item.Rotation.Z == 0)
-					transform.NJRotateZYX(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				double v5 = i * ((item.Scale.X + 10f) * -1);
 				double v6 = ObjectHelper.NJSin(sine) * item.Scale.Y;
 				sine += 0x4000 / (int)item.Scale.Z;
@@ -194,7 +202,12 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
                 transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -219,7 +232,12 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
                 transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -244,7 +262,12 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
                 transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -268,7 +291,12 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
                 transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation);
+				if (item.Rotation.Z != 0)
+					transform.NJRotateZ(item.Rotation.Z);
+				if (item.Rotation.Y != 0)
+					transform.NJRotateY(item.Rotation.Y);
+				if (item.Rotation.X != 0)
+					transform.NJRotateX(item.Rotation.X);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -421,7 +449,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -446,7 +474,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -471,7 +499,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -495,7 +523,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -632,7 +660,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -657,7 +685,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -682,7 +710,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);
@@ -706,7 +734,7 @@ namespace SA2ObjectDefinitions.Common
 					ObjectHelper.NJCos((int)(v4 / item.Scale.Z * 65536.0 * 0.002777777777777778)) * (item.Scale.X + 10f));
 				transform.Push();
 				transform.NJTranslate(item.Position);
-				transform.NJRotateObject(item.Rotation.X, item.Rotation.Y, 0);
+				transform.NJRotateZYX(item.Rotation.X, item.Rotation.Y, 0);
 				Vector3 pos = Vector3.TransformCoordinate(v7, transform.Top);
 				transform.Pop();
 				transform.NJTranslate(pos);

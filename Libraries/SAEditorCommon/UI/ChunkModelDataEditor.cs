@@ -32,9 +32,9 @@ namespace SAModel.SAEditorCommon.UI
 			if (objectOriginal == null)
 				return;
 			InitializeComponent();
+			freeze = true;
 			this.Resize += ChunkModelDataEditor_Resize;
 			OriginalSize = this.Size;
-			freeze = true;
 			comboBoxNode.Items.Clear();
 			editedHierarchy = objectOriginal.Clone();
 			editedHierarchy.FixParents();
@@ -54,6 +54,55 @@ namespace SAModel.SAEditorCommon.UI
 			polydownbutton = new Rectangle(buttonMoveMeshDown.Location, buttonMoveMeshDown.Size);
 			this.textures = textures;
 			freeze = false;
+		}
+
+		private void resize_Control(Control c, Rectangle r, int type = 0)
+		{
+			float xRatio = (float)this.Width / (float)OriginalSize.Width;
+			float yRatio = (float)this.Height / (float)OriginalSize.Height;
+			var xSize = this.Width - OriginalSize.Width;
+			var ySize = this.Height - OriginalSize.Height;
+
+			int newX = (int)(r.X * xRatio);
+			int newY = (int)(r.Y * yRatio);
+
+			var newXLoc = r.X + xSize;
+			var newYLoc = r.Y + ySize;
+
+			int newWidth = (int)(r.Width * xRatio);
+			int newHeight = (int)(r.Height * yRatio);
+
+			var newXSize = r.Width + xSize;
+			var newYSize = r.Height + ySize;
+
+			switch (type)
+			{
+				case 0: // Buttons beside list (Moving poly sets up/down)
+				default:
+					c.Location = new Point(newXLoc, r.Y);
+					break;
+				case 1: // Vertex List and Group
+					c.Size = new Size(r.Width, newYSize);
+					break;
+				case 2: // Poly Data List
+					c.Size = new Size(newXSize, newYSize);
+					break;
+				case 3: // Buttons below list
+					c.Location = new Point(r.X, newYLoc);
+					break;
+			}
+		}
+		private void ChunkModelDataEditor_Resize(object sender, EventArgs e)
+		{
+			resize_Control(listViewMeshes, polydatalistdyn, 2);
+			resize_Control(listViewVertices, vertdatalistdyn, 1);
+			resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
+			resize_Control(groupBoxMeshList, polydatagroupdyn, 2);
+			resize_Control(buttonCloneMesh, polyclonebutton, 3);
+			resize_Control(buttonResetMeshes, polyresetbutton, 3);
+			resize_Control(buttonDeleteMesh, polydeletebutton, 3);
+			resize_Control(buttonMoveMeshUp, polyupbutton, 0);
+			resize_Control(buttonMoveMeshDown, polydownbutton, 0);
 		}
 
 		#region Vertex management
@@ -1031,43 +1080,6 @@ namespace SAModel.SAEditorCommon.UI
 		{
 
 		}
-
-		private void resize_Control(Control c, Rectangle r, int type = 0)
-		{
-			float xRatio = (float)this.Width / (float)OriginalSize.Width;
-			float yRatio = (float)this.Height / (float)OriginalSize.Height;
-			float xSize = (float)(this.Width - OriginalSize.Width);
-			float ySize = (float)(this.Height - OriginalSize.Height);
-
-			int newX = (int)(r.X * xRatio);
-			int newY = (int)(r.Y * yRatio);
-
-			int newXLoc = (int)(r.X + xSize);
-			int newYLoc = (int)(r.Y + ySize);
-
-			int newWidth = (int)(r.Width * xRatio);
-			int newHeight = (int)(r.Height * yRatio);
-
-			int newXSize = (int)(r.Width + xSize);
-			int newYSize = (int)(r.Height + ySize);
-
-			switch (type)
-			{
-				case 0: // Buttons beside list (Moving poly sets up/down)
-				default:
-					c.Location = new Point(newXLoc, r.Y);
-					break;
-				case 1: // Vertex List and Group
-					c.Size = new Size(r.Width, newYSize);
-					break;
-				case 2: // Poly Data List
-					c.Size = new Size(newXSize, newYSize);
-					break;
-				case 3: // Buttons below list
-					c.Location = new Point(r.X, newYLoc);
-					break;
-			}
-		}
 		private void listViewVertices_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listViewVertices.SelectedIndices.Count == 0)
@@ -1096,19 +1108,6 @@ namespace SAModel.SAEditorCommon.UI
 			sb.Append(", Count:");
 			sb.Append(vcount);
 			toolStripStatusLabelInfo.Text = sb.ToString();
-		}
-
-		private void ChunkModelDataEditor_Resize(object sender, EventArgs e)
-		{
-			resize_Control(listViewMeshes, polydatalistdyn, 2);
-			resize_Control(listViewVertices, vertdatalistdyn, 1);
-			resize_Control(groupBoxVertList, vertdatagroupdyn, 1);
-			resize_Control(groupBoxMeshList, polydatagroupdyn, 2);
-			resize_Control(buttonCloneMesh, polyclonebutton, 3);
-			resize_Control(buttonResetMeshes, polyresetbutton, 3);
-			resize_Control(buttonDeleteMesh, polydeletebutton, 3);
-			resize_Control(buttonMoveMeshUp, polyupbutton);
-			resize_Control(buttonMoveMeshDown, polydownbutton);
 		}
 	}
 }
