@@ -115,6 +115,7 @@ namespace BuildEvent
 			
 			bool? bigEndian = null;
 			bool? lang = null;
+			bool? beta = null;
 			bool? compression = null;
 
 			var format = "default";
@@ -160,6 +161,23 @@ namespace BuildEvent
 								Console.WriteLine("Invalid Event Extra data type setting. Using file's default setting.");
 							}
 
+							a++;
+							break;
+						case "-dcbeta":
+							var dcBeta = args[a + 1];
+
+							if (dcBeta.Equals("false", StringComparison.OrdinalIgnoreCase))
+							{
+								beta = false;
+							}
+							else if (dcBeta.Equals("true", StringComparison.OrdinalIgnoreCase))
+							{
+								beta = true;
+							}
+							else
+							{
+								Console.WriteLine("Invalid Event Extra data type setting. Using file's default setting.");
+							}
 							a++;
 							break;
 						case "-format":
@@ -230,16 +248,19 @@ namespace BuildEvent
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 			
 			var endianGame = "";
+			var endianType = "";
 			
 			if (bigEndian.HasValue)
 			{
 				if (bigEndian == false)
 				{
 					endianGame = "Dreamcast";
+					endianType = "Little Endian";
 				}
 				else
 				{
 					endianGame = "GameCube/PS3/X360/PC";
+					endianType = "Big Endian";
 				}
 			}
 			if (name.Contains("TAILSPLAIN", StringComparison.OrdinalIgnoreCase))
@@ -306,6 +327,14 @@ namespace BuildEvent
 			else if (exfWCard.IsMatch(name))
 			{
 				var dataGame = "";
+				var dataBeta = "";
+				var ext = ".prs";
+				if (beta.HasValue)
+				{
+					if (beta == true)
+						ext = ".scr";
+				}
+
 				
 				if (lang.HasValue)
 				{
@@ -318,18 +347,44 @@ namespace BuildEvent
 						dataGame = "File will only contain subtitle and audio timings.";
 					}
 				}
-				
-				if (bigEndian.HasValue && lang.HasValue)
+				if (beta.HasValue)
+				{
+					if (beta == true)
+					{
+						dataBeta = "This file will only work with SA2: The Trial if all Event Extra data is present.";
+					}
+					else
+					{
+						dataBeta = "";
+				}
+				}
+				if (bigEndian.HasValue && lang.HasValue && beta.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name} for the {endianGame} version. {dataGame} \n{dataBeta}");
+				}
+				else if (bigEndian.HasValue && lang.HasValue)
 				{
 					Console.WriteLine($"Building Event Extra file {name} for the {endianGame} version. {dataGame}");
+				}
+				else if (bigEndian.HasValue && beta.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name} for the {endianGame} version.\n{dataBeta}");
 				}
 				else if (bigEndian.HasValue)
 				{
 					Console.WriteLine($"Building Event Extra file {name} for the {endianGame} version.");
 				}
+				else if (lang.HasValue && beta.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name}. {dataGame}\n{dataBeta}");
+				}
 				else if (lang.HasValue)
 				{
 					Console.WriteLine($"Building Event Extra file {name}. {dataGame}");
+				}
+				else if (beta.HasValue)
+				{
+					Console.WriteLine($"Building Event Extra file {name}. \n{dataBeta}");
 				}
 				else
 				{
@@ -339,11 +394,11 @@ namespace BuildEvent
 				if (fullPathBin.EndsWith(".prs", StringComparison.OrdinalIgnoreCase)
 				    || fullPathBin.EndsWith(".scr", StringComparison.OrdinalIgnoreCase))
 				{
-					sa2EventExtra.Build(bigEndian, lang, fullPathBin, fullPathOut);
+					sa2EventExtra.Build(bigEndian, lang, beta, fullPathBin, fullPathOut);
 				}
 				else
 				{
-					sa2EventExtra.Build(bigEndian, lang, fullPathBin + ".prs", fullPathOut);
+					sa2EventExtra.Build(bigEndian, lang, beta, fullPathBin + ext, fullPathOut);
 				}
 			}
 			else if (name.StartsWith("me", StringComparison.OrdinalIgnoreCase))

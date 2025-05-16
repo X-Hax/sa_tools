@@ -62,6 +62,7 @@ namespace SplitTools.SAArc
 					battle = false;
 					ini.BattleFormat = false;
 					beta = true;
+					ini.DCBeta = true;
 					ini.BigEndian = false;
 				}
 				else if (fc[4] > 0 || fc[8] > 0 || fc[0x800] > 0 || (fc.Length > 0x9900 && (fc[0x9800] > 0 || fc[0x26800] > 0)))
@@ -72,6 +73,7 @@ namespace SplitTools.SAArc
 					battle = false;
 					ini.BattleFormat = false;
 					beta = false;
+					ini.DCBeta = false;
 					ini.BigEndian = false;
 				}
 				else
@@ -82,6 +84,7 @@ namespace SplitTools.SAArc
 					battle = true;
 					ini.BattleFormat = true;
 					beta = false;
+					ini.DCBeta = false;
 					ini.BigEndian = true;
 				}
 				if (fc.Length < 0x9900)
@@ -156,6 +159,10 @@ namespace SplitTools.SAArc
 					// If the first character in the string is the character 0, music stops.
 					audio.MusicEntry = fc.GetCString(address + 8);
 					audio.JingleEntry = fc.GetCString(address + 0x18);
+					// If this is set to 2, the cutscene will run at 30FPS on Dreamcast.
+					// The effects of this parameter only work when placed in the first entry
+					// and will apply almost immediately, ignoring the starting frame.
+					audio.VsyncWaitCount = ByteConverter.ToInt32(fc, address + 0x28);
 					ini.AudioInfo.Add(audio);
 				}
 				if (audiocount != 0)
@@ -166,6 +173,11 @@ namespace SplitTools.SAArc
 				{
 					Console.WriteLine("Event does not contain active audio entries.");
 				}
+				if (ini.AudioInfo[0].VsyncWaitCount == 2)
+				{
+					Console.WriteLine("Event runs at 30FPS on Dreamcast if this is a language timing file.");
+				}
+
 
 				if (fc.Length > 0x9900)
 				{
@@ -241,50 +253,107 @@ namespace SplitTools.SAArc
 						Console.WriteLine("Event does not use standard particle effects.");
 					}
 
-					int lightcount = 0;
+					int lightcount1 = 0;
+					int lightcount2 = 0;
+					int lightcount3 = 0;
+					int lightcount4 = 0;
 					if (beta)
 					{
 						for (int i = 0; i < 256; i++)
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
-							if (i < 64)
-							{
-								light.LightSet = "Light1";
-							}
-							else if (i < 128)
-							{
-								light.LightSet = "Light2";
-							}
-							else if (i < 192)
-							{
-								light.LightSet = "Light3";
-							}
-							else
-							{
-								light.LightSet = "Light4";
-							}
-
 							light.FrameStart = ByteConverter.ToInt32(fc, address);
-							if (light.FrameStart != 0)
-							{
-								lightcount++;
-							}
-
 							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
 							light.LightDirection = new Vertex(fc, address + 8);
 							light.Color = new Vertex(fc, address + 0x14);
 							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
 							light.AmbientColor = new Vertex(fc, address + 0x24);
-							ini.Lighting.Add(light);
+							if (i < 64)
+							{
+								light.LightSet = "Light1";
+								if (light.FrameStart != 0)
+								{
+									lightcount1++;
+								}
+								ini.Lighting1.Add(light);
+							}
+							else if (i < 128)
+							{
+								light.LightSet = "Light2";
+								if (light.FrameStart != 0)
+								{
+									lightcount2++;
+								}
+								ini.Lighting2.Add(light);
+							}
+							else if (i < 192)
+							{
+								light.LightSet = "Light3";
+								if (light.FrameStart != 0)
+								{
+									lightcount3++;
+								}
+								ini.Lighting3.Add(light);
+							}
+							else
+							{
+								light.LightSet = "Light4";
+								if (light.FrameStart != 0)
+								{
+									lightcount4++;
+								}
+								ini.Lighting4.Add(light);
+							}
 						}
-						if (lightcount != 0)
+						List<LightingInfo> bufferlist = new List<LightingInfo>();
+						LightingInfo buffer = new LightingInfo();
+						buffer.FrameStart = 0;
+						buffer.LightSet = "Buffer!";
+						buffer.Color = new Vertex();
+						buffer.LightDirection = new Vertex();
+						buffer.Intensity = 0.0f;
+						buffer.AmbientColor = new Vertex();
+						for (int i = 0; i < 192; i++)
 						{
-							Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
+							bufferlist.Add(buffer);
+						}
+						//The following is padding used to "normalize" the beta lighting information when used in later builds.
+						ini.Lighting1.AddRange(bufferlist);
+						ini.Lighting2.AddRange(bufferlist);
+						ini.Lighting3.AddRange(bufferlist);
+						ini.Lighting4.AddRange(bufferlist);
+						if (lightcount1 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the first light array.", lightcount1, lightcount1 == 1 ? "y" : "ies");
 						}
 						else
 						{
-							Console.WriteLine("Event does not use lighting.");
+							Console.WriteLine("Event does not use lighting data from the first light array.");
+						}
+						if (lightcount2 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the second light array.", lightcount2, lightcount2 == 1 ? "y" : "ies");
+						}
+						else
+						{
+							Console.WriteLine("Event does not use lighting data from the second light array.");
+						}
+						if (lightcount3 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the third light array.", lightcount3, lightcount3 == 1 ? "y" : "ies");
+						}
+						else
+						{
+							Console.WriteLine("Event does not use lighting data from the third light array.");
+						}
+						if (lightcount4 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the fourth light array.", lightcount4, lightcount4 == 1 ? "y" : "ies");
+						}
+						else
+						{
+							Console.WriteLine("Event does not use lighting data from the fourth light array.");
 						}
 
 						int blurcount = 0;
@@ -384,43 +453,80 @@ namespace SplitTools.SAArc
 						{
 							address = 0x26800 + (0x44 * i);
 							LightingInfo light = new LightingInfo();
-							if (i < 256)
-							{
-								light.LightSet = "Light1";
-							}
-							else if (i < 512)
-							{
-								light.LightSet = "Light2";
-							}
-							else if (i < 768)
-							{
-								light.LightSet = "Light3";
-							}
-							else
-							{
-								light.LightSet = "Light4";
-							}
-
 							light.FrameStart = ByteConverter.ToInt32(fc, address);
-							if (light.FrameStart != 0)
-							{
-								lightcount++;
-							}
-
 							light.FadeType = ByteConverter.ToInt32(fc, address + 4);
 							light.LightDirection = new Vertex(fc, address + 8);
 							light.Color = new Vertex(fc, address + 0x14);
 							light.Intensity = ByteConverter.ToSingle(fc, address + 0x20);
 							light.AmbientColor = new Vertex(fc, address + 0x24);
-							ini.Lighting.Add(light);
+							if (i < 256)
+							{
+								light.LightSet = "Light1";
+								if (light.FrameStart != 0)
+								{
+									lightcount1++;
+								}
+								ini.Lighting1.Add(light);
+							}
+							else if (i < 512)
+							{
+								light.LightSet = "Light2";
+								if (light.FrameStart != 0)
+								{
+									lightcount2++;
+								}
+								ini.Lighting2.Add(light);
+							}
+							else if (i < 768)
+							{
+								light.LightSet = "Light3";
+								if (light.FrameStart != 0)
+								{
+									lightcount3++;
+								}
+								ini.Lighting3.Add(light);
+							}
+							else
+							{
+								light.LightSet = "Light4";
+								if (light.FrameStart != 0)
+								{
+									lightcount4++;
+								}
+								ini.Lighting4.Add(light);
+							}
 						}
-						if (lightcount != 0)
+						if (lightcount1 != 0)
 						{
-							Console.WriteLine("Event contains {0} active lighting entr{1}.", lightcount, lightcount == 1 ? "y" : "ies");
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the first light array.", lightcount1, lightcount1 == 1 ? "y" : "ies");
 						}
 						else
 						{
-							Console.WriteLine("Event does not use lighting.");
+							Console.WriteLine("Event does not use lighting data from the first light array.");
+						}
+						if (lightcount2 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the second light array.", lightcount2, lightcount2 == 1 ? "y" : "ies");
+						}
+						else
+						{
+							Console.WriteLine("Event does not use lighting data from the second light array.");
+						}
+						if (lightcount3 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the third light array.", lightcount3, lightcount3 == 1 ? "y" : "ies");
+						}
+						else
+						{
+							Console.WriteLine("Event does not use lighting data from the third light array.");
+						}
+						if (lightcount4 != 0)
+						{
+							Console.WriteLine("Event contains {0} active lighting entr{1} from the fourth light array.", lightcount4, lightcount4 == 1 ? "y" : "ies");
+						}
+						else
+						{
+							Console.WriteLine("Event does not use lighting data from the fourth light array.");
 						}
 
 						int blurcount = 0;
@@ -677,7 +783,7 @@ namespace SplitTools.SAArc
 				Environment.CurrentDirectory = dir;
 			}
 		}
-		public static void Build(bool? isBigEndian, bool? isLanguageFile, string filename, string fileOutputPath)
+		public static void Build(bool? isBigEndian, bool? isLanguageFile, bool? isDCBeta, string filename, string fileOutputPath)
 		{
 			string dir = Environment.CurrentDirectory;
 			try
@@ -694,7 +800,7 @@ namespace SplitTools.SAArc
 				using (JsonTextReader jtr = new JsonTextReader(tr))
 					ini = js.Deserialize<EventExtraIniData>(jtr);
 				bool battle = ini.BattleFormat;
-				//bool dcbeta = ini.Game == Game.SA2;
+				bool dcbeta = ini.DCBeta;
 				bool language = ini.LanguageOnly;
 				if (!isBigEndian.HasValue)
 				{
@@ -720,6 +826,15 @@ namespace SplitTools.SAArc
 				else
 				{
 					language = isLanguageFile.Value;
+				}
+
+				if (!isDCBeta.HasValue)
+				{
+					dcbeta = ini.DCBeta;
+				}
+				else
+				{
+					dcbeta = isDCBeta.Value;
 				}
 
 				List<byte> extradata = new List<byte>();
@@ -758,10 +873,43 @@ namespace SplitTools.SAArc
 					{
 						extradata.AddRange(particle.GetBytes());
 					}
-
-					foreach (LightingInfo light in ini.Lighting)
+					if (dcbeta)
 					{
-						extradata.AddRange(light.GetBytes());
+						for (int i = 0; i < 64; i++)
+						{
+							extradata.AddRange(ini.Lighting1[i].GetBytes());
+						}
+						for (int i = 0; i < 64; i++)
+						{
+							extradata.AddRange(ini.Lighting2[i].GetBytes());
+						}
+						for (int i = 0; i < 64; i++)
+						{
+							extradata.AddRange(ini.Lighting3[i].GetBytes());
+						}
+						for (int i = 0; i < 64; i++)
+						{
+							extradata.AddRange(ini.Lighting4[i].GetBytes());
+						}
+					}
+					else
+					{
+						foreach (LightingInfo light1 in ini.Lighting1)
+						{
+							extradata.AddRange(light1.GetBytes());
+						}
+						foreach (LightingInfo light2 in ini.Lighting2)
+						{
+							extradata.AddRange(light2.GetBytes());
+						}
+						foreach (LightingInfo light3 in ini.Lighting3)
+						{
+							extradata.AddRange(light3.GetBytes());
+						}
+						foreach (LightingInfo light4 in ini.Lighting4)
+						{
+							extradata.AddRange(light4.GetBytes());
+						}
 					}
 					foreach (BlurInfo blur in ini.BlurInfo)
 					{
@@ -884,11 +1032,15 @@ namespace SplitTools.SAArc
 		public bool BigEndian { get; set; }
 		public bool BattleFormat { get; set; }
 		public bool LanguageOnly { get; set; }
+		public bool DCBeta { get; set; }
 		public List<SubtitleInfo> Subtitles { get; set; } = new List<SubtitleInfo>();
 		public List<AudioInfo> AudioInfo { get; set; } = new List<AudioInfo>();
 		public List<ScreenEffects> ScreenEffects { get; set; } = new List<ScreenEffects>();
 		public List<ParticleEffects> ParticleEffects { get; set; } = new List<ParticleEffects>();
-		public List<LightingInfo> Lighting { get; set; } = new List<LightingInfo>();
+		public List<LightingInfo> Lighting1 { get; set; } = new List<LightingInfo>();
+		public List<LightingInfo> Lighting2 { get; set; } = new List<LightingInfo>();
+		public List<LightingInfo> Lighting3 { get; set; } = new List<LightingInfo>();
+		public List<LightingInfo> Lighting4 { get; set; } = new List<LightingInfo>();
 		public List<BlurInfo> BlurInfo { get; set; } = new List<BlurInfo>();
 		public List<ParticleEffects2> ParticleGenerators { get; set; } = new List<ParticleEffects2>();
 		public List<VideoInfo> VideoInfo { get; set; } = new List<VideoInfo>();
@@ -909,6 +1061,7 @@ namespace SplitTools.SAArc
 		public short VoiceEntry { get; set; }
 		public string MusicEntry { get; set; }
 		public string JingleEntry { get; set; }
+		public int VsyncWaitCount { get; set; }
 
 		public static int Size { get { return 0x48; } }
 
@@ -922,6 +1075,8 @@ namespace SplitTools.SAArc
 			result.AddRange(Encoding.ASCII.GetBytes(MusicEntry));
 			result.Align(0x18);
 			result.AddRange(Encoding.ASCII.GetBytes(JingleEntry));
+			result.Align(0x28);
+			result.AddRange(ByteConverter.GetBytes(VsyncWaitCount));
 			result.Align(0x48);
 			return result.ToArray();
 		}

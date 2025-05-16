@@ -127,6 +127,7 @@ namespace SAModel
 			if (animtype.HasFlag(AnimFlags.Spot)) mdata++;
 			if (animtype.HasFlag(AnimFlags.Point)) mdata++;
 			if (animtype.HasFlag(AnimFlags.Roll)) mdata++;
+			if (animtype.HasFlag(AnimFlags.Angle)) mdata++;
 			if (animtype.HasFlag(AnimFlags.Quaternion)) mdata++;
 			int mdatasize = 0;
 			bool lost = false;

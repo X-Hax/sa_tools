@@ -1444,6 +1444,15 @@ namespace SAModel
 		public class Strip : ICloneable
 		{
 			public bool Reversed { get; private set; }
+			public bool CMDEReversed
+			{
+				get { return Reversed; }
+				set
+				{
+					bool oldsettype = Reversed;
+					Reversed = value;
+				}
+			}
 			public ushort[] Indexes { get; private set; }
 			public UV[] UVs { get; private set; }
 			public UV[] UVs2 { get; private set; }
@@ -1766,6 +1775,12 @@ namespace SAModel
 			set { Flags = (byte)((Flags & ~0x40) | (value ? 0x40 : 0)); }
 		}
 
+		public bool NoAlphaTest
+		{
+			get { return (Flags & 0x80) == 0x80; }
+			set { Flags = (byte)((Flags & ~0x80) | (value ? 0x80 : 0)); }
+		}
+
 		public ushort Header2 { get; private set; }
 
 		public byte UserFlags
@@ -1856,6 +1871,8 @@ namespace SAModel
 				flags += "FST_FL|";
 			if (EnvironmentMapping)
 				flags += "FST_ENV|";
+			if (NoAlphaTest)
+				flags += "FST_NAT|";
 			if (flags == string.Empty)
 				flags = "0x0";
 			else
@@ -1936,6 +1953,7 @@ namespace SAModel
 			DoubleSide = mat.DoubleSided;
 			FlatShading = mat.FlatShading;
 			EnvironmentMapping = mat.EnvironmentMap;
+			NoAlphaTest = mat.NoAlphaTest;
 		}
 	}
 }

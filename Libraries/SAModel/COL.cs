@@ -20,6 +20,12 @@ namespace SAModel
 			set { Flags = (int)value; }
 		}
 
+		public SA2SurfaceFlags SA2SurfaceFlags
+		{
+			get { return (SA2SurfaceFlags)Flags; }
+			set { Flags = (int)value; }
+		}
+
 		public static int Size(LandTableFormat format)
 		{
 			switch (format)
