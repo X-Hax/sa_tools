@@ -1770,7 +1770,7 @@ namespace SAModel.SALVL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportLevelObj(a.FileName, true, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
+					ExportLevelObj(a.FileName, true, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 			}
 		}
@@ -1814,7 +1814,7 @@ namespace SAModel.SALVL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportLevelObj(a.FileName, false, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
+					ExportLevelObj(a.FileName, false, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 			}
 		}
@@ -1824,7 +1824,7 @@ namespace SAModel.SALVL
 			using (FolderBrowserDialog folderBrowser = new FolderBrowserDialog() { })
 				if (folderBrowser.ShowDialog() == DialogResult.OK)
 				{
-					exportStructs(folderBrowser.SelectedPath, true, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
+					exportStructs(folderBrowser.SelectedPath, true, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 		}
 
@@ -1833,7 +1833,7 @@ namespace SAModel.SALVL
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C file|*.c" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					exportStructs(sd.FileName, false, exportOnlyCollideableToolStripMenuItem.Checked, exportOnlyNonCollideableToolStripMenuItem.Checked);
+					exportStructs(sd.FileName, false, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 		}
 
@@ -2439,19 +2439,19 @@ namespace SAModel.SALVL
 
 		private void exportOnlyNonCollideableToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			exportOnlyNonCollideableToolStripMenuItem.Checked = exportOnlyNonCollideableToolStripMenuItem.Checked;
-			if(exportOnlyNonCollideableToolStripMenuItem.Checked == true)
+			exportVisibleGeometry.Checked = exportVisibleGeometry.Checked;
+			if(exportVisibleGeometry.Checked == true)
 			{
-				exportOnlyCollideableToolStripMenuItem.Checked = false;
+				exportCollisionGeometry.Checked = false;
 			}
 		}
 
 		private void exportOnlyCollideableToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			exportOnlyCollideableToolStripMenuItem.Checked = exportOnlyCollideableToolStripMenuItem.Checked;
-			if (exportOnlyCollideableToolStripMenuItem.Checked == true)
+			exportCollisionGeometry.Checked = exportCollisionGeometry.Checked;
+			if (exportCollisionGeometry.Checked == true)
 			{
-				exportOnlyNonCollideableToolStripMenuItem.Checked = false;
+				exportVisibleGeometry.Checked = false;
 			}
 		}
 	}

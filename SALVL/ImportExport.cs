@@ -89,7 +89,7 @@ namespace SAModel.SALVL
 		}
 
 		// Export models from stage (Assimp)
-		private void ExportLevelObj(string fileName, bool selectedOnly, bool exportOnlySolid, bool exportOnlyNonSolid)
+		private void ExportLevelObj(string fileName, bool selectedOnly, bool exportSolidOnly, bool exportVisibleOnly)
 		{
 			int stepCount = 0;
 			int numSteps = 0;
@@ -114,13 +114,13 @@ namespace SAModel.SALVL
 			}
 
 			//Sort out collision and regular models
-			if (exportOnlySolid)
+			if (exportSolidOnly)
 			{
 				items = items.Where(a => a.Solid == true).ToList();
 			}
-			else if (exportOnlyNonSolid)
+			else if (exportVisibleOnly)
 			{
-				items = items.Where(a => a.Solid == false).ToList();
+				items = items.Where(a => a.Visible == true).ToList();
 			}
 
 			List<COL> cols = items.Select(a => a.CollisionData).ToList();

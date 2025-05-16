@@ -58,8 +58,8 @@
 			exportAssimpSelectedItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportSA1MDLSelectedItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportSelectedItemsStructsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			exportOnlyNonCollideableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			exportOnlyCollideableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			exportVisibleGeometry = new System.Windows.Forms.ToolStripMenuItem();
+			exportCollisionGeometry = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			saveAdvancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			advancedSavelevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -395,7 +395,7 @@
 			// toStageToolStripMenuItem
 			// 
 			toStageToolStripMenuItem.Name = "toStageToolStripMenuItem";
-			toStageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			toStageToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
 			toStageToolStripMenuItem.Text = "To &Stage...";
 			toStageToolStripMenuItem.ToolTipText = "Import a model to the level.";
 			toStageToolStripMenuItem.Click += toStageToolStripMenuItem_Click;
@@ -403,20 +403,20 @@
 			// toModelLibraryToolStripMenuItem
 			// 
 			toModelLibraryToolStripMenuItem.Name = "toModelLibraryToolStripMenuItem";
-			toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			toModelLibraryToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
 			toModelLibraryToolStripMenuItem.Text = "To Model Library...";
 			toModelLibraryToolStripMenuItem.Click += importToModelLibrary_Click;
 			// 
 			// wholeLevelToolStripMenuItem
 			// 
 			wholeLevelToolStripMenuItem.Name = "wholeLevelToolStripMenuItem";
-			wholeLevelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			wholeLevelToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
 			wholeLevelToolStripMenuItem.Text = "&Whole Level...";
 			wholeLevelToolStripMenuItem.Click += wholeLevelToolStripMenuItem_Click;
 			// 
 			// exportToolStripMenuItem
 			// 
-			exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportLevelToolStripMenuItem, exportSelectedItemsToolstripMenuItem, exportOnlyNonCollideableToolStripMenuItem, exportOnlyCollideableToolStripMenuItem });
+			exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportLevelToolStripMenuItem, exportSelectedItemsToolstripMenuItem, exportVisibleGeometry, exportCollisionGeometry });
 			exportToolStripMenuItem.Image = Properties.Resources.export;
 			exportToolStripMenuItem.Name = "exportToolStripMenuItem";
 			exportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
@@ -426,7 +426,7 @@
 			// 
 			exportLevelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAssimpLevelToolStripMenuItem, exportLevelStructsToolStripMenuItem });
 			exportLevelToolStripMenuItem.Name = "exportLevelToolStripMenuItem";
-			exportLevelToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+			exportLevelToolStripMenuItem.Size = new System.Drawing.Size(247, 22);
 			exportLevelToolStripMenuItem.Text = "Level";
 			// 
 			// exportAssimpLevelToolStripMenuItem
@@ -451,7 +451,7 @@
 			// 
 			exportSelectedItemsToolstripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAssimpSelectedItemsToolStripMenuItem, exportSA1MDLSelectedItemsToolStripMenuItem, exportSelectedItemsStructsToolStripMenuItem });
 			exportSelectedItemsToolstripMenuItem.Name = "exportSelectedItemsToolstripMenuItem";
-			exportSelectedItemsToolstripMenuItem.Size = new System.Drawing.Size(226, 22);
+			exportSelectedItemsToolstripMenuItem.Size = new System.Drawing.Size(247, 22);
 			exportSelectedItemsToolstripMenuItem.Text = "Selected Items";
 			// 
 			// exportAssimpSelectedItemsToolStripMenuItem
@@ -481,21 +481,23 @@
 			exportSelectedItemsStructsToolStripMenuItem.ToolTipText = "Export selected level items as C structs for use in code mods.";
 			exportSelectedItemsStructsToolStripMenuItem.Click += exportSelectedItemsStructsToolStripMenuItem_Click;
 			// 
-			// exportOnlyNonCollideableToolStripMenuItem
+			// exportVisibleGeometry
 			// 
-			exportOnlyNonCollideableToolStripMenuItem.CheckOnClick = true;
-			exportOnlyNonCollideableToolStripMenuItem.Name = "exportOnlyNonCollideableToolStripMenuItem";
-			exportOnlyNonCollideableToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
-			exportOnlyNonCollideableToolStripMenuItem.Text = "Export Only Non-Collideable";
-			exportOnlyNonCollideableToolStripMenuItem.Click += exportOnlyNonCollideableToolStripMenuItem_Click;
+			exportVisibleGeometry.CheckOnClick = true;
+			exportVisibleGeometry.Name = "exportVisibleGeometry";
+			exportVisibleGeometry.Size = new System.Drawing.Size(247, 22);
+			exportVisibleGeometry.Text = "Export Visible Geometry Only";
+			exportVisibleGeometry.ToolTipText = "Exports only visible geometry in the scene. This may include collidable geometry in SA1/DX.";
+			exportVisibleGeometry.Click += exportOnlyNonCollideableToolStripMenuItem_Click;
 			// 
-			// exportOnlyCollideableToolStripMenuItem
+			// exportCollisionGeometry
 			// 
-			exportOnlyCollideableToolStripMenuItem.CheckOnClick = true;
-			exportOnlyCollideableToolStripMenuItem.Name = "exportOnlyCollideableToolStripMenuItem";
-			exportOnlyCollideableToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
-			exportOnlyCollideableToolStripMenuItem.Text = "Export Only Collideable";
-			exportOnlyCollideableToolStripMenuItem.Click += exportOnlyCollideableToolStripMenuItem_Click;
+			exportCollisionGeometry.CheckOnClick = true;
+			exportCollisionGeometry.Name = "exportCollisionGeometry";
+			exportCollisionGeometry.Size = new System.Drawing.Size(247, 22);
+			exportCollisionGeometry.Text = "Export Collidable Geometry Only";
+			exportCollisionGeometry.ToolTipText = "Exports Solid/Collidable objects in the scene only. This may include most visible geometry in SA1/DX.";
+			exportCollisionGeometry.Click += exportOnlyCollideableToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator1
 			// 
@@ -1376,7 +1378,7 @@
 			RenderPanel.Location = new System.Drawing.Point(0, 0);
 			RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			RenderPanel.Name = "RenderPanel";
-			RenderPanel.Size = new System.Drawing.Size(762, 328);
+			RenderPanel.Size = new System.Drawing.Size(762, 325);
 			RenderPanel.TabIndex = 1;
 			RenderPanel.SizeChanged += RenderPanel_SizeChanged;
 			RenderPanel.DragDrop += RenderPanel_DragDrop;
@@ -1526,7 +1528,7 @@
 			// 
 			PropertiesSplitter.Panel2.Controls.Add(propertyGrid1);
 			PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
-			PropertiesSplitter.SplitterDistance = 960;
+			PropertiesSplitter.SplitterDistance = 957;
 			PropertiesSplitter.SplitterWidth = 5;
 			PropertiesSplitter.TabIndex = 2;
 			// 
@@ -1546,8 +1548,8 @@
 			// LibrarySplitter.Panel2
 			// 
 			LibrarySplitter.Panel2.Controls.Add(libraryTabControl);
-			LibrarySplitter.Size = new System.Drawing.Size(956, 635);
-			LibrarySplitter.SplitterDistance = 328;
+			LibrarySplitter.Size = new System.Drawing.Size(953, 635);
+			LibrarySplitter.SplitterDistance = 325;
 			LibrarySplitter.SplitterWidth = 5;
 			LibrarySplitter.TabIndex = 3;
 			// 
@@ -1565,8 +1567,8 @@
 			// ItemsSplitter.Panel2
 			// 
 			ItemsSplitter.Panel2.Controls.Add(RenderPanel);
-			ItemsSplitter.Size = new System.Drawing.Size(956, 328);
-			ItemsSplitter.SplitterDistance = 189;
+			ItemsSplitter.Size = new System.Drawing.Size(953, 325);
+			ItemsSplitter.SplitterDistance = 186;
 			ItemsSplitter.SplitterWidth = 5;
 			ItemsSplitter.TabIndex = 0;
 			// 
@@ -1576,7 +1578,7 @@
 			sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
 			sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
 			sceneGraphControl1.Name = "sceneGraphControl1";
-			sceneGraphControl1.Size = new System.Drawing.Size(189, 328);
+			sceneGraphControl1.Size = new System.Drawing.Size(186, 325);
 			sceneGraphControl1.TabIndex = 0;
 			// 
 			// libraryTabControl
@@ -1588,7 +1590,7 @@
 			libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			libraryTabControl.Name = "libraryTabControl";
 			libraryTabControl.SelectedIndex = 0;
-			libraryTabControl.Size = new System.Drawing.Size(956, 302);
+			libraryTabControl.Size = new System.Drawing.Size(953, 305);
 			libraryTabControl.TabIndex = 0;
 			// 
 			// modelLibraryPage
@@ -1598,7 +1600,7 @@
 			modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			modelLibraryPage.Name = "modelLibraryPage";
 			modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			modelLibraryPage.Size = new System.Drawing.Size(948, 274);
+			modelLibraryPage.Size = new System.Drawing.Size(945, 277);
 			modelLibraryPage.TabIndex = 1;
 			modelLibraryPage.Text = "Model Library";
 			modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1610,7 +1612,7 @@
 			modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
 			modelLibraryControl1.Name = "modelLibraryControl1";
 			modelLibraryControl1.SelectedModel = null;
-			modelLibraryControl1.Size = new System.Drawing.Size(940, 268);
+			modelLibraryControl1.Size = new System.Drawing.Size(937, 271);
 			modelLibraryControl1.TabIndex = 0;
 			// 
 			// setLibraryPage
@@ -1619,7 +1621,7 @@
 			setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			setLibraryPage.Name = "setLibraryPage";
 			setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			setLibraryPage.Size = new System.Drawing.Size(949, 273);
+			setLibraryPage.Size = new System.Drawing.Size(946, 276);
 			setLibraryPage.TabIndex = 0;
 			setLibraryPage.Text = "SET Library";
 			setLibraryPage.UseVisualStyleBackColor = true;
@@ -1635,7 +1637,7 @@
 			propertyGrid1.Location = new System.Drawing.Point(0, 0);
 			propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
 			propertyGrid1.Name = "propertyGrid1";
-			propertyGrid1.Size = new System.Drawing.Size(362, 635);
+			propertyGrid1.Size = new System.Drawing.Size(365, 635);
 			propertyGrid1.TabIndex = 13;
 			propertyGrid1.ToolbarVisible = false;
 			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
@@ -2262,8 +2264,8 @@
 		private System.Windows.Forms.ToolStripMenuItem importLabelsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportLabelsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
-		private System.Windows.Forms.ToolStripMenuItem exportOnlyNonCollideableToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem exportOnlyCollideableToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportVisibleGeometry;
+		private System.Windows.Forms.ToolStripMenuItem exportCollisionGeometry;
 		private System.Windows.Forms.ToolStripMenuItem cAMFileToolStripMenuItem;
 	}
 }
