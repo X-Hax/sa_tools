@@ -264,9 +264,12 @@ namespace SAModel.SAEditorCommon.UI
 				}
 			}
 
-			foreach (SplineData splineData in LevelData.LevelSplines)
+			if (LevelData.LevelSplines != null)
 			{
-				splineNode.Nodes.Add("spline_" + splineData.Code.ToString("X"));
+				foreach (SplineData splineData in LevelData.LevelSplines)
+				{
+					splineNode.Nodes.Add("spline_" + splineData.Code.ToString("X"));
+				}
 			}
 
 			if (LevelData.MissionSETItems != null && LevelData.MissionSETItems[LevelData.Character] != null)
