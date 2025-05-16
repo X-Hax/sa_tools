@@ -1773,7 +1773,7 @@ namespace SAModel.SALVL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportLevelObj(a.FileName, true);
+					ExportLevelObj(a.FileName, true, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 			}
 		}
@@ -1817,7 +1817,7 @@ namespace SAModel.SALVL
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportLevelObj(a.FileName, false);
+					ExportLevelObj(a.FileName, false, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 			}
 		}
@@ -1827,7 +1827,7 @@ namespace SAModel.SALVL
 			using (FolderBrowserDialog folderBrowser = new FolderBrowserDialog() { })
 				if (folderBrowser.ShowDialog() == DialogResult.OK)
 				{
-					exportStructs(folderBrowser.SelectedPath, true);
+					exportStructs(folderBrowser.SelectedPath, true, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 		}
 
@@ -1836,7 +1836,7 @@ namespace SAModel.SALVL
 			using (SaveFileDialog sd = new SaveFileDialog() { DefaultExt = "c", Filter = "C file|*.c" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					exportStructs(sd.FileName, false);
+					exportStructs(sd.FileName, false, exportCollisionGeometry.Checked, exportVisibleGeometry.Checked);
 				}
 		}
 
@@ -2441,6 +2441,24 @@ namespace SAModel.SALVL
 		private void addLevelAnimationToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ImportLevelAnimation();
+		}
+
+		private void exportOnlyNonCollideableToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			exportVisibleGeometry.Checked = exportVisibleGeometry.Checked;
+			if(exportVisibleGeometry.Checked == true)
+			{
+				exportCollisionGeometry.Checked = false;
+			}
+		}
+
+		private void exportOnlyCollideableToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			exportCollisionGeometry.Checked = exportCollisionGeometry.Checked;
+			if (exportCollisionGeometry.Checked == true)
+			{
+				exportVisibleGeometry.Checked = false;
+			}
 		}
 	}
 }
