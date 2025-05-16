@@ -56,10 +56,10 @@
 			// statusStrip1
 			// 
 			statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-			statusStrip1.Location = new System.Drawing.Point(0, 523);
+			statusStrip1.Location = new System.Drawing.Point(0, 529);
 			statusStrip1.Name = "statusStrip1";
 			statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 15, 0);
-			statusStrip1.Size = new System.Drawing.Size(1157, 28);
+			statusStrip1.Size = new System.Drawing.Size(1157, 22);
 			statusStrip1.SizingGrip = false;
 			statusStrip1.TabIndex = 11;
 			statusStrip1.Text = "statusStrip1";
@@ -185,8 +185,7 @@
 			// 
 			// ChunkModelVertexDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			ClientSize = new System.Drawing.Size(1157, 551);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(buttonClose);

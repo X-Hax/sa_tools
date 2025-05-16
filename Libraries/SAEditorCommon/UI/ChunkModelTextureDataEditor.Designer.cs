@@ -250,8 +250,7 @@
 			// ChunkModelTextureDataEditor
 			// 
 			AcceptButton = doneButton;
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			AutoSize = true;
 			ClientSize = new System.Drawing.Size(544, 452);
 			ControlBox = false;

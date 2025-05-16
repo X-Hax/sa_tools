@@ -626,19 +626,18 @@
 			contextMenuStripVertData.ImageScalingSize = new System.Drawing.Size(24, 24);
 			contextMenuStripVertData.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { viewVertexDataToolStripMenuItem });
 			contextMenuStripVertData.Name = "contextMenuStripVertData";
-			contextMenuStripVertData.Size = new System.Drawing.Size(241, 69);
+			contextMenuStripVertData.Size = new System.Drawing.Size(217, 36);
 			// 
 			// viewVertexDataToolStripMenuItem
 			// 
 			viewVertexDataToolStripMenuItem.Name = "viewVertexDataToolStripMenuItem";
-			viewVertexDataToolStripMenuItem.Size = new System.Drawing.Size(240, 32);
+			viewVertexDataToolStripMenuItem.Size = new System.Drawing.Size(216, 32);
 			viewVertexDataToolStripMenuItem.Text = "View Vertex Data";
 			viewVertexDataToolStripMenuItem.Click += viewVertexDataToolStripMenuItem_Click;
 			// 
 			// GCModelDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			ClientSize = new System.Drawing.Size(1137, 764);
 			Controls.Add(groupBoxVertexList);
 			Controls.Add(comboBoxNode);

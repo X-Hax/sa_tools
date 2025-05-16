@@ -498,8 +498,7 @@
 			// 
 			// ChunkModelDataEditor
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			ClientSize = new System.Drawing.Size(1328, 764);
 			Controls.Add(groupBoxVertList);
 			Controls.Add(comboBoxNode);
