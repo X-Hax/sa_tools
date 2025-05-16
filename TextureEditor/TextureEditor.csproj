@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\build\tools\</OutputPath>
@@ -10,7 +10,8 @@
 		<ApplicationIcon>icon_TexEdit.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Platforms>x64;x86</Platforms>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Libraries\ArchiveLib\ArchiveLib.csproj" />

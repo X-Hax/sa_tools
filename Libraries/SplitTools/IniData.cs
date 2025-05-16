@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using ByteConverter = SAModel.ByteConverter;
 
@@ -26,6 +25,8 @@ namespace SplitTools
 		public bool BigEndian { get; set; }
 		[IniName("reverse")]
 		public bool Reverse { get; set; }
+		[IniName("korean")]
+		public bool KoreanMode { get; set; }
 		[IniName("nometa")]
 		public bool NoMeta { get; set; }
 		[IniName("offset")]
@@ -434,13 +435,22 @@ namespace SplitTools
 			return IniSerializer.Deserialize<Dictionary<SA1LevelAct, SA1StartPosInfo>>(filename);
 		}
 
-		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(byte[] file, int address)
+		public static Dictionary<SA1LevelAct, SA1StartPosInfo> Load(byte[] file, int address, int count = 255)
 		{
 			Dictionary<SA1LevelAct, SA1StartPosInfo> result = new Dictionary<SA1LevelAct, SA1StartPosInfo>();
-			while (ByteConverter.ToUInt16(file, address) != (ushort)SA1LevelIDs.Invalid)
+			for (int i = 0; i < count; i++)
 			{
+				if (ByteConverter.ToUInt16(file, address) >= (ushort)SA1LevelIDs.Invalid)
+					break;
 				SA1StartPosInfo objgrp = new SA1StartPosInfo(file, address + 4);
-				result.Add(new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2)), objgrp);
+				SA1LevelAct levelAct = new SA1LevelAct(ByteConverter.ToUInt16(file, address), ByteConverter.ToUInt16(file, address + 2));
+				if (result.ContainsKey(levelAct))
+					Console.WriteLine(levelAct.ToString() + " start position is already added, duplicate at " + address.ToString("X"));
+				else
+				{
+					//Console.WriteLine(levelAct.ToString() + " start position at " + address.ToString("X") + ": " + objgrp.Position.ToString());
+					result.Add(levelAct, objgrp);
+				}
 				address += Size;
 			}
 			return result;
@@ -741,7 +751,7 @@ namespace SplitTools
 			TextureNames = new string[NumTextures];
 		}
 
-		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset=0)
+		public NJS_TEXLIST(byte[] file, int address, uint imageBase, Dictionary<int, string> labels = null, uint offset = 0)
 		{
 			if (labels != null && labels.ContainsKey(address))
 				Name = labels[address];
@@ -823,6 +833,43 @@ namespace SplitTools
 				}
 				return new NJS_TEXLIST { TextureNames = textureNames };
 			}
+		}
+
+		public static NJS_TEXLIST Load(byte[] file, int address, int imageBase)
+		{
+			NJS_TEXLIST texlist = new();
+
+			texlist.Name = "texlist_" + address.ToString("X8");
+			uint TexnameArrayOffset = ByteConverter.ToUInt32(file, address);
+			int TexnameArrayAddr = (int)(TexnameArrayOffset - imageBase);
+			texlist.NumTextures = ByteConverter.ToUInt32(file, address + 4);
+			texlist.TexnameArrayName = "textures_" + TexnameArrayAddr.ToString("X8");
+			texlist.TextureNames = new string[texlist.NumTextures];
+			if (TexnameArrayAddr == 0)
+				return new();
+			if (texlist.NumTextures <= 300 && texlist.NumTextures > 0)
+			{
+				texlist.TextureNames = new string[texlist.NumTextures];
+				for (int u = 0; u < texlist.NumTextures; u++)
+				{
+					// Hack for uninitialized data
+					if (TexnameArrayAddr > file.Length)
+					{
+						texlist.TextureNames[u] = null;
+						continue;
+					}
+					uint TexnamePointer = ByteConverter.ToUInt32(file, (int)(TexnameArrayOffset + u * 12 - imageBase));
+					if (TexnamePointer != 0)
+					{
+						int TexnameAddress = (int)(TexnamePointer - imageBase);
+						texlist.TextureNames[u] = file.GetCString(TexnameAddress, Encoding.UTF8).TrimEnd();
+					}
+					else
+						texlist.TextureNames[u] = null;
+				}
+			}
+
+			return texlist;
 		}
 
 		public void SaveAsList(string fileOutputPath, string extension = "pvr")
@@ -1543,14 +1590,14 @@ namespace SplitTools
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(Filename))
 			{
-				sb.Append(Filename ?? "nullptr");
+				sb.Append(Filename.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(SoundList))
 			{
-				sb.Append(SoundList ?? "nullptr");
+				sb.Append(SoundList.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
@@ -1629,21 +1676,21 @@ namespace SplitTools
 			sb.AppendFormat(", ");
 			if (!string.IsNullOrEmpty(JPFilename))
 			{
-				sb.AppendFormat(JPFilename ?? "nullptr");
+				sb.AppendFormat(JPFilename.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(ENFilename))
 			{
-				sb.AppendFormat(ENFilename ?? "nullptr");
+				sb.AppendFormat(ENFilename.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(SoundList))
 			{
-				sb.AppendFormat(SoundList ?? "nullptr");
+				sb.AppendFormat(SoundList.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
@@ -2067,9 +2114,10 @@ namespace SplitTools
 			IniSerializer.Serialize(recap, filename);
 		}
 	}
+	[Serializable]
 	public class SA2RecapScreen
 	{
-		public SA2RecapScreen(){}
+		public SA2RecapScreen() { }
 
 		[IniAlwaysInclude]
 		public int StoryType { get; set; }
@@ -2098,28 +2146,34 @@ namespace SplitTools
 
 				for (int j = 0; j < cnt; j++)
 				{
+					//if (PC)
+					//{
+						SummaryData.Add(new SA2SummaryData(file, ptr, PC));
 					if (PC)
-					{
-						SummaryData.Add(new SA2PCSummaryData(file, ptr));
-						ptr += SA2PCSummaryData.Size;
-					}
+						ptr += SA2SummaryData.Size;
 					else
-					{
-						SummaryData.Add(new SA2DCGCSummaryData(file, ptr));
-						ptr += SA2DCGCSummaryData.Size;
-					}
+						ptr += 0x1C;
+					//}
+					//else
+					//{
+					//	SummaryData.Add(new SA2DCGCSummaryData(file, ptr));
+					//	ptr += SA2DCGCSummaryData.Size;
+					//}
 				}
 			}
 			SummaryCount = ByteConverter.ToInt32(file, address + 0x10);
 		}
 
-			public string ToStruct(string label)
+		public string ToStruct(string label)
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(StoryType);
+			sb.Append(", ");
 			sb.Append(StorySequenceID);
+			sb.Append(", ");
 			sb.Append(CharBGID);
-			if (SummaryData?.Count > 0)
+			sb.Append(", ");
+			if (SummaryCount > 0)
 			{
 				sb.AppendFormat("{0}, ", label);
 				sb.AppendFormat("{0}", SummaryCount);
@@ -2130,11 +2184,17 @@ namespace SplitTools
 			return sb.ToString();
 		}
 	}
-	[Serializable]
-	public abstract class SA2SummaryData {}
+	//[Serializable]
+	//public abstract class SA2SummaryData {
+
+	//	public abstract string ToStruct();
+	//}
+
+	//	public abstract string ToStruct();
+	//}
 
 	[Serializable]
-	public class SA2PCSummaryData : SA2SummaryData 
+	public class SA2SummaryData 
 	{
 		[IniAlwaysInclude]
 		public int StringID { get; set; }
@@ -2152,9 +2212,9 @@ namespace SplitTools
 		public int GERFrameStart { get; set; }
 		[IniAlwaysInclude]
 		public int ITAFrameStart { get; set; }
-		public SA2PCSummaryData() { }
+		public SA2SummaryData() { }
 		public static int Size { get { return 0x20; } }
-		public SA2PCSummaryData(byte[] file, int address)
+		public SA2SummaryData(byte[] file, int address, bool PC)
 		{
 			StringID = ByteConverter.ToInt32(file, address);
 			VoiceID = ByteConverter.ToInt32(file, address + 4);
@@ -2163,70 +2223,80 @@ namespace SplitTools
 			FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
 			SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
 			GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
-			ITAFrameStart = ByteConverter.ToInt32(file, address + 0x1C);
+			if (PC)
+				ITAFrameStart = ByteConverter.ToInt32(file, address + 0x1C);
+			else
+				ITAFrameStart = ByteConverter.ToInt32(file, address + 0x18);
 		}
 
 		public string ToStruct()
 		{
 			StringBuilder sb = new StringBuilder("{ ");
 			sb.Append(StringID);
+			sb.Append(", ");
 			sb.Append(VoiceID);
+			sb.Append(", ");
 			sb.Append(JPNFrameStart);
+			sb.Append(", ");
 			sb.Append(ENGFrameStart);
+			sb.Append(", ");
 			sb.Append(FRNFrameStart);
+			sb.Append(", ");
 			sb.Append(SPAFrameStart);
+			sb.Append(", ");
 			sb.Append(GERFrameStart);
+			sb.Append(", ");
 			sb.Append(ITAFrameStart);
 			sb.Append(" }");
 			return sb.ToString();
 		}
 	}
 
-	[Serializable]
-	public class SA2DCGCSummaryData : SA2SummaryData
-	{
-		[IniAlwaysInclude]
-		public int StringID { get; set; }
-		[IniAlwaysInclude]
-		public int VoiceID { get; set; }
-		[IniAlwaysInclude]
-		public int JPNFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int ENGFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int FRNFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int SPAFrameStart { get; set; }
-		[IniAlwaysInclude]
-		public int GERFrameStart { get; set; }
-		public SA2DCGCSummaryData() { }
-		public static int Size { get { return 0x1C; } }
-		public SA2DCGCSummaryData(byte[] file, int address)
-		{
-			StringID = ByteConverter.ToInt32(file, address);
-			VoiceID = ByteConverter.ToInt32(file, address + 4);
-			JPNFrameStart = ByteConverter.ToInt32(file, address + 8);
-			ENGFrameStart = ByteConverter.ToInt32(file, address + 0xC);
-			FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
-			SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
-			GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
-		}
+	//[Serializable]
+	//public class SA2DCGCSummaryData : SA2SummaryData
+	//{
+	//	[IniAlwaysInclude]
+	//	public int StringID { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int VoiceID { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int JPNFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int ENGFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int FRNFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int SPAFrameStart { get; set; }
+	//	[IniAlwaysInclude]
+	//	public int GERFrameStart { get; set; }
+	//	public SA2DCGCSummaryData() { }
+	//	public static int Size { get { return 0x1C; } }
+	//	public SA2DCGCSummaryData(byte[] file, int address)
+	//	{
+	//		StringID = ByteConverter.ToInt32(file, address);
+	//		VoiceID = ByteConverter.ToInt32(file, address + 4);
+	//		JPNFrameStart = ByteConverter.ToInt32(file, address + 8);
+	//		ENGFrameStart = ByteConverter.ToInt32(file, address + 0xC);
+	//		FRNFrameStart = ByteConverter.ToInt32(file, address + 0x10);
+	//		SPAFrameStart = ByteConverter.ToInt32(file, address + 0x14);
+	//		GERFrameStart = ByteConverter.ToInt32(file, address + 0x18);
+	//	}
 
-		public string ToStruct()
-		{
-			StringBuilder sb = new StringBuilder("{ ");
-			sb.Append(StringID);
-			sb.Append(VoiceID);
-			sb.Append(JPNFrameStart);
-			sb.Append(ENGFrameStart);
-			sb.Append(FRNFrameStart);
-			sb.Append(SPAFrameStart);
-			sb.Append(GERFrameStart);
-			sb.Append("NULL ");
-			sb.Append(" }");
-			return sb.ToString();
-		}
-	}
+	//	public override string ToStruct()
+	//	{
+	//		StringBuilder sb = new StringBuilder("{ ");
+	//		sb.Append(StringID);
+	//		sb.Append(VoiceID);
+	//		sb.Append(JPNFrameStart);
+	//		sb.Append(ENGFrameStart);
+	//		sb.Append(FRNFrameStart);
+	//		sb.Append(SPAFrameStart);
+	//		sb.Append(GERFrameStart);
+	//		sb.Append("NULL ");
+	//		sb.Append(" }");
+	//		return sb.ToString();
+	//	}
+	//}
 
 	public static class SA2BetaRecapScreenList
 	{
@@ -2360,9 +2430,9 @@ namespace SplitTools
 				hashes[l] = new string[list[l].Length];
 				for (int i = 0; i < list[l].Length; i++)
 				{
-					string scrname = Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo));
+					string scrname = Path.GetFullPath(Path.Combine(directory, (i + 1).ToString(NumberFormatInfo.InvariantInfo)));
 					Directory.CreateDirectory(scrname);
-					string textname = Path.Combine(scrname, ((Languages)l).ToString() + ".ini");
+					string textname = Path.GetFullPath(Path.Combine(scrname, ((Languages)l).ToString() + ".ini"));
 					IniSerializer.Serialize(list[l][i], textname);
 					hashes[l][i] = HelperFunctions.FileHash(textname);
 				}
@@ -2694,40 +2764,21 @@ namespace SplitTools
 
 		public SA2BDeathZoneFlags(byte[] file, int address)
 		{
-			if (ByteConverter.BigEndian)
-			{
-				DeathFlag = file[address++];
-				Constant2 = file[address++];
-				Constant1 = file[address++];
-				Flags = (SA2CharacterFlags)file[address++];
-			}
-			else
-			{
-				Flags = (SA2CharacterFlags)file[address++];
-				Constant1 = file[address++];
-				Constant2 = file[address++];
-				DeathFlag = file[address++];
-			}
+			int dzdata = ByteConverter.ToInt32(file, address);
+			Flags = (SA2CharacterFlags)((byte)dzdata);
+			Constant1 = (byte)(dzdata >> 8);
+			Constant2 = (byte)(dzdata >> 16);
+			DeathFlag = (byte)(dzdata >> 24);
 		}
 
 		public SA2BDeathZoneFlags(byte[] file, int address, string filename)
 		{
-			if (ByteConverter.BigEndian)
-			{
-				DeathFlag = file[address++];
-				Constant2 = file[address++];
-				Constant1 = file[address++];
-				Flags = (SA2CharacterFlags)file[address++];
-				Filename = filename;
-			}
-			else
-			{
-				Flags = (SA2CharacterFlags)file[address++];
-				Constant1 = file[address++];
-				Constant2 = file[address++];
-				DeathFlag = file[address++];
-				Filename = filename;
-			}
+			int dzdata = ByteConverter.ToInt32(file, address);
+			Flags = (SA2CharacterFlags)((byte)dzdata);
+			Constant1 = (byte)(dzdata >> 8);
+			Constant2 = (byte)(dzdata >> 16);
+			DeathFlag = (byte)(dzdata >> 24);
+			Filename = filename;
 		}
 
 		[IniAlwaysInclude]
@@ -2816,7 +2867,7 @@ namespace SplitTools
 					defaultScaleList.Add(new SkyboxScale { Far = new Vertex(1.0f, 1.0f, 1.0f), Near = new Vertex(1.0f, 1.0f, 1.0f), Normal = new Vertex(1.0f, 1.0f, 1.0f) });
 				}
 				return defaultScaleList.ToArray();
-			}	
+			}
 		}
 
 		public static SkyboxScale[] Load(byte[] file, int address, uint imageBase, int count)
@@ -4075,6 +4126,295 @@ namespace SplitTools
 		Z
 	}
 
+	[Serializable]
+	public class SA2ModelTexanimInfo
+	{
+		public SA2ModelTexanimInfo() { }
+
+		public SA2ModelTexanimInfo(byte[] file, int address, uint imageBase, int count)
+		{
+			Type = ByteConverter.ToInt32(file, address);
+			//This would have been an all-purpose variable, but the game never uses
+			//the other types that would alter its usage.
+			int animspeed = ByteConverter.ToInt32(file, address + 4);
+			PositionSpeed = (short)animspeed;
+			RotationSpeed = (short)(animspeed >> 16);
+			SpeedDivider = ByteConverter.ToInt32(file, address + 8);
+			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
+			uint uvptr = ByteConverter.ToUInt32(file, address + 0x10);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				UVEditDataName = "uvdata_" + ptr.ToString("X8");
+				UVEditData = new List<short>(count);
+				for (int i = 0; i < count; i++)
+				{
+					UVEditData.Add(ByteConverter.ToInt16(file, ptr));
+					ptr += sizeof(short);
+				}
+			}
+			Unk2 = ByteConverter.ToInt32(file, address + 0x14);
+			Unk3 = ByteConverter.ToInt32(file, address + 0x18);
+			Unk4 = ByteConverter.ToInt32(file, address + 0x1C);
+			Unk5 = ByteConverter.ToInt32(file, address + 0x20);
+		}
+
+		[IniAlwaysInclude]
+		public int Type { get; set; }
+		[IniAlwaysInclude]
+		public short PositionSpeed { get; set; }
+		[IniAlwaysInclude]
+		public short RotationSpeed { get; set; }
+		[IniAlwaysInclude]
+		public int SpeedDivider { get; set; }
+		[IniAlwaysInclude]
+		public int Unk1 { get; set; }
+		[IniCollection(IniCollectionMode.SingleLine, Format = ", ")]
+		public List<short> UVEditData { get; set; }
+		public string UVEditDataName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk2 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk3 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk4 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk5 { get; set; }
+
+
+		public static int Size { get { return 0x24; } }
+
+		public static SA2ModelTexanimInfo Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimInfo>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct()
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Type);
+			result.Append(", ");
+			result.Append(PositionSpeed);
+			result.Append(", ");
+			result.Append(RotationSpeed);
+			result.Append(", ");
+			result.Append(SpeedDivider);
+			result.Append(", ");
+			result.Append(Unk1);
+			result.Append(", ");
+			result.AppendFormat("(uint8_t)(LengthOfArray({0}) / 2)", UVEditDataName);
+			result.Append(", ");
+			result.Append(Unk2);
+			result.Append(", ");
+			result.Append(Unk3);
+			result.Append(", ");
+			result.Append(Unk4);
+			result.Append(", ");
+			result.Append(Unk5);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimArrayA
+	{
+		public SA2ModelTexanimArrayA() { }
+
+		public SA2ModelTexanimArrayA(byte[] file, int address, uint imageBase, int count)
+		{
+			uint modelptr = ByteConverter.ToUInt32(file, address);
+			if (modelptr != 0)
+			{
+				int ptr = (int)(modelptr - imageBase);
+				Model = "object_" + ptr.ToString("X8");
+			}
+			uint uvptr = ByteConverter.ToUInt32(file, address + 4);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimName = "texdata_" + ptr.ToString("X8");
+			}
+			Unk = ByteConverter.ToInt32(file, address + 8);
+		}
+
+		[IniAlwaysInclude]
+		public string Model { get; set; }
+		public SA2ModelTexanimInfo TexanimData { get; set; }
+		[IniAlwaysInclude]
+		public string TexanimName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk { get; set; }
+		public string CountModule { get; set; }
+
+		public static int Size { get { return 0xC; } }
+
+		public static SA2ModelTexanimArrayA Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimArrayA>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Model);
+			result.Append(", ");
+			if (!string.IsNullOrEmpty(TexanimName))
+
+				result.Append(label);
+			else
+				result.Append("NULL");
+			result.Append(", ");
+			result.Append(Unk);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimArrayB
+	{
+		public SA2ModelTexanimArrayB() { }
+
+		public SA2ModelTexanimArrayB(byte[] file, int address, uint imageBase, int count)
+		{
+			Type = ByteConverter.ToInt32(file, address);
+			uint modelptr = ByteConverter.ToUInt32(file, address + 4);
+			if (modelptr != 0)
+			{
+				int ptr = (int)(modelptr - imageBase);
+				Model = "object_" + ptr.ToString("X8");
+			}
+			uint uvptr = ByteConverter.ToUInt32(file, address + 8);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimName = "texdata_" + ptr.ToString("X8");
+			}
+			Unk1 = ByteConverter.ToInt32(file, address + 0xC);
+			Unk2 = ByteConverter.ToInt32(file, address + 0x10);
+		}
+
+		[IniAlwaysInclude]
+		public int Type { get; set; }
+		[IniAlwaysInclude]
+		public string Model { get; set; }
+		public SA2ModelTexanimInfo TexanimData { get; set; }
+		[IniAlwaysInclude]
+		public string TexanimName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk1 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk2 { get; set; }
+		public string CountModule { get; set; }
+
+		public static int Size { get { return 0x14; } }
+
+		public static SA2ModelTexanimArrayB Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimArrayB>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Type);
+			result.Append(", ");
+			result.Append(Model);
+			result.Append(", ");
+			if (!string.IsNullOrEmpty(TexanimName))
+
+				result.Append(label);
+			else
+				result.Append("NULL");
+			result.Append(", ");
+			result.Append(Unk1);
+			result.Append(", ");
+			result.Append(Unk2);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
+	[Serializable]
+	public class SA2ModelTexanimArrayC
+	{
+		public SA2ModelTexanimArrayC() { }
+
+		public SA2ModelTexanimArrayC(byte[] file, int address, uint imageBase, int count)
+		{
+			uint modelptr = ByteConverter.ToUInt32(file, address);
+			if (modelptr != 0)
+			{
+				int ptr = (int)(modelptr - imageBase);
+				Model = "object_" + ptr.ToString("X8");
+			}
+			uint uvptr = ByteConverter.ToUInt32(file, address + 4);
+			if (uvptr != 0)
+			{
+				int ptr = (int)(uvptr - imageBase);
+				TexanimData = new SA2ModelTexanimInfo(file, ptr, imageBase, count);
+				TexanimName = "texdata_" + ptr.ToString("X8");
+			}
+			Unk1 = ByteConverter.ToInt32(file, address + 8);
+			Unk2 = ByteConverter.ToInt32(file, address + 0xC);
+		}
+
+		[IniAlwaysInclude]
+		public string Model { get; set; }
+		public SA2ModelTexanimInfo TexanimData { get; set; }
+		[IniAlwaysInclude]
+		public string TexanimName { get; set; }
+		[IniAlwaysInclude]
+		public int Unk1 { get; set; }
+		[IniAlwaysInclude]
+		public int Unk2 { get; set; }
+		public string CountModule { get; set; }
+
+		public static int Size { get { return 0x10; } }
+
+		public static SA2ModelTexanimArrayC Load(string filename)
+		{
+			return IniSerializer.Deserialize<SA2ModelTexanimArrayC>(filename);
+		}
+		public void Save(string filename)
+		{
+			IniSerializer.Serialize(this, filename);
+		}
+
+		public string ToStruct(string label)
+		{
+			StringBuilder result = new StringBuilder("{ ");
+			result.Append(Model);
+			result.Append(", ");
+			if (!string.IsNullOrEmpty(TexanimName))
+
+				result.Append(label);
+			else
+				result.Append("NULL");
+			result.Append(", ");
+			result.Append(Unk1);
+			result.Append(", ");
+			result.Append(Unk2);
+			result.Append(" }");
+			return result.ToString();
+		}
+	}
+
 	public static class BlackMarketItemAttributesList
 	{
 		public static Dictionary<ChaoItemCategory, List<BlackMarketItemAttributes>> Load(string filename)
@@ -4275,14 +4615,14 @@ namespace SplitTools
 			sb.Append(TextColorA);
 			sb.AppendFormat(", ");
 			sb.Append(TextColorR);
-			sb.Append(", ");
+			sb.AppendFormat(", ");
 			sb.Append(TextColorG);
 			sb.AppendFormat(", ");
 			sb.Append(TextColorB);
 			sb.Append(", ");
 			if (!string.IsNullOrEmpty(Text))
 			{
-				sb.AppendFormat(Text ?? "nullptr");
+				sb.AppendFormat(Text.ToC() ?? "nullptr");
 			}
 			else
 				sb.Append("NULL");
@@ -4736,7 +5076,7 @@ namespace SplitTools
 	[Serializable]
 	public class ChaoItemStatsEntry
 	{
-		public ChaoItemStatsEntry() {}
+		public ChaoItemStatsEntry() { }
 		public ChaoItemStatsEntry(byte[] file, int address)
 		{
 			Mood = ByteConverter.ToInt16(file, address);
@@ -4873,7 +5213,7 @@ namespace SplitTools
 			return sb.ToString();
 		}
 	}
-	
+
 	public class CharaObjectData
 	{
 		public string MainModel { get; set; }
@@ -5188,15 +5528,10 @@ namespace SplitTools
 		public string[][] Text { get; private set; }
 		private SingleString() { Text = new string[1][]; }
 
-		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang): this()
+		public SingleString(byte[] file, int address, uint imageBase, int count, Languages lang) : this()
 		{
 			Text[0] = StringArray.Load(file, address, imageBase, count, lang);
 			Language = lang;
-		}
-
-		public void Save(string directory)
-		{
-			Save(directory, out string[] hashes);
 		}
 
 		public void Save(string directory, out string[] hashes)
@@ -5210,10 +5545,38 @@ namespace SplitTools
 	}
 
 	[Serializable]
+	public class FixedStringArray
+	{
+		[IniIgnore]
+		public string[] Text { get; private set; }
+		
+		private FixedStringArray() { Text = new string[1]; }
+
+		public FixedStringArray(byte[] file, int address, uint imageBase, int itemLength, int count, Languages lang) : this()
+		{
+			List<string> text = new();
+			for (int i = 0; i < count; i++)
+			{ 
+				text.Add(file.GetCString((int)(address + itemLength * i), HelperFunctions.GetEncoding(lang)));
+			}
+			Text = text.ToArray();
+		}
+
+		public void Save(string outputPath)
+		{
+			Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+			string[] result = (string[])Text.Clone();
+			for (int i = 0; i < result.Length; i++)
+				result[i] = result[i].EscapeNewlines();
+			File.WriteAllLines(outputPath, result);
+		}
+	}
+
+	[Serializable]
 	public class MultilingualString
 	{
 		public string[][] Text { get; private set; }
-		
+
 		private MultilingualString() { Text = new string[5][]; }
 
 		public MultilingualString(byte[] file, int address, uint imageBase, int count, bool doublePointer = false) : this()
@@ -5224,7 +5587,7 @@ namespace SplitTools
 				for (int c = 0; c < count; c++)
 				{
 					if (doublePointer)
-						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4*c, imageBase, 1, (Languages)i)[0];
+						Text[i][c] = StringArray.Load(file, file.GetPointer(address, imageBase) + 4 * c, imageBase, 1, (Languages)i)[0];
 					else
 						Text[i][c] = StringArray.Load(file, address, imageBase, 1, (Languages)i)[0];
 				}
@@ -5247,59 +5610,6 @@ namespace SplitTools
 				Text[i].Save(textname);
 				hashes[i] = HelperFunctions.FileHash(textname);
 			}
-		}
-	}
-
-	public class NinjaCamera
-	{
-		public Vertex Position { get; set; } // Camera position
-		public Vertex Vector { get; set; } // Camera vector in unit direction[Local Z axis]
-		//[TypeConverter(typeof(UInt32HexConverter))]
-		public int Roll { get; set; } // Camera roll
-		//[TypeConverter(typeof(UInt32HexConverter))]
-		public int Angle { get; set; } // Camera angle
-		public float NearClip { get; set; } // Near clip 
-		public float FarClip { get; set; } // Far clip
-		public Vertex LocalX { get; set; } // Camera local X axis
-		public Vertex LocalY { get; set; } //Camera local Y axis
-
-		public NinjaCamera(byte[] file, int address)
-		{
-			Position = new Vertex(file, address);
-			Vector = new Vertex(file, address + 12);
-			Roll = ByteConverter.ToInt32(file, address + 24);
-			Angle = ByteConverter.ToInt32(file, address + 28);
-			NearClip = ByteConverter.ToSingle(file, address + 32);
-			FarClip = ByteConverter.ToSingle(file, address + 36);
-			LocalX = new Vertex(file, address + 40);
-			LocalY = new Vertex(file, address + 52);
-		}
-
-		public void Save(string fileOutputPath)
-		{
-			IniSerializer.Serialize(this, fileOutputPath);
-		}
-		public static NinjaCamera Load(string filename)
-		{
-			return IniSerializer.Deserialize<NinjaCamera>(filename);
-		}
-		public NinjaCamera(){ }
-
-		public static int Size { get { return 0x40; } }
-
-		public byte[] GetBytes()
-		{
-			List<byte> result = new List<byte>(Size);
-			result.AddRange(Position.GetBytes());
-			result.AddRange(Vector.GetBytes());
-			result.AddRange(ByteConverter.GetBytes(Roll));
-			result.AddRange(ByteConverter.GetBytes(Angle));
-			result.AddRange(ByteConverter.GetBytes(NearClip));
-			result.AddRange(ByteConverter.GetBytes(FarClip));
-			result.AddRange(LocalX.GetBytes());
-			result.AddRange(LocalY.GetBytes());
-			result.Align(0x40);
-			return result.ToArray();
 		}
 	}
 
@@ -5391,7 +5701,7 @@ namespace SplitTools
 			IniSerializer.Serialize(this, fileOutputPath);
 		}
 
-		public FogDataArray() 
+		public FogDataArray()
 		{
 			High = new FogData();
 			Medium = new FogData();
@@ -5677,7 +5987,7 @@ namespace SplitTools
 			DriftHandling = ByteConverter.ToSingle(file, address + 24);
 			DriftSpeedThreshold = ByteConverter.ToSingle(file, address + 28);
 			Unk2 = ByteConverter.ToSingle(file, address + 32);
-			TopSpeed = ByteConverter.ToSingle(file, address + 36);	
+			TopSpeed = ByteConverter.ToSingle(file, address + 36);
 		}
 
 		public static KartPhysics Load(string filename) => IniSerializer.Deserialize<KartPhysics>(filename);
@@ -5703,6 +6013,149 @@ namespace SplitTools
 
 		public KartPhysics()
 		{ }
+	}
+
+	public class MissionTutorialPage
+	{
+		public int NumLines;
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public string[] Lines;
+
+		public MissionTutorialPage(byte[] file, int address, uint imageBase, Languages language)
+		{
+			NumLines = ByteConverter.ToInt32(file, address);
+			int StringsPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			List<string> linesList = new();
+			for (int i = 0; i < NumLines; i++)
+			{
+				int LinePointer = ByteConverter.ToInt32(file, StringsPointer) - (int)imageBase;
+				linesList.Add(file.GetCString(LinePointer, HelperFunctions.GetEncoding(language)));
+				StringsPointer += 4;
+			}
+			Lines = linesList.ToArray();
+		}
+
+		public MissionTutorialPage()
+		{ }
+	}
+
+	public class MissionTutorialMessage
+	{
+		public int NumPages;
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public MissionTutorialPage[] Pages;
+
+		public MissionTutorialMessage(byte[] file, int address, uint imageBase, Languages language)
+		{
+			NumPages = ByteConverter.ToInt32(file, address);
+			int PagesPointer = ByteConverter.ToInt32(file, address + 4) - (int)imageBase;
+			List<MissionTutorialPage> pagesList = new();
+			for (int i = 0; i < NumPages; i++)
+			{
+				pagesList.Add(new MissionTutorialPage(file, PagesPointer, imageBase, language));
+				PagesPointer += 8;
+			}
+			Pages = pagesList.ToArray();
+		}
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath); 
+		
+		public MissionTutorialMessage()
+		{ }
+	}
+
+	public class MissionDescriptionList
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public string[] Descriptions;
+
+		public MissionDescriptionList(byte[] file, int address, Languages language)
+		{
+			int maxlength = language == Languages.Japanese ? 104 : 208;
+			List<string> strings = new();
+			for (int i = 0; i < 70; i++)
+			{
+				string desc = file.GetCString(address, HelperFunctions.GetEncoding(language));
+				if (desc.Length > maxlength)
+					desc = desc.Substring(0, maxlength);
+				strings.Add(desc);
+				address += 208;
+			}
+			Descriptions = strings.ToArray();
+		}
+
+		public MissionDescriptionList() { }
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
+	}
+
+	public class TikalHintMultiLanguage
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public NPCTextLine[][] Lines;
+
+		public TikalHintMultiLanguage(byte[] file, int address, uint imageBase, int length, bool doublePointer)
+		{
+			int startaddr = address;
+			List<NPCTextLine[]> list = new();
+			for (int l = 0; l < 5; l++)
+			{
+				List<NPCTextLine> lines = new();
+				int pointer = ByteConverter.ToInt32(file, startaddr);
+				for (int i = 0; i < length; i++)
+				{
+					if (doublePointer)
+					{
+						pointer = file.GetPointer(ByteConverter.ToInt32(file, startaddr) + i * 4 - (int)imageBase, imageBase) + (int)imageBase;
+					}
+					else
+						pointer += i * 8;
+					lines.Add(new NPCTextLine(file, pointer - (int)imageBase, imageBase, (Languages)l, true));
+				}
+				list.Add(lines.ToArray());
+				startaddr += 4;
+			}
+			Lines = list.ToArray();
+		}
+
+		public TikalHintMultiLanguage() { }
+
+		public void Save(string fileOutputPath, out string[] hashes)
+		{
+			hashes = new string[5];
+			if (!Directory.Exists(fileOutputPath))
+				Directory.CreateDirectory(fileOutputPath);
+			for (int id = 0; id < Lines.Length; id++)
+			{
+				for (int lang = 0; lang < 5; lang++)
+				{
+					string textname = Path.Combine(fileOutputPath, ((Languages)lang).ToString() + ".ini");
+					IniSerializer.Serialize(Lines[lang], textname);
+					hashes[lang] = HelperFunctions.FileHash(textname);
+				}
+			}
+		}
+	}
+
+	public class TikalHintSingleLanguage
+	{
+		[IniCollection(IniCollectionMode.IndexOnly)]
+		public NPCTextLine[] Lines;
+
+		public TikalHintSingleLanguage(byte[] file, int address, uint imageBase, int length, Languages lang)
+		{
+			List<NPCTextLine> lines = new();
+			for (int i = 0; i < length; i++)
+			{
+				address += i * 8;
+				lines.Add(new NPCTextLine(file, address, imageBase, lang, true));
+			}
+			Lines = lines.ToArray();
+		}
+
+		public TikalHintSingleLanguage() { }
+
+		public void Save(string fileOutputPath) => IniSerializer.Serialize(this, fileOutputPath);
 	}
 
 	/// <summary>

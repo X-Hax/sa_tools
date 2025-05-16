@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SAModel.GC
@@ -46,17 +47,17 @@ namespace SAModel.GC
 	/// A collection of polygons
 	/// </summary>
 	[Serializable]
-	public class GCPrimitive
+	public class GCPrimitive : ICloneable
 	{
 		/// <summary>
 		/// The way in which triangles are being stored
 		/// </summary>
-		public GCPrimitiveType primitiveType;
+		public GCPrimitiveType PrimitiveType;
 
 		/// <summary>
 		/// The stored polygons
 		/// </summary>
-		public List<Loop> loops { get; set; }
+		public List<Loop> Loops { get; set; } = [];
 
 		/// <summary>
 		/// Create a new empty Primitive
@@ -64,111 +65,103 @@ namespace SAModel.GC
 		/// <param name="type">The type of primitive</param>
 		public GCPrimitive(GCPrimitiveType type)
 		{
-			primitiveType = type;
-			loops = new List<Loop>();
+			PrimitiveType = type;
 		}
 
-			/// <summary>
+		/// <summary>
 		/// Read a primitive object from a file
 		/// </summary>
 		/// <param name="file">The files contents as a byte array</param>
 		/// <param name="address">The starting address of the primitive</param>
 		/// <param name="indexFlags">How the indices of the loops are structured</param>
+		/// <param name="end"></param>
 		public GCPrimitive(byte[] file, int address, GCIndexAttributeFlags indexFlags, out int end)
 		{
-			primitiveType = (GCPrimitiveType)file[address];
+			PrimitiveType = (GCPrimitiveType)file[address];
 
-			bool wasBigEndian = ByteConverter.BigEndian;
+			var wasBigEndian = ByteConverter.BigEndian;
 			ByteConverter.BigEndian = true;
 
-			ushort vtxCount = ByteConverter.ToUInt16(file, address + 1);
+			var vtxCount = ByteConverter.ToUInt16(file, address + 1);
 
-			// checking the flags
-			bool hasFlag(GCIndexAttributeFlags flag)
-			{
-				return indexFlags.HasFlag(flag);
-			}
+			// Position always exists
+			var hasColor = indexFlags.HasFlag(GCIndexAttributeFlags.HasColor);
+			var hasNormal = indexFlags.HasFlag(GCIndexAttributeFlags.HasNormal);
+			var hasUv = indexFlags.HasFlag(GCIndexAttributeFlags.HasUV);
 
-			// position always exists
-			bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
-			bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
-			bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
+			// Whether any of the indices use 16 bits instead of 8
+			var pos16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex);
+			var col16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex);
+			var nrm16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex);
+			var uv16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.UV16BitIndex);
 
-			//whether any of the indices use 16 bits instead of 8
-			bool pos16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
-			bool col16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
-			bool nrm16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
-			bool uv16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
-
-			int tmpaddr = address + 3;
-
-			loops = new List<Loop>();
+			var tempAddr = address + 3;
 
 			for (ushort i = 0; i < vtxCount; i++)
 			{
-				Loop l = new Loop();
+				var l = new Loop();
 
-				// reading position, which should always exist
-				if(pos16bit)
+				// Reading position, which should always exist
+				if (pos16Bit)
 				{
-					l.PositionIndex = ByteConverter.ToUInt16(file, tmpaddr);
-					tmpaddr += 2;
+					l.PositionIndex = ByteConverter.ToUInt16(file, tempAddr);
+					tempAddr += 2;
 				}
 				else
 				{
-					l.PositionIndex = file[tmpaddr];
-					tmpaddr++;
+					l.PositionIndex = file[tempAddr];
+					tempAddr++;
 				}
 
-				// reading normals
-				if(has_normal)
+				// Reading normals
+				if (hasNormal)
 				{
-					if (nrm16bit)
+					if (nrm16Bit)
 					{
-						l.NormalIndex = ByteConverter.ToUInt16(file, tmpaddr);
-						tmpaddr += 2;
+						l.NormalIndex = ByteConverter.ToUInt16(file, tempAddr);
+						tempAddr += 2;
 					}
 					else
 					{
-						l.NormalIndex = file[tmpaddr];
-						tmpaddr++;
+						l.NormalIndex = file[tempAddr];
+						tempAddr++;
 					}
 				}
 
-				// reading colors
-				if (has_color)
+				// Reading colors
+				if (hasColor)
 				{
-					if (col16bit)
+					if (col16Bit)
 					{
-						l.Color0Index = ByteConverter.ToUInt16(file, tmpaddr);
-						tmpaddr += 2;
+						l.Color0Index = ByteConverter.ToUInt16(file, tempAddr);
+						tempAddr += 2;
 					}
 					else
 					{
-						l.Color0Index = file[tmpaddr];
-						tmpaddr++;
+						l.Color0Index = file[tempAddr];
+						tempAddr++;
 					}
 				}
 
-				// reading uvs
-				if (has_uv)
+				// Reading uvs
+				if (hasUv)
 				{
-					if (uv16bit)
+					if (uv16Bit)
 					{
-						l.UV0Index = ByteConverter.ToUInt16(file, tmpaddr);
-						tmpaddr += 2;
+						l.UV0Index = ByteConverter.ToUInt16(file, tempAddr);
+						tempAddr += 2;
 					}
 					else
 					{
-						l.UV0Index = file[tmpaddr];
-						tmpaddr++;
+						l.UV0Index = file[tempAddr];
+						tempAddr++;
 					}
 				}
 
-				loops.Add(l);
+				Loops.Add(l);
 			}
 
-			end = tmpaddr;
+			end = tempAddr;
 
 			ByteConverter.BigEndian = wasBigEndian;
 		}
@@ -176,59 +169,49 @@ namespace SAModel.GC
 		/// <summary>
 		/// Write the contents
 		/// </summary>
-		/// <param name="writer">The output stream</param>
 		/// <param name="indexFlags">How the indices of the loops are structured</param>
-
 		public byte[] GetBytes(GCIndexAttributeFlags indexFlags)
 		{
-			List<byte> result = new List<byte>();
-			result.Add((byte)primitiveType);
+			List<byte> result = [(byte)PrimitiveType];
 
-			byte[] big_endian_count = BitConverter.GetBytes((ushort)loops.Count);
-			// writing count as big endian
-			result.Add(big_endian_count[1]);
-			result.Add(big_endian_count[0]);
-
-			// checking the flags
-			bool hasFlag(GCIndexAttributeFlags flag)
-			{
-				return indexFlags.HasFlag(flag);
-			}
-
+			var bigEndianCount = BitConverter.GetBytes((ushort)Loops.Count);
+			// Writing count as big endian
+			result.Add(bigEndianCount[1]);
+			result.Add(bigEndianCount[0]);
+			
 			// position always exists
-			bool has_color = hasFlag(GCIndexAttributeFlags.HasColor);
-			bool has_normal = hasFlag(GCIndexAttributeFlags.HasNormal);
-			bool has_uv = hasFlag(GCIndexAttributeFlags.HasUV);
+			var hasColor = indexFlags.HasFlag(GCIndexAttributeFlags.HasColor);
+			var hasNormal = indexFlags.HasFlag(GCIndexAttributeFlags.HasNormal);
+			var hasUv = indexFlags.HasFlag(GCIndexAttributeFlags.HasUV);
 
-			bool is_position_16bit = hasFlag(GCIndexAttributeFlags.Position16BitIndex);
-			bool is_color_16bit = hasFlag(GCIndexAttributeFlags.Color16BitIndex);
-			bool is_normal_16bit = hasFlag(GCIndexAttributeFlags.Normal16BitIndex);
-			bool is_uv_16bit = hasFlag(GCIndexAttributeFlags.UV16BitIndex);
+			var isPosition16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.Position16BitIndex);
+			var isColor16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.Color16BitIndex);
+			var isNormal16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.Normal16BitIndex);
+			var isUv16Bit = indexFlags.HasFlag(GCIndexAttributeFlags.UV16BitIndex);
 
-			foreach (Loop v in loops)
+			foreach (var v in Loops)
 			{
 				// Position should always exist
-
-				if (is_position_16bit)
+				if (isPosition16Bit)
 				{
-					byte[] big_endian_pos = BitConverter.GetBytes(v.PositionIndex);
-					// writing count as big endian
-					result.Add(big_endian_pos[1]);
-					result.Add(big_endian_pos[0]);
+					var bigEndianPos = BitConverter.GetBytes(v.PositionIndex);
+					// Writing count as big endian
+					result.Add(bigEndianPos[1]);
+					result.Add(bigEndianPos[0]);
 				}
 				else
 				{
 					result.Add((byte)v.PositionIndex);
 				}
 
-				if (has_normal)
+				if (hasNormal)
 				{
-					if (is_normal_16bit)
+					if (isNormal16Bit)
 					{
-						byte[] big_endian_nrm = BitConverter.GetBytes(v.NormalIndex);
-						// writing count as big endian
-						result.Add(big_endian_nrm[1]);
-						result.Add(big_endian_nrm[0]);
+						var bigEndianNrm = BitConverter.GetBytes(v.NormalIndex);
+						// Writing count as big endian
+						result.Add(bigEndianNrm[1]);
+						result.Add(bigEndianNrm[0]);
 					}
 					else
 					{
@@ -236,14 +219,14 @@ namespace SAModel.GC
 					}
 				}
 
-				if (has_color)
+				if (hasColor)
 				{
-					if (is_color_16bit)
+					if (isColor16Bit)
 					{
-						byte[] big_endian_col = BitConverter.GetBytes(v.Color0Index);
-						// writing count as big endian
-						result.Add(big_endian_col[1]);
-						result.Add(big_endian_col[0]);
+						var bigEndianCol = BitConverter.GetBytes(v.Color0Index);
+						// Writing count as big endian
+						result.Add(bigEndianCol[1]);
+						result.Add(bigEndianCol[0]);
 					}
 					else
 					{
@@ -251,14 +234,14 @@ namespace SAModel.GC
 					}
 				}
 
-				if (has_uv)
+				if (hasUv)
 				{
-					if (is_uv_16bit)
+					if (isUv16Bit)
 					{
-						byte[] big_endian_uv = BitConverter.GetBytes(v.UV0Index);
-						// writing count as big endian
-						result.Add(big_endian_uv[1]);
-						result.Add(big_endian_uv[0]);
+						var bigEndianUv = BitConverter.GetBytes(v.UV0Index);
+						// Writing count as big endian
+						result.Add(bigEndianUv[1]);
+						result.Add(bigEndianUv[0]);
 					}
 					else
 					{
@@ -266,55 +249,59 @@ namespace SAModel.GC
 					}
 				}
 			}
+			
 			return result.ToArray();
 		}
 
 		public string LoopStruct()
 		{
-			List<string> s = new List<string>(loops.Count);
-			for (int i = 0; i < loops.Count; i++)
-				s.Add(loops[i].ToString());
+			var s = new List<string>(Loops.Count);
+			s.AddRange(Loops.Select(loop => loop.ToString()));
+
 			return string.Join(", ", s.ToArray());
 		}
+		
 		public virtual string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append((byte)primitiveType);
+			var result = new StringBuilder("{ ");
+			
+			result.Append((byte)PrimitiveType);
 			result.Append(", ");
-			result.Append((ushort)loops.Count);
+			result.Append((ushort)Loops.Count);
 			result.Append(", { ");
 			result.Append(LoopStruct());
 			result.Append(" }");
 			result.Append(" }");
+			
 			return result.ToString();
 		}
+
+		object ICloneable.Clone() => Clone();
+
+		public GCPrimitive Clone()
+		{
+			GCPrimitive result = (GCPrimitive)MemberwiseClone();
+			return result;
+		}
+
 		public void ToNJA(TextWriter writer)
 		{
-			string primtype = null;
-			switch (primitiveType)
+			var primtype = PrimitiveType switch
 			{
-				case GCPrimitiveType.Triangles:
-					primtype = "GJD_PRIM_TRIANGLE";
-					break;
-				case GCPrimitiveType.TriangleStrip:
-					primtype = "GJD_PRIM_TRISTRIP";
-					break;
-				case GCPrimitiveType.TriangleFan:
-					primtype = "GJD_PRIM_TRIFAN";
-					break;
-				case GCPrimitiveType.Lines:
-					primtype = "GJD_PRIM_LINE";
-					break;
-				case GCPrimitiveType.LineStrip:
-					primtype = "GJD_PRIM_LINESTRIP";
-					break;
-				case GCPrimitiveType.Points:
-					primtype = "GJD_PRIM_POINT";
-					break;
+				GCPrimitiveType.Triangles => "GJD_PRIM_TRIANGLE",
+				GCPrimitiveType.TriangleStrip => "GJD_PRIM_TRISTRIP",
+				GCPrimitiveType.TriangleFan => "GJD_PRIM_TRIFAN",
+				GCPrimitiveType.Lines => "GJD_PRIM_LINE",
+				GCPrimitiveType.LineStrip => "GJD_PRIM_LINESTRIP",
+				GCPrimitiveType.Points => "GJD_PRIM_POINT",
+				_ => null
+			};
+			
+			writer.WriteLine($"\t{primtype}({Loops.Count}),");
+			foreach (var loop in Loops)
+			{
+				writer.WriteLine($"\t{loop},");
 			}
-			writer.WriteLine($"\t{primtype}(" + loops.Count + "),");
-			for (int i = 0; i < loops.Count; i++)
-				writer.WriteLine("\t" + loops[i] + ",");
 		}
 
 		/// <summary>
@@ -323,64 +310,74 @@ namespace SAModel.GC
 		/// <returns></returns>
 		public List<Loop> ToTriangles()
 		{
-			List<Loop> sorted_vertices = new List<Loop>();
-			int degTriangles = 0;
+			var sortedVertices = new List<Loop>();
+			var degTriangles = 0;
 
-			switch (primitiveType)
+			switch (PrimitiveType)
 			{
 				case GCPrimitiveType.Triangles:
-					return loops;
+					return Loops;
 				case GCPrimitiveType.TriangleStrip:
-					bool isEven = false;
-					for (int v = 2; v < loops.Count; v++)
+					var isEven = false;
+					for (var v = 2; v < Loops.Count; v++)
 					{
-						Loop[] newTri = new Loop[]
+						var newTri = new[]
 						{
-							loops[v - 2],
-							isEven ? loops[v] : loops[v - 1],
-							isEven ? loops[v - 1] : loops[v]
+							Loops[v - 2],
+							isEven ? Loops[v] : Loops[v - 1],
+							isEven ? Loops[v - 1] : Loops[v]
 						};
 						isEven = !isEven;
 
 						// Check against degenerate triangles (a triangle which shares indexes)
 						if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
-							sorted_vertices.AddRange(newTri);
-						else degTriangles++;
+						{
+							sortedVertices.AddRange(newTri);
+						}
+						else
+						{
+							degTriangles++;
+						}
 					}
 					break;
 				case GCPrimitiveType.TriangleFan:
-					for (int v = 1; v < loops.Count - 1; v++)
+					for (var v = 1; v < Loops.Count - 1; v++)
 					{
 						// Triangle is always, v, v+1, and index[0]?
-						Loop[] newTri = new Loop[]
+						var newTri = new[]
 						{
-							loops[v],
-							loops[v + 1],
-							loops[0],
+							Loops[v],
+							Loops[v + 1],
+							Loops[0],
 						};
 
 						// Check against degenerate triangles (a triangle which shares indexes)
 						if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
-							sorted_vertices.AddRange(newTri);
-						else degTriangles++;
+						{
+							sortedVertices.AddRange(newTri);
+						}
+						else
+						{
+							degTriangles++;
+						}
 					}
 					break;
 				default:
-					Console.WriteLine($"Attempted to triangulate primitive type { primitiveType }");
+					Console.WriteLine($"Attempted to triangulate primitive type { PrimitiveType }");
 					break;
 			}
 
 			if (degTriangles > 0)
 			{
-				Console.WriteLine("Degenerate triangles skipped: " + degTriangles);
+				Console.WriteLine($"Degenerate triangles skipped: {degTriangles}");
 			}
 
-			return sorted_vertices;
+			return sortedVertices;
 		}
 
 		public override string ToString()
-			{
-				return $"{primitiveType}: {loops.Count}";
-			}
+		{
+			return $"{PrimitiveType}: {Loops.Count}";
 		}
 	}
+}

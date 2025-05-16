@@ -37,6 +37,7 @@ namespace SA2EventViewer
 							if (scenenum == @event.Scenes.Count)
 								scenenum = 1;
 							nextframe = animframe = 0;
+							BuildEventEntityList();
 						}
 					}
 					if (animframe >= 0 && Playing)

@@ -249,15 +249,21 @@ namespace SAModel.SAEditorCommon
 			public bool SACompatiblePalettes { get; set; }
 			[DefaultValue(true)]
 			public bool EnableFiltering { get; set; }
+			[DefaultValue(true)]
+			public bool UseDDSforPAK { get; set; }
 			[DefaultValue(false)]
-			public bool UsePNGforPAK { get; set; }
+			public bool UseDDSforTexPack { get; set; }
+			[DefaultValue(false)]
+			public bool UseDDSforPVMX { get; set; }
 
 			public Settings_TextureEditor()
 			{
 				HighQualityGVM = false;
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
-				UsePNGforPAK = false;
+				UseDDSforPAK = true;
+				UseDDSforTexPack = false;
+				UseDDSforPVMX = false;
 			}
 
 			public static Settings_TextureEditor Load()
@@ -274,15 +280,15 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(false)]
 			public bool BigEndian { get; set; }
-			[DefaultValue(false)]
-			public bool UseSJIS { get; set; }
+			[DefaultValue(0)]
+			public int Encoding { get; set; }
 			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 			public List<string> RecentFiles { get; set; } = new List<string>();
 
 			public Settings_SA2CutsceneTextEditor()
 			{
 				BigEndian = false;
-				UseSJIS = false;
+				Encoding = 0;
 				RecentFiles = new List<string>();
 			}
 
@@ -300,15 +306,15 @@ namespace SAModel.SAEditorCommon
 		{
 			[DefaultValue(false)]
 			public bool BigEndian { get; set; }
-			[DefaultValue(false)]
-			public bool UseSJIS { get; set; }
+			[DefaultValue(0)]
+			public int Encoding { get; set; }
 			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
 			public List<string> RecentFiles { get; set; } = new List<string>();
 
 			public Settings_SA2MessageFileEditor()
 			{
 				BigEndian = false;
-				UseSJIS = false;
+				Encoding = 0;
 				RecentFiles = new List<string>();
 			}
 

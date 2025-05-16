@@ -94,6 +94,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 
 		[Category("Common")]
+		[Description("The label of the NJS_OBJECT of the current item.")]
 		public string Name
 		{
 			get
@@ -108,6 +109,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 		[ReadOnly(true)]
 		[Category("Common"), ParenthesizePropertyName(true)]
+		[Description("This item's index in the landtable's model (COL) list.")]
+
 		public int Index
 		{
 			get
@@ -121,6 +124,12 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[Category("Common")]
 		public override Rotation Rotation { get { return COL.Model.Rotation; } set { COL.Model.Rotation = value; GetHandleMatrix(); } }
 		[Category("Common")]
+		[DisplayName("Scale (Unused)")]
+		[Description("This field is unused. SALVL will render the model with scaling, but the game will still render it as if the scale was 1,1,1. This field is sometimes present in SA1 Autodemo levels.")]
+		public Vertex Scale { get { return COL.Model.Scale; } set { COL.Model.Scale = value; GetHandleMatrix(); } }
+		[Category("Common")]
+		[DisplayName("Bounds")]
+		[Description("Stores the coordinates and radius of a sphere used to determine whether the item should be rendered. This field needs to be recalculated when the model is edited.")]
 		public override BoundingSphere Bounds { get { return COL.Bounds; } }
 
 		public override HitResult CheckHit(Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View)
@@ -373,6 +382,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		{
 			position = Position;
 			rotation = Rotation;
+			scale = Scale;
 			base.GetHandleMatrix();
 		}
 

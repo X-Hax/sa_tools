@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<RootNamespace>SAModel.SALVL</RootNamespace>
 		<UseWindowsForms>true</UseWindowsForms>
@@ -10,7 +10,7 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<ApplicationIcon>icon_dxLvl2.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
@@ -28,7 +28,7 @@
 		<Content Include="icon_dxLvl2.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Properties\Resources.Designer.cs">

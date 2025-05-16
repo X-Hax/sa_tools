@@ -18,7 +18,10 @@ namespace SADXTweaker2
 			set { NPCs[level.SelectedIndex].Value[language.SelectedIndex] = value; }
 		}
 		NPCText CurrentNPC { get { return CurrentList[npcID.SelectedIndex]; } }
-		NPCTextGroup CurrentGroup { get { return CurrentNPC.Groups[groupNum.SelectedIndex]; } }
+		NPCTextGroup CurrentGroup 
+		{ 
+			get  { return CurrentNPC.Groups[groupNum.SelectedIndex]; } 
+		}
 
 		public NPCMessageEditor()
 		{
@@ -30,12 +33,12 @@ namespace SADXTweaker2
 			level.BeginUpdate();
 			foreach (KeyValuePair<string, SplitTools.FileInfo> item in Program.IniData.SelectMany(a => a.Files).Where(b => b.Value.Type.Equals("npctext", StringComparison.OrdinalIgnoreCase)))
 			{
-				string path = Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename);
+				string path = Path.GetFullPath(Path.Combine(Program.project.GameInfo.ProjectFolder, item.Value.Filename));
 				NPCs.Add(new KeyValuePair<string, NPCText[][]>(item.Value.Filename, NPCTextList.Load(path, item.Value.Length)));
 				level.Items.Add(item.Key);
 			}
 			level.EndUpdate();
-            voiceNum.Directory = Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, "sounddata", "voice_us", "wma");
+            voiceNum.Directory = Path.GetFullPath(Path.Combine(SAModel.SAEditorCommon.ProjectManagement.ProjectFunctions.GetGamePath(Program.project.GameInfo.GameName), Program.project.GameInfo.GameDataFolder, "sounddata", "voice_us", "wma"));
 			language.SelectedIndex = 1;
 			level.SelectedIndex = 0;
 		}
@@ -49,15 +52,23 @@ namespace SADXTweaker2
 					break;
 				case DialogResult.Yes:
 					foreach (KeyValuePair<string, NPCText[][]> item in NPCs)
-						item.Value.Save(item.Key);
+						item.Value.Save(Path.GetFullPath(Path.Combine(Program.project.GameInfo.ProjectFolder, item.Key)));
 					break;
 			}
 		}
 
 		private void level_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (level.SelectedIndex == -1) return;
+			if (level.SelectedIndex == -1)
+			{
+				return;
+			}
+		
+			lineNum.Items.Clear();
+			lineNum.SelectedIndex = -1;
 			npcID.Items.Clear();
+
+
 			if (CurrentList.Length > 0)
 			{
 				npcID.Items.AddRange(Array.ConvertAll(Enumerable.Range(1, CurrentList.Length).ToArray(), (a) => (object)a));

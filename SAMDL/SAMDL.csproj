@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<RootNamespace>SAModel.SAMDL</RootNamespace>
 		<UseWindowsForms>true</UseWindowsForms>
@@ -10,7 +10,8 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<ApplicationIcon>ico_samdl.ico</ApplicationIcon>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 	  <DefineConstants>TRACE</DefineConstants>

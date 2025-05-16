@@ -320,6 +320,23 @@ namespace SAModel.SAEditorCommon.DataTypes
 
 			return bytes.ToArray();
 		}
+
+		public static void Save(List<CAMItem> items, string filename, bool bigendian = false) => System.IO.File.WriteAllBytes(filename, Save(items, bigendian));
+
+		public static byte[] Save(List<CAMItem> items, bool bigendian = false)
+		{
+			List<byte> file = new(items.Count * 0x40 + 0x40);
+			bool bigendianbk = ByteConverter.BigEndian;
+			ByteConverter.BigEndian = bigendian;
+			file.AddRange(ByteConverter.GetBytes(items.Count));
+			file.Align(0x40);
+
+			foreach (CAMItem item in items)
+				file.AddRange(item.GetBytes());
+			ByteConverter.BigEndian = bigendianbk;
+			return file.ToArray();
+		}
+
 		#endregion
 
 		#region Inheretance

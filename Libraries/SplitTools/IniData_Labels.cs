@@ -91,7 +91,7 @@ namespace SplitTools
 			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
 			using TextReader tr = File.OpenText(filename);
 			using JsonTextReader jtr = new JsonTextReader(tr);
-			List <LabelOBJECT> result = js.Deserialize<List<LabelOBJECT>>(jtr);
+			List<LabelOBJECT> result = js.Deserialize<List<LabelOBJECT>>(jtr);
 			jtr.Close();
 			return result;
 		}
@@ -120,6 +120,120 @@ namespace SplitTools
 				js.Serialize(jtw, list);
 		}
 
+		public static void OutputLabelList(NJS_OBJECT root, List<LabelOBJECT> LabelObjectList, Dictionary<int, string> labelList)
+		{
+			int o = 0;
+			foreach (NJS_OBJECT obj in root.GetObjects())
+			{
+				LabelOBJECT label = LabelObjectList[o];
+				int objAddr = 0;
+				int.TryParse(obj.Name.Substring(obj.Name.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out objAddr);
+				if (objAddr != 0 && !labelList.ContainsKey(objAddr))
+				{
+					labelList.Add(objAddr, label.ObjectName);
+				}
+				if (obj.Attach != null)
+				{
+					int attAddr = 0;
+					int.TryParse(obj.Attach.Name.Substring(obj.Attach.Name.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out attAddr);
+					if (attAddr != 0 && !labelList.ContainsKey(attAddr))
+					{
+						labelList.Add(attAddr, label.AttachName);
+					}
+					if (obj.Attach is BasicAttach batt)
+					{
+						if (batt.Vertex != null)
+						{
+							int vrtAddr = 0;
+							int.TryParse(batt.VertexName.Substring(batt.VertexName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out vrtAddr);
+							if (vrtAddr != 0 && !labelList.ContainsKey(vrtAddr))
+							{
+								labelList.Add(vrtAddr, label.VertexName);
+							}
+						}
+						if (batt.Normal != null)
+						{
+							int nrmAddr = 0;
+							int.TryParse(batt.NormalName.Substring(batt.NormalName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out nrmAddr);
+							if (nrmAddr != 0 && !labelList.ContainsKey(nrmAddr))
+							{
+								labelList.Add(nrmAddr, label.NormalName);
+							}
+						}
+						if (batt.Material != null)
+						{
+							int matAddr = 0;
+							int.TryParse(batt.MaterialName.Substring(batt.NormalName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out matAddr);
+							if (matAddr != 0 && !labelList.ContainsKey(matAddr))
+							{
+								labelList.Add(matAddr, label.MaterialName);
+							}
+						}
+						if (batt.Mesh != null)
+						{
+							int meshsetAddr = 0;
+							int.TryParse(batt.MeshName.Substring(batt.MeshName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out meshsetAddr);
+							if (meshsetAddr != 0 && !labelList.ContainsKey(meshsetAddr))
+							{
+								labelList.Add(meshsetAddr, label.MeshsetName);
+							}
+							int i = 0;
+							foreach (NJS_MESHSET mesh in batt.Mesh)
+							{
+								int polyAddr = 0;
+								int.TryParse(mesh.PolyName.Substring(mesh.PolyName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out polyAddr);
+								if (polyAddr != 0 && !labelList.ContainsKey(polyAddr))
+								{
+									labelList.Add(polyAddr, label.MeshsetItems[i].PolyName);
+								}
+								int uvAddr = 0;
+								int.TryParse(mesh.UVName.Substring(mesh.UVName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out uvAddr);
+								if (uvAddr != 0 && !labelList.ContainsKey(uvAddr))
+								{
+									labelList.Add(uvAddr, label.MeshsetItems[i].UVName);
+								}
+								int pnAddr = 0;
+								int.TryParse(mesh.PolyNormalName.Substring(mesh.PolyNormalName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out pnAddr);
+								if (pnAddr != 0 && !labelList.ContainsKey(pnAddr))
+								{
+									labelList.Add(pnAddr, label.MeshsetItems[i].PolyNormalName);
+								}
+								int vcAddr = 0;
+								int.TryParse(mesh.VColorName.Substring(mesh.VColorName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out vcAddr);
+								if (vcAddr != 0 && !labelList.ContainsKey(vcAddr))
+								{
+									labelList.Add(vcAddr, label.MeshsetItems[i].VColorName);
+								}
+								i++;
+							}
+						}
+					}
+					else if (obj.Attach is ChunkAttach catt)
+					{
+						if (catt.Vertex != null)
+						{
+							int vrtAddr = 0;
+							int.TryParse(catt.VertexName.Substring(catt.VertexName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out vrtAddr);
+							if (vrtAddr != 0 && !labelList.ContainsKey(vrtAddr))
+							{
+								labelList.Add(vrtAddr, label.VertexName);
+							}
+						}
+						if (catt.Poly != null)
+						{
+							int plyAddr = 0;
+							int.TryParse(catt.PolyName.Substring(catt.PolyName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out plyAddr);
+							if (plyAddr != 0 && !labelList.ContainsKey(plyAddr))
+							{
+								labelList.Add(plyAddr, label.MeshsetName);
+							}
+						}
+					}
+				}
+				o++;
+			}
+		}
+
 		public void Apply(NJS_OBJECT obj)
 		{
 			obj.Name = ObjectName;
@@ -143,7 +257,6 @@ namespace SplitTools
 							MeshsetItems[i].Apply(mesh);
 							i++;
 						}
-
 					}
 				}
 				else if (obj.Attach is ChunkAttach catt)
@@ -295,6 +408,11 @@ namespace SplitTools
 			foreach (KeyValuePair<int, AnimModelData> anm in mot.Models)
 				MkeyNames[anm.Key].Apply(anm.Value);
 		}
+
+		public static void OutputLabelList(NJS_MOTION mot, LabelMOTION label, Dictionary<int, string> labelList)
+		{
+			// I got tired, maybe later
+		}
 	}
 
 	public class LabelACTION
@@ -347,6 +465,13 @@ namespace SplitTools
 			MotionNames.Apply(act.Animation);
 			act.Animation.ActionName = act.Name;
 			ObjectNames.Apply(act.Model);
+		}
+
+		public Dictionary<int, string> OutputLabelList(NJS_ACTION act, LabelACTION label)
+		{
+			Dictionary<int, string> labelList = new();
+			// I got tired, maybe later
+			return labelList;
 		}
 	}
 
@@ -409,6 +534,66 @@ namespace SplitTools
 					GeoAnimActionNames[land.Anim.IndexOf(g)].MotionNames.Apply(g.Animation);
 					GeoAnimActionNames[land.Anim.IndexOf(g)].ObjectNames.Apply(g.Model);
 				}
+		}
+
+		public static void OutputLabelList(LandTable act, LabelLANDTABLE label, Dictionary<int, string> labelList)
+		{
+			// I got tired, maybe later
+		}
+	}
+
+	// Texlist labels
+	public class LabelTEXLIST
+	{
+		public string TexlistName;
+		public string TexnamesName;
+
+		public LabelTEXLIST() { }
+
+		public LabelTEXLIST(NJS_TEXLIST texlist)
+		{
+			TexlistName = texlist.Name;
+			TexnamesName = texlist.TexnameArrayName;
+		}
+
+		public static LabelTEXLIST Load(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using TextReader tr = File.OpenText(filename);
+			using JsonTextReader jtr = new JsonTextReader(tr);
+			LabelTEXLIST result = js.Deserialize<LabelTEXLIST>(jtr);
+			jtr.Close();
+			return result;
+		}
+
+		public void Save(string filename)
+		{
+			JsonSerializer js = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore, Culture = System.Globalization.CultureInfo.InvariantCulture };
+			using (TextWriter tw = File.CreateText(filename))
+			using (JsonTextWriter jtw = new JsonTextWriter(tw) { Formatting = Formatting.Indented })
+				js.Serialize(jtw, this);
+		}
+
+		public void Apply(NJS_TEXLIST texlist)
+		{
+			texlist.Name = TexlistName;
+			texlist.TexnameArrayName = TexnamesName;
+		}
+
+		public static void OutputLabelList(NJS_TEXLIST texlist, LabelTEXLIST label, Dictionary<int, string> labelList)
+		{
+			int texlistAddr = 0;
+			int.TryParse(texlist.Name.Substring(texlist.Name.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out texlistAddr);
+			if (texlistAddr != 0 && !labelList.ContainsKey(texlistAddr))
+			{
+				labelList.Add(texlistAddr, label.TexlistName);
+			}
+			int texnameAddr = 0;
+			int.TryParse(texlist.TexnameArrayName.Substring(texlist.TexnameArrayName.Length - 8, 8), System.Globalization.NumberStyles.HexNumber, null, out texnameAddr);
+			if (texnameAddr != 0 && !labelList.ContainsKey(texnameAddr))
+			{
+				labelList.Add(texnameAddr, label.TexnamesName);
+			}
 		}
 	}
 }

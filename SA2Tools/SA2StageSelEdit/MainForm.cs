@@ -43,7 +43,6 @@ namespace SA2StageSelEdit
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			if (Program.sapFile != null)
 				openFile(Program.sapFile);
 		}

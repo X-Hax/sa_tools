@@ -13,26 +13,30 @@ namespace SA2EventViewer
 	{
 		public List<EventScene> Scenes { get; set; }
 		public EventUpgrade[] Upgrades { get; set; }
+		public bool isBattle;
+		public byte[] filecontents;
 
 		public Event(string filename)
 		{
-			byte[] fc;
+			//byte[] fc;
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				fc = Prs.Decompress(filename);
+				filecontents = Prs.Decompress(filename);
 			else
-				fc = File.ReadAllBytes(filename);
-			if (Path.GetExtension(filename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && fc[0] == 0x0F && fc[1] == 0x81)
-				fc = Prs.Decompress(filename);
+				filecontents = File.ReadAllBytes(filename);
+			if (Path.GetExtension(filename).Equals(".bin", StringComparison.OrdinalIgnoreCase) && filecontents[0] == 0x0F && filecontents[1] == 0x81)
+				filecontents = Prs.Decompress(filename);
+			//fc = filecontents;
 			bool battle = false;
 			bool dcbeta = false;
 			uint key;
-			if (fc[0] == 0x81)
+			if (filecontents[0] == 0x81)
 			{
 				ByteConverter.BigEndian = true;
-				if (fc[0x2B] <= 0x01 && fc[0x2A] == 0)
+				if (filecontents[0x2B] <= 0x01 && filecontents[0x2A] == 0)
 				{
 					key = 0x8125FE60;
 					battle = true;
+					isBattle = true;
 				}
 				else
 				{
@@ -41,12 +45,13 @@ namespace SA2EventViewer
 			}
 			else
 			{
+				isBattle = false;
 				ByteConverter.BigEndian = false;
 				key = 0xC600000;
-				int upptr = fc.GetPointer(0x20, 0xC600000);
-				int betacheck = fc[upptr + 0x14C];
-				int betacheck2 = fc[upptr + 0x16C];
-				if (betacheck != 0 || (fc[0x27] != 0xC && betacheck == 0 && betacheck2 != 0))
+				int upptr = filecontents.GetPointer(0x20, 0xC600000);
+				int betacheck = filecontents[upptr + 0x14C];
+				int betacheck2 = filecontents[upptr + 0x16C];
+				if (betacheck != 0 || (filecontents[0x27] != 0xC && betacheck == 0 && betacheck2 != 0))
 					dcbeta = true;
 				else
 					dcbeta = false;
@@ -55,7 +60,7 @@ namespace SA2EventViewer
 			if (battle)
 				motions = ReadMotionFile(Path.ChangeExtension(filename, null) + "motion.bin");
 			Dictionary<string, NJS_OBJECT> models = new Dictionary<string, NJS_OBJECT>();
-			int ptr = fc.GetPointer(0x20, key);
+			int ptr = filecontents.GetPointer(0x20, key);
 			if (ptr != 0)
 			{
 				if (!dcbeta)
@@ -64,7 +69,7 @@ namespace SA2EventViewer
 					Upgrades = new EventUpgrade[cnt];
 					for (int i = 0; i < cnt; i++)
 					{
-						Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
+						Upgrades[i] = new EventUpgrade(filecontents, ptr, key, models);
 						ptr += EventUpgrade.Size;
 					}
 				}
@@ -74,19 +79,19 @@ namespace SA2EventViewer
 					Upgrades = new EventUpgrade[cnt];
 					for (int i = 0; i < cnt; i++)
 					{
-						Upgrades[i] = new EventUpgrade(fc, ptr, key, models);
+						Upgrades[i] = new EventUpgrade(filecontents, ptr, key, models);
 						ptr += EventUpgrade.Size;
 					}
 				}
 			}
-			int gcnt = ByteConverter.ToInt32(fc, 8);
-			ptr = fc.GetPointer(0, key);
+			int gcnt = ByteConverter.ToInt32(filecontents, 8);
+			ptr = filecontents.GetPointer(0, key);
 			if (ptr != 0)
 			{
 				Scenes = new List<EventScene>();
 				for (int gn = 0; gn <= gcnt; gn++)
 				{
-					Scenes.Add(new EventScene(fc, ptr, key, battle, models, motions));
+					Scenes.Add(new EventScene(filecontents, ptr, key, battle, models, motions));
 					ptr += EventScene.Size;
 				}
 			}
@@ -199,15 +204,18 @@ namespace SA2EventViewer
 		public NJS_OBJECT ShadowModel { get; set; }
 		public Vertex Position { get; set; }
 		[TypeConverter(typeof(UInt32HexConverter))]
+		[Description("The properties that apply to the model(s) contained within this entity. Draw methods can also be determined here.")]
 		public SA2CutsceneEntityFlags Flags { get; set; }
-		[TypeConverter(typeof(UInt32HexConverter))]
-		public SA2DCCutsceneEntityFlags DCFlags { get; set; }
+		[Description("Determines the order in which entities are drawn onscreen, with 0 being the earliest. Valid entries are 0-4 inclusive. (SA2B Events Only)")]
 		public uint Layer { get; set; }
 
 		public static int Size(bool battle) => battle ? 44 : 32;
+		[Browsable(false)]
+		public uint Layerloc;
 
 		public EventEntity(byte[] file, int address, uint imageBase, bool battle, Dictionary<string, NJS_OBJECT> models, List<NJS_MOTION> motions)
 		{
+			Layerloc = (uint)address + 43;
 			Model = Event.GetModel(file, address, imageBase, models);
 			if (battle)
 			{
@@ -228,7 +236,7 @@ namespace SA2EventViewer
 				if (ptr != 0)
 					ShapeMotion = new NJS_MOTION(file, ptr, imageBase, Model.CountMorph());
 				Position = new Vertex(file, address + 16);
-				DCFlags = (SA2DCCutsceneEntityFlags)ByteConverter.ToUInt32(file, address + 28);
+				Flags = (SA2CutsceneEntityFlags)ByteConverter.ToUInt32(file, address + 28);
 			}
 		}
 	}

@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\build\tools\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<DebugType>embedded</DebugType>
+		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<ApplicationIcon>sadxfontedit.ico</ApplicationIcon>
+		<Platforms>AnyCPU;x86;x64</Platforms>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="sadxfontedit.ico" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Data.DataSetExtensions" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	</ItemGroup>
+</Project>

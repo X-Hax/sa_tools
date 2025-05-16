@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<OutputPath>..\..\build\lib\</OutputPath>
 		<DebugType>embedded</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+		<PackageReference Include="Microsoft.CSharp" />
+		<PackageReference Include="System.Data.DataSetExtensions" />
 	</ItemGroup>
 </Project>

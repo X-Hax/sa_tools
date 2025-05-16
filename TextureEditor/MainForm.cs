@@ -26,10 +26,8 @@ using Application = System.Windows.Forms.Application;
 using Color = System.Drawing.Color;
 using Size = System.Drawing.Size;
 using Image = System.Drawing.Image;
-using BCnEncoder.Decoder;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
-using SharpDX.Direct3D9;
 
 namespace TextureEditor
 {
@@ -139,7 +137,16 @@ namespace TextureEditor
 				switch (textures[listBox1.SelectedIndex])
 				{
 					case PakTextureInfo pak:
-						dataFormatLabel.Text = $"Data Format: {pak.DataFormat}";
+						TextureFunctions.TextureFileFormat fmt = TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData);
+						switch (fmt)
+						{
+							case TextureFunctions.TextureFileFormat.GVR:
+								dataFormatLabel.Text = $"GVR Data Format: {pak.DataFormat}";
+								break;
+							default:
+								dataFormatLabel.Text = $"File Format: {fmt.ToString()}";
+								break;
+						}
 						pixelFormatLabel.Text = $"Surface Flags: {pak.GetSurfaceFlags()}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
@@ -165,6 +172,7 @@ namespace TextureEditor
 									currentPalette = new TexturePalette(File.ReadAllBytes(pvppath), settingsfile.SACompatiblePalettes);
 									paletteSet = Math.Min(currentPalette.GetMaxBanks(pvr.DataFormat == PvrDataFormat.Index8 || pvr.DataFormat == PvrDataFormat.Index8Mipmaps), paletteSet);
 								}
+								actualPaletteColors = currentPalette.Colors.Count();
 								if (!paletteApplied)
 								{
 									// Re-encode texture if data is missing
@@ -180,7 +188,6 @@ namespace TextureEditor
 									currentPalette.IsGVP = false;
 									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
 									int neededcolors = (pvr.DataFormat == PvrDataFormat.Index4 | pvr.DataFormat == PvrDataFormat.Index4Mipmaps) ? 16 : 256;
-									actualPaletteColors = currentPalette.Colors.Count();
 									if (neededcolors - actualPaletteColors > 0)
 									{
 										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
@@ -219,6 +226,7 @@ namespace TextureEditor
 						{
 							case GvrDataFormat.Index4:
 							case GvrDataFormat.Index8:
+								actualPaletteColors = currentPalette.Colors.Count();
 								string folder = !string.IsNullOrEmpty(archiveFilename) ? Path.GetDirectoryName(archiveFilename) + "\\" : "";
 								string gvppath = folder + gvr.Name + ".gvp";
 								if (!customPaletteLoaded && File.Exists(gvppath))
@@ -230,7 +238,7 @@ namespace TextureEditor
 								{
 									if (gvr.TextureData == null)
 									{
-										gvr.PixelFormat = GvrPixelFormat.Rgb565; // Same as default palette
+										gvr.PixelFormat = GvrPixelFormat.IntensityA8; // Indexed GVRs seem to have this set always
 										GvrTextureEncoder enc = new GvrTextureEncoder(gvr.Image, gvr.PixelFormat, gvr.DataFormat);
 										gvr.TextureData = new MemoryStream();
 										enc.Save(gvr.TextureData);
@@ -240,7 +248,6 @@ namespace TextureEditor
 									currentPalette.IsGVP = true;
 									// Failsafe check if the palette has a smaller number of colors than the indexed image expects
 									int neededcolors = (gvr.DataFormat == GvrDataFormat.Index4) ? 16 : 256;
-									actualPaletteColors = currentPalette.Colors.Count();
 									if (neededcolors - actualPaletteColors > 0)
 									{
 										for (int i = 0; i < neededcolors - actualPaletteColors; i++)
@@ -299,7 +306,8 @@ namespace TextureEditor
 							numericUpDownOrigSizeX.Value = pvmx.Image.Width;
 							numericUpDownOrigSizeY.Value = pvmx.Image.Height;
 						}
-						dataFormatLabel.Hide();
+						dataFormatLabel.Text = "File Format: " + TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData).ToString();
+						dataFormatLabel.Show();
 						pixelFormatLabel.Hide();
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
@@ -349,7 +357,7 @@ namespace TextureEditor
 				newtextures = new List<TextureInfo>();
 				foreach (PVMXFile.PVMXEntry pvmxe in pvmx.Entries)
 				{
-					PvmxTextureInfo texinfo = new PvmxTextureInfo(Path.GetFileNameWithoutExtension(pvmxe.Name), pvmxe.GBIX, pvmxe.GetBitmap());
+					PvmxTextureInfo texinfo = new PvmxTextureInfo(Path.GetFileNameWithoutExtension(pvmxe.Name), pvmxe.GBIX, pvmxe.GetBitmap(), new MemoryStream(pvmxe.Data));
 					if (pvmxe.HasDimensions())
 						texinfo.Dimensions = new Size(pvmxe.Width, pvmxe.Height);
 					newtextures.Add(texinfo);
@@ -391,7 +399,7 @@ namespace TextureEditor
 						{
 							bmp = fl.GetBitmap();
 						}
-						catch (Exception ex)
+						catch (Exception)
 						{
 							bmp = new Bitmap(TextureEditor.Properties.Resources.error);
 						}
@@ -409,9 +417,18 @@ namespace TextureEditor
 						Array.Copy(inf, i, pakentry, 0, 0x3C);
 						PAKInfEntry entry = new PAKInfEntry(pakentry);
 						// Load texture data
-						byte[] dds = pak.Entries.First((file) => file.Name.Equals(entry.GetFilename() + ".dds", StringComparison.OrdinalIgnoreCase)).Data;
-						MemoryStream str = new MemoryStream(dds);
-						newtextures.Add(new PakTextureInfo(entry.GetFilename(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+						try
+						{
+							// The substring thing removes the ".dds" extension in the entry name
+							// Names are trimmed to avoid trailing spaces which the game ignores but the tools don't
+							byte[] dds = pak.Entries.First((file) => Path.GetExtension(file.Name) != ".inf" && file.Name.Substring(0, file.Name.Length - 4).Trim().Equals(entry.GetFilename().Trim(), StringComparison.OrdinalIgnoreCase)).Data;
+							MemoryStream str = new MemoryStream(dds);
+							newtextures.Add(new PakTextureInfo(entry.GetFilename().Trim(), entry.globalindex, CreateBitmapFromStream(str), entry.Type, entry.fSurfaceFlags, str));
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show(this, $"Could not add texture {entry.GetFilename().Trim() + ".dds: " + ex.Message.ToString() + "."}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						}
 					}
 				}
 			}
@@ -602,8 +619,15 @@ namespace TextureEditor
 			highQualityGVMsToolStripMenuItem.Checked = settingsfile.HighQualityGVM;
 			textureFilteringToolStripMenuItem.Checked = settingsfile.EnableFiltering;
 			compatibleGVPToolStripMenuItem.Checked = settingsfile.SACompatiblePalettes;
-			usePNGInsteadOfDDSToolStripMenuItem.Checked = settingsfile.UsePNGforPAK;
+			useDDSInPAKsToolStripMenuItem.Checked = settingsfile.UseDDSforPAK;
+			useDDSInPVMXToolStripMenuItem.Checked = settingsfile.UseDDSforPVMX;
+			useDDSInTexturePacksToolStripMenuItem.Checked = settingsfile.UseDDSforTexPack;
 
+			System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
+			toolTip.AutoPopDelay = 5000;
+			toolTip.InitialDelay = 1000;
+			toolTip.ReshowDelay = 500;
+			toolTip.SetToolTip(checkBoxPAKUseAlpha, "Disables Alpha Test and Z Write for the selected texture.\nThis can make some transparent textures blend better or worse. Use with caution.");
 			if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
 				Close();
 		}
@@ -728,18 +752,11 @@ namespace TextureEditor
 						PVMXFile pvmx = new PVMXFile();
 						foreach (PvmxTextureInfo tex in textures)
 						{
-							MemoryStream ds;
 							Size size = new Size(tex.Image.Width, tex.Image.Height);
 							if (tex.Dimensions.HasValue)
 								size = new Size(tex.Dimensions.Value.Width, tex.Dimensions.Value.Height);
-							if (tex.TextureData == null)
-							{
-								ds = new MemoryStream();
-								tex.Image.Save(ds, System.Drawing.Imaging.ImageFormat.Png);
-							}
-							else
-								ds = tex.TextureData;
-							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + ".png", tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
+							MemoryStream ds = tex.TextureData == null ? ds = EncodeDDSorPNG(tex, useDDSInPVMXToolStripMenuItem.Checked) : ds = tex.TextureData;
+							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + TextureFunctions.IdentifyTextureFileExtension(ds), tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
 						}
 						File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
 						unsaved = false;
@@ -752,12 +769,13 @@ namespace TextureEditor
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						foreach (PakTextureInfo item in textures)
 						{
-							using (MemoryStream tex = EncodeDDS(item))
+							using (MemoryStream tex = EncodeDDSorPNG(item, useDDSInPAKsToolStripMenuItem.Checked))
 							{
 								byte[] tb = tex.ToArray();
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
 									name = name.Substring(0, 0x1C);
+								name = name.Trim();
 								pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb));
 								// Create a new PAK INF entry
 								PAKInfEntry entry = new PAKInfEntry();
@@ -985,15 +1003,28 @@ namespace TextureEditor
 					{
 						foreach (TextureInfo tex in textures)
 						{
-							System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
+							MemoryStream exportData = new MemoryStream();
 							PalettedTextureFormat indexedfmt = GetPalettedTextureFormat(tex);
+							// Indexed
 							if (indexedfmt != PalettedTextureFormat.NotIndexed)
+							{
+								System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
 								bmp = ProcessIndexedBitmap(tex, indexedfmt);
-							bmp.Save(Path.Combine(dir, tex.Name + ".png"));
-							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
-								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + ".png", xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
+								bmp.Save(exportData, ImageFormat.Png);
+								File.WriteAllBytes(Path.Combine(dir, tex.Name + ".png"), exportData.ToArray());
+								tex.TextureData = exportData;
+							}
+							// Non-indexed
 							else
-								texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + ".png", tex.Image.Width, tex.Image.Height);
+							{
+								exportData = EncodeDDSorPNG(tex, useDDSInTexturePacksToolStripMenuItem.Checked, true);
+							}
+							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
+								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
+							else
+								texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
+							File.WriteAllBytes(Path.Combine(dir, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData)), exportData.ToArray());
+
 						}
 					}
 				}
@@ -1578,11 +1609,11 @@ namespace TextureEditor
 						break;
 					case TextureFormat.PVMX:
 						PvmxTextureInfo oldpvmx = (PvmxTextureInfo)textures[listBox1.SelectedIndex];
-						textures[listBox1.SelectedIndex] = new PvmxTextureInfo(oldpvmx.Name, oldpvmx.GlobalIndex, CreateBitmapFromStream(texmemstr));
+						textures[listBox1.SelectedIndex] = new PvmxTextureInfo(oldpvmx.Name, oldpvmx.GlobalIndex, CreateBitmapFromStream(texmemstr), texmemstr);
 						break;
 					case TextureFormat.PAK:
 						PakTextureInfo oldpak = (PakTextureInfo)textures[listBox1.SelectedIndex];
-						textures[listBox1.SelectedIndex] = new PakTextureInfo(name, oldpak.GlobalIndex, CreateBitmapFromStream(texmemstr), oldpak.DataFormat, oldpak.SurfaceFlags);
+						textures[listBox1.SelectedIndex] = new PakTextureInfo(name, oldpak.GlobalIndex, CreateBitmapFromStream(texmemstr), oldpak.DataFormat, oldpak.SurfaceFlags, texmemstr);
 						break;
 					default:
 						break;
@@ -1642,9 +1673,11 @@ namespace TextureEditor
 						else if (info is XvrTextureInfo xvrt)
 							info.TextureData = EncodeXVR(xvrt);
 						else if (info is PakTextureInfo pakt)
-							info.TextureData = EncodeDDS(pakt);
+							info.TextureData = EncodeDDSorPNG(pakt, useDDSInPAKsToolStripMenuItem.Checked);
+						else if (info is PvmxTextureInfo pvmxt)
+							info.TextureData = EncodeDDSorPNG(pvmxt, useDDSInPVMXToolStripMenuItem.Checked);
 						else
-							info.Image.Save(info.TextureData, ImageFormat.Png);
+							info.TextureData = EncodeDDSorPNG(info, useDDSInTexturePacksToolStripMenuItem.Checked);
 					}
 					File.WriteAllBytes(dlg.FileName, textures[listBox1.SelectedIndex].TextureData.ToArray());
 				}
@@ -1717,11 +1750,11 @@ namespace TextureEditor
 			return xvr;
 		}
 
-		private MemoryStream EncodeDDS(PakTextureInfo tex)
+		private MemoryStream EncodeDDSorPNG(TextureInfo tex, bool dds, bool force = false)
 		{
-			if (tex.TextureData != null)
+			if (!force && tex.TextureData != null)
 				return tex.TextureData;
-			if (settingsfile.UsePNGforPAK)
+			if (!dds)
 			{
 				MemoryStream bmp = new MemoryStream();
 				tex.Image.Save(bmp, ImageFormat.Png);
@@ -2125,6 +2158,7 @@ namespace TextureEditor
 				if (info.CheckMipmap())
 				{
 					info.Mipmap = true;
+					info.TextureData = null;
 					if (info is PakTextureInfo pk)
 						pk.SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
 				}
@@ -2158,14 +2192,8 @@ namespace TextureEditor
 			settingsfile.HighQualityGVM = highQualityGVMsToolStripMenuItem.Checked;
 		}
 
-		private void usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-		{
-			settingsfile.UsePNGforPAK = usePNGInsteadOfDDSToolStripMenuItem.Checked;
-		}
-
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Settings.Save();
 			if (unsaved)
 			{
 				DialogResult res = MessageBox.Show(this, "There are unsaved changes. Would you like to save them?", "Save changes?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
@@ -2186,6 +2214,7 @@ namespace TextureEditor
 			}
 			try
 			{
+				Settings.Save();
 				settingsfile.Save();
 			}
 			catch { };
@@ -2376,10 +2405,10 @@ namespace TextureEditor
 				return;
 
 			DialogResult res = MessageBox.Show(this, "This will generate new GBIX for every texture, are you sure you wish to continue?", "Warning Gbix Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-			
+
 			if (res != DialogResult.Yes)
 			{
-				return; 
+				return;
 			}
 
 			Random random = new();
@@ -2394,6 +2423,21 @@ namespace TextureEditor
 			listBox1.SelectedIndex = -1;
 			listBox1.SelectedItem = null;
 			unsaved = true;
+		}
+
+		private void useDDSInPAKsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSforPAK = useDDSInPAKsToolStripMenuItem.Checked;
+		}
+
+		private void useDDSInTexturePacksToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSforTexPack = useDDSInTexturePacksToolStripMenuItem.Checked;
+		}
+
+		private void useDDSInPVMXToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSforPVMX = useDDSInPVMXToolStripMenuItem.Checked;
 		}
 	}
 }

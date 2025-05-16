@@ -76,12 +76,7 @@ namespace TextureEditor
 				Image = new Bitmap(TextureEditor.Properties.Resources.error);
 			else
 			{
-				Bitmap clone = new Bitmap(bitmap.Width, bitmap.Height,
-											 System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-				using (Graphics gr = Graphics.FromImage(clone))
-				{
-					gr.DrawImage(bitmap, new Rectangle(0, 0, clone.Width, clone.Height));
-				}
+				Bitmap clone = (Bitmap)bitmap.Clone();
 				Image = clone;
 			}
 		}
@@ -167,12 +162,7 @@ namespace TextureEditor
 				Image = new Bitmap(TextureEditor.Properties.Resources.error);
 			else
 			{
-				Bitmap clone = new Bitmap(bitmap.Width, bitmap.Height,
-											System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-				using (Graphics gr = Graphics.FromImage(clone))
-				{
-					gr.DrawImage(bitmap, new Rectangle(0, 0, clone.Width, clone.Height));
-				}
+				Bitmap clone = (Bitmap)bitmap.Clone();
 				Image = clone;
 			}
 		}

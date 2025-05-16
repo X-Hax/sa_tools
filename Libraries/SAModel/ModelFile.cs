@@ -370,7 +370,7 @@ namespace SAModel
 			}
 		}
 
-		public void SaveToFile(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
+		public byte[] GetBytes(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
 		{
 			uint ninjaMagic;
 			uint imageBase = (uint)(useNinjaMetaData ? 0 : 0x10);
@@ -556,8 +556,16 @@ namespace SAModel
 				file.AddRange(ByteConverter.GetBytes((uint)ChunkTypes.End));
 				file.AddRange(new byte[4]);
 			}
-			File.WriteAllBytes(filename, file.ToArray());
 			ByteConverter.BigEndian = be;
+
+			return file.ToArray();
+		}
+
+		public void SaveToFile(string filename, bool nometa = false, bool useNinjaMetaData = false, bool njbLittleEndian = false)
+		{
+			byte[] file = GetBytes(filename, nometa, useNinjaMetaData, njbLittleEndian);
+			
+			File.WriteAllBytes(filename, file);
 		}
 
 		public static void CreateFile(string filename, NJS_OBJECT model, string[] animationFiles, string author,

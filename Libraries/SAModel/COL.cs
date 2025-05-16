@@ -20,6 +20,12 @@ namespace SAModel
 			set { Flags = (int)value; }
 		}
 
+		public SA2SurfaceFlags SA2SurfaceFlags
+		{
+			get { return (SA2SurfaceFlags)Flags; }
+			set { Flags = (int)value; }
+		}
+
 		public static int Size(LandTableFormat format)
 		{
 			switch (format)
@@ -136,12 +142,12 @@ namespace SAModel
 					result.Append(", ");
 					result.Append(WidthZ.ToC());
 					result.Append(", ");
-					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
+					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name.MakeIdentifier()) : "NULL");
 					result.Append(", ");
 					result.AppendFormat(BlockBits.ToCHex());
 					break;
 				case LandTableFormat.SA2:
-					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name) : "NULL");
+					result.Append(Model != null ? ((decomp ? "" : "&") + Model.Name.MakeIdentifier()) : "NULL");
 					result.Append(", ");
 					result.Append(WidthZ.ToC());
 					result.Append(", ");

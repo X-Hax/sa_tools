@@ -298,19 +298,19 @@ namespace SAModel
 		public override string ToStruct(bool DX)
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(Vertex != null ? VertexName : "NULL");
+			result.Append(Vertex != null ? VertexName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(Normal != null ? NormalName : "NULL");
+			result.Append(Normal != null ? NormalName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(Vertex != null ? "LengthOfArray<Sint32>(" + VertexName + ")" : "0");
+			result.Append(Vertex != null ? "LengthOfArray<Sint32>(" + VertexName.MakeIdentifier() + ")" : "0");
 			result.Append(", ");
-			result.Append(Mesh != null ? MeshName : "NULL");
+			result.Append(Mesh != null ? MeshName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(Material != null && Material.Count > 0 ? MaterialName : "NULL");
+			result.Append(Material != null && Material.Count > 0 ? MaterialName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(Mesh != null ? "LengthOfArray<Uint16>(" + MeshName + ")" : "0");
+			result.Append(Mesh != null ? "LengthOfArray<Uint16>(" + MeshName.MakeIdentifier() + ")" : "0");
 			result.Append(", ");
-			result.Append(Material != null && Material.Count > 0 ? "LengthOfArray<Uint16>(" + MaterialName + ")" : "0");
+			result.Append(Material != null && Material.Count > 0 ? "LengthOfArray<Uint16>(" + MaterialName.MakeIdentifier() + ")" : "0");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			if (DX)
@@ -325,7 +325,7 @@ namespace SAModel
 			{
 				labels.Add(MaterialName);
 				writer.Write("NJS_MATERIAL ");
-				writer.Write(MaterialName);
+				writer.Write(MaterialName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> mtls = new List<string>(Material.Count);
 				foreach (NJS_MATERIAL item in Material)
@@ -342,7 +342,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].PolyName);
 						writer.Write("Sint16 ");
-						writer.Write(Mesh[i].PolyName);
+						writer.Write(Mesh[i].PolyName.MakeIdentifier());
 						writer.WriteLine("[] = {");
 						List<string> plys = new List<string>(Mesh[i].Poly.Count);
 						foreach (Poly item in Mesh[i].Poly)
@@ -358,7 +358,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].PolyNormalName);
 						writer.Write("NJS_VECTOR ");
-						writer.Write(Mesh[i].PolyNormalName);
+						writer.Write(Mesh[i].PolyNormalName.MakeIdentifier());
 						writer.WriteLine("[] = {");
 						List<string> plys = new List<string>(Mesh[i].PolyNormal.Length);
 						foreach (Vertex item in Mesh[i].PolyNormal)
@@ -374,7 +374,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].VColorName);
 						writer.Write("NJS_COLOR ");
-						writer.Write(Mesh[i].VColorName);
+						writer.Write(Mesh[i].VColorName.MakeIdentifier());
 						writer.WriteLine("[] = {");
 						List<string> vcs = new List<string>(Mesh[i].VColor.Length);
 						foreach (Color item in Mesh[i].VColor)
@@ -390,7 +390,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].UVName);
 						writer.Write("NJS_TEX ");
-						writer.Write(Mesh[i].UVName);
+						writer.Write(Mesh[i].UVName.MakeIdentifier());
 						writer.WriteLine("[] = {");
 						List<string> uvs = new List<string>(Mesh[i].UV.Length);
 						foreach (UV item in Mesh[i].UV)
@@ -405,7 +405,7 @@ namespace SAModel
 				if (DX)
 					writer.Write("_SADX");
 				writer.Write(" ");
-				writer.Write(MeshName);
+				writer.Write(MeshName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> mshs = new List<string>(Mesh.Count);
 				foreach (NJS_MESHSET item in Mesh)
@@ -418,7 +418,7 @@ namespace SAModel
 			{
 				labels.Add(VertexName);
 				writer.Write("NJS_VECTOR ");
-				writer.Write(VertexName);
+				writer.Write(VertexName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> vtxs = new List<string>(Vertex.Length);
 				foreach (Vertex item in Vertex)
@@ -431,7 +431,7 @@ namespace SAModel
 			{
 				labels.Add(VertexName);
 				writer.Write("NJS_VECTOR ");
-				writer.Write(NormalName);
+				writer.Write(NormalName.MakeIdentifier());
 				writer.WriteLine("[] = {");
 				List<string> vtxs = new List<string>(Normal.Length);
 				foreach (Vertex item in Normal)
@@ -444,7 +444,7 @@ namespace SAModel
 			if (DX)
 				writer.Write("_SADX");
 			writer.Write(" ");
-			writer.Write(Name);
+			writer.Write(Name.MakeIdentifier());
 			writer.Write(" = ");
 			writer.Write(ToStruct(DX));
 			writer.WriteLine(";");
@@ -456,7 +456,7 @@ namespace SAModel
 			{
 				labels.Add(MaterialName);
 				writer.Write("MATERIAL    ");
-				writer.Write(MaterialName + "[]" + Environment.NewLine);
+				writer.Write(MaterialName.MakeIdentifier() + "[]" + Environment.NewLine);
 				writer.WriteLine("START" + Environment.NewLine);
 				List<string> mtls = new List<string>(Material.Count);
 				foreach (NJS_MATERIAL item in Material)
@@ -473,7 +473,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].PolyName);
 						writer.Write("POLYGON     ");
-						writer.Write(Mesh[i].PolyName);
+						writer.Write(Mesh[i].PolyName.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 
@@ -503,7 +503,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].PolyNormalName);
 						writer.Write("POLYNORMAL  ");
-						writer.Write(Mesh[i].PolyNormalName);
+						writer.Write(Mesh[i].PolyNormalName.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 						List<string> plys = new List<string>(Mesh[i].PolyNormal.Length);
@@ -520,7 +520,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].VColorName);
 						writer.Write("VERTCOLOR   ");
-						writer.Write(Mesh[i].VColorName);
+						writer.Write(Mesh[i].VColorName.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 						List<string> vcs = new List<string>(Mesh[i].VColor.Length);
@@ -537,7 +537,7 @@ namespace SAModel
 					{
 						labels.Add(Mesh[i].UVName);
 						writer.Write("VERTUV      ");
-						writer.Write(Mesh[i].UVName);
+						writer.Write(Mesh[i].UVName.MakeIdentifier());
 						writer.WriteLine("[]");
 						writer.WriteLine("START");
 						List<string> uvs = new List<string>(Mesh[i].UV.Length);
@@ -551,7 +551,7 @@ namespace SAModel
 				labels.Add(MeshName);
 				writer.Write("MESHSET");
 				writer.Write("     ");
-				writer.Write(MeshName);
+				writer.Write(MeshName.MakeIdentifier());
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
 				writer.WriteLine();
@@ -566,7 +566,7 @@ namespace SAModel
 			{
 				labels.Add(VertexName);
 				writer.Write("POINT      ");
-				writer.Write(VertexName);
+				writer.Write(VertexName.MakeIdentifier());
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
 				List<string> vtxs = new List<string>(Vertex.Length);
@@ -578,9 +578,9 @@ namespace SAModel
 			}
 			if (Normal != null && !labels.Contains(NormalName))
 			{
-				labels.Add(VertexName);
+				labels.Add(NormalName);
 				writer.Write("NORMAL      ");
-				writer.Write(NormalName);
+				writer.Write(NormalName.MakeIdentifier());
 				writer.WriteLine("[]");
 				writer.WriteLine("START");
 				List<string> vtxs = new List<string>(Normal.Length);
@@ -592,14 +592,14 @@ namespace SAModel
 			}
 			writer.Write("MODEL");
 			writer.Write("       ");
-			writer.Write(Name);
+			writer.Write(Name.MakeIdentifier());
 			writer.WriteLine("[]");
 			writer.WriteLine("START");
-			writer.WriteLine("Points      " + VertexName + ",");
-			writer.WriteLine("Normal      " + NormalName + ",");
+			writer.WriteLine("Points      " + VertexName.MakeIdentifier() + ",");
+			writer.WriteLine("Normal      " + NormalName.MakeIdentifier() + ",");
 			writer.WriteLine("PointNum    " + Vertex.Length + ",");
-			writer.WriteLine("Meshset     " + MeshName + ",");
-			writer.WriteLine("Materials   " + MaterialName + ",");
+			writer.WriteLine("Meshset     " + MeshName.MakeIdentifier() + ",");
+			writer.WriteLine("Materials   " + (Material.Count > 0 ? MaterialName.MakeIdentifier() + "," : "NULL,"));
 			writer.WriteLine("MeshsetNum  " + Mesh.Count + ",");
 			writer.WriteLine("MatNum      " + Material.Count + ",");
 			writer.WriteLine("Center      " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");

@@ -1,0 +1,16 @@
+name: Feature Request
+description: File a feature request or enhancement for the tools.
+title: "[Feature Request]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+          Please provide information on your feature request below. Be sure to include which program(s) are part of your request in the title of this report.
+  - type: textarea
+    id: request
+    attributes:
+      label: Request Information
+      description: Please provide details regarding the feature you would like to see added to the SA Tools.
+    validations:
+      required: true

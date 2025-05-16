@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
-using System.Diagnostics.Eventing.Reader;
 
 namespace SAModel.GC
 {
@@ -18,12 +14,12 @@ namespace SAModel.GC
 		/// <summary>
 		/// The parameters that this mesh sets
 		/// </summary>
-		public List<GCParameter> parameters { get; private set; }
+		public List<GCParameter> Parameters { get; private set; }
 
 		/// <summary>
 		/// The polygon data
 		/// </summary>
-		public List<GCPrimitive> primitives { get; private set; }
+		public List<GCPrimitive> Primitives { get; private set; }
 
 		/// <summary>
 		/// The index attribute flags of this mesh. If it has no IndexAttribParam, it will return null
@@ -32,37 +28,36 @@ namespace SAModel.GC
 		{
 			get
 			{
-				IndexAttributeParameter index_param = (IndexAttributeParameter)parameters.Find(x => x.type == ParameterType.IndexAttributeFlags);
-				if (index_param == null) return null;
-				else return index_param.IndexAttributes;
+				var indexParam = (IndexAttributeParameter)Parameters.Find(x => x.Type == ParameterType.IndexAttributeFlags);
+				return indexParam?.IndexAttributes;
 			}
 		}
 
 		/// <summary>
 		/// The location to which the parameters have been written
 		/// </summary>
-		private uint paramAddress;
+		private uint _paramAddress;
 		public string ParameterName { get; set; }
 
 		/// <summary>
 		/// The location to which the primitives have been written
 		/// </summary>
-		private uint primitiveAddress;
+		private uint _primitiveAddress;
 		public string PrimitiveName { get; set; }
 
 		/// <summary>
 		/// The amount of bytes which have been written for the primitives
 		/// </summary>
-		private uint primitiveSize;
-
+		private uint _primitiveSize;
+		public uint PrimitiveSize;
 
 		/// <summary>
 		/// Create an empty mesh
 		/// </summary>
 		public GCMesh()
 		{
-			parameters = new List<GCParameter>();
-			primitives = new List<GCPrimitive>();
+			Parameters = [];
+			Primitives = [];
 		}
 
 		/// <summary>
@@ -72,8 +67,8 @@ namespace SAModel.GC
 		/// <param name="primitives"></param>
 		public GCMesh(List<GCParameter> parameters, List<GCPrimitive> primitives)
 		{
-			this.parameters = parameters;
-			this.primitives = primitives;
+			Parameters = parameters;
+			Primitives = primitives;
 		}
 
 		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
@@ -86,228 +81,282 @@ namespace SAModel.GC
 		/// </summary>
 		/// <param name="file">The files contents</param>
 		/// <param name="address">The address at which the mesh is located</param>
-		/// <param name="imageBase">The imagebase (used for when reading from an exe)</param>
-		/// <param name="index">Indexattribute parameter of the previous mesh</param>
+		/// <param name="imageBase">The image base (used for when reading from an exe)</param>
+		/// <param name="labels"></param>
+		/// <param name="indexFlags"></param>
 		public GCMesh(byte[] file, int address, uint imageBase, Dictionary<int, string> labels, GCIndexAttributeFlags indexFlags)
 		{
-			// getting the addresses and sizes
-			int parameters_offset = (int)(ByteConverter.ToInt32(file, address) - imageBase);
-			int parameters_count = ByteConverter.ToInt32(file, address + 4);
+			// Getting the addresses and sizes
+			var parametersOffset = (int)(ByteConverter.ToInt32(file, address) - imageBase);
+			var parametersCount = ByteConverter.ToInt32(file, address + 4);
 
-			int primitives_offset = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
-			uint primitives_size = ByteConverter.ToUInt32(file, address + 12);
+			var primitivesOffset = (int)(ByteConverter.ToInt32(file, address + 8) - imageBase);
+			var primitivesSize = ByteConverter.ToUInt32(file, address + 12);
 
-			// reading the parameters
-			parameters = new List<GCParameter>();
-			if (parameters_count != 0)
+			// Reading the parameters
+			Parameters = [];
+			
+			if (parametersCount != 0)
 			{
-				if (labels.ContainsKey(parameters_offset))
-					ParameterName = labels[parameters_offset];
+				if (labels.TryGetValue(parametersOffset, out var parameterName))
+				{
+					ParameterName = parameterName;
+				}
 				else
-					ParameterName = "parameter_" + parameters_offset.ToString("X8");
+				{
+					ParameterName = "parameter_" + parametersOffset.ToString("X8");
+				}
 			}
-			for (int i = 0; i < parameters_count; i++)
+			
+			for (var i = 0; i < parametersCount; i++)
 			{
-				parameters.Add(GCParameter.Read(file, parameters_offset));
-				parameters_offset += 8;
+				Parameters.Add(GCParameter.Read(file, parametersOffset));
+				parametersOffset += 8;
 			}
 
-			// getting the index attribute parameter
-			GCIndexAttributeFlags? flags = IndexFlags;
+			// Getting the index attribute parameter
+			var flags = IndexFlags;
 			if (flags.HasValue)
+			{
 				indexFlags = flags.Value;
+			}
 
-			// reading the primitives
-			primitives = new List<GCPrimitive>();
-			if (primitives_size != 0)
+			// Reading the primitives
+			Primitives = [];
+			if (primitivesSize != 0)
 			{
-				if (labels.ContainsKey(primitives_offset))
-					PrimitiveName = labels[primitives_offset];
+				if (labels.TryGetValue(primitivesOffset, out var primitiveName))
+				{
+					PrimitiveName = primitiveName;
+				}
 				else
-					PrimitiveName = "primitive_" + primitives_offset.ToString("X8");
+				{
+					PrimitiveName = "primitive_" + primitivesOffset.ToString("X8");
+				}
 			}
 
-			int end_pos = primitives_offset + (int)primitives_size;
+			var endPos = primitivesOffset + (int)primitivesSize;
 
-			while (primitives_offset < end_pos)
+			while (primitivesOffset < endPos)
 			{
-				// if the primitive isnt valid
-				if (file[primitives_offset] == 0) break;
-				primitives.Add(new GCPrimitive(file, primitives_offset, indexFlags, out primitives_offset));
+				// If the primitive isn't valid
+				if (file[primitivesOffset] == 0)
+				{
+					break;
+				}
+
+				Primitives.Add(new GCPrimitive(file, primitivesOffset, indexFlags, out primitivesOffset));
 			}
-			primitiveSize = primitives_size;
+			
+			_primitiveSize = primitivesSize;
+			PrimitiveSize = _primitiveSize;
 		}
 
 		/// <summary>
 		/// Writes the parameters and primitives to a stream
 		/// </summary>
-		/// <param name="writer">The ouput stream</param>
-		/// <param name="indexFlags">The index flags</param>
-
-		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress, GCIndexAttributeFlags indexFlags)
+		/// <param name="parameterAddress"></param>
+		/// <param name="primitiveAddress"></param>
+		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress)
 		{
-			uint primsize = Convert.ToUInt32(Math.Ceiling((decimal)primitiveSize / 32) * 32);
-			List<byte> result = new List<byte>();
+			var primitiveSize = Convert.ToUInt32(Math.Ceiling((decimal)_primitiveSize / 32) * 32);
+			var result = new List<byte>();
+			
 			result.AddRange(ByteConverter.GetBytes(parameterAddress));
-			result.AddRange(ByteConverter.GetBytes((uint)parameters.Count));
+			result.AddRange(ByteConverter.GetBytes((uint)Parameters.Count));
 			result.AddRange(ByteConverter.GetBytes(primitiveAddress));
-			result.AddRange(ByteConverter.GetBytes(primsize));
+			result.AddRange(ByteConverter.GetBytes(primitiveSize));
+			
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			uint primsize = Convert.ToUInt32(Math.Ceiling((decimal)primitiveSize / 32) * 32);
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append(parameters.Count != 0 ? ParameterName : "NULL");
+			var primitiveSize = Convert.ToUInt32(Math.Ceiling((decimal)_primitiveSize / 32) * 32);
+			var result = new StringBuilder("{ ");
+			
+			result.Append(Parameters.Count != 0 ? ParameterName : "NULL");
 			result.Append(", ");
-			result.Append(parameters != null ? (uint)parameters.Count : 0);
+			result.Append(Parameters != null ? (uint)Parameters.Count : 0);
 			result.Append(", ");
-			result.Append(primitiveSize != 0 ? PrimitiveName : "NULL");
+			result.Append(_primitiveSize != 0 ? PrimitiveName : "NULL");
 			result.Append(", ");
-			result.Append(primitives != null ? (uint)primsize : 0);
+			result.Append(Primitives != null ? primitiveSize : 0);
 			result.Append(" }");
+			
 			return result.ToString();
 		}
 
-		//WIP
+		// WIP
 		public void ToNJA(TextWriter writer)
 		{
-			if (parameters != null && parameters.Count != 0)
+			if (Parameters != null && Parameters.Count != 0)
 			{
-				writer.WriteLine("PARAMETER   " + ParameterName + "[]");
+				writer.WriteLine($"PARAMETER   {ParameterName}[]");
 				writer.WriteLine("START");
-				foreach (GCParameter item in parameters)
+				
+				foreach (var item in Parameters)
+				{
 					item.ToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				}
+
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 
-			if (primitives != null)
+			if (Primitives != null)
 			{
-				writer.WriteLine("PRIMITIVE   " + PrimitiveName + "[]");
+				writer.WriteLine($"PRIMITIVE   {PrimitiveName}[]");
 				writer.WriteLine("START");
-				foreach (GCPrimitive item in primitives)
+				
+				foreach (var item in Primitives)
+				{
 					item.ToNJA(writer);
-				writer.Write("END" + Environment.NewLine + Environment.NewLine);
+				}
+
+				writer.Write($"END{Environment.NewLine}{Environment.NewLine}");
 			}
 		}
+		
 		public void RefToNJA(TextWriter writer)
 		{
-			if (parameters != null && parameters.Count != 0)
+			if (Parameters != null && Parameters.Count != 0)
 			{
-				writer.WriteLine("Parameter   " + ParameterName + ",");
-				writer.WriteLine("ParamNum    " + parameters.Count + ",");
+				writer.WriteLine($"Parameter   {ParameterName},");
 			}
 			else
 			{
-				writer.WriteLine("Parameter   NULL" + ParameterName + ",");
-				writer.WriteLine("ParamNum    " + parameters.Count + ",");
+				writer.WriteLine($"Parameter   NULL{ParameterName},");
 			}
-			if (primitives != null)
+
+			writer.WriteLine($"ParamNum    {Parameters.Count},");
+
+			if (Primitives != null)
 			{
-				writer.WriteLine("Primitive   " + PrimitiveName + ",");
-				writer.WriteLine("PrimNum     " + primitiveSize + ",");
+				writer.WriteLine($"Primitive   {PrimitiveName},");
 			}
 			else
 			{
-				writer.WriteLine("Primitive   NULL" + PrimitiveName + ",");
-				writer.WriteLine("PrimNum     " + primitiveSize + ",");
+				writer.WriteLine($"Primitive   NULL{PrimitiveName},");
 			}
+
+			writer.WriteLine($"PrimNum     {_primitiveSize},");
 		}
 
-/// <summary>
-/// Creates meshinfo to render
-/// </summary>
-/// <param name="material">A material with the current material properties</param>
-/// <param name="positions">The position data</param>
-/// <param name="normals">The normal data</param>
-/// <param name="colors">The color data</param>
-/// <param name="uvs">The uv data</param>
-/// <returns>A mesh info for the mesh</returns>
-public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs)
+		/// <summary>
+		/// Creates meshinfo to render
+		/// </summary>
+		/// <param name="material">A material with the current material properties</param>
+		/// <param name="positions">The position data</param>
+		/// <param name="normals">The normal data</param>
+		/// <param name="colors">The color data</param>
+		/// <param name="uvs">The uv data</param>
+		/// <param name="scale">The uv scale data</param>
+		/// <returns>A mesh info for the mesh</returns>
+		public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx> normals, List<IOVtx> colors, List<IOVtx> uvs, GCUVScale scale)
 		{
-			// setting the material properties according to the parameters
-			foreach (GCParameter param in parameters)
+			// Setting the material properties according to the parameters
+			foreach (var param in Parameters)
 			{
-				switch (param.type)
+				switch (param.Type)
 				{
-					case ParameterType.BlendAlpha:
-						BlendAlphaParameter blend = param as BlendAlphaParameter;
-						material.SourceAlpha = blend.NJSourceAlpha;
+					case ParameterType.VtxAttrFmt:
+						var attrfmt = param as VtxAttrFmtParameter;
+						if (attrfmt.VertexAttribute == GCVertexAttribute.Tex0)
+							scale = (GCUVScale)(byte)attrfmt.UVScale;
+						break;
+					case ParameterType.BlendAlpha: 
+						var blend = param as BlendAlphaParameter; 
+						material.SourceAlpha = blend.NJSourceAlpha; 
 						material.DestinationAlpha = blend.NJDestAlpha;
 						break;
 					case ParameterType.AmbientColor:
-						AmbientColorParameter ambientCol = param as AmbientColorParameter;
-						material.DiffuseColor = ambientCol.AmbientColor.SystemCol;
+						var ambientCol = param as AmbientColorParameter; 
+						material.DiffuseColor = ambientCol.AmbientColor.SystemCol; 
 						break;
 					case ParameterType.Texture:
-						TextureParameter tex = param as TextureParameter;
-						material.TextureID = tex.TextureID;
+						var tex = param as TextureParameter;
+						material.TextureID = tex.TextureId;
 						material.FlipU = tex.Tile.HasFlag(GCTileMode.MirrorU);
 						material.FlipV = tex.Tile.HasFlag(GCTileMode.MirrorV);
 						material.ClampU = tex.Tile.HasFlag(GCTileMode.WrapU);
 						material.ClampV = tex.Tile.HasFlag(GCTileMode.WrapV);
 
-						// no idea why, but ok
+						// No idea why, but ok
 						material.ClampU &= tex.Tile.HasFlag(GCTileMode.Unk_1);
 						material.ClampV &= tex.Tile.HasFlag(GCTileMode.Unk_1);
 						break;
 					case ParameterType.TexCoordGen:
-						TexCoordGenParameter gen = param as TexCoordGenParameter;
+						var gen = param as TexCoordGenParameter;
 						material.EnvironmentMap = gen.TexGenSrc == GCTexGenSrc.Normal;
 						break;
 				}
 			}
 
-			// filtering out the double loops
-			List<Loop> corners = new List<Loop>();
-			List<Poly> polys = new List<Poly>();
+			// Filtering out the double loops
+			var corners = new List<Loop>();
+			var polys = new List<Poly>();
 
-			foreach (GCPrimitive prim in primitives)
+			foreach (var prim in Primitives)
 			{
-				int j = 0;
-				ushort[] indices = new ushort[prim.loops.Count];
-				foreach (Loop l in prim.loops)
+				var j = 0;
+				var indices = new ushort[prim.Loops.Count];
+				
+				foreach (var l in prim.Loops)
 				{
-					ushort t = (ushort)corners.FindIndex(x => x.Equals(l));
+					var t = (ushort)corners.FindIndex(x => x.Equals(l));
 					if (t == 0xFFFF)
 					{
 						indices[j] = (ushort)corners.Count;
 						corners.Add(l);
 					}
-					else indices[j] = t;
+					else
+					{
+						indices[j] = t;
+					}
+
 					j++;
 				}
 
-				// creating the polygons
-				if (prim.primitiveType == GCPrimitiveType.Triangles)
-					for (int i = 0; i < indices.Length; i += 3)
-					{
-						Triangle t = new Triangle();
-						t.Indexes[0] = indices[i];
-						t.Indexes[1] = indices[i + 1];
-						t.Indexes[2] = indices[i + 2];
+				// Creating the polygons
+				if (prim.PrimitiveType == GCPrimitiveType.Triangles)
+				{
+					for (var i = 0; i < indices.Length; i += 3)
+					{ 
+						var t = new Triangle
+						{
+							Indexes =
+							{
+								[0] = indices[i],
+								[1] = indices[i + 1],
+								[2] = indices[i + 2]
+							}
+						};
+						
 						polys.Add(t);
 					}
-				else if (prim.primitiveType == GCPrimitiveType.TriangleStrip)
+				}
+				else if (prim.PrimitiveType == GCPrimitiveType.TriangleStrip)
+				{
 					polys.Add(new Strip(indices, false));
+				}
 			}
 
-			// creating the vertex data
-			VertexData[] vertData = new VertexData[corners.Count];
-			bool hasNormals = normals != null;
-			bool hasColors = colors != null;
-			bool hasUVs = uvs != null;
+			// Creating the vertex data
+			var vertData = new VertexData[corners.Count];
+			var hasNormals = normals != null;
+			var hasColors = colors != null;
+			var hasUVs = uvs != null;
 
-			for (int i = 0; i < corners.Count; i++)
+			for (var i = 0; i < corners.Count; i++)
 			{
-				Loop l = corners[i];
+				var l = corners[i];
 				vertData[i] = new VertexData(
-						(Vector3)positions[l.PositionIndex],
-						hasNormals ? (Vector3)normals[l.NormalIndex] : new Vector3(0, 1, 0),
-						hasColors ? (Color)colors[l.Color0Index] : new Color(255, 255, 255, 255),
-						hasUVs ? (UV)uvs[l.UV0Index] : new UV(0, 0)
-						);
+					(Vector3)positions[l.PositionIndex],
+					hasNormals ? (Vector3)normals[l.NormalIndex] : new Vector3(0, 1, 0),
+					hasColors ? (Color)colors[l.Color0Index] : new Color(255, 255, 255, 255),
+					hasUVs ? (UV)uvs[l.UV0Index] : new UV(0, 0),
+					hasUVs ? scale : GCUVScale.Default
+					);
 			}
 
 			return new MeshInfo(new NJS_MATERIAL(material), polys.ToArray(), vertData, hasUVs, hasColors);
@@ -315,18 +364,19 @@ public MeshInfo Process(NJS_MATERIAL material, List<IOVtx> positions, List<IOVtx
 
 		public GCMesh Clone()
 		{
-			//throw new NotImplementedException();
-			GCMesh result = (GCMesh)MemberwiseClone();
-			//result.Vertices = new List<Vertex>(Vertices.Count);
-			//foreach (Vertex item in Vertices)
-			//	result.Vertices.Add(item.Clone());
-			//result.Normals = new List<Vertex>(Normals.Count);
-			//foreach (Vertex item in Normals)
-			//	result.Normals.Add(item.Clone());
-			//result.Diffuse = new List<Color>(Diffuse);
-			//result.Specular = new List<Color>(Specular);
-			//result.UserFlags = new List<uint>(UserFlags);
-			//result.NinjaFlags = new List<uint>(NinjaFlags);
+			var result = (GCMesh)MemberwiseClone();
+			if (Parameters != null)
+			{
+				result.Parameters = new List<GCParameter>(Parameters.Count);
+				foreach (GCParameter item in Parameters)
+					result.Parameters.Add(item.Clone());
+			}
+			if (Primitives != null)
+			{
+				result.Primitives = new List<GCPrimitive>(Primitives.Count);
+				foreach (GCPrimitive item in Primitives)
+					result.Primitives.Add(item.Clone());
+			}
 			return result;
 		}
 	}

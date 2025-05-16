@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<ApplicationIcon>icon_dxSndSharp.ico</ApplicationIcon>
 		<UseWindowsForms>true</UseWindowsForms>
@@ -9,7 +9,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="icon_dxSndSharp.ico" />

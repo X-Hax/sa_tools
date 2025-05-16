@@ -1,18 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\..\build\lib\</OutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.3" />
+		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 	<PropertyGroup>
 		<DebugType>embedded</DebugType>

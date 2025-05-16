@@ -495,38 +495,40 @@ namespace VMSEditor
                 while (itemtable.Count % 32 != 0);
                 // Convert Japanese strings
                 List<byte> stringtable = new List<byte>();
-                foreach (string str in JapaneseStrings)
-                {
-                    if (str != null)
-                        for (int s = 0; s < str.Length; s++)
-                    {
-                        if (str[s] == '\t')
-                        {
-                            stringtable.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes("t"));
-                        }
-                        else if (str[s] == '\n')
-                        {
-                            stringtable.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes("n"));
-                        }
-                        else
-                        {
-                            stringtable.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes(str[s].ToString()));
-                        }
-                    }
-                    do
-                    {
-                        stringtable.Add(0);
-                    }
-                    while (stringtable.Count % 64 != 0);
-                }
+				foreach (string str in JapaneseStrings)
+				{
+					if (!string.IsNullOrEmpty(str))
+					{
+						for (int s = 0; s < Math.Min(str.Length,32); s++)
+						{
+							if (str[s] == '\t')
+							{
+								stringtable.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes("t"));
+							}
+							else if (str[s] == '\n')
+							{
+								stringtable.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes("n"));
+							}
+							else
+							{
+								stringtable.AddRange(System.Text.Encoding.GetEncoding(932).GetBytes(str[s].ToString()));
+							}
+						}
+					}
+					do
+					{
+						stringtable.Add(0);
+					}
+					while (stringtable.Count % 64 != 0);
+				}
                 // Convert European strings
                 if (EnglishStrings != null)
                 {
-                    stringtable.AddRange(ProcessStrings(EnglishStrings, 932)); // English uses the same character set as Japanese
+					stringtable.AddRange(ProcessStrings(EnglishStrings, 932)); // English uses the same character set as Japanese
                     stringtable.AddRange(ProcessStrings(FrenchStrings));
                     stringtable.AddRange(ProcessStrings(SpanishStrings));
                     stringtable.AddRange(ProcessStrings(GermanStrings));
-                }
+				}
                 // Set size
                 int fullsize = SoundData.Length + ModelData.Length + TextureData.Length + itemtable.Count + stringtable.Count + 64; // 64 is sections table at 0x280 w/checksum + 16 bytes of padding
                 if ((fullsize + 640) % 512 != 0)
@@ -766,31 +768,36 @@ namespace VMSEditor
         public static byte[] ProcessStrings(string[] list, int codepage = 1252)
         {
             List<byte> result = new List<byte>();
-            foreach (string str in list)
+            for (int i = 0; i < 16; i++)
             {
-                if (str != null)
-                    for (int s = 0; s < str.Length; s++)
-                {
-                    if (str[s] == '\t')
-                    {
-                        result.AddRange(System.Text.Encoding.GetEncoding(1252).GetBytes("~"));
-                    }
-                    else if (str[s] == '\n')
-                    {
-                        result.AddRange(System.Text.Encoding.GetEncoding(1252).GetBytes("@"));
-                    }
-                    else
-                    {
-                        result.AddRange(System.Text.Encoding.GetEncoding(codepage).GetBytes(str[s].ToString()));
-                    }
-                }
-                do
-                {
-                    result.Add(0);
-                }
-                while (result.Count % 64 != 0);
+				if (!string.IsNullOrEmpty(list[i]))
+					for (int s = 0; s < Math.Min(64, list[i].Length); s++)
+					{
+						if (list[i][s] == '\t')
+						{
+							result.AddRange(System.Text.Encoding.GetEncoding(1252).GetBytes("~"));
+						}
+						else if (list[i][s] == '\n')
+						{
+							result.AddRange(System.Text.Encoding.GetEncoding(1252).GetBytes("@"));
+						}
+						else
+						{
+							result.AddRange(System.Text.Encoding.GetEncoding(codepage).GetBytes(list[i][s].ToString()));
+						}
+					}
+				else
+					result.AddRange(new byte[64]);
+				if (result.Count % 64 != 0)
+				{
+					do
+					{
+						result.Add(0);
+					}
+					while (result.Count % 64 != 0);
+				}
             }
-            return result.ToArray();
+			return result.ToArray();
         }
 
         public static Bitmap GetIconFromFile(byte[] file)

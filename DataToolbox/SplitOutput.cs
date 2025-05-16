@@ -1,5 +1,6 @@
 using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
+using SplitTools.Split;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,6 +51,7 @@ namespace SAModel.DataToolbox
 			string datafilename;
 			string inifilename;
 			string projectFolderName;
+			SplitFlags splitFlags = SplitFlags.Log | SplitFlags.Overwrite;
 			if (splitMDL == 0)
 			{
 				Console.WriteLine("Starting batch split for " + files.Count.ToString() + " file(s)" + System.Environment.NewLine);
@@ -130,20 +132,22 @@ namespace SAModel.DataToolbox
 					}
 					if (inifilename != null)
 						Console.WriteLine("Using split data: " + inifilename);
-                    bool nmeta = labelMode == 2; // If labels are stripped, run split with the nometa parameter
-                    bool nlabels = labelMode != 1; // If labels are address-based or stripped, prevent split from loading the labels file if it exists
-                    Console.WriteLine("Skip full labels: " + nlabels.ToString());
-                    Console.WriteLine("Strip labels: " + nmeta.ToString());
+					if (labelMode == 2) // If labels are stripped, run split with the nometa parameter
+						splitFlags |= SplitFlags.NoMeta;
+					if (labelMode != 1) // If labels are address-based or stripped, prevent split from loading the labels file if it exists
+						splitFlags |= SplitFlags.NoLabels;
+                    Console.WriteLine("Skip full labels: " + splitFlags.HasFlag(SplitFlags.NoLabels).ToString());
+                    Console.WriteLine("Strip metadata: " + splitFlags.HasFlag(SplitFlags.NoMeta).ToString());
                     switch (Path.GetExtension(datafilename).ToLowerInvariant())
 					{
 						case ".dll":
-							SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, nmeta, nlabels);
+							SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, splitFlags);
 							break;
 						case ".nb":
 							SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename);
 							break;
 						default:
-							SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, nmeta, nlabels);
+							SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, splitFlags);
 							break;
 					}
 				}
@@ -152,7 +156,7 @@ namespace SAModel.DataToolbox
 			{
 				Console.WriteLine("Starting split for " + files[0] + System.Environment.NewLine);
 				Console.WriteLine("Output folder: " + out_path + System.Environment.NewLine);
-				SplitTools.SAArc.sa2MDL.Split(files[0], out_path, files.Skip(1).ToArray());
+				SplitTools.SAArc.SA2MDL.Split(files[0], out_path, files.Skip(1).ToArray());
 			}
 			Console.WriteLine("Split job finished.");
 		}

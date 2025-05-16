@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\..\build\lib\</OutputPath>
@@ -8,7 +8,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
@@ -16,7 +16,8 @@
 		<ProjectReference Include="..\VrSharp\VrSharp.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Pfim" Version="0.11.2" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+		<PackageReference Include="AuroraLib.Compression" />
+		<PackageReference Include="Pfim" />
+		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
 </Project>

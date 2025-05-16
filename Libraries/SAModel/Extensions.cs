@@ -186,6 +186,8 @@ namespace SAModel
 			{
 				if ((item >= '0' & item <= '9') | (item >= 'A' & item <= 'Z') | (item >= 'a' & item <= 'z') | item == '_')
 					result.Append(item);
+				else
+					result.Append('_');
 			}
 			if (result[0] >= '0' & result[0] <= '9')
 				result.Insert(0, '_');

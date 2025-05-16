@@ -950,6 +950,7 @@ namespace SASave
 			using (SaveFileDialog fd = new SaveFileDialog()
 			{
 				DefaultExt = "snc",
+				AddExtension = false,
 				Filter = "Save Files|*.vms;*.gci;*.snc|All Files|*.*"
 			})
 				if (fd.ShowDialog(this) == DialogResult.OK)

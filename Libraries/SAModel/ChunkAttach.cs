@@ -5,6 +5,8 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
+using static SAModel.PolyChunkVolume;
+using static SAModel.PolyChunkStrip;
 
 namespace SAModel
 {
@@ -192,9 +194,9 @@ namespace SAModel
 		public override string ToStruct(bool DX)
 		{
 			StringBuilder result = new StringBuilder("{ ");
-			result.Append(Vertex != null ? VertexName : "NULL");
+			result.Append(Vertex != null ? VertexName.MakeIdentifier() : "NULL");
 			result.Append(", ");
-			result.Append(Poly != null ? PolyName : "NULL");
+			result.Append(Poly != null ? PolyName.MakeIdentifier() : "NULL");
 			result.Append(", ");
 			result.Append(Bounds.ToStruct());
 			result.Append(" }");
@@ -207,7 +209,7 @@ namespace SAModel
 			{
 				labels.Add(VertexName);
 				writer.Write("Sint32 ");
-				writer.Write(VertexName);
+				writer.Write(VertexName.MakeIdentifier());
 				writer.Write("[] = { ");
 				List<byte> chunks = new List<byte>();
 				foreach (VertexChunk item in Vertex)
@@ -228,7 +230,7 @@ namespace SAModel
 			{
 				labels.Add(PolyName);
 				writer.Write("Sint16 ");
-				writer.Write(PolyName);
+				writer.Write(PolyName.MakeIdentifier());
 				writer.Write("[] = { ");
 				List<byte> chunks = new List<byte>();
 				foreach (PolyChunk item in Poly)
@@ -246,7 +248,7 @@ namespace SAModel
 				writer.WriteLine();
 			}
 			writer.Write("NJS_CNK_MODEL ");
-			writer.Write(Name);
+			writer.Write(Name.MakeIdentifier());
 			writer.Write(" = ");
 			writer.Write(ToStruct(DX));
 			writer.WriteLine(";");
@@ -256,7 +258,7 @@ namespace SAModel
 		{
 			if (Poly != null && !labels.Contains(PolyName))
 			{
-				writer.WriteLine("PLIST      " + PolyName + "[]");
+				writer.WriteLine("PLIST      " + PolyName.MakeIdentifier() + "[]");
 				writer.WriteLine("START");
 
 				foreach (PolyChunk item in Poly)
@@ -270,7 +272,7 @@ namespace SAModel
 
 			if (Vertex != null && !labels.Contains(VertexName))
 			{
-				writer.WriteLine("VLIST      " + VertexName + "[]");
+				writer.WriteLine("VLIST      " + VertexName.MakeIdentifier() + "[]");
 				writer.WriteLine("START");
 
 				foreach (VertexChunk item in Vertex)
@@ -282,14 +284,14 @@ namespace SAModel
 				writer.Write("END" + Environment.NewLine + Environment.NewLine);
 			}
 
-			writer.WriteLine("CNKMODEL   " + Name + "[]");
+			writer.WriteLine("CNKMODEL   " + Name.MakeIdentifier() + "[]");
 			writer.WriteLine("START");
 			if (Vertex != null && !labels.Contains(VertexName))
-				writer.WriteLine("VList      " + VertexName + ",");
+				writer.WriteLine("VList      " + VertexName.MakeIdentifier() + ",");
 			else
 				writer.WriteLine("VList      NULL,");
 			if (Poly != null && !labels.Contains(PolyName))
-				writer.WriteLine("PList      " + PolyName + ",");
+				writer.WriteLine("PList      " + PolyName.MakeIdentifier() + ",");
 			else
 				writer.WriteLine("PList      NULL,");
 			writer.WriteLine("Center    " + Bounds.Center.X.ToNJA() + ", " + Bounds.Center.Y.ToNJA() + ", " + Bounds.Center.Z.ToNJA() + ",");
@@ -483,6 +485,58 @@ namespace SAModel
 							result.Add(new MeshInfo(MaterialBuffer, polys.ToArray(), verts.ToArray(), hasUV, hasVColor));
 							MaterialBuffer = new NJS_MATERIAL(MaterialBuffer);
 						}
+						break;
+					case ChunkType.Volume_Polygon3:
+					case ChunkType.Volume_Polygon4:
+					case ChunkType.Volume_Strip:
+						PolyChunkVolume vol = (PolyChunkVolume)chunk;
+						List<Poly> polyvol = new List<Poly>();
+						List<VertexData> vertvol = new List<VertexData>();
+						switch (chunk.Type)
+						{
+							case ChunkType.Volume_Polygon3:
+								foreach (PolyChunkVolume.Triangle tri in vol.Polys)
+								{
+									Triangle three = new Triangle();
+									for (int k = 0; k < tri.Indexes.Length; k++)
+									{
+										three.Indexes[k] = (ushort)vertvol.Count;
+										vertvol.Add(new VertexData(
+											VertexBuffer[tri.Indexes[k]].Position));
+									}
+									polyvol.Add(three);
+								}
+								break;
+							//Untested
+							case ChunkType.Volume_Polygon4:
+								foreach (PolyChunkVolume.Quad quad in vol.Polys)
+								{
+									Quad four = new Quad();
+									for (int k = 0; k < quad.Indexes.Length; k++)
+									{
+										four.Indexes[k] = (ushort)vertvol.Count;
+										vertvol.Add(new VertexData(
+											VertexBuffer[quad.Indexes[k]].Position));
+									}
+									polyvol.Add(four);
+								}
+								break;
+							//Untested
+							case ChunkType.Volume_Strip:
+								foreach (PolyChunkVolume.Strip strip in vol.Polys)
+								{
+									Strip str = new Strip(strip.Indexes.Length, strip.Reversed);
+									for (int k = 0; k < strip.Indexes.Length; k++)
+									{
+										str.Indexes[k] = (ushort)vertvol.Count;
+										vertvol.Add(new VertexData(
+											VertexBuffer[strip.Indexes[k]].Position));
+									}
+									polyvol.Add(str);
+								}
+								break;
+						}
+						result.Add(new MeshInfo(MaterialBuffer, polyvol.ToArray(), vertvol.ToArray(), false, false, true));
 						break;
 				}
 			}

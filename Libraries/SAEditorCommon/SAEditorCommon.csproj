@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<OutputPath>..\..\build\lib\</OutputPath>
 		<RootNamespace>SAModel.SAEditorCommon</RootNamespace>
@@ -9,10 +9,34 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Update="UI\ChunkModelBlendAlphaDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\GCModelVertexDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\GCModelParameterDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelVertexDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelStripDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelMaterialDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelTextureDataEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
 		<Compile Update="UI\GCMaterialEditor.cs">
+		  <SubType>Form</SubType>
+		</Compile>
+		<Compile Update="UI\ChunkModelDataEditor.cs">
 		  <SubType>Form</SubType>
 		</Compile>
 		<Compile Update="UI\ModelLibraryControl.cs">
@@ -35,8 +59,8 @@
 		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="AssimpNet" Version="4.1.0" />
-		<PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
-		<PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+		<PackageReference Include="AssimpNet" />
+		<PackageReference Include="SharpDX.Direct3D9" />
+		<PackageReference Include="SharpDX.Mathematics" />
 	</ItemGroup>
 </Project>

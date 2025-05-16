@@ -118,6 +118,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			/// </summary>
 			[XmlAttribute("projectType")]
 			public string ProjectType { get; set; }
+			/// <summary>
+			/// Boolean to tell whether the template only outputs NJA.
+			/// </summary>
+			[XmlAttribute("NJA")]
+			public bool NJA { get; set; }
 		}
 
 		/// <summary>
@@ -225,6 +230,11 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			[XmlAttribute("MTNLabelFile")]
 			public string MTNLabelFile { get; set; }
 			/// <summary>
+			/// List of external motions that the model pack uses and are not part of the corresponding MTN archive.
+			/// </summary>
+			[XmlAttribute("EXMTNFile")]
+			public string EXMTNFile { get; set; }
+			/// <summary>
 			/// List of Motion files uses by the Model File.
 			/// </summary>
 			[XmlElement("MotionFile")]
@@ -327,6 +337,9 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <returns>True if a match is found</returns>
 		private static bool checkFileHashes(string gameHashes, string checkFileHash)
 		{
+			if (gameHashes == null)
+				return true;
+
 			string[] hashes = gameHashes.Split(',');
 
 			if (!hashes.Any(h => h.Equals(checkFileHash, StringComparison.OrdinalIgnoreCase)))
@@ -573,8 +586,9 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 		/// <summary>
 		/// Splits data from a SplitEntry.
 		/// </summary>
-		public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, bool overwrite = true, bool nometa = false, bool nolabel = false)
+		public static void SplitTemplateEntry(Templates.SplitEntry splitData, SAModel.SAEditorCommon.UI.ProgressDialog progress, string gameFolder, string iniFolder, string outputFolder, SplitFlags splitFlags)
 		{
+			splitFlags |= SplitFlags.Log | SplitFlags.Overwrite;
 			string datafilename;
 			switch (splitData.SourceFile)
 			{
@@ -635,13 +649,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			switch (ext.ToLower())
 			{
 				case ".dll":
-					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, nometa, nolabel, overwrite, true);
+					SplitTools.SplitDLL.SplitDLL.SplitDLLFile(datafilename, inifilename, projectFolderName, splitFlags);
 					break;
 				case ".nb":
-					SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, overwrite);
+					SplitTools.Split.SplitNB.SplitNBFile(datafilename, false, projectFolderName, 0, inifilename, splitFlags.HasFlag(SplitFlags.Overwrite));
 					break;
 				default:
-					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, nometa, nolabel, overwrite, true);
+					SplitTools.Split.SplitBinary.SplitFile(datafilename, inifilename, projectFolderName, splitFlags);
 					break;
 			}
 		}
@@ -656,6 +670,13 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			string mdllabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.LabelFile.ToLower() + ".ini"));
 
 			string mtnlabelfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.MTNLabelFile.ToLower() + ".ini"));
+
+			string exmtnfile = null;
+			
+			if (splitMDL.EXMTNFile != null)
+			{
+				exmtnfile = Path.Combine(Path.Combine(iniFolder, "MDL"), (splitMDL.EXMTNFile.ToLower() + ".ini"));
+			}
 
 			string fileOutputFolder = Path.Combine(outputFolder, "figure\\bin");
 
@@ -680,7 +701,7 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 			#endregion
 
 			if (overwrite)
-				sa2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile);
+				SA2MDL.Split(filePath, fileOutputFolder, splitMDL.MotionFiles.ToArray(), mdllabelfile, mtnlabelfile, exmtnfile);
 		}
 
 		/// <summary>
@@ -808,19 +829,19 @@ namespace SAModel.SAEditorCommon.ProjectManagement
 						break;
 					case "Trial":
 					case "Preview":
-						sa2Event.Split(filePath, fileOutputFolder, labelfile);
+						SA2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
 						break;
 					case "MainPRS":
 					case "MainPC":
-						sa2Event.Split(filePath, fileOutputFolder, labelfile);
+						SA2Event.Split(filePath, fileOutputFolder, labelfile);
 						foreach (string ex in filePathEXArr)
 							sa2EventExtra.Split(ex, fileOutputFolder);
-						sa2Event.SplitExternalTexlist(filePathTex, fileOutputFolder);
+						SA2Event.SplitExternalTexList(filePathTex, fileOutputFolder);
 						break;
 					case "MainBIN":
-						sa2Event.Split(filePath, fileOutputFolder, labelfile);
+						SA2Event.Split(filePath, fileOutputFolder, labelfile);
 						break;
 					case "Cyclone":
 						sa2EventTailsPlane.Split(filePath, fileOutputFolder, labelfile);

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition.Primitives;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
-using SplitTools;
 using SplitTools.SplitDLL;
 
 namespace SAModel.SAEditorCommon
@@ -186,7 +183,7 @@ namespace SAModel.SAEditorCommon
 
 			foreach (KeyValuePair<string, FileTypeHash> item in iniData.Files)
 			{
-				bool modified = itemsToExport[item.Key];
+				bool modified = itemsToExport[item.Value.Name];
 
 				if (!oneModified)
 					oneModified = modified;
@@ -216,7 +213,7 @@ namespace SAModel.SAEditorCommon
 
 			foreach (var item in iniData.DataItems)
 			{
-				bool modified = itemsToExport[item.Filename];
+				bool modified = itemsToExport[item.Metadata];
 
 				listView.Items.Add(new ListViewItem
 				(
@@ -267,19 +264,20 @@ namespace SAModel.SAEditorCommon
 
 		private void listView1_ItemChecked(object sender, ItemCheckedEventArgs e)
 		{
-			// first get reference to our list box
-			// then reference to assembly
-			// then reference to export-list
 			string name = assemblyItemTabs.SelectedTab.Text;
-
-			assemblyItemsToExport[name][e.Item.Text] = e.Item.Checked;
+			string item = e.Item.Text;
+			if (assemblyItemsToExport[name].ContainsKey(item))
+				assemblyItemsToExport[name][item] = e.Item.Checked;
 		}
 
 		private void CheckAllButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+			if (page == null)
+				return;
 			ListView listView = assemblyListViews[page.Text];
-
+			if (listView == null)
+				return;
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
@@ -291,14 +289,15 @@ namespace SAModel.SAEditorCommon
 		private void CheckModifiedButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+			if (page == null)
+				return;
 			ListView listView = assemblyListViews[page.Text];
-
-			int modifiedIndex = (assemblies[page.Text] == AssemblyType.Exe) ? 2 : 1;
-
+			if (listView == null)
+				return;
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
-				item.Checked = item.SubItems[modifiedIndex].Text != "No"; // we need to handle this differently depending on if we're exe or dll
+				item.Checked = item.SubItems[2].Text != "No";
 			}
 			listView.EndUpdate();
 		}
@@ -306,8 +305,11 @@ namespace SAModel.SAEditorCommon
 		private void UncheckAllButton_Click(object sender, EventArgs e)
 		{
 			TabPage page = assemblyItemTabs.SelectedTab;
+			if (page == null)
+				return;
 			ListView listView = assemblyListViews[page.Text];
-
+			if (listView == null)
+				return;
 			listView.BeginUpdate();
 			foreach (ListViewItem item in listView.Items)
 			{
@@ -371,7 +373,7 @@ namespace SAModel.SAEditorCommon
 							break;
 
 						case AssemblyType.DLL:
-							DLLModGenerator.DLLModGen.ExportINIManual((DllIniData)assemblyIniFiles[assembly.Key],
+							DLLModGenerator.DLLModGen.ExportINI((DllIniData)assemblyIniFiles[assembly.Key],
 								assemblyItemsToExport[assembly.Key], Path.Combine(folderDialog.SelectedPath, assembly.Key + "_data.ini"));
 							break;
 

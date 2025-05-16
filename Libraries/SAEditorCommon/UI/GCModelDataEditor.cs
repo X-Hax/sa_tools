@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System;
 using SAModel.GC;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
+using SharpDX.Direct3D9;
+using SAModel.Direct3D.TextureSystem;
 
 namespace SAModel.SAEditorCommon.UI
 {
@@ -14,8 +17,9 @@ namespace SAModel.SAEditorCommon.UI
 		private Attach originalModel;
 		private bool freeze;
 		private int previousNodeIndex;
+		private readonly BMPInfo[] textures;
 
-		public GCModelDataEditor(NJS_OBJECT objectOriginal, int index = 0)
+		public GCModelDataEditor(NJS_OBJECT objectOriginal, BMPInfo[] textures, int index = 0)
 		{
 			if (objectOriginal == null)
 				return;
@@ -25,95 +29,17 @@ namespace SAModel.SAEditorCommon.UI
 			editedHierarchy = objectOriginal.Clone();
 			BuildNodeList();
 			comboBoxNode.SelectedIndex = index;
-			BuildMeshsetList();
+			BuildVertexList();
+			BuildOpaqueMeshList();
+			BuildTranslucentMeshList();
+			this.textures = textures;
 			freeze = false;
 		}
 
 		#region Meshset label and material ID editing
-
-		private void toolStripMenuItemEditMaterialID_Click(object sender, EventArgs e)
-		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			using (LabelEditor le = new LabelEditor(selectedMesh.MaterialID.ToString(), "", true))
-			{
-				if (le.ShowDialog(this) == DialogResult.OK)
-				{
-					int.TryParse(le.Result, out int result);
-					selectedMesh.MaterialID = (ushort)result;
-				}
-
-			}
-			FixLabels();
-			BuildMeshsetList();
-		}
-
-		private void toolStripMenuItemEditPolyName_Click(object sender, System.EventArgs e)
-		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			using (LabelEditor le = new LabelEditor(selectedMesh.PolyName))
-			{
-				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.PolyName = le.Result;
-			}
-			FixLabels();
-			BuildMeshsetList();
-		}
-
-		private void toolStripMenuItemEditUVName_Click(object sender, System.EventArgs e)
-		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			using (LabelEditor le = new LabelEditor(selectedMesh.UVName))
-			{
-				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.UVName = le.Result;
-			}
-			FixLabels();
-			BuildMeshsetList();
-		}
-
-		private void toolStripMenuItemEditVcolorName_Click(object sender, System.EventArgs e)
-		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			using (LabelEditor le = new LabelEditor(selectedMesh.VColorName))
-			{
-				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.VColorName = le.Result;
-			}
-			FixLabels();
-			BuildMeshsetList();
-		}
-
-		private void toolStripMenuItemEditPolynormalName_Click(object sender, System.EventArgs e)
-		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			using (LabelEditor le = new LabelEditor(selectedMesh.PolyNormalName))
-			{
-				if (le.ShowDialog(this) == DialogResult.OK)
-					selectedMesh.PolyNormalName = le.Result;
-			}
-			FixLabels();
-			BuildMeshsetList();
-		}
 		#endregion
 
 		#region Mesh management
-
-		private int CheckInvalidMaterials(NJS_MESHSET meshset, BasicAttach att)
-		{
-			if (meshset.MaterialID > att.Material.Count - 1)
-			{
-				meshset.MaterialID = (ushort)(att.Material.Count - 1);
-				return 1;
-			}
-			return 0;
-		}
-
-		private bool CheckAlpha(NJS_MESHSET meshset, BasicAttach att)
-		{
-			if (att.Material[meshset.MaterialID] != null)
-				return att.Material[meshset.MaterialID].UseAlpha;
-			return false;
-		}
 
 		private void FixLabels()
 		{
@@ -200,59 +126,111 @@ namespace SAModel.SAEditorCommon.UI
 			}
 		}
 
-		private void buttonResetMeshes_Click(object sender, System.EventArgs e)
+		private void buttonResetTMeshes_Click(object sender, System.EventArgs e)
 		{
-			((BasicAttach)editedModel).Mesh.Clear();
-			foreach (NJS_MESHSET mesh in ((BasicAttach)originalModel).Mesh)
-				((BasicAttach)editedModel).Mesh.Add(mesh);
-			BuildMeshsetList();
+			((GC.GCAttach)editedModel).TranslucentMeshes.Clear();
+			foreach (GCMesh mesh in ((GC.GCAttach)originalModel).TranslucentMeshes)
+				((GC.GCAttach)editedModel).TranslucentMeshes.Add(mesh);
+			BuildTranslucentMeshList();
+		}
+		private void buttonResetOMeshes_Click(object sender, System.EventArgs e)
+		{
+			((GC.GCAttach)editedModel).OpaqueMeshes.Clear();
+			foreach (GCMesh mesh in ((GC.GCAttach)originalModel).OpaqueMeshes)
+				((GC.GCAttach)editedModel).OpaqueMeshes.Add(mesh);
+			BuildOpaqueMeshList();
 		}
 
-		private void buttonCloneMesh_Click(object sender, System.EventArgs e)
+		private void buttonCloneOMesh_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
-			((BasicAttach)editedModel).Mesh.Insert(((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh) + 1, selectedMesh.Clone());
-			FixLabels();
-			BuildMeshsetList();
-			SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).OpaqueMeshes.Insert(((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) + 1, selectedMesh.Clone());
+			//FixLabels();
+			BuildOpaqueMeshList();
+			SelectOMesh(Math.Min(listViewOMeshes.Items.Count - 1, index + 1));
+		}
+		private void buttonCloneTMesh_Click(object sender, System.EventArgs e)
+		{
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).TranslucentMeshes.Insert(((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) + 1, selectedMesh.Clone());
+			//FixLabels();
+			BuildTranslucentMeshList();
+			SelectTMesh(Math.Min(listViewTMeshes.Items.Count - 1, index + 1));
 		}
 
-		private void buttonDeleteMesh_Click(object sender, System.EventArgs e)
+		private void buttonDeleteOMesh_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
-			((BasicAttach)editedModel).Mesh.Remove(selectedMesh);
-			FixLabels();
-			BuildMeshsetList();
-			SelectMesh(Math.Max(0, index - 1));
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).OpaqueMeshes.Remove(selectedMesh);
+			//FixLabels();
+			BuildOpaqueMeshList();
+			SelectOMesh(Math.Max(0, index - 1));
 		}
 
-		private void buttonMoveMeshUp_Click(object sender, System.EventArgs e)
+		private void buttonDeleteTMesh_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
-			((BasicAttach)editedModel).Mesh.Insert(index - 1, selectedMesh);
-			((BasicAttach)editedModel).Mesh.RemoveAt(index + 1);
-			FixLabels();
-			BuildMeshsetList();
-			SelectMesh(Math.Max(0, index - 1));
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).TranslucentMeshes.Remove(selectedMesh);
+			//FixLabels();
+			BuildTranslucentMeshList();
+			SelectTMesh(Math.Max(0, index - 1));
 		}
 
-		private void buttonMoveMeshDown_Click(object sender, System.EventArgs e)
+		private void buttonMoveOMeshUp_Click(object sender, System.EventArgs e)
 		{
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			int index = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh);
-			((BasicAttach)editedModel).Mesh.Insert(index + 2, selectedMesh);
-			((BasicAttach)editedModel).Mesh.RemoveAt(index);
-			FixLabels();
-			BuildMeshsetList();
-			SelectMesh(Math.Min(listViewMeshes.Items.Count -1, index + 1));
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).OpaqueMeshes.Insert(index - 1, selectedMesh);
+			((GC.GCAttach)editedModel).OpaqueMeshes.RemoveAt(index + 1);
+			//FixLabels();
+			BuildOpaqueMeshList();
+			SelectOMesh(Math.Max(0, index - 1));
 		}
 
-		private void SelectMesh(int index)
+		private void buttonMoveTMeshUp_Click(object sender, System.EventArgs e)
 		{
-			listViewMeshes.SelectedIndices.Add(index);
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).TranslucentMeshes.Insert(index - 1, selectedMesh);
+			((GC.GCAttach)editedModel).TranslucentMeshes.RemoveAt(index + 1);
+			//FixLabels();
+			BuildTranslucentMeshList();
+			SelectTMesh(Math.Max(0, index - 1));
+		}
+
+		private void buttonMoveOMeshDown_Click(object sender, System.EventArgs e)
+		{
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).OpaqueMeshes.Insert(index + 2, selectedMesh);
+			((GC.GCAttach)editedModel).OpaqueMeshes.RemoveAt(index);
+			//FixLabels();
+			BuildOpaqueMeshList();
+			SelectOMesh(Math.Min(listViewOMeshes.Items.Count - 1, index + 1));
+		}
+
+		private void buttonMoveTMeshDown_Click(object sender, System.EventArgs e)
+		{
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewOMeshes.SelectedIndices[0]];
+			int index = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh);
+			((GC.GCAttach)editedModel).TranslucentMeshes.Insert(index + 2, selectedMesh);
+			((GC.GCAttach)editedModel).TranslucentMeshes.RemoveAt(index);
+			//FixLabels();
+			BuildTranslucentMeshList();
+			SelectTMesh(Math.Min(listViewOMeshes.Items.Count - 1, index + 1));
+		}
+
+		private void SelectOMesh(int index)
+		{
+			listViewOMeshes.SelectedIndices.Add(index);
+		}
+		private void SelectTMesh(int index)
+		{
+			listViewTMeshes.SelectedIndices.Add(index);
 		}
 		#endregion
 
@@ -290,13 +268,13 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void textBoxVertexName_TextChanged(object sender, System.EventArgs e)
 		{
-		//	if (freeze)
-		//		return;
-		//	if (!string.IsNullOrEmpty(textBoxVertexName.Text))
-		//	{
-		//		if (editedModel is GCAttach)
-		//			((GCAttach)editedModel).VertexName = textBoxVertexName.Text;
-		//	}
+			//	if (freeze)
+			//		return;
+			//	if (!string.IsNullOrEmpty(textBoxVertexName.Text))
+			//	{
+			//		if (editedModel is GCAttach)
+			//			((GCAttach)editedModel).VertexName = textBoxVertexName.Text;
+			//	}
 		}
 
 		private void textBoxModelX_TextChanged(object sender, System.EventArgs e)
@@ -355,71 +333,257 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < objs.Length; i++)
 				comboBoxNode.Items.Add(i.ToString() + ": " + objs[i].Name.ToString());
 		}
-
-		private void BuildMeshsetList()
+		private void BuildVertexList()
 		{
-			listViewMeshes.Items.Clear();
-			groupBoxMeshList.Enabled = editedModel != null && editedModel is BasicAttach;
-			int invalidMaterials = 0;
-			if (editedModel is BasicAttach batt)
+			listViewVertices.Items.Clear();
+			groupBoxVertexList.Enabled = editedModel != null;
+			if (editedModel is GC.GCAttach gcmodel)
 			{
-				foreach (NJS_MESHSET meshset in batt.Mesh)
+				Dictionary<int, GCVertexSet> vertdata = new Dictionary<int, GCVertexSet>();
+				for (int i = 0; i < gcmodel.VertexData.Count; i++)
 				{
-					invalidMaterials += CheckInvalidMaterials(meshset, batt);
-					ListViewItem newmesh = new ListViewItem(batt.Mesh.IndexOf(meshset).ToString());
-					newmesh.SubItems.Add(meshset.MaterialID.ToString());
-					newmesh.SubItems.Add(meshset.PolyType.ToString());
-					newmesh.SubItems.Add(meshset.Poly != null ? meshset.PolyName : "N/A");
-					newmesh.SubItems.Add(meshset.UV != null ? meshset.UVName : "N/A");
-					newmesh.SubItems.Add(meshset.VColor != null ? meshset.VColorName : "N/A");
-					newmesh.SubItems.Add(meshset.PolyNormal != null ? meshset.PolyNormalName : "N/A");
-					newmesh.SubItems.Add(CheckAlpha(meshset, batt) ? "Yes" : "No");
-					listViewMeshes.Items.Add(newmesh);
+					vertdata.Add(i, gcmodel.VertexData[i]);
 				}
-				if (invalidMaterials > 0)
-					MessageBox.Show(this, invalidMaterials.ToString() + " materials were using invalid material IDs. " +
-						"Those material IDs have been reset to the value " + 
-						(batt.Material.Count - 1).ToString() + ".", "Model Data Editor Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				foreach (KeyValuePair<int, GCVertexSet> verts in vertdata)
+				{
+					ListViewItem newvert = new ListViewItem(verts.Key.ToString());
+					GCVertexSet vx = verts.Value;
+					string maintype = "";
+					string subtype = "";
+					switch (vx.Attribute)
+					{
+						case GCVertexAttribute.Position:
+							maintype += "Position";
+							break;
+						case GCVertexAttribute.Normal:
+							maintype += "Normal";
+							break;
+						case GCVertexAttribute.Color0:
+							maintype += "VColor";
+							break;
+						case GCVertexAttribute.Tex0:
+							maintype += "UV";
+							break;
+					}
+					newvert.SubItems.Add(maintype);
+					newvert.SubItems.Add(vx.Data.Count.ToString());
+					switch (vx.DataType)
+					{
+						case GCDataType.Signed16:
+							subtype += "S16, ";
+							break;
+						case GCDataType.Unsigned16:
+							subtype += "U16, ";
+							break;
+						case GCDataType.Signed8:
+							subtype += "S8, ";
+							break;
+						case GCDataType.Unsigned8:
+							subtype += "U8, ";
+							break;
+						case GCDataType.RGB565:
+							subtype += "RGB565, ";
+							break;
+						case GCDataType.RGB8:
+							subtype += "RGB8, ";
+							break;
+						case GCDataType.RGBA8:
+							subtype += "RGBA8, ";
+							break;
+						case GCDataType.Float32:
+							subtype += "F32, ";
+							break;
+					}
+					switch (vx.StructType)
+					{
+						case GCStructType.Position_XY:
+							subtype += "XY";
+							break;
+						case GCStructType.Normal_NBT:
+							subtype += "NBT";
+							break;
+						case GCStructType.Normal_NBT3:
+							subtype += "NBT3";
+							break;
+						case GCStructType.Position_XYZ:
+						case GCStructType.Normal_XYZ:
+							subtype += "XYZ";
+							break;
+						case GCStructType.Color_RGB:
+							subtype += "RGB";
+							break;
+						case GCStructType.Color_RGBA:
+							subtype += "RGBA";
+							break;
+						case GCStructType.TexCoord_S:
+							subtype += "S";
+							break;
+						case GCStructType.TexCoord_ST:
+							subtype += "ST";
+							break;
+					}
+					newvert.SubItems.Add(subtype);
+					listViewVertices.Items.Add(newvert);
+				}
+				listViewVertices.SelectedIndices.Clear();
+				listViewVertices.SelectedItems.Clear();
+				listViewVertices_SelectedIndexChanged(null, null);
+				listViewVertices.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 			}
-			listViewMeshes.SelectedIndices.Clear();
-			listViewMeshes.SelectedItems.Clear();
-			listViewMeshes_SelectedIndexChanged(null, null);
-			listViewMeshes.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
+		private void BuildOpaqueMeshList()
+		{
+			listViewOMeshes.Items.Clear();
+			groupBoxOpaque.Enabled = false;
+			if (editedModel is GC.GCAttach gcmodel)
+			{
+				if (gcmodel.OpaqueMeshes.Count > 0)
+				{
+					groupBoxOpaque.Enabled = true;
+					Dictionary<int, GCMesh> meshes = new Dictionary<int, GCMesh>();
+					for (int i = 0; i < gcmodel.OpaqueMeshes.Count; i++)
+					{
+						meshes.Add(i, gcmodel.OpaqueMeshes[i]);
+					}
+					foreach (KeyValuePair<int, GCMesh> meshdata in meshes)
+					{
+						ListViewItem gcm = new ListViewItem(meshdata.Key.ToString());
+						gcm.SubItems.Add(meshdata.Value.Parameters.Count.ToString());
+						gcm.SubItems.Add(meshdata.Value.Primitives.Count.ToString());
+						listViewOMeshes.Items.Add(gcm);
+					}
+				}
+			}
+			listViewOMeshes.SelectedIndices.Clear();
+			listViewOMeshes.SelectedItems.Clear();
+			listViewOMeshes_SelectedIndexChanged(null, null);
+			listViewOMeshes.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
+		private void BuildTranslucentMeshList()
+		{
+			listViewTMeshes.Items.Clear();
+			groupBoxTrans.Enabled = false;
+			if (editedModel is GC.GCAttach gcmodel)
+			{
+				if (gcmodel.TranslucentMeshes.Count > 0)
+				{
+					groupBoxTrans.Enabled = true;
+					Dictionary<int, GCMesh> meshes = new Dictionary<int, GCMesh>();
+					for (int i = 0; i < gcmodel.TranslucentMeshes.Count; i++)
+					{
+						meshes.Add(i, gcmodel.TranslucentMeshes[i]);
+					}
+					foreach (KeyValuePair<int, GCMesh> meshdata in meshes)
+					{
+						ListViewItem gcm = new ListViewItem(meshdata.Key.ToString());
+						gcm.SubItems.Add(meshdata.Value.Parameters.Count.ToString());
+						gcm.SubItems.Add(meshdata.Value.Primitives.Count.ToString());
+						listViewTMeshes.Items.Add(gcm);
+					}
+				}
+			}
+			listViewTMeshes.SelectedIndices.Clear();
+			listViewTMeshes.SelectedItems.Clear();
+			listViewTMeshes_SelectedIndexChanged(null, null);
+			listViewTMeshes.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 		}
 
-		private void listViewMeshes_SelectedIndexChanged(object sender, System.EventArgs e)
+		private void listViewOMeshes_SelectedIndexChanged(object sender, System.EventArgs e)
 		{
-			if (listViewMeshes.SelectedIndices.Count == 0)
+			if (listViewOMeshes.SelectedIndices.Count == 0)
 			{
-				buttonCloneMesh.Enabled = buttonDeleteMesh.Enabled = buttonMoveMeshDown.Enabled = buttonMoveMeshUp.Enabled = false;
+				buttonCloneOMesh.Enabled = buttonDeleteOMesh.Enabled = buttonMoveOMeshDown.Enabled = buttonMoveOMeshUp.Enabled = false;
 				return;
 			}
-			NJS_MESHSET selectedMesh = ((BasicAttach)editedModel).Mesh[listViewMeshes.SelectedIndices[0]];
-			buttonCloneMesh.Enabled = true;
-			buttonDeleteMesh.Enabled = ((BasicAttach)editedModel).Mesh.Count > 1;
-			buttonMoveMeshUp.Enabled = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh) > 0;
-			buttonMoveMeshDown.Enabled = ((BasicAttach)editedModel).Mesh.IndexOf(selectedMesh) < ((BasicAttach)editedModel).Mesh.Count - 1;
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+			buttonCloneOMesh.Enabled = true;
+			buttonDeleteOMesh.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.Count > 0;
+			buttonMoveOMeshUp.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) > 0;
+			buttonMoveOMeshDown.Enabled = ((GC.GCAttach)editedModel).OpaqueMeshes.IndexOf(selectedMesh) < ((GC.GCAttach)editedModel).OpaqueMeshes.Count - 1;
+			openOParameterViewerToolStripMenuItem.Enabled = selectedMesh.Parameters.Count > 0;
+			openTParameterViewerToolStripMenuItem.Enabled = false;
+			string meshParamAddr = selectedMesh.ParameterName;
+			string meshParamCount = selectedMesh.Parameters.Count.ToString();
+			string meshPrimName = selectedMesh.PrimitiveName;
+			string meshPrimCount = selectedMesh.Primitives.Count.ToString();
+			string meshPrimSize = selectedMesh.PrimitiveSize.ToString();
 			// Status bar
 			StringBuilder sb = new StringBuilder();
-			if (selectedMesh.Poly != null)
-				sb.Append("Polys: " + selectedMesh.Poly.Count + " ");
-			if (selectedMesh.UV != null)
-				sb.Append("UVs: " + selectedMesh.UV.Length + " ");
-			if (selectedMesh.PolyNormal != null)
-				sb.Append("Polynormals: " + selectedMesh.PolyNormal.Length);
-			sb.Append("Attributes: " + selectedMesh.PAttr.ToString());
+			sb.Append("Data: ");
+			if (meshParamAddr != null)
+			{
+				sb.Append(meshParamAddr);
+				sb.Append(", Count:");
+				sb.Append(meshParamCount);
+				sb.Append(", ");
+			}
+			if (meshPrimName != null)
+			{
+				sb.Append(meshPrimName);
+				sb.Append(", Count:");
+				sb.Append(meshPrimCount);
+				sb.Append(", Primitive Size (Bytes):");
+				sb.Append(meshPrimSize);
+			}
 			toolStripStatusLabelInfo.Text = sb.ToString();
-			// Label editor
-			toolStripMenuItemEditPolyName.Enabled = selectedMesh.Poly != null;
-			toolStripMenuItemEditUVName.Enabled = selectedMesh.UV != null;
-			toolStripMenuItemEditVcolorName.Enabled = selectedMesh.VColor != null;
-			toolStripMenuItemEditPolynormalName.Enabled = selectedMesh.PolyNormal != null;
 		}
 
-		private void listViewMeshes_MouseClick(object sender, MouseEventArgs e)
+		private void listViewTMeshes_SelectedIndexChanged(object sender, System.EventArgs e)
 		{
-			if (e.Button == MouseButtons.Right && listViewMeshes.SelectedIndices.Count != 0)
-				contextMenuStripLabels.Show(listViewMeshes, e.Location);
+			if (listViewTMeshes.SelectedIndices.Count == 0)
+			{
+				buttonCloneTMesh.Enabled = buttonDeleteTMesh.Enabled = buttonMoveTMeshDown.Enabled = buttonMoveTMeshUp.Enabled = false;
+				return;
+			}
+			GCMesh selectedMesh = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
+			buttonCloneTMesh.Enabled = true;
+			buttonDeleteTMesh.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.Count > 0;
+			buttonMoveTMeshUp.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) > 0;
+			buttonMoveTMeshDown.Enabled = ((GC.GCAttach)editedModel).TranslucentMeshes.IndexOf(selectedMesh) < ((GC.GCAttach)editedModel).TranslucentMeshes.Count - 1;
+			openTParameterViewerToolStripMenuItem.Enabled = selectedMesh.Parameters.Count > 0;
+			openOParameterViewerToolStripMenuItem.Enabled = false;
+			string meshParamAddr = selectedMesh.ParameterName;
+			string meshParamCount = selectedMesh.Parameters.Count.ToString();
+			string meshPrimName = selectedMesh.PrimitiveName;
+			string meshPrimCount = selectedMesh.Primitives.Count.ToString();
+			string meshPrimSize = selectedMesh.PrimitiveSize.ToString();
+			// Status bar
+			StringBuilder sb = new StringBuilder();
+			sb.Append("Data: ");
+			if (meshParamAddr != null)
+			{
+				sb.Append(meshParamAddr);
+				sb.Append(", Count:");
+				sb.Append(meshParamCount);
+				sb.Append(", ");
+			}
+			if (meshPrimName != null)
+			{
+				sb.Append(meshPrimName);
+				sb.Append(", Count:");
+				sb.Append(meshPrimCount);
+				sb.Append(", Primitive Size (Bytes):");
+				sb.Append(meshPrimSize);
+			}
+			toolStripStatusLabelInfo.Text = sb.ToString();
+		}
+
+		private void listViewOMeshes_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewOMeshes.SelectedIndices.Count != 0)
+				contextMenuStripParamEdit.Show(listViewOMeshes, e.Location);
+		}
+
+		private void listViewTMeshes_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewTMeshes.SelectedIndices.Count != 0)
+				contextMenuStripParamEdit.Show(listViewTMeshes, e.Location);
+		}
+
+		private void listViewVertices_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewVertices.SelectedIndices.Count != 0)
+				contextMenuStripVertData.Show(listViewVertices, e.Location);
 		}
 
 		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
@@ -468,7 +632,9 @@ namespace SAModel.SAEditorCommon.UI
 				editedModel = null;
 			}
 			previousNodeIndex = comboBoxNode.SelectedIndex;
-			BuildMeshsetList();
+			BuildVertexList();
+			BuildOpaqueMeshList();
+			BuildTranslucentMeshList();
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -476,5 +642,68 @@ namespace SAModel.SAEditorCommon.UI
 			comboBoxNode_SelectedIndexChanged(sender, e);
 		}
 		#endregion
+
+		private void listViewVertices_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listViewVertices.SelectedIndices.Count == 0)
+			{
+				return;
+			}
+			viewVertexDataToolStripMenuItem.Enabled = true;
+			GCVertexSet selectedVerts = ((GC.GCAttach)editedModel).VertexData[listViewVertices.SelectedItems[0].Index];
+			string vertsAttr = selectedVerts.Attribute.ToString();
+			string vertDataSize = selectedVerts.StructSize.ToString();
+			string vertsEntries = selectedVerts.Data.Count.ToString();
+			string vertsStructType = selectedVerts.StructType.ToString();
+			string vertsDataType = selectedVerts.DataType.ToString();
+			string vertsAddr = selectedVerts.DataName;
+			string vertsTotalSize = (selectedVerts.Data.Count * selectedVerts.StructSize).ToString();
+			StringBuilder sb = new StringBuilder();
+			sb.Append("Attributes: ");
+			sb.Append(vertsAttr);
+			sb.Append(", Size (Bytes):");
+			sb.Append(vertDataSize);
+			sb.Append(", Entries:");
+			sb.Append(vertsEntries);
+			sb.Append(", Struct Type:");
+			sb.Append(vertsStructType);
+			sb.Append(", Data Type:");
+			sb.Append(vertsDataType);
+			sb.Append(", ");
+			sb.Append(vertsAddr);
+			sb.Append(", Total Size (Bytes):");
+			sb.Append(vertsTotalSize);
+			toolStripStatusLabelInfo.Text = sb.ToString();
+		}
+
+		private void openOParameterViewerToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			GCMesh oMeshData = ((GC.GCAttach)editedModel).OpaqueMeshes[listViewOMeshes.SelectedIndices[0]];
+
+			using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(oMeshData, textures))
+			{
+				de.ShowDialog(this);
+			}
+		}
+
+		private void openTParameterViewerToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			GCMesh tMeshData = ((GC.GCAttach)editedModel).TranslucentMeshes[listViewTMeshes.SelectedIndices[0]];
+			using (GCModelParameterDataEditor de = new GCModelParameterDataEditor(tMeshData, textures))
+			{
+				de.ShowDialog(this);
+			}
+		}
+
+		private void viewVertexDataToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			int vertID = int.Parse(listViewVertices.SelectedItems[0].SubItems[0].Text);
+			List<GCVertexSet> selectedObj = ((GC.GCAttach)editedModel).VertexData;
+			GCVertexSet selectedVert = selectedObj[listViewVertices.SelectedIndices[0]];
+			using (GCModelVertexDataEditor vde = new GCModelVertexDataEditor(selectedVert))
+			{
+				vde.ShowDialog(this);
+			}
+		}
 	}
 }

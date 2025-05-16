@@ -364,10 +364,14 @@ namespace SAModel.Direct3D
 					data |= 1;
 				if (item.HasVC)
 					data |= 2;
+				if (item.IsMod)
+					data |= 4;
 			}
 			if (numverts == 0) return null;
 			switch (data)
 			{
+				case 4:
+					return new Mesh<FVF_PositionColored>(attach);
 				case 3:
 					return new Mesh<FVF_PositionNormalTexturedColored>(attach);
 				case 2:
@@ -466,7 +470,7 @@ namespace SAModel.Direct3D
 					var orignor = newNorms[i].ToVector3();
 					newVerts[i] = Vector3.TransformCoordinate(origpos, matrices[mdlindex]).ToVertex();
 					newNorms[i] = Vector3.TransformNormal(orignor, matrices[mdlindex]).ToVertex();
-					weightBuf[i] = new List<WeightData>() { new WeightData(mdlindex, origpos, newNorms[i].ToVector3(), 1) };
+					weightBuf[i] = new List<WeightData>() { new WeightData(mdlindex, origpos, orignor, 1) };
 				}
 			}
 

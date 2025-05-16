@@ -40,17 +40,17 @@
 			newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			newPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			newGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			newXVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			newPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			newPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			newXVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveAsPVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveAsGVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			saveXVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveAsPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveAsPAKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			saveXVMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			importTexturePackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportTexturePackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,19 +60,23 @@
 			exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			addMipmapsToAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			highQualityGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			generateNewGbixToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			alphaSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			enablePAKAlphaForAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			disablePAKAlphaForAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			palettedTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			compatibleGVPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			exportMaskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportPalettedIndexedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportPalettedFullToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			highQualityGVMsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			textureFilteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			usePNGInsteadOfDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			generateNewGbixToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			useDDSInPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			useDDSInTexturePacksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			useDDSInPVMXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			splitContainer1 = new System.Windows.Forms.SplitContainer();
 			listBox1 = new System.Windows.Forms.ListBox();
 			panel1 = new System.Windows.Forms.Panel();
@@ -89,6 +93,7 @@
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			textureSizeLabel = new System.Windows.Forms.Label();
 			importExportPanel = new System.Windows.Forms.Panel();
+			saveTextureButton = new System.Windows.Forms.Button();
 			exportButton = new System.Windows.Forms.Button();
 			importButton = new System.Windows.Forms.Button();
 			dataFormatLabel = new System.Windows.Forms.Label();
@@ -117,7 +122,6 @@
 			contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
 			copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			saveTextureButton = new System.Windows.Forms.Button();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -218,7 +222,7 @@
 			newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newPVMToolStripMenuItem, newGVMToolStripMenuItem, newXVMToolStripMenuItem, newPVMXToolStripMenuItem, newPAKToolStripMenuItem });
 			newToolStripMenuItem.Image = Properties.Resources._new;
 			newToolStripMenuItem.Name = "newToolStripMenuItem";
-			newToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			newToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			newToolStripMenuItem.Text = "&New";
 			// 
 			// newPVMToolStripMenuItem
@@ -237,6 +241,13 @@
 			newGVMToolStripMenuItem.Text = "&GVM";
 			newGVMToolStripMenuItem.Click += newGVMToolStripMenuItem_Click;
 			// 
+			// newXVMToolStripMenuItem
+			// 
+			newXVMToolStripMenuItem.Name = "newXVMToolStripMenuItem";
+			newXVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+			newXVMToolStripMenuItem.Text = "XVM";
+			newXVMToolStripMenuItem.Click += newXVMToolStripMenuItem_Click;
+			// 
 			// newPVMXToolStripMenuItem
 			// 
 			newPVMXToolStripMenuItem.Name = "newPVMXToolStripMenuItem";
@@ -253,19 +264,12 @@
 			newPAKToolStripMenuItem.Text = "PA&K";
 			newPAKToolStripMenuItem.Click += newPAKToolStripMenuItem_Click;
 			// 
-			// newXVMToolStripMenuItem
-			// 
-			newXVMToolStripMenuItem.Name = "newXVMToolStripMenuItem";
-			newXVMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-			newXVMToolStripMenuItem.Text = "XVM";
-			newXVMToolStripMenuItem.Click += newXVMToolStripMenuItem_Click;
-			// 
 			// openToolStripMenuItem
 			// 
 			openToolStripMenuItem.Image = Properties.Resources.open;
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
 			openToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-			openToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			openToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			openToolStripMenuItem.Text = "&Open...";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
@@ -274,7 +278,7 @@
 			saveToolStripMenuItem.Image = Properties.Resources.save;
 			saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			saveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
-			saveToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			saveToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			saveToolStripMenuItem.Text = "&Save";
 			saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
 			// 
@@ -284,7 +288,7 @@
 			saveAsToolStripMenuItem.Image = Properties.Resources.saveas;
 			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S;
-			saveAsToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			saveAsToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			saveAsToolStripMenuItem.Text = "Save &As...";
 			saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
 			// 
@@ -302,6 +306,13 @@
 			saveAsGVMToolStripMenuItem.Text = "&GVM";
 			saveAsGVMToolStripMenuItem.Click += saveAsGVMToolStripMenuItem_Click;
 			// 
+			// saveXVMToolStripMenuItem
+			// 
+			saveXVMToolStripMenuItem.Name = "saveXVMToolStripMenuItem";
+			saveXVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+			saveXVMToolStripMenuItem.Text = "XVM";
+			saveXVMToolStripMenuItem.Click += saveXVMToolStripMenuItem_Click;
+			// 
 			// saveAsPVMXToolStripMenuItem
 			// 
 			saveAsPVMXToolStripMenuItem.Name = "saveAsPVMXToolStripMenuItem";
@@ -316,24 +327,17 @@
 			saveAsPAKToolStripMenuItem.Text = "PA&K";
 			saveAsPAKToolStripMenuItem.Click += saveAsPAKToolStripMenuItem_Click;
 			// 
-			// saveXVMToolStripMenuItem
-			// 
-			saveXVMToolStripMenuItem.Name = "saveXVMToolStripMenuItem";
-			saveXVMToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
-			saveXVMToolStripMenuItem.Text = "XVM";
-			saveXVMToolStripMenuItem.Click += saveXVMToolStripMenuItem_Click;
-			// 
 			// toolStripSeparator3
 			// 
 			toolStripSeparator3.Name = "toolStripSeparator3";
-			toolStripSeparator3.Size = new System.Drawing.Size(222, 6);
+			toolStripSeparator3.Size = new System.Drawing.Size(256, 6);
 			// 
 			// importTexturePackToolStripMenuItem
 			// 
 			importTexturePackToolStripMenuItem.Image = Properties.Resources.import;
 			importTexturePackToolStripMenuItem.Name = "importTexturePackToolStripMenuItem";
 			importTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I;
-			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			importTexturePackToolStripMenuItem.Text = "&Import folder texture pack...";
 			importTexturePackToolStripMenuItem.ToolTipText = "Import a folder texture pack with an index file.";
 			importTexturePackToolStripMenuItem.Click += importTexturePackToolStripMenuItem_Click;
@@ -343,7 +347,7 @@
 			exportTexturePackToolStripMenuItem.Image = Properties.Resources.export;
 			exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
 			exportTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			exportTexturePackToolStripMenuItem.Text = "&Export folder texture pack...";
 			exportTexturePackToolStripMenuItem.ToolTipText = "Export a folder texture pack with an index file.";
 			exportTexturePackToolStripMenuItem.Click += exportTexturePackToolStripMenuItem_Click;
@@ -351,31 +355,31 @@
 			// toolStripSeparator1
 			// 
 			toolStripSeparator1.Name = "toolStripSeparator1";
-			toolStripSeparator1.Size = new System.Drawing.Size(222, 6);
+			toolStripSeparator1.Size = new System.Drawing.Size(256, 6);
 			// 
 			// recentFilesToolStripMenuItem
 			// 
 			recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			recentFilesToolStripMenuItem.Text = "&Recent Files";
 			recentFilesToolStripMenuItem.DropDownItemClicked += recentFilesToolStripMenuItem_DropDownItemClicked;
 			// 
 			// toolStripSeparator2
 			// 
 			toolStripSeparator2.Name = "toolStripSeparator2";
-			toolStripSeparator2.Size = new System.Drawing.Size(222, 6);
+			toolStripSeparator2.Size = new System.Drawing.Size(256, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			exitToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4;
-			exitToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+			exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
 			exitToolStripMenuItem.Text = "E&xit";
 			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
 			// 
 			// editToolStripMenuItem
 			// 
-			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, highQualityGVMsToolStripMenuItem, alphaSortingToolStripMenuItem, palettedTexturesToolStripMenuItem, textureFilteringToolStripMenuItem, usePNGInsteadOfDDSToolStripMenuItem, generateNewGbixToolStripMenuItem });
+			editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMipmapsToAllToolStripMenuItem, generateNewGbixToolStripMenuItem, alphaSortingToolStripMenuItem, toolStripSeparator7, palettedTexturesToolStripMenuItem, highQualityGVMsToolStripMenuItem, textureFilteringToolStripMenuItem, toolStripSeparator5, useDDSInPAKsToolStripMenuItem, useDDSInTexturePacksToolStripMenuItem, useDDSInPVMXToolStripMenuItem });
 			editToolStripMenuItem.Name = "editToolStripMenuItem";
 			editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
 			editToolStripMenuItem.Text = "&Edit";
@@ -388,14 +392,12 @@
 			addMipmapsToAllToolStripMenuItem.ToolTipText = "Enable the Mipmap flag for all textures.";
 			addMipmapsToAllToolStripMenuItem.Click += addMipmapsToAllToolStripMenuItem_Click;
 			// 
-			// highQualityGVMsToolStripMenuItem
+			// generateNewGbixToolStripMenuItem
 			// 
-			highQualityGVMsToolStripMenuItem.CheckOnClick = true;
-			highQualityGVMsToolStripMenuItem.Name = "highQualityGVMsToolStripMenuItem";
-			highQualityGVMsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			highQualityGVMsToolStripMenuItem.Text = "High &Quality GVMs (GC only)";
-			highQualityGVMsToolStripMenuItem.ToolTipText = "Enable support for lossless textures in GVM files. Only supported by SA2B Gamecube.";
-			highQualityGVMsToolStripMenuItem.CheckedChanged += highQualityGVMsToolStripMenuItem_CheckedChanged;
+			generateNewGbixToolStripMenuItem.Name = "generateNewGbixToolStripMenuItem";
+			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			generateNewGbixToolStripMenuItem.Text = "Generate New Gbix";
+			generateNewGbixToolStripMenuItem.Click += generateNewGbixToolStripMenuItem_Click;
 			// 
 			// alphaSortingToolStripMenuItem
 			// 
@@ -403,7 +405,7 @@
 			alphaSortingToolStripMenuItem.Enabled = false;
 			alphaSortingToolStripMenuItem.Name = "alphaSortingToolStripMenuItem";
 			alphaSortingToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			alphaSortingToolStripMenuItem.Text = "Alpha Sorting Flag";
+			alphaSortingToolStripMenuItem.Text = "PAK Alpha Flags";
 			alphaSortingToolStripMenuItem.ToolTipText = "Transparency flags for SA2 PC PAKs.";
 			// 
 			// enablePAKAlphaForAllToolStripMenuItem
@@ -411,7 +413,7 @@
 			enablePAKAlphaForAllToolStripMenuItem.Name = "enablePAKAlphaForAllToolStripMenuItem";
 			enablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
 			enablePAKAlphaForAllToolStripMenuItem.Text = "Enable for All";
-			enablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Set the RGB5A3 pixel format for all PAK items.";
+			enablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Set the RGB5A3 pixel format and disable Z Write/Alpha Test for all textures in this PAK.";
 			enablePAKAlphaForAllToolStripMenuItem.Click += enablePAKAlphaForAllToolStripMenuItem_Click;
 			// 
 			// disablePAKAlphaForAllToolStripMenuItem
@@ -419,8 +421,13 @@
 			disablePAKAlphaForAllToolStripMenuItem.Name = "disablePAKAlphaForAllToolStripMenuItem";
 			disablePAKAlphaForAllToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
 			disablePAKAlphaForAllToolStripMenuItem.Text = "Disable for All";
-			disablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Remove the RGB5A3 format flag in all PAK items.";
+			disablePAKAlphaForAllToolStripMenuItem.ToolTipText = "Remove the RGB5A3 format and unset the flag that disables Z Write/Alpha Test for all textures in this PAK.";
 			disablePAKAlphaForAllToolStripMenuItem.Click += disablePAKAlphaForAllToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator7
+			// 
+			toolStripSeparator7.Name = "toolStripSeparator7";
+			toolStripSeparator7.Size = new System.Drawing.Size(225, 6);
 			// 
 			// palettedTexturesToolStripMenuItem
 			// 
@@ -471,6 +478,15 @@
 			exportPalettedFullToolStripMenuItem.ToolTipText = "Export indexed textures as non-indexed images after applying the current palette.";
 			exportPalettedFullToolStripMenuItem.Click += exportPalettedFullToolStripMenuItem_Click;
 			// 
+			// highQualityGVMsToolStripMenuItem
+			// 
+			highQualityGVMsToolStripMenuItem.CheckOnClick = true;
+			highQualityGVMsToolStripMenuItem.Name = "highQualityGVMsToolStripMenuItem";
+			highQualityGVMsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			highQualityGVMsToolStripMenuItem.Text = "High &Quality GVMs (GC only)";
+			highQualityGVMsToolStripMenuItem.ToolTipText = "Enable support for lossless textures in GVM files. Only supported by SA2B Gamecube.";
+			highQualityGVMsToolStripMenuItem.CheckedChanged += highQualityGVMsToolStripMenuItem_CheckedChanged;
+			// 
 			// textureFilteringToolStripMenuItem
 			// 
 			textureFilteringToolStripMenuItem.Checked = true;
@@ -483,14 +499,39 @@
 			textureFilteringToolStripMenuItem.CheckedChanged += textureFilteringToolStripMenuItem_CheckedChanged;
 			textureFilteringToolStripMenuItem.Click += textureFilteringToolStripMenuItem_Click;
 			// 
-			// usePNGInsteadOfDDSToolStripMenuItem
+			// toolStripSeparator5
 			// 
-			usePNGInsteadOfDDSToolStripMenuItem.CheckOnClick = true;
-			usePNGInsteadOfDDSToolStripMenuItem.Name = "usePNGInsteadOfDDSToolStripMenuItem";
-			usePNGInsteadOfDDSToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			usePNGInsteadOfDDSToolStripMenuItem.Text = "Use PNG instead of DDS";
-			usePNGInsteadOfDDSToolStripMenuItem.ToolTipText = "Use PNG instead of DDS in PAK files. PNG has better quality but loads slower and lacks built-in mipmaps.";
-			usePNGInsteadOfDDSToolStripMenuItem.CheckedChanged += usePNGInsteadOfDDSToolStripMenuItem_CheckedChanged;
+			toolStripSeparator5.Name = "toolStripSeparator5";
+			toolStripSeparator5.Size = new System.Drawing.Size(225, 6);
+			// 
+			// useDDSInPAKsToolStripMenuItem
+			// 
+			useDDSInPAKsToolStripMenuItem.Checked = true;
+			useDDSInPAKsToolStripMenuItem.CheckOnClick = true;
+			useDDSInPAKsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			useDDSInPAKsToolStripMenuItem.Name = "useDDSInPAKsToolStripMenuItem";
+			useDDSInPAKsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			useDDSInPAKsToolStripMenuItem.Text = "Use DDS in PAKs";
+			useDDSInPAKsToolStripMenuItem.ToolTipText = "Uncheck to use PNG instead of DDS textures in PAK files. PNG has better quality but loads slower and lacks built-in mipmaps.";
+			useDDSInPAKsToolStripMenuItem.CheckedChanged += useDDSInPAKsToolStripMenuItem_CheckedChanged;
+			// 
+			// useDDSInTexturePacksToolStripMenuItem
+			// 
+			useDDSInTexturePacksToolStripMenuItem.CheckOnClick = true;
+			useDDSInTexturePacksToolStripMenuItem.Name = "useDDSInTexturePacksToolStripMenuItem";
+			useDDSInTexturePacksToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			useDDSInTexturePacksToolStripMenuItem.Text = "Use DDS in Texture Packs";
+			useDDSInTexturePacksToolStripMenuItem.ToolTipText = "Uncheck to use PNG instead of DDS textures in folder texture packs. PNG has better quality but loads slower and lacks built-in mipmaps.";
+			useDDSInTexturePacksToolStripMenuItem.CheckedChanged += useDDSInTexturePacksToolStripMenuItem_CheckedChanged;
+			// 
+			// useDDSInPVMXToolStripMenuItem
+			// 
+			useDDSInPVMXToolStripMenuItem.CheckOnClick = true;
+			useDDSInPVMXToolStripMenuItem.Name = "useDDSInPVMXToolStripMenuItem";
+			useDDSInPVMXToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+			useDDSInPVMXToolStripMenuItem.Text = "Use DDS in PVMX";
+			useDDSInPVMXToolStripMenuItem.ToolTipText = "Uncheck to use PNG instead of DDS textures in PVMX files. PNG has better quality but loads slower and lacks built-in mipmaps.";
+			useDDSInPVMXToolStripMenuItem.CheckedChanged += useDDSInPVMXToolStripMenuItem_CheckedChanged;
 			// 
 			// splitContainer1
 			// 
@@ -618,9 +659,9 @@
 			checkBoxPAKUseAlpha.Location = new System.Drawing.Point(317, 65);
 			checkBoxPAKUseAlpha.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			checkBoxPAKUseAlpha.Name = "checkBoxPAKUseAlpha";
-			checkBoxPAKUseAlpha.Size = new System.Drawing.Size(98, 19);
+			checkBoxPAKUseAlpha.Size = new System.Drawing.Size(99, 19);
 			checkBoxPAKUseAlpha.TabIndex = 15;
-			checkBoxPAKUseAlpha.Text = "Alpha Sorting";
+			checkBoxPAKUseAlpha.Text = "No Alpha Test";
 			checkBoxPAKUseAlpha.UseVisualStyleBackColor = true;
 			checkBoxPAKUseAlpha.CheckedChanged += checkBoxPAKUseAlpha_CheckedChanged;
 			checkBoxPAKUseAlpha.Click += checkBoxPAKUseAlpha_Click;
@@ -742,6 +783,19 @@
 			importExportPanel.Name = "importExportPanel";
 			importExportPanel.Size = new System.Drawing.Size(191, 31);
 			importExportPanel.TabIndex = 5;
+			// 
+			// saveTextureButton
+			// 
+			saveTextureButton.AutoSize = true;
+			saveTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			saveTextureButton.Enabled = false;
+			saveTextureButton.Location = new System.Drawing.Point(138, 3);
+			saveTextureButton.Name = "saveTextureButton";
+			saveTextureButton.Size = new System.Drawing.Size(50, 25);
+			saveTextureButton.TabIndex = 8;
+			saveTextureButton.Text = "Save...";
+			saveTextureButton.UseVisualStyleBackColor = true;
+			saveTextureButton.Click += saveTextureButton_Click;
 			// 
 			// exportButton
 			// 
@@ -1060,30 +1114,11 @@
 			pasteToolStripMenuItem.Text = "&Paste";
 			pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
 			// 
-			// saveTextureButton
-			// 
-			saveTextureButton.AutoSize = true;
-			saveTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			saveTextureButton.Enabled = false;
-			saveTextureButton.Location = new System.Drawing.Point(138, 3);
-			saveTextureButton.Name = "saveTextureButton";
-			saveTextureButton.Size = new System.Drawing.Size(50, 25);
-			saveTextureButton.TabIndex = 8;
-			saveTextureButton.Text = "Save...";
-			saveTextureButton.UseVisualStyleBackColor = true;
-			saveTextureButton.Click += saveTextureButton_Click;
-			// generateNewGbixToolStripMenuItem
-			// 
-			generateNewGbixToolStripMenuItem.Name = "generateNewGbixToolStripMenuItem";
-			generateNewGbixToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-			generateNewGbixToolStripMenuItem.Text = "Generate New Gbix";
-			generateNewGbixToolStripMenuItem.Click += generateNewGbixToolStripMenuItem_Click;
-			// 
 			// MainForm
 			// 
+			AllowDrop = true;
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			AllowDrop = true;
 			ClientSize = new System.Drawing.Size(705, 647);
 			Controls.Add(splitContainer1);
 			Controls.Add(menuStrip1);
@@ -1214,8 +1249,12 @@
 		private System.Windows.Forms.Label labelZoomInfo;
 		private System.Windows.Forms.ToolStripMenuItem newXVMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveXVMToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem usePNGInsteadOfDDSToolStripMenuItem;
 		private System.Windows.Forms.Button saveTextureButton;
 		private System.Windows.Forms.ToolStripMenuItem generateNewGbixToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripMenuItem useDDSInPAKsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem useDDSInTexturePacksToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem useDDSInPVMXToolStripMenuItem;
 	}
 }

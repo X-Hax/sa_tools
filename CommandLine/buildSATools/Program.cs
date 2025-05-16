@@ -154,11 +154,13 @@ namespace buildSATools
 						}
 					}
 					Console.WriteLine("\nDeleting reference assemblies...");
-					refdirlist = new List<string>();
-					refdirlist.Add(Path.Combine(outdir, "ref"));
-					refdirlist.Add(Path.Combine(outdir, "lib", "ref"));
-					refdirlist.Add(Path.Combine(outdir, "tools", "ref"));
-					refdirlist.Add(Path.Combine(outdir, "bin", "ref"));
+					refdirlist = new List<string>()
+					{
+					Path.Combine(outdir, "ref"),
+					Path.Combine(outdir, "lib", "ref"),
+					Path.Combine(outdir, "tools", "ref"),
+					Path.Combine(outdir, "bin", "ref")
+					};
 					DeleteDirs(refdirlist);
 					Console.WriteLine("\nMoving all DLL files to the lib folder...");
 					FileInfo[] dllfiles = d.GetFiles("*.dll", SearchOption.AllDirectories);
@@ -185,10 +187,13 @@ namespace buildSATools
 					DirectoryCopy(Path.Combine(outdir, "lib"), Path.Combine(outdir, "bin", "lib"), true);
 					DirectoryCopy(Path.Combine(outdir, "lib"), Path.Combine(outdir, "tools", "lib"), true);
 					Console.WriteLine("\nDeleting runtimes folders...");
-					refdirlist = new List<string>();
-					refdirlist.Add(Path.Combine(outdir, "runtimes"));
-					refdirlist.Add(Path.Combine(outdir, "bin", "runtimes"));
-					refdirlist.Add(Path.Combine(outdir, "tools", "runtimes"));
+					refdirlist = new List<string>()
+					{
+					Path.Combine(outdir, "runtimes"),
+					Path.Combine(outdir, "bin", "runtimes"),
+					Path.Combine(outdir, "tools", "runtimes"),
+					Path.Combine(outdir, "tools", "Properties"),
+					};
 					DeleteDirs(refdirlist);
 					Console.WriteLine("\nDeleting original lib folder...");
 					Directory.Delete(Path.Combine(outdir, "lib"), true);
@@ -198,13 +203,15 @@ namespace buildSATools
 					foreach (FileInfo devfile in devf)
 					{
 						string f = devfile.FullName.ToLowerInvariant();
-						if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64"))
+						if (f.Contains("dev.json") || f.Contains("freebsd") || f.Contains("linux") || f.Contains("osx") || f.Contains("unix") || f.Contains("arm64") || f.Contains("ios") || f.Contains("solaris") || f.Contains("tvos") || f.Contains("illumos"))
 							File.Delete(devfile.FullName);
 						else if (Environment.Is64BitProcess && f.Contains("win-x86"))
 							File.Delete(devfile.FullName);
 						else if (!Environment.Is64BitProcess && f.Contains("win-x64"))
 							File.Delete(devfile.FullName);
 					}
+					Console.WriteLine("\nCreating manifest...");
+					CreateFolderManifest(Path.GetFullPath(outdir), Path.Combine(outdir, "satools.manifest"));
 					Console.WriteLine("\nOutput folder: {0}", outdir);
 					Console.WriteLine("Finished!");
 					break;
@@ -220,6 +227,49 @@ namespace buildSATools
 					else
 						throw;
 				}
+		}
+
+		private static void CreateFolderManifest(string fullpath, string outputfile)
+		{
+			List<string> manifest = new List<string>();
+			// Create a DirectoryInfo object representing the specified directory.
+			var dir = new DirectoryInfo(fullpath);
+			FileInfo[] files = dir.GetFiles("*.*", SearchOption.AllDirectories);
+			using (System.Security.Cryptography.SHA256 mySHA256 = System.Security.Cryptography.SHA256.Create())
+			{
+				foreach (FileInfo fInfo in files)
+				{
+					using (FileStream fileStream = fInfo.Open(FileMode.Open))
+					{
+						try
+						{
+							// Get relative path
+							string shortname = Path.GetRelativePath(fullpath, fInfo.FullName);
+							// Create a fileStream for the file.
+							// Be sure it's positioned to the beginning of the stream.
+							fileStream.Position = 0;
+							// Compute the hash of the fileStream.
+							byte[] hashValue = mySHA256.ComputeHash(fileStream);
+							// Write the name and hash value of the file.
+							manifest.Add(string.Format("{0}\t{1}\t{2}", shortname, fInfo.Length.ToString(), SHA256ToString(hashValue)));
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine($"Exception: {e.Message}");
+						}
+					}
+				}
+			}
+			File.WriteAllLines(outputfile, manifest.ToArray());
+		}
+
+		// Display the byte array in a readable format.
+		private static string SHA256ToString(byte[] array)
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < array.Length; i++)
+				stringBuilder.Append($"{array[i]:x2}");
+			return stringBuilder.ToString();
 		}
 
 		private static void DeleteDirs(List<string> refdirlist)

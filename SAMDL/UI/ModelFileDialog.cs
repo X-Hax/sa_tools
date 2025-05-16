@@ -14,7 +14,7 @@ namespace SAModel.SAMDL
 				comboBoxBinaryFileType.Items.Add(item);
 		}
 
-		List<string> KnownFileTypes = new List<string> { "EXE", "DLL", "REL", "1ST_READ.BIN", "SA1 Level", "SA2 Level", "SA1 Event", "SA2 Event", "SA2PC Event", "EXE (X360)", "Model File" };
+		List<string> KnownFileTypes = new List<string> { "EXE", "DLL", "REL", "1ST_READ.BIN", "SA1 Level", "SA2 Level", "SA1 Event", "SA2 Event", "SA2PC Event", "EXE (X360)", "EXE (SADX Steam)", "Model File" };
 
 		public void CheckFilename(string filename)
 		{
@@ -290,11 +290,15 @@ namespace SAModel.SAMDL
 					break;
 				case 9: // X360 EXE
 					comboBoxModelFormat.SelectedIndex = 1;
-					comboBoxBinaryFileType.SelectedIndex = 9;
 					checkBoxBigEndian.Checked = true;
 					numericUpDownStartOffset.Value = 0xC800;
 					break;
-				case 10: // Unknown
+				case 10: // SADX Steam EXE
+					comboBoxModelFormat.SelectedIndex = 1;
+					checkBoxBigEndian.Checked = false;
+					numericUpDownStartOffset.Value = 0;
+					break;
+				case 11: // Unknown
 					numericUpDownKey.Value = 0;
 					break;
 			}

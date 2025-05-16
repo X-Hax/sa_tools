@@ -16,7 +16,7 @@ namespace SplitMDL
 			{
 				string filename = argq.Dequeue();
 				Console.WriteLine("File: {0}", filename);
-				sa2MDL.Split(filename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename)), argq.ToArray());
+				SA2MDL.Split(filename, Path.Combine(Environment.CurrentDirectory, Path.GetDirectoryName(filename)), argq.ToArray());
 			}
 			else
 			{

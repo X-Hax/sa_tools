@@ -65,6 +65,7 @@
 			advancedSavelevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			advancedSaveSETFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			advancedSaveSETFileBigEndianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			cAMFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -503,7 +504,7 @@
 			// 
 			// saveAdvancedToolStripMenuItem
 			// 
-			saveAdvancedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { advancedSavelevelToolStripMenuItem, advancedSaveSETFileToolStripMenuItem, advancedSaveSETFileBigEndianToolStripMenuItem });
+			saveAdvancedToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { advancedSavelevelToolStripMenuItem, advancedSaveSETFileToolStripMenuItem, advancedSaveSETFileBigEndianToolStripMenuItem, cAMFileToolStripMenuItem });
 			saveAdvancedToolStripMenuItem.Image = Properties.Resources.save_advanced;
 			saveAdvancedToolStripMenuItem.Name = "saveAdvancedToolStripMenuItem";
 			saveAdvancedToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
@@ -529,6 +530,13 @@
 			advancedSaveSETFileBigEndianToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
 			advancedSaveSETFileBigEndianToolStripMenuItem.Text = "SET File (Big Endian)...";
 			advancedSaveSETFileBigEndianToolStripMenuItem.Click += advancedSaveSETFileBigEndianToolStripMenuItem_Click;
+			// 
+			// cAMFileToolStripMenuItem
+			// 
+			cAMFileToolStripMenuItem.Name = "cAMFileToolStripMenuItem";
+			cAMFileToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+			cAMFileToolStripMenuItem.Text = "CAM File...";
+			cAMFileToolStripMenuItem.Click += cAMFileToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator4
 			// 
@@ -1368,7 +1376,7 @@
 			RenderPanel.Location = new System.Drawing.Point(0, 0);
 			RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			RenderPanel.Name = "RenderPanel";
-			RenderPanel.Size = new System.Drawing.Size(762, 326);
+			RenderPanel.Size = new System.Drawing.Size(762, 328);
 			RenderPanel.TabIndex = 1;
 			RenderPanel.SizeChanged += RenderPanel_SizeChanged;
 			RenderPanel.DragDrop += RenderPanel_DragDrop;
@@ -1518,7 +1526,7 @@
 			// 
 			PropertiesSplitter.Panel2.Controls.Add(propertyGrid1);
 			PropertiesSplitter.Size = new System.Drawing.Size(1331, 639);
-			PropertiesSplitter.SplitterDistance = 958;
+			PropertiesSplitter.SplitterDistance = 960;
 			PropertiesSplitter.SplitterWidth = 5;
 			PropertiesSplitter.TabIndex = 2;
 			// 
@@ -1538,8 +1546,8 @@
 			// LibrarySplitter.Panel2
 			// 
 			LibrarySplitter.Panel2.Controls.Add(libraryTabControl);
-			LibrarySplitter.Size = new System.Drawing.Size(954, 635);
-			LibrarySplitter.SplitterDistance = 326;
+			LibrarySplitter.Size = new System.Drawing.Size(956, 635);
+			LibrarySplitter.SplitterDistance = 328;
 			LibrarySplitter.SplitterWidth = 5;
 			LibrarySplitter.TabIndex = 3;
 			// 
@@ -1557,8 +1565,8 @@
 			// ItemsSplitter.Panel2
 			// 
 			ItemsSplitter.Panel2.Controls.Add(RenderPanel);
-			ItemsSplitter.Size = new System.Drawing.Size(954, 326);
-			ItemsSplitter.SplitterDistance = 187;
+			ItemsSplitter.Size = new System.Drawing.Size(956, 328);
+			ItemsSplitter.SplitterDistance = 189;
 			ItemsSplitter.SplitterWidth = 5;
 			ItemsSplitter.TabIndex = 0;
 			// 
@@ -1568,7 +1576,7 @@
 			sceneGraphControl1.Location = new System.Drawing.Point(0, 0);
 			sceneGraphControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
 			sceneGraphControl1.Name = "sceneGraphControl1";
-			sceneGraphControl1.Size = new System.Drawing.Size(187, 326);
+			sceneGraphControl1.Size = new System.Drawing.Size(189, 328);
 			sceneGraphControl1.TabIndex = 0;
 			// 
 			// libraryTabControl
@@ -1580,7 +1588,7 @@
 			libraryTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			libraryTabControl.Name = "libraryTabControl";
 			libraryTabControl.SelectedIndex = 0;
-			libraryTabControl.Size = new System.Drawing.Size(954, 304);
+			libraryTabControl.Size = new System.Drawing.Size(956, 302);
 			libraryTabControl.TabIndex = 0;
 			// 
 			// modelLibraryPage
@@ -1590,7 +1598,7 @@
 			modelLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			modelLibraryPage.Name = "modelLibraryPage";
 			modelLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			modelLibraryPage.Size = new System.Drawing.Size(946, 276);
+			modelLibraryPage.Size = new System.Drawing.Size(948, 274);
 			modelLibraryPage.TabIndex = 1;
 			modelLibraryPage.Text = "Model Library";
 			modelLibraryPage.UseVisualStyleBackColor = true;
@@ -1602,7 +1610,7 @@
 			modelLibraryControl1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
 			modelLibraryControl1.Name = "modelLibraryControl1";
 			modelLibraryControl1.SelectedModel = null;
-			modelLibraryControl1.Size = new System.Drawing.Size(938, 270);
+			modelLibraryControl1.Size = new System.Drawing.Size(940, 268);
 			modelLibraryControl1.TabIndex = 0;
 			// 
 			// setLibraryPage
@@ -1611,7 +1619,7 @@
 			setLibraryPage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			setLibraryPage.Name = "setLibraryPage";
 			setLibraryPage.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			setLibraryPage.Size = new System.Drawing.Size(947, 275);
+			setLibraryPage.Size = new System.Drawing.Size(949, 273);
 			setLibraryPage.TabIndex = 0;
 			setLibraryPage.Text = "SET Library";
 			setLibraryPage.UseVisualStyleBackColor = true;
@@ -1627,7 +1635,7 @@
 			propertyGrid1.Location = new System.Drawing.Point(0, 0);
 			propertyGrid1.Margin = new System.Windows.Forms.Padding(0);
 			propertyGrid1.Name = "propertyGrid1";
-			propertyGrid1.Size = new System.Drawing.Size(364, 635);
+			propertyGrid1.Size = new System.Drawing.Size(362, 635);
 			propertyGrid1.TabIndex = 13;
 			propertyGrid1.ToolbarVisible = false;
 			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
@@ -2256,6 +2264,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
 		private System.Windows.Forms.ToolStripMenuItem exportOnlyNonCollideableToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportOnlyCollideableToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem cAMFileToolStripMenuItem;
 	}
 }
 

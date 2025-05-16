@@ -14,99 +14,97 @@ namespace SAModel.GC
 		/// Writes the struct
 		/// </summary>
 		/// <param name="writer">The output stream</param>
-		/// <param name="attrib"></param>
+		/// <param name="dataType"></param>
+		/// <param name="structType"></param>
 		void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType);
-		public abstract byte[] GetBytes();
+		public byte[] GetBytes();
+		public string ToStruct();
+		public string ToGCMDEStruct();
 		void ToNJA(TextWriter writer, string vtype);
 	}
 
 	[Serializable]
-	public class Vector3 : IOVtx
+	public class Vector3(float x, float y, float z) : IOVtx
 	{
-		public float x;
-		public float y;
-		public float z;
+		public float X = x;
+		public float Y = y;
+		public float Z = z;
 
-		public Vector3(float x, float y, float z)
+		public Vector3(byte[] file, int address) : this(ByteConverter.ToSingle(file, address), ByteConverter.ToSingle(file, address + 4), ByteConverter.ToSingle(file, address + 8))
 		{
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-
-		public Vector3(byte[] file, int address)
-		{
-			x = ByteConverter.ToSingle(file, address);
-			y = ByteConverter.ToSingle(file, address + 4);
-			z = ByteConverter.ToSingle(file, address + 8);
 		}
 
 		public void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType)
 		{
-			writer.Write(x);
-			writer.Write(y);
-			writer.Write(z);
+			writer.Write(X);
+			writer.Write(Y);
+			writer.Write(Z);
 		}
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(x));
-			result.AddRange(ByteConverter.GetBytes(y));
-			result.AddRange(ByteConverter.GetBytes(z));
+			List<byte> result = [];
+			
+			result.AddRange(ByteConverter.GetBytes(X));
+			result.AddRange(ByteConverter.GetBytes(Y));
+			result.AddRange(ByteConverter.GetBytes(Z));
+			
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append(x.ToC());
+			var result = new StringBuilder("{ ");
+			
+			result.Append(X.ToC());
 			result.Append(", ");
-			result.Append(y.ToC());
+			result.Append(Y.ToC());
 			result.Append(", ");
-			result.Append(z.ToC());
+			result.Append(Z.ToC());
 			result.Append(" }");
+			
+			return result.ToString();
+		}
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder();
+
+			result.Append(X.ToC());
+			result.Append(", ");
+			result.Append(Y.ToC());
+			result.Append(", ");
+			result.Append(Z.ToC());
+
 			return result.ToString();
 		}
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + x.ToNJA() + ", " + y.ToNJA() + ", " + z.ToNJA() + " ),");
+			writer.WriteLine($"\t{vtype}( {X.ToNJA()}, {Y.ToNJA()}, {Z.ToNJA()} ),");
 		}
 	}
 
 	[Serializable]
 	public class UV : IOVtx
 	{
-		public short x;
-		public short y;
+		public short X;
+		public short Y;
 
 		public float XF
 		{
-			get
-			{
-				return x / 256f;
-			}
-			set
-			{
-				x = (short)(value * 256);
-			}
+			get => X / 256f;
+			set => X = (short)(value * 256);
 		}
+		
 		public float YF
 		{
-			get
-			{
-				return y / 256f;
-			}
-			set
-			{
-				y = (short)(value * 256);
-			}
+			get => Y / 256f;
+			set => Y = (short)(value * 256);
 		}
 
 		public UV(short x, short y)
 		{
-			this.x = x;
-			this.y = y;
+			X = x;
+			Y = y;
 		}
 
 		public UV(float x, float y)
@@ -115,38 +113,53 @@ namespace SAModel.GC
 			YF = y;
 		}
 
-		public UV(byte[] file, int address)
+		public UV(byte[] file, int address, GCUVScale scale = GCUVScale.Default)
 		{
-			x = ByteConverter.ToInt16(file, address);
-			y = ByteConverter.ToInt16(file, address + 2);
+			X = (short)(ByteConverter.ToInt16(file, address));
+			Y = (short)(ByteConverter.ToInt16(file, address + 2));
 		}
 
 		public void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType)
 		{
-			writer.Write(x);
-			writer.Write(y);
+			writer.Write(X);
+			writer.Write(Y);
 		}
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>();
-			result.AddRange(ByteConverter.GetBytes(x));
-			result.AddRange(ByteConverter.GetBytes(y));
+			List<byte> result = [];
+			
+			result.AddRange(ByteConverter.GetBytes(X));
+			result.AddRange(ByteConverter.GetBytes(Y));
+			
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append(x);
+			var result = new StringBuilder("{ ");
+			
+			result.Append(X);
 			result.Append(", ");
-			result.Append(y);
+			result.Append(Y);
 			result.Append(" }");
+			
 			return result.ToString();
 		}
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder();
+
+			result.Append(X);
+			result.Append(", ");
+			result.Append(Y);
+
+			return result.ToString();
+		}
+
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + x.ToString() + ", " + y.ToString() + " ),");
+			writer.WriteLine($"\t{vtype}( {X}, {Y} ),");
 		}
 	}
 
@@ -159,75 +172,54 @@ namespace SAModel.GC
 		/// <summary>
 		/// Red value
 		/// </summary>
-		public byte red;
+		public byte Red;
 		/// <summary>
 		/// Green value
 		/// </summary>
-		public byte green;
+		public byte Green;
 		/// <summary>
 		/// Blue value
 		/// </summary>
-		public byte blue;
+		public byte Blue;
 		/// <summary>
 		/// Alpha value
 		/// </summary>
-		public byte alpha;
+		public byte Alpha;
 
 		/// <summary>
 		/// Red float value. Ranges from 0 - 1
 		/// </summary>
 		public float RedF
 		{
-			get
-			{
-				return red / 255.0f;
-			}
-			set
-			{
-				red = (byte)Math.Round(value * 255);
-			}
+			get => Red / 255.0f;
+			set => Red = (byte)Math.Round(value * 255);
 		}
+		
 		/// <summary>
 		/// Green float value. Ranges from 0 - 1
 		/// </summary>
 		public float GreenF
 		{
-			get
-			{
-				return green / 255.0f;
-			}
-			set
-			{
-				green = (byte)Math.Round(value * 255);
-			}
+			get => Green / 255.0f;
+			set => Green = (byte)Math.Round(value * 255);
 		}
+		
 		/// <summary>
 		/// Blue float value. Ranges from 0 - 1
 		/// </summary>
 		public float BlueF
 		{
-			get
-			{
-				return blue / 255.0f;
-			}
-			set
-			{
-				blue = (byte)Math.Round(value * 255);
-			}
+			get => Blue / 255.0f;
+			set => Blue = (byte)Math.Round(value * 255);
 		}
+		
 		/// <summary>
 		/// Alpha float value. Ranges from 0 - 1
 		/// </summary>
 		public float AlphaF
 		{
-			get
-			{
-				return alpha / 255.0f;
-			}
-			set
-			{
-				alpha = (byte)Math.Round(value * 255);
-			}
+			get => Alpha / 255.0f;
+			set => Alpha = (byte)Math.Round(value * 255);
 		}
 
 		/// <summary>
@@ -235,16 +227,13 @@ namespace SAModel.GC
 		/// </summary>
 		public uint RGBA
 		{
-			get
-			{
-				return (uint)(red | (green << 8) | (blue << 16) | (alpha << 24));
-			}
+			get => (uint)(Red | (Green << 8) | (Blue << 16) | (Alpha << 24));
 			set
 			{
-				red = (byte)(value & 0xFF);
-				green = (byte)((value >> 8) & 0xFF);
-				blue = (byte)((value >> 16) & 0xFF);
-				alpha = (byte)(value >> 24);
+				Red = (byte)(value & 0xFF);
+				Green = (byte)((value >> 8) & 0xFF);
+				Blue = (byte)((value >> 16) & 0xFF);
+				Alpha = (byte)(value >> 24);
 			}
 		}
 
@@ -253,16 +242,13 @@ namespace SAModel.GC
 		/// </summary>
 		public uint ARGB
 		{
-			get
-			{
-				return (uint)(alpha | (red << 8) | (green << 16) | (blue << 24));
-			}
+			get => (uint)(Alpha | (Red << 8) | (Green << 16) | (Blue << 24));
 			set
 			{
-				alpha = (byte)(value & 0xFF);
-				red = (byte)((value >> 8) & 0xFF);
-				green = (byte)((value >> 16) & 0xFF);
-				blue = (byte)(value >> 24);
+				Alpha = (byte)(value & 0xFF);
+				Red = (byte)((value >> 8) & 0xFF);
+				Green = (byte)((value >> 16) & 0xFF);
+				Blue = (byte)(value >> 24);
 			}
 		}
 
@@ -271,16 +257,13 @@ namespace SAModel.GC
 		/// </summary>
 		public System.Drawing.Color SystemCol
 		{
-			get
-			{
-				return System.Drawing.Color.FromArgb(alpha, red, green, blue);
-			}
+			get => System.Drawing.Color.FromArgb(Alpha, Red, Green, Blue);
 			set
 			{
-				alpha = value.A;
-				red = value.R;
-				green = value.G;
-				blue = value.B;
+				Alpha = value.A;
+				Red = value.R;
+				Green = value.G;
+				Blue = value.B;
 			}
 		}
 
@@ -298,10 +281,10 @@ namespace SAModel.GC
 		/// <param name="alpha">Alpha color value</param>
 		public Color(byte red, byte green, byte blue, byte alpha)
 		{
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-			this.alpha = alpha;
+			Red = red;
+			Green = green;
+			Blue = blue;
+			Alpha = alpha;
 		}
 
 		/// <summary>
@@ -311,7 +294,7 @@ namespace SAModel.GC
 		/// <param name="green"></param>
 		/// <param name="blue"></param>
 		/// <param name="alpha"></param>
-		public Color(float red, float green, float blue, float alpha) : this((byte)0,0,0,0)
+		public Color(float red, float green, float blue, float alpha) : this(0,0,0,0)
 		{
 			RedF = red;
 			GreenF = green;
@@ -324,36 +307,46 @@ namespace SAModel.GC
 			switch (dataType)
 			{
 				case GCDataType.RGB565:
-					short colorShort = ByteConverter.ToInt16(file, address);
-					red = (byte)((colorShort & 0xF800) >> 8);
-					green = (byte)((colorShort & 0x07E0) >> 3);
-					blue = (byte)((colorShort & 0x001F) << 3);
+					var colorShort = ByteConverter.ToInt16(file, address);
+					
+					Red = (byte)((colorShort & 0xF800) >> 8);
+					Green = (byte)((colorShort & 0x07E0) >> 3);
+					Blue = (byte)((colorShort & 0x001F) << 3);
+					
 					endaddr = address + 2;
 					return;
 				case GCDataType.RGBA4:
-					ushort colorShortA = ByteConverter.ToUInt16(file, address);
-					// multiplying all by 0x11, so that e.g. 0xF becomes 0xFF
-					red = (byte)(((colorShortA & 0xF000) >> 12) * 0x11);
-					green = (byte)(((colorShortA & 0x0F00) >> 8) * 0x11);
-					blue = (byte)(((colorShortA & 0x00F0) >> 4) * 0x11);
-					alpha = (byte)((colorShortA & 0x000F) * 0x11);
+					var colorShortA = ByteConverter.ToUInt16(file, address);
+					
+					// Multiplying all by 0x11, so that e.g. 0xF becomes 0xFF
+					Red = (byte)(((colorShortA & 0xF000) >> 12) * 0x11);
+					Green = (byte)(((colorShortA & 0x0F00) >> 8) * 0x11);
+					Blue = (byte)(((colorShortA & 0x00F0) >> 4) * 0x11);
+					Alpha = (byte)((colorShortA & 0x000F) * 0x11);
+					
 					endaddr = address + 2;
 					return;
 				case GCDataType.RGBA6:
-					uint colorInt = ByteConverter.ToUInt32(file, address);
-					// shifting all 2 less to the left, so that they are more accurate to the color that they should represent
-					red = (byte)((colorInt & 0xFC0000) >> 16);
-					green = (byte)((colorInt & 0x03F000) >> 10);
-					blue = (byte)((colorInt & 0x000FC0) >> 4);
-					alpha = (byte)((colorInt & 0x00003F) << 2);
+					var colorInt = ByteConverter.ToUInt32(file, address);
+					
+					// Shifting all 2 less to the left, so that they are more accurate to the color that they should represent
+					Red = (byte)((colorInt & 0xFC0000) >> 16);
+					Green = (byte)((colorInt & 0x03F000) >> 10);
+					Blue = (byte)((colorInt & 0x000FC0) >> 4);
+					Alpha = (byte)((colorInt & 0x00003F) << 2);
+					
 					endaddr = address + 3;
 					return;
 				case GCDataType.RGB8:
 				case GCDataType.RGBX8:
 				case GCDataType.RGBA8:
 					RGBA = ByteConverter.ToUInt32(file, address);
+					
 					if (dataType != GCDataType.RGBA8)
-						alpha = 255;
+					{
+						Alpha = 255;
+					}
+
 					endaddr = address + 4;
 					return;
 				default:
@@ -365,22 +358,23 @@ namespace SAModel.GC
 		/// Write the color data to a stream
 		/// </summary>
 		/// <param name="writer"></param>
-		/// <param name="attrib"></param>
+		/// <param name="dataType"></param>
+		/// <param name="structType"></param>
 		public void Write(BinaryWriter writer, GCDataType dataType, GCStructType structType)
 		{
 			switch (dataType)
 			{
 				case GCDataType.RGB8:
-					writer.Write(red);
-					writer.Write(green);
-					writer.Write(blue);
+					writer.Write(Red);
+					writer.Write(Green);
+					writer.Write(Blue);
 					writer.Write((byte)255);
 					break;
 				case GCDataType.RGBA8:
-					writer.Write(red);
-					writer.Write(green);
-					writer.Write(blue);
-					writer.Write(alpha);
+					writer.Write(Red);
+					writer.Write(Green);
+					writer.Write(Blue);
+					writer.Write(Alpha);
 					break;
 				default:
 					throw new ArgumentException($"{dataType} is not a valid output color type");
@@ -389,34 +383,45 @@ namespace SAModel.GC
 
 		public byte[] GetBytes()
 		{
-			List<byte> result = new List<byte>();
+			List<byte> result = [];
+			
 			if (ByteConverter.BigEndian)
 			{
-				result.Add(alpha);
-				result.Add(blue);
-				result.Add(green);
-				result.Add(red);
+				result.Add(Alpha);
+				result.Add(Blue);
+				result.Add(Green);
+				result.Add(Red);
 			}
 			else
 			{
-				result.Add(red);
-				result.Add(green);
-				result.Add(blue);
-				result.Add(alpha);
+				result.Add(Red);
+				result.Add(Green);
+				result.Add(Blue);
+				result.Add(Alpha);
 			}
+			
 			return result.ToArray();
 		}
 
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
-					result.Append("0x" + $"{alpha.ToString("X2")}" + $"{blue.ToString("X2")}" + $"{green.ToString("X2")}" + $"{red.ToString("X2")}");
-					result.Append(" }");
+			var result = new StringBuilder("{ ");
+			
+			result.Append($"0x{Alpha:X2}{Blue:X2}{Green:X2}{Red:X2}");
+			result.Append(" }");
+			
 			return result.ToString();
 		}
+		public string ToGCMDEStruct()
+		{
+			var result = new StringBuilder();
+			result.Append($"A{Red}, R{Green}, G{Blue}, B{Alpha}");
+			return result.ToString();
+		}
+
 		public void ToNJA(TextWriter writer, string vtype)
 		{
-			writer.WriteLine($"\t{vtype}( " + red.ToString() + ", " + green.ToString() + ", " + blue.ToString() + ", " + alpha.ToString() + " ),");
+			writer.WriteLine($"\t{vtype}( {Red}, {Green}, {Blue}, {Alpha} ),");
 		}
 	}
 }

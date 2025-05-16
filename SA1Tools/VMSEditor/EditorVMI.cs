@@ -50,8 +50,6 @@ namespace VMSEditor
                 if (od.ShowDialog(this) == DialogResult.OK)
                 {
                     byte[] data = File.ReadAllBytes(od.FileName);
-                    if (BitConverter.ToUInt16(data, 0) == 0x8038)
-
                     vmi = new VMIFile(new VMSFile(data), "SADV_000");
                     SetCurrentTime();
                     UpdateAllLabels();
@@ -60,6 +58,8 @@ namespace VMSEditor
 
         private void SetCurrentTime()
         {
+			if (vmi is null)
+				vmi = new VMIFile();
             vmi.Year = (ushort)DateTime.Now.Year;
             vmi.Month = (byte)DateTime.Now.Month;
             vmi.Day = (byte)DateTime.Now.Day;

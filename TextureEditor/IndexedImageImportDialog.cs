@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static TextureEditor.TexturePalette;
 
@@ -33,26 +28,29 @@ namespace TextureEditor
         private void ProcessBitmap()
         {
             int usedColors = 0;
-            int totalColors = 0;
+            int totalColors = bitmap.Palette.Entries.Length;
             if (texinfo is PvrTextureInfo)
             {
                 radioButtonRGB5A3.Enabled = radioButtonIntensity8A.Enabled = false;
             }
 
-            using (var snoop_u = new BmpPixelSnoop(new Bitmap(bitmap)))
-            {
-                for (int p = 0; p < bitmap.Palette.Entries.Length; p++)
-                {
-                    totalColors += 1;
-                    bool match = false;
-                    for (int h = 0; h < bitmap.Height; h++)
-                        for (int w = 0; w < bitmap.Width; w++)
-                            if (snoop_u.GetPixel(w, h) == bitmap.Palette.Entries[p])
-                                match = true;
-                    if (match)
-                        usedColors += 1;
-                }
-            }
+			using (var snoop_u = new BmpPixelSnoop(new Bitmap(bitmap)))
+			{
+				List<Color> cols = new();
+				for (int h = 0; h < bitmap.Height; h++)
+				{
+					for (int w = 0; w < bitmap.Width; w++)
+					{
+						Color color = snoop_u.GetPixel(w, h);
+						if (!cols.Contains(color))
+						{
+							cols.Add(color);
+						}
+					}
+				}
+				usedColors = cols.Count;
+			}
+
             if (usedColors <= 16)
             {
                 radioButtonIndex4.Checked = true;
@@ -92,7 +90,7 @@ namespace TextureEditor
                     break;
             }
 
-            labelPaletteInfo.Text = "Palette: " + totalColors.ToString() + " colors (" + usedColors.ToString() + " colors used) , " + transparency;
+            labelPaletteInfo.Text = "Palette: " + totalColors.ToString() + " colors (" + usedColors.ToString() + " colors used), " + transparency;
             groupBoxMask.Enabled = groupBoxPalette.Enabled = buttonAuto.Enabled = buttonOK.Enabled = true;
             if (!gamecube)
                 radioButtonIntensity8A.Enabled = radioButtonRGB5A3.Enabled = false;

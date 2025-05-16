@@ -365,7 +365,7 @@ namespace SAToolsHub.Forms
 							}
 							break;
 						default:
-							if (e.FormattedValue != "")
+							if ((string)e.FormattedValue != "")
 							{
 								MessageBox.Show(type + " is not int or float. Please leave this empty.");
 								dataGridView1.CurrentCell.Value = null;

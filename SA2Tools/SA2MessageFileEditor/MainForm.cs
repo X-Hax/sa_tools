@@ -23,13 +23,11 @@ namespace SA2MessageFileEditor
 		List<Message> CurrentMessage { get { return messages[messageNum.SelectedIndex]; } }
 		Message CurrentLine { get { return CurrentMessage[lineNum.SelectedIndex]; } }
 
-		static readonly Encoding jpenc = Encoding.GetEncoding(932);
-		static readonly Encoding euenc = Encoding.GetEncoding(1252);
+		Encoding currentEncoding;
 		List<string> recentFiles = new List<string>();
 		string filename = null;
 		List<List<Message>> messages = new List<List<Message>>();
 		bool bigEndian;
-		bool useSJIS;
 		SearchCriteria currentSearch;
 		int searchMessage, searchLine;
 		Settings_SA2MessageFileEditor settingsFile;
@@ -38,14 +36,42 @@ namespace SA2MessageFileEditor
 		{
 			settingsFile = Settings_SA2MessageFileEditor.Load();
 			if (settingsFile.RecentFiles != null)
-				recentFiles = new List<string>(settingsFile.RecentFiles.Where(a => File.Exists(a)));
+				recentFiles = new List<string>(settingsFile.RecentFiles.Where(File.Exists));
 			if (recentFiles.Count > 0)
 				UpdateRecentFiles();
 			bigEndian = settingsFile.BigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			useSJIS = settingsFile.UseSJIS;
-			shiftJISToolStripMenuItem.Checked = useSJIS;
-			windows1252ToolStripMenuItem.Checked = !useSJIS;
+			switch (settingsFile.Encoding)
+			{
+				case 0:
+					autoToolStripMenuItem.Checked = true;
+					shiftJISToolStripMenuItem.Checked = false;
+					windows1252ToolStripMenuItem.Checked = false;
+					customToolStripMenuItem.Checked = false;
+					currentEncoding = Encoding.GetEncoding(1252);
+					break;
+				case 932:
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = true;
+					windows1252ToolStripMenuItem.Checked = false;
+					customToolStripMenuItem.Checked = false;
+					currentEncoding = Encoding.GetEncoding(932);
+					break;
+				case 1252:
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = false;
+					windows1252ToolStripMenuItem.Checked = true;
+					customToolStripMenuItem.Checked = false;
+					currentEncoding = Encoding.GetEncoding(1252);
+					break;
+				default:
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = false;
+					windows1252ToolStripMenuItem.Checked = false;
+					customToolStripMenuItem.Checked = true;
+					currentEncoding = Encoding.GetEncoding(settingsFile.Encoding);
+					break;
+			}
 			if (filename != null)
 				LoadFile(filename);
 		}
@@ -72,6 +98,8 @@ namespace SA2MessageFileEditor
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			filename = null;
+			Text = "SA2 Message File Editor";
 			messages.Clear();
 			messageNum.Items.Clear();
 			findNextToolStripMenuItem.Enabled = false;
@@ -79,7 +107,8 @@ namespace SA2MessageFileEditor
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (OpenFileDialog dlg = new OpenFileDialog() {
+			using (OpenFileDialog dlg = new OpenFileDialog()
+			{
 				DefaultExt = "prs",
 				Filter = "Supported Files|bh?????.prs;eh?????.prs;ex_mission?.prs;mcwarn_?.prs;mh*.prs;mission?.prs;msg*.prs;text_?.prs;" +
 				"bh?????.bin;eh?????.bin;ex_mission?.bin;mcwarn_?.bin;mh*.bin;mission?.bin;msg*.bin;text_?.bin" +
@@ -88,23 +117,23 @@ namespace SA2MessageFileEditor
 				"|Mission Text Files|ex_mission?.prs;mission?.prs;ex_mission?.bin;mission?.bin" +
 				"|Chao Text Files|msg*.prs;mhchao*.prs;msg*.bin;mhchao*.bin" +
 				"|System Text Files|mcwarn_?.prs;mhsys?.prs;text_?.prs;mcwarn_?.bin;mhsys?.bin;text_?.bin" +
-				"|All Files|*.*" 
+				"|All Files|*.*"
 			})
 				if (dlg.ShowDialog(this) == DialogResult.OK)
 					LoadFile(dlg.FileName);
 		}
 
-        private bool CheckForEscapeCharacter(string text)
-        {
-            int c = 0;
-            while (c < text.Length)
-            {
-                if (text[c] == '\f')
-                    return true;
-                c++;
-            }
-            return false;
-        }
+		private bool CheckForEscapeCharacter(string text)
+		{
+			int c = 0;
+			while (c < text.Length)
+			{
+				if (text[c] == '\f')
+					return true;
+				c++;
+			}
+			return false;
+		}
 
 		private void LoadFile(string filename)
 		{
@@ -124,30 +153,31 @@ namespace SA2MessageFileEditor
 				bigEndian = true;
 			ByteConverter.BigEndian = bigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			useSJIS = char.ToLowerInvariant(Path.GetFileNameWithoutExtension(filename).Last()) == 'j';
-			shiftJISToolStripMenuItem.Checked = useSJIS;
-			windows1252ToolStripMenuItem.Checked = !useSJIS;
-			Encoding encoding = useSJIS ? jpenc : euenc;
+			if (autoToolStripMenuItem.Checked)
+			{
+				bool useSJIS = char.ToLowerInvariant(Path.GetFileNameWithoutExtension(filename).Last()) == 'j';
+				currentEncoding = Encoding.GetEncoding(useSJIS ? 932 : 1252);
+			}
 			messages.Clear();
 			int address = 0;
 			int off = ByteConverter.ToInt32(fc, 0);
 			int end = off;
-            bool hasEscape = false;
+			bool hasEscape = false;
 			while (off != -1 && address < end)
 			{
-                string str = fc.GetCString(off, encoding);
-                messages.Add(Message.FromString(str));
-                if (CheckForEscapeCharacter(str))
-                    hasEscape = true; 
-                address += 4;
+				string str = fc.GetCString(off, currentEncoding);
+				messages.Add(Message.FromString(str));
+				if (CheckForEscapeCharacter(str))
+					hasEscape = true;
+				address += 4;
 				off = ByteConverter.ToInt32(fc, address);
 				end = Math.Min(off, end);
 			}
-            textOnlyToolStripMenuItem.Checked = !hasEscape;
+			textOnlyToolStripMenuItem.Checked = !hasEscape;
 			UpdateMessageSelect();
 			messagePanel.Enabled = false;
 			AddRecentFile(filename);
-			Text = "SA2 Message File Editor - " + Path.GetFileName(filename);
+			Text = $"SA2 Message File Editor - {Path.GetFileName(filename)}";
 			findNextToolStripMenuItem.Enabled = false;
 		}
 
@@ -155,7 +185,7 @@ namespace SA2MessageFileEditor
 		{
 			messageNum.Items.Clear();
 			if (messages.Count > 0)
-				messageNum.Items.AddRange(messages.Select((a, i) => (object)((i + 1).ToString() + ": " + (a.Count > 0 ? a[0].GetPreview() : string.Empty))).ToArray());
+				messageNum.Items.AddRange(messages.Select((a, i) => (object)$"{i + 1}: {(a.Count > 0 ? a[0].GetPreview() : string.Empty)}").ToArray());
 		}
 
 		private void AddRecentFile(string filename)
@@ -189,7 +219,7 @@ namespace SA2MessageFileEditor
 					filename = dlg.FileName;
 					SaveFile();
 					AddRecentFile(filename);
-					Text = "SA2 Message File Editor - " + Path.GetFileName(filename);
+					Text = $"SA2 Message File Editor - {Path.GetFileName(filename)}";
 				}
 			}
 		}
@@ -199,17 +229,16 @@ namespace SA2MessageFileEditor
 			ByteConverter.BigEndian = bigEndian;
 			int addr = (messages.Count + 1) * 4;
 			List<byte> fc = new List<byte>();
-			Encoding encoding = useSJIS ? jpenc : euenc;
-			List<string> strs = new List<string>(messages.Select(a => Message.ToString(a,textOnlyToolStripMenuItem.Checked)));
+			List<string> strs = new List<string>(messages.Select(a => Message.ToString(a, textOnlyToolStripMenuItem.Checked)));
 			foreach (string item in strs)
 			{
 				fc.AddRange(ByteConverter.GetBytes(addr));
-				addr += encoding.GetByteCount(item) + 1;
+				addr += currentEncoding.GetByteCount(item) + 1;
 			}
 			fc.AddRange(BitConverter.GetBytes(-1));
 			foreach (string item in strs)
 			{
-				fc.AddRange(encoding.GetBytes(item));
+				fc.AddRange(currentEncoding.GetBytes(item));
 				fc.Add(0);
 			}
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
@@ -250,16 +279,67 @@ namespace SA2MessageFileEditor
 
 		private void shiftJISToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			useSJIS = true;
+			currentEncoding = Encoding.GetEncoding(932);
 			shiftJISToolStripMenuItem.Checked = true;
 			windows1252ToolStripMenuItem.Checked = false;
+			customToolStripMenuItem.Checked = false;
+			autoToolStripMenuItem.Checked = false;
+			if (filename != null)
+			{
+				DialogResult res = MessageBox.Show(this, "Reload the current file? All unsaved changes will be lost.", "SA2 Message Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (res == DialogResult.Yes)
+					LoadFile(filename);
+			}
 		}
 
 		private void windows1252ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			useSJIS = false;
+			currentEncoding = Encoding.GetEncoding(1252);
 			shiftJISToolStripMenuItem.Checked = false;
 			windows1252ToolStripMenuItem.Checked = true;
+			customToolStripMenuItem.Checked = false;
+			autoToolStripMenuItem.Checked = false;
+			if (filename != null)
+			{
+				DialogResult res = MessageBox.Show(this, "Reload the current file? All unsaved changes will be lost.", "SA2 Message Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (res == DialogResult.Yes)
+					LoadFile(filename);
+			}
+		}
+
+		private void autoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			currentEncoding = Encoding.GetEncoding(1252);
+			shiftJISToolStripMenuItem.Checked = false;
+			windows1252ToolStripMenuItem.Checked = false;
+			customToolStripMenuItem.Checked = false;
+			autoToolStripMenuItem.Checked = true;
+		}
+
+		private void customToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			InputCustomEncoding enc = new InputCustomEncoding();
+			if (enc.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					currentEncoding = Encoding.GetEncoding(enc.CustomCodepage);
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = enc.CustomCodepage == 932;
+					customToolStripMenuItem.Checked = (enc.CustomCodepage != 1252 && enc.CustomCodepage != 932);
+					windows1252ToolStripMenuItem.Checked = enc.CustomCodepage == 1252;
+					if (filename != null)
+					{
+						DialogResult res = MessageBox.Show(this, "Reload the current file? All unsaved changes will be lost.", "SA2 Message Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+						if (res == DialogResult.Yes)
+							LoadFile(filename);
+					}
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(this, "Unable to set custom encoding: " + ex.Message.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 
 		private void bigEndianGCSteamToolStripMenuItem_Click(object sender, EventArgs e)
@@ -282,13 +362,13 @@ namespace SA2MessageFileEditor
 		private void UpdateLineSelect()
 		{
 			lineNum.Items.Clear();
-			lineNum.Items.AddRange(CurrentMessage.Select((a, i) => (object)((i + 1).ToString() + ": " + a.GetPreview())).ToArray());
+			lineNum.Items.AddRange(CurrentMessage.Select((a, i) => (object)$"{i + 1}: {a.GetPreview()}").ToArray());
 		}
 
 		private void messageAddButton_Click(object sender, EventArgs e)
 		{
 			messages.Add(new List<Message>() { new Message() });
-			messageNum.Items.Add((messageNum.Items.Count + 1) + ": ");
+			messageNum.Items.Add($"{messageNum.Items.Count + 1}: ");
 			messageNum.SelectedIndex = messageNum.Items.Count - 1;
 		}
 
@@ -319,6 +399,7 @@ namespace SA2MessageFileEditor
 				int? wait = CurrentLine.WaitTime;
 				if (waitTimeCheckBox.Checked = wait.HasValue)
 					waitTimeSelector.TotalFrames = wait.Value;
+				messageEmerald2P.Checked = CurrentLine.Emerald2P;
 				messageCentered.Checked = CurrentLine.Centered;
 				lineEdit.Text = CurrentLine.Text.Replace("\n", Environment.NewLine);
 			}
@@ -327,7 +408,7 @@ namespace SA2MessageFileEditor
 		private void lineAddButton_Click(object sender, EventArgs e)
 		{
 			CurrentMessage.Add(new Message());
-			lineNum.Items.Add((lineNum.Items.Count + 1) + ": ");
+			lineNum.Items.Add($"{lineNum.Items.Count + 1}: ");
 			lineNum.SelectedIndex = lineNum.Items.Count - 1;
 		}
 
@@ -403,6 +484,11 @@ namespace SA2MessageFileEditor
 			CurrentLine.WaitTime = waitTimeSelector.TotalFrames;
 		}
 
+		private void messageEmerald2P_CheckedChanged(object sender, EventArgs e)
+		{
+			CurrentLine.Emerald2P = messageEmerald2P.Checked;
+		}
+
 		private void messageCentered_CheckedChanged(object sender, EventArgs e)
 		{
 			CurrentLine.Centered = messageCentered.Checked;
@@ -466,6 +552,7 @@ namespace SA2MessageFileEditor
 		public int? Voice { get; set; }
 		public int? Audio { get; set; }
 		public int? WaitTime { get; set; }
+		public bool Emerald2P { get; set; }
 		public bool Centered { get; set; } = true;
 		public string Text { get; set; } = string.Empty;
 
@@ -492,25 +579,24 @@ namespace SA2MessageFileEditor
 					char v6 = text[c];
 					while (v6 != ' ' && v6 != ':')
 					{
+						++c;
 						switch (v6)
 						{
 							case 'A':
 							case 'a':
-								++c;
 								msg.Audio = ParseInt(text, ref c);
+								break;
+							case 'D':
+							case 'd':
+								msg.Emerald2P = true;
 								break;
 							case 'S':
 							case 's':
-								++c;
 								msg.Voice = ParseInt(text, ref c);
 								break;
 							case 'W':
 							case 'w':
-								++c;
 								msg.WaitTime = ParseInt(text, ref c);
-								break;
-							default:
-								++c;
 								break;
 						}
 						if (c == text.Length) break;
@@ -574,6 +660,8 @@ namespace SA2MessageFileEditor
 				sb.Append('w');
 				sb.Append(WaitTime.Value);
 			}
+			if (Emerald2P)
+				sb.Append('D');
 			sb.Append(' ');
 			if (Centered)
 				sb.Append('\a');

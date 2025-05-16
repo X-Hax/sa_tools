@@ -378,8 +378,8 @@ namespace VMSEditor
             Key1 = file[index + 3];
             Name = ReadChaoName(file, index + 0x04);
             Swim = BitConverter.ToUInt16(file, index + 0x0C);
-            Run = BitConverter.ToUInt16(file, index + 0x0E);
-            Fly = BitConverter.ToUInt16(file, index + 0x10);
+			Fly = BitConverter.ToUInt16(file, index + 0x0E);
+			Run = BitConverter.ToUInt16(file, index + 0x10);
             Power = BitConverter.ToUInt16(file, index + 0x12);
             HP = BitConverter.ToUInt16(file, index + 0x14);
             HP_Max = BitConverter.ToUInt16(file, index + 0x16);
@@ -442,8 +442,8 @@ namespace VMSEditor
             result.Add(Key1);
             result.AddRange(GetChaoNameBytes(Name));
             result.AddRange(BitConverter.GetBytes(Swim));
-            result.AddRange(BitConverter.GetBytes(Run));
-            result.AddRange(BitConverter.GetBytes(Fly));
+			result.AddRange(BitConverter.GetBytes(Fly));
+			result.AddRange(BitConverter.GetBytes(Run));
             result.AddRange(BitConverter.GetBytes(Power));
             result.AddRange(BitConverter.GetBytes(HP));
             result.AddRange(BitConverter.GetBytes(HP_Max));

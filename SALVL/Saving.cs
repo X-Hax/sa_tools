@@ -277,6 +277,23 @@ namespace SAModel.SALVL
 			}
 		}
 
+		private void SaveCamFile(bool bigendian)
+		{
+			using (SaveFileDialog a = new()
+			{
+				DefaultExt = "bin",
+				Filter = "CAM files|CAM*.bin",
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					{
+						CAMItem.Save(LevelData.camItems(LevelData.Character).ToList(), a.FileName, bigendian);
+					}
+				}
+			}
+		}
+
 		private void SaveSA2Data(bool autoCloseDialog)
 		{
 

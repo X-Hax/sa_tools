@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\..\build\lib\</OutputPath>
@@ -8,7 +8,7 @@
 		<DebugType>embedded</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\ArchiveLib\ArchiveLib.csproj" />
@@ -16,7 +16,7 @@
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="SharpDX.Direct3D9" Version="4.2.0" />
-		<PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+		<PackageReference Include="SharpDX.Direct3D9" />
+		<PackageReference Include="SharpDX.Mathematics" />
 	</ItemGroup>
 </Project>

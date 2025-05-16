@@ -8,6 +8,8 @@ using System.ComponentModel;
 using SAModel.SAEditorCommon.ModManagement;
 using SAModel.SAEditorCommon.ProjectManagement;
 using System.Xml;
+using SplitTools.Split;
+using SplitTools;
 
 namespace SAToolsHub
 {
@@ -23,6 +25,7 @@ namespace SAToolsHub
 		string gameDataFolder;
 		string checkFile;
 		string projName;
+		bool isNJA;
 
 		// Variables (split)
 		Stream projFileStream;
@@ -292,6 +295,7 @@ namespace SAToolsHub
 				gameName = template.GameInfo.GameName;
 				projectType = template.GameInfo.ProjectType;
 				gamePath = ProjectFunctions.GetGamePath(template.GameInfo.GameName);
+				isNJA = template.GameInfo.NJA;
 				// This should never happen under normal circumstances
 				if (gamePath == "")
 					throw new Exception("Game path not set");
@@ -398,14 +402,17 @@ namespace SAToolsHub
 
 		private void CopyFolder(string sourceFolder, string destinationFolder)
 		{
+			if (!Directory.Exists(sourceFolder))
+				return;
+
 			string[] files = Directory.GetFiles(sourceFolder);
 
 			Directory.CreateDirectory(destinationFolder);
 
 			foreach (string objdef in files)
 			{
-				FileInfo objdefFileInfo = new FileInfo(objdef);
-				if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj")) continue;
+				System.IO.FileInfo objdefFileInfo = new System.IO.FileInfo(objdef);
+				if (objdefFileInfo.Name.Equals("SADXObjectDefinitions.csproj") || objdefFileInfo.Name.Equals("SA2ObjectDefinitions.csproj")) continue;
 
 				// copy
 				string filePath = Path.Combine(sourceFolder, objdefFileInfo.Name);
@@ -439,11 +446,30 @@ namespace SAToolsHub
 				return Path.Combine(appPath, "..\\SA1Tools\\SADXObjectDefinitions");
 		}
 
+		private static void RemoveEmptyFolders(string startLocation)
+		{
+			foreach (var directory in Directory.GetDirectories(startLocation))
+			{
+				RemoveEmptyFolders(directory);
+				if (Directory.GetFiles(directory).Length == 0 &&
+					Directory.GetDirectories(directory).Length == 0)
+				{
+					Directory.Delete(directory, false);
+				}
+			}
+		}
+
 		ProjectSplitResult splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress, DoWorkEventArgs e)
 		{
+			SplitFlags splitFlags = SplitFlags.Log | SplitFlags.Overwrite;
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string iniFolder;
-
+			if (isNJA)
+				splitFlags |= SplitFlags.NJA;
+			if (comboBoxLabels.SelectedIndex == 2 && !isNJA)
+				splitFlags |= SplitFlags.NoMeta;
+			if (comboBoxLabels.SelectedIndex != 1 && !isNJA)
+				splitFlags |= SplitFlags.NoLabels;
 			progress.SetMaxSteps(setProgressMaxStep());
 
 			if (Directory.Exists(Path.Combine(appPath, "GameConfig", dataFolder)))
@@ -462,7 +488,7 @@ namespace SAToolsHub
 					e.Cancel = true;
 					return ProjectSplitResult.Cancelled;
 				}
-				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, nometa: comboBoxLabels.SelectedIndex == 2, nolabel: comboBoxLabels.SelectedIndex != 1);
+				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, splitFlags);
 				if (File.Exists(Path.Combine(projFolder, "SplitLog.log")))
 					return ProjectSplitResult.ItemFailure;
 			}
@@ -470,8 +496,14 @@ namespace SAToolsHub
 			if (File.Exists(Path.Combine(iniFolder, "sadxlvl.ini")))
 			{
 				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory();
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+				string objdefsinifolder = Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
+				// objdefs INI folder
+				if (!Directory.Exists(objdefsinifolder))
+					objdefsinifolder = Path.Combine(appPath, "..\\GameConfig", dataFolder, "objdefs");
+				CopyFolder(objdefsinifolder, outputObjdefsPath);
+				// objdefs CS folder
+				string objdefsPath = GetObjDefsDirectory();
 				if (Directory.Exists(objdefsPath))
 					CopyFolder(objdefsPath, outputObjdefsPath);
 				progress.SetTask("Finalizing SALVL Supported Setup");
@@ -481,8 +513,14 @@ namespace SAToolsHub
 			if (File.Exists(Path.Combine(iniFolder, "sa2lvl.ini")))
 			{
 				progress.SetStep("Copying Object Definitions");
-				string objdefsPath = GetObjDefsDirectory(true);
 				string outputObjdefsPath = Path.Combine(projFolder, "objdefs");
+				string objdefsinifolder = Path.Combine(appPath, "GameConfig", dataFolder, "objdefs");
+				// objdefs INI folder
+				if (!Directory.Exists(objdefsinifolder))
+					objdefsinifolder = Path.Combine(appPath, "..\\GameConfig", dataFolder, "objdefs");
+				CopyFolder(objdefsinifolder, outputObjdefsPath);
+				// objdefs CS folder
+				string objdefsPath = GetObjDefsDirectory(true);
 				if (Directory.Exists(objdefsPath))
 					CopyFolder(objdefsPath, outputObjdefsPath);
 				progress.SetTask("Finalizing SALVL Supported Setup");
@@ -517,6 +555,54 @@ namespace SAToolsHub
 					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, iniFolder);
 				}
 			}
+			// Process and clean up non-NJA stuff
+			if (isNJA)
+			{
+				string duplistpath = Path.Combine(iniFolder, "duppath.txt");
+				Dictionary<string, string> duplist = new Dictionary<string, string>();
+				if (File.Exists(duplistpath))
+					duplist = IniSerializer.Deserialize<Dictionary<string, string>>(duplistpath);
+				progress.SetTask("Processing and cleaning decomp files");
+				progress.SetStep("");
+				string[] files = Directory.GetFiles(projFolder, "*.*", SearchOption.AllDirectories);
+				foreach (string file in files)
+				{
+					switch (Path.GetExtension(file).ToLowerInvariant())
+					{
+						case ".sa1lvl":
+							// .c file export disabled for now
+							//StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
+							// Generate dupmodel and dupmotion files
+							if (duplist.ContainsKey(Path.GetFileName(file)))
+								SAModel.SAEditorCommon.ProjectManagement.NJAExporter.GenerateDup(file, Path.Combine(Path.GetDirectoryName(file), duplist[Path.GetFileName(file)]));
+							File.Delete(file);
+							break;
+						case ".sa1mdl":
+						case ".sa2mdl":
+						case ".sa2bmdl":
+						case ".saanim":
+						case ".satex":
+							StructConversion.ConvertFileToText(file, StructConversion.TextType.NJA, file[..file.LastIndexOf(".")], false, true);
+							File.Delete(file);
+							break;
+						case ".nja":
+						case ".nam":
+						case ".nad":
+						case ".nas":
+						case ".dup":
+						case ".dum":
+						case ".tls":
+						case ".cut":
+						case ".sap":
+							break;
+						default:
+							File.Delete(file);
+							break;
+					}
+				}
+				RemoveEmptyFolders(projFolder);
+				return ProjectSplitResult.Success;
+			}
 			// Project folders for buildable PC games
 			if (game == "SADXPC" || game == "SA2PC")
 			{
@@ -525,7 +611,6 @@ namespace SAToolsHub
 				GenerateModFile(game, progress, projFolder, Path.GetFileNameWithoutExtension(projName));
 				progress.StepProgress();
 			}
-
 			return ProjectSplitResult.Success;
 		}
 		#endregion
@@ -553,7 +638,7 @@ namespace SAToolsHub
 					MessageBox.Show(this, "Project failed to split: " + e.Error.Message, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					break;
 				case ProjectSplitResult.ItemFailure:
-					if (MessageBox.Show(this, "Item failed to split properly. The log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+					if (MessageBox.Show(this, "Item failed to split properly: " + e.Error.Message + ". The log file is located at:\n\n" + projFolder + ".\n\nWould you like to open it?", "Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
 						System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", $"\"" + Path.Combine(projFolder, "SplitLog.log") + "\"") { CreateNoWindow = false });
 					break;
 				case ProjectSplitResult.Success:

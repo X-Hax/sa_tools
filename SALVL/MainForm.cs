@@ -152,7 +152,6 @@ namespace SAModel.SALVL
 			progress = new ProgressDialog("SALVL", 11, false, true, true);
 			modelLibraryControl1.InitRenderer();
 			InitGUISettings();
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			LevelData.StateChanged += LevelData_StateChanged;
 			LevelData.PointOperation += LevelData_PointOperation;
 			RenderPanel.MouseWheel += panel1_MouseWheel;
@@ -280,6 +279,7 @@ namespace SAModel.SALVL
 			editLevelInfoToolStripMenuItem.Enabled = false;
 			advancedSaveSETFileToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = false;
 			saveAdvancedToolStripMenuItem.Enabled = false;
+			cAMFileToolStripMenuItem.Enabled = false;
 
 			// Labels import/export
 			importLabelsToolStripMenuItem.Enabled = false;
@@ -1889,6 +1889,11 @@ namespace SAModel.SALVL
 		private void advancedSaveSETFileBigEndianToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveSETFile(true);
+		}
+
+		private void cAMFileToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveCamFile(false);
 		}
 
 		private void MainForm_ResizeEnd(object sender, EventArgs e)

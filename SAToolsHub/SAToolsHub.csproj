@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\build\</OutputPath>
@@ -8,7 +8,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationIcon>Resources\ToolsHub_ico.ico</ApplicationIcon>
@@ -29,8 +29,8 @@
 		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+		<PackageReference Include="System.Data.DataSetExtensions" />
+		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="Updater\SizeSuffix.cs" />
@@ -42,6 +42,6 @@
 	  </None>
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\7z*.*&quot; &quot;$(ProjectDir)..\build\lib\&quot;&#xD;&#xA;xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\build\&quot;" />
+	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\Dependencies\7z*.*&quot; &quot;$(ProjectDir)..\build\lib\&quot;" />
 	</Target>
 </Project>

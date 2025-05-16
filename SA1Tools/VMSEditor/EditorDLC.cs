@@ -125,7 +125,7 @@ namespace VMSEditor
 
         private void UpdateSize()
         {
-            toolStripStatusSize.Text = "(" + meta.GetBytes().Length.ToString() + " bytes)";
+            toolStripStatusSize.Text = meta.GetBytes().Length.ToString() + " bytes";
         }
 
         public void LoadVMS_DLC(string filename)
@@ -335,7 +335,7 @@ namespace VMSEditor
 
         private void dLCToolManualToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/VMS-Editor#dlc-editor") { CreateNoWindow = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start https://github.com/X-Hax/sa_tools/wiki/DLC-Editor") { CreateNoWindow = true });
         }
 
         private void gitHubIssueTrackerToolStripMenuItem_Click(object sender, EventArgs e)

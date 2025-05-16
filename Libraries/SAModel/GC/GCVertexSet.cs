@@ -14,17 +14,17 @@ namespace SAModel.GC
 		/// <summary>
 		/// The type of vertex data that is stored
 		/// </summary>
-		public readonly GCVertexAttribute attribute;
+		public readonly GCVertexAttribute Attribute;
 
 		/// <summary>
 		/// The datatype as which the data is stored
 		/// </summary>
-		public readonly GCDataType dataType;
+		public readonly GCDataType DataType;
 
 		/// <summary>
 		/// The structure in which the data is stored
 		/// </summary>
-		public readonly GCStructType structType;
+		public readonly GCStructType StructType;
 
 		/// <summary>
 		/// The size of a single object in the list in bytes
@@ -33,36 +33,29 @@ namespace SAModel.GC
 		{
 			get
 			{
-				uint num_components = 1;
-
-				switch (structType)
+				uint numComponents = StructType switch
 				{
-					case GCStructType.Position_XY:
-					case GCStructType.TexCoord_ST:
-						num_components = 2;
-						break;
-					case GCStructType.Position_XYZ:
-					case GCStructType.Normal_XYZ:
-						num_components = 3;
-						break;
-				}
+					GCStructType.Position_XY or GCStructType.TexCoord_ST => 2,
+					GCStructType.Position_XYZ or GCStructType.Normal_XYZ => 3,
+					_ => 1
+				};
 
-				switch (dataType)
+				switch (DataType)
 				{
 					case GCDataType.Unsigned8:
 					case GCDataType.Signed8:
-						return num_components;
+						return numComponents;
 					case GCDataType.Unsigned16:
 					case GCDataType.Signed16:
 					case GCDataType.RGB565:
 					case GCDataType.RGBA4:
-						return num_components * 2;
+						return numComponents * 2;
 					case GCDataType.Float32:
 					case GCDataType.RGBA8:
 					case GCDataType.RGB8:
 					case GCDataType.RGBX8:
 					default:
-						return num_components * 4;
+						return numComponents * 4;
 				}
 			}
 		}
@@ -70,12 +63,12 @@ namespace SAModel.GC
 		/// <summary>
 		/// The vertex data
 		/// </summary>
-		public List<IOVtx> data;
+		public List<IOVtx> Data;
 
 		/// <summary>
 		/// The address of the vertex attribute (gets set after writing)
 		/// </summary>
-		private uint dataAddress;
+		private uint _dataAddress;
 
 		public string DataName { get; set; }
 
@@ -85,31 +78,31 @@ namespace SAModel.GC
 		/// <param name="attributeType">The attribute type of the vertex attribute</param>
 		public GCVertexSet(GCVertexAttribute attributeType)
 		{
-			attribute = attributeType;
+			Attribute = attributeType;
 
-			switch (attribute)
+			switch (Attribute)
 			{
 				case GCVertexAttribute.Position:
-					dataType = GCDataType.Float32;
-					structType = GCStructType.Position_XYZ;
+					DataType = GCDataType.Float32;
+					StructType = GCStructType.Position_XYZ;
 					break;
 				case GCVertexAttribute.Normal:
-					dataType = GCDataType.Float32;
-					structType = GCStructType.Normal_XYZ;
+					DataType = GCDataType.Float32;
+					StructType = GCStructType.Normal_XYZ;
 					break;
 				case GCVertexAttribute.Color0:
-					dataType = GCDataType.RGBA8;
-					structType = GCStructType.Color_RGBA;
+					DataType = GCDataType.RGBA8;
+					StructType = GCStructType.Color_RGBA;
 					break;
 				case GCVertexAttribute.Tex0:
-					dataType = GCDataType.Signed16;
-					structType = GCStructType.TexCoord_ST;
+					DataType = GCDataType.Signed16;
+					StructType = GCStructType.TexCoord_ST;
 					break;
 				default:
-					throw new ArgumentException($"Datatype { attribute } is not a valid vertex type for SA2");
+					throw new ArgumentException($"Datatype { Attribute } is not a valid vertex type for SA2");
 			}
 
-			data = new List<IOVtx>();
+			Data = [];
 		}
 
 		/// <summary>
@@ -118,13 +111,12 @@ namespace SAModel.GC
 		/// <param name="attribute"></param>
 		/// <param name="dataType"></param>
 		/// <param name="structType"></param>
-		/// <param name="fractionalBitCount"></param>
 		public GCVertexSet(GCVertexAttribute attribute, GCDataType dataType, GCStructType structType)
 		{
-			this.attribute = attribute;
-			this.dataType = dataType;
-			this.structType = structType;
-			data = new List<IOVtx>();
+			Attribute = attribute;
+			DataType = dataType;
+			StructType = structType;
+			Data = [];
 		}
 
 		public GCVertexSet(byte[] file, uint address, uint imageBase)
@@ -140,70 +132,94 @@ namespace SAModel.GC
 		/// <param name="imageBase">The image base of the addresses</param>
 		public GCVertexSet(byte[] file, uint address, uint imageBase, Dictionary<int, string> labels)
 		{
-			attribute = (GCVertexAttribute)file[address];
-			if (attribute == GCVertexAttribute.Null) return;
+			Attribute = (GCVertexAttribute)file[address];
+			if (Attribute == GCVertexAttribute.Null)
+			{
+				return;
+			}
 
-			uint structure = ByteConverter.ToUInt32(file, (int)address + 4);
-			structType = (GCStructType)(structure & 0x0F);
-			dataType = (GCDataType)((structure >> 4) & 0x0F);
+			var structure = ByteConverter.ToUInt32(file, (int)address + 4);
+			StructType = (GCStructType)(structure & 0x0F);
+			DataType = (GCDataType)((structure >> 4) & 0x0F);
+			
 			if (file[address + 1] != StructSize)
 			{
 				throw new Exception($"Read structure size doesnt match calculated structure size: {file[address + 1]} != {StructSize}");
 			}
 
-			// reading the data
+			// Reading the data
 			int count = ByteConverter.ToUInt16(file, (int)address + 2);
-			int tmpaddr = (int)(ByteConverter.ToUInt32(file, (int)address + 8) - imageBase);
+			var tempAddr = (int)(ByteConverter.ToUInt32(file, (int)address + 8) - imageBase);
 
-			data = new List<IOVtx>();
+			Data = [];
 
-			switch (attribute)
+			switch (Attribute)
 			{
 				case GCVertexAttribute.Position:
-					if (labels.ContainsKey(tmpaddr))
-						DataName = labels[tmpaddr];
-					else
-						DataName = "position_" + tmpaddr.ToString("X8");
-					for (int i = 0; i < count; i++)
+					if (labels.TryGetValue(tempAddr, out var positionName))
 					{
-						data.Add(new Vector3(file, tmpaddr));
-						tmpaddr += 12;
+						DataName = positionName;
+					}
+					else
+					{
+						DataName = $"position_{tempAddr:X8}";
+					}
+
+					for (var i = 0; i < count; i++)
+					{
+						Data.Add(new Vector3(file, tempAddr));
+						tempAddr += 12;
 					}
 					break;
 				case GCVertexAttribute.Normal:
-					if (labels.ContainsKey(tmpaddr))
-						DataName = labels[tmpaddr];
-					else
-						DataName = "normal_" + tmpaddr.ToString("X8");
-					for (int i = 0; i < count; i++)
+					if (labels.TryGetValue(tempAddr, out var noramlName))
 					{
-						data.Add(new Vector3(file, tmpaddr));
-						tmpaddr += 12;
+						DataName = noramlName;
+					}
+					else
+					{
+						DataName = $"normal_{tempAddr:X8}";
+					}
+
+					for (var i = 0; i < count; i++)
+					{
+						Data.Add(new Vector3(file, tempAddr));
+						tempAddr += 12;
 					}
 					break;
 				case GCVertexAttribute.Color0:
-					if (labels.ContainsKey(tmpaddr))
-						DataName = labels[tmpaddr];
-					else
-						DataName = "vcolor_" + tmpaddr.ToString("X8");
-					for (int i = 0; i < count; i++)
+					if (labels.TryGetValue(tempAddr, out var colorName))
 					{
-						data.Add(new Color(file, tmpaddr, dataType, out tmpaddr));
+						DataName = colorName;
+					}
+					else
+					{
+						DataName = $"vcolor_{tempAddr:X8}";
+					}
+
+					for (var i = 0; i < count; i++)
+					{
+						Data.Add(new Color(file, tempAddr, DataType, out tempAddr));
 					}
 					break;
 				case GCVertexAttribute.Tex0:
-					if (labels.ContainsKey(tmpaddr))
-						DataName = labels[tmpaddr];
-					else
-						DataName = "uv_" + tmpaddr.ToString("X8");
-					for (int i = 0; i < count; i++)
+					if (labels.TryGetValue(tempAddr, out var texName))
 					{
-						data.Add(new UV(file, tmpaddr));
-						tmpaddr += 4;
+						DataName = texName;
+					}
+					else
+					{
+						DataName = $"uv_{tempAddr:X8}";
+					}
+
+					for (var i = 0; i < count; i++)
+					{
+						Data.Add(new UV(file, tempAddr));
+						tempAddr += 4;
 					}
 					break;
 				default:
-					throw new ArgumentException($"Attribute type not valid sa2 type: {attribute}");
+					throw new ArgumentException($"Attribute type not valid sa2 type: {Attribute}");
 			}
 		}
 
@@ -211,14 +227,13 @@ namespace SAModel.GC
 		/// Writes the vertex data to the current writing location
 		/// </summary>
 		/// <param name="writer">The output stream</param>
-		/// <param name="imagebase">The imagebase</param>
 		public void WriteData(BinaryWriter writer)
 		{
-			dataAddress = (uint)writer.BaseStream.Length;
+			_dataAddress = (uint)writer.BaseStream.Length;
 
-			foreach(IOVtx vtx in data)
+			foreach(var vtx in Data)
 			{
-				vtx.Write(writer, dataType, structType);
+				vtx.Write(writer, DataType, StructType);
 			}
 		}
 
@@ -227,129 +242,135 @@ namespace SAModel.GC
 		/// Assumes that <see cref="WriteData(BinaryWriter)"/> has been called prior
 		/// </summary>
 		/// <param name="writer">The output stream</param>
-		/// <param name="imagebase">The imagebase</param>
-		public void WriteAttribute(BinaryWriter writer, uint imagebase, List<uint> njOffsets)
+		/// <param name="imageBase">The image base</param>
+		/// <param name="njOffsets"></param>
+		public void WriteAttribute(BinaryWriter writer, uint imageBase, List<uint> njOffsets)
 		{
-			if (dataAddress == 0)
+			if (_dataAddress == 0)
+			{
 				throw new Exception("Data has not been written yet!");
+			}
 
-			//POF0 Offsets
+			// POF0 Offsets
 			njOffsets.Add((uint)(writer.BaseStream.Position + 8));
 
-			writer.Write((byte)attribute);
+			writer.Write((byte)Attribute);
 			writer.Write((byte)StructSize);
-			writer.Write((ushort)data.Count);
-			uint structure = (uint)structType;
-			structure |= (uint)((byte)dataType << 4);
+			writer.Write((ushort)Data.Count);
+			
+			var structure = (uint)StructType;
+			structure |= (uint)((byte)DataType << 4);
+			
 			writer.Write(structure);
-			writer.Write(dataAddress + imagebase);
-			writer.Write((uint)(data.Count * StructSize));
+			writer.Write(_dataAddress + imageBase);
+			writer.Write((uint)(Data.Count * StructSize));
 
-			dataAddress = 0;
+			_dataAddress = 0;
 		}
 
 		public byte[] GetBytes(uint dataAddress)
 		{
-			List<byte> result = new List<byte>();
-			result.Add((byte)attribute);
-			result.Add((byte)StructSize);
-			result.AddRange(ByteConverter.GetBytes((ushort)data.Count));
-			uint structure = (uint)structType;
-			structure |= (uint)((byte)dataType << 4);
+			List<byte> result =
+			[
+				(byte)Attribute,
+				(byte)StructSize
+			];
+			
+			result.AddRange(ByteConverter.GetBytes((ushort)Data.Count));
+			
+			var structure = (uint)StructType;
+			structure |= (uint)((byte)DataType << 4);
+			
 			result.AddRange(ByteConverter.GetBytes(structure));
 			result.AddRange(ByteConverter.GetBytes(dataAddress));
-			result.AddRange(ByteConverter.GetBytes((uint)(data.Count * StructSize)));
+			result.AddRange(ByteConverter.GetBytes((uint)(Data.Count * StructSize)));
+			
 			return result.ToArray();
 		}
+		
 		public string ToStruct()
 		{
-			StringBuilder result = new StringBuilder("{ ");
-			result.Append((byte)attribute);
+			var result = new StringBuilder("{ ");
+			
+			result.Append((byte)Attribute);
 			result.Append(", ");
 			result.Append(StructSize);
 			result.Append(", ");
-			result.Append(data.Count);
+			result.Append(Data.Count);
 			result.Append(", ");
-			uint structure = (uint)structType;
-			structure |= (uint)((byte)dataType << 4);
+			
+			var structure = (uint)StructType;
+			structure |= (uint)((byte)DataType << 4);
+			
 			result.Append(structure);
 			result.Append(", ");
-			result.Append(data != null ? DataName : "NULL");
+			result.Append(Data != null ? DataName : "NULL");
 			result.Append(", ");
-			result.Append((uint)(data.Count * StructSize));
+			result.Append((uint)(Data.Count * StructSize));
 			result.Append(" }");
+			
 			return result.ToString();
 		}
 
-		//WIP
+		// WIP
 		public void ToNJA(TextWriter writer)
 		{
-			string verttype = null;
-			string verttype2 = null;
-			switch (attribute)
+			string vertType = null;
+			string vertType2 = null;
+			
+			switch (Attribute)
 			{
 				case GCVertexAttribute.Position:
-					verttype = "POINT";
-					verttype2 = "POSITION   ";
+					vertType = "POINT";
+					vertType2 = "POSITION   ";
 					break;
 				case GCVertexAttribute.Normal:
-					verttype = "NORMAL";
-					verttype2 = "NORMAL     ";
+					vertType = "NORMAL";
+					vertType2 = "NORMAL     ";
 					break;
 				case GCVertexAttribute.Color0:
-					verttype = "COLOR";
-					verttype2 = "COLOR0     ";
+					vertType = "COLOR";
+					vertType2 = "COLOR0     ";
 					break;
 				case GCVertexAttribute.Tex0:
-					verttype = "UV";
-					verttype2 = "TEX0       ";
+					vertType = "UV";
+					vertType2 = "TEX0       ";
 					break;
 			}
-			writer.WriteLine($"{verttype2}" + DataName + "[]");
+			
+			writer.WriteLine($"{vertType2}{DataName}[]");
 			writer.WriteLine("START");
-			foreach (IOVtx vtx in data)
+			
+			foreach (var vtx in Data)
 			{
-				vtx.ToNJA(writer, verttype);
+				vtx.ToNJA(writer, vertType);
 			}
-			writer.WriteLine("END" + Environment.NewLine);
+			
+			writer.WriteLine($"END{Environment.NewLine}");
 		}
+		
 		public void RefToNJA(TextWriter writer)
 		{
-			string verttype = null;
-			switch (attribute)
+			var vertType = Attribute switch
 			{
-				case GCVertexAttribute.Position:
-					verttype = "POSITION";
-					break;
-				case GCVertexAttribute.Normal:
-					verttype = "NORMAL";
-					break;
-				case GCVertexAttribute.Color0:
-					verttype = "COLOR0";
-					break;
-				case GCVertexAttribute.Tex0:
-					verttype = "TEX0";
-					break;
-			}
-			writer.WriteLine("\tVertAttr     " + $"{verttype}" + ",");
-			writer.WriteLine("\tElementSize  " + StructSize + ",");
-			writer.WriteLine("\tPoints       " + data.Count + ",");
-			writer.WriteLine("\tType         " + "( " + structType + ", " + dataType + " ),");
-			writer.WriteLine("\tName         " + DataName + ",");
-			writer.WriteLine("\tCheckSize    " + (data.Count * StructSize) + "," + Environment.NewLine);
+				GCVertexAttribute.Position => "POSITION",
+				GCVertexAttribute.Normal => "NORMAL",
+				GCVertexAttribute.Color0 => "COLOR0",
+				GCVertexAttribute.Tex0 => "TEX0",
+				_ => null
+			};
+
+			writer.WriteLine($"\tVertAttr     {vertType},");
+			writer.WriteLine($"\tElementSize  {StructSize},");
+			writer.WriteLine($"\tPoints       {Data.Count},");
+			writer.WriteLine($"\tType         ( {StructType}, {DataType} ),");
+			writer.WriteLine($"\tName         {DataName},");
+			writer.WriteLine($"\tCheckSize    {Data.Count * StructSize},{Environment.NewLine}");
 		}
 
 		public GCVertexSet Clone()
 		{
-			GCVertexSet result = (GCVertexSet)MemberwiseClone();
-			//result.data = new List<IOVtx>(data.Count);
-			//foreach (IOVtx item in data)
-				//result.data.Add(item.Clone());
-			//result.Normals = new List<Vector3>(Normals.Count);
-			//foreach (Vector3 item in Normals)
-			//	result.Normals.Add(item.Clone());
-			//result.Colors = new List<Color>(Colors);
-			//result.UVs = new List<UV>(UVs);
+			var result = (GCVertexSet)MemberwiseClone();
 			return result;
 		}
 	}

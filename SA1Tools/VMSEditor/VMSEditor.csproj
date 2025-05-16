@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
@@ -10,7 +10,7 @@
 		<DebugType>embedded</DebugType>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />
@@ -23,8 +23,8 @@
 		<Content Include="iconVMSEditor.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="nQuant.Master" Version="1.2.6" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+		<PackageReference Include="nQuant.Master" />
+		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Properties\Resources.Designer.cs">

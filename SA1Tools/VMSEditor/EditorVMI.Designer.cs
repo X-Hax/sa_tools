@@ -503,7 +503,7 @@ namespace VMSEditor
             this.buttonLoadVMI.Location = new System.Drawing.Point(10, 257);
             this.buttonLoadVMI.Margin = new System.Windows.Forms.Padding(2);
             this.buttonLoadVMI.Name = "buttonLoadVMI";
-            this.buttonLoadVMI.Size = new System.Drawing.Size(76, 24);
+            this.buttonLoadVMI.Size = new System.Drawing.Size(80, 24);
             this.buttonLoadVMI.TabIndex = 13;
             this.buttonLoadVMI.Text = "Load...";
             this.buttonLoadVMI.UseVisualStyleBackColor = true;
@@ -514,7 +514,7 @@ namespace VMSEditor
             this.buttonSaveVMI.Location = new System.Drawing.Point(90, 257);
             this.buttonSaveVMI.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSaveVMI.Name = "buttonSaveVMI";
-            this.buttonSaveVMI.Size = new System.Drawing.Size(76, 24);
+            this.buttonSaveVMI.Size = new System.Drawing.Size(80, 24);
             this.buttonSaveVMI.TabIndex = 14;
             this.buttonSaveVMI.Text = "Save...";
             this.buttonSaveVMI.UseVisualStyleBackColor = true;
@@ -525,9 +525,9 @@ namespace VMSEditor
             this.buttonGenerateVMI.Location = new System.Drawing.Point(170, 257);
             this.buttonGenerateVMI.Margin = new System.Windows.Forms.Padding(2);
             this.buttonGenerateVMI.Name = "buttonGenerateVMI";
-            this.buttonGenerateVMI.Size = new System.Drawing.Size(76, 24);
+            this.buttonGenerateVMI.Size = new System.Drawing.Size(80, 24);
             this.buttonGenerateVMI.TabIndex = 15;
-            this.buttonGenerateVMI.Text = "VMS...";
+            this.buttonGenerateVMI.Text = "From VMS...";
             this.buttonGenerateVMI.UseVisualStyleBackColor = true;
             this.buttonGenerateVMI.Click += new System.EventHandler(this.buttonGenerateVMI_Click);
             // 
@@ -537,7 +537,7 @@ namespace VMSEditor
             this.buttonClose.Location = new System.Drawing.Point(250, 257);
             this.buttonClose.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(76, 24);
+            this.buttonClose.Size = new System.Drawing.Size(80, 24);
             this.buttonClose.TabIndex = 16;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;

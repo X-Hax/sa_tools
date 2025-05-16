@@ -1,20 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.Net;
-using System.ComponentModel;
 using SAModel.SAEditorCommon.ProjectManagement;
 using SplitTools;
 using SplitTools.SplitDLL;
-using System.Net.Http;
-using System.Reflection.Emit;
-using Microsoft.VisualBasic.Logging;
-using SAModel.SAEditorCommon.DataTypes;
-using SAModel.SAEditorCommon;
+using SAToolsHub.Updater;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace SAToolsHub
 {
@@ -225,7 +222,7 @@ namespace SAToolsHub
 			if (!Directory.Exists(projectDirectory) || projectDirectory == "")
 			{
 			MissingProjectFolder:
-				DialogResult projDirMissing = MessageBox.Show(("Project Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult projDirMissing = MessageBox.Show(this, "Project Directory not found. Please locate the correct folder.", "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (projDirMissing == DialogResult.OK)
 				{
 					var fsd = new FolderBrowserDialog { Description = "Please select the correct project folder", UseDescriptionForTitle = true };
@@ -237,7 +234,7 @@ namespace SAToolsHub
 					}
 					else
 					{
-						DialogResult noProjFolder = MessageBox.Show(("No folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						DialogResult noProjFolder = MessageBox.Show(this, "No folder selected.", "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 						if (noProjFolder == DialogResult.Retry)
 							goto MissingProjectFolder;
 						else
@@ -249,7 +246,7 @@ namespace SAToolsHub
 			if (!Directory.Exists(gameDirectory) || gameDirectory == "")
 			{
 			MissingGameFolder:
-				DialogResult gameDirMissing = MessageBox.Show(("Game Directory not found. Please locate the correct folder."), "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				DialogResult gameDirMissing = MessageBox.Show(this, "Game Directory not found. Please locate the correct folder.", "Missing Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				if (gameDirMissing == DialogResult.OK)
 				{
 					var fsd = new FolderBrowserDialog { Description = "Please select the correct game folder", UseDescriptionForTitle = true };
@@ -264,7 +261,7 @@ namespace SAToolsHub
 						}
 						else
 						{
-							DialogResult invalidGameFolder = MessageBox.Show(("Invalid folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+							DialogResult invalidGameFolder = MessageBox.Show(this, "Invalid folder selected.", "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 							if (invalidGameFolder == DialogResult.Retry)
 								goto MissingGameFolder;
 							else
@@ -273,7 +270,7 @@ namespace SAToolsHub
 					}
 					else
 					{
-						DialogResult noGameFolder = MessageBox.Show(("No folder selected."), "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+						DialogResult noGameFolder = MessageBox.Show(this, "No folder selected.", "Missing Directory", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 						if (noGameFolder == DialogResult.Retry)
 							goto MissingGameFolder;
 						else
@@ -374,7 +371,7 @@ namespace SAToolsHub
 			salvlStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SALVL.exe")));
 			sadxsndsharpStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXsndSharp.exe")));
 			sadxtweakerStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXTweaker2.exe")));
-			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SADXFontEdit.exe")));
+			sadxfonteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SAFontEdit.exe")));
 			sasaveStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SASave.exe")));
 			sa2eventviewStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2EventViewer.exe")));
 			sa2evtexteditStartInfo = new ProcessStartInfo(Path.GetFullPath(Path.Combine(rootPath, "SA2CutsceneTextEditor.exe")));
@@ -826,7 +823,7 @@ namespace SAToolsHub
 		{
 			if (treeView1.Nodes.Count > 0)
 			{
-				DialogResult newProjWarning = MessageBox.Show(("A project is currently open.\n\nAre you sure you wish to create a new project?"), "Project Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+				DialogResult newProjWarning = MessageBox.Show(this, "A project is currently open.\n\nAre you sure you wish to create a new project?", "Project Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 				if (newProjWarning == DialogResult.Yes)
 				{
 					resetOpenProject();
@@ -972,8 +969,8 @@ namespace SAToolsHub
 
 		private void projectConverterToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult convWarning = MessageBox.Show(("This feature will create an sap file for your projects.\n\nSome tools may not function properly with older projects., notably SALVL." +
-				"\n\nWould you like to continue with the project conversion?"), "Project Conversion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+			DialogResult convWarning = MessageBox.Show(this, "This feature will create an sap file for your projects.\n\nSome tools may not function properly with older projects, notably SALVL." +
+				"\n\nWould you like to continue with the project conversion?", "Project Conversion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (convWarning == DialogResult.Yes)
 				projectConverter.ShowDialog();
 		}
@@ -989,7 +986,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1001,7 +998,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1013,7 +1010,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1025,7 +1022,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1038,7 +1035,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1050,7 +1047,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 
@@ -1063,7 +1060,7 @@ namespace SAToolsHub
 			}
 			catch
 			{
-				MessageBox.Show("Something went wrong, could not open link in browser.");
+				MessageBox.Show(this, "Something went wrong, could not open link in browser.");
 			}
 		}
 		#endregion
@@ -1256,7 +1253,7 @@ namespace SAToolsHub
 					string filename = ((itemTags)selItem.Tag).Path;
 					string outName = Path.Combine(outDir, (Path.GetFileNameWithoutExtension(((itemTags)selItem.Tag).Path))) + ".c";
 
-					SAModel.SAEditorCommon.StructConversion.ConvertFileToText(filename, SAModel.SAEditorCommon.StructConversion.TextType.CStructs, outName);
+					StructConversion.ConvertFileToText(filename, StructConversion.TextType.CStructs, outName);
 				}
 			}
 		}
@@ -1269,9 +1266,9 @@ namespace SAToolsHub
 				{
 					if (Path.GetExtension(((itemTags)selItem.Tag).Path) == ".saanim")
 					{
-						SAModel.SAEditorCommon.StructConversion.ConvertFileToText(
+						StructConversion.ConvertFileToText(
 							((itemTags)selItem.Tag).Path,
-							SAModel.SAEditorCommon.StructConversion.TextType.JSON);
+							StructConversion.TextType.JSON);
 					}
 
 				}
@@ -1313,7 +1310,7 @@ namespace SAToolsHub
 		{
 			if (listView1.SelectedItems.Count > 0)
 			{
-				DialogResult delCheck = MessageBox.Show(("You are about to delete " + listView1.SelectedItems.Count.ToString() + " file(s).\n\nAre you sure you want to delete these file(s)?"), "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				DialogResult delCheck = MessageBox.Show(this, "You are about to delete " + listView1.SelectedItems.Count.ToString() + " file(s).\n\nAre you sure you want to delete these file(s)?", "File Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 				if (delCheck == DialogResult.Yes)
 				{
 					foreach (ListViewItem selItem in listView1.SelectedItems)
@@ -1489,7 +1486,6 @@ namespace SAToolsHub
 		#endregion
 
 		#region Update Code
-		private bool checkedForUpdates; // Unused?
 		const string updatePath = ".updates";
 
 		private static bool UpdateTimeElapsed(SAToolsHubSettings.UpdateUnits unit, int amount, DateTime start)
@@ -1529,87 +1525,151 @@ namespace SAToolsHub
 				return false;
 			}
 
-			checkedForUpdates = true;
 			hubSettings.UpdateTime = DateTime.UtcNow.ToFileTimeUtc();
 
-			string stringdl = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
+			string currentTagName = File.Exists("satoolsver.txt") ? File.ReadAllText("satoolsver.txt") : "0";
+			uint currentID = 0;
+			bool cancelled = false;
 
-			if (!File.Exists("satoolsver.txt"))
+			if (!File.Exists("satoolsver.txt") || !uint.TryParse(currentTagName, out currentID))
 			{
+				if (!force)
+					return false;
+
 				if (MessageBox.Show(this, "Unable to find local version information. Would you like to download the latest version?", "SA Tools Hub", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
 					return false;
 			}
 
-			using (var wc = new WebClient())
+			// 64 bit check
+			string assetName = "SA.Tools.x86.7z";
+			if (Environment.Is64BitOperatingSystem)
 			{
-				try
+				// If the system and the process are both 64 bit, get the 64 bit archive
+				if (Environment.Is64BitProcess)
+					assetName = "SA.Tools.x64.7z";
+				// If the system is 64 bit but the process is 32 bit, ask the user what to do
+				else if (!Environment.Is64BitProcess && !hubSettings.DisableX86Warning)
 				{
-					string msg = wc.DownloadString("http://mm.reimuhakurei.net/toolchangelog.php?tool=satools&rev=" + stringdl);
-					if (msg.Length > 0)
+					DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\n\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+					switch (updateX86)
 					{
-						using (var dlg = new Updater.UpdateMessageDialog("SA Tools", msg.Replace("\n", "\r\n")))
-						{
-							if (dlg.ShowDialog(this) == DialogResult.Yes)
-							{
-								DialogResult result = DialogResult.OK;
-								do
-								{
-									try
-									{
-										if (!Directory.Exists(updatePath))
-										{
-											Directory.CreateDirectory(updatePath);
-										}
-									}
-									catch (Exception ex)
-									{
-										result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
-											+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admininstrator."
-																	   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
-										if (result == DialogResult.Cancel) return false;
-									}
-								} while (result == DialogResult.Retry);
-								// 64 bit check
-								string toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x86.7z";
-								if (Environment.Is64BitOperatingSystem)
-								{
-									// If the system and the process are both 64 bit, get the 64 bit archive
-									if (Environment.Is64BitProcess)
-										toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x64.7z";
-									// If the system is 64 bit but the process is 32 bit, ask the user what to do
-									else if (!Environment.Is64BitProcess && !hubSettings.DisableX86Warning)
-									{
-										DialogResult updateX86 = MessageBox.Show(this, "You are using a 32-bit version of SA Tools on a 64-bit system.\n\nWould you like to upgrade SA Tools to the 64-bit version for better performance?\n\nThis warning can be disabled in SA Tools Hub settings.", "SA Tools Hub", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-										switch (updateX86)
-										{
-											case DialogResult.Yes:
-												toolsArchiveFilename = "http://mm.reimuhakurei.net/SA%20Tools%20x64.7z";
-												break;
-											case DialogResult.No:
-												break;
-											case DialogResult.Cancel:
-												return false;
-										}
-									}
-								}
-								using (var dlg2 = new Updater.LoaderDownloadDialog(toolsArchiveFilename, updatePath))
-									if (dlg2.ShowDialog(this) == DialogResult.OK)
-									{
-										Close();
-										return true;
-									}
-							}
-						}
+						case DialogResult.Yes:
+							assetName = "SA.Tools.x64.7z";
+							break;
+						case DialogResult.No:
+							break;
+						case DialogResult.Cancel:
+							return false;
 					}
-					tsUpdate.Enabled = true;
-					checkForUpdatesToolStripMenuItem.Enabled = true;
-				}
-				catch
-				{
-					MessageBox.Show(this, "Unable to retrieve update information.", "SA Tools");
 				}
 			}
 
+			// Start update check
+			using (var wc = new Updater.UpdaterWebClient())
+			{
+				StringBuilder changelog = new StringBuilder();
+				List<GitHubRelease> releases;
+				string text_releases = string.Empty;
+				string url_releases = "https://api.github.com/repos/x-hax/sa_tools/releases";
+				try
+				{
+					text_releases = wc.DownloadString(url_releases);
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(this, string.Format("Error getting SA Tools GitHub repo data from\n`{0}`.\n{1}\n\nIf this is a 403 error, you may be hitting a rate limit. Wait a while and try again.", url_releases, e.Message.ToString()), "SA Tools Hub Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+				releases = JsonConvert.DeserializeObject<List<GitHubRelease>>(text_releases).Where(x => !x.Draft && !x.PreRelease).ToList();
+				if (releases == null || releases.Count == 0)
+				{
+					MessageBox.Show(this, string.Format("No GitHub releases found for URL " + url_releases), "SA Tools Hub Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return false;
+				}
+
+				GitHubRelease latestRelease = null;
+				GitHubAsset latestAsset = null;
+
+				DateTime dateCheck = DateTime.MinValue;
+
+				foreach (GitHubRelease release in releases)
+				{
+					GitHubAsset asset;
+					asset = release.Assets
+						.FirstOrDefault(x => x.Name.Equals(assetName, StringComparison.OrdinalIgnoreCase));
+
+					if (asset == null)
+						continue;
+
+					uint releaseID = 0;
+
+					if (uint.TryParse(release.TagName, out releaseID))
+					{
+						if (releaseID > currentID)
+						{
+							changelog.AppendLine(string.Format("Revision {0}\n{1}\n", release.TagName, release.Body));
+						}
+					}
+					
+					DateTime uploaded = DateTime.Parse(asset.Uploaded, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
+					if (uploaded > dateCheck)
+					{
+						latestRelease = release;
+						latestAsset = asset;
+						dateCheck = uploaded;
+					}
+				}
+
+				if (latestRelease == null || latestAsset == null)
+				{
+					return false;
+				}
+
+				if (latestRelease.TagName != currentTagName)
+				{
+					using (var dlg = new Updater.UpdateMessageDialog("SA Tools", Regex.Replace(changelog.ToString(), "(?<!\r)\n", "\r\n").TrimEnd()))
+					{
+						if (dlg.ShowDialog(this) == DialogResult.Yes)
+						{
+							DialogResult result = DialogResult.OK;
+							do
+							{
+								try
+								{
+									if (!Directory.Exists(updatePath))
+									{
+										Directory.CreateDirectory(updatePath);
+									}
+								}
+								catch (Exception ex)
+								{
+									result = MessageBox.Show(this, "Failed to create temporary update directory:\n" + ex.Message
+										+ "\n\nIf SA Tools are installed to the system drive or the Program Files folder, click Cancel and restart SA Tools Hub as admininstrator."
+																   + "\n\nWould you like to retry?", "Directory Creation Failed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+									if (result == DialogResult.Cancel) return false;
+								}
+							} while (result == DialogResult.Retry);
+
+							using (var dlg2 = new Updater.LoaderDownloadDialog(latestAsset.DownloadUrl, updatePath))
+								if (dlg2.ShowDialog(this) == DialogResult.OK)
+								{
+									Close();
+									return true;
+								}
+								else
+									cancelled = true;
+						}
+						else
+							cancelled = true;
+					}
+				}
+				tsUpdate.Enabled = true;
+				checkForUpdatesToolStripMenuItem.Enabled = true;
+			}
+			if (force && !cancelled)
+			{
+				MessageBox.Show(this, "SA Tools are up to date.", "SA Tools Hub", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
 			return false;
 		}
 		#endregion
@@ -1647,7 +1707,7 @@ namespace SAToolsHub
 
 		private void updateMetadataToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult updateMData = MessageBox.Show(("This will update the metadata inside of your project's *_data.ini files.\n\nThis process may take a few moments.\n\nDo you wish to continue?"), "Update Metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+			DialogResult updateMData = MessageBox.Show(this, "This will update the metadata inside of your project's *_data.ini files.\n\nThis process may take a few moments.\n\nDo you wish to continue?", "Update Metadata", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 			if (updateMData == DialogResult.Yes)
 			{
 				Dictionary<string, string> metadataList = new Dictionary<string, string>();

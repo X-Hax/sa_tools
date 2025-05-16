@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputPath>..\..\build\tools\</OutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ApplicationIcon>PLTool_100.ico</ApplicationIcon>
@@ -22,6 +22,6 @@
 		<Content Include="PLTool_100.ico" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+		<PackageReference Include="System.Data.DataSetExtensions" />
 	</ItemGroup>
 </Project>

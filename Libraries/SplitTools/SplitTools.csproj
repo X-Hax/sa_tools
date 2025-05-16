@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Library</OutputType>
-		<UseWindowsForms>true</UseWindowsForms>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<OutputPath>..\..\build\lib\</OutputPath>
 		<DebugType>embedded</DebugType>
-		<Platforms>x64;x86</Platforms>
+		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
@@ -19,9 +18,6 @@
 		<Compile Remove="EndianWriter.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\bin\&quot;&#xD;&#xA;xcopy /D /Y &quot;$(ProjectDir)..\..\Dependencies\SACompGC*.dll&quot; &quot;$(ProjectDir)..\..\build\tools\&quot;" />
-	</Target>
 </Project>

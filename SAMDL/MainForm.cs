@@ -271,7 +271,6 @@ namespace SAModel.SAMDL
 			log.Add("OS Version: ");
 			log.Add(Environment.OSVersion.ToString() + System.Environment.NewLine);
 			log.WriteLog();
-			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 			SharpDX.Direct3D9.Direct3DEx d3d = new SharpDX.Direct3D9.Direct3DEx();
 			d3ddevice = new Device(d3d, 0, DeviceType.Hardware, RenderPanel.Handle, CreateFlags.HardwareVertexProcessing,
 			new PresentParameters
@@ -562,7 +561,9 @@ namespace SAModel.SAMDL
 							return;
 						}
 						else if (ninjaBinary.Models.Count == 1)
+						{
 							model = ninjaBinary.Models[0];
+						}
 						else
 						{
 							using (PickModelDialog dlg = new PickModelDialog())
@@ -605,6 +606,8 @@ namespace SAModel.SAMDL
 								TexList = new NJS_TEXLIST(ninjaBinary.Texnames[modelIndex]);
 							else
 								TexList = new NJS_TEXLIST(ninjaBinary.Texnames[0]);
+
+							UpdateTexlist();
 						}
 						// Attempt to auto load textures from PVM or GVM.
 						// In PSO GC, NJ+GVM is possible so using just the model format to determine texture archive extension isn't reliable.
@@ -677,9 +680,17 @@ namespace SAModel.SAMDL
 							file = FraGag.Compression.Prs.Decompress(file);
 						ByteConverter.BigEndian = false;
 						modelinfo.CheckFilename(filename);
-						uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
-						if (baseaddr.HasValue)
-							modelinfo.numericUpDownKey.Value = baseaddr.Value;
+						if (file.Length != 90922000) // SADX Steam exception
+						{
+							uint? baseaddr = SplitTools.HelperFunctions.SetupEXE(ref file);
+							if (baseaddr.HasValue)
+								modelinfo.numericUpDownKey.Value = baseaddr.Value;
+						}
+						else
+						{
+							modelinfo.numericUpDownKey.Value = 0x401A00;
+							modelinfo.comboBoxBinaryFileType.SelectedIndex = 10;
+						}
 						modelinfo.ShowDialog(this);
 						if (modelinfo.DialogResult == DialogResult.OK)
 						{
@@ -1346,7 +1357,8 @@ namespace SAModel.SAMDL
 
 		private void DrawVertexIndices(NJS_OBJECT obj, MatrixStack transform)
 		{
-			if (obj.Attach == null || (!(obj.Attach is BasicAttach))) return;
+			if (obj.Attach == null || obj.Attach is GC.GCAttach) return;
+			if (obj.Attach is BasicAttach)
 			{
 				BasicAttach basicatt = (BasicAttach)obj.Attach;
 				Matrix view = d3ddevice.GetTransform(TransformState.View);
@@ -1359,6 +1371,25 @@ namespace SAModel.SAMDL
 					Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
 					Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
 					EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString(), (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+				}
+				osd.textSprite.End();
+			}
+			if (obj.Attach is ChunkAttach)
+			{
+				ChunkAttach chunkatt = (ChunkAttach)obj.Attach;
+				Matrix view = d3ddevice.GetTransform(TransformState.View);
+				Viewport viewport = d3ddevice.Viewport;
+				Matrix projection = d3ddevice.GetTransform(TransformState.Projection);
+				osd.textSprite.Begin(SpriteFlags.AlphaBlend);
+				for (int i = 0; i < chunkatt.Vertex.Count; i++)
+				{
+					for (int j = 0; j < chunkatt.Vertex[i].VertexCount; j++)
+					{
+						Vertex vtx = chunkatt.Vertex[i].Vertices[j];
+						Vector3 v3 = Vector3.TransformCoordinate(vtx.ToVector3(), transform.Top);
+						Vector3 screenCoordinates = viewport.Project(v3, projection, view, Matrix.Identity);
+						EditorOptions.OnscreenFont.DrawText(osd.textSprite, i.ToString() + "(" + j.ToString() + ")", (int)screenCoordinates.X, (int)screenCoordinates.Y, Color.White.ToRawColorBGRA());
+					}
 				}
 				osd.textSprite.End();
 			}
@@ -1979,7 +2010,7 @@ namespace SAModel.SAMDL
 				splitToolStripMenuItem.Enabled = selectedObject.Attach != null;
 				sortToolStripMenuItem.Enabled = true;
 				PolyNormalstoolStripMenuItem.Enabled = outfmt == ModelFormat.Basic;
-				exportContextMenuItem.Enabled = selectedObject.Attach != null;
+				exportContextMenuItem.Enabled = selectedObject != null;
 				importContextMenuItem.Enabled = true;
 				hierarchyToolStripMenuItem.Enabled = selectedObject.Children != null && selectedObject.Children.Count > 0;
 				moveDownToolStripMenuItem.Enabled = selectedObject.Parent != null && selectedObject.Parent.Children.IndexOf(selectedObject) < selectedObject.Parent.Children.Count - 1;
@@ -2042,9 +2073,9 @@ namespace SAModel.SAMDL
 				case GC.GCAttach gatt:
 					string vtype = null;
 					gatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-					foreach (GC.GCVertexSet m in gatt.vertexData)
+					foreach (GC.GCVertexSet m in gatt.VertexData)
 					{
-						switch (m.attribute)
+						switch (m.Attribute)
 						{
 							case GC.GCVertexAttribute.Position:
 								vtype = "position_";
@@ -2062,13 +2093,13 @@ namespace SAModel.SAMDL
 						m.DataName = $"{vtype}" + Extensions.GenerateIdentifier();
 					}
 					gatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
-					foreach (GC.GCMesh m in gatt.opaqueMeshes)
+					foreach (GC.GCMesh m in gatt.OpaqueMeshes)
 					{
 						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
 					}
 					gatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
-					foreach (GC.GCMesh m in gatt.translucentMeshes)
+					foreach (GC.GCMesh m in gatt.TranslucentMeshes)
 					{
 						m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 						m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
@@ -2089,8 +2120,10 @@ namespace SAModel.SAMDL
 					OpenGCMaterialEditor();
 					break;
 				case BasicAttach:
-				case ChunkAttach:
 					OpenMaterialEditor();
+					break;
+				case ChunkAttach:
+					OpenChunkMaterialEditor();
 					break;
 			}
 		}
@@ -2111,7 +2144,8 @@ namespace SAModel.SAMDL
 								break;
 							case PolyChunkStrip pcs:
 								chunks.Add(new PolyChunkMaterial(mats[matind]));
-								chunks.Add(new PolyChunkTinyTextureID(mats[matind]));
+								if (mats[matind].UseTexture)
+									chunks.Add(new PolyChunkTinyTextureID(mats[matind]));
 								pcs.UpdateFlags(mats[matind++]);
 								chunks.Add(pcs);
 								break;
@@ -2138,7 +2172,21 @@ namespace SAModel.SAMDL
 					mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
 					break;
 			}
-			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname, selectedObject.Attach is ChunkAttach))
+			using (MaterialEditor dlg = new MaterialEditor(mats, TextureInfoCurrent, matname))
+			{
+				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
+				dlg.ShowDialog(this);
+			}
+			unsavedChanges = true;
+		}
+
+		private void OpenChunkMaterialEditor()
+		{
+			List<NJS_MATERIAL> mats;
+			string matname = null;
+
+			mats = selectedObject.Attach.MeshInfo.Select(a => a.Material).ToList();
+			using (ChunkMaterialEditor dlg = new ChunkMaterialEditor(mats, TextureInfoCurrent, matname))
 			{
 				dlg.FormUpdated += (s, ev) => UpdateMaterials(mats);
 				dlg.ShowDialog(this);
@@ -2160,9 +2208,9 @@ namespace SAModel.SAMDL
 			{
 				case GC.GCAttach gcatt:
 					int matind = 0;
-					foreach (var msh in gcatt.opaqueMeshes.Concat(gcatt.translucentMeshes))
+					foreach (var msh in gcatt.OpaqueMeshes.Concat(gcatt.TranslucentMeshes))
 					{
-						msh.parameters.RemoveAll(a => a is GC.TextureParameter);
+						msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
 						if (mats[matind].UseTexture)
 						{
 							GC.GCTileMode tm = GC.GCTileMode.Mask;
@@ -2174,10 +2222,10 @@ namespace SAModel.SAMDL
 								tm &= ~GC.GCTileMode.WrapV;
 							if (mats[matind].FlipV)
 								tm &= ~GC.GCTileMode.MirrorV;
-							msh.parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
+							msh.Parameters.Add(new GC.TextureParameter((ushort)mats[matind].TextureID, tm));
 						}
-						msh.parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
-						msh.parameters.Add(new GC.BlendAlphaParameter() { NJSourceAlpha = mats[matind].SourceAlpha, NJDestAlpha = mats[matind].DestinationAlpha });
+						msh.Parameters.RemoveAll(a => a is GC.BlendAlphaParameter);
+						msh.Parameters.Add(new GC.BlendAlphaParameter() { NJSourceAlpha = mats[matind].SourceAlpha, NJDestAlpha = mats[matind].DestinationAlpha });
 						matind++;
 					}
 					break;
@@ -2291,13 +2339,13 @@ namespace SAModel.SAMDL
 											tex.TextureID = (ushort)dlg.TextureMap[tex.TextureID];
 								break;
 							case GC.GCAttach gatt:
-								foreach (var msh in gatt.opaqueMeshes.Concat(gatt.translucentMeshes))
+								foreach (var msh in gatt.OpaqueMeshes.Concat(gatt.TranslucentMeshes))
 								{
-									var tp = (GC.TextureParameter)msh.parameters.LastOrDefault(a => a is GC.TextureParameter);
-									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureID))
+									var tp = (GC.TextureParameter)msh.Parameters.LastOrDefault(a => a is GC.TextureParameter);
+									if (tp != null && dlg.TextureMap.ContainsKey(tp.TextureId))
 									{
-										msh.parameters.RemoveAll(a => a is GC.TextureParameter);
-										msh.parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureID], tp.Tile));
+										msh.Parameters.RemoveAll(a => a is GC.TextureParameter);
+										msh.Parameters.Add(new GC.TextureParameter((ushort)dlg.TextureMap[tp.TextureId], tp.Tile));
 									}
 								}
 								break;
@@ -2334,7 +2382,6 @@ namespace SAModel.SAMDL
 			using (SaveFileDialog sd = new SaveFileDialog() { FileName = outfn, DefaultExt = "nja", Filter = "Ninja Ascii Files|*.nja" })
 				if (sd.ShowDialog(this) == DialogResult.OK)
 				{
-					bool dx = false;
 					List<string> labels = new List<string>() { model.Name };
 					using (StreamWriter sw = File.CreateText(sd.FileName))
 					{
@@ -3077,8 +3124,10 @@ namespace SAModel.SAMDL
 					OpenGCMaterialEditor();
 					break;
 				case BasicAttach:
-				case ChunkAttach:
 					OpenMaterialEditor();
+					break;
+				case ChunkAttach:
+					OpenChunkMaterialEditor();
 					break;
 			}
 		}
@@ -3501,16 +3550,38 @@ namespace SAModel.SAMDL
 
 		private void exportContextMenuItem_Click(object sender, EventArgs e)
 		{
+			string filterSamdl;
+			string defext;
+			switch (selectedObject.GetModelFormat())
+			{
+				case ModelFormat.Chunk:
+					filterSamdl = "SAModel Chunk (*.sa2mdl)|*.sa2mdl";
+					defext = "sa2mdl";
+					break;
+				case ModelFormat.GC:
+					filterSamdl = "SAModel Ginja (*.sa2bmdl)|*.sa2bmdl";
+					defext = "sa2bmdl";
+					break;
+				case ModelFormat.Basic:
+				case ModelFormat.BasicDX:
+				default:
+					filterSamdl = "SAModel Basic (*.sa1mdl)|*.sa1mdl";
+					defext = "sa1mdl";
+					break;
+			}
 			using (SaveFileDialog a = new SaveFileDialog
 			{
-				DefaultExt = "dae",
-				Filter = "Collada (*.dae)|*.dae|Wavefront (*.obj)|*.obj",
+				DefaultExt = defext,
+				Filter = filterSamdl + "|Collada (*.dae)|*.dae|Wavefront (*.obj)|*.obj",
 				FileName = selectedObject.Name
 			})
 			{
 				if (a.ShowDialog() == DialogResult.OK)
 				{
-					ExportModel_Assimp(a.FileName, true);
+					if (Path.GetExtension(a.FileName).ToLowerInvariant().Contains("sa"))
+						ModelFile.CreateFile(a.FileName, selectedObject, null, modelAuthor, modelDescription, new Dictionary<uint, byte[]>(), selectedObject.GetModelFormat());
+					else
+						ExportModel_Assimp(a.FileName, true);
 				}
 			}
 		}
@@ -3723,7 +3794,7 @@ namespace SAModel.SAMDL
 							gcatt.OpaqueMeshName = FixLabel(gcatt.OpaqueMeshName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
-							foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+							foreach (GC.GCMesh m in gcatt.OpaqueMeshes)
 							{
 								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
 								if (!string.IsNullOrEmpty(dup))
@@ -3736,7 +3807,7 @@ namespace SAModel.SAMDL
 							gcatt.TranslucentMeshName = FixLabel(gcatt.TranslucentMeshName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
-							foreach (GC.GCMesh m in gcatt.translucentMeshes)
+							foreach (GC.GCMesh m in gcatt.TranslucentMeshes)
 							{
 								m.ParameterName = FixLabel(m.ParameterName, checkingLabels, out dup);
 								if (!string.IsNullOrEmpty(dup))
@@ -3749,7 +3820,7 @@ namespace SAModel.SAMDL
 							gcatt.VertexName = FixLabel(gcatt.VertexName, checkingLabels, out dup);
 							if (!string.IsNullOrEmpty(dup))
 								duplicateLabels.Add(dup);
-							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							foreach (GC.GCVertexSet v in gcatt.VertexData)
 							{
 								v.DataName = FixLabel(v.DataName, checkingLabels, out dup);
 								if (!string.IsNullOrEmpty(dup))
@@ -3821,27 +3892,27 @@ namespace SAModel.SAMDL
 							string vtype = null;
 							GC.GCAttach gcatt = (GC.GCAttach)obj.Attach;
 							gcatt.TranslucentMeshName = "tpoly_" + Extensions.GenerateIdentifier();
-							if (gcatt.translucentMeshes.Count != 0)
+							if (gcatt.TranslucentMeshes.Count != 0)
 							{
-								foreach (GC.GCMesh m in gcatt.translucentMeshes)
+								foreach (GC.GCMesh m in gcatt.TranslucentMeshes)
 								{
 									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
 								}
 							}
 							gcatt.OpaqueMeshName = "opoly_" + Extensions.GenerateIdentifier();
-							if (gcatt.opaqueMeshes.Count != 0)
+							if (gcatt.OpaqueMeshes.Count != 0)
 							{
-								foreach (GC.GCMesh m in gcatt.opaqueMeshes)
+								foreach (GC.GCMesh m in gcatt.OpaqueMeshes)
 								{
 									m.ParameterName = "parameter_" + Extensions.GenerateIdentifier();
 									m.PrimitiveName = "primitive_" + Extensions.GenerateIdentifier();
 								}
 							}
 							gcatt.VertexName = "vertex_" + Extensions.GenerateIdentifier();
-							foreach (GC.GCVertexSet v in gcatt.vertexData)
+							foreach (GC.GCVertexSet v in gcatt.VertexData)
 							{
-								switch (v.attribute)
+								switch (v.Attribute)
 								{
 									case GC.GCVertexAttribute.Position:
 										vtype = "position_";
@@ -4328,7 +4399,6 @@ namespace SAModel.SAMDL
 			switch (selectedObject.Attach)
 			{
 				case BasicAttach:
-				case ChunkAttach:
 					{
 						ModelDataEditor me = new ModelDataEditor(model, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
@@ -4344,15 +4414,35 @@ namespace SAModel.SAMDL
 						}
 					}
 					break;
-				case GC.GCAttach:
+				case ChunkAttach:
 					{
-						GCModelDataEditor me = new GCModelDataEditor(model, idx);
+						ChunkModelDataEditor me = new ChunkModelDataEditor(model, TextureInfoCurrent, idx);
 						if (me.ShowDialog(this) == DialogResult.OK)
 						{
 							model = me.editedHierarchy.Clone();
+							model.FixParents();
+							model.FixSiblings();
 							RebuildModelCache();
 							NeedRedraw = true;
 							unsavedChanges = true;
+							selectedObject = model.GetObjects()[idx];
+							SelectedItemChanged();
+						}
+					}
+					break;
+				case GC.GCAttach:
+					{
+						GCModelDataEditor me = new GCModelDataEditor(model, TextureInfoCurrent, idx);
+						if (me.ShowDialog(this) == DialogResult.OK)
+						{
+							model = me.editedHierarchy.Clone();
+							model.FixParents();
+							model.FixSiblings();
+							RebuildModelCache();
+							NeedRedraw = true;
+							unsavedChanges = true;
+							selectedObject = model.GetObjects()[idx];
+							SelectedItemChanged();
 						}
 					}
 					break;

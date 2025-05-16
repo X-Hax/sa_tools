@@ -23,16 +23,14 @@ namespace SA2CutsceneTextEditor
 		Scene CurrentScene { get { return scenes[sceneNum.SelectedIndex]; } }
 		Message CurrentMessage { get { return CurrentScene.Messages[messageNum.SelectedIndex]; } }
 
-		static readonly Encoding jpenc = Encoding.GetEncoding(932);
-		static readonly Encoding euenc = Encoding.GetEncoding(1252);
 		List<string> recentFiles = new List<string>();
 		string filename = null;
 		List<Scene> scenes = new List<Scene>();
 		bool bigEndian;
-		bool useSJIS;
 		SearchCriteria currentSearch;
 		int searchScene, searchMessage;
 		Settings_SA2CutsceneTextEditor settingsFile;
+		Encoding currentEncoding;
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
@@ -43,9 +41,37 @@ namespace SA2CutsceneTextEditor
 				UpdateRecentFiles();
 			bigEndian = settingsFile.BigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			useSJIS = settingsFile.UseSJIS;
-			shiftJISToolStripMenuItem.Checked = useSJIS;
-			windows1252ToolStripMenuItem.Checked = !useSJIS;
+			switch (settingsFile.Encoding)
+			{
+				case 0:
+					autoToolStripMenuItem.Checked = true;
+					shiftJISToolStripMenuItem.Checked = false;
+					windows1252ToolStripMenuItem.Checked = false;
+					customToolStripMenuItem.Checked = false;
+					currentEncoding = Encoding.GetEncoding(1252);
+					break;
+				case 932:
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = true;
+					windows1252ToolStripMenuItem.Checked = false;
+					customToolStripMenuItem.Checked = false;
+					currentEncoding = Encoding.GetEncoding(932);
+					break;
+				case 1252:
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = false;
+					windows1252ToolStripMenuItem.Checked = true;
+					customToolStripMenuItem.Checked = false;
+					currentEncoding = Encoding.GetEncoding(1252);
+					break;
+				default:
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = false;
+					windows1252ToolStripMenuItem.Checked = false;
+					customToolStripMenuItem.Checked = true;
+					currentEncoding = Encoding.GetEncoding(settingsFile.Encoding);
+					break;
+			}
 			if (filename != null)
 				LoadFile(filename);
 		}
@@ -72,6 +98,8 @@ namespace SA2CutsceneTextEditor
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			filename = null;
+			Text = "SA2 Cutscene Text Editor";
 			scenes.Clear();
 			sceneNum.Items.Clear();
 			findNextToolStripMenuItem.Enabled = false;
@@ -110,19 +138,22 @@ namespace SA2CutsceneTextEditor
 
 			ByteConverter.BigEndian = bigEndian;
 			bigEndianGCSteamToolStripMenuItem.Checked = bigEndian;
-			if (Path.GetFileNameWithoutExtension(filename).Last() == '0' || 
-				Path.GetFileNameWithoutExtension(filename).Last() == 'E' || 
-				Path.GetFileNameWithoutExtension(filename).Last() == 'e')
-				useSJIS = true;
-			shiftJISToolStripMenuItem.Checked = useSJIS;
-			windows1252ToolStripMenuItem.Checked = !useSJIS;
-			Encoding encoding = useSJIS ? jpenc : euenc;
+			if (autoToolStripMenuItem.Checked)
+			{
+				bool useSJIS = false;
+				if (Path.GetFileNameWithoutExtension(filename).Last() == '0' ||
+					Path.GetFileNameWithoutExtension(filename).Last() == 'E' ||
+					Path.GetFileNameWithoutExtension(filename).Last() == 'e')
+					useSJIS = true;
+				currentEncoding = Encoding.GetEncoding(useSJIS ? 932 : 1252);
+			}
+
 			scenes.Clear();
 			int address = 0;
 			int id = ByteConverter.ToInt32(fc, 0);
 			while (id != -1)
 			{
-				scenes.Add(new Scene(fc, address, imageBase, encoding));
+				scenes.Add(new Scene(fc, address, imageBase, currentEncoding));
 				address += Scene.Size;
 				id = ByteConverter.ToInt32(fc, address);
 			}
@@ -181,7 +212,6 @@ namespace SA2CutsceneTextEditor
 			ByteConverter.BigEndian = bigEndian;
 			uint addr = (uint)((scenes.Count + 1) * Scene.Size) + (bigEndian ? 0x817AFE60u : 0xCBD0000u);
 			List<byte> fc = new List<byte>();
-			Encoding encoding = useSJIS ? jpenc : euenc;
 			foreach (Scene scene in scenes)
 			{
 				fc.AddRange(ByteConverter.GetBytes(scene.SceneNumber));
@@ -197,7 +227,7 @@ namespace SA2CutsceneTextEditor
 				{
 					fc.AddRange(ByteConverter.GetBytes(msg.Character));
 					fc.AddRange(ByteConverter.GetBytes(addr));
-					addr += (uint)(encoding.GetByteCount(msg.Text) + 1);
+					addr += (uint)(currentEncoding.GetByteCount(msg.Text) + 1);
 					if (msg.Centered)
 						++addr;
 				}
@@ -206,7 +236,7 @@ namespace SA2CutsceneTextEditor
 				{
 					if (msg.Centered)
 						fc.Add((byte)'\a');
-					fc.AddRange(encoding.GetBytes(msg.Text));
+					fc.AddRange(currentEncoding.GetBytes(msg.Text));
 					fc.Add(0);
 				}
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
@@ -247,16 +277,67 @@ namespace SA2CutsceneTextEditor
 
 		private void shiftJISToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			useSJIS = true;
+			currentEncoding = Encoding.GetEncoding(932);
 			shiftJISToolStripMenuItem.Checked = true;
 			windows1252ToolStripMenuItem.Checked = false;
+			customToolStripMenuItem.Checked = false;
+			autoToolStripMenuItem.Checked = false;
+			if (filename != null)
+			{
+				DialogResult res = MessageBox.Show(this, "Reload the current file? All unsaved changes will be lost.", "SA2 Message Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (res == DialogResult.Yes)
+					LoadFile(filename);
+			}
 		}
 
 		private void windows1252ToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			useSJIS = false;
+			currentEncoding = Encoding.GetEncoding(1252);
 			shiftJISToolStripMenuItem.Checked = false;
 			windows1252ToolStripMenuItem.Checked = true;
+			customToolStripMenuItem.Checked = false;
+			autoToolStripMenuItem.Checked = false;
+			if (filename != null)
+			{
+				DialogResult res = MessageBox.Show(this, "Reload the current file? All unsaved changes will be lost.", "SA2 Message Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (res == DialogResult.Yes)
+					LoadFile(filename);
+			}
+		}
+
+		private void autoToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			currentEncoding = Encoding.GetEncoding(1252);
+			shiftJISToolStripMenuItem.Checked = false;
+			windows1252ToolStripMenuItem.Checked = false;
+			customToolStripMenuItem.Checked = false;
+			autoToolStripMenuItem.Checked = true;
+		}
+
+		private void customToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			InputCustomEncoding enc = new InputCustomEncoding();
+			if (enc.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					currentEncoding = Encoding.GetEncoding(enc.CustomCodepage);
+					autoToolStripMenuItem.Checked = false;
+					shiftJISToolStripMenuItem.Checked = enc.CustomCodepage == 932;
+					customToolStripMenuItem.Checked = (enc.CustomCodepage != 1252 && enc.CustomCodepage != 932);
+					windows1252ToolStripMenuItem.Checked = enc.CustomCodepage == 1252;
+					if (filename != null)
+					{
+						DialogResult res = MessageBox.Show(this, "Reload the current file? All unsaved changes will be lost.", "SA2 Message Editor", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+						if (res == DialogResult.Yes)
+							LoadFile(filename);
+					}
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(this, "Unable to set custom encoding: " + ex.Message.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 
 		private void bigEndianGCSteamToolStripMenuItem_Click(object sender, EventArgs e)

@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using SAModel.SAEditorCommon.ModManagement;
 using SAModel.SAEditorCommon.ProjectManagement;
-using SplitTools.SAArc;
 using System.Xml;
+using SplitTools.Split;
 
 namespace SAToolsHub
 {
@@ -65,6 +64,9 @@ namespace SAToolsHub
 		#region Form Functions
 		private void resplitMenu_Shown(object sender, EventArgs e)
 		{
+			splitEventEntries.Clear();
+			splitMDLEntries.Clear();
+			splitEntries.Clear();
 			chkBoxEntries.Clear();
 			checkedListBox1.Items.Clear();
 			template = ProjectFunctions.openTemplateFile(SAToolsHub.GetTemplateFileForResplit(SAToolsHub.projType));
@@ -83,7 +85,11 @@ namespace SAToolsHub
 
 			foreach (Templates.SplitEntryMDL mdlEntry in template.SplitMDLEntries)
 			{
-				string mdlFile = Path.GetFileNameWithoutExtension(mdlEntry.ModelFile);
+				string mdlFile;
+				if (mdlEntry.CmnName != null)
+					mdlFile = mdlEntry.CmnName;
+				else
+					mdlFile	= Path.GetFileNameWithoutExtension(mdlEntry.ModelFile);
 				chkBoxData item = new chkBoxData("mdl", mdlFile, null, mdlEntry);
 				chkBoxEntries.Add(item);
 			}
@@ -157,6 +163,7 @@ namespace SAToolsHub
 
 		void splitGame(string game, SAModel.SAEditorCommon.UI.ProgressDialog progress)
 		{
+			SplitFlags splitFlags = SplitFlags.Log | SplitFlags.Overwrite;
 			string appPath = Path.GetDirectoryName(Application.ExecutablePath);
 			string dataFolder = template.GameInfo.DataFolder;
 			string gamePath = SAToolsHub.gameDirectory;
@@ -172,20 +179,20 @@ namespace SAToolsHub
 
 			progress.SetTask("Splitting Game Content");
 			foreach (Templates.SplitEntry splitEntry in splitEntries)
-				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, overwrite);
+				ProjectFunctions.SplitTemplateEntry(splitEntry, progress, gamePath, iniFolder, projFolder, splitFlags);
 			// Split MDL files for SA2
 			if (splitMDLEntries.Count > 0)
 			{
 				progress.SetTask("Splitting Character Models");
 				foreach (Templates.SplitEntryMDL splitMDL in splitMDLEntries)
-					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder, iniFolder, overwrite);
+					ProjectFunctions.SplitTemplateMDLEntry(splitMDL, progress, gamePath, projFolder, iniFolder, splitFlags.HasFlag(SplitFlags.Overwrite));
 			}
 			// Split Event files for SA2
 			if (splitEventEntries.Count > 0)
 			{
 				progress.SetTask("Splitting Event Data");
 				foreach (Templates.SplitEntryEvent splitEvent in splitEventEntries)
-					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, iniFolder, overwrite);
+					ProjectFunctions.SplitTemplateEventEntry(splitEvent, progress, gamePath, projFolder, iniFolder, splitFlags.HasFlag(SplitFlags.Overwrite));
 			}
 			// Project folders for buildable PC games
 			progress.SetTask("Updating Project File");

@@ -40,6 +40,7 @@ namespace ArchiveTool
             bool createPB = false;
 			bool createARCX = false;
 			bool createAFS = false;
+			int afsblock = 0x80000;
 			AFSMetaMode afsmetamode = AFSMetaMode.OffsetEndTable;
             filePath = args[0];
             compressPRS = false;
@@ -51,6 +52,7 @@ namespace ArchiveTool
 				if (args[a] == "-afs") createAFS = true;
 				if (args[a] == "-nometa") afsmetamode = AFSMetaMode.NoMeta;
 				if (args[a] == "-metafirst") afsmetamode = AFSMetaMode.OffsetBeforeFirstEntry;
+				if (args[a] == "-block") afsblock = int.Parse(args[a + 1], System.Globalization.NumberStyles.HexNumber);
 			}
             // Folder mode
             if (Directory.Exists(filePath))
@@ -77,7 +79,7 @@ namespace ArchiveTool
 				if (createAFS)
 				{
 					folderMode = ArchiveFromFolderMode.AFS;
-					arc = new AFSFile(afsmetamode);
+					arc = new AFSFile(AFSType.AFS1, afsmetamode, afsblock);
 				}
 				else
 				{

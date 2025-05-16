@@ -78,8 +78,6 @@ namespace SAModel.SAEditorCommon.UI
 
 			if (!IsDesignMode())
 			{
-
-				SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque, true);
 				modelList = new List<KeyValuePair<int, Attach>>();
 				attachListRenders = new List<KeyValuePair<int, Bitmap>>();
 				meshes = new List<Direct3D.Mesh>();

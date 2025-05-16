@@ -1,0 +1,63 @@
+name: Bug Report
+description: Report a bug within the SA Tools Suite
+title: "[Bug Report]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a bug report. Please be include the name of the program(s) affected in the title. Be sure to include as much information as you can in the required fields.
+  - type: checkboxes
+    id: review
+    attributes:
+      label: Report Verification
+      options:
+        - label: I have reviewed existing issues on this repository and my issue is not currently reported.
+          required: true
+        - label: The issue I'm reporting is for a program in the SA Tools.
+          required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Please provide details regarding the bug you experienced. Do not include reproduction steps here.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction Steps
+      description: Please provide steps that will reproduce the error. 
+    validations:
+      required: true
+  - type: textarea
+    id: crash-report
+    attributes:
+      label: Crash Report
+      description: If the program crashed and provided a crash report or log, please provide it here.
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: Please select your Operating System.
+      multiple: false
+      options:
+        - Windows
+        - Linux
+        - MacOS
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: Operation System Information
+      description: Please provide the version of your Operating System. If you're using Linux or MacOS, please provide the emulation layer you're using.
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: If you have additional information or files that are needed to reproduce the issue, please include them in this field.
+    validations:
+      required: false

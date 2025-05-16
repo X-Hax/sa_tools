@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SplitTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<GameInfo gameName="SADXPC" projectType="SADXDecomp" dataFolder="PC_SADX" gameDataFolderName="system" checkFile="sonic.exe" checkHashes="491c8a38328377bccff34810afb5f760" checkRange="004DB2A0-034F6FF0" NJA="true" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="characters" CmnName="Characters (EXE)" />
+	<SplitEntry SourceFile="system/chrmodels.dll" IniFile="chrmodels" CmnName="Characters (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="commonobjects" CmnName="Common Objects" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="enemies" CmnName="Enemies" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="advertise" CmnName="Menus" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="event" CmnName="Event Models" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="fish" CmnName="Fish" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg01" CmnName="Emerald Coast" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg02" CmnName="Windy Valley" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg03" CmnName="Twinkle Park" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg04" CmnName="Speed Highway" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg05" CmnName="Red Mountain" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg06" CmnName="Sky Deck" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg07" CmnName="Lost World" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg08" CmnName="Ice Cap" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg09" CmnName="Casinopolis" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg10" CmnName="Final Egg" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg12" CmnName="Hot Shelter" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="adv00" CmnName="Station Square (EXE)" />
+	<SplitEntry SourceFile="system/adv00models.dll" IniFile="adv00_dll" CmnName="Station Square (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="adv02" CmnName="Mystic Ruins (EXE)" />
+	<SplitEntry SourceFile="system/adv02models.dll" IniFile="adv02_dll" CmnName="Mystic Ruins (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="adv0100" CmnName="Egg Carrier Exterior (EXE)" />
+	<SplitEntry SourceFile="system/adv01models.dll" IniFile="adv0100_dll" CmnName="Egg Carrier Exterior (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="adv0130" CmnName="Egg Carrier Interior (EXE)" />
+	<SplitEntry SourceFile="system/adv01cmodels.dll" IniFile="adv0130_dll" CmnName="Egg Carrier Interior (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="adv03" CmnName="The Past (EXE)" />
+	<SplitEntry SourceFile="system/adv03models.dll" IniFile="adv03_dll" CmnName="The Past (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos0" CmnName="Chaos 0 (EXE)" />
+	<SplitEntry SourceFile="system/bosschaos0models.dll" IniFile="b_chaos0_dll" CmnName="Chaos 0 (DLL)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos2" CmnName="Chaos 2" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos4" CmnName="Chaos 4" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos6" CmnName="Chaos 6" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos7" CmnName="Perfect Chaos" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_e101" CmnName="E-101" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_e101_r" CmnName="E-101 R (EXE)" />
+	<SplitEntry SourceFile="system/E101R_GC.NB" IniFile="b_e101_r_nb" CmnName="E-101 R (NB)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_egm1" CmnName="Egg Hornet" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_egm2" CmnName="Egg Walker" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_egm3" CmnName="Egg Viper" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_robo" CmnName="Zero (EXE)" />
+	<SplitEntry SourceFile="system/EROBO_GC.NB" IniFile="b_robo_nb" CmnName="Zero (NB)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="minicart" CmnName="Twinkle Circuit" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="sboard" CmnName="Sand Hill" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="shooting" CmnName="Sky Chase" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg00" CmnName="Hedgehog Hammer" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="chao" CmnName="Chao, Chao Race, SS Garden, EC Garden" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="animals" CmnName="Chao Animals" />
+	<SplitEntry SourceFile="system/chaostggarden02mr_daytime.dll" IniFile="chaostggarden02mr_daytime" CmnName="Mystic Ruins Chao Garden (Daytime)" />
+	<SplitEntry SourceFile="system/chaostggarden02mr_evening.dll" IniFile="chaostggarden02mr_evening" CmnName="Mystic Ruins Chao Garden (Evening)" />
+	<SplitEntry SourceFile="system/chaostggarden02mr_night.dll" IniFile="chaostggarden02mr_night" CmnName="Mystic Ruins Chao Garden (Nighttime)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="debug" CmnName="Debug Models" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="mission" CmnName="Mission Mode" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="sounds" CmnName="Sound Data" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="texlists" CmnName="Texture Lists" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="misc" CmnName="Event Dialogue, Recap Text, Level Flags, etc" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg00_land" CmnName="Hedgehog Hammer Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg01_land" CmnName="Emerald Coast Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg02_land" CmnName="Windy Valley Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg03_land" CmnName="Twinkle Park Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg04_land" CmnName="Speed Highway Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg05_land" CmnName="Red Mountain Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg06_land" CmnName="Sky Deck Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg07_land" CmnName="Lost World Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg08_land" CmnName="Ice Cap Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg09_land" CmnName="Casinopolis Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg10_land" CmnName="Final Egg Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="stg12_land" CmnName="Hot Shelter Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos2_land" CmnName="Chaos 2 Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos4_land" CmnName="Chaos 4 Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos6_land" CmnName="Chaos 6 Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_chaos7_land" CmnName="Perfect Chaos Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_e101_land" CmnName="E-101 Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_e101_r_land" CmnName="E-101 R Landtable (EXE)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_egm1_land" CmnName="Egg Hornet Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_egm2_land" CmnName="Egg Walker Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_egm3_land" CmnName="Egg Viper Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="b_robo_land" CmnName="Zero Landtable (EXE)" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="minicart_land" CmnName="Twinkle Circuit Landtables" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="sboard_land" CmnName="Sand Hill Landtable" />
+	<SplitEntry SourceFile="sonic.exe" IniFile="chao_land" CmnName="Chao, Chao Race, SS Garden, EC Garden Landtables" />
+	<SplitEntry SourceFile="system/adv00models.dll" IniFile="adv00_dll_land" CmnName="Station Square (DLL) Landtables" />
+	<SplitEntry SourceFile="system/adv01models.dll" IniFile="adv0100_dll_land" CmnName="Egg Carrier Exterior (DLL) Landtables" />
+	<SplitEntry SourceFile="system/adv01cmodels.dll" IniFile="adv0130_dll_land" CmnName="Egg Carrier Interior (DLL) Landtables" />
+	<SplitEntry SourceFile="system/adv02models.dll" IniFile="adv02_dll_land" CmnName="Mystic Ruins (DLL) Landtables" />
+	<SplitEntry SourceFile="system/adv03models.dll" IniFile="adv03_dll_land" CmnName="The Past (DLL) Landtables" />
+	<SplitEntry SourceFile="system/bosschaos0models.dll" IniFile="b_chaos0_dll_land" CmnName="Chaos 0 (DLL) Landtable" />
+	<SplitEntry SourceFile="system/chaostggarden02mr_daytime.dll" IniFile="chaostggarden02mr_daytime_land" CmnName="Mystic Ruins Chao Garden (Daytime) Landtable" />
+	<SplitEntry SourceFile="system/chaostggarden02mr_evening.dll" IniFile="chaostggarden02mr_evening_land" CmnName="Mystic Ruins Chao Garden (Evening) Landtable" />
+	<SplitEntry SourceFile="system/chaostggarden02mr_night.dll" IniFile="chaostggarden02mr_night_land" CmnName="Mystic Ruins Chao Garden (Nighttime) Landtable" />
+</SplitTemplate>

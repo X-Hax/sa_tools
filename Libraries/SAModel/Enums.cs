@@ -52,19 +52,19 @@ namespace SAModel
 	[Flags]
 	public enum AnimFlags : ushort
 	{
-		Position = 0x1,
-		Rotation = 0x2,
-		Scale = 0x4,
-		Vector = 0x8,
-		Vertex = 0x10,
-		Normal = 0x20,
-		Target = 0x40,
-		Roll = 0x80,
-		Angle = 0x100,
-		Color = 0x200,
-		Intensity = 0x400,
-		Spot = 0x800,
-		Point = 0x1000,
+		Position   = 0x1,
+		Rotation   = 0x2,
+		Scale      = 0x4,
+		Vector     = 0x8,
+		Vertex     = 0x10,
+		Normal     = 0x20,
+		Target     = 0x40,
+		Roll       = 0x80,
+		Angle      = 0x100,
+		Color      = 0x200,
+		Intensity  = 0x400,
+		Spot       = 0x800,
+		Point      = 0x1000,
 		Quaternion = 0x2000
 	}
 
@@ -124,50 +124,53 @@ namespace SAModel
     [Flags]
 	public enum SA2SurfaceFlags : int
 	{
-		Solid			= 0x01,
-		Water			= 0x02,
-		Diggable		= 0x20,
-		Unclimbable		= 0x80,
-		Stairs			= 0x100,
-		Hurt			= 0x0400,
-		CannotLand		= 0x1000,
-		Water2			= 0x2000,
-		NoShadows		= 0x8000,
-		NoFog			= 0x400000,
-		Unknown24		= 0x01000000,
-		Unknown29		= 0x20000000,
-		Unknown30		= 0x40000000,
-		Visible			= unchecked((int)0x80000000)
-	}
-
-	[Flags]
-	public enum SA2DCCutsceneEntityFlags : int
-	{
-		HasEnvMap			= 0x1,
-		IgnoreCulling		= 0x2,
-		Unk1				= 0x4,
-		MultiLight1			= 0x8,
-		MultiLight2			= 0x10,
-		MultiLight3			= 0x20,
-		ModifierVolume		= 0x40,
-		ReflectModel		= 0x80,
-		BlurModel			= 0x100,
-		Unk2				= 0x200
+		Solid             = 0x1,
+		Water             = 0x2,
+		LowFriction       = 0x4,
+		HighFriction      = 0x8,
+		MediumFriction    = 0x10,
+		Diggable          = 0x20,
+		Unknown40         = 0x40,
+		Unclimbable       = 0x80,
+		Stairs            = 0x100,
+		Unknown200        = 0x200,
+		Hurt              = 0x400,
+		Footsteps         = 0x800,
+		CannotLand        = 0x1000,
+		WaterSlowMove     = 0x2000,
+		Unknown4000       = 0x4000,
+		NoShadows         = 0x8000,
+		Unknown10000      = 0x10000,
+		Unknown20000      = 0x20000,
+		Unknown40000      = 0x40000,
+		Unknown80000      = 0x80000,
+		IncreaseSpeed     = 0x100000,
+		IncreaseAccel     = 0x200000,
+		NoFogHighGravity  = 0x400000,
+		MaxClip           = 0x800000,
+		SimpleDraw        = 0x1000000,
+		DirectDraw        = 0x2000000,
+		NoCompile         = 0x4000000,
+		DynamicCollision  = 0x8000000,
+		NoRotateCollision = 0x10000000,
+		SmallCollisionRad = 0x20000000,
+		TinyCollisionRad  = 0x40000000,
+		Visible           = unchecked((int)0x80000000)
 	}
 
 	[Flags]
 	public enum SA2CutsceneEntityFlags : int
 	{
-		HasEnvMap			= 0x1,
-		NoShapeMotion		= 0x2,
-		Unk1				= 0x4,
-		NoAnimation			= 0x8,
-		Unk2				= 0x10,
-		Unk3				= 0x20,
-		ModifierVolume		= 0x40,
-		ReflectModel		= 0x80,
-		BlurModel			= 0x100,
-		Unk4				= 0x200
+		SimpleDraw          = 0x1,
+		NoFogEasyDraw       = 0x2,
+		MultiLight1         = 0x4,
+		MultiLight2         = 0x8,
+		MultiLight3         = 0x10,
+		MultiLight4         = 0x20,
+		ModifierVolume      = 0x40,
+		ReflectModel        = 0x80,
+		BlurModel           = 0x100,
+		ForceSimpleDraw     = 0x200
 	}
 	public enum LandTableFormat
 	{
