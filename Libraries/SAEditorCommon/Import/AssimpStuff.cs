@@ -1471,6 +1471,7 @@ namespace SAModel.SAEditorCommon.Import
 						parameters.Add(new GC.TextureParameter(0, 0));
 					}
 				}
+				// This seems needed to ensure Texture IDs properly work, but it may be a "fix" for a deeper issue.
 				parameters.Add(new GC.AmbientColorParameter());
 				List<ushort> tris = new List<ushort>();
 
