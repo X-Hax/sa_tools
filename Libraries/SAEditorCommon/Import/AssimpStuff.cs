@@ -1455,7 +1455,6 @@ namespace SAModel.SAEditorCommon.Import
 									texId = i;
 							GC.TextureParameter texParam = new GC.TextureParameter((ushort)texId, tileMode);
 							parameters.Add(texParam);
-
 						}
 					}
 					else if (textures != null)
@@ -1467,7 +1466,12 @@ namespace SAModel.SAEditorCommon.Import
 						GC.TextureParameter texParam = new GC.TextureParameter((ushort)texId, GC.GCTileMode.WrapU | GC.GCTileMode.WrapV);
 						parameters.Add(texParam);
 					}
+					else
+					{
+						parameters.Add(new GC.TextureParameter(0, 0));
+					}
 				}
+				parameters.Add(new GC.AmbientColorParameter());
 				List<ushort> tris = new List<ushort>();
 
 				foreach (Face f in m.Faces)
@@ -1510,11 +1514,13 @@ namespace SAModel.SAEditorCommon.Import
 			//VertexAttribute stuff
 			GC.GCVertexSet vtxPositions = new GC.GCVertexSet(GC.GCVertexAttribute.Position);
 			vtxPositions.Data.AddRange(gcvertices);
+			vtxPositions.DataName = $"position_{Extensions.GenerateIdentifier()}";
 			attach.VertexData.Add(vtxPositions);
 
 			if (texcoords.Count > 0)
 			{
 				GC.GCVertexSet vtxUV = new GC.GCVertexSet(GC.GCVertexAttribute.Tex0);
+				vtxUV.DataName = $"uv_{Extensions.GenerateIdentifier()}";
 				vtxUV.Data.AddRange(texcoords);
 				attach.VertexData.Add(vtxUV);
 			}
@@ -1522,17 +1528,22 @@ namespace SAModel.SAEditorCommon.Import
 			if (colors.Count > 0)
 			{
 				GC.GCVertexSet vtxColors = new GC.GCVertexSet(GC.GCVertexAttribute.Color0);
+				vtxColors.DataName = $"vcolor_{Extensions.GenerateIdentifier()}";
 				vtxColors.Data.AddRange(colors);
 				attach.VertexData.Add(vtxColors);
 			}
 			else
 			{
 				GC.GCVertexSet vtxNormals = new GC.GCVertexSet(GC.GCVertexAttribute.Normal);
+				vtxNormals.DataName = $"normal_{Extensions.GenerateIdentifier()}";
 				vtxNormals.Data.AddRange(gcnormals);
 				attach.VertexData.Add(vtxNormals);
 			}
 
+			attach.OpaqueMeshName = $"opoly_{Extensions.GenerateIdentifier()}";
 			attach.OpaqueMeshes.AddRange(gcmeshes);
+
+			attach.TranslucentMeshName = $"tpoly_{Extensions.GenerateIdentifier()}";
 			return attach;
 		}
 		#endregion

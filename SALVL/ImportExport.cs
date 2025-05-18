@@ -51,7 +51,28 @@ namespace SAModel.SALVL
 		// Import models to stage
 		private void ImportLevelItem(bool multiple = false)
 		{
+			bool isSA2 = isSA2LVL();
+			bool isVisible = true;
+			bool isCol = true;
+			ModelFormat fmt = ModelFormat.BasicDX;
 			importFileDialog.InitialDirectory = modFolder;
+
+			if (isSA2)
+			{
+				isCol = false;
+				if (LevelData.geo.Format == LandTableFormat.SA2)
+				{
+					importFileDialog.Filter = "Model Files|*.sa2mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
+					fmt = ModelFormat.Chunk;
+				}
+				else
+				{
+					importFileDialog.Filter = "Model Files|*.sa2bmdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
+					fmt = ModelFormat.GC;
+				}
+					
+			}
+
 			if (importFileDialog.ShowDialog() != DialogResult.OK)
 				return;
 
@@ -75,13 +96,37 @@ namespace SAModel.SALVL
 
 			foreach (string s in importFileDialog.FileNames)
 			{
-				List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, osd, multiple);
+				List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, osd, multiple, isVisible, isCol, fmt);
 				if (errorFlag)
 					osd.AddMessage(errorMsg + "\n", 300);
 				if (!multiple)
 					selectedItems.Add(newItems);
 				else
 					selectedItems.Clear();
+			}
+
+			if (isSA2)
+			{
+				DialogResult impCollision = MessageBox.Show("Would you like to select any models to import as collision items?", "Import Collision Models", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (impCollision == DialogResult.Yes)
+				{
+					importFileDialog.Filter = "Model Files|*.sa1mdl;*.obj;*.objf;*.txt;*.dae;*.fbx";
+					if (importFileDialog.ShowDialog() != DialogResult.OK)
+						return;
+
+					isVisible = false;
+					isCol = true;
+					foreach (string s in importFileDialog.FileNames)
+					{
+						List<Item> newItems = LevelData.ImportFromFile(s, cam, out bool errorFlag, out string errorMsg, selectedItems, osd, multiple, isVisible, isCol, ModelFormat.Basic);
+						if (errorFlag)
+							osd.AddMessage(errorMsg + "\n", 300);
+						if (!multiple)
+							selectedItems.Add(newItems);
+						else
+							selectedItems.Clear();
+					}
+				}
 			}
 
 			LevelData.InvalidateRenderState();

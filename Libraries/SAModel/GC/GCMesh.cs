@@ -68,7 +68,9 @@ namespace SAModel.GC
 		public GCMesh(List<GCParameter> parameters, List<GCPrimitive> primitives)
 		{
 			Parameters = parameters;
+			ParameterName = $"parameter_{Extensions.GenerateIdentifier()}";
 			Primitives = primitives;
+			PrimitiveName = $"primimitve_{Extensions.GenerateIdentifier()}";
 		}
 
 		public GCMesh(byte[] file, int address, uint imageBase, GCIndexAttributeFlags indexFlags)
@@ -153,12 +155,50 @@ namespace SAModel.GC
 		}
 
 		/// <summary>
+		/// Sets the <see cref="_primitiveSize"/> if it's 0.
+		/// </summary>
+		private void SetPrimitiveSize()
+		{
+			if (_primitiveSize != 0)
+				return;
+
+			int size = 0;
+			int primsize = 4;
+			foreach (var parameter in Parameters)
+			{
+				if (parameter.Type == ParameterType.IndexAttributeFlags)
+				{
+					IndexAttributeParameter attr = (IndexAttributeParameter)parameter;
+					primsize = 1;
+					if (attr.IndexAttributes.HasFlag(GCIndexAttributeFlags.HasNormal))
+						primsize += 1;
+					if (attr.IndexAttributes.HasFlag(GCIndexAttributeFlags.HasUV))
+						primsize += 2;
+					if (attr.IndexAttributes.HasFlag(GCIndexAttributeFlags.Position16BitIndex))
+						primsize += 1;
+					if (attr.IndexAttributes.HasFlag(GCIndexAttributeFlags.Normal16BitIndex))
+						primsize += 1;
+					if (attr.IndexAttributes.HasFlag(GCIndexAttributeFlags.UV16BitIndex))
+						primsize += 1;
+				}	
+			}
+			foreach (GCPrimitive prim in Primitives)
+			{
+				size += (prim.Loops.Count * primsize);
+			}
+
+			_primitiveSize = (uint)size;
+		}
+
+		/// <summary>
 		/// Writes the parameters and primitives to a stream
 		/// </summary>
 		/// <param name="parameterAddress"></param>
 		/// <param name="primitiveAddress"></param>
 		public byte[] GetBytes(uint parameterAddress, uint primitiveAddress)
 		{
+			SetPrimitiveSize();
+
 			var primitiveSize = Convert.ToUInt32(Math.Ceiling((decimal)_primitiveSize / 32) * 32);
 			var result = new List<byte>();
 			
@@ -172,6 +212,8 @@ namespace SAModel.GC
 
 		public string ToStruct()
 		{
+			SetPrimitiveSize();
+
 			var primitiveSize = Convert.ToUInt32(Math.Ceiling((decimal)_primitiveSize / 32) * 32);
 			var result = new StringBuilder("{ ");
 			

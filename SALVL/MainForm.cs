@@ -315,8 +315,13 @@ namespace SAModel.SALVL
 
 		public bool isSA2LVL()
 		{
-			if (salvlini == null)
-				return false;
+			if (salvlini == null && LevelData.geo != null)
+			{
+				if (LevelData.geo.Format == LandTableFormat.SA2 || LevelData.geo.Format == LandTableFormat.SA2B)
+					return true;
+				else
+					return false;
+			}
 
 			return salvlini.IsSA2;
 		}

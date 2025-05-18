@@ -9,6 +9,7 @@ using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon.Import;
 using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
+using System.Windows.Forms;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -474,7 +475,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			errorMsg = "";
 		}
 
-		internal static List<Item> ImportFromHierarchy(NJS_OBJECT objm, EditorItemSelection selectionManager, OnScreenDisplay osd, bool multiple = false)
+		internal static List<Item> ImportFromHierarchy(NJS_OBJECT objm, EditorItemSelection selectionManager, OnScreenDisplay osd, bool multiple = false, bool isVisible = true, bool isCol = true)
 		{
 			List<Item> createdItems = new List<Item>();
 			if (objm.Attach != null)
@@ -482,7 +483,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 				objm.Attach.ProcessVertexData();
 				LevelItem lvlitem = new LevelItem(objm.Attach, new Vertex(objm.Position.X, objm.Position.Y, objm.Position.Z), objm.Rotation, levelItems.Count, selectionManager)
 				{
-					Visible = true
+					Visible = isVisible,
+					Solid = isCol
 				};
 				createdItems.Add(lvlitem);
 			}
@@ -492,7 +494,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				{
 					foreach (NJS_OBJECT child in objm.Children)
 					{
-						createdItems.AddRange(ImportFromHierarchy(child, selectionManager, osd, true));
+						createdItems.AddRange(ImportFromHierarchy(child, selectionManager, osd, true, isVisible, isCol));
 					}
 				}
 			}
@@ -506,8 +508,26 @@ namespace SAModel.SAEditorCommon.DataTypes
 			return new LevelAnim(new GeoAnimData(objm, mot), levelAnims.Count, selectionManager);
 		}
 
-		public static List<Item> ImportFromFile(string filePath, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager, OnScreenDisplay osd, bool multiple = false)
+		public static ModelFormat GetModelFormat()
 		{
+			switch (geo.Format)
+			{
+				case LandTableFormat.SA1:
+					return ModelFormat.Basic;
+				case LandTableFormat.SADX:
+				default:
+					return ModelFormat.BasicDX;
+				case LandTableFormat.SA2:
+					return ModelFormat.Chunk;
+				case LandTableFormat.SA2B:
+					return ModelFormat.GC;
+			}
+		}
+
+		public static List<Item> ImportFromFile(string filePath, EditorCamera camera, out bool errorFlag, out string errorMsg, EditorItemSelection selectionManager, OnScreenDisplay osd, bool multiple = false, bool isVisible = true, bool isCol = true, ModelFormat fmt = ModelFormat.BasicDX)
+		{
+			LandTableFormat lfmt = geo.Format;
+
 			List<Item> createdItems = new List<Item>();
 
 			if (!File.Exists(filePath))
@@ -526,30 +546,52 @@ namespace SAModel.SAEditorCommon.DataTypes
 			switch (filePathInfo.Extension)
 			{
 				case ".sa1mdl":
+				case ".sa2mdl":
+				case ".sa2bmdl":
+					// Run checks on the SA2 format to ensure import is valid and to set the flags appropriately for sa*mdl imports.
+					if (lfmt == LandTableFormat.SA2 || lfmt == LandTableFormat.SA2B)
+					{
+						if (lfmt == LandTableFormat.SA2 && filePathInfo.Extension == ".sa2bmdl")
+						{
+							DialogResult dialog = MessageBox.Show("Invalid format selected for import. You can only import sa2mdl or sa1mdl files.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							break;
+						}
+						else if (lfmt == LandTableFormat.SA2B && filePathInfo.Extension == ".sa2mdl")
+						{
+							DialogResult dialog = MessageBox.Show("Invalid format selected for import. You can only import sa2bmdl or sa1mdl files.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							break;
+						}
+
+						switch (filePathInfo.Extension)
+						{
+							case ".sa1mdl":
+								isVisible = false;
+								isCol = true;
+								break;
+							case ".sa2mdl":
+							case ".sa2bmdl":
+								isVisible = true;
+								isCol = false;
+								break;
+						}
+					}
+					
 					ModelFile mf = new ModelFile(filePath);
 					NJS_OBJECT objm = mf.Model;
 					osd.ClearMessageList();
 					osd.AddMessage("Importing models, please wait...", 3000);
 					osd.ClearMessageList();
-					createdItems.AddRange(ImportFromHierarchy(objm, selectionManager, osd, multiple));
+					createdItems.AddRange(ImportFromHierarchy(objm, selectionManager, osd, multiple, isVisible, isCol));
 					osd.AddMessage("Stage import complete!", 100);
 					break;
-				case ".obj":
-				case ".objf":
-					LevelItem item = new LevelItem(filePath, new Vertex(pos.X, pos.Y, pos.Z), new Rotation(), levelItems.Count, selectionManager)
-					{
-						Visible = true
-					};
-
-					createdItems.Add(item);
-					break;
-
 				case ".txt":
 					NodeTable.ImportFromFile(filePath, out importError, out importErrorMsg, selectionManager);
 					break;
-
+				case ".obj":
+				case ".objf":
 				case ".dae":
 				case ".fbx":
+					ModelFormat mfmt = GetModelFormat();
 					Assimp.AssimpContext context = new Assimp.AssimpContext();
 					Assimp.Configs.FBXPreservePivotsConfig conf = new Assimp.Configs.FBXPreservePivotsConfig(false);
 					context.SetConfig(conf);
@@ -562,7 +604,6 @@ namespace SAModel.SAEditorCommon.DataTypes
 						List<Assimp.Mesh> meshes = new List<Assimp.Mesh>();
 						foreach (int j in child.MeshIndices)
 							meshes.Add(scene.Meshes[j]);
-						bool isVisible = true;
 						for (int j = 0; j < child.MeshCount; j++)
 						{
 							if (scene.Materials[meshes[j].MaterialIndex].Name.Contains("Collision"))
@@ -571,18 +612,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 								break;
 							}
 						}
-						ModelFormat mfmt = ModelFormat.Basic;
-						if (isVisible)
-							switch (geo.Format)
-							{
-								case LandTableFormat.SA2:
-									mfmt = ModelFormat.Chunk;
-									break;
-								case LandTableFormat.SA2B:
-									mfmt = ModelFormat.GC;
-									break;
-							}
-						NJS_OBJECT obj = AssimpStuff.AssimpImport(scene, child, mfmt, TextureBitmaps[leveltexs].Select(a => a.Name).ToArray(), !multiple);
+
+						string[] texs = TextureBitmaps != null ? TextureBitmaps[leveltexs].Select(a => a.Name).ToArray() : null;
+						NJS_OBJECT obj = AssimpStuff.AssimpImport(scene, child, fmt, texs, !multiple);
 						{
 							//sa2 collision patch
 							if (obj.Attach.GetType() == typeof(BasicAttach))
@@ -614,7 +646,8 @@ namespace SAModel.SAEditorCommon.DataTypes
 						obj.Attach.ProcessVertexData();
 						LevelItem newLevelItem = new LevelItem(obj.Attach, new Vertex(obj.Position.X + pos.X, obj.Position.Y + pos.Y, obj.Position.Z + pos.Z), obj.Rotation, levelItems.Count, selectionManager)
 						{
-							Visible = isVisible
+							Visible = isVisible,
+							Solid = isCol
 						};
 						createdItems.Add(newLevelItem);
 					}
