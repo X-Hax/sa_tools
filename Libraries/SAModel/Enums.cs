@@ -82,20 +82,20 @@ namespace SAModel
 		IncreasedAcceleration = 0x80,
 		
 		Diggable              = 0x100,
-		//0x200
+		NoCamCollision        = 0x200,
 		Waterfall             = 0x400,
-		//0x800
+		Slide                 = 0x800,
 		
 		Unclimbable           = 0x1000,
 		Chaos0Land            = 0x2000, // Turns off Visible when Chaos 0 jumps up a pole
 		Stairs                = 0x4000,
-		//0x8000
+		Lava                  = 0x8000,
 		
 		Hurt                  = 0x10000,
-		//0x20000
+		Tube                  = 0x20000,
 		LowDepth              = 0x40000,
-		//0x80000
-		
+		Simple                = 0x80000,
+
 		Footprints            = 0x100000,
 		Accelerate            = 0x200000,
 		WaterCollision        = 0x400000,
@@ -107,8 +107,8 @@ namespace SAModel
 		DynamicCollision      = 0x8000000,
 
 		UseRotation           = 0x10000000,
-		//0x2000000
-		//0x4000000
+		LargeCollision        = 0x20000000,
+		MediumCollision       = 0x40000000,
 		Visible               = unchecked((int)0x80000000)
 	}
 
