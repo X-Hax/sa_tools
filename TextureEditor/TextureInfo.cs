@@ -311,18 +311,44 @@ namespace TextureEditor
             return string.Join(", ", flags);
         }
 
-        public PakTextureInfo(TextureInfo tex)
+		public PakTextureInfo(TextureInfo tex)
         {
             Name = tex.Name;
             GlobalIndex = tex.GlobalIndex;
-            if (tex is GvrTextureInfo gvrt)
-            {
-                DataFormat = gvrt.DataFormat;
-                if (gvrt.DataFormat == GvrDataFormat.Index4 || gvrt.DataFormat == GvrDataFormat.Index8)
-                    SurfaceFlags |= NinjaSurfaceFlags.Palettized;
-            }
-            else
-                DataFormat = GvrDataFormat.Dxt1;
+			if (tex is GvrTextureInfo gvrt)
+			{
+				DataFormat = gvrt.DataFormat;
+				if (gvrt.DataFormat == GvrDataFormat.Index4 || gvrt.DataFormat == GvrDataFormat.Index8)
+					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
+			}
+			else if (tex is PvrTextureInfo pvrt)
+			{
+				switch (pvrt.PixelFormat)
+				{
+					default:
+					case PvrPixelFormat.Rgb565:
+					case PvrPixelFormat.Argb1555:
+						DataFormat = GvrDataFormat.Dxt1;
+						break;
+					case PvrPixelFormat.Argb4444:
+						DataFormat = GvrDataFormat.Rgb5a3;
+						break;
+				}
+				if (pvrt.DataFormat == PvrDataFormat.Index4)
+				{
+					DataFormat = GvrDataFormat.Index4;
+					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
+				}
+				if (pvrt.DataFormat == PvrDataFormat.Index8)
+				{
+					DataFormat = GvrDataFormat.Index8;
+					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
+				}
+			}
+			else
+			{
+				DataFormat = GvrDataFormat.Dxt1;
+			}
             Image = tex.Image;
             Mipmap = tex.Mipmap;
             if (tex.Mipmap)

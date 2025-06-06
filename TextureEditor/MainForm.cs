@@ -153,6 +153,10 @@ namespace TextureEditor
 						checkBoxPAKUseAlpha.Enabled = true;
 						checkBoxPAKUseAlpha.Show();
 						checkBoxPAKUseAlpha.Checked = pak.DataFormat == GvrDataFormat.Rgb5a3;
+						DDSPixelFormatLabel.Show();
+						DDSPixelFormatComboBox.Enabled = true;
+						DDSPixelFormatComboBox.SelectedIndex = (int)pak.DataFormat;
+						DDSPixelFormatComboBox.Show();
 						textureSizeLabel.Hide();
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pak.Image.Width;
@@ -219,6 +223,9 @@ namespace TextureEditor
 						numericUpDownOrigSizeY.Value = pvr.Image.Height;
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
+						DDSPixelFormatComboBox.Enabled = false;
+						DDSPixelFormatComboBox.Hide();
+						DDSPixelFormatLabel.Hide();
 						textureSizeLabel.Hide();
 						break;
 					case GvrTextureInfo gvr:
@@ -279,6 +286,9 @@ namespace TextureEditor
 						numericUpDownOrigSizeY.Value = gvr.Image.Height;
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
+						DDSPixelFormatComboBox.Enabled = false;
+						DDSPixelFormatComboBox.Hide();
+						DDSPixelFormatLabel.Visible = false;
 						textureSizeLabel.Hide();
 						break;
 					case XvrTextureInfo xvr:
@@ -292,6 +302,9 @@ namespace TextureEditor
 						numericUpDownOrigSizeY.Value = xvr.Image.Height;
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
+						DDSPixelFormatComboBox.Enabled = false;
+						DDSPixelFormatComboBox.Hide();
+						DDSPixelFormatLabel.Hide();
 						textureSizeLabel.Hide();
 						break;
 					case PvmxTextureInfo pvmx:
@@ -311,6 +324,9 @@ namespace TextureEditor
 						pixelFormatLabel.Hide();
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
+						DDSPixelFormatComboBox.Enabled = false;
+						DDSPixelFormatComboBox.Hide();
+						DDSPixelFormatLabel.Hide();
 						textureSizeLabel.Text = $"Actual Size: {textures[listBox1.SelectedIndex].Image.Width}x{textures[listBox1.SelectedIndex].Image.Height}";
 						textureSizeLabel.Show();
 						break;
@@ -322,6 +338,9 @@ namespace TextureEditor
 						numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
 						checkBoxPAKUseAlpha.Enabled = false;
 						checkBoxPAKUseAlpha.Hide();
+						DDSPixelFormatComboBox.Enabled = false;
+						DDSPixelFormatComboBox.Hide();
+						DDSPixelFormatLabel.Hide();
 						textureSizeLabel.Hide();
 						break;
 				}
@@ -628,6 +647,7 @@ namespace TextureEditor
 			toolTip.InitialDelay = 1000;
 			toolTip.ReshowDelay = 500;
 			toolTip.SetToolTip(checkBoxPAKUseAlpha, "Disables Alpha Test and Z Write for the selected texture.\nThis can make some transparent textures blend better or worse. Use with caution.");
+			toolTip.SetToolTip(DDSPixelFormatComboBox, "Sets the pixel format for the selected texture.\nThis shouldn't affect the quality of the exported texture, since this value is used by the game to determine how the texture needs to be read.");
 			if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
 				Close();
 		}
@@ -755,7 +775,7 @@ namespace TextureEditor
 							Size size = new Size(tex.Image.Width, tex.Image.Height);
 							if (tex.Dimensions.HasValue)
 								size = new Size(tex.Dimensions.Value.Width, tex.Dimensions.Value.Height);
-							MemoryStream ds = tex.TextureData == null ? ds = EncodeDDSorPNG(tex, useDDSInPVMXToolStripMenuItem.Checked) : ds = tex.TextureData;
+							MemoryStream ds = tex.TextureData == null ? ds = EncodeDDSorPNG(tex, useDDSInPVMXToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked) : ds = tex.TextureData;
 							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + TextureFunctions.IdentifyTextureFileExtension(ds), tex.GlobalIndex, ds.ToArray(), size.Width, size.Height));
 						}
 						File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
@@ -769,7 +789,7 @@ namespace TextureEditor
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						foreach (PakTextureInfo item in textures)
 						{
-							using (MemoryStream tex = EncodeDDSorPNG(item, useDDSInPAKsToolStripMenuItem.Checked))
+							using (MemoryStream tex = EncodeDDSorPNG(item, useDDSInPAKsToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked))
 							{
 								byte[] tb = tex.ToArray();
 								string name = item.Name.ToLowerInvariant();
@@ -1673,11 +1693,11 @@ namespace TextureEditor
 						else if (info is XvrTextureInfo xvrt)
 							info.TextureData = EncodeXVR(xvrt);
 						else if (info is PakTextureInfo pakt)
-							info.TextureData = EncodeDDSorPNG(pakt, useDDSInPAKsToolStripMenuItem.Checked);
+							info.TextureData = EncodeDDSorPNG(pakt, useDDSInPAKsToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked);
 						else if (info is PvmxTextureInfo pvmxt)
-							info.TextureData = EncodeDDSorPNG(pvmxt, useDDSInPVMXToolStripMenuItem.Checked);
+							info.TextureData = EncodeDDSorPNG(pvmxt, useDDSInPVMXToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked);
 						else
-							info.TextureData = EncodeDDSorPNG(info, useDDSInTexturePacksToolStripMenuItem.Checked);
+							info.TextureData = EncodeDDSorPNG(info, useDDSInTexturePacksToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked);
 					}
 					File.WriteAllBytes(dlg.FileName, textures[listBox1.SelectedIndex].TextureData.ToArray());
 				}
@@ -1750,7 +1770,7 @@ namespace TextureEditor
 			return xvr;
 		}
 
-		private MemoryStream EncodeDDSorPNG(TextureInfo tex, bool dds, bool force = false)
+		private MemoryStream EncodeDDSorPNG(TextureInfo tex, bool dds, bool force = false, bool HQ = false)
 		{
 			if (!force && tex.TextureData != null)
 				return tex.TextureData;
@@ -1768,7 +1788,10 @@ namespace TextureEditor
 			BcEncoder encoder = new BcEncoder();
 			encoder.OutputOptions.GenerateMipMaps = tex.Mipmap;
 			encoder.OutputOptions.Quality = CompressionQuality.BestQuality;
-			encoder.OutputOptions.Format = (TextureFunctions.GetAlphaLevelFromBitmap(tex.Image) != 0) ? CompressionFormat.Bc3 : CompressionFormat.Bc1;
+			if (HQ)
+				encoder.OutputOptions.Format = CompressionFormat.Rgba;
+			else
+				encoder.OutputOptions.Format = (TextureFunctions.GetAlphaLevelFromBitmap(tex.Image) != 0) ? CompressionFormat.Bc3 : CompressionFormat.Bc1;
 			encoder.OutputOptions.FileFormat = OutputFileFormat.Dds;
 			MemoryStream ddsData = new MemoryStream();
 			encoder.EncodeToStream(image, ddsData);
@@ -2438,6 +2461,16 @@ namespace TextureEditor
 		private void useDDSInPVMXToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			settingsfile.UseDDSforPVMX = useDDSInPVMXToolStripMenuItem.Checked;
+		}
+
+		private void DDSPixelFormatComboBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (!(textures[listBox1.SelectedIndex] is PakTextureInfo))
+				return;
+			PakTextureInfo pk = (PakTextureInfo)textures[listBox1.SelectedIndex];
+			pk.DataFormat = (GvrDataFormat)DDSPixelFormatComboBox.SelectedIndex;
+			UpdateTextureInformation();
+			unsaved = true;
 		}
 	}
 }
