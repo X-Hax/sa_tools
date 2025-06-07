@@ -150,9 +150,6 @@ namespace TextureEditor
 						pixelFormatLabel.Text = $"Surface Flags: {pak.GetSurfaceFlags()}";
 						dataFormatLabel.Show();
 						pixelFormatLabel.Show();
-						checkBoxPAKUseAlpha.Enabled = true;
-						checkBoxPAKUseAlpha.Show();
-						checkBoxPAKUseAlpha.Checked = pak.DataFormat == GvrDataFormat.Rgb5a3;
 						DDSPixelFormatLabel.Show();
 						DDSPixelFormatComboBox.Enabled = true;
 						DDSPixelFormatComboBox.SelectedIndex = (int)pak.DataFormat;
@@ -221,8 +218,6 @@ namespace TextureEditor
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = pvr.Image.Width;
 						numericUpDownOrigSizeY.Value = pvr.Image.Height;
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
 						DDSPixelFormatComboBox.Enabled = false;
 						DDSPixelFormatComboBox.Hide();
 						DDSPixelFormatLabel.Hide();
@@ -284,8 +279,6 @@ namespace TextureEditor
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = gvr.Image.Width;
 						numericUpDownOrigSizeY.Value = gvr.Image.Height;
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
 						DDSPixelFormatComboBox.Enabled = false;
 						DDSPixelFormatComboBox.Hide();
 						DDSPixelFormatLabel.Visible = false;
@@ -300,8 +293,6 @@ namespace TextureEditor
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = xvr.Image.Width;
 						numericUpDownOrigSizeY.Value = xvr.Image.Height;
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
 						DDSPixelFormatComboBox.Enabled = false;
 						DDSPixelFormatComboBox.Hide();
 						DDSPixelFormatLabel.Hide();
@@ -322,8 +313,6 @@ namespace TextureEditor
 						dataFormatLabel.Text = "File Format: " + TextureFunctions.IdentifyTextureFileFormat(textures[listBox1.SelectedIndex].TextureData).ToString();
 						dataFormatLabel.Show();
 						pixelFormatLabel.Hide();
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
 						DDSPixelFormatComboBox.Enabled = false;
 						DDSPixelFormatComboBox.Hide();
 						DDSPixelFormatLabel.Hide();
@@ -336,8 +325,6 @@ namespace TextureEditor
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = textures[listBox1.SelectedIndex].Image.Width;
 						numericUpDownOrigSizeY.Value = textures[listBox1.SelectedIndex].Image.Height;
-						checkBoxPAKUseAlpha.Enabled = false;
-						checkBoxPAKUseAlpha.Hide();
 						DDSPixelFormatComboBox.Enabled = false;
 						DDSPixelFormatComboBox.Hide();
 						DDSPixelFormatLabel.Hide();
@@ -646,8 +633,9 @@ namespace TextureEditor
 			toolTip.AutoPopDelay = 5000;
 			toolTip.InitialDelay = 1000;
 			toolTip.ReshowDelay = 500;
-			toolTip.SetToolTip(checkBoxPAKUseAlpha, "Disables Alpha Test and Z Write for the selected texture.\nThis can make some transparent textures blend better or worse. Use with caution.");
-			toolTip.SetToolTip(DDSPixelFormatComboBox, "Sets the pixel format for the selected texture.\nThis shouldn't affect the quality of the exported texture, since this value is used by the game to determine how the texture needs to be read.");
+			toolTip.SetToolTip(DDSPixelFormatComboBox, "Sets the pixel format for the selected texture." +
+				"\nThis shouldn't affect the quality of the exported texture, since this value is used by the game to determine how the texture needs to be read." +
+				"\nSetting this to Rgb5a3 disables Alpha Test and Z Write for the selected texture.\nThis can make some transparent textures blend better or worse. Use with caution.");
 			if (Program.Arguments.Length > 0 && !LoadArchive(Program.Arguments[0]))
 				Close();
 		}
@@ -2267,23 +2255,6 @@ namespace TextureEditor
 			}
 		}
 
-		private void checkBoxPAKUseAlpha_CheckedChanged(object sender, EventArgs e)
-		{
-			if (!(textures[listBox1.SelectedIndex] is PakTextureInfo))
-				return;
-			PakTextureInfo pk = (PakTextureInfo)textures[listBox1.SelectedIndex];
-			// Use alpha
-			if (checkBoxPAKUseAlpha.Checked)
-				pk.DataFormat = GvrDataFormat.Rgb5a3;
-			// Don't use alpha (palettized)
-			else if ((pk.SurfaceFlags & NinjaSurfaceFlags.Palettized) != 0)
-				pk.DataFormat = GvrDataFormat.Index4;
-			// Don't use alpha (regular)
-			else
-				pk.DataFormat = GvrDataFormat.Dxt1;
-			UpdateTextureInformation();
-		}
-
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (archiveFilename == null)
@@ -2395,12 +2366,6 @@ namespace TextureEditor
 			PAKEnableAlphaForAll(false);
 		}
 
-		private void checkBoxPAKUseAlpha_Click(object sender, EventArgs e)
-		{
-			checkBoxPAKUseAlpha_CheckedChanged(sender, e);
-			unsaved = true;
-		}
-
 		private void texturePreviewZoomTrackBar_Scroll(object sender, EventArgs e)
 		{
 			UpdateTextureInformation();
@@ -2468,9 +2433,12 @@ namespace TextureEditor
 			if (!(textures[listBox1.SelectedIndex] is PakTextureInfo))
 				return;
 			PakTextureInfo pk = (PakTextureInfo)textures[listBox1.SelectedIndex];
-			pk.DataFormat = (GvrDataFormat)DDSPixelFormatComboBox.SelectedIndex;
+			if (pk.DataFormat != (GvrDataFormat)DDSPixelFormatComboBox.SelectedIndex)
+			{
+				pk.DataFormat = (GvrDataFormat)DDSPixelFormatComboBox.SelectedIndex;
+				unsaved = true;
+			}
 			UpdateTextureInformation();
-			unsaved = true;
 		}
 	}
 }
