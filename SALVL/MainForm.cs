@@ -2038,6 +2038,11 @@ namespace SAModel.SALVL
 
 		private void loadSETFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			if (LevelData.ObjDefs == null || LevelData.ObjDefs.Count == 0)
+			{
+				MessageBox.Show(this, "Please load an object list first.", "SALVL Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
 			{
 				DefaultExt = "bin",
