@@ -409,11 +409,12 @@ namespace TextureEditor
 						{
 							bmp = new Bitmap(TextureEditor.Properties.Resources.error);
 						}
-						newtextures.Add(new PakTextureInfo(Path.GetFileNameWithoutExtension(fl.Name), 0, bmp, GvrDataFormat.Dxt1, 0, new MemoryStream(fl.Data)));
+						newtextures.Add(new PakTextureInfo(Path.GetFileNameWithoutExtension(fl.Name), 0, bmp, GvrDataFormat.Dxt1, 0, new MemoryStream(fl.Data), Path.GetExtension(fl.Name)));
 					}
 				}
 				else
 				{
+					nonIndexedPAK = false;
 					byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
 					newtextures = new List<TextureInfo>(inf.Length / 0x3C);
 					for (int i = 0; i < inf.Length; i += 0x3C)
@@ -784,7 +785,7 @@ namespace TextureEditor
 								if (name.Length > 0x1C)
 									name = name.Substring(0, 0x1C);
 								name = name.Trim();
-								pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb));
+								pak.Entries.Add(new PAKFile.PAKEntry(name + item.OriginalFileExtension, longdir + '\\' + name + item.OriginalFileExtension, tb));
 								// Create a new PAK INF entry
 								PAKInfEntry entry = new PAKInfEntry();
 								byte[] namearr = Encoding.ASCII.GetBytes(name);
@@ -1207,7 +1208,7 @@ namespace TextureEditor
 												textures.Add(new PvmxTextureInfo(name, gbix, CreateBitmapFromStream(str), str));
 												break;
 											case TextureFormat.PAK:
-												textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, NinjaSurfaceFlags.Mipmapped, str));
+												textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, NinjaSurfaceFlags.Mipmapped, str, nonIndexedPAK ? Path.GetExtension(file) : ".dds"));
 												break;
 										}
 										if (gbix != uint.MaxValue)
@@ -1621,7 +1622,7 @@ namespace TextureEditor
 						break;
 					case TextureFormat.PAK:
 						PakTextureInfo oldpak = (PakTextureInfo)textures[listBox1.SelectedIndex];
-						textures[listBox1.SelectedIndex] = new PakTextureInfo(name, oldpak.GlobalIndex, CreateBitmapFromStream(texmemstr), oldpak.DataFormat, oldpak.SurfaceFlags, texmemstr);
+						textures[listBox1.SelectedIndex] = new PakTextureInfo(name, oldpak.GlobalIndex, CreateBitmapFromStream(texmemstr), oldpak.DataFormat, oldpak.SurfaceFlags, texmemstr, oldpak.OriginalFileExtension);
 						break;
 					default:
 						break;

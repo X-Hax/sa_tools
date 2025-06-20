@@ -310,6 +310,7 @@ namespace TextureEditor
                 flags.Add("VQ");
             return string.Join(", ", flags);
         }
+		public string OriginalFileExtension { get; set; }
 
 		public PakTextureInfo(TextureInfo tex)
         {
@@ -349,6 +350,8 @@ namespace TextureEditor
 			{
 				DataFormat = GvrDataFormat.Dxt1;
 			}
+			if (tex is PakTextureInfo pk)
+				OriginalFileExtension = pk.OriginalFileExtension;
             Image = tex.Image;
             Mipmap = tex.Mipmap;
             if (tex.Mipmap)
@@ -356,7 +359,7 @@ namespace TextureEditor
 			TextureData = null;
         }
 
-        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null)
+        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null, string origExt = ".dds")
         {
             Name = name;
             GlobalIndex = gbix;
@@ -365,6 +368,7 @@ namespace TextureEditor
             SurfaceFlags = flags;
             Mipmap = (SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0;
 			TextureData = str;
+			OriginalFileExtension = origExt;
         }
 
         public override bool CheckMipmap()
