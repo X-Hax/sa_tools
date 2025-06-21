@@ -102,25 +102,51 @@ namespace SAModel.SALVL
 
 			if (!LevelData.SETItemsIsNull())
 			{
-				for (int i = 0; i < LevelData.SETChars.Length; i++)
+				if (isSA2LVL())
 				{
-					string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-
-					// blank the set file
-					if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
+					for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
 					{
-						byte[] emptyBytes = new byte[0x20];
-						File.WriteAllBytes(setstr, emptyBytes);
+						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SA2SetTypes[i] + ".bin");
+
+						// blank the set file
+						if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
+						{
+							byte[] emptyBytes = new byte[0x20];
+							File.WriteAllBytes(setstr, emptyBytes);
+						}
+
+						List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
+						file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
+						file.Align(0x20);
+
+						foreach (SETItem item in LevelData.SETItems(i))
+							file.AddRange(item.GetBytes());
+
+						File.WriteAllBytes(setstr, file.ToArray());
 					}
+				}
+				else
+				{
+					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					{
+						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
 
-					List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
-					file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
-					file.Align(0x20);
+						// blank the set file
+						if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
+						{
+							byte[] emptyBytes = new byte[0x20];
+							File.WriteAllBytes(setstr, emptyBytes);
+						}
 
-					foreach (SETItem item in LevelData.SETItems(i))
-						file.AddRange(item.GetBytes());
+						List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
+						file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
+						file.Align(0x20);
 
-					File.WriteAllBytes(setstr, file.ToArray());
+						foreach (SETItem item in LevelData.SETItems(i))
+							file.AddRange(item.GetBytes());
+
+						File.WriteAllBytes(setstr, file.ToArray());
+					}
 				}
 			}
 
@@ -260,16 +286,101 @@ namespace SAModel.SALVL
 			Application.DoEvents();
 		}
 
-		private void SaveSETFile(bool bigendian)
+		private void SaveSETFile(bool bigendian, bool isSA2)
 		{
-			using (SaveFileDialog a = new SaveFileDialog
+			if (isSA2)
 			{
-				DefaultExt = "bin",
-				Filter = "SET files|SET*.bin",
-			})
-			{
-				if (a.ShowDialog() == DialogResult.OK)
+				List<SETItem> sSETitems = new List<SETItem>();
+				List<SETItem> uSETitems = new List<SETItem>();
+
+				//Just in case Kart SET editing becomes viable in the future
+				List<SETItem> kbaseSETitems = new List<SETItem>();
+				List<SETItem> kartSETitems = new List<SETItem>();
+				foreach (SETItem data in LevelData.SETItems(LevelData.SA2Set))
 				{
+					if (data.SETFileName.EndsWith("_U.BIN".ToLowerInvariant()))
+					{
+						uSETitems.Add(data);
+					}
+					else if (data.SETFileName.EndsWith("_S.BIN".ToLowerInvariant()))
+					{
+						sSETitems.Add(data);
+					}
+					else if (data.SETFileName.Contains("SETCARTBASE".ToLowerInvariant()))
+					{
+						kbaseSETitems.Add(data);
+					}
+					else if (data.SETFileName.Contains("SETCART".ToLowerInvariant()))
+					{
+						kartSETitems.Add(data);
+					}
+				}
+				if (sSETitems.Count > 0)
+				{
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = "bin",
+						Filter = "SET S files|SET*_S.bin",
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							SETItem.Save(sSETitems.ToList(), a.FileName, bigendian);
+						}
+					}
+				}
+				if (uSETitems.Count > 0)
+				{
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = "bin",
+						Filter = "SET U files|SET*_U.bin",
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							SETItem.Save(uSETitems.ToList(), a.FileName, bigendian);
+						}
+					}
+				}
+				if (kbaseSETitems.Count > 0)
+				{
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = "bin",
+						Filter = "SET files|SETCART*.bin",
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							SETItem.Save(kbaseSETitems.ToList(), a.FileName, bigendian);
+						}
+					}
+				}
+				if (kartSETitems.Count > 0)
+				{
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = "bin",
+						Filter = "SET files|SETCART*.bin",
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							SETItem.Save(kartSETitems.ToList(), a.FileName, bigendian);
+						}
+					}
+				}
+			}
+			else
+			{
+				using (SaveFileDialog a = new SaveFileDialog
+				{
+					DefaultExt = "bin",
+					Filter = "SET files|SET*.bin",
+				})
+				{
+					if (a.ShowDialog() == DialogResult.OK)
 					{
 						SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), a.FileName, bigendian);
 					}
@@ -293,7 +404,74 @@ namespace SAModel.SALVL
 				}
 			}
 		}
-
+		private void SaveSA2LandTables(bool hasextra)
+		{
+			string filter;
+			string defext;
+			switch (LevelData.geo.Format)
+			{
+				case LandTableFormat.SA2:
+					defext = "sa2lvl";
+					filter = "SA2 Level Files|*.sa2lvl";
+					break;
+				case LandTableFormat.SA2B:
+					defext = "sa2blvl";
+					filter = "SA2B Level Files|*.sa2blvl";
+					break;
+				case LandTableFormat.SA1:
+				case LandTableFormat.SADX:
+				default:
+					defext = "sa1lvl";
+					filter = "SA1/SADX Level Files| *.sa1lvl";
+					break;
+			}
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = defext,
+				Filter = filter,
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					LevelData.geo.SaveToFile(a.FileName, LevelData.geo.Format);
+				}
+			}
+			if (hasextra)
+			{
+				for (int i = 0; i < LevelData.secondgeos.Count; i++)
+				{ 
+					LandTable level = LevelData.secondgeos[i];
+					switch (level.Format)
+					{
+						case LandTableFormat.SA2:
+							defext = "sa2lvl";
+							filter = "SA2 Level Files|*.sa2lvl";
+							break;
+						case LandTableFormat.SA2B:
+							defext = "sa2blvl";
+							filter = "SA2B Level Files|*.sa2blvl";
+							break;
+						case LandTableFormat.SA1:
+						case LandTableFormat.SADX:
+						default:
+							defext = "sa1lvl";
+							filter = "SA1/SADX Level Files| *.sa1lvl";
+							break;
+					}
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = defext,
+						Filter = filter,
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							LevelData.secondgeos[i].SaveToFile(a.FileName, level.Format);
+						}
+					}
+				}
+			}
+		}
 		private void SaveSA2Data(bool autoCloseDialog)
 		{
 
@@ -307,7 +485,7 @@ namespace SAModel.SALVL
 
 			if (!LevelData.SETItemsIsNull())
 			{
-				SaveSETFile(true);
+				SaveSETFile(true, true);
 			}
 
 			#endregion
@@ -316,7 +494,7 @@ namespace SAModel.SALVL
 
 			#region Saving Geometry
 
-			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 3, true, autoCloseDialog);
+			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 7, true, autoCloseDialog);
 			progress.Show(this);
 
 			Application.DoEvents();
@@ -327,7 +505,11 @@ namespace SAModel.SALVL
 			{
 				LevelData.geo.SaveToFile(level.LevelGeometry, LevelData.geo.Format);
 			}
-
+			if (LevelData.secondgeos != null)
+			{
+				for (int i = 0; i < LevelData.secondgeos.Count; i++)
+					LevelData.secondgeos[i].SaveToFile(level.SecondaryGeometry[i], LevelData.secondgeos[i].Format);
+			}
 			progress.StepProgress();
 
 			#endregion
@@ -349,20 +531,229 @@ namespace SAModel.SALVL
 			progress.StepProgress();
 			#endregion
 
-
-			//TO DO: Add SA2 Start Pos for everyone
-
-			/*#region Start Positions
+			#region SA2 Start Positions
 
 			progress.Step = "Start positions...";
 			Application.DoEvents();
+			
+			for (int i = 0; i < LevelData.StartPositions.Length; i++)
+			{
+				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].StartPositions))
+				{
+					log.Add("Error saving start positions for character " + i.ToString());
+					osd.AddMessage("Error saving start positions for character " + i.ToString(), 180);
+					break;
+				}
 
+				Dictionary<SA2LevelIDs, SA2StartPosInfo> posini = SA2StartPosList.Load(salvlini.Characters[LevelData.SA2Characters[i]].StartPositions);
 
-			Dictionary<SA2LevelIDs, SA2StartPosInfo> posini = SA2StartPosList.Load(salvlini.Characters[LevelData.Characters[0]].StartPositions);
+				if (posini.ContainsKey(SA2level))
+					posini.Remove(SA2level);
 
+				if (LevelData.StartPositions[i].Position.X != 0 || LevelData.StartPositions[i].Position.Y != 0 ||
+					LevelData.StartPositions[i].Position.Z != 0 || LevelData.StartPositions[i].Rotation.Y != 0)
+				{
+					if (LevelData.SA2StartPositions2P1[i] != null && (LevelData.SA2StartPositions2P1[i].Position.X != 0 ||
+						LevelData.SA2StartPositions2P1[i].Position.Y != 0 || LevelData.SA2StartPositions2P1[i].Position.Z != 0 || LevelData.SA2StartPositions2P1[i].Rotation.Y != 0))
+					{
+						if (LevelData.SA2StartPositions2P2[i] != null && (LevelData.SA2StartPositions2P2[i].Position.X != 0 ||
+						LevelData.SA2StartPositions2P2[i].Position.Y != 0 || LevelData.SA2StartPositions2P2[i].Position.Z != 0 || LevelData.SA2StartPositions2P2[i].Rotation.Y != 0))
+						{
+							posini.Add(SA2level,
+						new SA2StartPosInfo()
+						{
+							Position = LevelData.StartPositions[i].Position,
+							YRotation = (ushort)LevelData.StartPositions[i].Rotation.Y,
+							P1Position = LevelData.SA2StartPositions2P1[i].Position,
+							P1YRotation = (ushort)LevelData.SA2StartPositions2P1[i].YRotation,
+							P2Position = LevelData.SA2StartPositions2P2[i].Position,
+							P2YRotation = (ushort)LevelData.SA2StartPositions2P2[i].YRotation
+						});
+						}
+						else
+							posini.Add(SA2level,
+						new SA2StartPosInfo()
+						{
+							Position = LevelData.StartPositions[i].Position,
+							YRotation = (ushort)LevelData.StartPositions[i].Rotation.Y,
+							P1Position = LevelData.SA2StartPositions2P1[i].Position,
+							P1YRotation = (ushort)LevelData.SA2StartPositions2P1[i].YRotation,
+						});
+					}
+					else
+						posini.Add(SA2level,
+						new SA2StartPosInfo()
+						{
+							Position = LevelData.StartPositions[i].Position,
+							YRotation = (ushort)LevelData.StartPositions[i].Rotation.Y,
+						});
+				}
+
+				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].StartPositions);
+			}
 
 			progress.StepProgress();
-			#endregion*/
+			#endregion
+
+			#region SA2 End Positions
+
+			progress.Step = "End positions...";
+			Application.DoEvents();
+
+			for (int i = 0; i < LevelData.EndPositions.Length; i++)
+			{
+				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].EndPositions))
+				{
+					log.Add("Error saving end positions for character " + i.ToString());
+					osd.AddMessage("Error saving end positions for character " + i.ToString(), 180);
+					break;
+				}
+
+				Dictionary<SA2LevelIDs, SA2StartPosInfo> posini = SA2StartPosList.Load(salvlini.Characters[LevelData.SA2Characters[i]].EndPositions);
+
+				if (posini.ContainsKey(SA2level))
+					posini.Remove(SA2level);
+
+				if (LevelData.EndPositions[i].Position.X != 0 || LevelData.EndPositions[i].Position.Y != 0 ||
+					LevelData.EndPositions[i].Position.Z != 0 || LevelData.EndPositions[i].Rotation.Y != 0)
+				{
+					if (LevelData.EndPositions2P1[i] != null && (LevelData.EndPositions2P1[i].Position.X != 0 ||
+						LevelData.EndPositions2P1[i].Position.Y != 0 || LevelData.EndPositions2P1[i].Position.Z != 0 || LevelData.EndPositions2P1[i].Rotation.Y != 0))
+					{
+						if (LevelData.EndPositions2P2[i] != null && (LevelData.EndPositions2P2[i].Position.X != 0 ||
+						LevelData.EndPositions2P2[i].Position.Y != 0 || LevelData.EndPositions2P2[i].Position.Z != 0 || LevelData.EndPositions2P2[i].Rotation.Y != 0))
+						{
+							posini.Add(SA2level,
+						new SA2StartPosInfo()
+						{
+							Position = LevelData.EndPositions[i].Position,
+							YRotation = (ushort)LevelData.EndPositions[i].Rotation.Y,
+							P1Position = LevelData.EndPositions2P1[i].Position,
+							P1YRotation = (ushort)LevelData.EndPositions2P1[i].YRotation,
+							P2Position = LevelData.EndPositions2P2[i].Position,
+							P2YRotation = (ushort)LevelData.EndPositions2P2[i].YRotation
+						});
+						}
+						else
+							posini.Add(SA2level,
+						new SA2StartPosInfo()
+						{
+							Position = LevelData.EndPositions[i].Position,
+							YRotation = (ushort)LevelData.EndPositions[i].Rotation.Y,
+							P1Position = LevelData.EndPositions2P1[i].Position,
+							P1YRotation = (ushort)LevelData.EndPositions2P1[i].YRotation,
+						});
+					}
+					else
+						posini.Add(SA2level,
+						new SA2StartPosInfo()
+						{
+							Position = LevelData.EndPositions[i].Position,
+							YRotation = (ushort)LevelData.EndPositions[i].Rotation.Y,
+						});
+				}
+
+				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].EndPositions);
+			}
+
+			progress.StepProgress();
+			#endregion
+
+			#region 2P Intro Positions
+
+			progress.Step = "2P Intro positions...";
+			Application.DoEvents();
+
+			for (int i = 0; i < LevelData.MultiplayerIntroPositionsA.Length; i++)
+			{
+				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions))
+				{
+					log.Add("Error saving 2P intro positions for character " + i.ToString());
+					osd.AddMessage("Error saving 2P intro positions for character " + i.ToString(), 180);
+					break;
+				}
+
+				Dictionary<SA2LevelIDs, SA2EndPosInfo> posini = SA2EndPosList.Load(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
+
+				if (posini.ContainsKey(SA2level))
+					posini.Remove(SA2level);
+
+				if (LevelData.MultiplayerIntroPositionsA[i].Position.X != 0 || LevelData.MultiplayerIntroPositionsA[i].Position.Y != 0 ||
+					LevelData.MultiplayerIntroPositionsA[i].Position.Z != 0 || LevelData.MultiplayerIntroPositionsA[i].Rotation.Y != 0)
+				{
+					if (LevelData.MultiplayerIntroPositionsB[i] != null && (LevelData.MultiplayerIntroPositionsB[i].Position.X != 0 ||
+						LevelData.MultiplayerIntroPositionsB[i].Position.Y != 0 || LevelData.MultiplayerIntroPositionsB[i].Position.Z != 0 || LevelData.MultiplayerIntroPositionsB[i].Rotation.Y != 0))
+					{
+						posini.Add(SA2level,
+						new SA2EndPosInfo()
+						{
+							Mission2Position = LevelData.MultiplayerIntroPositionsA[i].Position,
+							Mission2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
+							Mission3Position = LevelData.MultiplayerIntroPositionsB[i].Position,
+							Mission3YRotation = (ushort)LevelData.MultiplayerIntroPositionsB[i].YRotation,
+						});
+					}
+						else
+							posini.Add(SA2level,
+						new SA2EndPosInfo()
+						{
+							Mission2Position = LevelData.MultiplayerIntroPositionsA[i].Position,
+							Mission2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
+						});
+					}
+				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
+			}
+
+			progress.StepProgress();
+			#endregion
+
+			#region Mission 2/3 End Positions
+
+			progress.Step = "Mission 2/3 end positions...";
+			Application.DoEvents();
+
+			for (int i = 0; i < LevelData.AltEndPositionsA.Length; i++)
+			{
+				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions))
+				{
+					log.Add("Error saving Mission 2/3 end positions for character " + i.ToString());
+					osd.AddMessage("Error saving Mission 2/3 positions for character " + i.ToString(), 180);
+					break;
+				}
+
+				Dictionary<SA2LevelIDs, SA2EndPosInfo> posini = SA2EndPosList.Load(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions);
+
+				if (posini.ContainsKey(SA2level))
+					posini.Remove(SA2level);
+
+				if (LevelData.AltEndPositionsA[i].Position.X != 0 || LevelData.AltEndPositionsA[i].Position.Y != 0 ||
+					LevelData.AltEndPositionsA[i].Position.Z != 0 || LevelData.AltEndPositionsA[i].Rotation.Y != 0)
+				{
+					if (LevelData.AltEndPositionsB[i] != null && (LevelData.AltEndPositionsB[i].Position.X != 0 ||
+						LevelData.AltEndPositionsB[i].Position.Y != 0 || LevelData.AltEndPositionsB[i].Position.Z != 0 || LevelData.AltEndPositionsB[i].Rotation.Y != 0))
+					{
+						posini.Add(SA2level,
+						new SA2EndPosInfo()
+						{
+							Mission2Position = LevelData.AltEndPositionsA[i].Position,
+							Mission2YRotation = (ushort)LevelData.AltEndPositionsA[i].Rotation.Y,
+							Mission3Position = LevelData.AltEndPositionsB[i].Position,
+							Mission3YRotation = (ushort)LevelData.AltEndPositionsB[i].YRotation,
+						});
+					}
+					else
+						posini.Add(SA2level,
+					new SA2EndPosInfo()
+					{
+						Mission2Position = LevelData.AltEndPositionsA[i].Position,
+						Mission2YRotation = (ushort)LevelData.AltEndPositionsA[i].Rotation.Y,
+					});
+				}
+				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].AltEndPositions);
+			}
+
+			progress.StepProgress();
+			#endregion
 
 			progress.StepProgress();
 			progress.SetTaskAndStep("Save complete!");

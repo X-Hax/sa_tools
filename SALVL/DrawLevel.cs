@@ -56,8 +56,10 @@ namespace SAModel.SALVL
 
 			List<RenderInfo> renderlist_death = new List<RenderInfo>();
 			List<RenderInfo> renderlist_geo = new List<RenderInfo>();
+			List<RenderInfo> renderlist_exgeo = new List<RenderInfo>();
 			List<RenderInfo> renderlist_char = new List<RenderInfo>();
 			List<RenderInfo> renderlist_set = new List<RenderInfo>();
+			List<RenderInfo> renderlist_spline = new List<RenderInfo>();
 
 			#region Adding Level Geometry
 
@@ -78,6 +80,23 @@ namespace SAModel.SALVL
 						renderlist_geo.AddRange(item.Render(d3ddevice, cam, transform));
 				}
 			}
+			if (LevelData.EXLevelItems != null)
+			{
+				foreach (LevelItem item in LevelData.EXLevelItems)
+				{
+					bool display = false;
+
+					if (exVisibleToolStripMenuItem.Checked && item.Visible)
+						display = true;
+					else if (exInvisibleToolStripMenuItem.Checked && !item.Visible)
+						display = true;
+					else if (exAllToolStripMenuItem.Checked)
+						display = true;
+
+					if (display)
+						renderlist_exgeo.AddRange(item.Render(d3ddevice, cam, transform));
+				}
+			}
 
 			if (LevelData.LevelAnims != null)
 			{
@@ -94,7 +113,38 @@ namespace SAModel.SALVL
 			}
 			#endregion
 
-			if (LevelData.StartPositions != null) renderlist_char.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
+			if (LevelData.StartPositions != null)
+			{
+				if (isSA2LVL())
+				{
+					if (toolHardMode.Checked || toolNormalSET.Checked)
+						renderlist_char.AddRange(LevelData.StartPositions[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+					else
+					{
+						if (LevelData.SA2StartPositions2P1 != null) renderlist_char.AddRange(LevelData.SA2StartPositions2P1[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+						if (LevelData.SA2StartPositions2P2 != null) renderlist_char.AddRange(LevelData.SA2StartPositions2P2[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+					}
+				}
+				else 
+				{ 
+					renderlist_char.AddRange(LevelData.StartPositions[LevelData.Character].Render(d3ddevice, cam, transform));
+				}
+			}
+
+			//SA2 Positions
+			if (toolNormalSET.Checked || toolHardMode.Checked)
+			{
+				if (LevelData.EndPositions != null) renderlist_char.AddRange(LevelData.EndPositions[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+				if (LevelData.AltEndPositionsA != null) renderlist_char.AddRange(LevelData.AltEndPositionsA[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+				if (LevelData.AltEndPositionsB != null) renderlist_char.AddRange(LevelData.AltEndPositionsB[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+			}
+			else
+			{
+				if (LevelData.EndPositions2P1 != null) renderlist_char.AddRange(LevelData.EndPositions2P1[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+				if (LevelData.EndPositions2P2 != null) renderlist_char.AddRange(LevelData.EndPositions2P2[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+				if (LevelData.MultiplayerIntroPositionsA != null) renderlist_char.AddRange(LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+				if (LevelData.MultiplayerIntroPositionsB != null) renderlist_char.AddRange(LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Render(d3ddevice, cam, transform));
+			}
 
 			#region Adding Death Zones
 			if (LevelData.DeathZones != null & viewDeathZonesToolStripMenuItem.Checked)
@@ -110,7 +160,10 @@ namespace SAModel.SALVL
 			#region Adding SET Layout
 			if (!LevelData.SETItemsIsNull() && viewSETItemsToolStripMenuItem.Checked)
 			{
-				foreach (SETItem item in LevelData.SETItems(LevelData.Character))
+				int id = LevelData.Character;
+				if (isSA2LVL())
+					id = LevelData.SA2Set;
+				foreach (SETItem item in LevelData.SETItems(id))
 				{
 					bool render = false;
 					if (item.ClipSetting == ClipSetting.All)
@@ -198,14 +251,20 @@ namespace SAModel.SALVL
 
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
 			drawqueue.AddRange(RenderInfo.Queue(renderlist_geo, cam));
+			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.LevelDrawDistance);
+			drawqueue.AddRange(RenderInfo.Queue(renderlist_exgeo, cam));
 
 			cam.DrawDistance = Math.Min(EditorOptions.SetItemDrawDistance, EditorOptions.SetItemDrawDistance);
 			drawqueue.AddRange(RenderInfo.Queue(renderlist_set, cam));
+
+			cam.DrawDistance = 70000;
+			drawqueue.AddRange(RenderInfo.Queue(renderlist_spline, cam));
 
 			cam.DrawDistance = Math.Min(EditorOptions.RenderDrawDistance, EditorOptions.RenderDrawDistance);
 			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Level);
 			RenderInfo.Draw(drawqueue, d3ddevice, cam);
 
+			cam.DrawDistance = 100000;
 			d3ddevice.SetRenderState(RenderState.FogEnable, false);
 			EditorOptions.SetLightType(d3ddevice, EditorOptions.SADXLightTypes.Character);
 			RenderInfo.Draw(renderlist_char, d3ddevice, cam);

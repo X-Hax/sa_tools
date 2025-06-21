@@ -144,6 +144,7 @@ namespace SAModel.SALVL
 		string modFolder; // The mod's main folder
 		string modSystemFolder; // The mod's "system" folder, such as SONICADV in SA1 or SYSTEM in SADX
 		string currentLandtableFilename; // Path to the currently loaded .sa?lvl file
+		List<string> currentSecondaryLandtableFilename = [];
 		Dictionary<string, ObjectData> objdefini;
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -316,8 +317,14 @@ namespace SAModel.SALVL
 		public bool isSA2LVL()
 		{
 			if (salvlini == null)
+			{
+				LevelData.isSA2 = false;
 				return false;
-
+			}
+			else
+			{
+				LevelData.isSA2 = salvlini.IsSA2;
+			}
 			return salvlini.IsSA2;
 		}
 
@@ -564,11 +571,6 @@ namespace SAModel.SALVL
 
 		private void characterToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
-			if (isSA2LVL()) //fix crash
-			{
-				return;
-			}
-
 			LevelData.Character = characterToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
 
 			// Character view buttons
@@ -616,11 +618,6 @@ namespace SAModel.SALVL
 
 		private void onClickCharacterButton(object sender, EventArgs e)
 		{
-			if (isSA2LVL()) //fix crash
-			{
-				return;
-			}
-
 			if (sender == toolTails)
 				tailsToolStripMenuItem.PerformClick();
 			else if (sender == toolKnuckles)
@@ -635,11 +632,38 @@ namespace SAModel.SALVL
 				sonicToolStripMenuItem.PerformClick();
 		}
 
+		private void onClickSETLayoutButton(object sender, EventArgs e)
+		{
+			if (sender == toolTwoPlayer)
+				twoPToolStripMenuItem.PerformClick();
+			else if (sender == toolHardMode)
+				hardModeToolStripMenuItem.PerformClick();
+			else
+				normalSETToolStripMenuItem.PerformClick();
+		}
+
+		private void onClickSA2CharacterButton(object sender, EventArgs e)
+		{
+			if (sender == toolTailsSA2)
+				tailsSA2ToolStripMenuItem.PerformClick();
+			else if (sender == toolKnucklesSA2)
+				knucklesSA2ToolStripMenuItem.PerformClick();
+			else if (sender == toolRouge)
+				rougeToolStripMenuItem.PerformClick();
+			else if (sender == toolEggman)
+				eggmanToolStripMenuItem.PerformClick();
+			else if (sender == toolShadow)
+				shadowToolStripMenuItem.PerformClick();
+			else
+				sonicSA2ToolStripMenuItem.PerformClick();
+		}
+
 		// Hide/Show features that only work in SADX.
 		public void Set_SADXOptionsVisible(Boolean flag)
 		{
 			lightsEditorToolStripMenuItem.Visible = flag;
 			fogEditorToolStripMenuItem.Visible = flag;
+			moveToStartButton.Visible = flag;
 
 			//char icon / menu
 			characterToolStripMenuItem.Visible = flag;
@@ -652,6 +676,7 @@ namespace SAModel.SALVL
 
 			toolClearMissionSetItems.Visible = flag;
 			viewMissionSETItemsToolStripMenuItem.Visible = flag;
+			jumpToStartPositionToolStripMenuItem.Visible = flag;
 			missionItemsButton.Visible = flag;
 			missionObjectToolStripMenuItem.Visible = flag;
 			addMissionItemToolStripMenuItem.Visible = flag;
@@ -660,10 +685,65 @@ namespace SAModel.SALVL
 			timeOfDayToolStripMenuItem.Visible = flag;
 		}
 
+		// Hide/Show features that only work in SA2.
+		public void Set_SA2OptionsVisible(Boolean flag)
+		{
+			toolStripSeparator14.Visible = flag;
+			SA2JumpToToolStripMenuItem.Visible = flag;
+			SA2MoveToDropDownButton.Visible = flag;
+			SETLayoutToolStripMenuItem.Visible = flag;
+			toolSonicSA2.Visible = flag;
+			toolShadow.Visible = flag;
+			toolKnucklesSA2.Visible = flag;
+			toolRouge.Visible = flag;
+			toolTailsSA2.Visible = flag;
+			toolEggman.Visible = flag;
+			toolNormalSET.Visible = flag;
+			toolTwoPlayer.Visible = flag;
+			toolHardMode.Visible = flag;
+		}
+
+		public void Set_SA2NormalStartPosOptionsVisible(Boolean flag)
+		{
+			SA2StartPosButton.Visible = flag;
+			SA2StartToolStripMenuItem.Visible = flag;
+			SA2EndPosButton.Visible = flag;
+			SA2EndToolStripMenuItem.Visible = flag;
+			Mission2EndPosButton.Visible = flag;
+			Mission2EndToolStripMenuItem.Visible = flag;
+			Mission3EndPosButton.Visible = flag;
+			Mission3EndToolStripMenuItem.Visible = flag;
+		}
+
+		public void Set_SA2MultiStartPosOptionsVisible(Boolean flag)
+		{
+			MultiStartPos1Button.Visible = flag;
+			MultiStart1ToolStripMenuItem.Visible = flag;
+			MultiStartPos2Button.Visible = flag;
+			MultiStart2ToolStripMenuItem.Visible = flag;
+			MultiIntroPos1Button.Visible = flag;
+			MultiIntro1ToolStripMenuItem.Visible = flag;
+			MultiIntroPos2Button.Visible = flag;
+			MultiIntro2ToolStripMenuItem.Visible = flag;
+			MultiEndPos1Button.Visible = flag;
+			MultiEnd1ToolStripMenuItem.Visible = flag;
+			MultiEndPos2Button.Visible = flag;
+			MultiEnd2ToolStripMenuItem.Visible = flag;
+		}
 
 		private void levelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
 			UncheckMenuItems(levelToolStripMenuItem);
+			((ToolStripMenuItem)e.ClickedItem).Checked = true;
+
+			transformGizmo.Enabled = false;
+
+			NeedRedraw = true;
+		}
+
+		private void extraLevelToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			UncheckMenuItems(extraLevelToolStripMenuItem);
 			((ToolStripMenuItem)e.ClickedItem).Checked = true;
 
 			transformGizmo.Enabled = false;
@@ -1174,6 +1254,7 @@ namespace SAModel.SALVL
 				return;
 
 			LevelData.ClearLevelGeometry();
+			LevelData.ClearEXLevelGeometry();
 			unsaved = true;
 		}
 
@@ -1253,6 +1334,7 @@ namespace SAModel.SALVL
 			LevelData.LevelSplines.Clear();
 			LevelData.ClearLevelGeoAnims();
 			LevelData.ClearLevelGeometry();
+			LevelData.ClearEXLevelGeometry();
 			selectedItems.Clear();
 			unsaved = true;
 		}
@@ -1595,20 +1677,130 @@ namespace SAModel.SALVL
 			LevelData.InvalidateRenderState();
 		}
 
+		private void InitSA2DefaultParams()
+		{
+			IniLevelData level = salvlini.Levels[levelID];
+			toolSonicSA2.Checked = false;
+			toolShadow.Checked = false;
+			toolKnucklesSA2.Checked = false;
+			toolRouge.Checked = false;
+			toolTailsSA2.Checked = false;
+			toolEggman.Checked = false;
+			UncheckMenuItems(startPosToolStripMenuItem);
+			toolHardMode.Checked = false;
+			toolNormalSET.Checked = false;
+			toolTwoPlayer.Checked = false;
+			UncheckMenuItems(SETLayoutToolStripMenuItem);
+			if (isSA2LVL())
+			{
+				int charID;
+				int setID;
+				switch (level.DefaultCharacter)
+				{
+					default:
+					case "Sonic":
+						toolSonicSA2.Checked = true;
+						sonicSA2ToolStripMenuItem.Checked = true;
+						charID = 0;
+						break;
+					case "Shadow":
+						toolShadow.Checked = true;
+						shadowToolStripMenuItem.Checked = true;
+						charID = 1;
+						break;
+					case "Knuckles":
+						toolKnucklesSA2.Checked = true;
+						knucklesSA2ToolStripMenuItem.Checked = true;
+						charID = 2;
+						break;
+					case "Rouge":
+						toolRouge.Checked = true;
+						rougeToolStripMenuItem.Checked = true;
+						charID = 3;
+						break;
+					case "Tails":
+					case "MechTails":
+						toolTailsSA2.Checked = true;
+						tailsSA2ToolStripMenuItem.Checked = true;
+						charID = 4;
+						break;
+					case "Eggman":
+					case "MechEggman":
+						toolEggman.Checked = true;
+						eggmanToolStripMenuItem.Checked = true;
+						charID = 5;
+						break;
+				}
+				switch (level.SA2LevelType)
+				{
+					default:
+					case "Normal":
+						toolNormalSET.Checked = true;
+						normalSETStripMenuItem.Checked = true;
+						Set_SA2NormalStartPosOptionsVisible(true);
+						Set_SA2MultiStartPosOptionsVisible(false);
+						setID = 0;
+						break;
+					case "Multiplayer":
+					case "2P":
+						toolTwoPlayer.Checked = true;
+						twoPToolStripMenuItem.Checked = true;
+						Set_SA2NormalStartPosOptionsVisible(false);
+						Set_SA2MultiStartPosOptionsVisible(true);
+						//Prevents a crash caused by spline data not being found
+						LevelData.LevelSplines = new List<SplineData>();
+						setID = 1;
+						break;
+				}
+				//transformGizmo.Enabled = false;
+				LevelData.SA2Character = charID;
+				LevelData.SA2Set = setID;
+				NeedRedraw = true;
+			}
+		}
+
 		private void JumpToStartPos()
 		{
 			if (IsLevelOnly)
 				return;
-
-			if (LevelData.Character < LevelData.StartPositions.Length)
+			if (isSA2LVL()) // This is used for the initialization process; all other jumps are done in JumpToSA2Pos
 			{
-				cam.Position = new Vector3(LevelData.StartPositions[LevelData.Character].Position.X, LevelData.StartPositions[LevelData.Character].Position.Y + 10, LevelData.StartPositions[LevelData.Character].Position.Z);
-				ushort rot = (ushort)LevelData.StartPositions[LevelData.Character].YRotation;
-				cam.Yaw = (ushort)(-rot - 0x4000);
-				cam.Pitch = 0;
-				DrawLevel();
-				osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
-				LevelData.InvalidateRenderState();
+				if (LevelData.SA2Set == 1)
+				{
+					cam.Position = new Vector3(LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.X, LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.Y + 10, LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.Z);
+					ushort rot = (ushort)LevelData.SA2StartPositions2P1[LevelData.SA2Character].YRotation;
+					cam.Yaw = (ushort)(-rot - 0x4000);
+					cam.Pitch = 0;
+					DrawLevel();
+					osd.UpdateOSDItem("Jumped to P1 start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					LevelData.InvalidateRenderState();
+				}
+				else
+				{
+					if (LevelData.SA2Character < LevelData.StartPositions.Length)
+					{
+						cam.Position = new Vector3(LevelData.StartPositions[LevelData.SA2Character].Position.X, LevelData.StartPositions[LevelData.SA2Character].Position.Y + 10, LevelData.StartPositions[LevelData.SA2Character].Position.Z);
+						ushort rot = (ushort)LevelData.StartPositions[LevelData.SA2Character].YRotation;
+						cam.Yaw = (ushort)(-rot - 0x4000);
+						cam.Pitch = 0;
+						DrawLevel();
+						osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+						LevelData.InvalidateRenderState();
+					}
+				}
+			}
+			else
+			{
+				if (LevelData.Character < LevelData.StartPositions.Length)
+				{
+					cam.Position = new Vector3(LevelData.StartPositions[LevelData.Character].Position.X, LevelData.StartPositions[LevelData.Character].Position.Y + 10, LevelData.StartPositions[LevelData.Character].Position.Z);
+					ushort rot = (ushort)LevelData.StartPositions[LevelData.Character].YRotation;
+					cam.Yaw = (ushort)(-rot - 0x4000);
+					cam.Pitch = 0;
+					DrawLevel();
+					osd.UpdateOSDItem("Jumped to start position", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+					LevelData.InvalidateRenderState();
+				}
 			}
 		}
 
@@ -1852,46 +2044,54 @@ namespace SAModel.SALVL
 
 		private void advancedSavelevelToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			string filter;
-			string defext;
-			switch (LevelData.geo.Format)
+			if (isSA2LVL())
 			{
-				case LandTableFormat.SA2:
-					defext = "sa2lvl";
-					filter = "SA2 Level Files|*.sa2lvl";
-					break;
-				case LandTableFormat.SA2B:
-					defext = "sa2blvl";
-					filter = "SA2B Level Files|*.sa2blvl";
-					break;
-				case LandTableFormat.SA1:
-				case LandTableFormat.SADX:
-				default:
-					defext = "sa1lvl";
-					filter = "SA1/SADX Level Files| *.sa1lvl";
-					break;
+				bool extralevelpieces = LevelData.secondgeos.Count > 0;
+				SaveSA2LandTables(extralevelpieces);
 			}
-			using (SaveFileDialog a = new SaveFileDialog
+			else
 			{
-				DefaultExt = defext,
-				Filter = filter,
-			})
-			{
-				if (a.ShowDialog() == DialogResult.OK)
+				string filter;
+				string defext;
+				switch (LevelData.geo.Format)
 				{
-					LevelData.geo.SaveToFile(a.FileName, LevelData.geo.Format);
+					case LandTableFormat.SA2:
+						defext = "sa2lvl";
+						filter = "SA2 Level Files|*.sa2lvl";
+						break;
+					case LandTableFormat.SA2B:
+						defext = "sa2blvl";
+						filter = "SA2B Level Files|*.sa2blvl";
+						break;
+					case LandTableFormat.SA1:
+					case LandTableFormat.SADX:
+					default:
+						defext = "sa1lvl";
+						filter = "SA1/SADX Level Files| *.sa1lvl";
+						break;
+				}
+				using (SaveFileDialog a = new SaveFileDialog
+				{
+					DefaultExt = defext,
+					Filter = filter,
+				})
+				{
+					if (a.ShowDialog() == DialogResult.OK)
+					{
+						LevelData.geo.SaveToFile(a.FileName, LevelData.geo.Format);
+					}
 				}
 			}
 		}
 
 		private void advancedSaveSETFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveSETFile(false);
+			SaveSETFile(false, isSA2LVL());
 		}
 
 		private void advancedSaveSETFileBigEndianToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveSETFile(true);
+			SaveSETFile(true, isSA2LVL());
 		}
 
 		private void cAMFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1934,7 +2134,7 @@ namespace SAModel.SALVL
 		{
 			ShowLevelSelect();
 		}
-		
+
 		private void loadLandtableToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
 			using (OpenFileDialog fileDialog = new OpenFileDialog()
@@ -1953,10 +2153,12 @@ namespace SAModel.SALVL
 					if (ext == ".sa2lvl" || ext == ".sa2blvl")
 					{
 						Set_SADXOptionsVisible(false);
+						Set_SA2OptionsVisible(true);
 					}
 					else
 					{
 						Set_SADXOptionsVisible(true);
+						Set_SA2OptionsVisible(false);
 					}
 
 					IsLevelOnly = true;
@@ -2051,16 +2253,28 @@ namespace SAModel.SALVL
 			})
 			{
 				DialogResult result = fileDialog.ShowDialog();
+				int length = 0;
+				int id = 0;
 				if (result == DialogResult.OK)
 				{
 					if (LevelData.SETItemsIsNull()) LevelData.InitSETItems();
 					LevelData.SETName = Path.GetFileNameWithoutExtension(fileDialog.FileName);
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					if (isSA2LVL())
+					{
+						length = LevelData.SA2SetTypes.Length;
+						id = LevelData.SA2Set;
+					}
+					else
+					{
+						length = LevelData.SETChars.Length;
+						id = LevelData.Character;
+					}
+					for (int i = 0; i < length; i++)
 					{
 						if (LevelData.SETItems(i) == null)
 							LevelData.AssignSetList(i, new List<SETItem>());
 					}
-					LevelData.AssignSetList(LevelData.Character, SETItem.Load(fileDialog.FileName, selectedItems));
+					LevelData.AssignSetList(id, SETItem.Load(fileDialog.FileName, selectedItems));
 					bool isSETPreset = !LevelData.SETItemsIsNull();
 					objectToolStripMenuItem.Enabled = isSETPreset;
 					editSETItemsToolStripMenuItem.Enabled = advancedSaveSETFileBigEndianToolStripMenuItem.Enabled = advancedSaveSETFileToolStripMenuItem.Enabled = unloadSETFileToolStripMenuItem.Enabled = addSETItemToolStripMenuItem.Enabled = LevelData.SETItemsIsNull() != true;
@@ -2448,10 +2662,226 @@ namespace SAModel.SALVL
 			ImportLevelAnimation();
 		}
 
+		private void SETLayoutToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			//if (!isSA2LVL()) //fix crash
+			//{
+			//	return;
+			//}
+
+			LevelData.SA2Set = SETLayoutToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
+
+			// SET view buttons
+			toolHardMode.Checked = false;
+			toolNormalSET.Checked = false;
+			toolTwoPlayer.Checked = false;
+			UncheckMenuItems(SETLayoutToolStripMenuItem);
+			((ToolStripMenuItem)e.ClickedItem).Checked = true;
+
+			switch (LevelData.SA2Set)
+			{
+				default:
+					toolNormalSET.Checked = true;
+					Set_SA2NormalStartPosOptionsVisible(true);
+					Set_SA2MultiStartPosOptionsVisible(false);
+					break;
+				case 1:
+					toolTwoPlayer.Checked = true;
+					Set_SA2NormalStartPosOptionsVisible(false);
+					Set_SA2MultiStartPosOptionsVisible(true);
+					break;
+				case 2:
+					toolHardMode.Checked = true;
+					Set_SA2NormalStartPosOptionsVisible(true);
+					Set_SA2MultiStartPosOptionsVisible(false);
+					break;
+			}
+
+			transformGizmo.Enabled = false;
+
+			NeedRedraw = true;
+		}
+		private void startPosToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			//if (!isSA2LVL()) //fix crash
+			//{
+			//	return;
+			//}
+
+			LevelData.SA2Character = startPosToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
+
+			// Start/End Position view buttons
+			toolSonicSA2.Checked = false;
+			toolShadow.Checked = false;
+			toolKnucklesSA2.Checked = false;
+			toolRouge.Checked = false;
+			toolTailsSA2.Checked = false;
+			toolEggman.Checked = false;
+			UncheckMenuItems(startPosToolStripMenuItem);
+			((ToolStripMenuItem)e.ClickedItem).Checked = true;
+
+			switch (LevelData.SA2Character)
+			{
+				default:
+					toolSonicSA2.Checked = true;
+					break;
+				case 1:
+					toolShadow.Checked = true;
+					break;
+				case 2:
+					toolKnucklesSA2.Checked = true;
+					break;
+				case 3:
+					toolRouge.Checked = true;
+					break;
+				case 4:
+					toolTailsSA2.Checked = true;
+					break;
+				case 5:
+					toolEggman.Checked = true;
+					break;
+			}
+
+			transformGizmo.Enabled = false;
+
+			NeedRedraw = true;
+		}
+		private void SA2JumpToToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			int posID = SA2JumpToToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem);
+			ushort rot;
+			string posLocation = "";
+
+			switch (posID)
+			{
+				default:
+				case 0:
+					posLocation = "start position";
+					cam.Position = new Vector3(LevelData.StartPositions[LevelData.SA2Character].Position.X, LevelData.StartPositions[LevelData.SA2Character].Position.Y + 10, LevelData.StartPositions[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.StartPositions[LevelData.SA2Character].YRotation;
+					break;
+				case 1:
+					posLocation = "end position";
+					cam.Position = new Vector3(LevelData.EndPositions[LevelData.SA2Character].Position.X, LevelData.EndPositions[LevelData.SA2Character].Position.Y + 10, LevelData.EndPositions[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.EndPositions[LevelData.SA2Character].YRotation;
+					break;
+				case 2:
+					posLocation = "Mission 2 end position";
+					cam.Position = new Vector3(LevelData.AltEndPositionsA[LevelData.SA2Character].Position.X, LevelData.AltEndPositionsA[LevelData.SA2Character].Position.Y + 10, LevelData.AltEndPositionsA[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.AltEndPositionsA[LevelData.SA2Character].YRotation;
+					break;
+				case 3:
+					posLocation = "Mission 3 end position";
+					cam.Position = new Vector3(LevelData.AltEndPositionsB[LevelData.SA2Character].Position.X, LevelData.AltEndPositionsB[LevelData.SA2Character].Position.Y + 10, LevelData.AltEndPositionsB[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.AltEndPositionsB[LevelData.SA2Character].YRotation;
+					break;
+				case 4:
+					posLocation = "2P intro position for Player 1";
+					cam.Position = new Vector3(LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Position.X, LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Position.Y + 10, LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].YRotation;
+					break;
+				case 5:
+					posLocation = "2P intro position for Player 2";
+					cam.Position = new Vector3(LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Position.X, LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Position.Y + 10, LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].YRotation;
+					break;
+				case 6:
+					posLocation = "2P start position for Player 1";
+					cam.Position = new Vector3(LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.X, LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.Y + 10, LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.SA2StartPositions2P1[LevelData.SA2Character].YRotation;
+					break;
+				case 7:
+					posLocation = "2P start position for Player 2";
+					cam.Position = new Vector3(LevelData.SA2StartPositions2P2[LevelData.SA2Character].Position.X, LevelData.SA2StartPositions2P2[LevelData.SA2Character].Position.Y + 10, LevelData.SA2StartPositions2P2[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.SA2StartPositions2P2[LevelData.SA2Character].YRotation;
+					break;
+				case 8:
+					posLocation = "2P end position for Player 1";
+					cam.Position = new Vector3(LevelData.EndPositions2P1[LevelData.SA2Character].Position.X, LevelData.EndPositions2P1[LevelData.SA2Character].Position.Y + 10, LevelData.EndPositions2P1[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.EndPositions2P1[LevelData.SA2Character].YRotation;
+					break;
+				case 9:
+					posLocation = "2P end position for Player 2";
+					cam.Position = new Vector3(LevelData.EndPositions2P2[LevelData.SA2Character].Position.X, LevelData.EndPositions2P2[LevelData.SA2Character].Position.Y + 10, LevelData.EndPositions2P2[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.EndPositions2P2[LevelData.SA2Character].YRotation;
+					break;
+			}
+			cam.Yaw = (ushort)(-rot - 0x4000);
+			cam.Pitch = 0;
+			DrawLevel();
+			osd.UpdateOSDItem($"Jumped to {posLocation}", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			LevelData.InvalidateRenderState();
+		}
+		private void SA2MoveToDropDownButton_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			int posID = SA2MoveToDropDownButton.DropDownItems.IndexOf(e.ClickedItem);
+			ushort rot;
+			string posLocation = "";
+
+			switch (posID)
+			{
+				default:
+				case 0:
+					posLocation = "start position";
+					cam.Position = new Vector3(LevelData.StartPositions[LevelData.SA2Character].Position.X, LevelData.StartPositions[LevelData.SA2Character].Position.Y + 10, LevelData.StartPositions[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.StartPositions[LevelData.SA2Character].YRotation;
+					break;
+				case 1:
+					posLocation = "end position";
+					cam.Position = new Vector3(LevelData.EndPositions[LevelData.SA2Character].Position.X, LevelData.EndPositions[LevelData.SA2Character].Position.Y + 10, LevelData.EndPositions[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.EndPositions[LevelData.SA2Character].YRotation;
+					break;
+				case 2:
+					posLocation = "Mission 2 end position";
+					cam.Position = new Vector3(LevelData.AltEndPositionsA[LevelData.SA2Character].Position.X, LevelData.AltEndPositionsA[LevelData.SA2Character].Position.Y + 10, LevelData.AltEndPositionsA[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.AltEndPositionsA[LevelData.SA2Character].YRotation;
+					break;
+				case 3:
+					posLocation = "Mission 3 end position";
+					cam.Position = new Vector3(LevelData.AltEndPositionsB[LevelData.SA2Character].Position.X, LevelData.AltEndPositionsB[LevelData.SA2Character].Position.Y + 10, LevelData.AltEndPositionsB[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.AltEndPositionsB[LevelData.SA2Character].YRotation;
+					break;
+				case 4:
+					posLocation = "2P intro position for Player 1";
+					cam.Position = new Vector3(LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Position.X, LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Position.Y + 10, LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].YRotation;
+					break;
+				case 5:
+					posLocation = "2P intro position for Player 2";
+					cam.Position = new Vector3(LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Position.X, LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Position.Y + 10, LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].YRotation;
+					break;
+				case 6:
+					posLocation = "2P start position for Player 1";
+					cam.Position = new Vector3(LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.X, LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.Y + 10, LevelData.SA2StartPositions2P1[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.SA2StartPositions2P1[LevelData.SA2Character].YRotation;
+					break;
+				case 7:
+					posLocation = "2P start position for Player 2";
+					cam.Position = new Vector3(LevelData.SA2StartPositions2P2[LevelData.SA2Character].Position.X, LevelData.SA2StartPositions2P2[LevelData.SA2Character].Position.Y + 10, LevelData.SA2StartPositions2P2[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.SA2StartPositions2P2[LevelData.SA2Character].YRotation;
+					break;
+				case 8:
+					posLocation = "2P end position for Player 1";
+					cam.Position = new Vector3(LevelData.EndPositions2P1[LevelData.SA2Character].Position.X, LevelData.EndPositions2P1[LevelData.SA2Character].Position.Y + 10, LevelData.EndPositions2P1[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.EndPositions2P1[LevelData.SA2Character].YRotation;
+					break;
+				case 9:
+					posLocation = "2P end position for Player 2";
+					cam.Position = new Vector3(LevelData.EndPositions2P2[LevelData.SA2Character].Position.X, LevelData.EndPositions2P2[LevelData.SA2Character].Position.Y + 10, LevelData.EndPositions2P2[LevelData.SA2Character].Position.Z);
+					rot = (ushort)LevelData.EndPositions2P2[LevelData.SA2Character].YRotation;
+					break;
+			}
+			cam.Yaw = (ushort)(-rot - 0x4000);
+			cam.Pitch = 0;
+			DrawLevel();
+			osd.UpdateOSDItem($"Jumped to {posLocation}", RenderPanel.Width, 32, Color.AliceBlue.ToRawColorBGRA(), "camera", 120);
+			LevelData.InvalidateRenderState();
+		}
 		private void exportOnlyNonCollideableToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			exportVisibleGeometry.Checked = exportVisibleGeometry.Checked;
-			if(exportVisibleGeometry.Checked == true)
+			if (exportVisibleGeometry.Checked == true)
 			{
 				exportCollisionGeometry.Checked = false;
 			}

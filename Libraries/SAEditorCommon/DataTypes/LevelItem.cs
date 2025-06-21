@@ -9,6 +9,9 @@ using SAModel.Direct3D;
 using SAModel.Direct3D.TextureSystem;
 using SAModel.SAEditorCommon.UI;
 using Mesh = SAModel.Direct3D.Mesh;
+using System.IO;
+using SplitTools;
+using SAModel.SAEditorCommon.SETEditing;
 
 namespace SAModel.SAEditorCommon.DataTypes
 {
@@ -22,6 +25,14 @@ namespace SAModel.SAEditorCommon.DataTypes
 		private Mesh mesh;
 		[Browsable(false)]
 		public Mesh Mesh { get { return mesh; } set { mesh = value; } }
+		[Browsable(false)]
+		private NJS_TEXLIST LevelTexlist;
+		private Texture[] LevelTextures;
+		private Texture[] SecondaryLevelTextures;
+		[Browsable(false)]
+		private bool IsSecondary;
+		[Browsable(false)]
+		private List<string> SecondaryTexPacks = [];
 
 		private int index = 0;
 
@@ -32,9 +43,10 @@ namespace SAModel.SAEditorCommon.DataTypes
 		/// <param name="filePath">location of the file to use.</param>
 		/// <param name="position">Position to place the resulting model (worldspace).</param>
 		/// <param name="rotation">Rotation to apply to the model.</param>
-		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool legacyImport = false)
+		public LevelItem(string filePath, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, bool legacyImport = false, string leveltexlist = null)
 			: base(selectionManager)
 		{
+			string nopathfname = Path.GetFileName(filePath);
 			this.index = index;
 			COL = new COL
 			{
@@ -46,6 +58,11 @@ namespace SAModel.SAEditorCommon.DataTypes
 			};
 			ImportModel(filePath, legacyImport);
 			COL.CalculateBounds();
+			LevelFileName = nopathfname;
+			if (leveltexlist != null)
+				LevelTexlist = NJS_TEXLIST.Load(leveltexlist);
+			else
+				LevelTexlist = null;
 			Paste();
 
 			GetHandleMatrix();
@@ -56,13 +73,20 @@ namespace SAModel.SAEditorCommon.DataTypes
 		/// </summary>
 		/// <param name="col"></param>
 		/// <param name="dev">Current Direct3d Device.</param>
-		public LevelItem(COL col, int index, EditorItemSelection selectionManager)
+		public LevelItem(COL col, int index, EditorItemSelection selectionManager, string filePath = null, string leveltexlist = null, List<string> secondtexs = null, bool secondary = false)
 			: base(selectionManager)
 		{
 			this.index = index;
 			COL = col;
 			col.Model.ProcessVertexData();
 			Mesh = col.Model.Attach.CreateD3DMesh();
+			LevelFileName = Path.GetFileName(filePath);
+			if (leveltexlist != null)
+				LevelTexlist = NJS_TEXLIST.Load(leveltexlist);
+			else
+				LevelTexlist = null;
+			IsSecondary = secondary;
+			SecondaryTexPacks = secondtexs;
 
 			GetHandleMatrix();
 		}
@@ -73,7 +97,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		/// <param name="attach">Attach to use for this levelItem</param>
 		/// <param name="position">Position in worldspace to place this LevelItem.</param>
 		/// <param name="rotation">Rotation.</param>
-		public LevelItem(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager)
+		public LevelItem(Attach attach, Vertex position, Rotation rotation, int index, EditorItemSelection selectionManager, string filename = null, bool secondary = false)
 			: base(selectionManager)
 		{
 			this.index = index;
@@ -92,6 +116,9 @@ namespace SAModel.SAEditorCommon.DataTypes
 			Mesh = COL.Model.Attach.CreateD3DMesh();
 			Paste();
 		}
+
+		[Category("Common"), DisplayName("File Source"), ParenthesizePropertyName(true)]
+		public string LevelFileName { get; set; }
 
 		[Category("Common")]
 		[Description("The label of the NJS_OBJECT of the current item.")]
@@ -140,10 +167,35 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public override List<RenderInfo> Render(Device dev, EditorCamera camera, MatrixStack transform)
 		{
 			if (!camera.SphereInFrustum(COL.Bounds)) return EmptyRenderInfo;
-
-			List<RenderInfo> result = new List<RenderInfo>();
-			if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0 && LevelData.Textures.ContainsKey(LevelData.leveltexs) && !EditorOptions.DisableTextures)
-				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+			if (LevelTextures == null && !string.IsNullOrEmpty(LevelData.leveltexs))
+				LevelTextures = ObjectHelper.GetTextures(LevelData.leveltexs, LevelTexlist, dev);
+			if (IsSecondary && SecondaryLevelTextures == null && SecondaryTexPacks != null)
+			{ 
+				SecondaryLevelTextures = ObjectHelper.GetTexturesMultiSource(SecondaryTexPacks, LevelTexlist, dev);
+			}
+				List<RenderInfo> result = new List<RenderInfo>();
+			if (IsSecondary && SecondaryTexPacks != null)
+			{
+				if (SecondaryLevelTextures != null)
+				{
+					result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, SecondaryLevelTextures, Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
+				else
+				{
+					result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
+			}
+			else if (!string.IsNullOrEmpty(LevelData.leveltexs) && LevelData.Textures.Count > 0 && LevelData.Textures.ContainsKey(LevelData.leveltexs) && !EditorOptions.DisableTextures)
+			{
+				if (LevelTexlist != null)
+				{
+					result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelTextures, Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
+				else
+				{
+					result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, LevelData.Textures[LevelData.leveltexs], Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
+				}
+			}
 			else
 				result.AddRange(COL.Model.DrawModel(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, null, Mesh, Visible, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (Selected)
@@ -237,14 +289,43 @@ namespace SAModel.SAEditorCommon.DataTypes
 		[DisplayName("Edit Model")]
 		public void EditModel()
 		{
-			ModelDataEditor me = new ModelDataEditor(COL.Model);
-			if (me.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			BMPInfo[] textures;
+			if (LevelData.leveltexs == null || LevelData.TextureBitmaps.Count == 0) textures = null; else textures = LevelData.TextureBitmaps[LevelData.leveltexs];
+			switch (COL.Model.Attach)
 			{
-				COL.Model = me.editedHierarchy.Clone();
-				COL.Model.ProcessVertexData();
-				mesh = COL.Model.Attach.CreateD3DMesh();
-				COL.Model.Attach.CalculateBounds();
-				LevelData.InvalidateRenderState();
+				case BasicAttach:
+				ModelDataEditor me = new ModelDataEditor(COL.Model);
+				if (me.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
+					COL.Model = me.editedHierarchy.Clone();
+					COL.Model.ProcessVertexData();
+					mesh = COL.Model.Attach.CreateD3DMesh();
+					COL.Model.Attach.CalculateBounds();
+					LevelData.InvalidateRenderState();
+				}
+				break;
+				case ChunkAttach:
+					ChunkModelDataEditor ce = new ChunkModelDataEditor(COL.Model, textures);
+					if (ce.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					{
+						COL.Model = ce.editedHierarchy.Clone();
+						COL.Model.ProcessVertexData();
+						mesh = COL.Model.Attach.CreateD3DMesh();
+						COL.Model.Attach.CalculateBounds();
+						LevelData.InvalidateRenderState();
+					}
+					break;
+				case GC.GCAttach:
+					GCModelDataEditor ge = new GCModelDataEditor(COL.Model, textures);
+					if (ge.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+					{
+						COL.Model = ge.editedHierarchy.Clone();
+						COL.Model.ProcessVertexData();
+						mesh = COL.Model.Attach.CreateD3DMesh();
+						COL.Model.Attach.CalculateBounds();
+						LevelData.InvalidateRenderState();
+					}
+					break;
 			}
 		}
 
@@ -532,6 +613,159 @@ namespace SAModel.SAEditorCommon.DataTypes
 			set { COL.SurfaceFlags = (COL.SurfaceFlags & ~SA1SurfaceFlags.Accelerate) | (value ? SA1SurfaceFlags.Accelerate : 0); }
 		}
 
+		#endregion
+
+		#region SA2 Surface Flag Accessors
+		[Category("SA2 Flags"), DisplayName("Solid")]
+		public bool SA2Solid
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Solid) == SA2SurfaceFlags.Solid; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Solid) | (value ? SA2SurfaceFlags.Solid : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Water")]
+		public bool SA2Water
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Water) == SA2SurfaceFlags.Water; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Water) | (value ? SA2SurfaceFlags.Water : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Low Friction")]
+		public bool SA2LowFric
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.LowFriction) == SA2SurfaceFlags.LowFriction; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.LowFriction) | (value ? SA2SurfaceFlags.LowFriction : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("High Friction")]
+		public bool SA2HiFric
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.HighFriction) == SA2SurfaceFlags.HighFriction; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.HighFriction) | (value ? SA2SurfaceFlags.HighFriction : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Medium Friction")]
+		public bool SA2MediumFric
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.MediumFriction) == SA2SurfaceFlags.MediumFriction; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.MediumFriction) | (value ? SA2SurfaceFlags.MediumFriction : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Diggable")]
+		public bool SA2Diggable
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Diggable) == SA2SurfaceFlags.Diggable; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Diggable) | (value ? SA2SurfaceFlags.Diggable : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Unclimbable")]
+		public bool SA2Unclimbable
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Unclimbable) == SA2SurfaceFlags.Unclimbable; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Unclimbable) | (value ? SA2SurfaceFlags.Unclimbable : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Stairs")]
+		public bool SA2Stairs
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Stairs) == SA2SurfaceFlags.Stairs; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Stairs) | (value ? SA2SurfaceFlags.Stairs : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Hurt")]
+		public bool SA2Hurt
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Hurt) == SA2SurfaceFlags.Hurt; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Hurt) | (value ? SA2SurfaceFlags.Hurt : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Footsteps"), Description("This flag draws footstep textures on surfaces in levels that utilize the feature.")]
+		public bool SA2Footsteps
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Footsteps) == SA2SurfaceFlags.Footsteps; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Footsteps) | (value ? SA2SurfaceFlags.Footsteps : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Cannot Land")]
+		public bool SA2CannotLand
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.CannotLand) == SA2SurfaceFlags.CannotLand; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.CannotLand) | (value ? SA2SurfaceFlags.CannotLand : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Slow Water"), Description("Any surface with this flag greatly reduces player speed if it's underwater.")]
+		public bool SA2WaterSlow
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.WaterSlowMove) == SA2SurfaceFlags.WaterSlowMove; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.WaterSlowMove) | (value ? SA2SurfaceFlags.WaterSlowMove : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("No Shadows"), Description("Drop shadows will not render over surfaces with this flag.")]
+		public bool SA2NoShadows
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoShadows) == SA2SurfaceFlags.NoShadows; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoShadows) | (value ? SA2SurfaceFlags.NoShadows : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("High Speed")]
+		public bool SA2HighSpeed
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.IncreaseSpeed) == SA2SurfaceFlags.IncreaseSpeed; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.IncreaseSpeed) | (value ? SA2SurfaceFlags.IncreaseSpeed : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("High Acceleration")]
+		public bool SA2HighAccel
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.IncreaseAccel) == SA2SurfaceFlags.IncreaseAccel; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.IncreaseAccel) | (value ? SA2SurfaceFlags.IncreaseAccel : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("No Fog/High Gravity"), Description("Visible surfaces with this flag will not have fog data applied to them. Collision surfaces will increase player gravity.")]
+		public bool SA2NoFogHighGrav
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoFogHighGravity) == SA2SurfaceFlags.NoFogHighGravity; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoFogHighGravity) | (value ? SA2SurfaceFlags.NoFogHighGravity : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Use Max Clip Distance"), Description("Surfaces with this flag will ignore the LandTable's Far Clipping setting and use the value stored in nj_clip instead.")]
+		public bool SA2MaxClip
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.MaxClip) == SA2SurfaceFlags.MaxClip; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.MaxClip) | (value ? SA2SurfaceFlags.MaxClip : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Simple Draw"), Description("Surfaces with this flag will use the Simple draw method. Setting this to False will set the surface to use the Easy draw method instead.")]
+		public bool SA2SimpleDraw
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.SimpleDraw) == SA2SurfaceFlags.SimpleDraw; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.SimpleDraw) | (value ? SA2SurfaceFlags.SimpleDraw : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Direct Draw"), Description("Surfaces with this flag will use the Direct draw method.")]
+		public bool SA2DirectDraw
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.DirectDraw) == SA2SurfaceFlags.DirectDraw; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.DirectDraw) | (value ? SA2SurfaceFlags.DirectDraw : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Do Not Compile"), Description("Surfaces with this flag will not compile model data, allowing for edits like UV manipulations to be applied.")]
+		public bool SA2NoCompile
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoCompile) == SA2SurfaceFlags.NoCompile; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoCompile) | (value ? SA2SurfaceFlags.NoCompile : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Dynamic Collision"), Description("Collision surfaces with this flag are capable of moving around.")]
+		public bool SA2DynamicCollision
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.DynamicCollision) == SA2SurfaceFlags.DynamicCollision; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.DynamicCollision) | (value ? SA2SurfaceFlags.DynamicCollision : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("No Rotation Collision"), Description("Collision surfaces with this flag will ignore rotations.")]
+		public bool SA2NoRotateCollision
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.NoRotateCollision) == SA2SurfaceFlags.NoRotateCollision; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.NoRotateCollision) | (value ? SA2SurfaceFlags.NoRotateCollision : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Small Collision Radius"), Description("Collision surfaces with this flag will have a reduced radius. Enabling this flag and Tiny Collision Radius will shrink the radius even more.")]
+		public bool SA2SmallCollision
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.SmallCollisionRad) == SA2SurfaceFlags.SmallCollisionRad; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.SmallCollisionRad) | (value ? SA2SurfaceFlags.SmallCollisionRad : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Tiny Collision Radius"), Description("Collision surfaces with this flag will have a reduced radius. Enabling this flag and Small Collision Radius will shrink the radius even more.")]
+		public bool SA2TinyCollision
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.TinyCollisionRad) == SA2SurfaceFlags.TinyCollisionRad; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.TinyCollisionRad) | (value ? SA2SurfaceFlags.TinyCollisionRad : 0); }
+		}
+		[Category("SA2 Flags"), DisplayName("Visible")]
+		public bool SA2Visible
+		{
+			get { return (COL.SA2SurfaceFlags & SA2SurfaceFlags.Visible) == SA2SurfaceFlags.Visible; }
+			set { COL.SA2SurfaceFlags = (COL.SA2SurfaceFlags & ~SA2SurfaceFlags.Visible) | (value ? SA2SurfaceFlags.Visible : 0); }
+		}
 		#endregion
 
 		public void Save() { COL.CalculateBounds(); }

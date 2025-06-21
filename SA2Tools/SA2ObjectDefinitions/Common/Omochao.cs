@@ -87,6 +87,13 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.Z = -z;
 		}
 
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Message ID", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v > 0 ? (float)v : 999.0f),
+			new PropertySpec("Mode", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 999.0f)
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
+
 		public override string Name { get { return "Omochao"; } }
 
 		public override float DefaultXScale { get { return 0; } }

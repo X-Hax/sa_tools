@@ -68,7 +68,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			GetHandleMatrix();
 		}
 
-		public DeathZoneItem(NJS_OBJECT model, SA2CharacterFlags flags, EditorItemSelection selectionManager)
+		public DeathZoneItem(NJS_OBJECT model, SA2DeathFlags flags, EditorItemSelection selectionManager)
 	: base(selectionManager)
 		{
 			Model = model;
@@ -80,7 +80,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 				attach.Material[0].Flags = 0x96102400;
 			}
 			model.ProcessVertexData();
-			SA2Flags = flags;
+			SA2DeathFlags = flags;
 			IsSA2DeathZone = true;
 
 			Mesh = Model.Attach.CreateD3DMesh();
@@ -219,7 +219,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		}
 		[Category("Common"), Description("All characters flags in one field.")]
 		public SA1CharacterFlags Flags { get; set; }
-		public SA2CharacterFlags SA2Flags { get; set; }
+		public SA2DeathFlags SA2DeathFlags { get; set; }
 
 		[Browsable(false)]
 		public bool Visible

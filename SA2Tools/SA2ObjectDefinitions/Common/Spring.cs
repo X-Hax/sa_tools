@@ -142,11 +142,26 @@ namespace SA2ObjectDefinitions.Common
 	
 	public class MstSpring : Spring
 	{
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Disable Timer", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+			new PropertySpec("Switch ID", typeof(float), "Extended", null, null, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v)
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Ground Spring (Mystic Melody)"; } }
+
 	}
 	
 	public class MstSpringB : SpringB
 	{
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Disable Timer", typeof(float), "Extended", null, null, (o) => o.Scale.X, (o, v) => o.Scale.X = (float)v),
+			new PropertySpec("Speed", typeof(float), "Extended", null, null, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v),
+			new PropertySpec("Switch ID", typeof(float), "Extended", null, null, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v)
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 		public override string Name { get { return "Air Spring (Mystic Melody)"; } }
 	}
 	

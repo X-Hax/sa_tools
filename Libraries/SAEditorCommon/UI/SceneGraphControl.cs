@@ -11,6 +11,7 @@ namespace SAModel.SAEditorCommon.UI
 		EditorItemSelection selection;
 
 		TreeNode levelItemNode;
+		TreeNode exLevelItemNode;
 		TreeNode levelAnimNode;
 		TreeNode deathZoneNode;
 		TreeNode setNode;
@@ -63,7 +64,7 @@ namespace SAModel.SAEditorCommon.UI
 				// figure out which kind of node we are by looking at the immediate parent.
 				Item _item = GetItemForNode(selectedNode);
 				if (selectedNode == sceneTreeView.TopNode) continue;
-				if (selectedNode == levelItemNode || selectedNode == levelAnimNode || selectedNode == deathZoneNode ||
+				if (selectedNode == levelItemNode || selectedNode == exLevelItemNode || selectedNode == levelAnimNode || selectedNode == deathZoneNode ||
 					selectedNode == setNode || selectedNode == camNode ||
 					selectedNode == missionSETNode || selectedNode == splineNode) continue;
 
@@ -81,6 +82,10 @@ namespace SAModel.SAEditorCommon.UI
 			if (parent == levelItemNode)
 			{
 				return LevelData.GetLevelitemAtIndex(node.Index);
+			}
+			else if (parent == exLevelItemNode)
+			{
+				return LevelData.GetEXLevelitemAtIndex(node.Index);
 			}
 			else if (parent == levelAnimNode)
 			{
@@ -122,11 +127,16 @@ namespace SAModel.SAEditorCommon.UI
 				if (item is LevelItem)
 				{
 					LevelItem levelItem = (LevelItem)item;
-
 					// find the index of the level item
 					int index = LevelData.GetIndexOfItem(levelItem);
-
-					selectedNodes.Add(levelItemNode.Nodes[index]);
+					int indexex = 0;
+					if (index >= 0)
+						selectedNodes.Add(levelItemNode.Nodes[index]);
+					else
+					{
+						indexex = LevelData.GetIndexOfEXItem(levelItem);
+						selectedNodes.Add(exLevelItemNode.Nodes[indexex]);
+					}
 				}
 				else if (item is LevelAnim)
 				{
@@ -156,8 +166,13 @@ namespace SAModel.SAEditorCommon.UI
 				else if (item is SETItem)
 				{
 					SETItem setItem = (SETItem)item;
-
-					int index = LevelData.GetIndexOfSETItem(LevelData.Character, setItem);//LevelData.SETItems[LevelData.Character].IndexOf(setItem);
+					int index;
+					if (LevelData.isSA2)
+					{
+						index = LevelData.GetIndexOfSETItem(LevelData.SA2Set, setItem);//LevelData.SETItems[LevelData.Character].IndexOf(setItem);
+					}
+					else
+						index = LevelData.GetIndexOfSETItem(LevelData.Character, setItem);//LevelData.SETItems[LevelData.Character].IndexOf(setItem);
 
 					selectedNodes.Add(setNode.Nodes[index]);
 				}
@@ -189,6 +204,7 @@ namespace SAModel.SAEditorCommon.UI
 				// go through the level data and add all the things
 				sceneTreeView.BeginUpdate();
 				levelItemNode = sceneTreeView.Nodes.Add("Level Objects");
+				exLevelItemNode = sceneTreeView.Nodes.Add("Extra Level Objects");
 				levelAnimNode = sceneTreeView.Nodes.Add("Level Animations");
 				deathZoneNode = sceneTreeView.Nodes.Add("Death Zones");
 				setNode = sceneTreeView.Nodes.Add("SET Items");
@@ -197,15 +213,23 @@ namespace SAModel.SAEditorCommon.UI
 				missionSETNode = sceneTreeView.Nodes.Add("MI SET Items");
 				sceneTreeView.EndUpdate();
 
-				// subscrube to our level data changed event
+				// subscribe to our level data changed event
 				LevelData.StateChanged += LevelData_StateChanged;
 
 				// subscribe to our character changed event
 				LevelData.CharacterChanged += LevelData_CharacterChanged;
+
+				// subscribe to our SA2 SET type changed event
+				LevelData.SetTypeChanged += LevelData_SetTypeChanged;
 			}
 		}
 
 		private void LevelData_CharacterChanged()
+		{
+			LoadFullTree();
+		}
+
+		private void LevelData_SetTypeChanged()
 		{
 			LoadFullTree();
 		}
@@ -220,6 +244,7 @@ namespace SAModel.SAEditorCommon.UI
 			sceneTreeView.BeginUpdate();
 
 			levelItemNode.Nodes.Clear();
+			exLevelItemNode.Nodes.Clear();
 			levelAnimNode.Nodes.Clear();
 			deathZoneNode.Nodes.Clear();
 			setNode.Nodes.Clear();
@@ -232,7 +257,10 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				levelItemNode.Nodes.Add(levelItem.Name);
 			}
-
+			foreach (LevelItem levelItem in LevelData.EXLevelItems)
+			{
+				exLevelItemNode.Nodes.Add(levelItem.Name);
+			}
 			// level animations
 			foreach (LevelAnim levelAnimItem in LevelData.LevelAnims)
 			{

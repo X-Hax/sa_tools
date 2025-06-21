@@ -23,9 +23,7 @@ namespace SA2ObjectDefinitions.Common
 		private Mesh[] meshesCase;
 		private NJS_TEXLIST texarrCase;
 		private Texture[] texsCase;
-		
-		private NJS_OBJECT arrow;
-		private Mesh[] meshesArrow;
+		private int XRotation;
 
 		public override void Init(ObjectData data, string name)
 		{
@@ -36,16 +34,14 @@ namespace SA2ObjectDefinitions.Common
 			dynamitecase = ObjectHelper.LoadModel("object/OBJECT_DYNAMITE_CASE.sa2mdl");
 			meshesCase = ObjectHelper.GetMeshes(dynamitecase);
 			texarrCase = NJS_TEXLIST.Load("object/tls/DYNAMITE_CASE.satex");
-			
-			arrow = ObjectHelper.LoadModel("object/OBJECT_DYNAMITE_ARROW.sa2mdl");
-			meshesArrow = ObjectHelper.GetMeshes(arrow);
 		}
 
 		public override HitResult CheckHit(SETItem item, Vector3 Near, Vector3 Far, Viewport Viewport, Matrix Projection, Matrix View, MatrixStack transform)
 		{
+			XRotation = (item.Rotation.X >> 8) * 0x100;
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateZYX(XRotation, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			HitResult result = dynamite.CheckHit(Near, Far, Viewport, Projection, View, transform, meshesDynamite);
 			transform.Pop();
 			return result;
@@ -53,6 +49,7 @@ namespace SA2ObjectDefinitions.Common
 
 		public override List<RenderInfo> Render(SETItem item, Device dev, EditorCamera camera, MatrixStack transform)
 		{
+			XRotation = (item.Rotation.X >> 8) * 0x100;
 			List<RenderInfo> result = new List<RenderInfo>();
 			if (texsDynamite == null)
 				texsDynamite = ObjectHelper.GetTextures("objtex_common", texarrDynamite, dev);
@@ -60,15 +57,13 @@ namespace SA2ObjectDefinitions.Common
 				texsCase = ObjectHelper.GetTextures("objtex_common", texarrCase, dev);
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateZYX(XRotation, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.AddRange(dynamite.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsDynamite, meshesDynamite, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			result.AddRange(dynamitecase.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, texsCase, meshesCase, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
-			result.AddRange(arrow.DrawModelTree(dev.GetRenderState<FillMode>(RenderState.FillMode), transform, ObjectHelper.GetTextures("objtex_common"), meshesArrow, EditorOptions.IgnoreMaterialColors, EditorOptions.OverrideLighting));
 			if (item.Selected)
 			{
 				result.AddRange(dynamite.DrawModelTreeInvert(transform, meshesDynamite));
 				result.AddRange(dynamitecase.DrawModelTreeInvert(transform, meshesCase));
-				result.AddRange(arrow.DrawModelTreeInvert(transform, meshesArrow));
 			}
 			transform.Pop();
 			return result;
@@ -76,10 +71,11 @@ namespace SA2ObjectDefinitions.Common
 
 		public override List<ModelTransform> GetModels(SETItem item, MatrixStack transform)
 		{
+			XRotation = (item.Rotation.X >> 8) * 0x100;
 			List<ModelTransform> result = new List<ModelTransform>();
 			transform.Push();
 			transform.NJTranslate(item.Position);
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateZYX(XRotation, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			result.Add(new ModelTransform(dynamite, transform.Top));
 			transform.Pop();
 			return result;
@@ -87,9 +83,10 @@ namespace SA2ObjectDefinitions.Common
 
 		public override BoundingSphere GetBounds(SETItem item)
 		{
+			XRotation = (item.Rotation.X >> 8) * 0x100;
 			MatrixStack transform = new MatrixStack();
 			transform.NJTranslate(item.Position.ToVector3());
-			transform.NJRotateObject(item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			transform.NJRotateZYX(XRotation, item.Rotation.Y - 0x8000, item.Rotation.Z);
 			return ObjectHelper.GetModelBounds(dynamite, transform);
 		}
 
@@ -98,7 +95,7 @@ namespace SA2ObjectDefinitions.Common
 			Matrix matrix = Matrix.Identity;
 
 			MatrixFunctions.Translate(ref matrix, item.Position);
-			MatrixFunctions.RotateObject(ref matrix, item.Rotation.X, item.Rotation.Y - 0x8000, item.Rotation.Z);
+			MatrixFunctions.RotateObject(ref matrix, 0, item.Rotation.Y - 0x8000, item.Rotation.Z);
 
 			return matrix;
 		}
@@ -109,6 +106,14 @@ namespace SA2ObjectDefinitions.Common
 			item.Rotation.X = x + 0x4000;
 			item.Rotation.Z = -z;
 		}
+		private readonly PropertySpec[] customProperties = new PropertySpec[] {
+			new PropertySpec("Item Link ID", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xFF,
+			(o, v) => { o.Rotation.X &= 0xFF00; o.Rotation.X |= (byte)v; }),
+			new PropertySpec("X Rotation (ZYX, Decimal)", typeof(byte), "Extended", null, null, (o) => o.Rotation.X >> 8,
+			(o, v) => { o.Rotation.X &= 0xFF; o.Rotation.X |= (byte)v << 8; }),
+		};
+
+		public override PropertySpec[] CustomProperties { get { return customProperties; } }
 
 		public override string Name { get { return "Dynamite Pack"; } }
 

@@ -1,4 +1,5 @@
-﻿using SAModel.Direct3D;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SAModel.Direct3D;
 using SAModel.SAEditorCommon;
 using SAModel.SAEditorCommon.DataTypes;
 using SAModel.SAEditorCommon.UI;
@@ -402,31 +403,161 @@ namespace SAModel.SALVL
                     }
                 }
             }
+			if (LevelData.EXLevelItems != null)
+			{
+				for (int i = 0; i < LevelData.EXLevelItemCount; i++)
+				{
+					bool display = false;
+					if (exVisibleToolStripMenuItem.Checked && LevelData.GetEXLevelitemAtIndex(i).Visible)
+						display = true;
+					else if (exInvisibleToolStripMenuItem.Checked && !LevelData.GetEXLevelitemAtIndex(i).Visible)
+						display = true;
+					else if (exAllToolStripMenuItem.Checked)
+						display = true;
+					if (display && layer_levelItemsToolStripMenuItem.Checked)
+					{
+						hit = LevelData.GetEXLevelitemAtIndex(i).CheckHit(Near, Far, viewport, proj, view);
+						if (hit < closesthit)
+						{
+							closesthit = hit;
+							item = LevelData.GetEXLevelitemAtIndex(i);
+						}
+					}
+				}
+			}
 			#endregion
 
 			#region Picking Start Positions
 			if (LevelData.StartPositions != null)
             {
-                hit = LevelData.StartPositions[LevelData.Character].CheckHit(Near, Far, viewport, proj, view);
+				int charID;
+				if (isSA2LVL())
+					charID = LevelData.SA2Character;
+				else
+					charID = LevelData.Character;
+                hit = LevelData.StartPositions[charID].CheckHit(Near, Far, viewport, proj, view);
                 if (hit < closesthit)
                 {
                     closesthit = hit;
-                    item = LevelData.StartPositions[LevelData.Character];
+                    item = LevelData.StartPositions[charID];
                 }
             }
-            #endregion
+			if (LevelData.SA2StartPositions2P1 != null)
+			{
+				hit = LevelData.SA2StartPositions2P1[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.SA2StartPositions2P1[LevelData.SA2Character];
+				}
+			}
+			if (LevelData.SA2StartPositions2P2 != null)
+			{
+				hit = LevelData.SA2StartPositions2P2[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.SA2StartPositions2P2[LevelData.SA2Character];
+				}
+			}
+			#endregion
 
-            #region Picking SET Items
-            if (!LevelData.SETItemsIsNull() && viewSETItemsToolStripMenuItem.Checked && layer__SETItemsToolStripMenuItem.Checked)
-                foreach (SETItem setitem in LevelData.SETItems(LevelData.Character))
-                {
-                    hit = setitem.CheckHit(Near, Far, viewport, proj, view);
-                    if (hit < closesthit)
-                    {
-                        closesthit = hit;
-                        item = setitem;
-                    }
-                }
+			#region Picking End Positions
+			if (LevelData.EndPositions != null)
+			{
+				hit = LevelData.EndPositions[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.EndPositions[LevelData.SA2Character];
+				}
+			}
+			if (LevelData.EndPositions2P1 != null)
+			{
+				hit = LevelData.EndPositions2P1[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.EndPositions2P1[LevelData.SA2Character];
+				}
+			}
+			if (LevelData.EndPositions2P2 != null)
+			{
+				hit = LevelData.EndPositions2P2[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.EndPositions2P2[LevelData.SA2Character];
+				}
+			}
+			#endregion
+
+			#region Picking 2P Intro Positions
+			if (LevelData.MultiplayerIntroPositionsA != null)
+			{
+				for (int i = 0; i < LevelData.MultiplayerIntroPositionsA.Length; i++)
+				{
+					hit = LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = LevelData.MultiplayerIntroPositionsA[LevelData.SA2Character];
+					}
+				}
+			}
+			if (LevelData.MultiplayerIntroPositionsB != null)
+			{
+				for (int i = 0; i < LevelData.MultiplayerIntroPositionsB.Length; i++)
+				{
+					hit = LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = LevelData.MultiplayerIntroPositionsB[LevelData.SA2Character];
+					}
+				}
+			}
+			#endregion
+
+			#region Picking Mission 2/3 End Positions
+			if (LevelData.AltEndPositionsA != null)
+			{
+				hit = LevelData.AltEndPositionsA[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.AltEndPositionsA[LevelData.SA2Character];
+				}
+			}
+			if (LevelData.AltEndPositionsB != null)
+			{
+				hit = LevelData.AltEndPositionsB[LevelData.SA2Character].CheckHit(Near, Far, viewport, proj, view);
+				if (hit < closesthit)
+				{
+					closesthit = hit;
+					item = LevelData.AltEndPositionsB[LevelData.SA2Character];
+				}
+			}
+			#endregion
+
+			#region Picking SET Items
+			if (!LevelData.SETItemsIsNull() && viewSETItemsToolStripMenuItem.Checked && layer__SETItemsToolStripMenuItem.Checked)
+			{
+				int setID;
+				if (isSA2LVL())
+					setID = LevelData.SA2Set;
+				else
+					setID = LevelData.Character;
+				foreach (SETItem setitem in LevelData.SETItems(setID))
+				{
+					hit = setitem.CheckHit(Near, Far, viewport, proj, view);
+					if (hit < closesthit)
+					{
+						closesthit = hit;
+						item = setitem;
+					}
+				}
+			}
             #endregion
 
             #region Picking CAM Items

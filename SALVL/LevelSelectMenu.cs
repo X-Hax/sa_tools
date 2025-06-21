@@ -31,8 +31,8 @@ namespace SAModel.SALVL
 
                 UncheckMenuItems(changeLevelToolStripMenuItem);
                 CheckMenuItemByTag(changeLevelToolStripMenuItem, stageToLoad);
-                LoadStage(stageToLoad);
-            }
+				LoadStage(stageToLoad);
+			}
         }
 
         private void PopulateLevelMenu(ToolStripMenuItem targetMenu, Dictionary<string, List<string>> levels)
