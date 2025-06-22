@@ -18,7 +18,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using System.Globalization;
-using System.Linq;
 
 namespace SAModel.SALVL
 {
@@ -814,7 +813,7 @@ namespace SAModel.SALVL
 			}
 			if (!IsLevelOnly)
 			{
-				if (level.SecondaryGeometry == null)
+				if (level.SecondaryGeometry.Count < 1)
 				{
 					LevelData.secondgeos = [];
 				}
@@ -842,7 +841,7 @@ namespace SAModel.SALVL
 						{
 							LevelData.AddLevelAnim(new LevelAnim(LevelData.secondgeos[i].Anim[j], j, selectedItems));
 						}
-						log.Add("----Level load complete: " + currentSecondaryLandtableFilename[i] + "----\n");
+						log.Add("----Secondary Geometry Loaded: " + currentSecondaryLandtableFilename[i] + "----\n");
 					}
 				}
 

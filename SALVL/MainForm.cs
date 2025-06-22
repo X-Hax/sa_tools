@@ -15,9 +15,7 @@ using SAModel.SAEditorCommon.SETEditing;
 using SAModel.SAEditorCommon.UI;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
-using Rectangle = System.Drawing.Rectangle;
 using System.Text;
-using SharpDX.Mathematics.Interop;
 using static SAModel.SAEditorCommon.SettingsFile;
 
 namespace SAModel.SALVL
