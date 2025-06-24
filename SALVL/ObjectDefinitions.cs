@@ -114,19 +114,36 @@ namespace SAModel.SALVL
 					if (progress != null) progress.SetStep("Loading: " + defgroup.Model);
 					// Otherwise, if the model file doesn't exist and/or no texture file is defined,
 					// load the "default object" instead ("?").
-					if (!File.Exists(defgroup.Model) || // Model file missing OR
-						string.IsNullOrEmpty(defgroup.Texture) || // Texture file undefined OR
-						LevelData.Textures == null ||  // Textures not loaded OR
-								((!LevelData.Textures.ContainsKey(defgroup.Texture) && // Texture file not among loaded textures 1 AND
-								(!LevelData.Textures.ContainsKey(defgroup.Texture.ToLowerInvariant()) && // Texture file not among loaded textures 2 AND
-								(!LevelData.Textures.ContainsKey(defgroup.Texture.ToUpperInvariant())))))) // Texture file not among loaded textures 3
+
+					//SA2 Check
+					if (defgroup.TexturePacks.Count > 0)
 					{
-						ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
-						objectErrors.Add(error);
-						defgroup.Model = null;
+						if (!File.Exists(defgroup.Model) || // Model file missing OR
+						LevelData.Textures == null ||  // Textures not loaded OR
+								((!LevelData.Textures.ContainsKey(defgroup.TexturePacks[0]) && // Texture file not among loaded textures 1 AND
+								(!LevelData.Textures.ContainsKey(defgroup.TexturePacks[0].ToLowerInvariant()) && // Texture file not among loaded textures 2 AND
+								(!LevelData.Textures.ContainsKey(defgroup.TexturePacks[0].ToUpperInvariant())))))) // Texture file not among loaded textures 3)
+						{
+							ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+							objectErrors.Add(error);
+							defgroup.Model = null;
+						}
+					}
+					else
+					{
+						if (!File.Exists(defgroup.Model) || // Model file missing OR
+							string.IsNullOrEmpty(defgroup.Texture) || // Texture file undefined OR
+							LevelData.Textures == null ||  // Textures not loaded OR
+									((!LevelData.Textures.ContainsKey(defgroup.Texture) && // Texture file not among loaded textures 1 AND
+									(!LevelData.Textures.ContainsKey(defgroup.Texture.ToLowerInvariant()) && // Texture file not among loaded textures 2 AND
+									(!LevelData.Textures.ContainsKey(defgroup.Texture.ToUpperInvariant())))))) // Texture file not among loaded textures 3
+						{
+							ObjectData error = new ObjectData { Name = defgroup.Name, Model = defgroup.Model, Texture = defgroup.Texture };
+							objectErrors.Add(error);
+							defgroup.Model = null;
+						}
 					}
 				}
-
 				def.Init(defgroup, objlstini[ID].Name);
 				def.SetInternalName(objlstini[ID].Name);
 #if DEBUG
