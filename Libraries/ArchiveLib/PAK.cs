@@ -15,60 +15,58 @@ namespace ArchiveLib
         const uint Magic = 0x6B617001;
         public string FolderName;
 
-        public class PAKEntry : GenericArchiveEntry
-        {
-            public string LongPath { get; set; }
+		public class PAKEntry : GenericArchiveEntry
+		{
+			public string LongPath { get; set; }
 
-            public PAKEntry()
-            {
-                Name = LongPath = string.Empty;
-            }
+			public PAKEntry()
+			{
+				Name = LongPath = string.Empty;
+			}
 
-            public PAKEntry(string name, string longpath, byte[] data)
-            {
-                Name = name;
-                LongPath = longpath;
-                Data = data;
-            }
+			public PAKEntry(string name, string longpath, byte[] data)
+			{
+				Name = name;
+				LongPath = longpath;
+				Data = data;
+			}
 
-            public override Bitmap GetBitmap()
-            {
-                MemoryStream str = new MemoryStream(Data);
-                uint check = BitConverter.ToUInt32(Data, 0);
-                if (check == 0x20534444) // DDS header
-                {
-                    PixelFormat pxformat;
-                    var image = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
-                    switch (image.Format)
-                    {
-                        case Pfim.ImageFormat.Rgba32:
-                            pxformat = PixelFormat.Format32bppArgb;
-                            break;
-                        case Pfim.ImageFormat.Rgb24:
-                            pxformat = PixelFormat.Format24bppRgb;
-                            break;
-                        case Pfim.ImageFormat.R5g5b5:
-                            pxformat = PixelFormat.Format16bppRgb555;
-                            break;
-                        case Pfim.ImageFormat.R5g5b5a1:
-                            pxformat = PixelFormat.Format16bppArgb1555;
-                            break;
-                        case Pfim.ImageFormat.R5g6b5:
-                            pxformat = PixelFormat.Format16bppRgb565;
-                            break;
-                        default:
-                            throw new Exception("Unsupported image format: " + image.Format.ToString());
-                    }
-                    var bitmap = new Bitmap(image.Width, image.Height, pxformat);
-                    BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
-                    System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-                    bitmap.UnlockBits(bmpData);
-                    return bitmap;
-                }
-                else
-                    return new Bitmap(str);
-            }
-        }
+			public override Bitmap GetBitmap()
+			{
+				MemoryStream str = new MemoryStream(Data);
+				uint check = BitConverter.ToUInt32(Data, 0);
+				if (check == 0x20534444) // DDS header
+				{
+					PixelFormat pxformat;
+					var image = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
+					switch (image.Format)
+					{
+						case Pfim.ImageFormat.Rgba32:
+							pxformat = PixelFormat.Format32bppArgb;
+							break;
+						case Pfim.ImageFormat.Rgb24:
+							pxformat = PixelFormat.Format24bppRgb;
+							break;
+						case Pfim.ImageFormat.R5g5b5:
+							pxformat = PixelFormat.Format16bppRgb555;
+							break;
+						case Pfim.ImageFormat.R5g5b5a1:
+							pxformat = PixelFormat.Format16bppArgb1555;
+							break;
+						case Pfim.ImageFormat.R5g6b5:
+							pxformat = PixelFormat.Format16bppRgb565;
+							break;
+						default:
+							throw new Exception("Unsupported image format: " + image.Format.ToString());
+					}
+					var data = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
+					var bitmap = new Bitmap(image.Width, image.Height, image.Stride, pxformat, data);
+					return bitmap;
+				}
+				else
+					return new Bitmap(str);
+			}
+		}
 
         public PAKFile() { }
 
