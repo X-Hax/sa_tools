@@ -86,6 +86,7 @@
 			textureUpButton = new System.Windows.Forms.Button();
 			removeTextureButton = new System.Windows.Forms.Button();
 			addTextureButton = new System.Windows.Forms.Button();
+			checkBoxPAKUseAlpha = new System.Windows.Forms.CheckBox();
 			numericUpDownOrigSizeY = new System.Windows.Forms.NumericUpDown();
 			numericUpDownOrigSizeX = new System.Windows.Forms.NumericUpDown();
 			hexIndexCheckBox = new System.Windows.Forms.CheckBox();
@@ -115,7 +116,7 @@
 			texturePreviewZoomTrackBar = new System.Windows.Forms.TrackBar();
 			textureImage = new System.Windows.Forms.PictureBox();
 			labelZoomInfo = new System.Windows.Forms.Label();
-			DDSPixelFormatComboBox = new System.Windows.Forms.ComboBox();
+			DDSPixelFormatLabel = new System.Windows.Forms.Label();
 			globalIndex = new System.Windows.Forms.NumericUpDown();
 			textureName = new System.Windows.Forms.TextBox();
 			statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -188,7 +189,7 @@
 			labelOriginalSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelOriginalSize.Name = "labelOriginalSize";
 			labelOriginalSize.Size = new System.Drawing.Size(30, 15);
-			labelOriginalSize.TabIndex = 8;
+			labelOriginalSize.TabIndex = 9;
 			labelOriginalSize.Text = "Size:";
 			// 
 			// labelX
@@ -198,7 +199,7 @@
 			labelX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelX.Name = "labelX";
 			labelX.Size = new System.Drawing.Size(12, 15);
-			labelX.TabIndex = 10;
+			labelX.TabIndex = 11;
 			labelX.Text = "x";
 			// 
 			// DDSPixelFormatLabel
@@ -572,6 +573,7 @@
 			// splitContainer1.Panel2
 			// 
 			splitContainer1.Panel2.AutoScroll = true;
+			splitContainer1.Panel2.Controls.Add(checkBoxPAKUseAlpha);
 			splitContainer1.Panel2.Controls.Add(labelX);
 			splitContainer1.Panel2.Controls.Add(numericUpDownOrigSizeY);
 			splitContainer1.Panel2.Controls.Add(numericUpDownOrigSizeX);
@@ -675,6 +677,19 @@
 			addTextureButton.UseVisualStyleBackColor = true;
 			addTextureButton.Click += addTextureButton_Click;
 			// 
+			// checkBoxPAKUseAlpha
+			// 
+			checkBoxPAKUseAlpha.AutoSize = true;
+			checkBoxPAKUseAlpha.Location = new System.Drawing.Point(311, 65);
+			checkBoxPAKUseAlpha.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			checkBoxPAKUseAlpha.Name = "checkBoxPAKUseAlpha";
+			checkBoxPAKUseAlpha.Size = new System.Drawing.Size(100, 19);
+			checkBoxPAKUseAlpha.TabIndex = 8;
+			checkBoxPAKUseAlpha.Text = "No Alpha Test";
+			checkBoxPAKUseAlpha.UseVisualStyleBackColor = true;
+			checkBoxPAKUseAlpha.CheckedChanged += checkBoxPAKUseAlpha_CheckedChanged;
+			checkBoxPAKUseAlpha.Click += checkBoxPAKUseAlpha_Click;
+			// 
 			// numericUpDownOrigSizeY
 			// 
 			numericUpDownOrigSizeY.Enabled = false;
@@ -683,7 +698,7 @@
 			numericUpDownOrigSizeY.Maximum = new decimal(new int[] { 8192, 0, 0, 0 });
 			numericUpDownOrigSizeY.Name = "numericUpDownOrigSizeY";
 			numericUpDownOrigSizeY.Size = new System.Drawing.Size(64, 23);
-			numericUpDownOrigSizeY.TabIndex = 11;
+			numericUpDownOrigSizeY.TabIndex = 12;
 			numericUpDownOrigSizeY.ValueChanged += numericUpDownOrigSizeY_ValueChanged;
 			// 
 			// numericUpDownOrigSizeX
@@ -694,7 +709,7 @@
 			numericUpDownOrigSizeX.Maximum = new decimal(new int[] { 8192, 0, 0, 0 });
 			numericUpDownOrigSizeX.Name = "numericUpDownOrigSizeX";
 			numericUpDownOrigSizeX.Size = new System.Drawing.Size(62, 23);
-			numericUpDownOrigSizeX.TabIndex = 9;
+			numericUpDownOrigSizeX.TabIndex = 10;
 			numericUpDownOrigSizeX.ValueChanged += numericUpDownOrigSizeX_ValueChanged;
 			// 
 			// hexIndexCheckBox
@@ -749,6 +764,7 @@
 			tableLayoutPanel1.Controls.Add(texturePreviewZoomTrackBar, 0, 3);
 			tableLayoutPanel1.Controls.Add(textureImage, 0, 5);
 			tableLayoutPanel1.Controls.Add(labelZoomInfo, 0, 4);
+			tableLayoutPanel1.Controls.Add(DDSPixelFormatLabel, 1, 0);
 			tableLayoutPanel1.Location = new System.Drawing.Point(5, 122);
 			tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -764,8 +780,8 @@
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.Size = new System.Drawing.Size(393, 387);
-			tableLayoutPanel1.TabIndex = 14;
+			tableLayoutPanel1.Size = new System.Drawing.Size(441, 387);
+			tableLayoutPanel1.TabIndex = 13;
 			// 
 			// textureSizeLabel
 			// 
@@ -790,7 +806,7 @@
 			importExportPanel.Location = new System.Drawing.Point(4, 204);
 			importExportPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			importExportPanel.Name = "importExportPanel";
-			importExportPanel.Size = new System.Drawing.Size(191, 31);
+			importExportPanel.Size = new System.Drawing.Size(248, 31);
 			importExportPanel.TabIndex = 20;
 			// 
 			// saveTextureButton
@@ -798,9 +814,9 @@
 			saveTextureButton.AutoSize = true;
 			saveTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			saveTextureButton.Enabled = false;
-			saveTextureButton.Location = new System.Drawing.Point(138, 3);
+			saveTextureButton.Location = new System.Drawing.Point(170, 3);
 			saveTextureButton.Name = "saveTextureButton";
-			saveTextureButton.Size = new System.Drawing.Size(50, 25);
+			saveTextureButton.Size = new System.Drawing.Size(75, 25);
 			saveTextureButton.TabIndex = 23;
 			saveTextureButton.Text = "Save...";
 			saveTextureButton.UseVisualStyleBackColor = true;
@@ -814,9 +830,9 @@
 			exportButton.Location = new System.Drawing.Point(71, 3);
 			exportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			exportButton.Name = "exportButton";
-			exportButton.Size = new System.Drawing.Size(59, 25);
+			exportButton.Size = new System.Drawing.Size(93, 25);
 			exportButton.TabIndex = 22;
-			exportButton.Text = "Export...";
+			exportButton.Text = "Export As PNG";
 			exportButton.UseVisualStyleBackColor = true;
 			exportButton.Click += exportButton_Click;
 			// 
@@ -842,7 +858,7 @@
 			dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
 			dataFormatLabel.Name = "dataFormatLabel";
 			dataFormatLabel.Size = new System.Drawing.Size(129, 15);
-			dataFormatLabel.TabIndex = 15;
+			dataFormatLabel.TabIndex = 14;
 			dataFormatLabel.Text = "Data Format: Unknown";
 			dataFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
@@ -934,7 +950,7 @@
 			panelPaletteInfo.Controls.Add(numericUpDownStartBank);
 			panelPaletteInfo.Controls.Add(comboBoxCurrentPaletteBank);
 			panelPaletteInfo.Controls.Add(labelPaletteFormat);
-			panelPaletteInfo.Location = new System.Drawing.Point(212, 241);
+			panelPaletteInfo.Location = new System.Drawing.Point(260, 241);
 			panelPaletteInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panelPaletteInfo.Name = "panelPaletteInfo";
 			panelPaletteInfo.Size = new System.Drawing.Size(177, 106);
@@ -1052,17 +1068,16 @@
 			labelZoomInfo.TabIndex = 19;
 			labelZoomInfo.Text = "Zoom: N/A";
 			// 
-			// DDSPixelFormatComboBox
+			// DDSPixelFormatLabel
 			// 
-			DDSPixelFormatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			DDSPixelFormatComboBox.FormattingEnabled = true;
-			DDSPixelFormatComboBox.Items.AddRange(new object[] { "Intensity4", "Intensity8", "IntensityA4", "IntensityA8", "Rgb565", "Rgb5a3", "Argb8888", "0x7 (Unknown1)", "Index4", "Index8", "0xA (Unknown2)", "0xB (Unknown3)", "0xC (Unknown4)", "0xD (Unknown5)", "Dxt1" });
-			DDSPixelFormatComboBox.Location = new System.Drawing.Point(324, 93);
-			DDSPixelFormatComboBox.Name = "DDSPixelFormatComboBox";
-			DDSPixelFormatComboBox.Size = new System.Drawing.Size(93, 23);
-			DDSPixelFormatComboBox.TabIndex = 13;
-			DDSPixelFormatComboBox.Visible = false;
-			DDSPixelFormatComboBox.SelectedIndexChanged += DDSPixelFormatComboBox_SelectedIndexChanged;
+			DDSPixelFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			DDSPixelFormatLabel.AutoSize = true;
+			DDSPixelFormatLabel.Location = new System.Drawing.Point(259, 3);
+			DDSPixelFormatLabel.Name = "DDSPixelFormatLabel";
+			DDSPixelFormatLabel.Size = new System.Drawing.Size(129, 15);
+			DDSPixelFormatLabel.TabIndex = 15;
+			DDSPixelFormatLabel.Text = "Pixel Format: Unknown";
+			DDSPixelFormatLabel.Visible = false;
 			// 
 			// globalIndex
 			// 
@@ -1277,6 +1292,7 @@
 		private System.Windows.Forms.ToolStripMenuItem useDDSInTexturePacksToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem useDDSInPVMXToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem useHQDDSToolStripMenuItem;
+		private System.Windows.Forms.CheckBox checkBoxPAKUseAlpha;
 		private System.Windows.Forms.Label DDSPixelFormatLabel;
 		private System.Windows.Forms.ComboBox DDSPixelFormatComboBox;
 	}

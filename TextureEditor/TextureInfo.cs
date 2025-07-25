@@ -11,6 +11,7 @@ using static VrSharp.Xvr.DirectXTexUtility;
 namespace TextureEditor
 {
     enum TextureFormat { PVM, GVM, PVMX, PAK, XVM }
+	enum TextureFiles { PVR, GVR, PNG, DDS, XVR, Default }
 
     public abstract class TextureInfo
     {
@@ -293,6 +294,7 @@ namespace TextureEditor
         public GvrDataFormat DataFormat { get; set; }
         public NinjaSurfaceFlags SurfaceFlags { get; set; }
         public PakTextureInfo() { }
+		public TextureFunctions.TextureFileFormat FileFormat { get; set; }
         public string GetSurfaceFlags()
         {
             List<string> flags = new List<string>();
@@ -311,6 +313,10 @@ namespace TextureEditor
             return string.Join(", ", flags);
         }
 		public string OriginalFileExtension { get; set; }
+		public string GetPixelFormat()
+		{
+			return DataFormat.ToString();
+		}
 
 		public PakTextureInfo(TextureInfo tex)
         {
@@ -352,7 +358,15 @@ namespace TextureEditor
 			}
 			if (tex is PakTextureInfo pk)
 				OriginalFileExtension = pk.OriginalFileExtension;
-            Image = tex.Image;
+			else
+			{
+				FileFormat = TextureFunctions.IdentifyTextureFileFormat(TextureData);
+				if (FileFormat != TextureFunctions.TextureFileFormat.PNG)
+					OriginalFileExtension = ".dds";
+				else
+					OriginalFileExtension = ".png";
+			}
+			Image = tex.Image;
             Mipmap = tex.Mipmap;
             if (tex.Mipmap)
                 SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
