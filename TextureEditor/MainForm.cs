@@ -2452,11 +2452,9 @@ namespace TextureEditor
 			UpdateTextureInformation();
 		}
 		private void checkBoxPAKUseAlpha_Click(object sender, EventArgs e)
-			{
+		{
 			checkBoxPAKUseAlpha_CheckedChanged(sender, e);
-				unsaved = true;
-			}
-			UpdateTextureInformation();
+			unsaved = true;
 		}
 	}
 }
