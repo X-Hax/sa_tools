@@ -327,5 +327,55 @@ namespace SAModel.SAEditorCommon
 					return new Settings_SA2MessageFileEditor();
 			}
 		}
+		public class Settings_SA2CutsceneEffectEditor : SettingsFile
+		{
+			[DefaultValue(false)]
+			public bool BigEndian { get; set; }
+			[DefaultValue(0)]
+			public int Format { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+			public Settings_SA2CutsceneEffectEditor()
+			{
+				BigEndian = false;
+				Format = 0;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2CutsceneEffectEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2CutsceneEffectEditor>(path);
+				else
+					return new Settings_SA2CutsceneEffectEditor();
+			}
+		}
+		public class Settings_SA2LightFogEditor : SettingsFile
+		{
+			[DefaultValue(false)]
+			public bool BigEndian { get; set; }
+			[DefaultValue(0)]
+			public int Format { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+			public Settings_SA2LightFogEditor()
+			{
+				BigEndian = false;
+				Format = 0;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2LightFogEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2LightFogEditor>(path);
+				else
+					return new Settings_SA2LightFogEditor();
+			}
+		}
 	}
 }
