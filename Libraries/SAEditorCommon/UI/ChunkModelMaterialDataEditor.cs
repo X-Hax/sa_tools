@@ -42,9 +42,9 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkMaterial pcm = (PolyChunkMaterial)poly;
 			srcAlphaCombo.SelectedIndex = (int)pcm.SourceAlpha;
 			dstAlphaCombo.SelectedIndex = (int)pcm.DestinationAlpha;
-			diffuseSettingBox.Enabled = pcm.Diffuse.HasValue;
-			ambientSettingBox.Enabled = pcm.Ambient.HasValue;
-			specularSettingBox.Enabled = pcm.Specular.HasValue;
+			diffuseSettingBox.Enabled = useDiffuseCheckBox.Checked = pcm.Diffuse.HasValue;
+			ambientSettingBox.Enabled = useAmbientCheckBox.Checked = pcm.Ambient.HasValue;
+			specularSettingBox.Enabled = useSpecularCheckBox.Checked = pcm.Specular.HasValue;
 
 			if (pcm.Diffuse.HasValue)
 			{
@@ -149,12 +149,23 @@ namespace SAModel.SAEditorCommon.UI
 		private void checkSettingsOnClose()
 		{
 			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
-			if (pcm.Diffuse.HasValue)
+			if (diffuseSettingBox.Enabled)
 				pcm.Diffuse = diffuseColorBox.BackColor;
-			if (pcm.Ambient.HasValue)
+			else
+				pcm.Diffuse = null;
+			if (ambientSettingBox.Enabled)
 				pcm.Ambient = ambientColorBox.BackColor;
-			if (pcm.Specular.HasValue)
+			else pcm.Ambient = null;
+			if (specularSettingBox.Enabled)
+			{
 				pcm.Specular = specColorBox.BackColor;
+				ValidateExponent();
+			}
+			else
+			{
+				pcm.Specular = null;
+				pcm.SpecularExponent = 0;
+			}
 			pcm.SourceAlpha = (AlphaInstruction)srcAlphaCombo.SelectedIndex;
 			pcm.DestinationAlpha = (AlphaInstruction)dstAlphaCombo.SelectedIndex;
 		}
@@ -282,6 +293,48 @@ namespace SAModel.SAEditorCommon.UI
 		private void specularBUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			SetSpecularFromNumerics();
+		}
+
+		private void useDiffuseCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
+			if (useDiffuseCheckBox.Checked)
+			{
+				//pcm.Diffuse = null;
+				diffuseSettingBox.Enabled = true;
+			}
+			else
+			{
+				diffuseSettingBox.Enabled = false;
+			}
+		}
+
+		private void useAmbientCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
+			if (useAmbientCheckBox.Checked)
+			{
+				//pcm.Ambient = null;
+				ambientSettingBox.Enabled = true;
+			}
+			else
+			{
+				ambientSettingBox.Enabled = false;
+			}
+		}
+
+		private void useSpecularCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
+			if (useSpecularCheckBox.Checked)
+			{
+				//pcm.Specular = null;
+				specularSettingBox.Enabled = true;
+			}
+			else
+			{
+				specularSettingBox.Enabled = false;
+			}
 		}
 	}
 }

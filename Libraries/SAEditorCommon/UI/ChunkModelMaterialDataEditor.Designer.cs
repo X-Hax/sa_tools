@@ -69,6 +69,9 @@
 			label9 = new System.Windows.Forms.Label();
 			label10 = new System.Windows.Forms.Label();
 			blendModeSettingsBox = new System.Windows.Forms.GroupBox();
+			useDiffuseCheckBox = new System.Windows.Forms.CheckBox();
+			useAmbientCheckBox = new System.Windows.Forms.CheckBox();
+			useSpecularCheckBox = new System.Windows.Forms.CheckBox();
 			diffuseSettingBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)diffuseBUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)diffuseGUpDown).BeginInit();
@@ -322,7 +325,7 @@
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(537, 363);
+			doneButton.Location = new System.Drawing.Point(553, 432);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
@@ -340,7 +343,7 @@
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(378, 363);
+			resetButton.Location = new System.Drawing.Point(394, 432);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
 			resetButton.Size = new System.Drawing.Size(132, 40);
@@ -513,13 +516,49 @@
 			blendModeSettingsBox.TabStop = false;
 			blendModeSettingsBox.Text = "Blend Modes";
 			// 
+			// useDiffuseCheckBox
+			// 
+			useDiffuseCheckBox.AutoSize = true;
+			useDiffuseCheckBox.Location = new System.Drawing.Point(359, 354);
+			useDiffuseCheckBox.Name = "useDiffuseCheckBox";
+			useDiffuseCheckBox.Size = new System.Drawing.Size(151, 29);
+			useDiffuseCheckBox.TabIndex = 21;
+			useDiffuseCheckBox.Text = "Enable Diffuse";
+			useDiffuseCheckBox.UseVisualStyleBackColor = true;
+			useDiffuseCheckBox.CheckedChanged += useDiffuseCheckBox_CheckedChanged;
+			// 
+			// useAmbientCheckBox
+			// 
+			useAmbientCheckBox.AutoSize = true;
+			useAmbientCheckBox.Location = new System.Drawing.Point(522, 354);
+			useAmbientCheckBox.Name = "useAmbientCheckBox";
+			useAmbientCheckBox.Size = new System.Drawing.Size(163, 29);
+			useAmbientCheckBox.TabIndex = 22;
+			useAmbientCheckBox.Text = "Enable Ambient";
+			useAmbientCheckBox.UseVisualStyleBackColor = true;
+			useAmbientCheckBox.CheckedChanged += useAmbientCheckBox_CheckedChanged;
+			// 
+			// useSpecularCheckBox
+			// 
+			useSpecularCheckBox.AutoSize = true;
+			useSpecularCheckBox.Location = new System.Drawing.Point(359, 392);
+			useSpecularCheckBox.Name = "useSpecularCheckBox";
+			useSpecularCheckBox.Size = new System.Drawing.Size(162, 29);
+			useSpecularCheckBox.TabIndex = 23;
+			useSpecularCheckBox.Text = "Enable Specular";
+			useSpecularCheckBox.UseVisualStyleBackColor = true;
+			useSpecularCheckBox.CheckedChanged += useSpecularCheckBox_CheckedChanged;
+			// 
 			// ChunkModelMaterialDataEditor
 			// 
 			AcceptButton = doneButton;
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(684, 424);
+			ClientSize = new System.Drawing.Size(700, 493);
 			ControlBox = false;
+			Controls.Add(useSpecularCheckBox);
+			Controls.Add(useAmbientCheckBox);
+			Controls.Add(useDiffuseCheckBox);
 			Controls.Add(blendModeSettingsBox);
 			Controls.Add(specularSettingBox);
 			Controls.Add(ambientSettingBox);
@@ -556,6 +595,7 @@
 			blendModeSettingsBox.ResumeLayout(false);
 			blendModeSettingsBox.PerformLayout();
 			ResumeLayout(false);
+			PerformLayout();
 		}
 
 		#endregion
@@ -599,5 +639,8 @@
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.GroupBox blendModeSettingsBox;
+		private System.Windows.Forms.CheckBox useDiffuseCheckBox;
+		private System.Windows.Forms.CheckBox useAmbientCheckBox;
+		private System.Windows.Forms.CheckBox useSpecularCheckBox;
 	}
 }

@@ -131,7 +131,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				ListViewItem newstrip = new ListViewItem(i.ToString());
 				newstrip.SubItems.Add(PolyStrip.Indexes[i].ToString());
-				if (hasUVs)
+				if (hasUVs && PolyStrip.UVs != null)
 					newstrip.SubItems.Add(PolyStrip.UVs[i].ToStruct());
 				else
 					newstrip.SubItems.Add("N/A");
@@ -312,6 +312,23 @@ namespace SAModel.SAEditorCommon.UI
 			PolyStripCollection[index].CMDEReversed = PolyStripCollectionOriginal[index].Reversed;
 			BuildStripSetList(PolyData);
 			stripSetComboBox.SelectedIndex = index;
+		}
+
+		private void deleteSelectedUVButton_Click(object sender, EventArgs e)
+		{
+			int index = stripSetComboBox.SelectedIndex;
+			PolyStripCollection[index].CMDEUVs = null;
+			BuildStripSetList(PolyData);
+			stripSetComboBox.SelectedIndex = index;
+		}
+
+		private void deleteAllUVButton_Click(object sender, EventArgs e)
+		{
+			for (int i = 0; i < PolyStripCollectionOriginal.Length; i++)
+				PolyStripCollection[i].CMDEUVs = null;
+			BuildStripSetList(PolyData);
+			PolyData.CMDEType = ChunkType.Strip_Strip;
+			stripSetComboBox.SelectedIndex = 0;
 		}
 	}
 }

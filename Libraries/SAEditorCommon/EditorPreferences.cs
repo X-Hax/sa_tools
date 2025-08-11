@@ -252,6 +252,12 @@ namespace SAModel.SAEditorCommon
 			[DefaultValue(true)]
 			public bool UseDDSforPAK { get; set; }
 			[DefaultValue(false)]
+			public bool UseDDSColorSpace { get; set; }
+			[DefaultValue(false)]
+			public bool UsePNGforPAK { get; set; }
+			[DefaultValue(true)]
+			public bool UseHQDDS { get; set; }
+			[DefaultValue(false)]
 			public bool UseDDSforTexPack { get; set; }
 			[DefaultValue(false)]
 			public bool UseDDSforPVMX { get; set; }
@@ -262,8 +268,11 @@ namespace SAModel.SAEditorCommon
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
 				UseDDSforPAK = true;
+				UseHQDDS = true;
 				UseDDSforTexPack = false;
 				UseDDSforPVMX = false;
+				UseDDSColorSpace = false;
+				UsePNGforPAK = false;
 			}
 
 			public static Settings_TextureEditor Load()

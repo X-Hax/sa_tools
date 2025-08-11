@@ -18,6 +18,15 @@ namespace SAModel
 			get { return (ChunkType)(Header & 0xFF); }
 			protected set { Header = (ushort)((Header & 0xFF00) | (byte)value); }
 		}
+		public ChunkType CMDEType
+		{
+			get { return Type; }
+			set 
+			{
+				ChunkType oldtype = Type;
+				Header = (ushort)((Header & 0xFF00) | (byte)value); 
+			}
+		}
 
 		public byte Flags
 		{
@@ -1455,6 +1464,15 @@ namespace SAModel
 			}
 			public ushort[] Indexes { get; private set; }
 			public UV[] UVs { get; private set; }
+			public UV[] CMDEUVs
+			{
+				get { return UVs; }
+				set
+				{
+					UV[] olduvs = UVs;
+					UVs = value;
+				}
+			}
 			public UV[] UVs2 { get; private set; }
 			public Color[] VColors { get; private set; }
 			public ushort[] UserFlags1 { get; private set; }
