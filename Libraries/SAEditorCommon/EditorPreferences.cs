@@ -249,13 +249,15 @@ namespace SAModel.SAEditorCommon
 			public bool SACompatiblePalettes { get; set; }
 			[DefaultValue(true)]
 			public bool EnableFiltering { get; set; }
+			[DefaultValue(false)]
+			public bool UseDDSUncompressedForPAK { get; set; }
 			[DefaultValue(true)]
 			public bool UseDDSforPAK { get; set; }
 			[DefaultValue(false)]
 			public bool UseDDSColorSpace { get; set; }
 			[DefaultValue(false)]
 			public bool UsePNGforPAK { get; set; }
-			[DefaultValue(true)]
+			[DefaultValue(false)]
 			public bool UseHQDDS { get; set; }
 			[DefaultValue(false)]
 			public bool UseDDSforTexPack { get; set; }
@@ -268,8 +270,9 @@ namespace SAModel.SAEditorCommon
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
 				UseDDSforPAK = true;
-				UseHQDDS = true;
+				UseHQDDS = false;
 				UseDDSforTexPack = false;
+				UseDDSUncompressedForPAK = false;
 				UseDDSforPVMX = false;
 				UseDDSColorSpace = false;
 				UsePNGforPAK = false;
