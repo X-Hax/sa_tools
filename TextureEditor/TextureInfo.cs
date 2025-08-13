@@ -19,6 +19,7 @@ namespace TextureEditor
         public uint GlobalIndex { get; set; }
         public bool Mipmap { get; set; }
         public Bitmap Image { get; set; } // Preview image
+		public Bitmap[] MipmapData { get; set; } // Mipmap data
 		public MemoryStream TextureData { get; set; } // Texture data in target format
 		public abstract bool CheckMipmap(); // Checks if the texture format allows mipmaps (the texture itself may or may not have them)
     }
@@ -41,6 +42,7 @@ namespace TextureEditor
 			if (tex is PvrTextureInfo pv)
 			{
 				TextureData = pv.TextureData;
+				MipmapData = pv.MipmapData;
 				PixelFormat = pv.PixelFormat;
 				DataFormat = pv.DataFormat;
 			}
@@ -112,7 +114,10 @@ namespace TextureEditor
 			if (texture.NeedsExternalPalette)
 				Image = new Bitmap(Properties.Resources.error);
 			else
+			{
 				Image = texture.ToBitmap();
+				MipmapData = texture.MipmapsToBitmap();
+			}
         }
 
         public override bool CheckMipmap()
@@ -151,7 +156,8 @@ namespace TextureEditor
                 PixelFormat = gvrt.PixelFormat;
                 DataFormat = gvrt.DataFormat;
                 TextureData = gvrt.TextureData;
-            }
+				MipmapData = gvrt.MipmapData;
+			}
             else if (tex is PvrTextureInfo pvrt)
             {
                 switch (pvrt.DataFormat)
@@ -195,10 +201,13 @@ namespace TextureEditor
             DataFormat = texture.DataFormat;
             Mipmap = texture.HasMipmaps;
             PixelFormat = texture.PixelFormat;
-            if (texture.NeedsExternalPalette)
-                Image = new Bitmap(Properties.Resources.error);
-            else
-                Image = texture.ToBitmap();
+			if (texture.NeedsExternalPalette)
+				Image = new Bitmap(Properties.Resources.error);
+			else
+			{
+				Image = texture.ToBitmap();
+				MipmapData = texture.MipmapsToBitmap();
+			}
         }
 
         public override bool CheckMipmap()
@@ -408,6 +417,7 @@ namespace TextureEditor
 						DataFormatInf = GvrDataFormat.Rgb5a3;
 						break;
 				}
+				TextureData = gvrt.TextureData;
 			}
 			else if (tex is PvrTextureInfo pvrt)
 			{
@@ -448,6 +458,11 @@ namespace TextureEditor
 				}
 				TextureData = pvrt.TextureData;
 			}
+			else if (tex is PakTextureInfo pakt)
+			{
+				IsPAK = true;
+				TextureData = pakt.TextureData;
+			}
 			else
 			{
 				DataFormatInf = GvrDataFormat.Dxt1;
@@ -468,16 +483,20 @@ namespace TextureEditor
 			}
 			Image = tex.Image;
             Mipmap = tex.Mipmap;
+			MipmapData = tex.MipmapData;
+			if (OriginalFileExtension == ".dds")
+				IsPAK = true;
             if (tex.Mipmap)
                 SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
 			TextureData = null;
         }
 
-        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, DDSPixelFormat ppx = DDSPixelFormat.RGB, DDSPixelBitFormat pbx = DDSPixelBitFormat.Invalid, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null, string origExt = ".dds")
+        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, DDSPixelFormat ppx = DDSPixelFormat.RGB, DDSPixelBitFormat pbx = DDSPixelBitFormat.Invalid, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null, string origExt = ".dds", Bitmap[] mipdata = null)
         {
             Name = name;
             GlobalIndex = gbix;
             Image = bitmap;
+			MipmapData = mipdata;
             DataFormatInf = format;
 			DataFormat = ppx;
 			PixelBitType = pbx;
@@ -485,6 +504,7 @@ namespace TextureEditor
             Mipmap = (SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0;
 			TextureData = str;
 			OriginalFileExtension = origExt;
+			IsPAK = OriginalFileExtension == ".dds" ? true: false;
         }
 
         public override bool CheckMipmap()
@@ -506,6 +526,7 @@ namespace TextureEditor
 			GlobalIndex = tex.GlobalIndex;
 			Image = tex.Image;
 			Mipmap = tex.Mipmap;
+			MipmapData = tex.MipmapData;
 			if (tex is PvrTextureInfo pv)
 			{
 				TextureData = pv.TextureData;
@@ -545,6 +566,7 @@ namespace TextureEditor
 			GlobalIndex = texture.GlobalIndex;
 			DataFormat = texture.DXGIPixelFormat;
 			Mipmap = texture.HasMipmaps;
+			MipmapData = texture.MipmapsToBitmap();
 			PixelFormat = texture.DXGIPixelFormat;
 			Image = texture.ToBitmap();
 		}

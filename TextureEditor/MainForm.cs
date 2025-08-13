@@ -651,6 +651,7 @@ namespace TextureEditor
 			useDDSInPAKsToolStripMenuItem.Checked = settingsfile.UseDDSforPAK;
 			useHQDDSToolStripMenuItem.Checked = settingsfile.UseHQDDS;
 			useDDSInPVMXToolStripMenuItem.Checked = settingsfile.UseDDSforPVMX;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked = settingsfile.UseDDSUncompressedForPAK;
 			useDDSInTexturePacksToolStripMenuItem.Checked = settingsfile.UseDDSforTexPack;
 			usePNGToolStripMenuItem.Checked = settingsfile.UsePNGforPAK;
 			useDDSColorSpaceToolStripMenuItem.Checked = settingsfile.UseDDSColorSpace;
@@ -801,9 +802,9 @@ namespace TextureEditor
 						List<byte> inf = new List<byte>(textures.Count * 0x3C);
 						foreach (PakTextureInfo item in textures)
 						{
-							if (item.IsPAK == false && useDDSColorSpaceToolStripMenuItem.Checked)
+							if (useDDSColorSpaceToolStripMenuItem.Checked)
 							{
-								byte[] tb = WriteDDSFile(item, item.Image);
+								byte[] tb = WriteDDSFile(item, item.MipmapData, item.Image);
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
 									name = name.Substring(0, 0x1C);
@@ -824,15 +825,14 @@ namespace TextureEditor
 							}
 							else
 							{
-								using (MemoryStream tex = EncodeDDSorPNG(item, useDDSInPAKsToolStripMenuItem.Checked || useDDSColorSpaceToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked))
+								using (MemoryStream tex = EncodeDDSorPNG(item, !usePNGToolStripMenuItem.Checked, false, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked))
 								{
 									byte[] tb = tex.ToArray();
 									string name = item.Name.ToLowerInvariant();
 									if (name.Length > 0x1C)
 										name = name.Substring(0, 0x1C);
 									name = name.Trim();
-									if (useDDSInPAKsToolStripMenuItem.Checked || useDDSColorSpaceToolStripMenuItem.Checked ||
-										((useDDSInPAKsToolStripMenuItem.Checked || useDDSColorSpaceToolStripMenuItem.Checked) && useHQDDSToolStripMenuItem.Checked))
+									if (!usePNGToolStripMenuItem.Checked)
 									{
 										pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb));
 									}
@@ -1055,7 +1055,7 @@ namespace TextureEditor
 								case TextureFiles.DDS:
 									if (tex is PakTextureInfo paktr)
 									{
-										exportData = EncodeDDSorPNG(paktr, true, false, useHQDDSToolStripMenuItem.Checked);
+										exportData = EncodeDDSorPNG(paktr, true, false, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
 										File.WriteAllBytes(Path.Combine(dir, paktr.Name + ext), exportData.ToArray());
 									}
 									else
@@ -1063,12 +1063,12 @@ namespace TextureEditor
 										pakti = new PakTextureInfo(tex);
 										if (!useDDSColorSpaceToolStripMenuItem.Checked)
 										{
-											exportData = EncodeDDSorPNG(pakti, true, false, useHQDDSToolStripMenuItem.Checked);
+											exportData = EncodeDDSorPNG(pakti, true, false, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
 											File.WriteAllBytes(Path.Combine(dir, pakti.Name + ext), exportData.ToArray());
 										}
 										else
 										{
-											byte[] textureinfo = WriteDDSFile(pakti, tex.Image);
+											byte[] textureinfo = WriteDDSFile(pakti, pakti.MipmapData, pakti.Image);
 											File.WriteAllBytes(Path.Combine(dir, pakti.Name + ext), textureinfo.ToArray());
 										}
 									}
@@ -1494,9 +1494,12 @@ namespace TextureEditor
 		{
 			if (textures[listBox1.SelectedIndex].Mipmap != mipmapCheckBox.Checked)
 			{
-				// Erase cached texture data
-				if (mipmapCheckBox.Enabled)
-					textures[listBox1.SelectedIndex].TextureData = null;
+				// Erase cached texture data if it's not a PAK DDS file.
+				if (textures[listBox1.SelectedIndex] is not PakTextureInfo pakt)
+				{
+					if (mipmapCheckBox.Enabled)
+						textures[listBox1.SelectedIndex].TextureData = null;
+				}
 				textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
 				// Update surface flags for PAK textures
 				if (textures[listBox1.SelectedIndex] is PakTextureInfo pk)
@@ -1632,20 +1635,27 @@ namespace TextureEditor
 		{
 			Bitmap bitmap_temp;
 			Bitmap textureimg;
+			Bitmap[] mipbitarray;
 			if (PvrTexture.Is(texmemstr))
 			{
 				PvrTexture pvrt = new PvrTexture(texmemstr);
 				bitmap_temp = pvrt.ToBitmap();
+				if (pvrt.HasMipmaps)
+					mipbitarray = pvrt.MipmapsToBitmap();
 			}
 			else if (GvrTexture.Is(texmemstr))
 			{
 				GvrTexture gvrt = new GvrTexture(texmemstr);
 				bitmap_temp = gvrt.ToBitmap();
+				if (gvrt.HasMipmaps)
+					mipbitarray = gvrt.MipmapsToBitmap();
 			}
 			else if (XvrTexture.Is(texmemstr))
 			{
 				XvrTexture xvrt = new XvrTexture(texmemstr);
 				bitmap_temp = xvrt.ToBitmap();
+				if (xvrt.HasMipmaps)
+					mipbitarray = xvrt.MipmapsToBitmap();
 			}
 			else
 			{
@@ -1661,7 +1671,7 @@ namespace TextureEditor
 						case Pfim.ImageFormat.Rgb24:
 							pxformat = PixelFormat.Format24bppRgb;
 							break;
-							//Temporary fix. This prevents Rgba16 DDS textures from crashing the editor. 
+						//Temporary fix. This prevents Rgba16 DDS textures from crashing the editor. 
 						case Pfim.ImageFormat.Rgba16:
 							pxformat = PixelFormat.Format16bppArgb1555;
 							break;
@@ -1879,7 +1889,7 @@ namespace TextureEditor
 						else if (info is XvrTextureInfo xvrt)
 							info.TextureData = EncodeXVR(xvrt);
 						else if (info is PakTextureInfo pakt)
-							info.TextureData = EncodeDDSorPNG(pakt, useDDSInPAKsToolStripMenuItem.Checked || useDDSColorSpaceToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked);
+							info.TextureData = EncodeDDSorPNG(pakt, !usePNGToolStripMenuItem.Checked, false, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
 						else if (info is PvmxTextureInfo pvmxt)
 							info.TextureData = EncodeDDSorPNG(pvmxt, useDDSInPVMXToolStripMenuItem.Checked, false, useHQDDSToolStripMenuItem.Checked);
 						else
@@ -2064,7 +2074,7 @@ namespace TextureEditor
 				   (Multiply8BitValue(b, 31)));
 		}
 		public static byte[] BitmapToByteArray(Bitmap bitmap)
-		{ 
+		{
 			BitmapData bmpdata = null;
 			try
 			{
@@ -2083,7 +2093,7 @@ namespace TextureEditor
 					bitmap.UnlockBits(bmpdata);
 			}
 		}
-		private byte[] ConvertBitmapToDDS(Bitmap bmp, PakTextureInfo pti)
+		private byte[] ConvertBitmapToDDS(Bitmap[] bmp, PakTextureInfo pti, Bitmap bmpfallback = null)
 		{
 			byte r = 0;
 			byte g = 0;
@@ -2091,65 +2101,131 @@ namespace TextureEditor
 			byte a = 0;
 			int numpixels;
 			int bits = 0;
-
-			byte[] imagebytes = BitmapToByteArray(bmp);
 			List<byte> rawlist = new List<byte>();
-			numpixels = bmp.Width * bmp.Height;
-			byte[] compressedbits = [];
-			for (int i = 0; i < numpixels; ++i)
+			if (bmp != null)
 			{
-				b = imagebytes[(4 * i) + 0];
-				g = imagebytes[(4 * i) + 1];
-				r = imagebytes[(4 * i) + 2];
-				a = imagebytes[(4 * i) + 3];
+				foreach (Bitmap bitmap in bmp)
+				{
+					byte[] imagebytes = BitmapToByteArray(bitmap);
+					numpixels = bitmap.Width * bitmap.Height;
+					byte[] compressedbits = [];
+					for (int i = 0; i < numpixels; ++i)
+					{
+						b = imagebytes[(4 * i) + 0];
+						g = imagebytes[(4 * i) + 1];
+						r = imagebytes[(4 * i) + 2];
+						a = imagebytes[(4 * i) + 3];
+						switch (pti.PixelBitType)
+						{
+							case DDSPixelBitFormat.ARGB8888:
+							default:
+								rawlist.Add(b);
+								rawlist.Add(g);
+								rawlist.Add(r);
+								rawlist.Add(a);
+								break;
+							case DDSPixelBitFormat.BGRA8888:
+								rawlist.Add(r);
+								rawlist.Add(g);
+								rawlist.Add(b);
+								rawlist.Add(a);
+								break;
+							case DDSPixelBitFormat.RGB565:
+								compressedbits = BitConverter.GetBytes(DDSEncodeRGB565(r, g, b));
+								rawlist.Add(compressedbits[0]);
+								rawlist.Add(compressedbits[1]);
+								break;
+							case DDSPixelBitFormat.ARGB1555:
+								compressedbits = BitConverter.GetBytes(DDSEncodeRGBA1555(r, g, b, a));
+								rawlist.Add(compressedbits[0]);
+								rawlist.Add(compressedbits[1]);
+								break;
+							case DDSPixelBitFormat.ARGB4444:
+								compressedbits = BitConverter.GetBytes(DDSEncodeRGBA4444(r, g, b, a));
+								rawlist.Add(compressedbits[0]);
+								rawlist.Add(compressedbits[1]);
+								break;
+						}
+					}
+					switch (pti.PixelBitType)
+					{
+						case DDSPixelBitFormat.ARGB8888:
+						case DDSPixelBitFormat.BGRA8888:
+						default:
+							bits = 4;
+							break;
+						case DDSPixelBitFormat.RGB565:
+						case DDSPixelBitFormat.ARGB1555:
+						case DDSPixelBitFormat.ARGB4444:
+							bits = 2;
+							break;
+					}
+				}
+				if (pti.Mipmap && bmp.Length <= 1)
+				{
+					rawlist.AddRange(GenerateDDSMipmaps(pti, rawlist.ToArray(), bits, false, GetMipmapNum(bmp[0])));
+				}
+			}
+			else
+			{
+				byte[] imagebytes = BitmapToByteArray(bmpfallback);
+				numpixels = bmpfallback.Width * bmpfallback.Height;
+				byte[] compressedbits = [];
 				switch (pti.PixelBitType)
 				{
 					case DDSPixelBitFormat.ARGB8888:
-					default:
-						rawlist.Add(b);
-						rawlist.Add(g);
-						rawlist.Add(r);
-						rawlist.Add(a);
-						break;
 					case DDSPixelBitFormat.BGRA8888:
-						rawlist.Add(r);
-						rawlist.Add(g);
-						rawlist.Add(b);
-						rawlist.Add(a);
+					default:
+						bits = 4;
 						break;
 					case DDSPixelBitFormat.RGB565:
-						compressedbits = BitConverter.GetBytes(DDSEncodeRGB565(r, g, b));
-						rawlist.Add(compressedbits[0]);
-						rawlist.Add(compressedbits[1]);
-						break;
 					case DDSPixelBitFormat.ARGB1555:
-						compressedbits = BitConverter.GetBytes(DDSEncodeRGBA1555(r, g, b, a));
-						rawlist.Add(compressedbits[0]);
-						rawlist.Add(compressedbits[1]);
-						break;
 					case DDSPixelBitFormat.ARGB4444:
-						compressedbits = BitConverter.GetBytes(DDSEncodeRGBA4444(r, g, b, a));
-						rawlist.Add(compressedbits[0]);
-						rawlist.Add(compressedbits[1]);
+						bits = 2;
 						break;
 				}
-			}
-			switch (pti.PixelBitType)
-			{
-				case DDSPixelBitFormat.ARGB8888:
-				case DDSPixelBitFormat.BGRA8888:
-				default:
-					bits = 4;
-					break;
-				case DDSPixelBitFormat.RGB565:
-				case DDSPixelBitFormat.ARGB1555:
-				case DDSPixelBitFormat.ARGB4444:
-					bits = 2;
-					break;
-			}
-			if (pti.Mipmap)
-			{
-				rawlist.AddRange(GenerateDDSMipmaps(pti, rawlist.ToArray(), bits, false, GetMipmapNum(bmp)));
+				for (int i = 0; i < numpixels; ++i)
+				{
+					b = imagebytes[(4 * i) + 0];
+					g = imagebytes[(4 * i) + 1];
+					r = imagebytes[(4 * i) + 2];
+					a = imagebytes[(4 * i) + 3];
+					switch (pti.PixelBitType)
+					{
+						case DDSPixelBitFormat.ARGB8888:
+						default:
+							rawlist.Add(b);
+							rawlist.Add(g);
+							rawlist.Add(r);
+							rawlist.Add(a);
+							break;
+						case DDSPixelBitFormat.BGRA8888:
+							rawlist.Add(r);
+							rawlist.Add(g);
+							rawlist.Add(b);
+							rawlist.Add(a);
+							break;
+						case DDSPixelBitFormat.RGB565:
+							compressedbits = BitConverter.GetBytes(DDSEncodeRGB565(r, g, b));
+							rawlist.Add(compressedbits[0]);
+							rawlist.Add(compressedbits[1]);
+							break;
+						case DDSPixelBitFormat.ARGB1555:
+							compressedbits = BitConverter.GetBytes(DDSEncodeRGBA1555(r, g, b, a));
+							rawlist.Add(compressedbits[0]);
+							rawlist.Add(compressedbits[1]);
+							break;
+						case DDSPixelBitFormat.ARGB4444:
+							compressedbits = BitConverter.GetBytes(DDSEncodeRGBA4444(r, g, b, a));
+							rawlist.Add(compressedbits[0]);
+							rawlist.Add(compressedbits[1]);
+							break;
+					}
+				}
+				if (pti.Mipmap)
+				{
+					rawlist.AddRange(GenerateDDSMipmaps(pti, rawlist.ToArray(), bits, false, GetMipmapNum(bmpfallback)));
+				}
 			}
 			return rawlist.ToArray();
 		}
@@ -2199,7 +2275,7 @@ namespace TextureEditor
 
 			return mips.ToArray();
 		}
-		private List<byte> CreateDDSHeader(PakTextureInfo pti, Bitmap bmp)
+		private List<byte> CreateDDSHeader(PakTextureInfo pti, Bitmap[] bmp, Bitmap bmpfallback = null)
 		{
 			switch (pti.PixelBitType)
 			{
@@ -2244,7 +2320,15 @@ namespace TextureEditor
 			{
 				flags |= DDSHeaderFlags.MipmapCount;
 				caps |= DDSCaps.Complex | DDSCaps.Mipmap;
-				mipmapnum = GetMipmapNum(bmp);
+				if (bmp != null)
+				{
+					if (bmp.Length == 1)
+						mipmapnum = GetMipmapNum(bmp[0]);
+					else
+						mipmapnum = bmp.Length;
+				}
+				else
+					mipmapnum = GetMipmapNum(bmpfallback);
 			}
 			else
 			{
@@ -2255,9 +2339,18 @@ namespace TextureEditor
 			outBytes.Add(0x7C);
 			outBytes.AddRange(new byte[3]);
 			outBytes.AddRange(BitConverter.GetBytes((uint)flags));
-			outBytes.AddRange(BitConverter.GetBytes(bmp.Height));
-			outBytes.AddRange(BitConverter.GetBytes(bmp.Width));
-			outBytes.AddRange(BitConverter.GetBytes((uint)((bmp.Width * pixelbits + 7) / 8)));
+			if (bmp != null)
+			{
+				outBytes.AddRange(BitConverter.GetBytes(bmp[0].Height));
+				outBytes.AddRange(BitConverter.GetBytes(bmp[0].Width));
+				outBytes.AddRange(BitConverter.GetBytes((uint)((bmp[0].Width * pixelbits + 7) / 8)));
+			}
+			else
+			{
+				outBytes.AddRange(BitConverter.GetBytes(bmpfallback.Height));
+				outBytes.AddRange(BitConverter.GetBytes(bmpfallback.Width));
+				outBytes.AddRange(BitConverter.GetBytes((uint)((bmpfallback.Width * pixelbits + 7) / 8)));
+			}
 			//Volume maps? Don't need 'em here! Default to 1.
 			outBytes.Add(1);
 			outBytes.AddRange(new byte[3]);
@@ -2279,11 +2372,11 @@ namespace TextureEditor
 			outBytes.AddRange(new byte[16]);
 			return outBytes;
 		}
-		private byte[] WriteDDSFile(PakTextureInfo pti, Bitmap bmp)
+		private byte[] WriteDDSFile(PakTextureInfo pti, Bitmap[] bmp, Bitmap bmpfallback = null)
 		{
 			List<byte> ddsbytes = new();
-			ddsbytes.AddRange(CreateDDSHeader(pti, bmp));
-			ddsbytes.AddRange(ConvertBitmapToDDS(bmp, pti));
+			ddsbytes.AddRange(CreateDDSHeader(pti, bmp, bmpfallback));
+			ddsbytes.AddRange(ConvertBitmapToDDS(bmp, pti, bmpfallback));
 			return ddsbytes.ToArray();
 		}
 		#endregion
@@ -2986,11 +3079,16 @@ namespace TextureEditor
 		{
 			settingsfile.UsePNGforPAK = usePNGToolStripMenuItem.Checked;
 		}
+		private void useDDSInPAKsUncompressedLargestSizeToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			settingsfile.UseDDSUncompressedForPAK = useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked;
+		}
 
 		private void useDDSInPAKsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			useDDSInPAKsToolStripMenuItem.Checked = true;
 			useDDSColorSpaceToolStripMenuItem.Checked = false;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked = false;
 			usePNGToolStripMenuItem.Checked = false;
 		}
 
@@ -2998,6 +3096,7 @@ namespace TextureEditor
 		{
 			useDDSInPAKsToolStripMenuItem.Checked = false;
 			useDDSColorSpaceToolStripMenuItem.Checked = true;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked = false;
 			usePNGToolStripMenuItem.Checked = false;
 		}
 
@@ -3005,7 +3104,16 @@ namespace TextureEditor
 		{
 			useDDSInPAKsToolStripMenuItem.Checked = false;
 			useDDSColorSpaceToolStripMenuItem.Checked = false;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked = false;
 			usePNGToolStripMenuItem.Checked = true;
+		}
+
+		private void useDDSInPAKsUncompressedLargestSizeToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			useDDSInPAKsToolStripMenuItem.Checked = false;
+			useDDSColorSpaceToolStripMenuItem.Checked = false;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked = true;
+			usePNGToolStripMenuItem.Checked = false;
 		}
 	}
 }

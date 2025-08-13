@@ -80,8 +80,9 @@
 			textureFilteringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			DDSPAKSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			useDDSInPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			useDDSColorSpaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			useDDSInPAKsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			usePNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			useHQDDSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -552,10 +553,30 @@
 			// 
 			// DDSPAKSettingsToolStripMenuItem
 			// 
-			DDSPAKSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { useDDSInPAKsToolStripMenuItem, useDDSColorSpaceToolStripMenuItem, usePNGToolStripMenuItem, toolStripSeparator6, useHQDDSToolStripMenuItem, useDDSInTexturePacksToolStripMenuItem, useDDSInPVMXToolStripMenuItem });
+			DDSPAKSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { useDDSInPAKsUncompressedLargestSizeToolStripMenuItem, useDDSColorSpaceToolStripMenuItem, useDDSInPAKsToolStripMenuItem, usePNGToolStripMenuItem, toolStripSeparator6, useHQDDSToolStripMenuItem, useDDSInTexturePacksToolStripMenuItem, useDDSInPVMXToolStripMenuItem });
 			DDSPAKSettingsToolStripMenuItem.Name = "DDSPAKSettingsToolStripMenuItem";
 			DDSPAKSettingsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
 			DDSPAKSettingsToolStripMenuItem.Text = "DDS/PAK Settings";
+			// 
+			// useDDSInPAKsUncompressedLargestSizeToolStripMenuItem
+			// 
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.CheckOnClick = true;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Name = "useDDSInPAKsUncompressedLargestSizeToolStripMenuItem";
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Text = "Use DDS in PAKs (Highest Quality, Largest Size)";
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.ToolTipText = resources.GetString("useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.ToolTipText");
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.CheckedChanged += useDDSInPAKsUncompressedLargestSizeToolStripMenuItem_CheckedChanged;
+			useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Click += useDDSInPAKsUncompressedLargestSizeToolStripMenuItem_Click;
+			// 
+			// useDDSColorSpaceToolStripMenuItem
+			// 
+			useDDSColorSpaceToolStripMenuItem.CheckOnClick = true;
+			useDDSColorSpaceToolStripMenuItem.Name = "useDDSColorSpaceToolStripMenuItem";
+			useDDSColorSpaceToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
+			useDDSColorSpaceToolStripMenuItem.Text = "Use DDS in PAKs (Best Fit, Medium Size)";
+			useDDSColorSpaceToolStripMenuItem.ToolTipText = resources.GetString("useDDSColorSpaceToolStripMenuItem.ToolTipText");
+			useDDSColorSpaceToolStripMenuItem.CheckedChanged += useDDSColorSpaceToolStripMenuItem_CheckedChanged;
+			useDDSColorSpaceToolStripMenuItem.Click += useDDSColorSpaceToolStripMenuItem_Click;
 			// 
 			// useDDSInPAKsToolStripMenuItem
 			// 
@@ -563,26 +584,18 @@
 			useDDSInPAKsToolStripMenuItem.CheckOnClick = true;
 			useDDSInPAKsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			useDDSInPAKsToolStripMenuItem.Name = "useDDSInPAKsToolStripMenuItem";
-			useDDSInPAKsToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-			useDDSInPAKsToolStripMenuItem.Text = "Use DDS in PAKs (Compressed)";
+			useDDSInPAKsToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
+			useDDSInPAKsToolStripMenuItem.Text = "Use DDS in PAKs (Compressed, Small Size)";
 			useDDSInPAKsToolStripMenuItem.ToolTipText = resources.GetString("useDDSInPAKsToolStripMenuItem.ToolTipText");
 			useDDSInPAKsToolStripMenuItem.CheckedChanged += useDDSInPAKsToolStripMenuItem_CheckedChanged;
 			useDDSInPAKsToolStripMenuItem.Click += useDDSInPAKsToolStripMenuItem_Click;
 			// 
-			// useDDSColorSpaceToolStripMenuItem
-			// 
-			useDDSColorSpaceToolStripMenuItem.Name = "useDDSColorSpaceToolStripMenuItem";
-			useDDSColorSpaceToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-			useDDSColorSpaceToolStripMenuItem.Text = "Use DDS in PAKs (Color Space)";
-			useDDSColorSpaceToolStripMenuItem.ToolTipText = resources.GetString("useDDSColorSpaceToolStripMenuItem.ToolTipText");
-			useDDSColorSpaceToolStripMenuItem.CheckedChanged += useDDSColorSpaceToolStripMenuItem_CheckedChanged;
-			useDDSColorSpaceToolStripMenuItem.Click += useDDSColorSpaceToolStripMenuItem_Click;
-			// 
 			// usePNGToolStripMenuItem
 			// 
+			usePNGToolStripMenuItem.CheckOnClick = true;
 			usePNGToolStripMenuItem.Name = "usePNGToolStripMenuItem";
-			usePNGToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-			usePNGToolStripMenuItem.Text = "Use PNG in PAKs";
+			usePNGToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
+			usePNGToolStripMenuItem.Text = "Use PNG in PAKs (No Mipmaps, Smallest Size)";
 			usePNGToolStripMenuItem.ToolTipText = "All texture images will be saved as PNG files inside the PAK container.\r\nPNG has better quality but loads slower and lacks built-in mipmaps.";
 			usePNGToolStripMenuItem.CheckedChanged += usePNGToolStripMenuItem_CheckedChanged;
 			usePNGToolStripMenuItem.Click += usePNGToolStripMenuItem_Click;
@@ -590,7 +603,7 @@
 			// toolStripSeparator6
 			// 
 			toolStripSeparator6.Name = "toolStripSeparator6";
-			toolStripSeparator6.Size = new System.Drawing.Size(234, 6);
+			toolStripSeparator6.Size = new System.Drawing.Size(318, 6);
 			// 
 			// useHQDDSToolStripMenuItem
 			// 
@@ -598,16 +611,16 @@
 			useHQDDSToolStripMenuItem.CheckOnClick = true;
 			useHQDDSToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
 			useHQDDSToolStripMenuItem.Name = "useHQDDSToolStripMenuItem";
-			useHQDDSToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-			useHQDDSToolStripMenuItem.Text = "Use High-Quality DDS Format";
-			useHQDDSToolStripMenuItem.ToolTipText = "If checked, all DDS textures will be saved in uncompressed ARGB8888 format.\r\nThis will only apply if DDS is used for texture pack exports, PVMX,\r\nand if compressed DDS files are used in PAKs.";
+			useHQDDSToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
+			useHQDDSToolStripMenuItem.Text = "Use High-Quality DDS For PVMX/Texture Packs";
+			useHQDDSToolStripMenuItem.ToolTipText = "If checked, all DDS textures will be saved in uncompressed ARGB8888 format.\r\nThis will only apply for texture pack exports and PVMX encoding.";
 			useHQDDSToolStripMenuItem.CheckedChanged += useHQDDSToolStripMenuItem_CheckedChanged;
 			// 
 			// useDDSInTexturePacksToolStripMenuItem
 			// 
 			useDDSInTexturePacksToolStripMenuItem.CheckOnClick = true;
 			useDDSInTexturePacksToolStripMenuItem.Name = "useDDSInTexturePacksToolStripMenuItem";
-			useDDSInTexturePacksToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+			useDDSInTexturePacksToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
 			useDDSInTexturePacksToolStripMenuItem.Text = "Use DDS in Texture Packs";
 			useDDSInTexturePacksToolStripMenuItem.ToolTipText = "Uncheck to use PNG instead of DDS textures in folder texture packs. PNG has better quality but loads slower and lacks built-in mipmaps.";
 			useDDSInTexturePacksToolStripMenuItem.CheckedChanged += useDDSInTexturePacksToolStripMenuItem_CheckedChanged;
@@ -616,7 +629,7 @@
 			// 
 			useDDSInPVMXToolStripMenuItem.CheckOnClick = true;
 			useDDSInPVMXToolStripMenuItem.Name = "useDDSInPVMXToolStripMenuItem";
-			useDDSInPVMXToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+			useDDSInPVMXToolStripMenuItem.Size = new System.Drawing.Size(321, 22);
 			useDDSInPVMXToolStripMenuItem.Text = "Use DDS in PVMX";
 			useDDSInPVMXToolStripMenuItem.ToolTipText = "Uncheck to use PNG instead of DDS textures in PVMX files. PNG has better quality but loads slower and lacks built-in mipmaps.";
 			useDDSInPVMXToolStripMenuItem.CheckedChanged += useDDSInPVMXToolStripMenuItem_CheckedChanged;
@@ -1380,5 +1393,6 @@
 		private System.Windows.Forms.ToolStripMenuItem useHQDDSToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem useDDSInTexturePacksToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem useDDSInPVMXToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem useDDSInPAKsUncompressedLargestSizeToolStripMenuItem;
 	}
 }
