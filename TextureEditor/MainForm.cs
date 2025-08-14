@@ -804,6 +804,10 @@ namespace TextureEditor
 						{
 							if (useDDSColorSpaceToolStripMenuItem.Checked)
 							{
+								if (item.DataFormat == DDSPixelFormat.Invalid)
+									item.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(item.Image, false);
+								if (item.PixelBitType == DDSPixelBitFormat.Invalid)
+									item.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(item.Image, false);
 								byte[] tb = WriteDDSFile(item, item.MipmapData, item.Image);
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
@@ -885,10 +889,10 @@ namespace TextureEditor
 						case TextureFormat.GVM:
 							textures = new List<TextureInfo>(textures.Cast<GvrTextureInfo>().Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
-						case TextureFormat.PVMX:
 						case TextureFormat.PAK:
 							textures = new List<TextureInfo>(textures.Cast<PakTextureInfo>().Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
+						case TextureFormat.PVMX:
 						case TextureFormat.XVM:
 							textures = new List<TextureInfo>(textures.Select(a => new PvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
@@ -900,8 +904,10 @@ namespace TextureEditor
 						case TextureFormat.PVM:
 							textures = new List<TextureInfo>(textures.Cast<PvrTextureInfo>().Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
-						case TextureFormat.PVMX:
 						case TextureFormat.PAK:
+							textures = new List<TextureInfo>(textures.Cast<PakTextureInfo>().Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
+							break;
+						case TextureFormat.PVMX:
 						case TextureFormat.XVM:
 							textures = new List<TextureInfo>(textures.Select(a => new GvrTextureInfo(a)).Cast<TextureInfo>());
 							break;
@@ -1213,7 +1219,7 @@ namespace TextureEditor
 							// Non-indexed
 							else
 							{
-								exportData = EncodeDDSorPNG(tex, useDDSInTexturePacksToolStripMenuItem.Checked, true);
+								exportData = EncodeDDSorPNG(tex, useDDSInTexturePacksToolStripMenuItem.Checked, true, useHQDDSToolStripMenuItem.Checked);
 							}
 							if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 								texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
@@ -1704,7 +1710,7 @@ namespace TextureEditor
 
 		private void importButton_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp" };
+			OpenFileDialog dlg = new OpenFileDialog() { DefaultExt = "pvr", Filter = "Texture Files|*.pvr;*.gvr;*.xvr;*.png;*.jpg;*.jpeg;*.gif;*.bmp;*.dds" };
 			if (!string.IsNullOrEmpty(listBox1.GetItemText(listBox1.SelectedItem)))
 				dlg.FileName = listBox1.GetItemText(listBox1.SelectedItem);
 			DialogResult res = dlg.ShowDialog(this);
@@ -1829,8 +1835,16 @@ namespace TextureEditor
 						textures[listBox1.SelectedIndex] = new PvmxTextureInfo(oldpvmx.Name, oldpvmx.GlobalIndex, CreateBitmapFromStream(texmemstr), texmemstr);
 						break;
 					case TextureFormat.PAK:
+						Bitmap ddsbmp = CreateBitmapFromStream(texmemstr);
 						PakTextureInfo oldpak = (PakTextureInfo)textures[listBox1.SelectedIndex];
-						textures[listBox1.SelectedIndex] = new PakTextureInfo(name, oldpak.GlobalIndex, CreateBitmapFromStream(texmemstr), oldpak.DataFormatInf, oldpak.DataFormat, oldpak.PixelBitType, oldpak.SurfaceFlags, texmemstr, oldpak.OriginalFileExtension);
+						PakTextureInfo newpak = new PakTextureInfo(name, oldpak.GlobalIndex, ddsbmp, oldpak.DataFormatInf, oldpak.DataFormat, oldpak.PixelBitType, oldpak.SurfaceFlags, texmemstr, oldpak.OriginalFileExtension);
+						if (oldpak.OriginalFileExtension == ".dds")
+						{
+							newpak.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(ddsbmp, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
+							newpak.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(ddsbmp, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
+						}
+						textures[listBox1.SelectedIndex] = newpak;
+						//textures[listBox1.SelectedIndex] = new PakTextureInfo(name, oldpak.GlobalIndex, CreateBitmapFromStream(texmemstr), oldpak.DataFormatInf, oldpak.DataFormat, oldpak.PixelBitType, oldpak.SurfaceFlags, texmemstr, oldpak.OriginalFileExtension);
 						break;
 					default:
 						break;
@@ -2101,6 +2115,7 @@ namespace TextureEditor
 			byte a = 0;
 			int numpixels;
 			int bits = 0;
+			DDSPixelBitFormat srcpixels;
 			List<byte> rawlist = new List<byte>();
 			if (bmp != null)
 			{
@@ -2115,7 +2130,7 @@ namespace TextureEditor
 						g = imagebytes[(4 * i) + 1];
 						r = imagebytes[(4 * i) + 2];
 						a = imagebytes[(4 * i) + 3];
-						switch (pti.PixelBitType)
+							switch (pti.PixelBitType)
 						{
 							case DDSPixelBitFormat.ARGB8888:
 							default:

@@ -78,6 +78,9 @@ namespace TextureEditor
 					case DDSPixelBitFormat.ARGB8888:
 						PixelFormat = PvrPixelFormat.Argb8888;
 						break;
+					default:
+						PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(pakv.Image);
+						break;
 				}
 			}
 			else
@@ -151,30 +154,30 @@ namespace TextureEditor
             Mipmap = tex.Mipmap;
             PixelFormat = GvrPixelFormat.NonIndexed;
             DataFormat = GvrDataFormat.Unknown;
-            if (tex is GvrTextureInfo gvrt)
-            {
-                PixelFormat = gvrt.PixelFormat;
-                DataFormat = gvrt.DataFormat;
-                TextureData = gvrt.TextureData;
-				MipmapData = gvrt.MipmapData;
+			if (tex is GvrTextureInfo gvrt)
+			{
+				PixelFormat = gvrt.PixelFormat;
+				DataFormat = gvrt.DataFormat;
+				TextureData = gvrt.TextureData;
+				//MipmapData = gvrt.MipmapData;
 			}
-            else if (tex is PvrTextureInfo pvrt)
-            {
-                switch (pvrt.DataFormat)
-                {
-                    case PvrDataFormat.Index4:
-                        DataFormat = GvrDataFormat.Index4;
-                        break;
-                    case PvrDataFormat.Index8:
-                        DataFormat = GvrDataFormat.Index8;
-                        break;
-                    default:
-                        DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false, true);
-                        break;
-                }
-            }
-            else
-                DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false, true);
+			else if (tex is PvrTextureInfo pvrt)
+			{
+				switch (pvrt.DataFormat)
+				{
+					case PvrDataFormat.Index4:
+						DataFormat = GvrDataFormat.Index4;
+						break;
+					case PvrDataFormat.Index8:
+						DataFormat = GvrDataFormat.Index8;
+						break;
+					default:
+						DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false, true);
+						break;
+				}
+			}
+			else
+				DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false, true);
         }
 
 		public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
@@ -206,7 +209,7 @@ namespace TextureEditor
 			else
 			{
 				Image = texture.ToBitmap();
-				MipmapData = texture.MipmapsToBitmap();
+				//MipmapData = texture.MipmapsToBitmap();
 			}
         }
 
@@ -402,8 +405,8 @@ namespace TextureEditor
 						DataFormatInf = GvrDataFormat.Dxt1;
 						break;
 					case GvrDataFormat.Dxt1:
-						DataFormat = DDSPixelFormat.RGBA;
-						PixelBitType = DDSPixelBitFormat.ARGB1555;
+						DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(tex.Image, false);
+						PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(tex.Image, false);
 						DataFormatInf = GvrDataFormat.Dxt1;
 						break;
 					case GvrDataFormat.Rgb5a3:

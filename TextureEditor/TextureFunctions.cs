@@ -172,6 +172,42 @@ namespace TextureEditor
 					return GvrPixelFormat.NonIndexed;
 			}
 		}
+		public static DDSPixelFormat GetDDSPixelTypeFromBitmap(Bitmap bmp, bool useHQ)
+		{
+			int tlevels = GetAlphaLevelFromBitmap(bmp);
+			if (useHQ)
+			{
+				return DDSPixelFormat.RGBA;
+			}
+			else
+			{
+				if (tlevels < 1)
+					return DDSPixelFormat.RGB;
+				else
+					return DDSPixelFormat.RGBA;
+			}
+		}
+		public static DDSPixelBitFormat GetDDSPixelFormatFromBitmap(Bitmap bmp, bool useHQ)
+		{
+			int tlevels = GetAlphaLevelFromBitmap(bmp);
+			if (useHQ)
+			{
+				return DDSPixelBitFormat.ARGB8888;
+			}
+			else
+			{
+				switch (tlevels)
+				{
+					case 0:
+					default:
+						return DDSPixelBitFormat.RGB565;
+					case 1:
+						return DDSPixelBitFormat.ARGB1555;
+					case 2:
+						return DDSPixelBitFormat.ARGB4444;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Looks for the GBIX header in a MemoryStream and sets the GBIX to the specified value. 
