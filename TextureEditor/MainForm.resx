@@ -135,6 +135,25 @@
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>All texture images will be saved as DDS files using the ARGB8888 pixel format.
+Mipmaps will be generated and no quality loss will be seen, but the overall file size will be large.
+NOTE: This will not apply to pre-existing DDS files.</value>
+  </data>
+  <data name="useDDSColorSpaceToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>(Experimental)
+All texture images will be saved as DDS files with limited color space within the PAK container.
+This is an uncompressed option, so the filesize will be larger than both PNG and DDS (Compressed).
+Best used with texture packs containing PVR/GVR textures, as their color spaces will be mostly retained,
+resulting in virtually no quality loss.
+Mipmaps will be generated when applicable.
+NOTE: This will not apply to pre-existing DDS files.</value>
+  </data>
+  <data name="useDDSInPAKsToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>All texture images will be saved as DDS files with compression applied within the PAK container. 
+This yields the smallest filesize and generates mipmaps, but all textures will suffer from quality loss.
+NOTE: This will not apply to pre-existing DDS files.</value>
+  </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>132, 17</value>
   </metadata>

@@ -150,7 +150,7 @@ namespace TextureEditor
 			if (!hqGVM)
 			{
 				int tlevels = GetAlphaLevelFromBitmap(image);
-				if (tlevels == 0)
+				if (tlevels < 2)
 					return GvrDataFormat.Dxt1;
 				else
 					return GvrDataFormat.Rgb5a3;
@@ -170,6 +170,42 @@ namespace TextureEditor
 				case 0:
 				default:
 					return GvrPixelFormat.NonIndexed;
+			}
+		}
+		public static DDSPixelFormat GetDDSPixelTypeFromBitmap(Bitmap bmp, bool useHQ)
+		{
+			int tlevels = GetAlphaLevelFromBitmap(bmp);
+			if (useHQ)
+			{
+				return DDSPixelFormat.RGBA;
+			}
+			else
+			{
+				if (tlevels < 1)
+					return DDSPixelFormat.RGB;
+				else
+					return DDSPixelFormat.RGBA;
+			}
+		}
+		public static DDSPixelBitFormat GetDDSPixelFormatFromBitmap(Bitmap bmp, bool useHQ)
+		{
+			int tlevels = GetAlphaLevelFromBitmap(bmp);
+			if (useHQ)
+			{
+				return DDSPixelBitFormat.ARGB8888;
+			}
+			else
+			{
+				switch (tlevels)
+				{
+					case 0:
+					default:
+						return DDSPixelBitFormat.RGB565;
+					case 1:
+						return DDSPixelBitFormat.ARGB1555;
+					case 2:
+						return DDSPixelBitFormat.ARGB4444;
+				}
 			}
 		}
 
@@ -266,9 +302,91 @@ namespace TextureEditor
 			};
 		}
 
+		public static DDSPixelFormat IdentifyPAKPixelFormat(byte[] file)
+		{
+			return (DDSPixelFormat)BitConverter.ToUInt32(file, 0x50);
+		}
+
 		public static TextureFileFormat IdentifyTextureFileFormat(MemoryStream ms)
 		{
 			return ms == null ? TextureFileFormat.Invalid : IdentifyTextureFileFormat(ms.ToArray());
+		}
+
+		public static DDSPixelFormat IdentifyPAKPixelFormat(MemoryStream ms)
+		{
+			return ms == null ? DDSPixelFormat.Invalid : IdentifyPAKPixelFormat(ms.ToArray());
+		}
+
+		public static DDSPixelBitFormat IdentifyPAKPixelSubFormat(MemoryStream ms)
+		{
+			return ms == null ? DDSPixelBitFormat.Invalid : IdentifyPAKPixelSubFormat(ms.ToArray());
+		}
+		public static DDSPixelBitFormat IdentifyPAKPixelSubFormat(byte[] file)
+		{
+			byte compression = file[0x57];
+			int bitdepth = BitConverter.ToInt32(file, 0x58);
+			int r = BitConverter.ToInt32(file, 0x5C);
+			int g = BitConverter.ToInt32(file, 0x60);
+			int b = BitConverter.ToInt32(file, 0x64);
+			int a = BitConverter.ToInt32(file, 0x68);
+			DDSPixelBitFormat fmt = DDSPixelBitFormat.Invalid;
+			if (IdentifyPAKPixelFormat(file) == DDSPixelFormat.FourCC)
+			{
+				switch (compression)
+				{
+					case 0x31:
+						fmt = DDSPixelBitFormat.DXT1;
+						break;
+					case 0x32:
+						fmt = DDSPixelBitFormat.DXT2;
+						break;
+					case 0x33:
+						fmt = DDSPixelBitFormat.DXT3;
+						break;
+					case 0x34:
+						fmt = DDSPixelBitFormat.DXT4;
+						break;
+					case 0x35:
+						fmt = DDSPixelBitFormat.DXT5;
+						break;
+				}
+			}
+			else if (IdentifyPAKPixelFormat(file) == DDSPixelFormat.RGB || IdentifyPAKPixelFormat(file) == DDSPixelFormat.RGBA)
+			{
+				switch (bitdepth)
+				{
+					case 0:
+					default:
+						break;
+					case 8:
+					case 16:
+						if (a == 0 && r == 63488 && g == 2016)
+							fmt = DDSPixelBitFormat.RGB565;
+						else if (r == 31744 && g == 992)
+							fmt = DDSPixelBitFormat.ARGB1555;
+						else if (r == 3840 && g == 240 && a == 61440)
+							fmt = DDSPixelBitFormat.ARGB4444;
+							break;
+					case 24:
+						break;
+					case 32:
+						if (g != 65280)
+							break;
+						else
+						{
+							if (r != 16711680)
+							{
+								fmt = DDSPixelBitFormat.BGRA8888;
+							}
+							else
+							{
+								fmt = DDSPixelBitFormat.ARGB8888;
+							}
+						}
+						break;
+				}
+			}
+				return fmt;
 		}
 
 		/// <summary>

@@ -249,8 +249,16 @@ namespace SAModel.SAEditorCommon
 			public bool SACompatiblePalettes { get; set; }
 			[DefaultValue(true)]
 			public bool EnableFiltering { get; set; }
+			[DefaultValue(false)]
+			public bool UseDDSUncompressedForPAK { get; set; }
 			[DefaultValue(true)]
 			public bool UseDDSforPAK { get; set; }
+			[DefaultValue(false)]
+			public bool UseDDSColorSpace { get; set; }
+			[DefaultValue(false)]
+			public bool UsePNGforPAK { get; set; }
+			[DefaultValue(false)]
+			public bool UseHQDDS { get; set; }
 			[DefaultValue(false)]
 			public bool UseDDSforTexPack { get; set; }
 			[DefaultValue(false)]
@@ -262,8 +270,12 @@ namespace SAModel.SAEditorCommon
 				SACompatiblePalettes = true;
 				EnableFiltering = true;
 				UseDDSforPAK = true;
+				UseHQDDS = false;
 				UseDDSforTexPack = false;
+				UseDDSUncompressedForPAK = false;
 				UseDDSforPVMX = false;
+				UseDDSColorSpace = false;
+				UsePNGforPAK = false;
 			}
 
 			public static Settings_TextureEditor Load()
@@ -325,6 +337,56 @@ namespace SAModel.SAEditorCommon
 					return IniSerializer.Deserialize<Settings_SA2MessageFileEditor>(path);
 				else
 					return new Settings_SA2MessageFileEditor();
+			}
+		}
+		public class Settings_SA2CutsceneEffectEditor : SettingsFile
+		{
+			[DefaultValue(false)]
+			public bool BigEndian { get; set; }
+			[DefaultValue(0)]
+			public int Format { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+			public Settings_SA2CutsceneEffectEditor()
+			{
+				BigEndian = false;
+				Format = 0;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2CutsceneEffectEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2CutsceneEffectEditor>(path);
+				else
+					return new Settings_SA2CutsceneEffectEditor();
+			}
+		}
+		public class Settings_SA2LightFogEditor : SettingsFile
+		{
+			[DefaultValue(false)]
+			public bool BigEndian { get; set; }
+			[DefaultValue(0)]
+			public int Format { get; set; }
+			[IniCollection(IniCollectionMode.SingleLine, Format = ",")]
+			public List<string> RecentFiles { get; set; } = new List<string>();
+
+			public Settings_SA2LightFogEditor()
+			{
+				BigEndian = false;
+				Format = 0;
+				RecentFiles = new List<string>();
+			}
+
+			public static Settings_SA2LightFogEditor Load()
+			{
+				string path = GetSettingsPath();
+				if (File.Exists(path))
+					return IniSerializer.Deserialize<Settings_SA2LightFogEditor>(path);
+				else
+					return new Settings_SA2LightFogEditor();
 			}
 		}
 	}

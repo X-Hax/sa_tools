@@ -49,6 +49,8 @@ namespace SAModel.SAEditorCommon.UI
 			toolTip = new System.Windows.Forms.ToolTip(components);
 			resetButton = new System.Windows.Forms.Button();
 			groupBox1 = new System.Windows.Forms.GroupBox();
+			deleteAllUVButton = new System.Windows.Forms.Button();
+			deleteSelectedUVButton = new System.Windows.Forms.Button();
 			groupBox2 = new System.Windows.Forms.GroupBox();
 			resetAllWindingsButton = new System.Windows.Forms.Button();
 			flipAllWindingsButton = new System.Windows.Forms.Button();
@@ -250,6 +252,8 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// groupBox1
 			// 
+			groupBox1.Controls.Add(deleteAllUVButton);
+			groupBox1.Controls.Add(deleteSelectedUVButton);
 			groupBox1.Controls.Add(groupBox2);
 			groupBox1.Controls.Add(stripListView);
 			groupBox1.Controls.Add(stripSetComboBox);
@@ -257,10 +261,30 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox1.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			groupBox1.Size = new System.Drawing.Size(454, 518);
+			groupBox1.Size = new System.Drawing.Size(454, 567);
 			groupBox1.TabIndex = 9;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Strip Sets";
+			// 
+			// deleteAllUVButton
+			// 
+			deleteAllUVButton.Location = new System.Drawing.Point(237, 383);
+			deleteAllUVButton.Name = "deleteAllUVButton";
+			deleteAllUVButton.Size = new System.Drawing.Size(186, 34);
+			deleteAllUVButton.TabIndex = 6;
+			deleteAllUVButton.Text = "Delete All UV Data";
+			deleteAllUVButton.UseVisualStyleBackColor = true;
+			deleteAllUVButton.Click += deleteAllUVButton_Click;
+			// 
+			// deleteSelectedUVButton
+			// 
+			deleteSelectedUVButton.Location = new System.Drawing.Point(36, 383);
+			deleteSelectedUVButton.Name = "deleteSelectedUVButton";
+			deleteSelectedUVButton.Size = new System.Drawing.Size(179, 34);
+			deleteSelectedUVButton.TabIndex = 5;
+			deleteSelectedUVButton.Text = "Delete Selected UV";
+			deleteSelectedUVButton.UseVisualStyleBackColor = true;
+			deleteSelectedUVButton.Click += deleteSelectedUVButton_Click;
 			// 
 			// groupBox2
 			// 
@@ -268,7 +292,7 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox2.Controls.Add(flipAllWindingsButton);
 			groupBox2.Controls.Add(resetWindingButton);
 			groupBox2.Controls.Add(flipWindingButton);
-			groupBox2.Location = new System.Drawing.Point(30, 362);
+			groupBox2.Location = new System.Drawing.Point(30, 425);
 			groupBox2.Name = "groupBox2";
 			groupBox2.Size = new System.Drawing.Size(403, 122);
 			groupBox2.TabIndex = 4;
@@ -320,7 +344,7 @@ namespace SAModel.SAEditorCommon.UI
 			stripListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
 			stripListView.GridLines = true;
 			stripListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			stripListView.Location = new System.Drawing.Point(30, 89);
+			stripListView.Location = new System.Drawing.Point(30, 97);
 			stripListView.MultiSelect = false;
 			stripListView.Name = "stripListView";
 			stripListView.Size = new System.Drawing.Size(403, 269);
@@ -493,5 +517,7 @@ namespace SAModel.SAEditorCommon.UI
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.NumericUpDown userFlagsNumericUpDown;
 		private System.Windows.Forms.CheckBox noAlphaTestCheck;
+		private System.Windows.Forms.Button deleteAllUVButton;
+		private System.Windows.Forms.Button deleteSelectedUVButton;
 	}
 }

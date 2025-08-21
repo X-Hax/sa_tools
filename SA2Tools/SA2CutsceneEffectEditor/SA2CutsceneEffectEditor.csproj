@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <OutputPath>..\..\build\tools\</OutputPath>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+    <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
+    <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
+    <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
+  </ItemGroup>
+
+</Project>

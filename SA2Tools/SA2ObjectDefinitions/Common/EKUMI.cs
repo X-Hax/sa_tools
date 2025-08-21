@@ -253,11 +253,21 @@ namespace SA2ObjectDefinitions.Common
 		}
 
 		private readonly PropertySpec[] customProperties = new PropertySpec[] {
-			new PropertySpec("Speed", typeof(float), "Extended", null, 1.0f, (o) => o.Rotation.X, (o, v) => o.Rotation.X = (int)v > 0 ? (int)v : 99),
+			new PropertySpec("Speed (Mono Beetle, Moving)", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xFF,
+			(o, v) => { o.Rotation.X &= 0xFF00; o.Rotation.X |= (byte)v; }),
+			new PropertySpec("Bullets Fired (Gun Beetle)", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xF,
+			(o, v) => { o.Rotation.X &= 0xFFF0; o.Rotation.X |= (byte)v; }),
+			new PropertySpec("Bomb Type (Bomb Beetle)", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xF,
+			(o, v) => { o.Rotation.X &= 0xFFF0; o.Rotation.X |= (byte)v; }),
+			new PropertySpec("Spring Power (Spring Beetle)", typeof(byte), "Extended", null, null, (o) => o.Rotation.X & 0xF,
+			(o, v) => { o.Rotation.X &= 0xFFF0; o.Rotation.X |= (byte)v; }),
 			new PropertySpec("Emerald/Item Link ID", typeof(byte), "Extended", null, null, (o) => o.Rotation.Y & 0xFF,
 			(o, v) => { o.Rotation.Y &= 0xFF00; o.Rotation.Y |= (byte)v; }),
+			new PropertySpec("Oscillation/Rotation Speed", typeof(int), "Extended", null, 1, (o) => o.Rotation.Z, (o, v) => o.Rotation.Z = (int)v > 0 ? (int)v : 999999),
+			new PropertySpec("Draw Type", typeof(DrawType), "Extended", null, null, (o) => o.Rotation.Z & 0xF,
+			(o, v) => { o.Rotation.Z &= 0xFFF0; o.Rotation.Z |= (byte)v; }),
 			new PropertySpec("Beetle Type", typeof(BeetleType), "Extended", null, null, (o) => (BeetleType)Math.Min(Math.Max((int)o.Scale.X, 0), 8), (o, v) => o.Scale.X = (int)v),
-			new PropertySpec("Bullet Speed Electric time", typeof(float), "Extended", null, 1.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 999.0f),
+			new PropertySpec("Bullet Speed/Electric Time", typeof(float), "Extended", null, 1.0f, (o) => o.Scale.Y, (o, v) => o.Scale.Y = (float)v > 0 ? (float)v : 999.0f),
 			new PropertySpec("Vision Radius", typeof(float), "Extended", null, 10.0f, (o) => o.Scale.Z, (o, v) => o.Scale.Z = (float)v > 0 ? (float)v : 999.0f)
 		};
 
@@ -281,6 +291,11 @@ namespace SA2ObjectDefinitions.Common
 			Appearing,
 			Spring,
 			Bombing,
+		}
+		public enum DrawType
+		{
+			Simple,
+			Direct
 		}
 	}
 }

@@ -11,6 +11,7 @@ using static VrSharp.Xvr.DirectXTexUtility;
 namespace TextureEditor
 {
     enum TextureFormat { PVM, GVM, PVMX, PAK, XVM }
+	enum TextureFiles { PVR, GVR, PNG, DDS, XVR, Default }
 
     public abstract class TextureInfo
     {
@@ -18,6 +19,7 @@ namespace TextureEditor
         public uint GlobalIndex { get; set; }
         public bool Mipmap { get; set; }
         public Bitmap Image { get; set; } // Preview image
+		public Bitmap[] MipmapData { get; set; } // Mipmap data
 		public MemoryStream TextureData { get; set; } // Texture data in target format
 		public abstract bool CheckMipmap(); // Checks if the texture format allows mipmaps (the texture itself may or may not have them)
     }
@@ -37,33 +39,55 @@ namespace TextureEditor
             Mipmap = tex.Mipmap;
             PixelFormat = PvrPixelFormat.Unknown;
             DataFormat = PvrDataFormat.Unknown;
-            if (tex is PvrTextureInfo pv)
-            {
-                TextureData = pv.TextureData;
-                PixelFormat = pv.PixelFormat;
-                DataFormat = pv.DataFormat;
-            }
-            else if (tex is GvrTextureInfo gv)
-            {
-                switch (gv.DataFormat)
-                {
-                    case GvrDataFormat.Index4:
-                        DataFormat = PvrDataFormat.Index4;
-                        break;
-                    case GvrDataFormat.Index8:
-                        DataFormat = PvrDataFormat.Index8;
-                        break;
-                    default:
-                        DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap, true);
-                        PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
-                        break;
-                }
-            }
-            else
-            {
-                DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image,tex.Mipmap, true);
-                PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
-            }
+			if (tex is PvrTextureInfo pv)
+			{
+				TextureData = pv.TextureData;
+				MipmapData = pv.MipmapData;
+				PixelFormat = pv.PixelFormat;
+				DataFormat = pv.DataFormat;
+			}
+			else if (tex is GvrTextureInfo gv)
+			{
+				switch (gv.DataFormat)
+				{
+					case GvrDataFormat.Index4:
+						DataFormat = PvrDataFormat.Index4;
+						break;
+					case GvrDataFormat.Index8:
+						DataFormat = PvrDataFormat.Index8;
+						break;
+					default:
+						DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap, true);
+						PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
+						break;
+				}
+			}
+			else if (tex is PakTextureInfo pakv)
+			{
+				switch (pakv.PixelBitType)
+				{
+					case DDSPixelBitFormat.RGB565:
+						PixelFormat = PvrPixelFormat.Rgb565;
+						break;
+					case DDSPixelBitFormat.ARGB1555:
+						PixelFormat = PvrPixelFormat.Argb1555;
+						break;
+					case DDSPixelBitFormat.ARGB4444:
+						PixelFormat = PvrPixelFormat.Argb4444;
+						break;
+					case DDSPixelBitFormat.ARGB8888:
+						PixelFormat = PvrPixelFormat.Argb8888;
+						break;
+					default:
+						PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(pakv.Image);
+						break;
+				}
+			}
+			else
+			{
+				DataFormat = TextureFunctions.GetPvrDataFormatFromBitmap(tex.Image, tex.Mipmap, true);
+				PixelFormat = TextureFunctions.GetPvrPixelFormatFromBitmap(tex.Image);
+			}
         }
 
 		public PvrTextureInfo(string name, uint gbix, Bitmap bitmap)
@@ -93,7 +117,10 @@ namespace TextureEditor
 			if (texture.NeedsExternalPalette)
 				Image = new Bitmap(Properties.Resources.error);
 			else
+			{
 				Image = texture.ToBitmap();
+				MipmapData = texture.MipmapsToBitmap();
+			}
         }
 
         public override bool CheckMipmap()
@@ -127,29 +154,30 @@ namespace TextureEditor
             Mipmap = tex.Mipmap;
             PixelFormat = GvrPixelFormat.NonIndexed;
             DataFormat = GvrDataFormat.Unknown;
-            if (tex is GvrTextureInfo gvrt)
-            {
-                PixelFormat = gvrt.PixelFormat;
-                DataFormat = gvrt.DataFormat;
-                TextureData = gvrt.TextureData;
-            }
-            else if (tex is PvrTextureInfo pvrt)
-            {
-                switch (pvrt.DataFormat)
-                {
-                    case PvrDataFormat.Index4:
-                        DataFormat = GvrDataFormat.Index4;
-                        break;
-                    case PvrDataFormat.Index8:
-                        DataFormat = GvrDataFormat.Index8;
-                        break;
-                    default:
-                        DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false, true);
-                        break;
-                }
-            }
-            else
-                DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false, true);
+			if (tex is GvrTextureInfo gvrt)
+			{
+				PixelFormat = gvrt.PixelFormat;
+				DataFormat = gvrt.DataFormat;
+				TextureData = gvrt.TextureData;
+				//MipmapData = gvrt.MipmapData;
+			}
+			else if (tex is PvrTextureInfo pvrt)
+			{
+				switch (pvrt.DataFormat)
+				{
+					case PvrDataFormat.Index4:
+						DataFormat = GvrDataFormat.Index4;
+						break;
+					case PvrDataFormat.Index8:
+						DataFormat = GvrDataFormat.Index8;
+						break;
+					default:
+						DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(pvrt.Image, false, true);
+						break;
+				}
+			}
+			else
+				DataFormat = TextureFunctions.GetGvrDataFormatFromBitmap(Image, false, true);
         }
 
 		public GvrTextureInfo(string name, uint gbix, Bitmap bitmap)
@@ -176,10 +204,13 @@ namespace TextureEditor
             DataFormat = texture.DataFormat;
             Mipmap = texture.HasMipmaps;
             PixelFormat = texture.PixelFormat;
-            if (texture.NeedsExternalPalette)
-                Image = new Bitmap(Properties.Resources.error);
-            else
-                Image = texture.ToBitmap();
+			if (texture.NeedsExternalPalette)
+				Image = new Bitmap(Properties.Resources.error);
+			else
+			{
+				Image = texture.ToBitmap();
+				//MipmapData = texture.MipmapsToBitmap();
+			}
         }
 
         public override bool CheckMipmap()
@@ -232,13 +263,40 @@ namespace TextureEditor
         Palettized = 0x00008000
     }
 
-    class PAKInfEntry
+	public enum DDSPixelFormat
+	{
+		Invalid,
+		AlphaPixels,
+		Alpha,
+		FourCC = 0x4, //Compressed RGB
+		RGB = 0x40, //Uncompressed RGB
+		RGBA = 0x41,
+		YUV = 0x200,
+	}
+	
+	public enum DDSPixelBitFormat
+	{
+		Invalid,
+		RGB444, //RGB444
+		ARGB4444, //ARGB4444
+		RGB565, //RGB565
+		ARGB1555, //ARGB1555
+		ARGB8888, //ARGB8888
+		BGRA8888, //BGRA8888
+		DXT1,
+		DXT2,
+		DXT3,
+		DXT4,
+		DXT5
+	}
+
+	class PAKInfEntry
     {
         public byte[] filename; // 28
         public uint globalindex;
-        public GvrDataFormat Type;
+        public GvrDataFormat TypeInf;
         public uint BitDepth; // Unused
-        public GvrDataFormat PixelFormat; // Duplicate of Type
+        public GvrDataFormat PixelFormatInf; // Duplicate of Type
         public uint nWidth;
         public uint nHeight;
         public uint TextureSize; // Unused
@@ -252,9 +310,9 @@ namespace TextureEditor
             filename = new byte[28];
             Array.Copy(data, filename, 0x1C);
             globalindex = BitConverter.ToUInt32(data, 0x1C);
-            Type = (GvrDataFormat)BitConverter.ToUInt32(data, 0x20);
+            TypeInf = (GvrDataFormat)BitConverter.ToUInt32(data, 0x20);
             BitDepth = BitConverter.ToUInt32(data, 0x24);
-            PixelFormat = (GvrDataFormat)BitConverter.ToUInt32(data, 0x28);
+            PixelFormatInf = (GvrDataFormat)BitConverter.ToUInt32(data, 0x28);
             nWidth = BitConverter.ToUInt32(data, 0x2C);
             nHeight = BitConverter.ToUInt32(data, 0x30);
             TextureSize = BitConverter.ToUInt32(data, 0x34);
@@ -277,9 +335,9 @@ namespace TextureEditor
             List<byte> result = new List<byte>();
             result.AddRange(filename);
             result.AddRange(BitConverter.GetBytes(globalindex));
-            result.AddRange(BitConverter.GetBytes((uint)Type));
+            result.AddRange(BitConverter.GetBytes((uint)TypeInf));
             result.AddRange(BitConverter.GetBytes(BitDepth));
-            result.AddRange(BitConverter.GetBytes((uint)PixelFormat));
+            result.AddRange(BitConverter.GetBytes((uint)PixelFormatInf));
             result.AddRange(BitConverter.GetBytes(nWidth));
             result.AddRange(BitConverter.GetBytes(nHeight));
             result.AddRange(BitConverter.GetBytes(TextureSize));
@@ -290,9 +348,13 @@ namespace TextureEditor
 
     class PakTextureInfo : TextureInfo
     {
-        public GvrDataFormat DataFormat { get; set; }
+		public GvrDataFormat DataFormatInf { get; set; }
+        public DDSPixelFormat DataFormat { get; set; }
+		public DDSPixelBitFormat PixelBitType { get; set; }
         public NinjaSurfaceFlags SurfaceFlags { get; set; }
+		public bool IsPAK { get; set; }
         public PakTextureInfo() { }
+		public TextureFunctions.TextureFileFormat FileFormat { get; set; }
         public string GetSurfaceFlags()
         {
             List<string> flags = new List<string>();
@@ -311,6 +373,18 @@ namespace TextureEditor
             return string.Join(", ", flags);
         }
 		public string OriginalFileExtension { get; set; }
+		public string GetPixelFormatInf()
+		{
+			return DataFormatInf.ToString();
+		}
+		public string GetPixelFormat()
+		{
+			return DataFormat.ToString();
+		}
+		public string GetPixelSubType()
+		{
+			return PixelBitType.ToString();
+		}
 
 		public PakTextureInfo(TextureInfo tex)
         {
@@ -318,57 +392,122 @@ namespace TextureEditor
             GlobalIndex = tex.GlobalIndex;
 			if (tex is GvrTextureInfo gvrt)
 			{
-				DataFormat = gvrt.DataFormat;
+				IsPAK = false;
+				DataFormatInf = gvrt.DataFormat;
 				if (gvrt.DataFormat == GvrDataFormat.Index4 || gvrt.DataFormat == GvrDataFormat.Index8)
 					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
+				switch (gvrt.DataFormat)
+				{
+					default:
+					case GvrDataFormat.Rgb565:
+						DataFormat = DDSPixelFormat.RGB;
+						PixelBitType = DDSPixelBitFormat.RGB565;
+						DataFormatInf = GvrDataFormat.Dxt1;
+						break;
+					case GvrDataFormat.Dxt1:
+						DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(tex.Image, false);
+						PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(tex.Image, false);
+						DataFormatInf = GvrDataFormat.Dxt1;
+						break;
+					case GvrDataFormat.Rgb5a3:
+						DataFormat = DDSPixelFormat.RGBA;
+						PixelBitType = DDSPixelBitFormat.ARGB8888;
+						DataFormatInf = GvrDataFormat.Rgb5a3;
+						break;
+					case GvrDataFormat.Argb8888:
+						DataFormat = DDSPixelFormat.RGBA;
+						PixelBitType = DDSPixelBitFormat.ARGB8888;
+						DataFormatInf = GvrDataFormat.Rgb5a3;
+						break;
+				}
+				TextureData = gvrt.TextureData;
 			}
 			else if (tex is PvrTextureInfo pvrt)
 			{
+				IsPAK = false;
 				switch (pvrt.PixelFormat)
 				{
 					default:
 					case PvrPixelFormat.Rgb565:
+						DataFormat = DDSPixelFormat.RGB;
+						PixelBitType = DDSPixelBitFormat.RGB565;
+						DataFormatInf = GvrDataFormat.Dxt1;
+						break;
 					case PvrPixelFormat.Argb1555:
-						DataFormat = GvrDataFormat.Dxt1;
+						DataFormat = DDSPixelFormat.RGBA;
+						PixelBitType = DDSPixelBitFormat.ARGB1555;
+						DataFormatInf = GvrDataFormat.Dxt1;
 						break;
 					case PvrPixelFormat.Argb4444:
-						DataFormat = GvrDataFormat.Rgb5a3;
+						DataFormat = DDSPixelFormat.RGBA;
+						PixelBitType = DDSPixelBitFormat.ARGB4444;
+						DataFormatInf = GvrDataFormat.Rgb5a3;
+						break;
+					case PvrPixelFormat.Argb8888:
+						DataFormat = DDSPixelFormat.RGBA;
+						PixelBitType = DDSPixelBitFormat.ARGB8888;
+						DataFormatInf = GvrDataFormat.Rgb5a3;
 						break;
 				}
 				if (pvrt.DataFormat == PvrDataFormat.Index4)
 				{
-					DataFormat = GvrDataFormat.Index4;
+					DataFormatInf = GvrDataFormat.Index4;
 					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
 				}
 				if (pvrt.DataFormat == PvrDataFormat.Index8)
 				{
-					DataFormat = GvrDataFormat.Index8;
+					DataFormatInf = GvrDataFormat.Index8;
 					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
 				}
+				TextureData = pvrt.TextureData;
+			}
+			else if (tex is PakTextureInfo pakt)
+			{
+				IsPAK = true;
+				TextureData = pakt.TextureData;
 			}
 			else
 			{
-				DataFormat = GvrDataFormat.Dxt1;
+				DataFormatInf = GvrDataFormat.Dxt1;
 			}
 			if (tex is PakTextureInfo pk)
+			{
+				IsPAK = true;
 				OriginalFileExtension = pk.OriginalFileExtension;
-            Image = tex.Image;
+				DataFormat = TextureFunctions.IdentifyPAKPixelFormat(TextureData);
+			}
+			else
+			{
+				FileFormat = TextureFunctions.IdentifyTextureFileFormat(TextureData);
+				if (FileFormat != TextureFunctions.TextureFileFormat.PNG)
+					OriginalFileExtension = ".dds";
+				else
+					OriginalFileExtension = ".png";
+			}
+			Image = tex.Image;
             Mipmap = tex.Mipmap;
+			MipmapData = tex.MipmapData;
+			if (OriginalFileExtension == ".dds")
+				IsPAK = true;
             if (tex.Mipmap)
                 SurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
 			TextureData = null;
         }
 
-        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null, string origExt = ".dds")
+        public PakTextureInfo(string name, uint gbix, Bitmap bitmap, GvrDataFormat format = GvrDataFormat.Dxt1, DDSPixelFormat ppx = DDSPixelFormat.RGB, DDSPixelBitFormat pbx = DDSPixelBitFormat.Invalid, NinjaSurfaceFlags flags = NinjaSurfaceFlags.Mipmapped, MemoryStream str = null, string origExt = ".dds", Bitmap[] mipdata = null)
         {
             Name = name;
             GlobalIndex = gbix;
             Image = bitmap;
-            DataFormat = format;
+			MipmapData = mipdata;
+            DataFormatInf = format;
+			DataFormat = ppx;
+			PixelBitType = pbx;
             SurfaceFlags = flags;
             Mipmap = (SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0;
 			TextureData = str;
 			OriginalFileExtension = origExt;
+			IsPAK = OriginalFileExtension == ".dds" ? true: false;
         }
 
         public override bool CheckMipmap()
@@ -390,6 +529,7 @@ namespace TextureEditor
 			GlobalIndex = tex.GlobalIndex;
 			Image = tex.Image;
 			Mipmap = tex.Mipmap;
+			MipmapData = tex.MipmapData;
 			if (tex is PvrTextureInfo pv)
 			{
 				TextureData = pv.TextureData;
@@ -429,6 +569,7 @@ namespace TextureEditor
 			GlobalIndex = texture.GlobalIndex;
 			DataFormat = texture.DXGIPixelFormat;
 			Mipmap = texture.HasMipmaps;
+			MipmapData = texture.MipmapsToBitmap();
 			PixelFormat = texture.DXGIPixelFormat;
 			Image = texture.ToBitmap();
 		}
