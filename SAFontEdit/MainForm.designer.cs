@@ -39,14 +39,18 @@ namespace SAFontEdit
 			toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			extractAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			exportIndividualCharactersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			exportWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			fONTDATAFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			simpleFormatFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			simpleFormatFile32bppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+			toolStripTextBoxSearch = new System.Windows.Forms.ToolStripTextBox();
 			toolStripMenuItemSearch = new System.Windows.Forms.ToolStripMenuItem();
+			helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			sAFontEditGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			bugReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			listBox1 = new System.Windows.Forms.ListBox();
 			panel3 = new System.Windows.Forms.Panel();
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -67,9 +71,6 @@ namespace SAFontEdit
 			trackBar1 = new System.Windows.Forms.TrackBar();
 			label1 = new System.Windows.Forms.Label();
 			errorProvider1 = new System.Windows.Forms.ErrorProvider(components);
-			helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			sAFontEditGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			bugReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			menuStripMain.SuspendLayout();
 			panel3.SuspendLayout();
 			tableLayoutPanel1.SuspendLayout();
@@ -86,7 +87,7 @@ namespace SAFontEdit
 			// menuStripMain
 			// 
 			menuStripMain.ImageScalingSize = new System.Drawing.Size(24, 24);
-			menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, toolStripTextBox1, toolStripMenuItemSearch, helpToolStripMenuItem });
+			menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, toolStripTextBoxSearch, toolStripMenuItemSearch, helpToolStripMenuItem });
 			menuStripMain.Location = new System.Drawing.Point(0, 0);
 			menuStripMain.Name = "menuStripMain";
 			menuStripMain.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
@@ -96,7 +97,7 @@ namespace SAFontEdit
 			// 
 			// fileToolStripMenuItem
 			// 
-			fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, importToolStripMenuItem, toolStripSeparator2, extractAllToolStripMenuItem, exportIndividualCharactersToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator1, quitToolStripMenuItem });
+			fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, importToolStripMenuItem, toolStripSeparator2, extractAllToolStripMenuItem, exportIndividualCharactersToolStripMenuItem, exportWidthToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator1, quitToolStripMenuItem });
 			fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			fileToolStripMenuItem.Size = new System.Drawing.Size(37, 28);
 			fileToolStripMenuItem.Text = "&File";
@@ -105,7 +106,7 @@ namespace SAFontEdit
 			// 
 			openToolStripMenuItem.Image = Properties.Resources.open;
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
-			openToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			openToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			openToolStripMenuItem.Text = "&Open...";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
@@ -113,21 +114,21 @@ namespace SAFontEdit
 			// 
 			importToolStripMenuItem.Image = Properties.Resources.import;
 			importToolStripMenuItem.Name = "importToolStripMenuItem";
-			importToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			importToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			importToolStripMenuItem.Text = "&Import...";
 			importToolStripMenuItem.Click += importToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator2
 			// 
 			toolStripSeparator2.Name = "toolStripSeparator2";
-			toolStripSeparator2.Size = new System.Drawing.Size(171, 6);
+			toolStripSeparator2.Size = new System.Drawing.Size(185, 6);
 			// 
 			// extractAllToolStripMenuItem
 			// 
 			extractAllToolStripMenuItem.Enabled = false;
 			extractAllToolStripMenuItem.Image = Properties.Resources.export;
 			extractAllToolStripMenuItem.Name = "extractAllToolStripMenuItem";
-			extractAllToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			extractAllToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			extractAllToolStripMenuItem.Text = "&Export...";
 			extractAllToolStripMenuItem.Click += extractAllToolStripMenuItem_Click;
 			// 
@@ -136,9 +137,19 @@ namespace SAFontEdit
 			exportIndividualCharactersToolStripMenuItem.Enabled = false;
 			exportIndividualCharactersToolStripMenuItem.Image = Properties.Resources.character;
 			exportIndividualCharactersToolStripMenuItem.Name = "exportIndividualCharactersToolStripMenuItem";
-			exportIndividualCharactersToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-			exportIndividualCharactersToolStripMenuItem.Text = "Export &characters...";
+			exportIndividualCharactersToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+			exportIndividualCharactersToolStripMenuItem.Text = "Export &Characters...";
 			exportIndividualCharactersToolStripMenuItem.Click += exportIndividualCharactersToolStripMenuItem_Click;
+			// 
+			// exportWidthToolStripMenuItem
+			// 
+			exportWidthToolStripMenuItem.Enabled = false;
+			exportWidthToolStripMenuItem.Image = Properties.Resources.binary;
+			exportWidthToolStripMenuItem.Name = "exportWidthToolStripMenuItem";
+			exportWidthToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+			exportWidthToolStripMenuItem.Text = "Export &Width...";
+			exportWidthToolStripMenuItem.ToolTipText = "Export character widths as a byte array. This can be used to mod console versions of games.";
+			exportWidthToolStripMenuItem.Click += exportWidthToolStripMenuItem_Click;
 			// 
 			// saveAsToolStripMenuItem
 			// 
@@ -146,7 +157,7 @@ namespace SAFontEdit
 			saveAsToolStripMenuItem.Enabled = false;
 			saveAsToolStripMenuItem.Image = Properties.Resources.saveas;
 			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-			saveAsToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			saveAsToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			saveAsToolStripMenuItem.Text = "Save &As";
 			// 
 			// fONTDATAFileToolStripMenuItem
@@ -173,25 +184,25 @@ namespace SAFontEdit
 			// toolStripSeparator1
 			// 
 			toolStripSeparator1.Name = "toolStripSeparator1";
-			toolStripSeparator1.Size = new System.Drawing.Size(171, 6);
+			toolStripSeparator1.Size = new System.Drawing.Size(185, 6);
 			// 
 			// quitToolStripMenuItem
 			// 
 			quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-			quitToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+			quitToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
 			quitToolStripMenuItem.Text = "&Quit";
 			quitToolStripMenuItem.Click += quitToolStripMenuItem_Click;
 			// 
-			// toolStripTextBox1
+			// toolStripTextBoxSearch
 			// 
-			toolStripTextBox1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			toolStripTextBox1.ForeColor = System.Drawing.SystemColors.GrayText;
-			toolStripTextBox1.Name = "toolStripTextBox1";
-			toolStripTextBox1.Size = new System.Drawing.Size(100, 28);
-			toolStripTextBox1.Text = "Search character...";
-			toolStripTextBox1.ToolTipText = "Search items by ID or character.";
-			toolStripTextBox1.KeyPress += toolStripTextBox1_KeyPress;
-			toolStripTextBox1.Click += toolStripTextBox1_Click;
+			toolStripTextBoxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			toolStripTextBoxSearch.ForeColor = System.Drawing.SystemColors.GrayText;
+			toolStripTextBoxSearch.Name = "toolStripTextBoxSearch";
+			toolStripTextBoxSearch.Size = new System.Drawing.Size(100, 28);
+			toolStripTextBoxSearch.Text = "Search character...";
+			toolStripTextBoxSearch.ToolTipText = "Search items by ID or character.";
+			toolStripTextBoxSearch.KeyPress += toolStripTextBox1_KeyPress;
+			toolStripTextBoxSearch.Click += toolStripTextBox1_Click;
 			// 
 			// toolStripMenuItemSearch
 			// 
@@ -204,10 +215,33 @@ namespace SAFontEdit
 			toolStripMenuItemSearch.ToolTipText = "Search items by ID or character.";
 			toolStripMenuItemSearch.Click += toolStripMenuItemSearch_Click;
 			// 
+			// helpToolStripMenuItem
+			// 
+			helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { sAFontEditGuideToolStripMenuItem, bugReportToolStripMenuItem });
+			helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+			helpToolStripMenuItem.Size = new System.Drawing.Size(44, 28);
+			helpToolStripMenuItem.Text = "Help";
+			// 
+			// sAFontEditGuideToolStripMenuItem
+			// 
+			sAFontEditGuideToolStripMenuItem.Image = Properties.Resources.help;
+			sAFontEditGuideToolStripMenuItem.Name = "sAFontEditGuideToolStripMenuItem";
+			sAFontEditGuideToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+			sAFontEditGuideToolStripMenuItem.Text = "SAFontEdit Guide";
+			sAFontEditGuideToolStripMenuItem.Click += sAFontEditGuideToolStripMenuItem_Click;
+			// 
+			// bugReportToolStripMenuItem
+			// 
+			bugReportToolStripMenuItem.Image = Properties.Resources.bug;
+			bugReportToolStripMenuItem.Name = "bugReportToolStripMenuItem";
+			bugReportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
+			bugReportToolStripMenuItem.Text = "Bug Report";
+			bugReportToolStripMenuItem.Click += bugReportToolStripMenuItem_Click;
+			// 
 			// listBox1
 			// 
 			listBox1.Dock = System.Windows.Forms.DockStyle.Left;
-			listBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			listBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
 			listBox1.FormattingEnabled = true;
 			listBox1.IntegralHeight = false;
 			listBox1.ItemHeight = 24;
@@ -432,29 +466,6 @@ namespace SAFontEdit
 			// 
 			errorProvider1.ContainerControl = this;
 			// 
-			// helpToolStripMenuItem
-			// 
-			helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { sAFontEditGuideToolStripMenuItem, bugReportToolStripMenuItem });
-			helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-			helpToolStripMenuItem.Size = new System.Drawing.Size(44, 28);
-			helpToolStripMenuItem.Text = "Help";
-			// 
-			// sAFontEditGuideToolStripMenuItem
-			// 
-			sAFontEditGuideToolStripMenuItem.Image = Properties.Resources.help;
-			sAFontEditGuideToolStripMenuItem.Name = "sAFontEditGuideToolStripMenuItem";
-			sAFontEditGuideToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
-			sAFontEditGuideToolStripMenuItem.Text = "SAFontEdit Guide";
-			sAFontEditGuideToolStripMenuItem.Click += sAFontEditGuideToolStripMenuItem_Click;
-			// 
-			// bugReportToolStripMenuItem
-			// 
-			bugReportToolStripMenuItem.Image = Properties.Resources.bug;
-			bugReportToolStripMenuItem.Name = "bugReportToolStripMenuItem";
-			bugReportToolStripMenuItem.Size = new System.Drawing.Size(188, 30);
-			bugReportToolStripMenuItem.Text = "Bug Report";
-			bugReportToolStripMenuItem.Click += bugReportToolStripMenuItem_Click;
-			// 
 			// MainForm
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -535,12 +546,13 @@ namespace SAFontEdit
 		private System.Windows.Forms.Button buttonImportCharacter;
 		private System.Windows.Forms.Button buttonExportCharacter;
 		private System.Windows.Forms.ToolStripMenuItem simpleFormatFile32bppToolStripMenuItem;
-		private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
+		private System.Windows.Forms.ToolStripTextBox toolStripTextBoxSearch;
 		private System.Windows.Forms.ErrorProvider errorProvider1;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemSearch;
 		private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem sAFontEditGuideToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem bugReportToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportWidthToolStripMenuItem;
 	}
 }
 

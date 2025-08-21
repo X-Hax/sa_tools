@@ -413,5 +413,17 @@ namespace SAFontEdit
         {
             return base.GetHashCode();
         }
+
+		public override byte GetCharacterWidth()
+		{
+			int result = 0;
+			for (int y = 0; y < Height; y++)
+				for (int x = 0; x < Width; x++)
+				{
+					if (this[x, y] == true && x > result)
+						result = x;
+				}
+			return (byte)(result);
+		}
     }
 }

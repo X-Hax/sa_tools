@@ -63,6 +63,16 @@ namespace SAFontEdit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap binary {
+            get {
+                object obj = ResourceManager.GetObject("binary", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap bug {
             get {
                 object obj = ResourceManager.GetObject("bug", resourceCulture);

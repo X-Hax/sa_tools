@@ -16,5 +16,7 @@ namespace SAFontEdit
 
 		public abstract byte[] GetBytes(bool invert);
 		public abstract Bitmap ToBitmap();
+
+		public abstract byte GetCharacterWidth();
 	}
 }
