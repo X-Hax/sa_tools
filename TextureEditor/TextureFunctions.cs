@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 using VrSharp.Xvr;
+using VrSharp.DDS;
 
 // Various additional texture related functions to avoid cluttering the MainForm
 
@@ -316,6 +317,10 @@ namespace TextureEditor
 		{
 			return ms == null ? DDSPixelFormat.Invalid : IdentifyPAKPixelFormat(ms.ToArray());
 		}
+		public static bool IdentifyDDSMipmapUsage(MemoryStream ms)
+		{
+			return ms == null ? false : IdentifyDDSMipmapUsage(ms.ToArray());
+		}
 
 		public static DDSPixelBitFormat IdentifyPAKPixelSubFormat(MemoryStream ms)
 		{
@@ -387,6 +392,11 @@ namespace TextureEditor
 				}
 			}
 				return fmt;
+		}
+		public static bool IdentifyDDSMipmapUsage(byte[] file)
+		{
+			DDSHeaderFlags HeaderFlags = (DDSHeaderFlags)BitConverter.ToUInt32(file, 8);
+			return (HeaderFlags & DDSHeaderFlags.MipmapCount) != 0;
 		}
 
 		/// <summary>

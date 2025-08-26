@@ -858,7 +858,7 @@
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.Size = new System.Drawing.Size(416, 408);
+			tableLayoutPanel1.Size = new System.Drawing.Size(432, 408);
 			tableLayoutPanel1.TabIndex = 13;
 			// 
 			// textureSizeLabel
@@ -884,7 +884,7 @@
 			importExportPanel.Location = new System.Drawing.Point(4, 225);
 			importExportPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			importExportPanel.Name = "importExportPanel";
-			importExportPanel.Size = new System.Drawing.Size(223, 31);
+			importExportPanel.Size = new System.Drawing.Size(239, 31);
 			importExportPanel.TabIndex = 20;
 			// 
 			// saveTextureButton
@@ -894,9 +894,9 @@
 			saveTextureButton.Enabled = false;
 			saveTextureButton.Location = new System.Drawing.Point(170, 3);
 			saveTextureButton.Name = "saveTextureButton";
-			saveTextureButton.Size = new System.Drawing.Size(50, 25);
+			saveTextureButton.Size = new System.Drawing.Size(66, 25);
 			saveTextureButton.TabIndex = 23;
-			saveTextureButton.Text = "Save...";
+			saveTextureButton.Text = "Save As...";
 			saveTextureButton.UseVisualStyleBackColor = true;
 			saveTextureButton.Click += saveTextureButton_Click;
 			// 
@@ -1028,7 +1028,7 @@
 			panelPaletteInfo.Controls.Add(numericUpDownStartBank);
 			panelPaletteInfo.Controls.Add(comboBoxCurrentPaletteBank);
 			panelPaletteInfo.Controls.Add(labelPaletteFormat);
-			panelPaletteInfo.Location = new System.Drawing.Point(235, 262);
+			panelPaletteInfo.Location = new System.Drawing.Point(251, 262);
 			panelPaletteInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panelPaletteInfo.Name = "panelPaletteInfo";
 			panelPaletteInfo.Size = new System.Drawing.Size(177, 106);

@@ -6,6 +6,7 @@ using System.Text;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 using VrSharp.Xvr;
+using VrSharp.DDS;
 using static VrSharp.Xvr.DirectXTexUtility;
 
 namespace TextureEditor
@@ -263,89 +264,61 @@ namespace TextureEditor
         Palettized = 0x00008000
     }
 
-	public enum DDSPixelFormat
-	{
-		Invalid,
-		AlphaPixels,
-		Alpha,
-		FourCC = 0x4, //Compressed RGB
-		RGB = 0x40, //Uncompressed RGB
-		RGBA = 0x41,
-		YUV = 0x200,
-	}
-	
-	public enum DDSPixelBitFormat
-	{
-		Invalid,
-		RGB444, //RGB444
-		ARGB4444, //ARGB4444
-		RGB565, //RGB565
-		ARGB1555, //ARGB1555
-		ARGB8888, //ARGB8888
-		BGRA8888, //BGRA8888
-		DXT1,
-		DXT2,
-		DXT3,
-		DXT4,
-		DXT5
-	}
-
 	class PAKInfEntry
-    {
-        public byte[] filename; // 28
-        public uint globalindex;
-        public GvrDataFormat TypeInf;
-        public uint BitDepth; // Unused
-        public GvrDataFormat PixelFormatInf; // Duplicate of Type
-        public uint nWidth;
-        public uint nHeight;
-        public uint TextureSize; // Unused
-        public NinjaSurfaceFlags fSurfaceFlags;
-        public PAKInfEntry()
-        {
-            filename = new byte[28];
-        }
-        public PAKInfEntry(byte[] data)
-        {
-            filename = new byte[28];
-            Array.Copy(data, filename, 0x1C);
-            globalindex = BitConverter.ToUInt32(data, 0x1C);
-            TypeInf = (GvrDataFormat)BitConverter.ToUInt32(data, 0x20);
-            BitDepth = BitConverter.ToUInt32(data, 0x24);
-            PixelFormatInf = (GvrDataFormat)BitConverter.ToUInt32(data, 0x28);
-            nWidth = BitConverter.ToUInt32(data, 0x2C);
-            nHeight = BitConverter.ToUInt32(data, 0x30);
-            TextureSize = BitConverter.ToUInt32(data, 0x34);
-            fSurfaceFlags = (NinjaSurfaceFlags)BitConverter.ToUInt32(data, 0x38);
-        }
+	{
+		public byte[] filename; // 28
+		public uint globalindex;
+		public GvrDataFormat TypeInf;
+		public uint BitDepth; // Unused
+		public GvrDataFormat PixelFormatInf; // Duplicate of Type
+		public uint nWidth;
+		public uint nHeight;
+		public uint TextureSize; // Unused
+		public NinjaSurfaceFlags fSurfaceFlags;
+		public PAKInfEntry()
+		{
+			filename = new byte[28];
+		}
+		public PAKInfEntry(byte[] data)
+		{
+			filename = new byte[28];
+			Array.Copy(data, filename, 0x1C);
+			globalindex = BitConverter.ToUInt32(data, 0x1C);
+			TypeInf = (GvrDataFormat)BitConverter.ToUInt32(data, 0x20);
+			BitDepth = BitConverter.ToUInt32(data, 0x24);
+			PixelFormatInf = (GvrDataFormat)BitConverter.ToUInt32(data, 0x28);
+			nWidth = BitConverter.ToUInt32(data, 0x2C);
+			nHeight = BitConverter.ToUInt32(data, 0x30);
+			TextureSize = BitConverter.ToUInt32(data, 0x34);
+			fSurfaceFlags = (NinjaSurfaceFlags)BitConverter.ToUInt32(data, 0x38);
+		}
 
-        public string GetFilename()
-        {
-            StringBuilder sb = new StringBuilder(0x1C);
-            for (int j = 0; j < 0x1C; j++)
-                if (filename[j] != 0)
-                    sb.Append((char)filename[j]);
-                else
-                    break;
-            return sb.ToString();
-        }
+		public string GetFilename()
+		{
+			StringBuilder sb = new StringBuilder(0x1C);
+			for (int j = 0; j < 0x1C; j++)
+				if (filename[j] != 0)
+					sb.Append((char)filename[j]);
+				else
+					break;
+			return sb.ToString();
+		}
 
-        public byte[] GetBytes()
-        {
-            List<byte> result = new List<byte>();
-            result.AddRange(filename);
-            result.AddRange(BitConverter.GetBytes(globalindex));
-            result.AddRange(BitConverter.GetBytes((uint)TypeInf));
-            result.AddRange(BitConverter.GetBytes(BitDepth));
-            result.AddRange(BitConverter.GetBytes((uint)PixelFormatInf));
-            result.AddRange(BitConverter.GetBytes(nWidth));
-            result.AddRange(BitConverter.GetBytes(nHeight));
-            result.AddRange(BitConverter.GetBytes(TextureSize));
-            result.AddRange(BitConverter.GetBytes((uint)fSurfaceFlags));
-            return result.ToArray();
-        }
-    };
-
+		public byte[] GetBytes()
+		{
+			List<byte> result = new List<byte>();
+			result.AddRange(filename);
+			result.AddRange(BitConverter.GetBytes(globalindex));
+			result.AddRange(BitConverter.GetBytes((uint)TypeInf));
+			result.AddRange(BitConverter.GetBytes(BitDepth));
+			result.AddRange(BitConverter.GetBytes((uint)PixelFormatInf));
+			result.AddRange(BitConverter.GetBytes(nWidth));
+			result.AddRange(BitConverter.GetBytes(nHeight));
+			result.AddRange(BitConverter.GetBytes(TextureSize));
+			result.AddRange(BitConverter.GetBytes((uint)fSurfaceFlags));
+			return result.ToArray();
+		}
+	};
     class PakTextureInfo : TextureInfo
     {
 		public GvrDataFormat DataFormatInf { get; set; }
@@ -464,6 +437,14 @@ namespace TextureEditor
 			else if (tex is PakTextureInfo pakt)
 			{
 				IsPAK = true;
+				if (pakt.FileFormat == TextureFunctions.TextureFileFormat.PVR ||
+					pakt.FileFormat == TextureFunctions.TextureFileFormat.GVR)
+				{
+					IsPAK = false; 
+					DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(tex.Image, false);
+					PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(tex.Image, false);
+					DataFormatInf = TextureFunctions.GetGvrDataFormatFromBitmap(tex.Image, false, false);
+				}
 				TextureData = pakt.TextureData;
 			}
 			else
@@ -498,13 +479,13 @@ namespace TextureEditor
         {
             Name = name;
             GlobalIndex = gbix;
-            Image = bitmap;
-			MipmapData = mipdata;
+			Image = bitmap;
             DataFormatInf = format;
 			DataFormat = ppx;
 			PixelBitType = pbx;
             SurfaceFlags = flags;
             Mipmap = (SurfaceFlags & NinjaSurfaceFlags.Mipmapped) != 0;
+			MipmapData = mipdata;
 			TextureData = str;
 			OriginalFileExtension = origExt;
 			IsPAK = OriginalFileExtension == ".dds" ? true: false;

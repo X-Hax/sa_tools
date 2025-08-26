@@ -15,7 +15,9 @@ namespace VrSharp
         protected bool initalized = false; // Is the texture initalized?
 
         protected byte[] decodedData; // Decoded texture data (either 32-bit RGBA or 8-bit indexed)
+		protected byte[][] decodedMipData;
         protected Bitmap decodedBitmap; // Decoded bitmap
+		protected Bitmap[] decodedMipBitmap; 
 
         protected VrPixelCodec pixelCodec; // Pixel codec
         protected VrDataCodec dataCodec;   // Data codec
@@ -141,8 +143,12 @@ namespace VrSharp
         {
             Initalize(source);
         }
+		public VrTextureEncoder(Bitmap source, Bitmap[] mipsource)
+		{
+			InitalizeWithMips(source, mipsource);
+		}
 
-        private void Initalize(Bitmap source)
+		private void Initalize(Bitmap source)
         {
             // Make sure this bitmap's dimensions are valid
             if (!HasValidDimensions(source.Width, source.Height))
@@ -163,12 +169,35 @@ namespace VrSharp
                 textureHeight = 0;
             }
         }
+		private void InitalizeWithMips(Bitmap source, Bitmap[] mipsource)
+		{
+			// Make sure this bitmap's dimensions are valid
+			if (!HasValidDimensions(source.Width, source.Height))
+				return;
 
-        /// <summary>
-        /// Returns if the texture was loaded successfully.
-        /// </summary>
-        /// <returns></returns>
-        public bool Initalized
+			try
+			{
+				decodedBitmap = source;
+				decodedMipBitmap = mipsource;
+
+				textureWidth = (ushort)source.Width;
+				textureHeight = (ushort)source.Height;
+			}
+			catch
+			{
+				decodedBitmap = null;
+				decodedMipBitmap = null;
+
+				textureWidth = 0;
+				textureHeight = 0;
+			}
+		}
+
+		/// <summary>
+		/// Returns if the texture was loaded successfully.
+		/// </summary>
+		/// <returns></returns>
+		public bool Initalized
         {
             get { return initalized; }
         }

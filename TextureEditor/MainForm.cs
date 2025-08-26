@@ -14,6 +14,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using VrSharp.DDS;
 using VrSharp.Gvr;
 using VrSharp.Pvr;
 using VrSharp.Xvr;
@@ -432,7 +433,6 @@ namespace TextureEditor
 					nonIndexedPAK = false;
 					byte[] inf = pak.Entries.Single((file) => file.Name.Equals(indexName, StringComparison.OrdinalIgnoreCase)).Data;
 					newtextures = new List<TextureInfo>(inf.Length / 0x3C);
-					int argb4count = 0;
 					for (int i = 0; i < inf.Length; i += 0x3C)
 					{
 						// Load a PAK INF entry
@@ -447,17 +447,11 @@ namespace TextureEditor
 							byte[] dds = pak.Entries.First((file) => Path.GetExtension(file.Name) != ".inf" && file.Name.Substring(0, file.Name.Length - 4).Trim().Equals(entry.GetFilename().Trim(), StringComparison.OrdinalIgnoreCase)).Data;
 							MemoryStream str = new MemoryStream(dds);
 							newtextures.Add(new PakTextureInfo(entry.GetFilename().Trim(), entry.globalindex, CreateBitmapFromStream(str), entry.TypeInf, TextureFunctions.IdentifyPAKPixelFormat(str), TextureFunctions.IdentifyPAKPixelSubFormat(str), entry.fSurfaceFlags, str));
-							if (TextureFunctions.IdentifyPAKPixelSubFormat(str) == DDSPixelBitFormat.ARGB4444)
-								argb4count++;
 						}
 						catch (Exception ex)
 						{
 							MessageBox.Show(this, $"Could not add texture {entry.GetFilename().Trim() + ".dds: " + ex.Message.ToString() + "."}", "Texture Editor Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 						}
-					}
-					if (argb4count > 0)
-					{
-						MessageBox.Show("Some DDS textures use the ARGB4444 pixel format, which does not display correctly in Texture Editor.\nThose textures will display correctly in-game or when extracted and viewed on their own.", "Texture Editor", MessageBoxButtons.OK);
 					}
 				}
 			}
@@ -505,7 +499,7 @@ namespace TextureEditor
 					case TextureFormat.PAK:
 						if (!(newtextures[i] is PakTextureInfo))
 							newtextures[i] = new PakTextureInfo(newtextures[i]);
-						break;
+							break;
 					case TextureFormat.XVM:
 						if (!(newtextures[i] is XvrTextureInfo))
 							newtextures[i] = new XvrTextureInfo(newtextures[i]);
@@ -808,12 +802,18 @@ namespace TextureEditor
 									item.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(item.Image, false);
 								if (item.PixelBitType == DDSPixelBitFormat.Invalid)
 									item.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(item.Image, false);
-								byte[] tb = WriteDDSFile(item, item.MipmapData, item.Image);
+								if (item.FileFormat != TextureFunctions.TextureFileFormat.DDS)
+								{
+									item.FileFormat = TextureFunctions.TextureFileFormat.DDS;
+									item.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(item.Image, false);
+									item.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(item.Image, false);
+								}
+								MemoryStream tb = item.TextureData == null ? EncodeDDSLimitedColors(item) : tb = item.TextureData;
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
 									name = name.Substring(0, 0x1C);
 								name = name.Trim();
-								pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb));
+								pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", tb.ToArray()));
 								// Create a new PAK INF entry
 								PAKInfEntry entry = new PAKInfEntry();
 								byte[] namearr = Encoding.ASCII.GetBytes(name);
@@ -935,6 +935,7 @@ namespace TextureEditor
 							break;
 						case TextureFormat.PVMX:
 						case TextureFormat.XVM:
+						default:
 							textures = new List<TextureInfo>(textures.Select(a => new PakTextureInfo(a)).Cast<TextureInfo>());
 							break;
 					}
@@ -1061,6 +1062,13 @@ namespace TextureEditor
 								case TextureFiles.DDS:
 									if (tex is PakTextureInfo paktr)
 									{
+										if (paktr.FileFormat == TextureFunctions.TextureFileFormat.PVR ||
+											paktr.FileFormat == TextureFunctions.TextureFileFormat.GVR)
+										{
+											paktr.FileFormat = TextureFunctions.TextureFileFormat.DDS;
+											paktr.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(paktr.Image, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
+											paktr.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(paktr.Image, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
+										}
 										exportData = EncodeDDSorPNG(paktr, true, false, useDDSInPAKsUncompressedLargestSizeToolStripMenuItem.Checked);
 										File.WriteAllBytes(Path.Combine(dir, paktr.Name + ext), exportData.ToArray());
 									}
@@ -1074,8 +1082,8 @@ namespace TextureEditor
 										}
 										else
 										{
-											byte[] textureinfo = WriteDDSFile(pakti, pakti.MipmapData, pakti.Image);
-											File.WriteAllBytes(Path.Combine(dir, pakti.Name + ext), textureinfo.ToArray());
+											exportData = EncodeDDSLimitedColors(pakti);
+											File.WriteAllBytes(Path.Combine(dir, pakti.Name + ext), exportData.ToArray());
 										}
 									}
 									break;
@@ -1097,7 +1105,7 @@ namespace TextureEditor
 									{
 										System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
 										bmp = ProcessIndexedBitmap(tex, indexedfmt);
-										bmp.Save(exportData, ImageFormat.Png);
+										bmp.Save(exportData, System.Drawing.Imaging.ImageFormat.Png);
 										File.WriteAllBytes(Path.Combine(dir, tex.Name + ".png"), exportData.ToArray());
 										tex.TextureData = exportData;
 									}
@@ -1212,7 +1220,7 @@ namespace TextureEditor
 							{
 								System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(tex.Image);
 								bmp = ProcessIndexedBitmap(tex, indexedfmt);
-								bmp.Save(exportData, ImageFormat.Png);
+								bmp.Save(exportData, System.Drawing.Imaging.ImageFormat.Png);
 								File.WriteAllBytes(Path.Combine(dir, tex.Name + ".png"), exportData.ToArray());
 								tex.TextureData = exportData;
 							}
@@ -1500,12 +1508,9 @@ namespace TextureEditor
 		{
 			if (textures[listBox1.SelectedIndex].Mipmap != mipmapCheckBox.Checked)
 			{
-				// Erase cached texture data if it's not a PAK DDS file.
-				if (textures[listBox1.SelectedIndex] is not PakTextureInfo pakt)
-				{
-					if (mipmapCheckBox.Enabled)
-						textures[listBox1.SelectedIndex].TextureData = null;
-				}
+				// Erase cached texture data.
+				if (mipmapCheckBox.Enabled)
+					textures[listBox1.SelectedIndex].TextureData = null;
 				textures[listBox1.SelectedIndex].Mipmap = mipmapCheckBox.Checked;
 				// Update surface flags for PAK textures
 				if (textures[listBox1.SelectedIndex] is PakTextureInfo pk)
@@ -1667,37 +1672,44 @@ namespace TextureEditor
 			{
 				if (TextureFunctions.CheckIfTextureIsDDS(texmemstr.ToArray()))
 				{
-					PixelFormat pxformat;
-					var image = Pfim.Pfimage.FromStream(texmemstr, new Pfim.PfimConfig());
-					switch (image.Format)
+					if (TextureFunctions.IdentifyPAKPixelSubFormat(texmemstr) == DDSPixelBitFormat.ARGB4444)
 					{
-						case Pfim.ImageFormat.Rgba32:
-							pxformat = PixelFormat.Format32bppArgb;
-							break;
-						case Pfim.ImageFormat.Rgb24:
-							pxformat = PixelFormat.Format24bppRgb;
-							break;
-						//Temporary fix. This prevents Rgba16 DDS textures from crashing the editor. 
-						case Pfim.ImageFormat.Rgba16:
-							pxformat = PixelFormat.Format16bppArgb1555;
-							break;
-						case Pfim.ImageFormat.R5g5b5:
-							pxformat = PixelFormat.Format16bppRgb555;
-							break;
-						case Pfim.ImageFormat.R5g5b5a1:
-							pxformat = PixelFormat.Format16bppArgb1555;
-							break;
-						case Pfim.ImageFormat.R5g6b5:
-							pxformat = PixelFormat.Format16bppRgb565;
-							break;
-						default:
-							MessageBox.Show("Unsupported image format: " + image.Format.ToString());
-							throw new NotImplementedException();
+						// An entire abstraction just for this. Yay!
+						DDSTexture ddst = new DDSTexture(texmemstr);
+						bitmap_temp = ddst.ToBitmap();
+						if (ddst.HasMipmaps)
+							mipbitarray = ddst.MipmapsToBitmap();
 					}
-					bitmap_temp = new Bitmap(image.Width, image.Height, pxformat);
-					BitmapData bmpData = bitmap_temp.LockBits(new Rectangle(0, 0, bitmap_temp.Width, bitmap_temp.Height), ImageLockMode.WriteOnly, bitmap_temp.PixelFormat);
-					Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-					bitmap_temp.UnlockBits(bmpData);
+					else
+					{
+						PixelFormat pxformat;
+						var image = Pfim.Pfimage.FromStream(texmemstr, new Pfim.PfimConfig());
+						switch (image.Format)
+						{
+							case Pfim.ImageFormat.Rgba32:
+								pxformat = PixelFormat.Format32bppArgb;
+								break;
+							case Pfim.ImageFormat.Rgb24:
+								pxformat = PixelFormat.Format24bppRgb;
+								break;
+							case Pfim.ImageFormat.R5g5b5:
+								pxformat = PixelFormat.Format16bppRgb555;
+								break;
+							case Pfim.ImageFormat.R5g5b5a1:
+								pxformat = PixelFormat.Format16bppArgb1555;
+								break;
+							case Pfim.ImageFormat.R5g6b5:
+								pxformat = PixelFormat.Format16bppRgb565;
+								break;
+							default:
+								MessageBox.Show("Unsupported image format: " + image.Format.ToString());
+								throw new NotImplementedException();
+						}
+						bitmap_temp = new Bitmap(image.Width, image.Height, pxformat);
+						BitmapData bmpData = bitmap_temp.LockBits(new Rectangle(0, 0, bitmap_temp.Width, bitmap_temp.Height), ImageLockMode.WriteOnly, bitmap_temp.PixelFormat);
+						Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+						bitmap_temp.UnlockBits(bmpData);
+					}
 				}
 				else
 					bitmap_temp = new Bitmap(texmemstr);
@@ -1979,7 +1991,19 @@ namespace TextureEditor
 			xvr.Seek(0, SeekOrigin.Begin);
 			return xvr;
 		}
-
+		private MemoryStream EncodeDDSLimitedColors(PakTextureInfo tex)
+		{
+			if (tex.TextureData != null)
+				return TextureFunctions.UpdateGBIX(tex.TextureData, tex.GlobalIndex, true);
+			tex.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(tex.Image, settingsfile.UseDDSUncompressedForPAK);
+			tex.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(tex.Image, settingsfile.UseDDSUncompressedForPAK);
+			DDSTextureEncoder encoder = new DDSTextureEncoder(tex.Image, tex.PixelBitType, tex.MipmapData);
+			encoder.HasMipmaps = tex.Mipmap;
+			MemoryStream dds = new MemoryStream();
+			encoder.Save(dds);
+			dds.Seek(0, SeekOrigin.Begin);
+			return dds;
+		}
 		private MemoryStream EncodeDDSorPNG(TextureInfo tex, bool dds, bool force = false, bool HQ = false)
 		{
 			if (!force && tex.TextureData != null)
@@ -1987,12 +2011,12 @@ namespace TextureEditor
 			if (!dds)
 			{
 				MemoryStream bmp = new MemoryStream();
-				tex.Image.Save(bmp, ImageFormat.Png);
+				tex.Image.Save(bmp, System.Drawing.Imaging.ImageFormat.Png);
 				return bmp;
 			}
 			Image<Rgba32> image;
 			MemoryStream ms = new MemoryStream();
-			tex.Image.Save(ms, ImageFormat.Png);
+			tex.Image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
 			image = SixLabors.ImageSharp.Image.Load<Rgba32>(ms.ToArray());
 			ms.Dispose();
 			BcEncoder encoder = new BcEncoder();
@@ -2007,394 +2031,6 @@ namespace TextureEditor
 			encoder.EncodeToStream(image, ddsData);
 			return ddsData;
 		}
-		#region Custom DDS Encoding
-		const uint MagicDDS = 0x20534444; //DDS
-		enum DDSHeaderFlags
-		{
-			Caps = 0x1,
-			Height = 0x2,
-			Width = 0x4,
-			Pitch = 0x8,
-			PixelType = 0x1000,
-			MipmapCount = 0x20000,
-			LinearSize = 0x80000,
-			Depth = 0x800000
-		}
-		enum DDSCaps
-		{
-			Complex = 0x00000008,
-			Texture = 0x00001000,
-			Mipmap = 0x00400000
-		}
-		DDSHeaderFlags flags = DDSHeaderFlags.Caps | DDSHeaderFlags.PixelType | DDSHeaderFlags.Height | DDSHeaderFlags.Width | DDSHeaderFlags.Pitch;
-		DDSCaps caps = DDSCaps.Texture;
-		int pixelbits;
-		int mipmapnum;
-		uint rmask;
-		uint gmask;
-		uint bmask;
-		uint amask;
-		/// <summary>
-		///Determines the number of generated mipmaps for DDS files.
-		///Sonic Adventure 1 and 2 only accept powers of 2 for texture dimensions.
-		///</summary>
-		private int GetMipmapNum(Bitmap bmp)
-		{
-			int num = 1;
-			int newwidth = bmp.Width;
-			int newheight = bmp.Height;
-			while (newwidth > 1 || newheight > 1)
-			{
-				if (newwidth > 1)
-					newwidth = newwidth / 2;
-				if (newheight > 1)
-					newheight = newheight / 2;
-				num++;
-			}
-			return num;
-		}
-		/// <summary>
-		/// Parts adapted from DDS GIMP plugin. Rework if necessary.
-		/// Link: https://code.google.com/archive/p/gimp-dds/
-		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
-		/// <returns></returns>
-		private int Multiply8BitValue(int a, int b)
-		{
-			int t = a * b + 128;
-			return ((t + (t >> 8)) >> 8);
-		}
-		private ushort DDSEncodeRGB565(int r, int g, int b)
-		{
-			return (ushort)((Multiply8BitValue(r, 31) << 11) |
-				   (Multiply8BitValue(g, 63) << 5) |
-				   (Multiply8BitValue(b, 31)));
-		}
-
-		private ushort DDSEncodeRGBA4444(int r, int g, int b, int a)
-		{
-			return (ushort)((Multiply8BitValue(a, 15) << 12) |
-				   (Multiply8BitValue(r, 15) << 8) |
-				   (Multiply8BitValue(g, 15) << 4) |
-				   (Multiply8BitValue(b, 15)));
-		}
-
-		private ushort DDSEncodeRGBA1555(int r, int g, int b, int a)
-		{
-			return (ushort)((((a >> 7) & 0x01) << 15) |
-				   (Multiply8BitValue(r, 31) << 10) |
-				   (Multiply8BitValue(g, 31) << 5) |
-				   (Multiply8BitValue(b, 31)));
-		}
-		public static byte[] BitmapToByteArray(Bitmap bitmap)
-		{
-			BitmapData bmpdata = null;
-			try
-			{
-				bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-				int numbytes = bmpdata.Stride * bitmap.Height;
-				byte[] bytedata = new byte[numbytes];
-				IntPtr ptr = bmpdata.Scan0;
-
-				Marshal.Copy(ptr, bytedata, 0, numbytes);
-
-				return bytedata;
-			}
-			finally
-			{
-				if (bmpdata != null)
-					bitmap.UnlockBits(bmpdata);
-			}
-		}
-		private byte[] ConvertBitmapToDDS(Bitmap[] bmp, PakTextureInfo pti, Bitmap bmpfallback = null)
-		{
-			byte r = 0;
-			byte g = 0;
-			byte b = 0;
-			byte a = 0;
-			int numpixels;
-			int bits = 0;
-			DDSPixelBitFormat srcpixels;
-			List<byte> rawlist = new List<byte>();
-			if (bmp != null)
-			{
-				foreach (Bitmap bitmap in bmp)
-				{
-					byte[] imagebytes = BitmapToByteArray(bitmap);
-					numpixels = bitmap.Width * bitmap.Height;
-					byte[] compressedbits = [];
-					for (int i = 0; i < numpixels; ++i)
-					{
-						b = imagebytes[(4 * i) + 0];
-						g = imagebytes[(4 * i) + 1];
-						r = imagebytes[(4 * i) + 2];
-						a = imagebytes[(4 * i) + 3];
-							switch (pti.PixelBitType)
-						{
-							case DDSPixelBitFormat.ARGB8888:
-							default:
-								rawlist.Add(b);
-								rawlist.Add(g);
-								rawlist.Add(r);
-								rawlist.Add(a);
-								break;
-							case DDSPixelBitFormat.BGRA8888:
-								rawlist.Add(r);
-								rawlist.Add(g);
-								rawlist.Add(b);
-								rawlist.Add(a);
-								break;
-							case DDSPixelBitFormat.RGB565:
-								compressedbits = BitConverter.GetBytes(DDSEncodeRGB565(r, g, b));
-								rawlist.Add(compressedbits[0]);
-								rawlist.Add(compressedbits[1]);
-								break;
-							case DDSPixelBitFormat.ARGB1555:
-								compressedbits = BitConverter.GetBytes(DDSEncodeRGBA1555(r, g, b, a));
-								rawlist.Add(compressedbits[0]);
-								rawlist.Add(compressedbits[1]);
-								break;
-							case DDSPixelBitFormat.ARGB4444:
-								compressedbits = BitConverter.GetBytes(DDSEncodeRGBA4444(r, g, b, a));
-								rawlist.Add(compressedbits[0]);
-								rawlist.Add(compressedbits[1]);
-								break;
-						}
-					}
-					switch (pti.PixelBitType)
-					{
-						case DDSPixelBitFormat.ARGB8888:
-						case DDSPixelBitFormat.BGRA8888:
-						default:
-							bits = 4;
-							break;
-						case DDSPixelBitFormat.RGB565:
-						case DDSPixelBitFormat.ARGB1555:
-						case DDSPixelBitFormat.ARGB4444:
-							bits = 2;
-							break;
-					}
-				}
-				if (pti.Mipmap && bmp.Length <= 1)
-				{
-					rawlist.AddRange(GenerateDDSMipmaps(pti, rawlist.ToArray(), bits, false, GetMipmapNum(bmp[0])));
-				}
-			}
-			else
-			{
-				byte[] imagebytes = BitmapToByteArray(bmpfallback);
-				numpixels = bmpfallback.Width * bmpfallback.Height;
-				byte[] compressedbits = [];
-				switch (pti.PixelBitType)
-				{
-					case DDSPixelBitFormat.ARGB8888:
-					case DDSPixelBitFormat.BGRA8888:
-					default:
-						bits = 4;
-						break;
-					case DDSPixelBitFormat.RGB565:
-					case DDSPixelBitFormat.ARGB1555:
-					case DDSPixelBitFormat.ARGB4444:
-						bits = 2;
-						break;
-				}
-				for (int i = 0; i < numpixels; ++i)
-				{
-					b = imagebytes[(4 * i) + 0];
-					g = imagebytes[(4 * i) + 1];
-					r = imagebytes[(4 * i) + 2];
-					a = imagebytes[(4 * i) + 3];
-					switch (pti.PixelBitType)
-					{
-						case DDSPixelBitFormat.ARGB8888:
-						default:
-							rawlist.Add(b);
-							rawlist.Add(g);
-							rawlist.Add(r);
-							rawlist.Add(a);
-							break;
-						case DDSPixelBitFormat.BGRA8888:
-							rawlist.Add(r);
-							rawlist.Add(g);
-							rawlist.Add(b);
-							rawlist.Add(a);
-							break;
-						case DDSPixelBitFormat.RGB565:
-							compressedbits = BitConverter.GetBytes(DDSEncodeRGB565(r, g, b));
-							rawlist.Add(compressedbits[0]);
-							rawlist.Add(compressedbits[1]);
-							break;
-						case DDSPixelBitFormat.ARGB1555:
-							compressedbits = BitConverter.GetBytes(DDSEncodeRGBA1555(r, g, b, a));
-							rawlist.Add(compressedbits[0]);
-							rawlist.Add(compressedbits[1]);
-							break;
-						case DDSPixelBitFormat.ARGB4444:
-							compressedbits = BitConverter.GetBytes(DDSEncodeRGBA4444(r, g, b, a));
-							rawlist.Add(compressedbits[0]);
-							rawlist.Add(compressedbits[1]);
-							break;
-					}
-				}
-				if (pti.Mipmap)
-				{
-					rawlist.AddRange(GenerateDDSMipmaps(pti, rawlist.ToArray(), bits, false, GetMipmapNum(bmpfallback)));
-				}
-			}
-			return rawlist.ToArray();
-		}
-		private byte[] DDSMipmap_Nearest(byte[] bitmap, int dw, int dh, int sw, int sh, int bpp)
-		{
-			List<byte> mm = new List<byte>();
-			byte[] imagebytes = bitmap;
-			int n, x, y;
-			int ix, iy;
-			int srowbytes = sw * bpp;
-			int drowbytes = dw * bpp;
-
-			for (y = 0; y < dh; ++y)
-			{
-				iy = (y * sh + sh / 2) / dh;
-				for (x = 0; x < dw; ++x)
-				{
-					ix = (x * sw + sw / 2) / dw;
-					for (n = 0; n < bpp; ++n)
-					{
-						mm.Add(imagebytes[iy * srowbytes + (ix * bpp) + n]);
-					}
-				}
-			}
-			return mm.ToArray();
-		}
-		private byte[] GenerateDDSMipmaps(PakTextureInfo pti, byte[] bitmap, int bpp,
-					 bool indexed, int mipmaps)
-		{
-			List<byte> mips = new List<byte>();
-			byte[] newmipmap = bitmap;
-			int mipw, miph;
-			int baseh = pti.Image.Height;
-			int basew = pti.Image.Width;
-			do
-			{
-				mipw = basew / 2;
-				miph = baseh / 2;
-				// "Nearest Neighbor" mipmap generation is the only format available at the moment.
-				// If smoother formats can be adapted, place them here.
-				mips.AddRange(DDSMipmap_Nearest(bitmap, mipw, miph, basew, baseh, bpp));
-				bitmap = DDSMipmap_Nearest(bitmap, mipw, miph, basew, baseh, bpp);
-				basew = mipw;
-				baseh = miph;
-			}
-			while (mipw > 1 || miph > 1);
-
-			return mips.ToArray();
-		}
-		private List<byte> CreateDDSHeader(PakTextureInfo pti, Bitmap[] bmp, Bitmap bmpfallback = null)
-		{
-			switch (pti.PixelBitType)
-			{
-				case DDSPixelBitFormat.ARGB8888:
-				default:
-					rmask = 16711680;
-					gmask = 65280;
-					bmask = 255;
-					amask = 4278190080;
-					pixelbits = 32;
-					break;
-				case DDSPixelBitFormat.BGRA8888:
-					rmask = 255;
-					gmask = 65280;
-					bmask = 16711680;
-					amask = 4278190080;
-					pixelbits = 32;
-					break;
-				case DDSPixelBitFormat.RGB565:
-					rmask = 63488;
-					gmask = 2016;
-					bmask = 31;
-					amask = 0;
-					pixelbits = 16;
-					break;
-				case DDSPixelBitFormat.ARGB1555:
-					rmask = 31744;
-					gmask = 992;
-					bmask = 31;
-					amask = 32768;
-					pixelbits = 16;
-					break;
-				case DDSPixelBitFormat.ARGB4444:
-					rmask = 3840;
-					gmask = 240;
-					bmask = 15;
-					amask = 61440;
-					pixelbits = 16;
-					break;
-			}
-			if (pti.Mipmap)
-			{
-				flags |= DDSHeaderFlags.MipmapCount;
-				caps |= DDSCaps.Complex | DDSCaps.Mipmap;
-				if (bmp != null)
-				{
-					if (bmp.Length == 1)
-						mipmapnum = GetMipmapNum(bmp[0]);
-					else
-						mipmapnum = bmp.Length;
-				}
-				else
-					mipmapnum = GetMipmapNum(bmpfallback);
-			}
-			else
-			{
-				mipmapnum = 1;
-			}
-			List<byte> outBytes = new();
-			outBytes.AddRange(BitConverter.GetBytes(MagicDDS));
-			outBytes.Add(0x7C);
-			outBytes.AddRange(new byte[3]);
-			outBytes.AddRange(BitConverter.GetBytes((uint)flags));
-			if (bmp != null)
-			{
-				outBytes.AddRange(BitConverter.GetBytes(bmp[0].Height));
-				outBytes.AddRange(BitConverter.GetBytes(bmp[0].Width));
-				outBytes.AddRange(BitConverter.GetBytes((uint)((bmp[0].Width * pixelbits + 7) / 8)));
-			}
-			else
-			{
-				outBytes.AddRange(BitConverter.GetBytes(bmpfallback.Height));
-				outBytes.AddRange(BitConverter.GetBytes(bmpfallback.Width));
-				outBytes.AddRange(BitConverter.GetBytes((uint)((bmpfallback.Width * pixelbits + 7) / 8)));
-			}
-			//Volume maps? Don't need 'em here! Default to 1.
-			outBytes.Add(1);
-			outBytes.AddRange(new byte[3]);
-			outBytes.AddRange(BitConverter.GetBytes(mipmapnum));
-			//Reserved space
-			outBytes.AddRange(new byte[44]);
-			outBytes.Add(0x20);
-			outBytes.AddRange(new byte[3]);
-			outBytes.AddRange(BitConverter.GetBytes((uint)pti.DataFormat));
-			//We're not compressing the texture data like BCnEncoder, so this segment is null.
-			outBytes.AddRange(new byte[4]);
-			outBytes.AddRange(BitConverter.GetBytes(pixelbits));
-			outBytes.AddRange(BitConverter.GetBytes(rmask));
-			outBytes.AddRange(BitConverter.GetBytes(gmask));
-			outBytes.AddRange(BitConverter.GetBytes(bmask));
-			outBytes.AddRange(BitConverter.GetBytes(amask));
-			outBytes.AddRange(BitConverter.GetBytes((int)caps));
-			//No volume/cubemaps, so this is the end
-			outBytes.AddRange(new byte[16]);
-			return outBytes;
-		}
-		private byte[] WriteDDSFile(PakTextureInfo pti, Bitmap[] bmp, Bitmap bmpfallback = null)
-		{
-			List<byte> ddsbytes = new();
-			ddsbytes.AddRange(CreateDDSHeader(pti, bmp, bmpfallback));
-			ddsbytes.AddRange(ConvertBitmapToDDS(bmp, pti, bmpfallback));
-			return ddsbytes.ToArray();
-		}
-		#endregion
 		#endregion
 
 		#region Palette related functions
@@ -2556,7 +2192,7 @@ namespace TextureEditor
 							break;
 						case ".png":
 						case ".bmp":
-							ImageFormat fmt = Path.GetExtension(fd.FileName).ToLowerInvariant() == ".png" ? ImageFormat.Png : ImageFormat.Bmp;
+							System.Drawing.Imaging.ImageFormat fmt = Path.GetExtension(fd.FileName).ToLowerInvariant() == ".png" ? System.Drawing.Imaging.ImageFormat.Png : System.Drawing.Imaging.ImageFormat.Bmp;
 							Bitmap save = currentPalette.GetBitmap();
 							save.Save(fd.FileName, fmt);
 							break;
