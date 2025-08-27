@@ -1415,7 +1415,12 @@ namespace TextureEditor
 												}
 												else
 												{
-													textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, DDSPixelFormat.Invalid, DDSPixelBitFormat.Invalid, NinjaSurfaceFlags.Mipmapped, str, nonIndexedPAK ? Path.GetExtension(file) : ".dds"));
+													Bitmap[] mips = [];
+													if (PvrTexture.Is(file))
+													{
+														mips = new PvrTexture(file).MipmapsToBitmap();
+													}
+													textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, DDSPixelFormat.Invalid, DDSPixelBitFormat.Invalid, NinjaSurfaceFlags.Mipmapped, str, nonIndexedPAK ? Path.GetExtension(file) : ".dds", mips));
 												}
 												break;
 										}
