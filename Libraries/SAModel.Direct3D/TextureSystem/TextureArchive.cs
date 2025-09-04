@@ -39,7 +39,7 @@ namespace SAModel.Direct3D.TextureSystem
                     // Get sorted entires from the INF file if it exists
                     List<PAKFile.PAKEntry> sorted = pak.GetSortedEntries(filenoext);
                     arc.Entries = new List<GenericArchiveEntry>(sorted.Cast<GenericArchiveEntry>());
-                    break;
+					break;
                 case ".pvmx":
                     arc = new PVMXFile(file);
                     break;
