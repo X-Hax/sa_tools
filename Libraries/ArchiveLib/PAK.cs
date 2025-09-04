@@ -4,7 +4,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using VrSharp.DDS;
 using SplitTools;
 
 // Generic archive format used in Sonic Adventure 2 PC.
@@ -33,39 +35,60 @@ namespace ArchiveLib
 
 			public override Bitmap GetBitmap()
 			{
+				Bitmap bitmap_temp;
+				Bitmap textureimg;
 				MemoryStream str = new MemoryStream(Data);
 				uint check = BitConverter.ToUInt32(Data, 0);
+				uint check2 = BitConverter.ToUInt32(Data, 0x50);
 				if (check == 0x20534444) // DDS header
 				{
-					PixelFormat pxformat;
-					var image = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
-					switch (image.Format)
+					if (check2 != 0x00000004) // DXT compression check
 					{
-						case Pfim.ImageFormat.Rgba32:
-							pxformat = PixelFormat.Format32bppArgb;
-							break;
-						case Pfim.ImageFormat.Rgb24:
-							pxformat = PixelFormat.Format24bppRgb;
-							break;
-						case Pfim.ImageFormat.R5g5b5:
-							pxformat = PixelFormat.Format16bppRgb555;
-							break;
-						case Pfim.ImageFormat.R5g5b5a1:
-							pxformat = PixelFormat.Format16bppArgb1555;
-							break;
-						case Pfim.ImageFormat.R5g6b5:
-							pxformat = PixelFormat.Format16bppRgb565;
-							break;
-						default:
-							throw new Exception("Unsupported image format: " + image.Format.ToString());
+						DDSTexture ddst = new DDSTexture(str);
+						bitmap_temp = ddst.ToBitmap();
 					}
-					var data = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
-					var bitmap = new Bitmap(image.Width, image.Height, image.Stride, pxformat, data);
-					return bitmap;
+					else
+					{
+						PixelFormat pxformat;
+						var image = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
+
+						switch (image.Format)
+						{
+							case Pfim.ImageFormat.Rgba32:
+								pxformat = PixelFormat.Format32bppArgb;
+								break;
+							case Pfim.ImageFormat.Rgb24:
+								pxformat = PixelFormat.Format24bppRgb;
+								break;
+							case Pfim.ImageFormat.R5g5b5:
+								pxformat = PixelFormat.Format16bppRgb555;
+								break;
+							case Pfim.ImageFormat.R5g5b5a1:
+								pxformat = PixelFormat.Format16bppArgb1555;
+								break;
+							case Pfim.ImageFormat.R5g6b5:
+								pxformat = PixelFormat.Format16bppRgb565;
+								break;
+							default:
+								throw new Exception("Unsupported image format: " + image.Format.ToString());
+						}
+
+						bitmap_temp = new Bitmap(image.Width, image.Height, pxformat);
+						BitmapData bmpData = bitmap_temp.LockBits(new Rectangle(0, 0, bitmap_temp.Width, bitmap_temp.Height), ImageLockMode.WriteOnly, bitmap_temp.PixelFormat);
+						Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
+						bitmap_temp.UnlockBits(bmpData);
+					}
 				}
 				else
-					return new Bitmap(str);
+				{
+					bitmap_temp = new Bitmap(str);
+				}
+				// The bitmap is cloned to avoid access error on the original file
+				textureimg = (Bitmap)bitmap_temp.Clone();
+				bitmap_temp.Dispose();
+				return textureimg;
 			}
+
 		}
 
         public PAKFile() { }

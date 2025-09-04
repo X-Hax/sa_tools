@@ -366,6 +366,7 @@ namespace TextureEditor
 			if (tex is GvrTextureInfo gvrt)
 			{
 				IsPAK = false;
+				FileFormat = TextureFunctions.TextureFileFormat.GVR;
 				DataFormatInf = gvrt.DataFormat;
 				if (gvrt.DataFormat == GvrDataFormat.Index4 || gvrt.DataFormat == GvrDataFormat.Index8)
 					SurfaceFlags |= NinjaSurfaceFlags.Palettized;
@@ -398,6 +399,8 @@ namespace TextureEditor
 			else if (tex is PvrTextureInfo pvrt)
 			{
 				IsPAK = false;
+				FileFormat = TextureFunctions.TextureFileFormat.PVR;
+				MipmapData = pvrt.MipmapData;
 				switch (pvrt.PixelFormat)
 				{
 					default:

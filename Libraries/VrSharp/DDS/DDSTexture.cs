@@ -118,7 +118,6 @@ namespace VrSharp.DDS
 			// Check to see if what we are dealing with is a DDS texture
 			if (!Is(encodedData))
 			{
-				uint data = BitConverter.ToUInt32(encodedData, 0);
 				throw new NotAValidTextureException($"This is not a valid DDS texture.");
 			}
 
@@ -138,9 +137,11 @@ namespace VrSharp.DDS
 				dataFormat = DDSPixelBitFormat.ARGB1555;
 			else if (amask == 61440 && rmask == 3840)
 				dataFormat = DDSPixelBitFormat.ARGB4444;
+			else if (amask == 4278190080 && rmask == 16711680)
+				dataFormat = DDSPixelBitFormat.ARGB8888;
 
-			// Get the codecs and make sure we can decode using them
-			dataCodec = DDSDataCodec.GetDataCodec(dataFormat);
+				// Get the codecs and make sure we can decode using them
+				dataCodec = DDSDataCodec.GetDataCodec(dataFormat);
 			// We need a pixel codec if this is a palettized texture
 			// Placeholder because palette data doesn't work properly yet
 			//if (dataCodec != null && dataCodec.PaletteEntries != 0)
@@ -191,9 +192,10 @@ namespace VrSharp.DDS
 		/// <returns>True if this is a DDS texture, false otherwise.</returns>
 		public static bool Is(byte[] source, int offset, int length)
 		{
-			// Fairly simple. Just check for DDS magic
+			// Fairly simple. Just check for DDS magic and no compression
 			uint check = BitConverter.ToUInt32(source, 0);
-			if (check == 0x20534444) // DDS header
+			uint check2 = BitConverter.ToUInt32(source, 0x50);
+			if (check == 0x20534444 && check2 != 0x00000004) // DDS header
 				return true;
 
 			return false;
