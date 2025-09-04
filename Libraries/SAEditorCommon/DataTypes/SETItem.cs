@@ -43,7 +43,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			string nopathfname = Path.GetFileName(filename);
 			ushort _id = ByteConverter.ToUInt16(file, address);
 			ID = _id;
-			ClipLevel = (byte)((_id >> 12) & 7);
+			ClipLevel = (byte)((_id >> 12) & 0xF);
 			ushort xrot = ByteConverter.ToUInt16(file, address + 2);
 			ushort yrot = ByteConverter.ToUInt16(file, address + 4);
 			ushort zrot = ByteConverter.ToUInt16(file, address + 6);
@@ -100,6 +100,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 			get { return (ClipSetting)ClipLevel; }
 			set { ClipLevel = (ushort)value; }
 		}
+
 		[Category("Common")]
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
 		[Category("Common")]
@@ -321,6 +322,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 	{
 		All,
 		HighOnly,
-		MediumAndHigh
+		MediumAndHigh,
+		SA2Unsubstansive = 8,
 	}
 }

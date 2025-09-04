@@ -166,7 +166,7 @@ namespace SAModel.SALVL
 				foreach (SETItem item in LevelData.SETItems(id))
 				{
 					bool render = false;
-					if (item.ClipSetting == ClipSetting.All)
+					if (item.ClipSetting == ClipSetting.All || item.ClipSetting == ClipSetting.SA2Unsubstansive)
 						render = true;
 					else if (item.ClipSetting == ClipSetting.HighOnly && editorDetailSetting == ClipLevel.Far)
 						render = true;

@@ -24,22 +24,119 @@ namespace SAModel.SALVL
 			if (!isStageLoaded)
 				return;
 
-			if (isSA2LVL()) 
-			{
-				SaveSA2Data(autoCloseDialog);
-				return;
-			}
-
-			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 6, true, autoCloseDialog);
-			progress.Show(this);
-			Application.DoEvents();
-
 			IniLevelData level = salvlini.Levels[levelID];
 
 			Directory.CreateDirectory(modSystemFolder);
 
+			if (isSA2LVL()) 
+				SaveSA2Data(autoCloseDialog, level);
+			else
+				SaveSA1Data(autoCloseDialog, level);
+		}
+
+		private void SaveSETFile(bool bigendian, bool isSA2, bool manualMode)
+		{
+			if (isSA2)
+			{
+				List<SETItem> substansiveObjects = new List<SETItem>();
+				List<SETItem> unsubstansiveObjects = new List<SETItem>();
+
+				foreach (SETItem setObject in LevelData.SETItems(LevelData.SA2Set))
+				{
+					if (setObject.ClipSetting == ClipSetting.SA2Unsubstansive)
+						unsubstansiveObjects.Add(setObject);
+					else
+						substansiveObjects.Add(setObject);
+				}
+
+				// TODO: Implement some form of Kart save support. Should be using another flag.
+
+				if (manualMode)
+				{
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = "bin",
+						Filter = "SET files|SET*.bin",
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							string subName = Path.GetFileNameWithoutExtension(a.FileName) + "_s.bin";
+							string unsubName = Path.GetFileNameWithoutExtension(a.FileName) + "_u.bin";
+							SETItem.Save(substansiveObjects.ToList(), Path.Combine(Path.GetDirectoryName(a.FileName), subName), bigendian);
+							SETItem.Save(unsubstansiveObjects.ToList(), Path.Combine(Path.GetDirectoryName(a.FileName), unsubName), bigendian);
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
+					{
+						string subName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_s.bin";
+						string unsubName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_u.bin";
+						string subNamePath = Path.Combine(modFolder, "gd_PC", subName);
+						string unsubNamePath = Path.Combine(modFolder, "gd_PC", unsubName);
+						SETItem.Save(substansiveObjects.ToList(), subNamePath, bigendian);
+						SETItem.Save(unsubstansiveObjects.ToList(), unsubNamePath, bigendian);
+					}
+				}
+				
+			}
+			else
+			{
+				if (manualMode)
+				{
+					using (SaveFileDialog a = new SaveFileDialog
+					{
+						DefaultExt = "bin",
+						Filter = "SET files|SET*.bin",
+					})
+					{
+						if (a.ShowDialog() == DialogResult.OK)
+						{
+							SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), a.FileName, bigendian);
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < LevelData.SETChars.Length; i++)
+					{
+						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
+
+						SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), setstr, bigendian);
+					}
+				}
+			}
+		}
+
+		private void SaveCamFile(bool bigendian)
+		{
+			using (SaveFileDialog a = new()
+			{
+				DefaultExt = "bin",
+				Filter = "CAM files|CAM*.bin",
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					{
+						CAMItem.Save(LevelData.camItems(LevelData.Character).ToList(), a.FileName, bigendian);
+					}
+				}
+			}
+		}
+
+		#region SA1 Save Functions
+		private void SaveSA1Data(bool autoCloseDialog, IniLevelData level)
+		{
+			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 6, true, autoCloseDialog);
+			progress.Show(this);
+			Application.DoEvents();
+
 			SA1LevelAct levelact = new SA1LevelAct(level.LevelID);
 
+			#region Save Stage Geometry
 			progress.SetTaskAndStep("Saving:", "Geometry...");
 
 			if (LevelData.geo != null)
@@ -81,6 +178,9 @@ namespace SAModel.SALVL
 
 			progress.StepProgress();
 
+			#endregion
+
+			#region Save Death Zones
 			progress.Step = "Death zones...";
 			Application.DoEvents();
 
@@ -95,6 +195,8 @@ namespace SAModel.SALVL
 
 			progress.StepProgress();
 
+			#endregion
+
 			#region Saving SET Items
 
 			progress.Step = "SET items...";
@@ -102,52 +204,8 @@ namespace SAModel.SALVL
 
 			if (!LevelData.SETItemsIsNull())
 			{
-				if (isSA2LVL())
-				{
-					for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
-					{
-						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SA2SetTypes[i] + ".bin");
-
-						// blank the set file
-						if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
-						{
-							byte[] emptyBytes = new byte[0x20];
-							File.WriteAllBytes(setstr, emptyBytes);
-						}
-
-						List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
-						file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
-						file.Align(0x20);
-
-						foreach (SETItem item in LevelData.SETItems(i))
-							file.AddRange(item.GetBytes());
-
-						File.WriteAllBytes(setstr, file.ToArray());
-					}
-				}
-				else
-				{
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
-					{
-						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-
-						// blank the set file
-						if (File.Exists(setstr) || LevelData.GetSetItemCount(i) == 0)
-						{
-							byte[] emptyBytes = new byte[0x20];
-							File.WriteAllBytes(setstr, emptyBytes);
-						}
-
-						List<byte> file = new List<byte>(LevelData.GetSetItemCount(i) * 0x20 + 0x20);
-						file.AddRange(BitConverter.GetBytes(LevelData.GetSetItemCount(i)));
-						file.Align(0x20);
-
-						foreach (SETItem item in LevelData.SETItems(i))
-							file.AddRange(item.GetBytes());
-
-						File.WriteAllBytes(setstr, file.ToArray());
-					}
-				}
+				// TODO: Fix this so there's a Big Endian variable.
+				SaveSETFile(false, false, (salvlini == null));
 			}
 
 			progress.StepProgress();
@@ -286,124 +344,9 @@ namespace SAModel.SALVL
 			Application.DoEvents();
 		}
 
-		private void SaveSETFile(bool bigendian, bool isSA2)
-		{
-			if (isSA2)
-			{
-				List<SETItem> sSETitems = new List<SETItem>();
-				List<SETItem> uSETitems = new List<SETItem>();
+		#endregion
 
-				//Just in case Kart SET editing becomes viable in the future
-				List<SETItem> kbaseSETitems = new List<SETItem>();
-				List<SETItem> kartSETitems = new List<SETItem>();
-				foreach (SETItem data in LevelData.SETItems(LevelData.SA2Set))
-				{
-					if (data.SETFileName.EndsWith("_U.BIN".ToLowerInvariant()))
-					{
-						uSETitems.Add(data);
-					}
-					else if (data.SETFileName.EndsWith("_S.BIN".ToLowerInvariant()))
-					{
-						sSETitems.Add(data);
-					}
-					else if (data.SETFileName.Contains("SETCARTBASE".ToLowerInvariant()))
-					{
-						kbaseSETitems.Add(data);
-					}
-					else if (data.SETFileName.Contains("SETCART".ToLowerInvariant()))
-					{
-						kartSETitems.Add(data);
-					}
-				}
-				if (sSETitems.Count > 0)
-				{
-					using (SaveFileDialog a = new SaveFileDialog
-					{
-						DefaultExt = "bin",
-						Filter = "SET S files|SET*_S.bin",
-					})
-					{
-						if (a.ShowDialog() == DialogResult.OK)
-						{
-							SETItem.Save(sSETitems.ToList(), a.FileName, bigendian);
-						}
-					}
-				}
-				if (uSETitems.Count > 0)
-				{
-					using (SaveFileDialog a = new SaveFileDialog
-					{
-						DefaultExt = "bin",
-						Filter = "SET U files|SET*_U.bin",
-					})
-					{
-						if (a.ShowDialog() == DialogResult.OK)
-						{
-							SETItem.Save(uSETitems.ToList(), a.FileName, bigendian);
-						}
-					}
-				}
-				if (kbaseSETitems.Count > 0)
-				{
-					using (SaveFileDialog a = new SaveFileDialog
-					{
-						DefaultExt = "bin",
-						Filter = "SET files|SETCART*.bin",
-					})
-					{
-						if (a.ShowDialog() == DialogResult.OK)
-						{
-							SETItem.Save(kbaseSETitems.ToList(), a.FileName, bigendian);
-						}
-					}
-				}
-				if (kartSETitems.Count > 0)
-				{
-					using (SaveFileDialog a = new SaveFileDialog
-					{
-						DefaultExt = "bin",
-						Filter = "SET files|SETCART*.bin",
-					})
-					{
-						if (a.ShowDialog() == DialogResult.OK)
-						{
-							SETItem.Save(kartSETitems.ToList(), a.FileName, bigendian);
-						}
-					}
-				}
-			}
-			else
-			{
-				using (SaveFileDialog a = new SaveFileDialog
-				{
-					DefaultExt = "bin",
-					Filter = "SET files|SET*.bin",
-				})
-				{
-					if (a.ShowDialog() == DialogResult.OK)
-					{
-						SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), a.FileName, bigendian);
-					}
-				}
-			}
-		}
-
-		private void SaveCamFile(bool bigendian)
-		{
-			using (SaveFileDialog a = new()
-			{
-				DefaultExt = "bin",
-				Filter = "CAM files|CAM*.bin",
-			})
-			{
-				if (a.ShowDialog() == DialogResult.OK)
-				{
-					{
-						CAMItem.Save(LevelData.camItems(LevelData.Character).ToList(), a.FileName, bigendian);
-					}
-				}
-			}
-		}
+		#region SA2 Save Functions
 		private void SaveSA2LandTables(bool hasextra)
 		{
 			string filter;
@@ -439,7 +382,7 @@ namespace SAModel.SALVL
 			if (hasextra)
 			{
 				for (int i = 0; i < LevelData.secondgeos.Count; i++)
-				{ 
+				{
 					LandTable level = LevelData.secondgeos[i];
 					switch (level.Format)
 					{
@@ -472,34 +415,17 @@ namespace SAModel.SALVL
 				}
 			}
 		}
-		private void SaveSA2Data(bool autoCloseDialog)
+
+		private void SaveSA2Data(bool autoCloseDialog, IniLevelData level)
 		{
-
-			Application.DoEvents();
-			IniLevelData level = salvlini.Levels[levelID];
-			Directory.CreateDirectory(modSystemFolder);
-
-			#region Saving SET Items
-
-			Application.DoEvents();
-
-			if (!LevelData.SETItemsIsNull())
-			{
-				SaveSETFile(true, true);
-			}
-
-			#endregion
-
 			SA2LevelIDs SA2level = (SA2LevelIDs)byte.Parse(level.LevelID, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-
-			#region Saving Geometry
 
 			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 7, true, autoCloseDialog);
 			progress.Show(this);
-
 			Application.DoEvents();
-			progress.SetTaskAndStep("Saving:", "Geometry...");
 
+			#region Saving Geometry
+			progress.SetTaskAndStep("Saving:", "Geometry...");
 
 			if (LevelData.geo != null)
 			{
@@ -511,6 +437,17 @@ namespace SAModel.SALVL
 					LevelData.secondgeos[i].SaveToFile(level.SecondaryGeometry[i], LevelData.secondgeos[i].Format);
 			}
 			progress.StepProgress();
+
+			#endregion
+
+			#region Saving SET Items
+
+			Application.DoEvents();
+
+			if (!LevelData.SETItemsIsNull())
+			{
+				SaveSETFile(true, true, (salvlini == null));
+			}
 
 			#endregion
 
@@ -535,7 +472,7 @@ namespace SAModel.SALVL
 
 			progress.Step = "Start positions...";
 			Application.DoEvents();
-			
+
 			for (int i = 0; i < LevelData.StartPositions.Length; i++)
 			{
 				if (!File.Exists(salvlini.Characters[LevelData.SA2Characters[i]].StartPositions))
@@ -693,14 +630,14 @@ namespace SAModel.SALVL
 							Mission3YRotation = (ushort)LevelData.MultiplayerIntroPositionsB[i].YRotation,
 						});
 					}
-						else
-							posini.Add(SA2level,
-						new SA2EndPosInfo()
-						{
-							Mission2Position = LevelData.MultiplayerIntroPositionsA[i].Position,
-							Mission2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
-						});
-					}
+					else
+						posini.Add(SA2level,
+					new SA2EndPosInfo()
+					{
+						Mission2Position = LevelData.MultiplayerIntroPositionsA[i].Position,
+						Mission2YRotation = (ushort)LevelData.MultiplayerIntroPositionsA[i].Rotation.Y,
+					});
+				}
 				posini.Save(salvlini.Characters[LevelData.SA2Characters[i]].MultiplayerIntroPositions);
 			}
 
@@ -760,5 +697,7 @@ namespace SAModel.SALVL
 			unsaved = false;
 			Application.DoEvents();
 		}
+
+		#endregion
 	}
 }

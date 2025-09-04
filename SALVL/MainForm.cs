@@ -2084,12 +2084,12 @@ namespace SAModel.SALVL
 
 		private void advancedSaveSETFileToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveSETFile(false, isSA2LVL());
+			SaveSETFile(false, isSA2LVL(), true);
 		}
 
 		private void advancedSaveSETFileBigEndianToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SaveSETFile(true, isSA2LVL());
+			SaveSETFile(true, isSA2LVL(), true);
 		}
 
 		private void cAMFileToolStripMenuItem_Click(object sender, EventArgs e)
