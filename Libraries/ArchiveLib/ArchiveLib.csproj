@@ -16,7 +16,7 @@
 		<ProjectReference Include="..\VrSharp\VrSharp.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="AuroraLib.Compression" />
+		<PackageReference Include="AuroraLib.Compression-Extended" />
 		<PackageReference Include="Pfim" />
 		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
