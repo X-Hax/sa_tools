@@ -65,12 +65,22 @@ namespace SAModel.SALVL
 							if (subName.Contains("_s"))
 								subName += ".bin";
 							else
+							{
+								if (subName.Contains("_u"))
+									subName.Remove(subName.Length - 2, 2);
+
 								subName += "_s.bin";
+							}
+								
 							string unsubName = Path.GetFileNameWithoutExtension(a.FileName);
 							if (unsubName.Contains("_u"))
 								unsubName += ".bin";
 							else
+							{
+								if (unsubName.Contains("_s"))
+									unsubName.Remove(unsubName.Length - 2, 2);
 								unsubName += "_u.bin";
+							}
 							
 							SETItem.Save(substansiveObjects.ToList(), Path.Combine(Path.GetDirectoryName(a.FileName), subName), bigendian);
 							SETItem.Save(unsubstansiveObjects.ToList(), Path.Combine(Path.GetDirectoryName(a.FileName), unsubName), bigendian);
