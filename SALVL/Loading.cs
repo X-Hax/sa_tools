@@ -589,94 +589,26 @@ namespace SAModel.SALVL
 
 		private void LoadSA2SetFiles()
 		{
-			string setTxt = "set";
-			string setEndU = "{0}_u.bin";
-			string formatted = "";
-			string formattedFallback = "";
-			string formatted2 = "";
-			string formattedFallback2 = "";
-			string formattedDef = "";
-			string formattedFallbackDef = "";
-			string setEndS = "{0}_s.bin";
-
-			string setfallbackS = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEndS);
-			string setstrS = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEndS);
 			for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
 			{
-				formatted = string.Format(setstrS, LevelData.SA2SetTypes[i]);
-				formattedFallback = string.Format(setfallbackS, LevelData.SA2SetTypes[i]);
-				string useSetPathS = ProjectFunctions.ModPathOrGameFallback(formatted, formattedFallback);
-				string formattedDefS = string.Format(setstrS, "");
-				string formattedFallbackS = string.Format(setfallbackS, "");
-				string useSetPathDefS = ProjectFunctions.ModPathOrGameFallback(formattedDefS, formattedFallbackS);
+				List<SETItem> setitems = new List<SETItem>();
 
-				if (File.Exists(useSetPathS))
-				{
-					if (progress != null)
-						progress.SetTask("SET: " + Path.GetFileName(useSetPathS));
+				string subSetName = $"set{LevelData.SETName}{LevelData.SA2SetTypes[i]}_s.bin";
+				string unsubSetName = $"set{LevelData.SETName}{LevelData.SA2SetTypes[i]}_u.bin";
 
-					List<SETItem> SetList = new List<SETItem>();
+				string gameSystemPath = systemFallback;
+				string projSystemPath = Path.Combine(modFolder, "gd_PC");
 
-					SetList = SETItem.Load(useSetPathS, selectedItems);
-					string setfallbackU = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEndU);
-					string setstrU = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEndU);
+				string subSetFilePath = File.Exists(Path.Combine(projSystemPath, subSetName)) ? Path.Combine(projSystemPath, subSetName) : Path.Combine(gameSystemPath, subSetName);
+				string unsubSetFilePath = File.Exists(Path.Combine(projSystemPath, unsubSetName)) ? Path.Combine(projSystemPath, unsubSetName) : Path.Combine(gameSystemPath, unsubSetName);
 
-					formatted2 = string.Format(setstrU, LevelData.SA2SetTypes[i]);
-					formattedFallback2 = string.Format(setfallbackU, LevelData.SA2SetTypes[i]);
+				if (File.Exists(subSetFilePath))
+					setitems.AddRange(SETItem.Load(subSetFilePath, selectedItems));
 
-					formattedDef = string.Format(setstrU, LevelData.SA2SetTypes[0]);
-					formattedFallbackDef = string.Format(setfallbackU, LevelData.SA2SetTypes[0]);
+				if (File.Exists(unsubSetFilePath))
+					setitems.AddRange(SETItem.Load(unsubSetFilePath, selectedItems));
 
-					string useSetPathU = ProjectFunctions.ModPathOrGameFallback(formatted2, formattedFallback2);
-					string useSetPathDefU = ProjectFunctions.ModPathOrGameFallback(formattedDef, formattedFallbackDef);
-					if (File.Exists(useSetPathU))
-					{
-						SetList.AddRange(SETItem.Load(useSetPathU, selectedItems));
-					}
-					// Yes, because some SA2 Levels don't use a unique _U variant for 2P/Hard Mode
-					else
-					{
-						SetList.AddRange(SETItem.Load(useSetPathDefU, selectedItems));
-					}
-
-					LevelData.AssignSetList(i, SetList);
-				}
-				// Yes, because some multiplayer stages understandably don't have normal SET files
-				else if (File.Exists(useSetPathDefS))
-				{
-					if (progress != null)
-						progress.SetTask("SET: " + Path.GetFileName(useSetPathDefS));
-
-					List<SETItem> SetList = new List<SETItem>();
-
-					SetList = SETItem.Load(useSetPathDefS, selectedItems);
-					string setfallbackU = Path.Combine(systemFallback, setTxt + LevelData.SETName + setEndU);
-					string setstrU = Path.Combine(modSystemFolder, setTxt + LevelData.SETName + setEndU);
-
-					formatted2 = string.Format(setstrU, LevelData.SA2SetTypes[i]);
-					formattedFallback2 = string.Format(setfallbackU, LevelData.SA2SetTypes[i]);
-
-					formattedDef = string.Format(setstrU, LevelData.SA2SetTypes[0]);
-					formattedFallbackDef = string.Format(setfallbackU, LevelData.SA2SetTypes[0]);
-
-					string useSetPathU = ProjectFunctions.ModPathOrGameFallback(formatted2, formattedFallback2);
-					string useSetPathDefU = ProjectFunctions.ModPathOrGameFallback(formattedDef, formattedFallbackDef);
-					if (File.Exists(useSetPathU))
-					{
-						SetList.AddRange(SETItem.Load(useSetPathU, selectedItems));
-					}
-					// Yes, because some SA2 Levels don't use a unique _U variant for 2P/Hard Mode
-					else
-					{
-						SetList.AddRange(SETItem.Load(useSetPathDefU, selectedItems));
-					}
-
-					LevelData.AssignSetList(i, SetList);
-				}
-				else
-				{
-					LevelData.AssignSetList(i, new List<SETItem>());
-				}
+				LevelData.AssignSetList(i, setitems);
 			}
 		}
 
