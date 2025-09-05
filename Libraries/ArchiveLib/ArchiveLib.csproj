@@ -18,6 +18,7 @@
 	<ItemGroup>
 		<PackageReference Include="AuroraLib.Compression-Extended" />
 		<PackageReference Include="Pfim" />
+		<PackageReference Include="SixLabors.ImageSharp" />
 		<PackageReference Include="System.Text.Encoding.CodePages" />
 	</ItemGroup>
 </Project>

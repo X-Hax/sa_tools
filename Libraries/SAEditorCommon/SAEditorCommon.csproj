@@ -62,5 +62,8 @@
 		<PackageReference Include="AssimpNet" />
 		<PackageReference Include="SharpDX.Direct3D9" />
 		<PackageReference Include="SharpDX.Mathematics" />
+		<PackageReference Include="SixLabors.ImageSharp" />
+		<PackageReference Include="System.Net.Http" />
+		<PackageReference Include="System.Text.RegularExpressions" />
 	</ItemGroup>
 </Project>

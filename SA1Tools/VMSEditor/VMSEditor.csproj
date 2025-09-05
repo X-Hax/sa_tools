@@ -24,7 +24,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="nQuant.Master" />
+		<PackageReference Include="SixLabors.ImageSharp" />
 		<PackageReference Include="System.Text.Encoding.CodePages" />
+		<PackageReference Include="System.Text.RegularExpressions" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Properties\Resources.Designer.cs">

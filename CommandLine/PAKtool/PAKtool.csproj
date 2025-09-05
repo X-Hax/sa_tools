@@ -10,6 +10,9 @@
    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />
     <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
   </ItemGroup>

@@ -26,4 +26,9 @@
 	<ItemGroup>
 		<Content Include="icon_sa2MsgEdit.ico" />
 	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="SixLabors.ImageSharp" />
+	  <PackageReference Include="System.Net.Http" />
+	  <PackageReference Include="System.Text.RegularExpressions" />
+	</ItemGroup>
 </Project>

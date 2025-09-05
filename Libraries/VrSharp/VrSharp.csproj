@@ -13,6 +13,7 @@
 		<PackageReference Include="BCnEncoder.Net" />
 		<PackageReference Include="BCnEncoder.Net.ImageSharp" />
 		<PackageReference Include="Pfim" />
+		<PackageReference Include="SixLabors.ImageSharp" />
 		<PackageReference Include="System.Drawing.Common" />
 	</ItemGroup>
 </Project>
