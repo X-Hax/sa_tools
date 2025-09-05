@@ -35,6 +35,14 @@ namespace SAModel.SALVL
 				SaveSA1Data(autoCloseDialog, level);
 		}
 
+		private void SaveSETFile(bool bigendian, bool isSA2, bool manualMode)
+		{
+			if (isSA2)
+				SaveSA2SetFile(bigendian, manualMode);
+			else
+				SaveSA1SetFile(bigendian, manualMode);
+		}
+
 		private void SaveCamFile(bool bigendian)
 		{
 			using (SaveFileDialog a = new()
