@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace SAModel.SALVL
 {
@@ -37,96 +38,9 @@ namespace SAModel.SALVL
 		private void SaveSETFile(bool bigendian, bool isSA2, bool manualMode)
 		{
 			if (isSA2)
-			{
-				List<SETItem> substansiveObjects = new List<SETItem>();
-				List<SETItem> unsubstansiveObjects = new List<SETItem>();
-
-				foreach (SETItem setObject in LevelData.SETItems(LevelData.SA2Set))
-				{
-					if (setObject.ClipSetting == ClipSetting.SA2Unsubstansive)
-						unsubstansiveObjects.Add(setObject);
-					else
-						substansiveObjects.Add(setObject);
-				}
-
-				// TODO: Implement some form of Kart save support. Should be using another flag.
-
-				if (manualMode)
-				{
-					using (SaveFileDialog a = new SaveFileDialog
-					{
-						DefaultExt = "bin",
-						Filter = "SET files|SET*.bin",
-					})
-					{
-						if (a.ShowDialog() == DialogResult.OK)
-						{
-							string subName = Path.GetFileNameWithoutExtension(a.FileName);
-							if (subName.Contains("_s"))
-								subName += ".bin";
-							else
-							{
-								if (subName.Contains("_u"))
-									subName.Remove(subName.Length - 2, 2);
-
-								subName += "_s.bin";
-							}
-								
-							string unsubName = Path.GetFileNameWithoutExtension(a.FileName);
-							if (unsubName.Contains("_u"))
-								unsubName += ".bin";
-							else
-							{
-								if (unsubName.Contains("_s"))
-									unsubName.Remove(unsubName.Length - 2, 2);
-								unsubName += "_u.bin";
-							}
-							
-							SETItem.Save(substansiveObjects.ToList(), Path.Combine(Path.GetDirectoryName(a.FileName), subName), bigendian);
-							SETItem.Save(unsubstansiveObjects.ToList(), Path.Combine(Path.GetDirectoryName(a.FileName), unsubName), bigendian);
-						}
-					}
-				}
-				else
-				{
-					for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
-					{
-						string subName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_s.bin";
-						string unsubName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_u.bin";
-						string subNamePath = Path.Combine(modFolder, "gd_PC", subName);
-						string unsubNamePath = Path.Combine(modFolder, "gd_PC", unsubName);
-						SETItem.Save(substansiveObjects.ToList(), subNamePath, bigendian);
-						SETItem.Save(unsubstansiveObjects.ToList(), unsubNamePath, bigendian);
-					}
-				}
-				
-			}
+				SaveSA2SetFile(bigendian, manualMode);
 			else
-			{
-				if (manualMode)
-				{
-					using (SaveFileDialog a = new SaveFileDialog
-					{
-						DefaultExt = "bin",
-						Filter = "SET files|SET*.bin",
-					})
-					{
-						if (a.ShowDialog() == DialogResult.OK)
-						{
-							SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), a.FileName, bigendian);
-						}
-					}
-				}
-				else
-				{
-					for (int i = 0; i < LevelData.SETChars.Length; i++)
-					{
-						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
-
-						SETItem.Save(LevelData.SETItems(LevelData.Character).ToList(), setstr, bigendian);
-					}
-				}
-			}
+				SaveSA1SetFile(bigendian, manualMode);
 		}
 
 		private void SaveCamFile(bool bigendian)
@@ -146,7 +60,77 @@ namespace SAModel.SALVL
 			}
 		}
 
+		private void ManuallySaveSETFile(string extension, string filter, string title, List<SETItem> setItems, bool isBigEndian)
+		{
+			using (SaveFileDialog a = new SaveFileDialog
+			{
+				DefaultExt = extension,
+				Filter = filter,
+				Title = title,
+				AddExtension = false,
+			})
+			{
+				if (a.ShowDialog() == DialogResult.OK)
+				{
+					string filepath = Path.Combine(Path.GetDirectoryName(a.FileName), Path.GetFileNameWithoutExtension(a.FileName));
+					if (!filepath.EndsWith(extension))
+						filepath += extension;
+					else if (filepath.Contains("_s") || filepath.Contains("_u"))
+						filepath += ".bin";
+					SETItem.Save(setItems.ToList(), filepath, isBigEndian);
+				}
+			}
+		}
+
 		#region SA1 Save Functions
+		private void SaveSA1SetFile(bool isBigEndian, bool isManual)
+		{
+			Dictionary<string, List<SETItem>> setitems = new Dictionary<string, List<SETItem>>()
+				{
+					{ "S", new List<SETItem>() },
+					{ "EG", new List<SETItem>() },	// Eggman is in here in case we ever add support.
+					{ "M", new List<SETItem>() },
+					{ "K", new List<SETItem>() },
+					{ "TI", new List<SETItem>() },	// Same deal for Tikal.
+					{ "A", new List<SETItem>() },
+					{ "E", new List<SETItem>() },
+					{ "B", new List<SETItem>() },
+					{ "L", new List<SETItem>() },	// Ditto for the Last Story/Super Sonic.
+				};
+
+			for (int i = 0; i < LevelData.SETChars.Length; i++)
+			{
+				foreach (SETItem setObject in LevelData.SETItems(i))
+				{
+					setitems[LevelData.SETChars[i]].Add(setObject);
+				}
+			}
+
+			if (isManual)
+			{
+				for (int i = 0; i < LevelData.SETChars.Length; i++)
+				{
+					string filetype = LevelData.Characters[i];
+					string id = LevelData.SETChars[i];
+
+					if (setitems[id].Count > 0)
+						ManuallySaveSETFile($".bin", "SET Files (*.bin)|*.bin", $"Saving {filetype}'s Object Layout", setitems[id], isBigEndian);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < LevelData.SETChars.Length; i++)
+				{
+					if (setitems[LevelData.SETChars[i]].Count > 0)
+					{
+						string setstr = Path.Combine(modSystemFolder, "SET" + LevelData.SETName + LevelData.SETChars[i] + ".bin");
+
+						SETItem.Save(setitems[LevelData.SETChars[i]], setstr, isBigEndian);
+					}
+				}
+			}
+		}
+
 		private void SaveSA1Data(bool autoCloseDialog, IniLevelData level)
 		{
 			ProgressDialog progress = new ProgressDialog("Saving stage: " + levelName, 6, true, autoCloseDialog);
@@ -366,6 +350,78 @@ namespace SAModel.SALVL
 		#endregion
 
 		#region SA2 Save Functions
+		private void SaveSA2SetFile(bool isBigEndian, bool isManual)
+		{
+			// TODO: Implement some form of Kart save support. Should use another flag if it's not contained in its own code set.
+
+			Dictionary<string, List<SETItem>> setitems = new Dictionary<string, List<SETItem>>()
+				{
+					{ "", new List<SETItem>() },
+					{ "_2P", new List<SETItem>() },
+					{ "_HD", new List<SETItem>() }
+				};
+
+			for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
+			{
+				foreach (SETItem setObject in LevelData.SETItems(i))
+				{
+					setitems[LevelData.SA2SetTypes[i]].Add(setObject);
+				}
+			}
+
+			if (isManual)
+			{
+				for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
+				{
+
+					List<SETItem> subItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting != ClipSetting.SA2Unsubstansive).ToList();
+					List<SETItem> unsubItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting == ClipSetting.SA2Unsubstansive).ToList();
+
+					string filetype = string.Empty;
+					string id = LevelData.SA2SetTypes[i].ToLowerInvariant();
+					switch (id)
+					{
+						case "":
+						default:
+							filetype = "Single Player";
+							break;
+						case "_2p":
+							filetype = "Multiplayer";
+							break;
+						case "_hd":
+							filetype = "Hard Mode";
+							break;
+					}
+
+					if (subItems.Count > 0)
+						ManuallySaveSETFile($"{id}_s.bin", "SET Files (*_s.bin)|*_s.bin", $"Saving {filetype} Substansive Object Layout", subItems, isBigEndian);
+					if (unsubItems.Count > 0)
+						ManuallySaveSETFile($"{id}_u.bin", "SET Files (*_u.bin)|*_u.bin", $"Saving {filetype} Unsubstansive Object Layout", unsubItems, isBigEndian);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < LevelData.SA2SetTypes.Length; i++)
+				{
+					List<SETItem> subItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting != ClipSetting.SA2Unsubstansive).ToList();
+					if (subItems.Count > 0)
+					{
+						string subName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_s.bin";
+						string subNamePath = Path.Combine(modFolder, "gd_PC", subName);
+						SETItem.Save(subItems, subNamePath, isBigEndian);
+					}
+
+					List<SETItem> unsubItems = setitems[LevelData.SA2SetTypes[i]].Where(x => x.ClipSetting == ClipSetting.SA2Unsubstansive).ToList();
+					if (unsubItems.Count > 0)
+					{
+						string unsubName = "set" + LevelData.SETName + LevelData.SA2SetTypes[i] + "_u.bin";
+						string unsubNamePath = Path.Combine(modFolder, "gd_PC", unsubName);
+						SETItem.Save(unsubItems, unsubNamePath, isBigEndian);
+					}
+				}
+			}
+		}
+
 		private void SaveSA2LandTables(bool hasextra)
 		{
 			string filter;
