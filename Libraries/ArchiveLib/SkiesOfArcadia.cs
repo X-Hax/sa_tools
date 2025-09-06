@@ -251,7 +251,7 @@ namespace ArchiveLib
 		public NJS_OBJECT ConvertedObject;
 
 		private GRND GRNDObj;
-		private GOBJ GOBJChunk;
+		//private GOBJ GOBJChunk; // TODO: Implement GOBJChunk reading proper.
 
 		public nmldGround(byte[] file, int address, string name)
 		{
