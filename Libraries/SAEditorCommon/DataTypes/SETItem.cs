@@ -105,7 +105,7 @@ namespace SAModel.SAEditorCommon.DataTypes
 		public override Vertex Position { get { return position; } set { position = value; GetHandleMatrix(); } }
 		[Category("Common")]
 		public override Rotation Rotation { get { return rotation; } set { rotation = value; GetHandleMatrix(); } }
-		protected Vertex scale = new Vertex();
+		new protected Vertex scale = new Vertex();
 		[Category("Common")]
 		public Vertex Scale { get { return scale; } set { scale = value; GetHandleMatrix(); } }
 
