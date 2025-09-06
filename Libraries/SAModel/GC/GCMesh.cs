@@ -36,13 +36,11 @@ namespace SAModel.GC
 		/// <summary>
 		/// The location to which the parameters have been written
 		/// </summary>
-		private uint _paramAddress;
 		public string ParameterName { get; set; }
 
 		/// <summary>
 		/// The location to which the primitives have been written
 		/// </summary>
-		private uint _primitiveAddress;
 		public string PrimitiveName { get; set; }
 
 		/// <summary>

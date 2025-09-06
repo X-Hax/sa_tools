@@ -28,7 +28,6 @@ namespace SAModel.SAEditorCommon.UI
 		private List<GCParameter> ParamData; // Poly data that is being edited
 		private readonly List<GCParameter> ParamDataOriginal; // Original poly data at the time of opening the dialog
 		private readonly BMPInfo[] textures;
-		private bool freeze;
 
 		public GCModelParameterDataEditor(GCMesh meshData, BMPInfo[] textures, int index = 0)
 		{
@@ -37,14 +36,12 @@ namespace SAModel.SAEditorCommon.UI
 				return;
 			}
 			InitializeComponent();
-			freeze = true;
 			ParamDataOriginal = meshData.Clone().Parameters;
 			ParamData = meshData.Parameters;
 			this.textures = textures;
 			//comboBoxVertexGroup.Items.Clear();
 			//comboBoxVertexGroup.SelectedIndex = index;
 			BuildParameterDataList();
-			freeze = false;
 		}
 		private void MaterialEditor_Load(object sender, EventArgs e)
 		{

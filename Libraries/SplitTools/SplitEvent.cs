@@ -111,7 +111,6 @@ namespace SplitTools.SAArc
 
 				// These are for establishing a Motions dictionary for non-Battle files to facilitiate converting between game versions
 				var m = 1;
-				Dictionary<int, string> dctogcmotions = null;
 
 				if (fc[0] == 0x81)
 				{
