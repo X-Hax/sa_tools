@@ -23,8 +23,7 @@ namespace SAModel.SAEditorCommon.SETEditing
 		private Mesh[] meshes;
 		private string texture;
 		private List<string> texturesmulti;
-		private float? xpos, ypos, zpos, xscl, yscl, zscl, defxscl, defyscl, defzscl, gnddst, addxscl, addyscl, addzscl;
-		private int? xrot, yrot, zrot;
+		private float? xpos, ypos, zpos,defxscl, defyscl, defzscl, gnddst, addxscl, addyscl, addzscl;
 		private ushort? defxrot, defyrot, defzrot, addxrot, addyrot, addzrot;
 		private string rottype;
 		private string scltype;
