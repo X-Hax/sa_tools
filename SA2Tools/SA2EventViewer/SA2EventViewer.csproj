@@ -24,10 +24,6 @@
 		<Content Include="icon_sa2EvView.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" />
-	  <PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
-	<ItemGroup>
 	  <Compile Update="RenderLoop.cs">
 	    <SubType>Form</SubType>
 	  </Compile>

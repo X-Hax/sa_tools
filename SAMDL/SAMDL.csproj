@@ -27,11 +27,6 @@
 		<Content Include="ico_samdl.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" />
-	  <PackageReference Include="System.Net.Http" />
-	  <PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
-	<ItemGroup>
 	  <Compile Update="Properties\Resources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>

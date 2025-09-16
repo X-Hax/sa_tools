@@ -10,11 +10,6 @@
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" />
-	  <PackageReference Include="System.Net.Http" />
-	  <PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
-	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
 	</ItemGroup>

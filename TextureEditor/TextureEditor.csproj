@@ -23,9 +23,4 @@
 	<ItemGroup>
 		<Content Include="icon_TexEdit.ico" />
 	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" />
-	  <PackageReference Include="System.Net.Http" />
-	  <PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
 </Project>

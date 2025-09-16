@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<OutputPath>..\..\build\bin\</OutputPath>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
@@ -13,8 +13,5 @@
 		<ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	</ItemGroup>
 </Project>

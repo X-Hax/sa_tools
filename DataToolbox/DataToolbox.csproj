@@ -15,11 +15,6 @@
 	  <Content Include="datatoolbox.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" />
-	  <PackageReference Include="System.Net.Http" />
-	  <PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
-	<ItemGroup>
 		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
 		</ProjectReference>
 		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">

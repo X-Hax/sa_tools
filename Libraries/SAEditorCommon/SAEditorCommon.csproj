@@ -12,6 +12,9 @@
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="AssimpNet" Version="4.1.0" />
+	</ItemGroup>
+	<ItemGroup>
 		<Compile Update="UI\ChunkModelBlendAlphaDataEditor.cs">
 		  <SubType>Form</SubType>
 		</Compile>
@@ -57,13 +60,5 @@
 		<ProjectReference Include="..\SAModel.Direct3D\SAModel.Direct3D.csproj" />
 		<ProjectReference Include="..\SAModel\SAModel.csproj" />
 		<ProjectReference Include="..\SplitTools\SplitTools.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="AssimpNet" />
-		<PackageReference Include="SharpDX.Direct3D9" />
-		<PackageReference Include="SharpDX.Mathematics" />
-		<PackageReference Include="SixLabors.ImageSharp" />
-		<PackageReference Include="System.Net.Http" />
-		<PackageReference Include="System.Text.RegularExpressions" />
 	</ItemGroup>
 </Project>

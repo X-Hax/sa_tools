@@ -29,13 +29,6 @@
 		<ProjectReference Include="..\Libraries\SAModel\SAModel.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="SixLabors.ImageSharp" />
-		<PackageReference Include="System.Data.DataSetExtensions" />
-		<PackageReference Include="System.Net.Http" />
-		<PackageReference Include="System.Text.Encoding.CodePages" />
-		<PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
-	<ItemGroup>
 		<Compile Remove="Updater\SizeSuffix.cs" />
 	</ItemGroup>
 	<ItemGroup>

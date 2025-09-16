@@ -22,11 +22,6 @@
 		<Content Include="icon_sa2DiagEdit.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="SixLabors.ImageSharp" />
-	  <PackageReference Include="System.Net.Http" />
-	  <PackageReference Include="System.Text.RegularExpressions" />
-	</ItemGroup>
-	<ItemGroup>
 	  <Compile Update="InputCustomEncoding.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
