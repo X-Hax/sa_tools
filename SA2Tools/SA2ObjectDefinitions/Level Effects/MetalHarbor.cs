@@ -20,7 +20,7 @@ namespace SA2ObjectDefinitions.Level_Effects
 		NJS_TEXLIST watertls;
 		Mesh[] mesh2;
 		Texture[] texs2;
-		float waterYPos = -329.65820002f;
+		//float waterYPos = -329.65820002f;
 
 
 		public override void Init(IniLevelData data, byte act, byte timeofday)

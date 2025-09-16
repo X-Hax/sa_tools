@@ -13,7 +13,7 @@ namespace SAToolsHub
 	public partial class resplitMenu : Form
 	{
 		SAModel.SAEditorCommon.UI.ProgressDialog splitProgress;
-		bool overwrite = false;
+		//bool overwrite = false; // This does nothing
 		Templates.SplitTemplate template;
 		List<Templates.SplitEntry> splitEntries = new List<Templates.SplitEntry>();
 		List<Templates.SplitEntryMDL> splitMDLEntries = new List<Templates.SplitEntryMDL>();
@@ -154,10 +154,10 @@ namespace SAToolsHub
 
 		private void chkOverwrite_CheckedChanged(object sender, EventArgs e)
 		{
-			if (chkOverwrite.Checked)
+			/*if (chkOverwrite.Checked)
 				overwrite = true;
 			else
-				overwrite = false;
+				overwrite = false;*/
 		}
 		#endregion
 

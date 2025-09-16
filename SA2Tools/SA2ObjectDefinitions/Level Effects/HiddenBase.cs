@@ -63,6 +63,7 @@ namespace SA2ObjectDefinitions.Level_Effects
 		Mesh[] qsandmesh3;
 		NJS_OBJECT qsandgritmodel3;
 		Mesh[] qsandgritmesh3;
+		/*
 		NJS_OBJECT qsandmodel3A;
 		Mesh[] qsandmesh3A;
 		NJS_OBJECT qsandgritmodel3A;
@@ -79,7 +80,7 @@ namespace SA2ObjectDefinitions.Level_Effects
 		Mesh[] qsandmesh3D;
 		NJS_OBJECT qsandgritmodel3D;
 		Mesh[] qsandgritmesh3D;
-
+		*/
 		NJS_OBJECT qsandmodel4;
 		Mesh[] qsandmesh4;
 		NJS_OBJECT qsandgritmodel4;

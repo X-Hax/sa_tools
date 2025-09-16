@@ -2740,7 +2740,6 @@
 		private System.Windows.Forms.ToolStripMenuItem MultiEnd1ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem MultiEnd2ToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem extraLevelToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem visibleToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem exInvisibleToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exVisibleToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exAllToolStripMenuItem;

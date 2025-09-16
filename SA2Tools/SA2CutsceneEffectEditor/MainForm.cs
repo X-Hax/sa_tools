@@ -24,7 +24,7 @@ namespace SA2CutsceneEffectEditor
 		public Size currentFormSize { get { return formSizes[effectDataSetComboBox.SelectedIndex]; } }
 		public Size currentMEFormSize { get { return formMESizes[miniEventDataSetComboBox.SelectedIndex]; } }
 		List<string> recentFiles = new List<string>();
-		string filename = null;
+		string filename = "";
 		string currentFormatDialog = "";
 		bool bigEndian;
 		string bigEndianDialog = "";
@@ -107,7 +107,7 @@ namespace SA2CutsceneEffectEditor
 					break;
 			}
 			InitializeEffectData();
-			if (filename != null)
+			if (!string.IsNullOrEmpty(filename))
 				LoadFile(filename);
 		}
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -867,7 +867,7 @@ namespace SA2CutsceneEffectEditor
 		}
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (filename == null)
+			if (string.IsNullOrEmpty(filename))
 			{
 				saveAsToolStripMenuItem_Click(sender, e);
 				return;
@@ -883,7 +883,7 @@ namespace SA2CutsceneEffectEditor
 			}
 			using (SaveFileDialog dlg = new SaveFileDialog() { DefaultExt = "prs", Filter = "Supported Files|*.prs;*.scr|All Files|*.*" })
 			{
-				if (filename != null)
+				if (!string.IsNullOrEmpty(filename))
 				{
 					dlg.FileName = Path.GetFileName(filename);
 					dlg.InitialDirectory = Path.GetDirectoryName(filename);
@@ -979,7 +979,7 @@ namespace SA2CutsceneEffectEditor
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			filename = null;
+			filename = "";
 			Text = "SA2 Cutscene Effect Editor";
 			ClearEffectData();
 			currentFormat = CutsceneEffectFileTypes.Normal;
@@ -1583,7 +1583,8 @@ namespace SA2CutsceneEffectEditor
 		#endregion
 		private void recentFilesToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
-			LoadFile(recentFiles[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
+			if (e.ClickedItem != null)
+				LoadFile(recentFiles[recentFilesToolStripMenuItem.DropDownItems.IndexOf(e.ClickedItem)]);
 		}
 	}
 	#region Effect Data Structs
