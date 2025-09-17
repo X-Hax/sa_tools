@@ -54,7 +54,6 @@ namespace SAModel.SALVL
 					LoadStage("");
 					LoadLandtable();
 					UpdateMRUList(filename);
-					LevelPath = string.Empty;
 					unsaved = false;
 					break;
 				case ".sap":
@@ -167,11 +166,6 @@ namespace SAModel.SALVL
 
 		private void LoadStage(string id)
 		{
-			if (id.Length > 0)
-			{
-				IsLevelOnly = false;
-				LevelPath = string.Empty;
-			}
 			if (!IsLevelOnly)
 			{
 				UseWaitCursor = true;
