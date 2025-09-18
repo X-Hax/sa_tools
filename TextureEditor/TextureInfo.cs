@@ -449,6 +449,7 @@ namespace TextureEditor
 					DataFormatInf = TextureFunctions.GetGvrDataFormatFromBitmap(tex.Image, false, false);
 				}
 				TextureData = pakt.TextureData;
+				MipmapData = tex.MipmapData;
 			}
 			else
 			{

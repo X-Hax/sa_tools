@@ -134,6 +134,7 @@
 			contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(components);
 			copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			exportAllXVRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			label1 = new System.Windows.Forms.Label();
 			label2 = new System.Windows.Forms.Label();
 			label3 = new System.Windows.Forms.Label();
@@ -234,7 +235,7 @@
 			newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { newPVMToolStripMenuItem, newGVMToolStripMenuItem, newXVMToolStripMenuItem, newPVMXToolStripMenuItem, newPAKToolStripMenuItem });
 			newToolStripMenuItem.Image = Properties.Resources._new;
 			newToolStripMenuItem.Name = "newToolStripMenuItem";
-			newToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			newToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			newToolStripMenuItem.Text = "&New";
 			// 
 			// newPVMToolStripMenuItem
@@ -281,7 +282,7 @@
 			openToolStripMenuItem.Image = Properties.Resources.open;
 			openToolStripMenuItem.Name = "openToolStripMenuItem";
 			openToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
-			openToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			openToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			openToolStripMenuItem.Text = "&Open...";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
 			// 
@@ -290,7 +291,7 @@
 			saveToolStripMenuItem.Image = Properties.Resources.save;
 			saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			saveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
-			saveToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			saveToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			saveToolStripMenuItem.Text = "&Save";
 			saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
 			// 
@@ -300,7 +301,7 @@
 			saveAsToolStripMenuItem.Image = Properties.Resources.saveas;
 			saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S;
-			saveAsToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			saveAsToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			saveAsToolStripMenuItem.Text = "Save &As...";
 			saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
 			// 
@@ -342,14 +343,14 @@
 			// toolStripSeparator3
 			// 
 			toolStripSeparator3.Name = "toolStripSeparator3";
-			toolStripSeparator3.Size = new System.Drawing.Size(254, 6);
+			toolStripSeparator3.Size = new System.Drawing.Size(262, 6);
 			// 
 			// importTexturePackToolStripMenuItem
 			// 
 			importTexturePackToolStripMenuItem.Image = Properties.Resources.import;
 			importTexturePackToolStripMenuItem.Name = "importTexturePackToolStripMenuItem";
 			importTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I;
-			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			importTexturePackToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			importTexturePackToolStripMenuItem.Text = "&Import folder texture pack...";
 			importTexturePackToolStripMenuItem.ToolTipText = "Import a folder texture pack with an index file.";
 			importTexturePackToolStripMenuItem.Click += importTexturePackToolStripMenuItem_Click;
@@ -359,68 +360,68 @@
 			exportTexturePackToolStripMenuItem.Image = Properties.Resources.export;
 			exportTexturePackToolStripMenuItem.Name = "exportTexturePackToolStripMenuItem";
 			exportTexturePackToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E;
-			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			exportTexturePackToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			exportTexturePackToolStripMenuItem.Text = "&Export folder texture pack...";
 			exportTexturePackToolStripMenuItem.ToolTipText = "Export a folder texture pack with an index file.";
 			exportTexturePackToolStripMenuItem.Click += exportTexturePackToolStripMenuItem_Click;
 			// 
 			// exportAllToolStripMenuItem
 			// 
-			exportAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllPVRToolStripMenuItem, exportAllGVRToolStripMenuItem, exportAllDDSToolStripMenuItem, exportAllPNGToolStripMenuItem });
+			exportAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { exportAllPVRToolStripMenuItem, exportAllGVRToolStripMenuItem, exportAllXVRToolStripMenuItem, exportAllDDSToolStripMenuItem, exportAllPNGToolStripMenuItem });
 			exportAllToolStripMenuItem.Name = "exportAllToolStripMenuItem";
-			exportAllToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			exportAllToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			exportAllToolStripMenuItem.Text = "Export all textures as...";
 			// 
 			// exportAllPVRToolStripMenuItem
 			// 
 			exportAllPVRToolStripMenuItem.Name = "exportAllPVRToolStripMenuItem";
-			exportAllPVRToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+			exportAllPVRToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			exportAllPVRToolStripMenuItem.Text = "PVR";
 			exportAllPVRToolStripMenuItem.Click += exportAllPVRToolStripMenuItem_Click;
 			// 
 			// exportAllGVRToolStripMenuItem
 			// 
 			exportAllGVRToolStripMenuItem.Name = "exportAllGVRToolStripMenuItem";
-			exportAllGVRToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+			exportAllGVRToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			exportAllGVRToolStripMenuItem.Text = "GVR";
 			exportAllGVRToolStripMenuItem.Click += exportAllGVRToolStripMenuItem_Click;
 			// 
 			// exportAllDDSToolStripMenuItem
 			// 
 			exportAllDDSToolStripMenuItem.Name = "exportAllDDSToolStripMenuItem";
-			exportAllDDSToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+			exportAllDDSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			exportAllDDSToolStripMenuItem.Text = "DDS";
 			exportAllDDSToolStripMenuItem.Click += exportAllDDSToolStripMenuItem_Click;
 			// 
 			// exportAllPNGToolStripMenuItem
 			// 
 			exportAllPNGToolStripMenuItem.Name = "exportAllPNGToolStripMenuItem";
-			exportAllPNGToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+			exportAllPNGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			exportAllPNGToolStripMenuItem.Text = "PNG";
 			exportAllPNGToolStripMenuItem.Click += exportAllPNGToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator1
 			// 
 			toolStripSeparator1.Name = "toolStripSeparator1";
-			toolStripSeparator1.Size = new System.Drawing.Size(254, 6);
+			toolStripSeparator1.Size = new System.Drawing.Size(262, 6);
 			// 
 			// recentFilesToolStripMenuItem
 			// 
 			recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
-			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			recentFilesToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			recentFilesToolStripMenuItem.Text = "&Recent Files";
 			recentFilesToolStripMenuItem.DropDownItemClicked += recentFilesToolStripMenuItem_DropDownItemClicked;
 			// 
 			// toolStripSeparator2
 			// 
 			toolStripSeparator2.Name = "toolStripSeparator2";
-			toolStripSeparator2.Size = new System.Drawing.Size(254, 6);
+			toolStripSeparator2.Size = new System.Drawing.Size(262, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			exitToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4;
-			exitToolStripMenuItem.Size = new System.Drawing.Size(257, 22);
+			exitToolStripMenuItem.Size = new System.Drawing.Size(265, 30);
 			exitToolStripMenuItem.Text = "E&xit";
 			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
 			// 
@@ -1230,6 +1231,13 @@
 			pasteToolStripMenuItem.Text = "&Paste";
 			pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
 			// 
+			// exportAllXVRToolStripMenuItem
+			// 
+			exportAllXVRToolStripMenuItem.Name = "exportAllXVRToolStripMenuItem";
+			exportAllXVRToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			exportAllXVRToolStripMenuItem.Text = "XVR";
+			exportAllXVRToolStripMenuItem.Click += exportAllXVRToolStripMenuItem_Click;
+			// 
 			// MainForm
 			// 
 			AllowDrop = true;
@@ -1394,5 +1402,6 @@
 		private System.Windows.Forms.ToolStripMenuItem useDDSInTexturePacksToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem useDDSInPVMXToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem useDDSInPAKsUncompressedLargestSizeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exportAllXVRToolStripMenuItem;
 	}
 }

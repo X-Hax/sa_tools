@@ -499,7 +499,7 @@ namespace TextureEditor
 					case TextureFormat.PAK:
 						if (!(newtextures[i] is PakTextureInfo))
 							newtextures[i] = new PakTextureInfo(newtextures[i]);
-							break;
+						break;
 					case TextureFormat.XVM:
 						if (!(newtextures[i] is XvrTextureInfo))
 							newtextures[i] = new XvrTextureInfo(newtextures[i]);
@@ -804,10 +804,10 @@ namespace TextureEditor
 									item.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(item.Image, false);
 								if (item.FileFormat != TextureFunctions.TextureFileFormat.DDS)
 								{
-									item.FileFormat = TextureFunctions.TextureFileFormat.DDS;
 									item.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(item.Image, false);
 									item.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(item.Image, false);
 								}
+								item.FileFormat = TextureFunctions.TextureFileFormat.DDS;
 								MemoryStream tb = item.TextureData == null ? EncodeDDSLimitedColors(item) : tb = item.TextureData;
 								string name = item.Name.ToLowerInvariant();
 								if (name.Length > 0x1C)
@@ -1047,6 +1047,7 @@ namespace TextureEditor
 										pvrt = new PvrTextureInfo(tex);
 										exportData = EncodePVR(pvrt);
 									}
+									texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
 									File.WriteAllBytes(Path.Combine(dir, tex.Name + ext), exportData.ToArray());
 									break;
 								case TextureFiles.GVR:
@@ -1058,6 +1059,7 @@ namespace TextureEditor
 										exportData = EncodeGVR(gvrt);
 									}
 									File.WriteAllBytes(Path.Combine(dir, tex.Name + ext), exportData.ToArray());
+									texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
 									break;
 								case TextureFiles.DDS:
 									if (tex is PakTextureInfo paktr)
@@ -1086,6 +1088,7 @@ namespace TextureEditor
 											File.WriteAllBytes(Path.Combine(dir, pakti.Name + ext), exportData.ToArray());
 										}
 									}
+									texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
 									break;
 								case TextureFiles.XVR:
 									if (tex is XvrTextureInfo xvrtex)
@@ -1096,6 +1099,7 @@ namespace TextureEditor
 										exportData = EncodeXVR(xvrt);
 									}
 									File.WriteAllBytes(Path.Combine(dir, tex.Name + ext), exportData.ToArray());
+									texList.WriteLine("{0},{1},{2}x{3}", tex.GlobalIndex, tex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), tex.Image.Width, tex.Image.Height);
 									break;
 								case TextureFiles.PNG:
 								default:
@@ -1112,7 +1116,7 @@ namespace TextureEditor
 									// Non-indexed
 									else
 									{
-										exportData = EncodeDDSorPNG(tex, useDDSInTexturePacksToolStripMenuItem.Checked, true);
+										exportData = EncodeDDSorPNG(tex, false, true);
 									}
 									if (tex is PvmxTextureInfo xtex && xtex.Dimensions.HasValue)
 										texList.WriteLine("{0},{1},{2}x{3}", xtex.GlobalIndex, xtex.Name + TextureFunctions.IdentifyTextureFileExtension(exportData), xtex.Dimensions.Value.Width, xtex.Dimensions.Value.Height);
@@ -1415,7 +1419,7 @@ namespace TextureEditor
 												}
 												else
 												{
-													Bitmap[] mips = [];
+													Bitmap[] mips = null;
 													if (PvrTexture.Is(file))
 													{
 														mips = new PvrTexture(file).MipmapsToBitmap();
@@ -2479,7 +2483,8 @@ namespace TextureEditor
 				Settings.Save();
 				settingsfile.Save();
 			}
-			catch { };
+			catch { }
+			;
 		}
 
 		private void numericUpDownOrigSizeX_ValueChanged(object sender, EventArgs e)
@@ -2700,27 +2705,26 @@ namespace TextureEditor
 			checkBoxPAKUseAlpha_CheckedChanged(sender, e);
 			unsaved = true;
 		}
-
 		private void exportAllPVRToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.PVR);
 		}
-
 		private void exportAllGVRToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.GVR);
 		}
-
+		private void exportAllXVRToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportAllAs(TextureFiles.XVR);
+		}
 		private void exportAllDDSToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.DDS);
 		}
-
 		private void exportAllPNGToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ExportAllAs(TextureFiles.PNG);
 		}
-
 		private void useHQDDSToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			settingsfile.UseHQDDS = useHQDDSToolStripMenuItem.Checked;
