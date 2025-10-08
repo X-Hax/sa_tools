@@ -122,8 +122,8 @@ namespace VrSharp.DDS
 			}
 
 			// Read information about the texture
-			textureWidth = (ushort)BitConverter.ToUInt32(encodedData, 0xC);
-			textureHeight = (ushort)BitConverter.ToUInt32(encodedData, 0x10);
+			textureHeight = (ushort)BitConverter.ToUInt32(encodedData, 0xC);
+			textureWidth = (ushort)BitConverter.ToUInt32(encodedData, 0x10);
 
 			pixelFormat = (DDSPixelFormat)(encodedData[0x50]);
 			dataFlags = (DDSHeaderFlags)BitConverter.ToUInt32(encodedData, 0x8);

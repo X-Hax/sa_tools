@@ -806,6 +806,7 @@ namespace TextureEditor
 								{
 									item.PixelBitType = TextureFunctions.GetDDSPixelFormatFromBitmap(item.Image, false);
 									item.DataFormat = TextureFunctions.GetDDSPixelTypeFromBitmap(item.Image, false);
+									item.DataFormatInf = TextureFunctions.GetAlphaLevelFromBitmap(item.Image) < 2 ? GvrDataFormat.Dxt1 : GvrDataFormat.Rgb5a3;
 								}
 								item.FileFormat = TextureFunctions.TextureFileFormat.DDS;
 								MemoryStream tb = item.TextureData == null ? EncodeDDSLimitedColors(item) : tb = item.TextureData;
@@ -1415,16 +1416,27 @@ namespace TextureEditor
 											case TextureFormat.PAK:
 												if (Path.GetFileName(file).EndsWith(".dds", StringComparison.OrdinalIgnoreCase))
 												{
-													textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, TextureFunctions.IdentifyPAKPixelFormat(str), TextureFunctions.IdentifyPAKPixelSubFormat(str), NinjaSurfaceFlags.Mipmapped, str));
+													textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, TextureFunctions.IdentifyPAKPixelFormat(str), TextureFunctions.IdentifyPAKPixelSubFormat(str), TextureFunctions.IdentifyDDSMipmapUsage(str) ? NinjaSurfaceFlags.Mipmapped : 0, str));
 												}
 												else
 												{
 													Bitmap[] mips = null;
+													NinjaSurfaceFlags mipflag = NinjaSurfaceFlags.Mipmapped;
 													if (PvrTexture.Is(file))
 													{
 														mips = new PvrTexture(file).MipmapsToBitmap();
+														mipflag = new PvrTexture(file).HasMipmaps ? NinjaSurfaceFlags.Mipmapped : 0;
 													}
-													textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, DDSPixelFormat.Invalid, DDSPixelBitFormat.Invalid, NinjaSurfaceFlags.Mipmapped, str, nonIndexedPAK ? Path.GetExtension(file) : ".dds", mips));
+													if (GvrTexture.Is(file))
+													{
+														mips = new GvrTexture(file).MipmapsToBitmap();
+														mipflag = new GvrTexture(file).HasMipmaps ? NinjaSurfaceFlags.Mipmapped : 0;
+													}
+													if (XvrTexture.Is(file))
+													{
+														mipflag = new XvrTexture(file).HasMipmaps ? NinjaSurfaceFlags.Mipmapped : 0;
+													}
+													textures.Add(new PakTextureInfo(name, gbix, CreateBitmapFromStream(str), GvrDataFormat.Dxt1, DDSPixelFormat.Invalid, DDSPixelBitFormat.Invalid, mipflag, str, nonIndexedPAK ? Path.GetExtension(file) : ".dds", mips));
 												}
 												break;
 										}
@@ -1905,7 +1917,10 @@ namespace TextureEditor
 					ext = "xvr";
 					break;
 				case TextureFormat.PAK:
-					ext = TextureFunctions.CheckIfTextureIsDDS(textures[listBox1.SelectedIndex].TextureData.ToArray()) ? "dds" : "png";
+					if (textures[listBox1.SelectedIndex].TextureData == null)
+						ext = ".png";
+					else
+						ext = TextureFunctions.CheckIfTextureIsDDS(textures[listBox1.SelectedIndex].TextureData.ToArray()) ? "dds" : "png";
 					break;
 				case TextureFormat.PVMX:
 					ext = TextureFunctions.CheckIfTextureIsDDS(textures[listBox1.SelectedIndex].TextureData.ToArray()) ? "dds" : "png";

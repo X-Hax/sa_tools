@@ -420,8 +420,8 @@ namespace VrSharp.DDS
 			destination.WriteByte((byte)' ');
 			PTStream.WriteUInt32(destination, 124);
 			PTStream.WriteUInt32(destination, (uint)dataFlags);
-			PTStream.WriteUInt32(destination, textureWidth);
 			PTStream.WriteUInt32(destination, textureHeight);
+			PTStream.WriteUInt32(destination, textureWidth);
 			PTStream.WriteUInt32(destination, (uint)((textureWidth * dataCodec.Bpp + 7) / 8));
 			PTStream.WriteInt32(destination, 1);
 			PTStream.WriteUInt32(destination, (uint)mipmapcount);
