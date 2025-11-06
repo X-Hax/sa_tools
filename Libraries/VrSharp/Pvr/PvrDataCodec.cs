@@ -221,20 +221,20 @@ namespace VrSharp.Pvr
                 int destinationIndex;
 
                 // Decode a 1x1 texture (for mipmaps)
-                // No need to make use of a twiddle map in this case
+                // Gets the color of the 2x2 mipmap's last (bottom right) pixel
                 if (width == 1 && height == 1)
                 {
-                    int index = source[sourceIndex] * 4;
-
+					byte[] two = Decode(source, sourceIndex, 2, 2);
+                    
                     destinationIndex = 0;
 
-                    for (int i = 0; i < 4; i++)
+					for (int i = 0; i < 4; i++)
                     {
-                        destination[destinationIndex] = palette[index][i];
+						destination[destinationIndex] = two[12 + i];
                         destinationIndex++;
                     }
 
-                    return destination;
+					return destination;
                 }
 
                 // Twiddle map
@@ -910,25 +910,25 @@ namespace VrSharp.Pvr
                 byte[] destination = new byte[width * height * 4];
                 int destinationIndex;
 
-                // Decode a 1x1 texture (for mipmaps)
-                // No need to make use of a twiddle map in this case
-                if (width == 1 && height == 1)
-                {
-                    int index = source[sourceIndex] * 4;
+				// Decode a 1x1 texture (for mipmaps)
+				// Gets the color of the 2x2 mipmap's last (bottom right) pixel
+				if (width == 1 && height == 1)
+				{
+					byte[] two = Decode(source, sourceIndex, 2, 2);
 
-                    destinationIndex = 0;
+					destinationIndex = 0;
 
-                    for (int i = 0; i < 4; i++)
-                    {
-                        destination[destinationIndex] = palette[index][i];
-                        destinationIndex++;
-                    }
+					for (int i = 0; i < 4; i++)
+					{
+						destination[destinationIndex] = two[12 + i];
+						destinationIndex++;
+					}
 
-                    return destination;
-                }
+					return destination;
+				}
 
-                // Twiddle map
-                int[] twiddleMap = MakeTwiddleMap(width);
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(width);
 
                 // Decode texture data
                 for (int y = 0; y < height; y += 2)
