@@ -173,19 +173,18 @@ namespace SplitTools.SAArc
 					i = ByteConverter.ToInt16(anifile, address);
 					while (i != -1)
 					{
-						// This doesn't work as of November 2024. Reimplement when fixed.
-						//if (mtnlabelfile != null)
-						//{
-						//	mtnmetadata = mtnsplitfilenames[i].Split('|'); // Filename|Description
-						//	string outFilename = mtnmetadata[0];
-						//	if (!mtnmetadata[0].StartsWith("NO FILE"))
-						//	{
-						//		animmeta = mtnmetadata[1];
-						//		mtnsectionlist[i] = outFilename + "|" + animmeta;
-						//	}
-						//	else
-						//		mtnsectionlist[i] = "NULL";
-						//}
+						if (mtnLabelFile != null)
+						{
+							mtnmetadata = mtnsplitfilenames[i].Split('|'); // Filename|Description
+							string outFilename = mtnmetadata[0];
+							if (!mtnmetadata[0].StartsWith("NO FILE"))
+							{
+								animmeta = mtnmetadata[1];
+								mtnsectionlist[i] = outFilename + "|" + animmeta;
+							}
+							else
+								mtnsectionlist[i] = "NULL";
+						}
 						var aniaddr = ByteConverter.ToInt32(anifile, address + 4);
 						if (!processedanims.ContainsKey(aniaddr))
 						{
@@ -221,27 +220,26 @@ namespace SplitTools.SAArc
 							animlist.Add(rel);
 						}
 					}
-					// This section does not work as of November 2024. Reimplement when fixed.
 					// Model Labels
-					//if (mdllabelfile != null)
-					//{
-					//	mdlmetadata = mdlsplitfilenames[model.Key].Split('|'); // Filename|Description|Texture file
-					//	string outFilename = mdlmetadata[0];
-					//	if (mdlsplitfilenames[model.Key] == "NULL")
-					//		mdlsectionlist.Add(model.Key, "NULL");
-					//	string outResult = outFilename;
-					//	if (mdlmetadata.Length > 1)
-					//		outResult += ("|" + mdlmetadata[1]);
-					//	if (mdlmetadata.Length > 2)
-					//		outResult += ("|" + mdlmetadata[2]);
-					//	mdlsectionlist.Add(model.Key, outResult);
-					//}
-					// External motions for SAMDL Project Mode
-					//if (exmtnfile != null && mtnsplitpaths.ContainsKey(model.Key))
-					//{
-					//	exmtndata = mtnsplitpaths[model.Key].Split(','); // Assigns external motions based on model ID
-					//	animlist.AddRange(exmtndata);
-					//}
+					if (mdlLabelFile != null)
+					{
+						mdlmetadata = mdlsplitfilenames[model.Key].Split('|'); // Filename|Description|Texture file
+						string outFilename = mdlmetadata[0];
+						if (mdlsplitfilenames[model.Key] == "NULL")
+							mdlsectionlist.Add(model.Key, "NULL");
+						string outResult = outFilename;
+						if (mdlmetadata.Length > 1)
+							outResult += ("|" + mdlmetadata[1]);
+						if (mdlmetadata.Length > 2)
+							outResult += ("|" + mdlmetadata[2]);
+						mdlsectionlist.Add(model.Key, outResult);
+					}
+					//External motions for SAMDL Project Mode
+					if (exMtnFile != null && mtnsplitpaths.ContainsKey(model.Key))
+						{
+							exmtndata = mtnsplitpaths[model.Key].Split(','); // Assigns external motions based on model ID
+							animlist.AddRange(exmtndata);
+						}
 
 					ModelFile.CreateFile(Path.Combine(Path.GetFileNameWithoutExtension(mdlFilename), model.Key.ToString(NumberFormatInfo.InvariantInfo) + ".sa2mdl"), 
 						model.Value,
@@ -250,17 +248,17 @@ namespace SplitTools.SAArc
 				}
 
 				// labels for SAMDL Project Mode
-				//if (mdllabelfile != null)
-				//{
-				//	string mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdllabelfile) + "_data.ini";
-				//	IniSerializer.Serialize(mdlsectionlist, Path.Combine(outputFolder, mdlsectionListFilename));
-				//}
+				if (mdlLabelFile != null)
+				{
+					string mdlsectionListFilename = Path.GetFileNameWithoutExtension(mdlLabelFile) + "_data.ini";
+					IniSerializer.Serialize(mdlsectionlist, Path.Combine(outputFolder, mdlsectionListFilename));
+				}
 
-				//if (mtnlabelfile != null)
-				//{
-				//	string mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnlabelfile) + "_data.ini";
-				//	IniSerializer.Serialize(mtnsectionlist, Path.Combine(outputFolder, mtnsectionListFilename));
-				//}
+				if (mtnLabelFile != null)
+				{
+					string mtnsectionListFilename = Path.GetFileNameWithoutExtension(mtnLabelFile) + "_data.ini";
+					IniSerializer.Serialize(mtnsectionlist, Path.Combine(outputFolder, mtnsectionListFilename));
+				}
 
 				// Save ini file
 				IniSerializer.Serialize(new MDLInfo { BigEndian = ByteConverter.BigEndian, Indexes = modelnames }, 
