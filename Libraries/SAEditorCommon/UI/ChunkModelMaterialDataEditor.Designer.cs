@@ -329,7 +329,7 @@
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
-			doneButton.TabIndex = 0;
+			doneButton.TabIndex = 7;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
 			doneButton.Click += doneButton_Click;

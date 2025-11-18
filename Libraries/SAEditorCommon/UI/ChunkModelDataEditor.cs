@@ -10,7 +10,8 @@ namespace SAModel.SAEditorCommon.UI
 	public partial class ChunkModelDataEditor : Form
 	{
 		public NJS_OBJECT editedHierarchy;
-
+		private NJS_OBJECT originalHierarchy;
+		private NJS_OBJECT currentObject;
 		private Attach editedModel;
 		private Attach originalModel;
 		private bool freeze;
@@ -36,6 +37,7 @@ namespace SAModel.SAEditorCommon.UI
 			this.Resize += ChunkModelDataEditor_Resize;
 			OriginalSize = this.Size;
 			comboBoxNode.Items.Clear();
+			originalHierarchy = objectOriginal;
 			editedHierarchy = objectOriginal.Clone();
 			editedHierarchy.FixParents();
 			editedHierarchy.FixSiblings();
@@ -43,6 +45,7 @@ namespace SAModel.SAEditorCommon.UI
 			comboBoxNode.SelectedIndex = index;
 			BuildVertexDataList();
 			BuildPolyChunkList();
+			BuildObjectDataList();
 			vertdatagroupdyn = new Rectangle(groupBoxVertList.Location, groupBoxVertList.Size);
 			polydatagroupdyn = new Rectangle(groupBoxMeshList.Location, groupBoxMeshList.Size);
 			vertdatalistdyn = new Rectangle(listViewVertices.Location, listViewVertices.Size);
@@ -109,6 +112,29 @@ namespace SAModel.SAEditorCommon.UI
 
 		#endregion
 		#region Mesh management
+		private void updateObjectSettings(NJS_OBJECT obj)
+		{
+			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			ObjectFlags flags = obj.Flags;
+			objs[comboBoxNode.SelectedIndex].Position = obj.Position;
+			objs[comboBoxNode.SelectedIndex].Rotation = obj.Rotation;
+			objs[comboBoxNode.SelectedIndex].Scale = obj.Scale;
+			objs[comboBoxNode.SelectedIndex].Flags = flags;
+			objs[comboBoxNode.SelectedIndex].IgnorePosition = (flags & ObjectFlags.NoPosition) == ObjectFlags.NoPosition;
+			objs[comboBoxNode.SelectedIndex].IgnoreRotation = (flags & ObjectFlags.NoRotate) == ObjectFlags.NoRotate;
+			objs[comboBoxNode.SelectedIndex].IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
+			objs[comboBoxNode.SelectedIndex].SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
+			objs[comboBoxNode.SelectedIndex].SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
+			objs[comboBoxNode.SelectedIndex].RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
+			objs[comboBoxNode.SelectedIndex].Animate = (flags & ObjectFlags.NoAnimate) == 0;
+			objs[comboBoxNode.SelectedIndex].Morph = (flags & ObjectFlags.NoMorph) == 0;
+			objs[comboBoxNode.SelectedIndex].Clip = (flags & ObjectFlags.Clip) == ObjectFlags.Clip;
+			objs[comboBoxNode.SelectedIndex].Modifier = (flags & ObjectFlags.Modifier) == ObjectFlags.Modifier;
+			objs[comboBoxNode.SelectedIndex].Quaternion = (flags & ObjectFlags.Quaternion) == ObjectFlags.Quaternion;
+			objs[comboBoxNode.SelectedIndex].RotateBase = (flags & ObjectFlags.RotateBase) == ObjectFlags.RotateBase;
+			objs[comboBoxNode.SelectedIndex].RotateSet = (flags & ObjectFlags.RotateSet) == ObjectFlags.RotateSet;
+			objs[comboBoxNode.SelectedIndex].Envelope = (flags & ObjectFlags.Envelope) == ObjectFlags.Envelope;
+		}
 		private void updateStripData(List<PolyChunk> modelchunks, int chunkID, PolyChunkStrip pcs)
 		{
 			modelchunks[chunkID] = pcs;
@@ -382,6 +408,114 @@ namespace SAModel.SAEditorCommon.UI
 			for (int i = 0; i < objs.Length; i++)
 				comboBoxNode.Items.Add(i.ToString() + ": " + objs[i].Name.ToString());
 		}
+		private void BuildObjectDataList()
+		{
+			listViewObjectData.Items.Clear();
+			string flagnames = "";
+			string objpos = "SKIP";
+			string objang = "SKIP";
+			string objscl = "SKIP";
+			ObjectFlags flg = currentObject.Flags;
+			bool nopos = (flg & ObjectFlags.NoPosition) != 0;
+			bool norot = (flg & ObjectFlags.NoRotate) != 0;
+			bool noscl = (flg & ObjectFlags.NoScale) != 0;
+			bool nodraw = (flg & ObjectFlags.NoDisplay) != 0;
+			bool nochild = (flg & ObjectFlags.NoChildren) != 0;
+			bool zyxrot = (flg & ObjectFlags.RotateZYX) != 0;
+			bool noanim = (flg & ObjectFlags.NoAnimate) != 0;
+			bool noshape = (flg & ObjectFlags.NoMorph) != 0;
+			bool clip = (flg & ObjectFlags.Clip) != 0;
+			bool modifier = (flg & ObjectFlags.Modifier) != 0;
+			bool quaternion = (flg & ObjectFlags.Quaternion) != 0;
+			bool rotatebase = (flg & ObjectFlags.RotateBase) != 0;
+			bool rotateset = (flg & ObjectFlags.RotateSet) != 0;
+			bool envelope = (flg & ObjectFlags.Envelope) != 0;
+			if (nopos || norot || noscl)
+			{
+				flagnames += "UNIT_";
+				flagnames += nopos ? "POS" : "";
+				flagnames += norot ? "ROT" : "";
+				flagnames += noscl ? "SCL" : "";
+			}
+			if ((!nopos) && (!norot) && (!noscl))
+				flagnames += nodraw ? "HIDE" : "";
+			else
+				flagnames += nodraw ? ", HIDE" : "";
+			if ((!nopos) && (!norot) && (!noscl) && (!nodraw))
+				flagnames += nochild ? "BREAK" : "";
+			else
+				flagnames += nochild ? ", BREAK" : "";
+			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild))
+				flagnames += zyxrot ? "ZYX_ANG" : "";
+			else
+				flagnames += zyxrot ? ", ZYX_ANG" : "";
+			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot))
+				flagnames += noanim ? "ANIM_SKIP" : "";
+			else
+				flagnames += noanim ? ", ANIM_SKIP" : "";
+			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot) && (!noanim))
+				flagnames += noshape ? "SHAPE_SKIP" : "";
+			else
+				flagnames += noshape ? ", SHAPE_SKIP" : "";
+			if ((!nopos) && (!norot) && (!noscl) && (!nodraw) && (!nochild) && (!zyxrot) && (!noanim) && (!noshape))
+				flagnames += clip ? "CLIP" : "";
+			else
+				flagnames += clip ? ", CLIP" : "";
+			if ((!nopos) && (!norot) && (!noscl)
+				&& (!nodraw) && (!nochild) && (!zyxrot)
+				&& (!noanim) && (!noshape)
+				&& (!clip))
+				flagnames += modifier ? "MOD" : "";
+			else
+				flagnames += modifier ? ", MOD" : "";
+			if ((!nopos) && (!norot) && (!noscl)
+				&& (!nodraw) && (!nochild) && (!zyxrot)
+				&& (!noanim) && (!noshape)
+				&& (!clip) && (!modifier))
+				flagnames += quaternion ? "QUAT" : "";
+			else
+				flagnames += quaternion ? ", QUAT" : "";
+			if ((!nopos) && (!norot) && (!noscl)
+				&& (!nodraw) && (!nochild) && (!zyxrot)
+				&& (!noanim) && (!noshape)
+				&& (!clip) && (!modifier) && (!quaternion))
+				flagnames += rotatebase ? "ROTBASE" : "";
+			else
+				flagnames += rotatebase ? ", ROTBASE" : "";
+			if ((!nopos) && (!norot) && (!noscl)
+				&& (!nodraw) && (!nochild) && (!zyxrot)
+				&& (!noanim) && (!noshape)
+				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase))
+				flagnames += rotateset ? "ROTSET" : "";
+			else
+				flagnames += rotateset ? ", ROTSET" : "";
+			if ((!nopos) && (!norot) && (!noscl)
+				&& (!nodraw) && (!nochild) && (!zyxrot)
+				&& (!noanim) && (!noshape)
+				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset))
+				flagnames += envelope ? "ENVELOPE" : "";
+			else
+				flagnames += envelope ? ", ENVELOPE" : "";
+			if ((!nopos) && (!norot) && (!noscl)
+				&& (!nodraw) && (!nochild) && (!zyxrot)
+				&& (!noanim) && (!noshape)
+				&& (!clip) && (!modifier) && (!quaternion) && (!rotatebase) && (!rotateset) && (!envelope))
+				flagnames = "NONE";
+			ListViewItem objdata = new ListViewItem(flagnames);
+			if (!nopos)
+				objpos = currentObject.Position.ToString();
+			if (!norot)
+				objang = currentObject.Rotation.ToString();
+			if (!noscl)
+				objscl = currentObject.Scale.ToString();
+			objdata.SubItems.Add(objpos);
+			objdata.SubItems.Add(objang);
+			objdata.SubItems.Add(objscl);
+			listViewObjectData.Items.Add(objdata);
+			listViewObjectData.SelectedIndices.Clear();
+			listViewObjectData.SelectedItems.Clear();
+			listViewObjectData.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		}
 		private void BuildVertexDataList()
 		{
 			listViewVertices.Items.Clear();
@@ -517,15 +651,81 @@ namespace SAModel.SAEditorCommon.UI
 								break;
 							case PolyChunkBitsMipmapDAdjust pcda:
 								newmesh.SubItems.Add("Bits_DA");
+								string mipda = "DA( ";
+								switch (pcda.Flags & 0xF)
+								{
+									case 0:
+									default:
+										mipda += "INVALID";
+										break;
+									case 1:
+										mipda += "0.25";
+										break;
+									case 2:
+										mipda += "0.50";
+										break;
+									case 3:
+										mipda += "0.75";
+										break;
+									case 4:
+										mipda += "1.00";
+										break;
+									case 5:
+										mipda += "1.25";
+										break;
+									case 6:
+										mipda += "1.50";
+										break;
+									case 7:
+										mipda += "1.75";
+										break;
+									case 8:
+										mipda += "2.00";
+										break;
+									case 9:
+										mipda += "2.25";
+										break;
+									case 10:
+										mipda += "2.50";
+										break;
+									case 11:
+										mipda += "2.75";
+										break;
+									case 12:
+										mipda += "3.00";
+										break;
+									case 13:
+										mipda += "3.25";
+										break;
+									case 14:
+										mipda += "3.50";
+										break;
+									case 15:
+										mipda += "3.75";
+										break;
+								}
+								mipda += " )";
+								newmesh.SubItems.Add(mipda);
 								break;
 							case PolyChunkBitsSpecularExponent pcse:
 								newmesh.SubItems.Add("Bits_SE");
+								string exponent = "S(" + "Exp " + pcse.SpecularExponent.ToString() + ")";
+								newmesh.SubItems.Add(exponent);
 								break;
 							case PolyChunkVolume pcv:
 								newmesh.SubItems.Add(pcv.Type.ToString());
 								break;
 							case PolyChunkMaterialBump pcmb:
 								newmesh.SubItems.Add("Material_Bump");
+								string bumpD = "D( ";
+								string bumpU = "U( ";
+								bumpD += pcmb.DX.ToString() + ", ";
+								bumpD += pcmb.DY.ToString() + ", ";
+								bumpD += pcmb.DZ.ToString() + " ), " ;
+								bumpU += pcmb.UX.ToString() + ", ";
+								bumpU += pcmb.UY.ToString() + ", ";
+								bumpU += pcmb.UZ.ToString() + " )";
+								newmesh.SubItems.Add(bumpD + bumpU);
 								break;
 							case PolyChunkMaterial pcm:
 								string mtype = "Material_";
@@ -631,57 +831,56 @@ namespace SAModel.SAEditorCommon.UI
 								{
 									case 0:
 									default:
-										mipd += "000";
+										mipd += "INVALID";
 										break;
 									case 1:
-										mipd += "025";
+										mipd += "0.25";
 										break;
 									case 2:
-										mipd += "050";
+										mipd += "0.50";
 										break;
 									case 3:
-										mipd += "075";
+										mipd += "0.75";
 										break;
 									case 4:
-										mipd += "100";
+										mipd += "1.00";
 										break;
 									case 5:
-										mipd += "125";
+										mipd += "1.25";
 										break;
 									case 6:
-										mipd += "150";
+										mipd += "1.50";
 										break;
 									case 7:
-										mipd += "175";
+										mipd += "1.75";
 										break;
 									case 8:
-										mipd += "200";
+										mipd += "2.00";
 										break;
 									case 9:
-										mipd += "225";
+										mipd += "2.25";
 										break;
 									case 10:
-										mipd += "250";
+										mipd += "2.50";
 										break;
 									case 11:
-										mipd += "275";
+										mipd += "2.75";
 										break;
 									case 12:
-										mipd += "300";
+										mipd += "3.00";
 										break;
 									case 13:
-										mipd += "325";
+										mipd += "3.25";
 										break;
 									case 14:
-										mipd += "350";
+										mipd += "3.50";
 										break;
 									case 15:
-										mipd += "375";
+										mipd += "3.75";
 										break;
 								}
 								mipd += " )";
-								if ((pct.Flags & 0xF) != 0)
-									texdata += mipd;
+								texdata += mipd;
 								texdata += pct.SuperSample ? ", SS" : "";
 								clamp += pct.ClampU ? "U" : "";
 								clamp += pct.ClampV ? "V" : "";
@@ -700,7 +899,10 @@ namespace SAModel.SAEditorCommon.UI
 										filter += "BF";
 										break;
 									case FilterMode.Trilinear:
-										filter += "TF";
+										filter += "TFA";
+										break;
+									case FilterMode.Reserved:
+										filter += "TFB";
 										break;
 								}
 								filter += " )";
@@ -745,7 +947,7 @@ namespace SAModel.SAEditorCommon.UI
 								if ((!pcs.UseAlpha) && (!pcs.DoubleSide) && (!pcs.EnvironmentMapping) && (!pcs.FlatShading) && (!pcs.IgnoreLight) && (!pcs.IgnoreAmbient) && (!pcs.IgnoreSpecular) && (!pcs.NoAlphaTest))
 									stripflags = "NONE";
 								stripflags += " )";
-									switch (pcs.Type)
+								switch (pcs.Type)
 								{
 									case ChunkType.Strip_Strip:
 										break;
@@ -877,7 +1079,7 @@ namespace SAModel.SAEditorCommon.UI
 				prevmatstart = listViewMeshes.Items[prevIndex].SubItems[1].Text;
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			PolyChunk selectedMesh = selectedObj[matID];
-			if (polytype == "Null" || (polytype.StartsWith("Bits") && polytype != "Bits_BA"))
+			if ((polytype.StartsWith("Bits") && polytype != "Bits_BA"))
 				buttonCloneMesh.Enabled = false;
 			else
 				buttonCloneMesh.Enabled = true;
@@ -968,8 +1170,7 @@ namespace SAModel.SAEditorCommon.UI
 							mipd += "375";
 							break;
 					}
-					if ((pct.Flags & 0xF) != 0)
-						pdata2 += mipd;
+					pdata2 += mipd;
 					pdata2 += pct.SuperSample ? ", SuperSample" : "";
 					clamp += pct.ClampU ? "U" : "";
 					clamp += pct.ClampV ? "V" : "";
@@ -1001,6 +1202,70 @@ namespace SAModel.SAEditorCommon.UI
 					pdata2 += ", Src Alpha:" + pba.SourceAlpha.ToString() + ", ";
 					pdata2 += "Dst Alpha:" + pba.DestinationAlpha.ToString();
 					break;
+				case PolyChunkBitsMipmapDAdjust pda:
+					string mipda = "";
+					switch (pda.Flags & 0xF)
+					{
+						case 0:
+						default:
+							mipda += "0.00 (Invalid)";
+							break;
+						case 1:
+							mipda += "0.25";
+							break;
+						case 2:
+							mipda += "0.50";
+							break;
+						case 3:
+							mipda += "0.75";
+							break;
+						case 4:
+							mipda += "1.00";
+							break;
+						case 5:
+							mipda += "1.25";
+							break;
+						case 6:
+							mipda += "1.50";
+							break;
+						case 7:
+							mipda += "1.75";
+							break;
+						case 8:
+							mipda += "2.00";
+							break;
+						case 9:
+							mipda += "2.25";
+							break;
+						case 10:
+							mipda += "2.50";
+							break;
+						case 11:
+							mipda += "2.75";
+							break;
+						case 12:
+							mipda += "3.00";
+							break;
+						case 13:
+							mipda += "3.25";
+							break;
+						case 14:
+							mipda += "3.50";
+							break;
+						case 15:
+							mipda += "3.75";
+							break;
+					}
+					pdata2 += ", Depth Adjust " + mipda;
+					break;
+				case PolyChunkBitsSpecularExponent pcse:
+					pdata2 += ", S(" + "Exp " + pcse.SpecularExponent.ToString() + ")";
+					break;
+				case PolyChunkMaterialBump pcmb:
+					pdata2 += ", D( " + pcmb.DX.ToString() + ", " + pcmb.DY.ToString() + ", " + pcmb.DZ.ToString() + " ), ";
+					pdata2 += "U( " + pcmb.UX.ToString() + ", " + pcmb.UY.ToString() + ", " + pcmb.UZ.ToString() + " )";
+					break;
+
 			}
 			// Status bar
 			string bardata = ptype;
@@ -1022,6 +1287,11 @@ namespace SAModel.SAEditorCommon.UI
 			if (e.Button == MouseButtons.Right && listViewVertices.SelectedIndices.Count != 0)
 				contextMenuStripVertCol.Show(listViewVertices, e.Location);
 		}
+		private void listViewObjectData_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right && listViewObjectData.SelectedIndices.Count != 0)
+				contextMenuStripObjSet.Show(listViewObjectData, e.Location);
+		}
 
 		private void comboBoxNode_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -1029,6 +1299,7 @@ namespace SAModel.SAEditorCommon.UI
 			if (index == -1)
 				return;
 			NJS_OBJECT[] objs = editedHierarchy.GetObjects();
+			currentObject = objs[index].Clone();
 			// Apply changes
 			if (!freeze)
 				objs[previousNodeIndex].Name = textBoxObjectName.Text;
@@ -1068,6 +1339,7 @@ namespace SAModel.SAEditorCommon.UI
 			previousNodeIndex = comboBoxNode.SelectedIndex;
 			BuildVertexDataList();
 			BuildPolyChunkList();
+			BuildObjectDataList();
 		}
 
 		private void buttonClose_Click(object sender, EventArgs e)
@@ -1108,6 +1380,190 @@ namespace SAModel.SAEditorCommon.UI
 			sb.Append(", Count:");
 			sb.Append(vcount);
 			toolStripStatusLabelInfo.Text = sb.ToString();
+		}
+
+		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void editObjectSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (ObjectSettingsEditor ose = new ObjectSettingsEditor(currentObject))
+			{
+				ose.FormUpdated += (s, ev) => updateObjectSettings(currentObject);
+				ose.ShowDialog(this);
+			}
+			BuildObjectDataList();
+		}
+
+		private void addPolyButton_MouseClick(object sender, MouseEventArgs e)
+		{
+			contextMenuStripAddPoly.Show(addPolyButton, e.Location);
+		}
+
+		private void materialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkMaterial newpcm = new PolyChunkMaterial();
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newpcm);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newpcm);
+				BuildPolyChunkList();
+			}
+		}
+
+		private void textureToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkTinyTextureID newtid = new PolyChunkTinyTextureID();
+			newtid.MipmapDAdjust = 1.0f;
+			newtid.FilterMode = FilterMode.Bilinear;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newtid);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newtid);
+				BuildPolyChunkList();
+			}
+		}
+
+		private void blendAlphaToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkBitsBlendAlpha newba = new PolyChunkBitsBlendAlpha();
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newba);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newba);
+				BuildPolyChunkList();
+			}
+		}
+
+		private void nullChunkToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkNull newn = new PolyChunkNull();
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newn);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newn);
+				BuildPolyChunkList();
+			}
+		}
+
+		private void mipmapDAdjustToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkBitsMipmapDAdjust newda = new PolyChunkBitsMipmapDAdjust();
+			newda.MipmapDAdjust = 1.0f;
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newda);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newda);
+				BuildPolyChunkList();
+			}
+		}
+
+		private void specularExponentToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkBitsSpecularExponent newse = new PolyChunkBitsSpecularExponent();
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newse);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newse);
+				BuildPolyChunkList();
+			}
+		}
+
+		private void bumpMaterialToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			PolyChunkMaterialBump newbm = new PolyChunkMaterialBump();
+			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
+			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
+			if (listViewMeshes.SelectedIndices.Count != 0)
+			{
+				int matID = int.Parse(listViewMeshes.SelectedItems[0].SubItems[0].Text);
+				PolyChunk selectedMesh = selectedObj[listViewMeshes.SelectedIndices[0]];
+				selectedMeshes.Add(selectedObj[matID]);
+				int index = selectedObj.IndexOf(selectedMesh);
+				foreach (PolyChunk mesh in selectedMeshes)
+					selectedObj.Insert(matID + 1, newbm);
+				BuildPolyChunkList();
+				SelectMesh(Math.Min(listViewMeshes.Items.Count - 1, index + 1));
+			}
+			else
+			{
+				selectedObj.Add(newbm);
+				BuildPolyChunkList();
+			}
 		}
 	}
 }

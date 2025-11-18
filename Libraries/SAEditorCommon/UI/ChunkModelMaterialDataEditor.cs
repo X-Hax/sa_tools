@@ -184,6 +184,7 @@ namespace SAModel.SAEditorCommon.UI
 			{
 				MessageBox.Show("Specular exponent was invalid - setting to 10");
 				pcm.SpecularExponent = 10;
+				exponentTextBox.Text = "10";
 			}
 			else
 			{

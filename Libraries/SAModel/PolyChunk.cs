@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 
 namespace SAModel
 {
@@ -1814,6 +1812,15 @@ namespace SAModel
 		}
 
 		public List<Strip> Strips { get; private set; }
+		public List<Strip> CMDEStrips
+		{
+			get { return Strips; }
+			set
+			{
+				List<Strip> oldstrips = Strips;
+				Strips = value;
+			}
+		}
 
 		public PolyChunkStrip(ChunkType type)
 		{

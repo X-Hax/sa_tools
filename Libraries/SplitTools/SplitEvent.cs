@@ -788,17 +788,17 @@ namespace SplitTools.SAArc
 									var cnt = ByteConverter.ToInt32(fc, ptr2 + 8);
 									for (var i = 0; i < cnt; i++)
 									{
-										big.Motions.Add([GetMotion(fc, ptr3, key, $"Scene {gn}/Big Motion {i + 1}a.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}A"), GetMotion(fc, ptr3 + 4, key, $"Scene {gn}\\Big Motion {i + 1}b.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}B")
+										big.Motions.Add([GetMotion(fc, ptr3, key, $"Scene {gn}\\Big Motion {i + 1}.saanim", motions, anicnt, $"{evname} Scene {gn} Big Motion {i + 1}"), GetMotion(fc, ptr3 + 4, key, $"Scene {gn}\\Big Shape Motion {i + 1}.saanim", motions, anicnt, $"{evname} Scene {gn} Big Shape Motion {i + 1}")
 										]);
 										// add metadata to animations found in motion.bin files
 										if (battle)
 										{
 											var ptr4 = fc.GetPointer(ptr3 + 4, key);
-											motionFiles[big.Motions[i][0]].Description = $"{evname} Scene {gn} Big Motion {i + 1}A";
+											motionFiles[big.Motions[i][0]].Description = $"{evname} Scene {gn} Big Motion {i + 1}";
 											modelFiles[big.Model].Motions.Add("../" + motionFiles[big.Motions[i][0]].Filename);
 											if (ptr4 != 0)
 											{
-												motionFiles[big.Motions[i][1]].Description = $"{evname} Scene {gn} Big Motion {i + 1}B";
+												motionFiles[big.Motions[i][1]].Description = $"{evname} Scene {gn} Big Shape Motion {i + 1}";
 												modelFiles[big.Model].Motions.Add("../" + motionFiles[big.Motions[i][1]].Filename);
 											}
 

@@ -32,32 +32,61 @@ namespace SAModel
 
 		[Description("The label used to identify this node.")]
 		public string Name { get; set; }
+		[DisplayName("Code Path")]
+		[Description("The syntax to access this node from the root node in C++ code.")]
+		public string CodePath
+		{
+			get
+			{
+				if (Parent == null)
+					return "root";
+				StringBuilder result = new StringBuilder("->child");
+				int idx = Parent.Children.IndexOf(this);
+				for (int i = 0; i < idx; i++)
+					result.Append("->sibling");
+				return Parent.CodePath + result.ToString();
+			}
+		}
 
-		[Description("Do not reposition this node.")]
+		[Category("Flags"), Description("Do not reposition this node.")]
 		public bool IgnorePosition { get; set; }
 		
-		[Description("Do not rotate this node.")]
+		[Category("Flags"), Description("Do not rotate this node.")]
 		public bool IgnoreRotation { get; set; }
 
-		[Description("Do not scale this node.")]
+		[Category("Flags"), Description("Do not scale this node.")]
 		public bool IgnoreScale { get; set; }
 
-		[Description("Use inverse rotation for this node.")]
+		[Category("Flags"), Description("Use inverse rotation for this node.")]
 		public bool RotateZYX { get; set; }
 
-		[Description("Do not render this node (makes the model invisible).")]
+		[Category("Flags"), Description("Do not render this node (makes the model invisible).")]
 		public bool SkipDraw { get; set; }
 
-		[Description("Do not process this node's children. This flag should always be set if the node has no child nodes.")]
+		[Category("Flags"), Description("Do not process this node's children. This flag should always be set if the node has no child nodes.")]
 		public bool SkipChildren { get; set; }
 
-		[Description("Include this node in NJS_MOTION processing. If this flag is disabled, motions will skip this node.")]
+		[Category("Flags"), Description("Include this node in NJS_MOTION processing. If this flag is disabled, motions will skip this node.")]
 		[DefaultValue(true)]
 		public bool Animate { get; set; }
 
-		[Description("Include this node in shape motion processing. If this flag is disabled, shape motions will skip this node.")]
+		[Category("Flags"), Description("Include this node in shape motion processing. If this flag is disabled, shape motions will skip this node.")]
 		[DefaultValue(true)]
 		public bool Morph { get; set; }
+		[Category("Flags")]
+		public bool Clip { get; set; }
+		[Category("Flags")]
+		public bool Modifier { get; set; }
+		[Category("Flags")]
+		public bool Quaternion { get; set; }
+		[Category("Flags")]
+		public bool RotateBase { get; set; }
+		[Category("Flags")]
+		public bool RotateSet { get; set; }
+		[Category("Flags")]
+		public bool Envelope { get; set; }
+		[Browsable(false)]
+		public ObjectFlags Flags { get; set; }
 
 		public static int Size
 		{
@@ -76,22 +105,6 @@ namespace SAModel
 				if (Parent == null && Sibling != null && Sibling.HasWeight)
 					return true;
 				return false;
-			}
-		}
-
-		[DisplayName("Code Path")]
-		[Description("The syntax to access this node from the root node in C++ code.")]
-		public string CodePath
-		{
-			get
-			{
-				if (Parent == null)
-					return "root";
-				StringBuilder result = new StringBuilder("->child");
-				int idx = Parent.Children.IndexOf(this);
-				for (int i = 0; i < idx; i++)
-					result.Append("->sibling");
-				return Parent.CodePath + result.ToString();
 			}
 		}
 
@@ -129,6 +142,7 @@ namespace SAModel
 				return;
 			}
 			ObjectFlags flags = (ObjectFlags)ByteConverter.ToInt32(file, address);
+			Flags = flags;
 			RotateZYX = (flags & ObjectFlags.RotateZYX) == ObjectFlags.RotateZYX;
 			SkipDraw = (flags & ObjectFlags.NoDisplay) == ObjectFlags.NoDisplay;
 			SkipChildren = (flags & ObjectFlags.NoChildren) == ObjectFlags.NoChildren;
@@ -137,6 +151,12 @@ namespace SAModel
 			IgnoreScale = (flags & ObjectFlags.NoScale) == ObjectFlags.NoScale;
 			Animate = (flags & ObjectFlags.NoAnimate) == 0;
 			Morph = (flags & ObjectFlags.NoMorph) == 0;
+			Clip = (flags & ObjectFlags.Clip) == ObjectFlags.Clip;
+			Modifier = (flags & ObjectFlags.Modifier) == ObjectFlags.Modifier;
+			Quaternion = (flags & ObjectFlags.Quaternion) == ObjectFlags.Quaternion;
+			RotateBase = (flags & ObjectFlags.RotateBase) == ObjectFlags.RotateBase;
+			RotateSet = (flags & ObjectFlags.RotateSet) == ObjectFlags.RotateSet;
+			Envelope = (flags & ObjectFlags.Envelope) == ObjectFlags.Envelope;
 			int tmpaddr = ByteConverter.ToInt32(file, address + 4);
 			if (tmpaddr != 0)
 			{
@@ -378,6 +398,18 @@ namespace SAModel
 				flags |= ObjectFlags.NoAnimate;
 			if (!Morph)
 				flags |= ObjectFlags.NoMorph;
+			if (Clip)
+				flags |= ObjectFlags.Clip;
+			if (Modifier)
+				flags |= ObjectFlags.Modifier;
+			if (Quaternion)
+				flags |= ObjectFlags.Quaternion;
+			if (RotateBase)
+				flags |= ObjectFlags.RotateBase;
+			if (RotateSet)
+				flags |= ObjectFlags.RotateSet;
+			if (Envelope)
+				flags |= ObjectFlags.Envelope;
 			return flags;
 		}
 

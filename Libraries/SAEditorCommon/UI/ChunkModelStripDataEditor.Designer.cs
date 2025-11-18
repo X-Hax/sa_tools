@@ -35,7 +35,8 @@ namespace SAModel.SAEditorCommon.UI
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChunkModelStripDataEditor));
 			colorDialog = new System.Windows.Forms.ColorDialog();
 			flagsGroupBox = new System.Windows.Forms.GroupBox();
-			noAlphaTestCheck = new System.Windows.Forms.CheckBox();
+			exAlphaLabel = new System.Windows.Forms.Label();
+			exAlphaSettingComboBox = new System.Windows.Forms.ComboBox();
 			userFlagsNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			label4 = new System.Windows.Forms.Label();
 			ignoreLightCheck = new System.Windows.Forms.CheckBox();
@@ -48,8 +49,8 @@ namespace SAModel.SAEditorCommon.UI
 			doneButton = new System.Windows.Forms.Button();
 			toolTip = new System.Windows.Forms.ToolTip(components);
 			resetButton = new System.Windows.Forms.Button();
-			groupBox1 = new System.Windows.Forms.GroupBox();
 			deleteAllUVButton = new System.Windows.Forms.Button();
+			groupBox1 = new System.Windows.Forms.GroupBox();
 			deleteSelectedUVButton = new System.Windows.Forms.Button();
 			groupBox2 = new System.Windows.Forms.GroupBox();
 			resetAllWindingsButton = new System.Windows.Forms.Button();
@@ -88,7 +89,8 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flagsGroupBox
 			// 
-			flagsGroupBox.Controls.Add(noAlphaTestCheck);
+			flagsGroupBox.Controls.Add(exAlphaLabel);
+			flagsGroupBox.Controls.Add(exAlphaSettingComboBox);
 			flagsGroupBox.Controls.Add(userFlagsNumericUpDown);
 			flagsGroupBox.Controls.Add(label4);
 			flagsGroupBox.Controls.Add(ignoreLightCheck);
@@ -102,29 +104,38 @@ namespace SAModel.SAEditorCommon.UI
 			flagsGroupBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flagsGroupBox.Name = "flagsGroupBox";
 			flagsGroupBox.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			flagsGroupBox.Size = new System.Drawing.Size(329, 385);
-			flagsGroupBox.TabIndex = 8;
+			flagsGroupBox.Size = new System.Drawing.Size(425, 385);
+			flagsGroupBox.TabIndex = 10;
 			flagsGroupBox.TabStop = false;
 			flagsGroupBox.Text = "Flags";
 			// 
-			// noAlphaTestCheck
+			// exAlphaLabel
 			// 
-			noAlphaTestCheck.Location = new System.Drawing.Point(20, 291);
-			noAlphaTestCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
-			noAlphaTestCheck.Name = "noAlphaTestCheck";
-			noAlphaTestCheck.Size = new System.Drawing.Size(270, 29);
-			noAlphaTestCheck.TabIndex = 16;
-			noAlphaTestCheck.Text = "No Alpha Test (SA2B Only)";
-			toolTip.SetToolTip(noAlphaTestCheck, "Ignores the Alpha Test setting. This flag does nothing outside of SA2B.");
-			noAlphaTestCheck.UseVisualStyleBackColor = true;
-			noAlphaTestCheck.Click += noAlphaTestCheck_Click;
+			exAlphaLabel.AutoSize = true;
+			exAlphaLabel.Location = new System.Drawing.Point(62, 75);
+			exAlphaLabel.Name = "exAlphaLabel";
+			exAlphaLabel.Size = new System.Drawing.Size(104, 25);
+			exAlphaLabel.TabIndex = 18;
+			exAlphaLabel.Text = "Alpha Type:";
+			// 
+			// exAlphaSettingComboBox
+			// 
+			exAlphaSettingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			exAlphaSettingComboBox.FormattingEnabled = true;
+			exAlphaSettingComboBox.Items.AddRange(new object[] { "Normal", "No Alpha Test", "Force Alpha Test" });
+			exAlphaSettingComboBox.Location = new System.Drawing.Point(178, 73);
+			exAlphaSettingComboBox.Name = "exAlphaSettingComboBox";
+			exAlphaSettingComboBox.Size = new System.Drawing.Size(198, 33);
+			exAlphaSettingComboBox.TabIndex = 12;
+			toolTip.SetToolTip(exAlphaSettingComboBox, resources.GetString("exAlphaSettingComboBox.ToolTip"));
+			exAlphaSettingComboBox.SelectedIndexChanged += exAlphaSettingComboBox_SelectedIndexChanged;
 			// 
 			// userFlagsNumericUpDown
 			// 
 			userFlagsNumericUpDown.Location = new System.Drawing.Point(123, 328);
 			userFlagsNumericUpDown.Name = "userFlagsNumericUpDown";
 			userFlagsNumericUpDown.Size = new System.Drawing.Size(64, 31);
-			userFlagsNumericUpDown.TabIndex = 15;
+			userFlagsNumericUpDown.TabIndex = 19;
 			// 
 			// label4
 			// 
@@ -137,11 +148,11 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// ignoreLightCheck
 			// 
-			ignoreLightCheck.Location = new System.Drawing.Point(20, 219);
+			ignoreLightCheck.Location = new System.Drawing.Point(20, 255);
 			ignoreLightCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreLightCheck.Name = "ignoreLightCheck";
 			ignoreLightCheck.Size = new System.Drawing.Size(232, 29);
-			ignoreLightCheck.TabIndex = 12;
+			ignoreLightCheck.TabIndex = 17;
 			ignoreLightCheck.Text = "Ignore Lighting";
 			toolTip.SetToolTip(ignoreLightCheck, "If checked, the mesh will not have any lighting applied.");
 			ignoreLightCheck.UseVisualStyleBackColor = true;
@@ -149,23 +160,23 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// flatShadeCheck
 			// 
-			flatShadeCheck.Location = new System.Drawing.Point(20, 147);
+			flatShadeCheck.Location = new System.Drawing.Point(20, 183);
 			flatShadeCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			flatShadeCheck.Name = "flatShadeCheck";
 			flatShadeCheck.Size = new System.Drawing.Size(215, 29);
-			flatShadeCheck.TabIndex = 11;
+			flatShadeCheck.TabIndex = 15;
 			flatShadeCheck.Text = "Flat Shaded";
-			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die. This flag does nothing in SADX, or SA2B without the Render Fix mod.");
+			toolTip.SetToolTip(flatShadeCheck, "If checked, polygon smoothing will be disabled and the model will appear faceted, like a cut gem or die.\r\nThis flag does nothing in SADX, or SA2B without the Render Fix mod.");
 			flatShadeCheck.UseVisualStyleBackColor = true;
 			flatShadeCheck.Click += flatShadeCheck_Click;
 			// 
 			// doubleSideCheck
 			// 
-			doubleSideCheck.Location = new System.Drawing.Point(20, 111);
+			doubleSideCheck.Location = new System.Drawing.Point(20, 147);
 			doubleSideCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			doubleSideCheck.Name = "doubleSideCheck";
 			doubleSideCheck.Size = new System.Drawing.Size(215, 29);
-			doubleSideCheck.TabIndex = 10;
+			doubleSideCheck.TabIndex = 14;
 			doubleSideCheck.Text = "Double Sided";
 			toolTip.SetToolTip(doubleSideCheck, resources.GetString("doubleSideCheck.ToolTip"));
 			doubleSideCheck.UseVisualStyleBackColor = true;
@@ -173,11 +184,11 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// envMapCheck
 			// 
-			envMapCheck.Location = new System.Drawing.Point(20, 75);
+			envMapCheck.Location = new System.Drawing.Point(20, 111);
 			envMapCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			envMapCheck.Name = "envMapCheck";
 			envMapCheck.Size = new System.Drawing.Size(260, 29);
-			envMapCheck.TabIndex = 9;
+			envMapCheck.TabIndex = 13;
 			envMapCheck.Text = "Environment Mapping";
 			toolTip.SetToolTip(envMapCheck, "If checked, the texture's uv maps will be mapped to the environment and the model will appear 'shiny'.");
 			envMapCheck.UseVisualStyleBackColor = true;
@@ -189,7 +200,7 @@ namespace SAModel.SAEditorCommon.UI
 			useAlphaCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			useAlphaCheck.Name = "useAlphaCheck";
 			useAlphaCheck.Size = new System.Drawing.Size(215, 29);
-			useAlphaCheck.TabIndex = 7;
+			useAlphaCheck.TabIndex = 11;
 			useAlphaCheck.Text = "Use Alpha";
 			toolTip.SetToolTip(useAlphaCheck, "If checked, texture transparency will be enabled (and possibly non-texture transparency). ");
 			useAlphaCheck.UseVisualStyleBackColor = true;
@@ -197,36 +208,36 @@ namespace SAModel.SAEditorCommon.UI
 			// 
 			// ignoreSpecCheck
 			// 
-			ignoreSpecCheck.Location = new System.Drawing.Point(20, 255);
+			ignoreSpecCheck.Location = new System.Drawing.Point(20, 291);
 			ignoreSpecCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreSpecCheck.Name = "ignoreSpecCheck";
 			ignoreSpecCheck.Size = new System.Drawing.Size(215, 29);
-			ignoreSpecCheck.TabIndex = 6;
+			ignoreSpecCheck.TabIndex = 18;
 			ignoreSpecCheck.Text = "Ignore Specular";
-			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material. This flag does nothing in SADX or SA2B.");
+			toolTip.SetToolTip(ignoreSpecCheck, "Disables specular lighting on the material.\r\nThis flag does nothing in SADX or SA2B.");
 			ignoreSpecCheck.UseVisualStyleBackColor = true;
 			ignoreSpecCheck.Click += ignoreSpecCheck_Click;
 			// 
 			// ignoreAmbiCheck
 			// 
-			ignoreAmbiCheck.Location = new System.Drawing.Point(20, 182);
+			ignoreAmbiCheck.Location = new System.Drawing.Point(20, 218);
 			ignoreAmbiCheck.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ignoreAmbiCheck.Name = "ignoreAmbiCheck";
 			ignoreAmbiCheck.Size = new System.Drawing.Size(215, 29);
-			ignoreAmbiCheck.TabIndex = 0;
+			ignoreAmbiCheck.TabIndex = 16;
 			ignoreAmbiCheck.Text = "Ignore Ambient";
-			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source. In other words, the ambient light will be treated as black, darkening the model. This flag does nothing in SA2B without the Render Fix mod.");
+			toolTip.SetToolTip(ignoreAmbiCheck, "If checked, the mesh will ignore the ambient light source. In other words, the ambient light will be treated as black, darkening the model.\r\nThis flag does nothing in SA2B without the Render Fix mod.");
 			ignoreAmbiCheck.UseVisualStyleBackColor = true;
 			ignoreAmbiCheck.Click += ignoreAmbiCheck_Click;
 			// 
 			// doneButton
 			// 
 			doneButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			doneButton.Location = new System.Drawing.Point(687, 540);
+			doneButton.Location = new System.Drawing.Point(818, 540);
 			doneButton.Margin = new System.Windows.Forms.Padding(4);
 			doneButton.Name = "doneButton";
 			doneButton.Size = new System.Drawing.Size(132, 40);
-			doneButton.TabIndex = 0;
+			doneButton.TabIndex = 25;
 			doneButton.Text = "Done";
 			doneButton.UseVisualStyleBackColor = true;
 			doneButton.Click += doneButton_Click;
@@ -240,15 +251,26 @@ namespace SAModel.SAEditorCommon.UI
 			// resetButton
 			// 
 			resetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-			resetButton.Location = new System.Drawing.Point(528, 540);
+			resetButton.Location = new System.Drawing.Point(659, 540);
 			resetButton.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			resetButton.Name = "resetButton";
 			resetButton.Size = new System.Drawing.Size(132, 40);
-			resetButton.TabIndex = 6;
+			resetButton.TabIndex = 24;
 			resetButton.Text = "Reset";
 			toolTip.SetToolTip(resetButton, "Reset the poly data to the state it was when this dialog opened.");
 			resetButton.UseVisualStyleBackColor = true;
 			resetButton.Click += resetButton_Click;
+			// 
+			// deleteAllUVButton
+			// 
+			deleteAllUVButton.Location = new System.Drawing.Point(247, 383);
+			deleteAllUVButton.Name = "deleteAllUVButton";
+			deleteAllUVButton.Size = new System.Drawing.Size(186, 34);
+			deleteAllUVButton.TabIndex = 4;
+			deleteAllUVButton.Text = "Delete All UV Data";
+			toolTip.SetToolTip(deleteAllUVButton, "Deletes all UV data from the strip collection, converting the data chunk\r\nto use the Strip_Strip format.");
+			deleteAllUVButton.UseVisualStyleBackColor = true;
+			deleteAllUVButton.Click += deleteAllUVButton_Click;
 			// 
 			// groupBox1
 			// 
@@ -262,27 +284,17 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox1.Name = "groupBox1";
 			groupBox1.Padding = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			groupBox1.Size = new System.Drawing.Size(454, 567);
-			groupBox1.TabIndex = 9;
+			groupBox1.TabIndex = 0;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Strip Sets";
 			// 
-			// deleteAllUVButton
-			// 
-			deleteAllUVButton.Location = new System.Drawing.Point(237, 383);
-			deleteAllUVButton.Name = "deleteAllUVButton";
-			deleteAllUVButton.Size = new System.Drawing.Size(186, 34);
-			deleteAllUVButton.TabIndex = 6;
-			deleteAllUVButton.Text = "Delete All UV Data";
-			deleteAllUVButton.UseVisualStyleBackColor = true;
-			deleteAllUVButton.Click += deleteAllUVButton_Click;
-			// 
 			// deleteSelectedUVButton
 			// 
-			deleteSelectedUVButton.Location = new System.Drawing.Point(36, 383);
+			deleteSelectedUVButton.Location = new System.Drawing.Point(30, 383);
 			deleteSelectedUVButton.Name = "deleteSelectedUVButton";
-			deleteSelectedUVButton.Size = new System.Drawing.Size(179, 34);
-			deleteSelectedUVButton.TabIndex = 5;
-			deleteSelectedUVButton.Text = "Delete Selected UV";
+			deleteSelectedUVButton.Size = new System.Drawing.Size(190, 34);
+			deleteSelectedUVButton.TabIndex = 3;
+			deleteSelectedUVButton.Text = "Delete Selected Strip";
 			deleteSelectedUVButton.UseVisualStyleBackColor = true;
 			deleteSelectedUVButton.Click += deleteSelectedUVButton_Click;
 			// 
@@ -295,7 +307,7 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox2.Location = new System.Drawing.Point(30, 425);
 			groupBox2.Name = "groupBox2";
 			groupBox2.Size = new System.Drawing.Size(403, 122);
-			groupBox2.TabIndex = 4;
+			groupBox2.TabIndex = 5;
 			groupBox2.TabStop = false;
 			groupBox2.Text = "Windings";
 			// 
@@ -304,7 +316,7 @@ namespace SAModel.SAEditorCommon.UI
 			resetAllWindingsButton.Location = new System.Drawing.Point(217, 70);
 			resetAllWindingsButton.Name = "resetAllWindingsButton";
 			resetAllWindingsButton.Size = new System.Drawing.Size(137, 34);
-			resetAllWindingsButton.TabIndex = 5;
+			resetAllWindingsButton.TabIndex = 9;
 			resetAllWindingsButton.Text = "Reset All";
 			resetAllWindingsButton.UseVisualStyleBackColor = true;
 			resetAllWindingsButton.Click += resetAllWindingsButton_Click;
@@ -314,7 +326,7 @@ namespace SAModel.SAEditorCommon.UI
 			flipAllWindingsButton.Location = new System.Drawing.Point(217, 30);
 			flipAllWindingsButton.Name = "flipAllWindingsButton";
 			flipAllWindingsButton.Size = new System.Drawing.Size(137, 34);
-			flipAllWindingsButton.TabIndex = 4;
+			flipAllWindingsButton.TabIndex = 7;
 			flipAllWindingsButton.Text = "Flip All";
 			flipAllWindingsButton.UseVisualStyleBackColor = true;
 			flipAllWindingsButton.Click += flipAllWindingsButton_Click;
@@ -324,7 +336,7 @@ namespace SAModel.SAEditorCommon.UI
 			resetWindingButton.Location = new System.Drawing.Point(40, 70);
 			resetWindingButton.Name = "resetWindingButton";
 			resetWindingButton.Size = new System.Drawing.Size(137, 34);
-			resetWindingButton.TabIndex = 3;
+			resetWindingButton.TabIndex = 8;
 			resetWindingButton.Text = "Reset Selected";
 			resetWindingButton.UseVisualStyleBackColor = true;
 			resetWindingButton.Click += resetWindingButton_Click;
@@ -334,7 +346,7 @@ namespace SAModel.SAEditorCommon.UI
 			flipWindingButton.Location = new System.Drawing.Point(40, 30);
 			flipWindingButton.Name = "flipWindingButton";
 			flipWindingButton.Size = new System.Drawing.Size(137, 34);
-			flipWindingButton.TabIndex = 2;
+			flipWindingButton.TabIndex = 6;
 			flipWindingButton.Text = "Flip Selected";
 			flipWindingButton.UseVisualStyleBackColor = true;
 			flipWindingButton.Click += flipWindingButton_Click;
@@ -348,7 +360,7 @@ namespace SAModel.SAEditorCommon.UI
 			stripListView.MultiSelect = false;
 			stripListView.Name = "stripListView";
 			stripListView.Size = new System.Drawing.Size(403, 269);
-			stripListView.TabIndex = 1;
+			stripListView.TabIndex = 2;
 			stripListView.UseCompatibleStateImageBehavior = false;
 			stripListView.View = System.Windows.Forms.View.Details;
 			// 
@@ -379,7 +391,7 @@ namespace SAModel.SAEditorCommon.UI
 			stripSetComboBox.Location = new System.Drawing.Point(30, 39);
 			stripSetComboBox.Name = "stripSetComboBox";
 			stripSetComboBox.Size = new System.Drawing.Size(403, 33);
-			stripSetComboBox.TabIndex = 0;
+			stripSetComboBox.TabIndex = 1;
 			stripSetComboBox.SelectedIndexChanged += stripSetComboBox_SelectedIndexChanged;
 			// 
 			// groupBox3
@@ -392,36 +404,36 @@ namespace SAModel.SAEditorCommon.UI
 			groupBox3.Controls.Add(label1);
 			groupBox3.Location = new System.Drawing.Point(491, 405);
 			groupBox3.Name = "groupBox3";
-			groupBox3.Size = new System.Drawing.Size(328, 126);
-			groupBox3.TabIndex = 10;
+			groupBox3.Size = new System.Drawing.Size(457, 97);
+			groupBox3.TabIndex = 20;
 			groupBox3.TabStop = false;
 			groupBox3.Text = "User Flags (Strip)";
 			// 
 			// userFlag3NumericUpDown
 			// 
-			userFlag3NumericUpDown.Location = new System.Drawing.Point(95, 75);
+			userFlag3NumericUpDown.Location = new System.Drawing.Point(370, 37);
 			userFlag3NumericUpDown.Name = "userFlag3NumericUpDown";
 			userFlag3NumericUpDown.Size = new System.Drawing.Size(60, 31);
-			userFlag3NumericUpDown.TabIndex = 8;
+			userFlag3NumericUpDown.TabIndex = 23;
 			// 
 			// userFlag2NumericUpDown
 			// 
-			userFlag2NumericUpDown.Location = new System.Drawing.Point(233, 37);
+			userFlag2NumericUpDown.Location = new System.Drawing.Point(231, 37);
 			userFlag2NumericUpDown.Name = "userFlag2NumericUpDown";
 			userFlag2NumericUpDown.Size = new System.Drawing.Size(60, 31);
-			userFlag2NumericUpDown.TabIndex = 7;
+			userFlag2NumericUpDown.TabIndex = 22;
 			// 
 			// userFlag1NumericUpDown
 			// 
 			userFlag1NumericUpDown.Location = new System.Drawing.Point(95, 37);
 			userFlag1NumericUpDown.Name = "userFlag1NumericUpDown";
 			userFlag1NumericUpDown.Size = new System.Drawing.Size(60, 31);
-			userFlag1NumericUpDown.TabIndex = 6;
+			userFlag1NumericUpDown.TabIndex = 21;
 			// 
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(23, 75);
+			label3.Location = new System.Drawing.Point(298, 37);
 			label3.Name = "label3";
 			label3.Size = new System.Drawing.Size(64, 25);
 			label3.TabIndex = 2;
@@ -450,7 +462,7 @@ namespace SAModel.SAEditorCommon.UI
 			AcceptButton = doneButton;
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			AutoSize = true;
-			ClientSize = new System.Drawing.Size(834, 601);
+			ClientSize = new System.Drawing.Size(965, 601);
 			ControlBox = false;
 			Controls.Add(groupBox3);
 			Controls.Add(groupBox1);
@@ -516,8 +528,9 @@ namespace SAModel.SAEditorCommon.UI
 		private System.Windows.Forms.ColumnHeader columnHeader5;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.NumericUpDown userFlagsNumericUpDown;
-		private System.Windows.Forms.CheckBox noAlphaTestCheck;
 		private System.Windows.Forms.Button deleteAllUVButton;
 		private System.Windows.Forms.Button deleteSelectedUVButton;
+		private System.Windows.Forms.ComboBox exAlphaSettingComboBox;
+		private System.Windows.Forms.Label exAlphaLabel;
 	}
 }

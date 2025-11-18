@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using SAModel.Direct3D.TextureSystem;
-using static VrSharp.Xvr.DirectXTexUtility;
 
 namespace SAModel.SAEditorCommon.UI
 {
