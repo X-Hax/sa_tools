@@ -253,6 +253,8 @@ namespace SAModel.SAEditorCommon.UI
 			PolyChunkStrip pcs = (PolyChunkStrip)PolyData;
 			exAlphaSettingComboBox.Enabled = useAlphaCheck.Checked;
 			exAlphaLabel.Enabled = useAlphaCheck.Checked;
+			if (exAlphaSettingComboBox.SelectedIndex == -1 && useAlphaCheck.Checked)
+				exAlphaSettingComboBox.SelectedIndex = 0;
 			RaiseFormUpdated();
 		}
 
@@ -384,6 +386,7 @@ namespace SAModel.SAEditorCommon.UI
 			switch (index)
 			{
 				case 0:
+				default:
 					pcs.UseAlpha = true;
 					pcs.NoAlphaTest = false;
 					break;

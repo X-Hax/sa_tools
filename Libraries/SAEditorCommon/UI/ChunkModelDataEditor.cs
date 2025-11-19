@@ -728,7 +728,9 @@ namespace SAModel.SAEditorCommon.UI
 								newmesh.SubItems.Add(bumpD + bumpU);
 								break;
 							case PolyChunkMaterial pcm:
-								string mtype = "Material_";
+								string mtype = "Material";
+								if (pcm.Diffuse.HasValue || pcm.Ambient.HasValue || pcm.Specular.HasValue || pcm.Second)
+									mtype += "_";
 								if (pcm.Diffuse.HasValue)
 									mtype += "D";
 								if (pcm.Ambient.HasValue)
@@ -759,7 +761,11 @@ namespace SAModel.SAEditorCommon.UI
 									}
 									specular += "S(" + "Exp " + pcm.SpecularExponent.ToString() + ", " + pcm.Specular.Value.R + ", " + pcm.Specular.Value.G + ", " + pcm.Specular.Value.B + ")";
 								}
-								string blendmodes = ", BL( ";
+								string blendmodes = "";
+								if (diffuse == "" && ambient == "" && specular == "")
+									blendmodes += "BL( ";
+								else
+									blendmodes += ", BL( ";
 								string sourcealpha = "";
 								string destalpha = ", ";
 								switch (pcm.SourceAlpha)

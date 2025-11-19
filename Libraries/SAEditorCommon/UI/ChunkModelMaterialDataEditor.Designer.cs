@@ -118,7 +118,7 @@
 			// 
 			// diffuseBUpDown
 			// 
-			diffuseBUpDown.Location = new System.Drawing.Point(76, 128);
+			diffuseBUpDown.Location = new System.Drawing.Point(217, 80);
 			diffuseBUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			diffuseBUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseBUpDown.Name = "diffuseBUpDown";
@@ -128,7 +128,7 @@
 			// 
 			// diffuseGUpDown
 			// 
-			diffuseGUpDown.Location = new System.Drawing.Point(230, 80);
+			diffuseGUpDown.Location = new System.Drawing.Point(76, 81);
 			diffuseGUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			diffuseGUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseGUpDown.Name = "diffuseGUpDown";
@@ -138,7 +138,7 @@
 			// 
 			// diffuseRUpDown
 			// 
-			diffuseRUpDown.Location = new System.Drawing.Point(76, 80);
+			diffuseRUpDown.Location = new System.Drawing.Point(217, 32);
 			diffuseRUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			diffuseRUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			diffuseRUpDown.Name = "diffuseRUpDown";
@@ -149,7 +149,7 @@
 			// label4
 			// 
 			label4.AutoSize = true;
-			label4.Location = new System.Drawing.Point(22, 131);
+			label4.Location = new System.Drawing.Point(163, 83);
 			label4.Name = "label4";
 			label4.Size = new System.Drawing.Size(49, 25);
 			label4.TabIndex = 5;
@@ -158,7 +158,7 @@
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(163, 82);
+			label2.Location = new System.Drawing.Point(9, 83);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(62, 25);
 			label2.TabIndex = 4;
@@ -167,7 +167,7 @@
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(25, 82);
+			label1.Location = new System.Drawing.Point(166, 34);
 			label1.Name = "label1";
 			label1.Size = new System.Drawing.Size(46, 25);
 			label1.TabIndex = 3;
@@ -176,7 +176,7 @@
 			// labelAlpha
 			// 
 			labelAlpha.AutoSize = true;
-			labelAlpha.Location = new System.Drawing.Point(163, 34);
+			labelAlpha.Location = new System.Drawing.Point(9, 130);
 			labelAlpha.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			labelAlpha.Name = "labelAlpha";
 			labelAlpha.Size = new System.Drawing.Size(62, 25);
@@ -185,7 +185,7 @@
 			// 
 			// alphaDiffuseNumeric
 			// 
-			alphaDiffuseNumeric.Location = new System.Drawing.Point(230, 32);
+			alphaDiffuseNumeric.Location = new System.Drawing.Point(76, 128);
 			alphaDiffuseNumeric.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			alphaDiffuseNumeric.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			alphaDiffuseNumeric.Name = "alphaDiffuseNumeric";
@@ -218,7 +218,7 @@
 			// ambientColorBox
 			// 
 			ambientColorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			ambientColorBox.Location = new System.Drawing.Point(76, 40);
+			ambientColorBox.Location = new System.Drawing.Point(76, 32);
 			ambientColorBox.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientColorBox.Name = "ambientColorBox";
 			ambientColorBox.Size = new System.Drawing.Size(64, 32);
@@ -230,7 +230,7 @@
 			// ambientLabel
 			// 
 			ambientLabel.AutoSize = true;
-			ambientLabel.Location = new System.Drawing.Point(12, 42);
+			ambientLabel.Location = new System.Drawing.Point(12, 34);
 			ambientLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			ambientLabel.Name = "ambientLabel";
 			ambientLabel.Size = new System.Drawing.Size(59, 25);
@@ -365,14 +365,14 @@
 			ambientSettingBox.Controls.Add(ambientColorBox);
 			ambientSettingBox.Location = new System.Drawing.Point(347, 13);
 			ambientSettingBox.Name = "ambientSettingBox";
-			ambientSettingBox.Size = new System.Drawing.Size(303, 136);
+			ambientSettingBox.Size = new System.Drawing.Size(309, 136);
 			ambientSettingBox.TabIndex = 18;
 			ambientSettingBox.TabStop = false;
 			ambientSettingBox.Text = "Ambient";
 			// 
 			// ambientBUpDown
 			// 
-			ambientBUpDown.Location = new System.Drawing.Point(217, 83);
+			ambientBUpDown.Location = new System.Drawing.Point(217, 80);
 			ambientBUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientBUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			ambientBUpDown.Name = "ambientBUpDown";
@@ -382,7 +382,7 @@
 			// 
 			// ambientGUpDown
 			// 
-			ambientGUpDown.Location = new System.Drawing.Point(76, 84);
+			ambientGUpDown.Location = new System.Drawing.Point(76, 81);
 			ambientGUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientGUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			ambientGUpDown.Name = "ambientGUpDown";
@@ -392,7 +392,7 @@
 			// 
 			// ambientRUpDown
 			// 
-			ambientRUpDown.Location = new System.Drawing.Point(217, 40);
+			ambientRUpDown.Location = new System.Drawing.Point(217, 32);
 			ambientRUpDown.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
 			ambientRUpDown.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
 			ambientRUpDown.Name = "ambientRUpDown";
@@ -403,7 +403,7 @@
 			// label5
 			// 
 			label5.AutoSize = true;
-			label5.Location = new System.Drawing.Point(163, 86);
+			label5.Location = new System.Drawing.Point(163, 83);
 			label5.Name = "label5";
 			label5.Size = new System.Drawing.Size(49, 25);
 			label5.TabIndex = 20;
@@ -412,7 +412,7 @@
 			// label6
 			// 
 			label6.AutoSize = true;
-			label6.Location = new System.Drawing.Point(9, 86);
+			label6.Location = new System.Drawing.Point(9, 83);
 			label6.Name = "label6";
 			label6.Size = new System.Drawing.Size(62, 25);
 			label6.TabIndex = 19;
@@ -421,7 +421,7 @@
 			// label7
 			// 
 			label7.AutoSize = true;
-			label7.Location = new System.Drawing.Point(166, 42);
+			label7.Location = new System.Drawing.Point(166, 34);
 			label7.Name = "label7";
 			label7.Size = new System.Drawing.Size(46, 25);
 			label7.TabIndex = 18;
