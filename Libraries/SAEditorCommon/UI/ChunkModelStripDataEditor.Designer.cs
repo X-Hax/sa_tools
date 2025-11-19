@@ -354,6 +354,7 @@ namespace SAModel.SAEditorCommon.UI
 			// stripListView
 			// 
 			stripListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4, columnHeader5 });
+			stripListView.FullRowSelect = true;
 			stripListView.GridLines = true;
 			stripListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			stripListView.Location = new System.Drawing.Point(30, 97);

@@ -59,15 +59,15 @@
 			textBoxModelRadius = new System.Windows.Forms.TextBox();
 			labelR = new System.Windows.Forms.Label();
 			groupBoxMeshList = new System.Windows.Forms.GroupBox();
-			addPolyButton = new System.Windows.Forms.Button();
-			contextMenuStripAddPoly = new System.Windows.Forms.ContextMenuStrip(components);
-			materialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			textureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			blendAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			mipmapDAdjustToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			specularExponentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			bumpMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			nullChunkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			toolStrip1 = new System.Windows.Forms.ToolStrip();
+			toolStripButtonAddPoly = new System.Windows.Forms.ToolStripDropDownButton();
+			addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			addTextureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			addBlendAlphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			addMipmapDAdjustToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			addSpecExpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			addBumpMatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			addNullChunkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			buttonResetMeshes = new System.Windows.Forms.Button();
 			buttonClose = new System.Windows.Forms.Button();
 			comboBoxNode = new System.Windows.Forms.ComboBox();
@@ -95,7 +95,7 @@
 			groupBoxLabels.SuspendLayout();
 			groupBoxBounds.SuspendLayout();
 			groupBoxMeshList.SuspendLayout();
-			contextMenuStripAddPoly.SuspendLayout();
+			toolStrip1.SuspendLayout();
 			contextMenuStripMatEdit.SuspendLayout();
 			groupBoxVertList.SuspendLayout();
 			contextMenuStripVertCol.SuspendLayout();
@@ -379,7 +379,7 @@
 			// 
 			// groupBoxMeshList
 			// 
-			groupBoxMeshList.Controls.Add(addPolyButton);
+			groupBoxMeshList.Controls.Add(toolStrip1);
 			groupBoxMeshList.Controls.Add(buttonResetMeshes);
 			groupBoxMeshList.Controls.Add(buttonMoveMeshUp);
 			groupBoxMeshList.Controls.Add(buttonMoveMeshDown);
@@ -393,72 +393,84 @@
 			groupBoxMeshList.TabStop = false;
 			groupBoxMeshList.Text = "Poly Data";
 			// 
-			// addPolyButton
+			// toolStrip1
 			// 
-			addPolyButton.ContextMenuStrip = contextMenuStripAddPoly;
-			addPolyButton.Location = new System.Drawing.Point(456, 392);
-			addPolyButton.Name = "addPolyButton";
-			addPolyButton.Size = new System.Drawing.Size(123, 34);
-			addPolyButton.TabIndex = 22;
-			addPolyButton.Text = "Add Poly";
-			addPolyButton.UseVisualStyleBackColor = true;
-			addPolyButton.MouseClick += addPolyButton_MouseClick;
+			toolStrip1.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonDropDown;
+			toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+			toolStrip1.GripMargin = new System.Windows.Forms.Padding(0);
+			toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+			toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripButtonAddPoly });
+			toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+			toolStrip1.Location = new System.Drawing.Point(455, 391);
+			toolStrip1.Name = "toolStrip1";
+			toolStrip1.Padding = new System.Windows.Forms.Padding(0);
+			toolStrip1.Size = new System.Drawing.Size(112, 37);
+			toolStrip1.TabIndex = 23;
+			toolStrip1.TabStop = true;
+			toolStrip1.Text = "toolStrip1";
 			// 
-			// contextMenuStripAddPoly
+			// toolStripButtonAddPoly
 			// 
-			contextMenuStripAddPoly.ImageScalingSize = new System.Drawing.Size(24, 24);
-			contextMenuStripAddPoly.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { materialToolStripMenuItem, textureToolStripMenuItem, blendAlphaToolStripMenuItem, mipmapDAdjustToolStripMenuItem, specularExponentToolStripMenuItem, bumpMaterialToolStripMenuItem, nullChunkToolStripMenuItem });
-			contextMenuStripAddPoly.Name = "contextMenuStripAddPoly";
-			contextMenuStripAddPoly.Size = new System.Drawing.Size(234, 228);
+			toolStripButtonAddPoly.AccessibleRole = System.Windows.Forms.AccessibleRole.ButtonDropDown;
+			toolStripButtonAddPoly.AutoToolTip = false;
+			toolStripButtonAddPoly.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			toolStripButtonAddPoly.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			toolStripButtonAddPoly.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { addMaterialToolStripMenuItem, addTextureToolStripMenuItem, addBlendAlphaToolStripMenuItem, addMipmapDAdjustToolStripMenuItem, addSpecExpToolStripMenuItem, addBumpMatToolStripMenuItem, addNullChunkToolStripMenuItem });
+			toolStripButtonAddPoly.ImageTransparentColor = System.Drawing.Color.Magenta;
+			toolStripButtonAddPoly.Margin = new System.Windows.Forms.Padding(4);
+			toolStripButtonAddPoly.Name = "toolStripButtonAddPoly";
+			toolStripButtonAddPoly.Size = new System.Drawing.Size(102, 29);
+			toolStripButtonAddPoly.Text = "Add Poly";
 			// 
-			// materialToolStripMenuItem
+			// addMaterialToolStripMenuItem
 			// 
-			materialToolStripMenuItem.Name = "materialToolStripMenuItem";
-			materialToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			materialToolStripMenuItem.Text = "Material";
-			materialToolStripMenuItem.Click += materialToolStripMenuItem_Click;
+			addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
+			addMaterialToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addMaterialToolStripMenuItem.Text = "Material";
+			addMaterialToolStripMenuItem.Click += materialToolStripMenuItem_Click;
 			// 
-			// textureToolStripMenuItem
+			// addTextureToolStripMenuItem
 			// 
-			textureToolStripMenuItem.Name = "textureToolStripMenuItem";
-			textureToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			textureToolStripMenuItem.Text = "Texture";
-			textureToolStripMenuItem.Click += textureToolStripMenuItem_Click;
+			addTextureToolStripMenuItem.Name = "addTextureToolStripMenuItem";
+			addTextureToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addTextureToolStripMenuItem.Text = "Texture";
+			addTextureToolStripMenuItem.Click += textureToolStripMenuItem_Click;
 			// 
-			// blendAlphaToolStripMenuItem
+			// addBlendAlphaToolStripMenuItem
 			// 
-			blendAlphaToolStripMenuItem.Name = "blendAlphaToolStripMenuItem";
-			blendAlphaToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			blendAlphaToolStripMenuItem.Text = "Blend Alpha";
-			blendAlphaToolStripMenuItem.Click += blendAlphaToolStripMenuItem_Click;
+			addBlendAlphaToolStripMenuItem.Name = "addBlendAlphaToolStripMenuItem";
+			addBlendAlphaToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addBlendAlphaToolStripMenuItem.Text = "Blend Alpha";
+			addBlendAlphaToolStripMenuItem.Click += blendAlphaToolStripMenuItem_Click;
 			// 
-			// mipmapDAdjustToolStripMenuItem
+			// addMipmapDAdjustToolStripMenuItem
 			// 
-			mipmapDAdjustToolStripMenuItem.Name = "mipmapDAdjustToolStripMenuItem";
-			mipmapDAdjustToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			mipmapDAdjustToolStripMenuItem.Text = "Mipmap 'D' Adjust";
-			mipmapDAdjustToolStripMenuItem.Click += mipmapDAdjustToolStripMenuItem_Click;
+			addMipmapDAdjustToolStripMenuItem.Name = "addMipmapDAdjustToolStripMenuItem";
+			addMipmapDAdjustToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addMipmapDAdjustToolStripMenuItem.Text = "Mipmap 'D' Adjust";
+			addMipmapDAdjustToolStripMenuItem.Click += mipmapDAdjustToolStripMenuItem_Click;
 			// 
-			// specularExponentToolStripMenuItem
+			// addSpecExpToolStripMenuItem
 			// 
-			specularExponentToolStripMenuItem.Name = "specularExponentToolStripMenuItem";
-			specularExponentToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			specularExponentToolStripMenuItem.Text = "Specular Exponent";
-			specularExponentToolStripMenuItem.Click += specularExponentToolStripMenuItem_Click;
+			addSpecExpToolStripMenuItem.Name = "addSpecExpToolStripMenuItem";
+			addSpecExpToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addSpecExpToolStripMenuItem.Text = "Specular Exponent";
+			addSpecExpToolStripMenuItem.Click += specularExponentToolStripMenuItem_Click;
 			// 
-			// bumpMaterialToolStripMenuItem
+			// addBumpMatToolStripMenuItem
 			// 
-			bumpMaterialToolStripMenuItem.Name = "bumpMaterialToolStripMenuItem";
-			bumpMaterialToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			bumpMaterialToolStripMenuItem.Text = "Bump Material";
-			bumpMaterialToolStripMenuItem.Click += bumpMaterialToolStripMenuItem_Click;
+			addBumpMatToolStripMenuItem.Name = "addBumpMatToolStripMenuItem";
+			addBumpMatToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addBumpMatToolStripMenuItem.Text = "Bump Material";
+			addBumpMatToolStripMenuItem.Click += bumpMaterialToolStripMenuItem_Click;
 			// 
-			// nullChunkToolStripMenuItem
+			// addNullChunkToolStripMenuItem
 			// 
-			nullChunkToolStripMenuItem.Name = "nullChunkToolStripMenuItem";
-			nullChunkToolStripMenuItem.Size = new System.Drawing.Size(233, 32);
-			nullChunkToolStripMenuItem.Text = "Null Chunk";
-			nullChunkToolStripMenuItem.Click += nullChunkToolStripMenuItem_Click;
+			addNullChunkToolStripMenuItem.Name = "addNullChunkToolStripMenuItem";
+			addNullChunkToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+			addNullChunkToolStripMenuItem.Text = "Null Chunk";
+			addNullChunkToolStripMenuItem.Click += nullChunkToolStripMenuItem_Click;
 			// 
 			// buttonResetMeshes
 			// 
@@ -673,7 +685,9 @@
 			groupBoxBounds.ResumeLayout(false);
 			groupBoxBounds.PerformLayout();
 			groupBoxMeshList.ResumeLayout(false);
-			contextMenuStripAddPoly.ResumeLayout(false);
+			groupBoxMeshList.PerformLayout();
+			toolStrip1.ResumeLayout(false);
+			toolStrip1.PerformLayout();
 			contextMenuStripMatEdit.ResumeLayout(false);
 			groupBoxVertList.ResumeLayout(false);
 			contextMenuStripVertCol.ResumeLayout(false);
@@ -736,14 +750,15 @@
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStripObjSet;
 		private System.Windows.Forms.ToolStripMenuItem editObjectSettingsToolStripMenuItem;
-		private System.Windows.Forms.Button addPolyButton;
-		private System.Windows.Forms.ContextMenuStrip contextMenuStripAddPoly;
-		private System.Windows.Forms.ToolStripMenuItem materialToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem textureToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem blendAlphaToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem nullChunkToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem mipmapDAdjustToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem specularExponentToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem bumpMaterialToolStripMenuItem;
+		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStripButton toolStripButton1;
+		private System.Windows.Forms.ToolStripDropDownButton toolStripButtonAddPoly;
+		private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addTextureToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addBlendAlphaToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addMipmapDAdjustToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addSpecExpToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addBumpMatToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem addNullChunkToolStripMenuItem;
 	}
 }

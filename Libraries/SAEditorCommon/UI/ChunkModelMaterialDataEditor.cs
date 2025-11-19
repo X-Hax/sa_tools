@@ -46,6 +46,20 @@ namespace SAModel.SAEditorCommon.UI
 			ambientSettingBox.Enabled = useAmbientCheckBox.Checked = pcm.Ambient.HasValue;
 			specularSettingBox.Enabled = useSpecularCheckBox.Checked = pcm.Specular.HasValue;
 
+			if (useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked && !useSpecularCheckBox.Checked)
+				useDiffuseCheckBox.Enabled = false;
+			else
+				useDiffuseCheckBox.Enabled = true;
+			if (useAmbientCheckBox.Checked && !useDiffuseCheckBox.Checked && !useSpecularCheckBox.Checked)
+				useAmbientCheckBox.Enabled = false;
+			else
+				useAmbientCheckBox.Enabled = true;
+			if (useSpecularCheckBox.Checked && !useAmbientCheckBox.Checked && !useDiffuseCheckBox.Checked)
+				useSpecularCheckBox.Enabled = false;
+			else
+				useSpecularCheckBox.Enabled = true;
+
+
 			if (pcm.Diffuse.HasValue)
 			{
 				diffuseRUpDown.Value = pcm.Diffuse.Value.R;
@@ -298,44 +312,65 @@ namespace SAModel.SAEditorCommon.UI
 
 		private void useDiffuseCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
 			if (useDiffuseCheckBox.Checked)
 			{
-				//pcm.Diffuse = null;
 				diffuseSettingBox.Enabled = true;
 			}
 			else
 			{
 				diffuseSettingBox.Enabled = false;
 			}
+			//Prevent the user from creating a material with no diffuse, ambient, or specular values.
+			if (useAmbientCheckBox.Checked && !useDiffuseCheckBox.Checked && !useSpecularCheckBox.Checked)
+				useAmbientCheckBox.Enabled = false;
+			else
+				useAmbientCheckBox.Enabled = true;
+			if (useSpecularCheckBox.Checked && !useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked)
+				useSpecularCheckBox.Enabled = false;
+			else
+				useSpecularCheckBox.Enabled = true;
 		}
 
 		private void useAmbientCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
 			if (useAmbientCheckBox.Checked)
 			{
-				//pcm.Ambient = null;
 				ambientSettingBox.Enabled = true;
 			}
 			else
 			{
 				ambientSettingBox.Enabled = false;
 			}
+			//Prevent the user from creating a material with no diffuse, ambient, or specular values.
+			if (useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked && !useSpecularCheckBox.Checked)
+				useDiffuseCheckBox.Enabled = false;
+			else
+				useDiffuseCheckBox.Enabled = true;
+			if (useSpecularCheckBox.Checked && !useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked)
+				useSpecularCheckBox.Enabled = false;
+			else
+				useSpecularCheckBox.Enabled = true;
 		}
 
 		private void useSpecularCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			PolyChunkMaterial pcm = (PolyChunkMaterial)PolyData;
 			if (useSpecularCheckBox.Checked)
 			{
-				//pcm.Specular = null;
 				specularSettingBox.Enabled = true;
 			}
 			else
 			{
 				specularSettingBox.Enabled = false;
 			}
+			//Prevent the user from creating a material with no diffuse, ambient, or specular values.
+			if (useDiffuseCheckBox.Checked && !useAmbientCheckBox.Checked && !useSpecularCheckBox.Checked)
+				useDiffuseCheckBox.Enabled = false;
+			else
+				useDiffuseCheckBox.Enabled = true;
+			if (useAmbientCheckBox.Checked && !useDiffuseCheckBox.Checked && !useSpecularCheckBox.Checked)
+				useAmbientCheckBox.Enabled = false;
+			else
+				useAmbientCheckBox.Enabled = true;
 		}
 	}
 }

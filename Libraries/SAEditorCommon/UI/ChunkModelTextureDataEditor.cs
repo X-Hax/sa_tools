@@ -123,6 +123,7 @@ namespace SAModel.SAEditorCommon.UI
 					if (texPicker.ShowDialog(this) == DialogResult.OK)
 					{
 						pct.TextureID = (ushort)texPicker.SelectedValue;
+						textureIDNumeric.Value = (ushort)texPicker.SelectedValue;
 						textureBox.Image = DrawPreviewImage(textures[(ushort)textureIDNumeric.Value].Image);
 
 						RaiseFormUpdated();

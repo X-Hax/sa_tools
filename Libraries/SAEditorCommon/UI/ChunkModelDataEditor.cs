@@ -721,7 +721,7 @@ namespace SAModel.SAEditorCommon.UI
 								string bumpU = "U( ";
 								bumpD += pcmb.DX.ToString() + ", ";
 								bumpD += pcmb.DY.ToString() + ", ";
-								bumpD += pcmb.DZ.ToString() + " ), " ;
+								bumpD += pcmb.DZ.ToString() + " ), ";
 								bumpU += pcmb.UX.ToString() + ", ";
 								bumpU += pcmb.UY.ToString() + ", ";
 								bumpU += pcmb.UZ.ToString() + " )";
@@ -1089,10 +1089,10 @@ namespace SAModel.SAEditorCommon.UI
 			editAlphaBlendDataToolStripMenuItem.Enabled = editAlphaBlendDataToolStripMenuItem.Visible = polytype == "Bits_BA";
 			buttonDeleteMesh.Enabled = selectedObj.Count > 1;
 			buttonMoveMeshUp.Enabled = selectedObj.IndexOf(selectedMesh) > 0;
-			if (prevmatstart.StartsWith("Bits") && prevmatstart != "Bits_BA")
+			if (prevmatstart == "Bits_CP" || prevmatstart == "Bits_DP")
 				buttonMoveMeshUp.Enabled = false;
 			buttonMoveMeshDown.Enabled = matID + 1 < selectedObj.Count;
-			if (polytype.StartsWith("Bits") && polytype != "Bits_BA")
+			if (polytype == "Bits_CP" || polytype == "Bits_DP")
 				buttonMoveMeshDown.Enabled = false;
 			string ptype = selectedMesh.Type.ToString();
 			string pdata2 = "";
@@ -1397,14 +1397,15 @@ namespace SAModel.SAEditorCommon.UI
 			BuildObjectDataList();
 		}
 
-		private void addPolyButton_MouseClick(object sender, MouseEventArgs e)
-		{
-			contextMenuStripAddPoly.Show(addPolyButton, e.Location);
-		}
-
 		private void materialToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			PolyChunkMaterial newpcm = new PolyChunkMaterial();
+			newpcm.Diffuse = Color.FromArgb(0xFF, 0xB2, 0xB2, 0xB2);
+			newpcm.Ambient = Color.FromArgb(0, 0x7F, 0x7F, 0x7F);
+			newpcm.Specular = Color.FromArgb(0, 0xFF, 0xFF, 0xFF);
+			newpcm.SpecularExponent = 11;
+			newpcm.SourceAlpha = AlphaInstruction.SourceAlpha;
+			newpcm.DestinationAlpha = AlphaInstruction.InverseSourceAlpha;
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
 			if (listViewMeshes.SelectedIndices.Count != 0)
@@ -1453,6 +1454,8 @@ namespace SAModel.SAEditorCommon.UI
 		private void blendAlphaToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			PolyChunkBitsBlendAlpha newba = new PolyChunkBitsBlendAlpha();
+			newba.SourceAlpha = AlphaInstruction.SourceAlpha;
+			newba.DestinationAlpha = AlphaInstruction.InverseSourceAlpha;
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
 			if (listViewMeshes.SelectedIndices.Count != 0)
@@ -1523,6 +1526,7 @@ namespace SAModel.SAEditorCommon.UI
 		private void specularExponentToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			PolyChunkBitsSpecularExponent newse = new PolyChunkBitsSpecularExponent();
+			newse.SpecularExponent = 11;
 			List<PolyChunk> selectedObj = ((ChunkAttach)editedModel).Poly;
 			List<PolyChunk> selectedMeshes = new List<PolyChunk>();
 			if (listViewMeshes.SelectedIndices.Count != 0)
