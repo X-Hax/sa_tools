@@ -8,63 +8,363 @@ namespace TexTool
 {
 	// This tool is used for prototype development and testing of the SA Tools' texture library (TextureLib) and is not meant for general use (yet).
 
+	// TODO: Check handling of paths
+
+	enum ProgramMode
+	{
+		Decode,
+		Encode,
+		Error
+	}
+
+	enum TargetFileFormat
+	{ 
+		Pvr,
+		Gvr,
+		Xvr,
+		Dds,
+		Png
+	}
+
 	class Program
 	{
+		// Input-output stuff
+		static string inputFilename;
+		static string outputFilenameNoExt;
+		static string outputExtension;
+		static string outputFullFilename;
+		static string paletteFilename;
+		static ProgramMode programMode;
+		static TargetFileFormat targetFileFormat;
+		static GenericTexture inputTexture;
+		static TexturePalette inputPalette;
+
+		// Shared data and flags
+		static uint gbix;
+		static bool useMipmaps;
+		static bool useDitheringForIndexed;
+		static bool encodeExternalPalette;
+		
+		// GVR stuff
+		static GvrDataFormat targetGvrFormat;
+		static GvrPaletteFormat targetGvrPaletteFormat;
+		static bool saCompatibleGvrPalettes;
+		static bool autoGvrDataFormat;
+		static bool autoGvrPaletteFormat;
+
+		// PVR stuff
+		static PvrDataFormat targetPvrFormat;
+		static PvrPixelFormat targetPvrPixelFormat;
+
+		static void ParseCommandLine(string[] args)
+		{
+			if (args.Length == 0)
+			{
+				ShowUsage();
+				programMode = ProgramMode.Error;
+				return;
+			}
+			// Set input file
+			inputFilename = args[0];
+			if (!File.Exists(inputFilename))
+			{
+				Console.WriteLine("File not found: {0}", inputFilename);
+				programMode = ProgramMode.Error;
+				return;
+			}
+			// Determine whether it's supposed to decode or encode the texture
+			switch (Path.GetExtension(inputFilename).ToLowerInvariant())
+			{
+				case ".pvr":
+				case ".gvr":
+				case ".xvr":
+				case ".dds":
+					programMode = ProgramMode.Decode;
+					targetFileFormat = TargetFileFormat.Png;
+					break;
+				case ".png":
+				case ".bmp":
+				case ".jpg":
+				case ".gif":
+					programMode = ProgramMode.Encode;
+					break;
+				default:
+					Console.WriteLine("Unsupported format: {0}", inputFilename);
+					programMode = ProgramMode.Error;
+					break;
+			}
+			if (programMode == ProgramMode.Encode)
+			{
+				// Determine the target texture file format
+				if (args.Contains("-pvr"))
+					targetFileFormat = TargetFileFormat.Pvr;
+				if (args.Contains("-gvr"))
+					targetFileFormat = TargetFileFormat.Gvr;
+				if (args.Contains("-xvr"))
+					targetFileFormat = TargetFileFormat.Xvr;
+				if (args.Contains("-dds"))
+					targetFileFormat = TargetFileFormat.Dds;
+				// Get target texture pixel/data format from command line arguments
+				switch (targetFileFormat)
+				{
+					case TargetFileFormat.Gvr:
+						if (args.Contains("-int4"))
+							targetGvrFormat = GvrDataFormat.Intensity4;
+						else if (args.Contains("-inta4"))
+							targetGvrFormat = GvrDataFormat.IntensityA4;
+						else if (args.Contains("-int8"))
+							targetGvrFormat = GvrDataFormat.Intensity8;
+						else if (args.Contains("-inta8"))
+							targetGvrFormat = GvrDataFormat.IntensityA8;
+						else if (args.Contains("-565"))
+							targetGvrFormat = GvrDataFormat.Rgb565;
+						else if (args.Contains("-5a3"))
+							targetGvrFormat = GvrDataFormat.Rgb5a3;
+						else if (args.Contains("-8888"))
+							targetGvrFormat = GvrDataFormat.Argb8888;
+						else if (args.Contains("-i4"))
+							targetGvrFormat = GvrDataFormat.Index4;
+						else if (args.Contains("-i8"))
+							targetGvrFormat = GvrDataFormat.Index8;
+						else if (args.Contains("-i14"))
+							targetGvrFormat = GvrDataFormat.Index14;
+						else if (args.Contains("-dxt"))
+							targetGvrFormat = GvrDataFormat.Dxt1;
+						else
+							autoGvrDataFormat = true;
+						// Get target palette format if necessary
+						if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 || targetGvrFormat == GvrDataFormat.Index14)
+						{
+							if (args.Contains("-p_565"))
+								targetGvrPaletteFormat = GvrPaletteFormat.Rgb565;
+							else if (args.Contains("-p_1555"))
+							{
+								targetGvrPaletteFormat = GvrPaletteFormat.IntensityA8orArgb1555;
+								saCompatibleGvrPalettes = true;
+							}
+							else if (args.Contains("-p_4444"))
+							{
+								targetGvrPaletteFormat = GvrPaletteFormat.Rgb5A3orArgb4444;
+								saCompatibleGvrPalettes = true;
+							}
+							else if (args.Contains("-p_5a3"))
+							{
+								targetGvrPaletteFormat = GvrPaletteFormat.Rgb5A3orArgb4444;
+								saCompatibleGvrPalettes = false;
+							}
+							else if (args.Contains("-p_inta8"))
+							{
+								targetGvrPaletteFormat = GvrPaletteFormat.IntensityA8orArgb1555;
+								saCompatibleGvrPalettes = false;
+							}
+							else if (args.Contains("-p_8888"))
+							{
+								targetGvrPaletteFormat = GvrPaletteFormat.Argb8888;
+								saCompatibleGvrPalettes = false;
+							}
+							else
+								autoGvrPaletteFormat = true;
+						}
+						break;
+					case TargetFileFormat.Pvr:
+					case TargetFileFormat.Xvr:
+					case TargetFileFormat.Dds:
+						// TODO
+					default:
+						break;
+				}
+
+			}
+			// Check gbix
+			if (args.Contains("-gbix"))
+			{
+				gbix = uint.Parse(args[FindArgument(args, "-gbix") + 1]);
+			}
+			// Check mipmaps flag
+			useMipmaps = args.Contains("-m");
+			// Check dithering flag
+			useDitheringForIndexed = args.Contains("-dither");
+			// Check external palette flag
+			encodeExternalPalette = args.Contains("-extpal");
+			// Check if palette filename is specified
+			if (args.Contains("-p"))
+			{
+				paletteFilename = args[FindArgument(args, "-p") + 1];
+				if (!File.Exists(paletteFilename))
+				{
+					Console.WriteLine("Palette file not found: {0}", paletteFilename);
+					programMode = ProgramMode.Error;
+					return;
+				}
+			}
+			// Set output filename
+			if (args.Contains("-o"))
+			{
+				outputFullFilename = args[FindArgument(args, "-o") + 1];
+				outputFilenameNoExt = Path.GetFileNameWithoutExtension(outputFullFilename);
+				outputExtension = Path.GetExtension(outputFullFilename);
+			}
+			else
+			{
+				outputFilenameNoExt = Path.GetFileNameWithoutExtension(inputFilename);
+				outputExtension = "";
+				switch (targetFileFormat)
+				{
+					case TargetFileFormat.Pvr:
+						outputExtension = ".pvr";
+						break;
+					case TargetFileFormat.Gvr:
+						outputExtension = ".gvr";
+						break;
+					case TargetFileFormat.Xvr:
+						outputExtension = ".xvr";
+						break;
+					case TargetFileFormat.Dds:
+						outputExtension = ".dds";
+						break;
+					case TargetFileFormat.Png:
+						outputExtension = ".png";
+						break;
+					default:
+						throw new Exception("Unknown target format: " + targetFileFormat.ToString());
+				}
+				outputFullFilename = outputFilenameNoExt + outputExtension;
+			}
+		}
+
 		static void Main(string[] args)
 		{
-			int mode = args.Contains("-d") ? 1 : 0;
-			switch (mode)
+			ParseCommandLine(args);
+
+			Console.WriteLine("Input file: {0}", inputFilename);
+			Console.WriteLine("Output file: {0}", outputFullFilename);
+			Console.WriteLine("Mode: {0}", programMode.ToString());
+			Console.WriteLine("Target format: {0}", targetFileFormat.ToString());
+			Console.WriteLine("Mipmaps: {0}", useMipmaps.ToString());
+			Console.WriteLine("Dithering: {0}", useDitheringForIndexed.ToString());
+			switch (programMode)
 			{
-				case 0:
-					Bitmap test = new Bitmap(args[0]);
-					GvrDataFormat targetFormat = GvrDataFormat.Index8;
-					TexturePalette texpal;
-					GvrTexture result = new GvrTexture(test, targetFormat, true, out texpal, 1111, GvrPaletteFormat.Rgb5A3orArgb4444, false, false, false);
-					File.WriteAllBytes("test.gvr", result.GetBytes());
-					if (texpal != null)
-					{
-						texpal.SaveGVP("test.gvp");
-					}
-					return;
-				case 1:
-					GenericTexture tex = null;
-					TexturePalette pale = null;
-					byte[] inputFile = File.ReadAllBytes(args[0]);
-					if (args.Length > 2)
-					{
-						byte[] inputPalette = File.ReadAllBytes(args[2]);
-						pale = new TexturePalette(inputPalette, false);
-						pale.SavePNG("pale.png");
-					}
-					switch (Path.GetExtension(args[0]).ToLowerInvariant())
+				case ProgramMode.Decode:
+					// Read palette file if specified
+					inputPalette = string.IsNullOrEmpty(paletteFilename) ? null : 
+						new TexturePalette(File.ReadAllBytes(paletteFilename), false);
+					// Read input texture data
+					byte[] inputFile = File.ReadAllBytes(inputFilename);
+					// Get input texture format from file extension. This is temporary, should have methods to auto-detect input texture format
+					switch (Path.GetExtension(inputFilename).ToLowerInvariant())
 					{
 						case ".pvr":
-							tex = new PvrTexture(inputFile, extPalette: pale);
+							inputTexture = new PvrTexture(inputFile, extPalette: inputPalette);
 							break;
 						case ".gvr":
-							tex = new GvrTexture(inputFile, extPalette: pale);
+							inputTexture = new GvrTexture(inputFile, extPalette: inputPalette);
+							break;
+						default:
+							Console.WriteLine("{0}: input texture format not implemented", inputFile);
+							return;
+					}
+					// Save texture bitmap
+					inputTexture.Image.Save(outputFullFilename);
+					// Save mipmap bitmaps if specified
+					if (useMipmaps && inputTexture.HasMipmaps && inputTexture.MipmapImages != null)
+						for (int m = 0; m < inputTexture.MipmapImages.Length; m++)
+							inputTexture.MipmapImages[m].Save(outputFilenameNoExt + "_mip" + m.ToString() + outputExtension);
+					return;				
+				case ProgramMode.Encode:
+					// Read palette file if specified
+					inputPalette = string.IsNullOrEmpty(paletteFilename) ? null :
+						new TexturePalette(File.ReadAllBytes(paletteFilename), false);
+					// Output encoder parameters
+					Console.WriteLine("GBIX: {0}", gbix.ToString());
+					switch (targetFileFormat)
+					{
+						case TargetFileFormat.Pvr:
+							Console.WriteLine("PVR data format: {0}", targetPvrFormat.ToString());
+							Console.WriteLine("PVR pixel format: {0}", targetPvrPixelFormat.ToString());
+							switch (targetPvrFormat)
+							{
+								case PvrDataFormat.Index4:
+								case PvrDataFormat.Index8:
+								case PvrDataFormat.Index4Mipmaps:
+								case PvrDataFormat.Index8Mipmaps:
+									break;
+							}
+							break;
+						case TargetFileFormat.Gvr:
+							Console.WriteLine("GVR format: {0}", targetGvrFormat.ToString());
+							switch (targetGvrFormat)
+							{
+								case GvrDataFormat.Index4:
+								case GvrDataFormat.Index8:
+								case GvrDataFormat.Index14:
+									if (useMipmaps)
+									{
+										Console.WriteLine("WARNING: Indexed GVR cannot have mipmaps, mipmaps flag ignored");
+										useMipmaps = false;
+									}
+									Console.WriteLine("GVR palette mode: {0}", encodeExternalPalette ? "External" : "Internal");
+									string gvrpalfmt = targetGvrPaletteFormat.ToString();
+									switch (targetGvrPaletteFormat)
+									{
+										case GvrPaletteFormat.IntensityA8orArgb1555:
+											gvrpalfmt = saCompatibleGvrPalettes ? "ARGB1555 (SA)" : "IntensityA8 (Regular)";
+											break;
+										case GvrPaletteFormat.Rgb5A3orArgb4444:
+											gvrpalfmt = saCompatibleGvrPalettes ? "ARGB4444 (SA)" : "RGB5A3 (Regular)";
+											break;
+										case GvrPaletteFormat.Rgb565:
+											gvrpalfmt = "RGB565";
+											break;
+										case GvrPaletteFormat.Argb8888:
+											gvrpalfmt = "ARGB8888";
+											break;
+									}
+									Console.WriteLine("GVR palette format: {0}", gvrpalfmt);
+									break;
+							}
 							break;
 					}
-
-					tex.Image.Save("test.png");
-					if (tex.HasMipmaps && tex.MipmapImages != null)
-						for (int m = 0; m < tex.MipmapImages.Length; m++)
-							tex.MipmapImages[m].Save("test_" + m.ToString() + ".png");
+					// Read the input bitmap
+					Bitmap inputBitmap = new Bitmap(inputFilename);
+					TexturePalette outputTexturePalette = null;
+					// Set formats for auto mode
+					if (autoGvrDataFormat)
+					{
+						Console.WriteLine("Auto GVR formats not implemented yet");
+						return;
+					}
+					if (autoGvrPaletteFormat)
+					{
+						Console.WriteLine("Auto GVR palette formats not implemented yet");
+						return;
+					}
+					// Encode texture
+					GvrTexture result = new GvrTexture(inputBitmap, targetGvrFormat, useMipmaps, out outputTexturePalette, inputPalette, gbix, targetGvrPaletteFormat, useDitheringForIndexed, encodeExternalPalette, saCompatibleGvrPalettes);
+					// Save the encoded texture
+					File.WriteAllBytes(outputFilenameNoExt + ".gvr", result.GetBytes());
+					// Save the encoded palette if available
+					if (encodeExternalPalette && outputTexturePalette != null)
+						outputTexturePalette.SaveGVP(outputFilenameNoExt + ".gvp");
+					Console.WriteLine("Finished!"); 
+					return;
+				case ProgramMode.Error:
 					return;
 			}
+		}
 
-			//GvrTexture ass2 = new GvrTexture(File.ReadAllBytes("test.gvr"));
-			//ass2.Image.Save("ass2.png");
-			return;
-			//TexturePalette testP = new TexturePalette(File.ReadAllBytes(args[0]));
-			//testP.SaveGVP("test.gvp");
-			//testP.SavePVP("test.pvp");
-			//testP.SavePNG("test.png");
-			//return;
-			/*
+		static int FindArgument(string[] args, string arg)
+		{
+			for (int i = 0; i < args.Length; i++)
+			{
+				if (args[i]==arg)
+					return i;
+			}
+			return -1;
+		}
 
-            */
-
+		static void ShowUsage()
+		{
+			Console.WriteLine("No arguments");
 		}
 	}
 }

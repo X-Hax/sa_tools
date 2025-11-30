@@ -14,8 +14,6 @@ namespace TextureLib
         Invalid
     }
 
-
-
     public enum NinjaSurfaceFlags : uint
     {
         Mipmapped = 0x80000000,

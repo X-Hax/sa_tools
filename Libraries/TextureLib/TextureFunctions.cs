@@ -1,131 +1,119 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace TextureLib
 {
     public static partial class TextureFunctions
     {
-        public static unsafe byte[] BitmapToRawIndexed(Bitmap img)
+		/// <summary>Quantizes a Bitmap using a specified palette or WuQuantizer, outputs raw indexed bytes and a TexturePalette.</summary>
+		public static byte[] QuantizeImage(Bitmap bitmap, bool index8, out TexturePalette outputPalette, bool dither = false, TexturePalette inputPalette = null)
         {
-            byte[] destination = new byte[img.Width * img.Height];
+			// Create raw bitmap data array compatible with ImageSharp
+			byte[] rawBitmap = BitmapToRaw(bitmap);
+			// Load ImageSharp image
+			SixLabors.ImageSharp.Image<Rgba32> image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(rawBitmap, bitmap.Width, bitmap.Height);
+			// Set the quantizer
+			IQuantizer quantizer = inputPalette != null ? TexturePalette.CreatePaletteQuantizer(inputPalette, inputPalette.GetNumColors(), 0, dither):
+				new WuQuantizer(new QuantizerOptions { Dither = dither ? QuantizerConstants.DefaultDither : null, MaxColors = index8 ? 256 : 16 });
+			// Create the specific quantizer
+			IQuantizer<Rgba32> iquant = quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default);
+			// Quantize the image frame
+			IndexedImageFrame<Rgba32> imageFrame = iquant.BuildPaletteAndQuantizeFrame(image.Frames[0], new(0, 0, image.Width, image.Height));
+			byte[] quantizedPixels = new byte[image.Width * image.Height];
+			// Transfer pizels
+			Span<byte> pixelData = quantizedPixels;
+			for (int y = 0; y < image.Height; y++)
+				imageFrame.DangerousGetRowSpan(y).CopyTo(pixelData[(y * image.Width)..]);
+			// Get palette bytes
+			byte[] copyPalette = MemoryMarshal.Cast<Rgba32, byte>(iquant.Palette.Span).ToArray();
+			// Expand the palette to 16 or 256 colors
+			byte[] fillPalette = new byte[4 * (index8 ? 256 : 16)];
+			Array.Copy(copyPalette, 0, fillPalette, 0, copyPalette.Length);
+			// Create the output palette
+			outputPalette = new TexturePalette(fillPalette, new ARGB8888PixelCodec(), index8 ? 256:16, bigEndian: false);
+			return quantizedPixels;
+		}
 
-            int bitsPerPixel = System.Drawing.Image.GetPixelFormatSize(img.PixelFormat);
-            //Console.WriteLine("Bpp: {0}", bitsPerPixel);
+		/// <summary>Writes raw pixels from a byte array into a Bitmap with conversion.</summary>
+		public static void RawToBitmap(Bitmap image, byte[] rawData)
+		{
+			// Copy the original array
+			byte[] targetData = new byte[rawData.Length];
+			Array.Copy(rawData, targetData, rawData.Length);
+			// Convert for Windows bitmap byte order
+			for (int i = 0; i < targetData.Length; i += 4)
+			{
+				// Swap R and B bytes
+				byte temp = targetData[i];     // Store R
+				targetData[i] = targetData[i + 2]; // R becomes B
+				targetData[i + 2] = temp;     // B becomes original R
+			}
+			// Write to bitmap data
+			BitmapData bitmapData = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height), ImageLockMode.WriteOnly, image.PixelFormat);
+			Marshal.Copy(targetData, 0, bitmapData.Scan0, targetData.Length);
+			image.UnlockBits(bitmapData);
+		}
 
-            // Copy over the data to the destination. We need to use Stride in this case, as it may not
-            // always be equal to Width.
-            BitmapData bitmapData = img.LockBits(new System.Drawing.Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
+		public static void BitmapToRaw(Bitmap img, byte[] destination)
+		{
+			// If this is not a 32-bit ARGB bitmap, convert it to one
+			if (img.PixelFormat != PixelFormat.Format32bppArgb)
+			{
+				Bitmap newImage = new Bitmap(img.Width, img.Height, PixelFormat.Format32bppArgb);
+				using (Graphics g = Graphics.FromImage(newImage))
+				{
+					g.DrawImage(img, 0, 0, img.Width, img.Height);
+				}
+				img = newImage;
+			}
+			// Copy over the data to the destination. It's ok to do it without utilizing Stride
+			// since each pixel takes up 4 bytes (aka Stride will always be equal to Width)
+			BitmapData bitmapData = img.LockBits(new System.Drawing.Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
+			Marshal.Copy(bitmapData.Scan0, destination, 0, destination.Length);
+			img.UnlockBits(bitmapData);
+			// Convert from Windows byte order
+			for (int i = 0; i < destination.Length; i += 4)
+			{
+				// Swap R and B bytes
+				byte temp = destination[i];     // Store R
+				destination[i] = destination[i + 2]; // R becomes B
+				destination[i + 2] = temp;     // B becomes original R
+			}
+		}
 
-            byte* pointer = (byte*)bitmapData.Scan0;
+		public static byte[] BitmapToRaw(Bitmap source)
+		{
+			byte[] destination = new byte[source.Width * source.Height * 4];
+			BitmapToRaw(source, destination);
+			return destination;
+		}
 
-            if (bitsPerPixel == 1)
-            {
-                for (int y = 0; y < bitmapData.Height; y++)
-                {
-                    for (int x = 0; x < bitmapData.Width; x++)
-                    {
-                        destination[(y * img.Width) + x] = (byte)((pointer[(y * bitmapData.Stride) + (x >> 3)] >> (7 - (x % 8))) & 0x1);
-                    }
-                }
-            }
-            else if (bitsPerPixel == 4)
-            {
-                for (int y = 0; y < bitmapData.Height; y++)
-                {
-                    for (int x = 0; x < bitmapData.Width; x++)
-                    {
-                        byte paletteIndex;
-                        if (x % 2 == 0)
-                        {
-                            paletteIndex = (byte)(pointer[(y * bitmapData.Stride) + (x >> 1)] >> 4);
-                        }
-                        else
-                        {
-                            paletteIndex = (byte)(pointer[(y * bitmapData.Stride) + (x >> 1)] & 0xF);
-                        }
+		/// <summary>Gets the luminance value of a pixel./// </summary>
+		public static byte GetLuminance(byte red, byte green, byte blue)
+		{
+			return (byte)((0.2126f * red) + (0.7152f * green) + (0.0722f * blue));
+		}
 
-                        destination[(y * img.Width) + x] = (byte)((paletteIndex >> 4) | (paletteIndex << 4)); // Hotfixed for GVR Index4 codec expecting the whole byte
-                    }
-                }
-            }
-            else
-            {
-                for (int y = 0; y < bitmapData.Height; y++)
-                {
-                    for (int x = 0; x < bitmapData.Width; x++)
-                    {
-                        destination[(y * img.Width) + x] = pointer[(y * bitmapData.Stride) + x];
-                    }
-                }
-            }
+		/// <summary>Gets the luminance value of a pixel from a 3-byte array./// </summary>
+		public static byte GetLuminance(ReadOnlySpan<byte> color)
+		{
+			return GetLuminance(color[0], color[1], color[2]);
+		}
 
-            img.UnlockBits(bitmapData);
-            return destination;
-        }
+		/// <summary>Checks if a signed integer is a power of 2./// </summary>
+		public static bool IsPow2(int number)
+		{
+			return (number & (number - 1)) == 0 && number > 0;
+		}
 
-        public static Bitmap QuantizeImage(Bitmap bitmap, bool index8, bool dither = false, int mipWidth = 0)
-        {
-            // Save bitmap to stream and reset the stream
-            MemoryStream bitmapStream = new MemoryStream();
-            bitmap.Save(bitmapStream, ImageFormat.Png);
-            bitmapStream.Seek(0, SeekOrigin.Begin);
-            // Load ImageSharp image
-            SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(bitmapStream);
-            // Set up the quantizer
-            var quantizer = new WuQuantizer(new QuantizerOptions
-            {
-                Dither = dither ? QuantizerConstants.DefaultDither : null,
-                MaxColors = index8 ? 256 : 16,
-            });
-            // Resize if mipmap
-            if (mipWidth != 0)
-                image.Mutate(x => x.Resize(mipWidth, mipWidth, KnownResamplers.NearestNeighbor));
-            // Quantize the ImageSharp image
-            image.Mutate(x => x.Quantize(quantizer));
-            // Save the ImageSharp image as a PNG into a stream and reset the stream
-            MemoryStream endStream = new MemoryStream();
-            image.Save(endStream, new PngEncoder() { ColorType = PngColorType.Palette, BitDepth = index8 ? PngBitDepth.Bit8 : PngBitDepth.Bit4 });
-            endStream.Seek(0, SeekOrigin.Begin);
-            // Create the Bitmap from the stream, but not using the regular functions because of .NET bugs (sigh)
-            return BitmapHandler.LoadBitmap(endStream.ToArray());
-        }
-        /// <summary>
-        /// Sorts the colors in a palette by luminance into a new palette.
-        /// </summary>
-        /// <param name="palette">The palette to sort the colors of.</param>
-        /// <returns>A new palette with the sorted colors.</returns>
-        public static TexturePalette SortByLuminance(this TexturePalette palette)
-        {
-            (int, byte)[] luminanceLUT = new (int, byte)[palette.GetNumColors()];
-            ReadOnlySpan<byte> data = palette.DecodedData;
+		/*
 
-            for (int i = 0; i < luminanceLUT.Length; i++)
-            {
-                ReadOnlySpan<byte> color = data[(i * 4)..];
-                luminanceLUT[i] = (i, GetLuminance(color));
-            }
-
-            Array.Sort(luminanceLUT, (a, b) => a.Item2.CompareTo(b.Item2));
-
-            byte[] newPalette = new byte[data.Length];
-            Span<byte> destination = newPalette;
-            for (int i = 0; i < luminanceLUT.Length; i++)
-            {
-                int dstIndex = luminanceLUT[i].Item1;
-                data.Slice(luminanceLUT[i].Item1 * 4, 4).CopyTo(destination[(i * 4)..]);
-            }
-
-            return new(newPalette, new ARGB8888PixelCodec(), palette.GetNumColors());
-        }
-
-        public static byte[] GetPaletteColorsFromIndexedBitmap(Bitmap bitmap, bool bigEndian)
+		public static byte[] GetPaletteColorsFromIndexedBitmap(Bitmap bitmap, bool bigEndian)
         {
             int numColors = bitmap.Palette.Entries.Length;
             bool index8 = numColors <= 16;
@@ -137,73 +125,6 @@ namespace TextureLib
                 Array.Copy(color, 0, colorData, i * 4, 4);
             }
             return colorData;
-        }
-
-        public static void RawToBitmap(Bitmap image, byte[] rawData)
-        {
-            BitmapData bitmapData = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height), ImageLockMode.WriteOnly, image.PixelFormat);
-            Marshal.Copy(rawData, 0, bitmapData.Scan0, rawData.Length);
-            image.UnlockBits(bitmapData);
-        }
-
-        public static byte[] BitmapToRaw(Bitmap source)
-        {
-            byte[] destination = new byte[source.Width * source.Height * 4];
-            BitmapToRaw(source, destination);
-            return destination;
-        }
-
-        public static void BitmapToRaw(Bitmap img, byte[] destination)
-        {
-            // If this is not a 32-bit ARGB bitmap, convert it to one
-            if (img.PixelFormat != PixelFormat.Format32bppArgb)
-            {
-                //Console.WriteLine("Bitmap to raw 32");
-                Bitmap newImage = new Bitmap(img.Width, img.Height, PixelFormat.Format32bppArgb);
-                using (Graphics g = Graphics.FromImage(newImage))
-                {
-                    g.DrawImage(img, 0, 0, img.Width, img.Height);
-                }
-                img = newImage;
-            }
-
-            // Copy over the data to the destination. It's ok to do it without utilizing Stride
-            // since each pixel takes up 4 bytes (aka Stride will always be equal to Width)
-            BitmapData bitmapData = img.LockBits(new System.Drawing.Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, img.PixelFormat);
-            Marshal.Copy(bitmapData.Scan0, destination, 0, destination.Length);
-            img.UnlockBits(bitmapData);
-        }
-        
-        public static void RGBAtoBGRA(byte[] pixelData)
-        {
-            // Assuming 4 bytes per pixel (R, G, B, A)
-            for (int i = 0; i < pixelData.Length; i += 4)
-            {
-                // Swap R and B bytes
-                byte temp = pixelData[i];     // Store R
-                pixelData[i] = pixelData[i + 2]; // R becomes B
-                pixelData[i + 2] = temp;     // B becomes original R
-            }
-        }
-
-        public static byte GetLuminance(byte red, byte green, byte blue)
-        {
-            return (byte)((0.2126f * red) + (0.7152f * green) + (0.0722f * blue));
-        }
-
-        public static byte GetLuminance(ReadOnlySpan<byte> color)
-        {
-            return GetLuminance(color[0], color[1], color[2]);
-        }
-
-        /// <summary>
-		/// Checks if a signed integer is a power of 2.
-		/// </summary>
-		/// <param name="number">Number to check.</param>
-		/// <returns>Whether the number is a power of 2.</returns>
-        public static bool IsPow2(int number)
-        {
-            return (number & (number - 1)) == 0 && number > 0;
         }
 
         /// <summary>
@@ -493,19 +414,16 @@ namespace TextureLib
                 _ => TextureFileFormat.Unknown,
             };
         }
-        */
 
         public static DDSPixelFormat IdentifyPAKPixelFormat(byte[] file)
         {
             return (DDSPixelFormat)BitConverter.ToUInt32(file, 0x50);
         }
 
-        /*
         public static TextureFileFormat IdentifyTextureFileFormat(MemoryStream ms)
         {
             return ms == null ? TextureFileFormat.Invalid : IdentifyTextureFileFormat(ms.ToArray());
         }
-        */
 
         public static DDSPixelFormat IdentifyPAKPixelFormat(MemoryStream ms)
         {

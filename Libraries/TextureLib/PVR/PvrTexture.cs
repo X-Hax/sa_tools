@@ -135,11 +135,10 @@ namespace TextureLib
 
             //System.IO.File.WriteAllBytes("test.bin", result);
             //System.IO.File.WriteAllBytes("pal.bin", palette.ToArray());
-            TextureFunctions.RGBAtoBGRA(result);
+            //TextureFunctions.RGBAtoBGRA(result);
             //System.IO.File.WriteAllBytes("test_reverse.bin", result);
 
             Image = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
-
             TextureFunctions.RawToBitmap(Image, result);
 
             //if (PvrDataFormat is PvrDataFormat.Bitmap || PvrDataFormat is PvrDataFormat.BitmapMipmaps)
@@ -185,7 +184,7 @@ namespace TextureLib
                     if (Indexed)
                         mipRawData = ApplyPalette(mipRawData, sizex, sizex).ToArray();
                     Console.WriteLine("MipRawData {0}", mipRawData.Length);
-                    TextureFunctions.RGBAtoBGRA(mipRawData);
+                    //TextureFunctions.RGBAtoBGRA(mipRawData);
                     Bitmap mipBitmap = new Bitmap(sizex, sizex, PixelFormat.Format32bppArgb);
                     TextureFunctions.RawToBitmap(mipBitmap, mipRawData);
                     Console.WriteLine(mipBitmap.GetPixel(0, 0).ToString());

@@ -10,14 +10,6 @@ namespace TextureLib
         Argb8888 = 0x06
     }
 
-    public enum GvrPixelFormat : byte
-    {
-        IntensityA8 = 0x00,
-        Rgb565 = 0x01,
-        Rgb5a3 = 0x02,
-        NonIndexed = 0xFF,
-    }
-
     public enum GvrDataFormat : byte
     {
         Intensity4 = 0x00,

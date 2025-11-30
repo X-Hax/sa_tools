@@ -16,7 +16,7 @@ namespace TextureLib
 
 		protected override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
 		{
-			dst[0] = (byte)((src[0]) | (src[1] >> 4));
+			dst[0] = (byte)((src[0] << 4) | (src[1]));
         }
 	}
 }

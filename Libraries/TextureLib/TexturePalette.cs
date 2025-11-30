@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
-using System.Drawing.Imaging;
 
 // Other formats: PNG (1 pixel height), Adobe ACT, JASC PAL, Microsoft PAL, PaintShopPro TXT, GIMP GPL
 
@@ -96,7 +95,6 @@ namespace TextureLib
             Span<byte> dest = DecodedData[dstAddress..];
             for (int index = 0; index < numColors; index++)
             {
-                Console.WriteLine("Color {0}", index);
                 paletteCodec.DecodePixel(srcData[srcAddress..],
                    dest[dstAddress..], ByteConverter.BigEndian);
 
@@ -155,6 +153,7 @@ namespace TextureLib
             StartColor = startColor;
             paletteCodec = codec;
             TextureFunctions.BitmapToRaw(bitmap, DecodedData);
+			//TextureFunctions.RGBAtoBGRA(DecodedData);
             Encode(codec, bigEndian);
         }
 
@@ -234,7 +233,7 @@ namespace TextureLib
         {
             byte[] colorsBitmap = new byte[DecodedData.Length];
             Array.Copy(DecodedData, 0, colorsBitmap, 0, DecodedData.Length);
-            TextureFunctions.RGBAtoBGRA(colorsBitmap);
+            //TextureFunctions.RGBAtoBGRA(colorsBitmap);
             Bitmap img = new Bitmap(GetNumColors(), 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             TextureFunctions.RawToBitmap(img, colorsBitmap);
             img.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
@@ -272,8 +271,8 @@ namespace TextureLib
             for (int entry = 0; entry < GetNumColors(); entry++)
             {
                 int argb = BitConverter.ToInt32(DecodedData, 4 * entry);
+				// Might need BGRA conversion?
                 colors.Add(Color.FromArgb(argb));
-                //Console.WriteLine("Color {0}:{1}", entry, Color.FromArgb(argb).ToString());
             }
             return colors.ToArray();
         }
@@ -283,13 +282,15 @@ namespace TextureLib
             int numColors = bitmap.Palette.Entries.Length;
             bool index8 = forceIndex8 || numColors > 16;
             byte[] colorData = new byte[(index8 ? 256 : 16) * 4];
-            for (int i = 0; i < bitmap.Palette.Entries.Length; i++)
-            {
-                byte[] color = BitConverter.GetBytes(bitmap.Palette.Entries[i].ToArgb());
-                // Convert from BGRA because bullshit!
-                TextureFunctions.RGBAtoBGRA(color);
-                Array.Copy(color, 0, colorData, i * 4, 4);
-            }
+			for (int i = 0; i < bitmap.Palette.Entries.Length; i++)
+			{
+				byte[] color = BitConverter.GetBytes(bitmap.Palette.Entries[i].ToArgb());
+				// Convert from BGRA because Windows bullshit!
+				byte temp = color[i];     // Store R
+				color[i] = color[i + 2]; // R becomes B
+				color[i + 2] = temp;     // B becomes original R
+				Array.Copy(color, 0, colorData, i * 4, 4);
+			}
             return new TexturePalette(colorData, new ARGB8888PixelCodec(), index8 ? 256 : 16);
         }
 
@@ -317,8 +318,35 @@ namespace TextureLib
                 new QuantizerOptions()
                 {
                     MaxColors = width,
-                    Dither = dither ? QuantizerConstants.DefaultDither : null,
+                    Dither = dither ? QuantizerConstants.DefaultDither : null
                 });
         }
-    }
+
+		/// <summary>
+		/// Sorts the colors in a palette by luminance.
+		/// </summary>
+		public void SortByLuminance()
+		{
+			(int, byte)[] luminanceLUT = new (int, byte)[GetNumColors()];
+			ReadOnlySpan<byte> data = DecodedData;
+
+			for (int i = 0; i < luminanceLUT.Length; i++)
+			{
+				ReadOnlySpan<byte> color = data[(i * 4)..];
+				luminanceLUT[i] = (i, TextureFunctions.GetLuminance(color));
+			}
+
+			Array.Sort(luminanceLUT, (a, b) => a.Item2.CompareTo(b.Item2));
+
+			byte[] newPalette = new byte[data.Length];
+			Span<byte> destination = newPalette;
+			for (int i = 0; i < luminanceLUT.Length; i++)
+			{
+				int dstIndex = luminanceLUT[i].Item1;
+				data.Slice(luminanceLUT[i].Item1 * 4, 4).CopyTo(destination[(i * 4)..]);
+			}
+
+			DecodedData = newPalette;
+		}
+	}
 }
