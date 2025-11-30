@@ -20,7 +20,6 @@ namespace TextureLib
 		/// <returns>Reencoded Bitmap.</returns>
 		public static Bitmap CalculateLossyForPaletteOrVq(Bitmap texture, DataCodec codec)
 		{
-			//PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
 			byte[] encoded = codec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
 			byte[] decoded = codec.Decode(encoded, texture.Width, texture.Height, null);
 			Bitmap output = new Bitmap(texture.Width, texture.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);

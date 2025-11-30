@@ -306,6 +306,9 @@ namespace TexTool
 						case ".gvr":
 							inputTexture = new GvrTexture(inputFile, extPalette: inputPalette);
 							break;
+						case ".dds":
+							inputTexture = new DdsTexture(inputFile);
+							break;
 						default:
 							Console.WriteLine("{0}: input texture format not implemented", inputFile);
 							return;
