@@ -163,7 +163,7 @@ namespace VrSharp.Pvr
             // Set the number of palette entries
             // The number in a Small Vq encoded texture various based on its size
             paletteEntries = dataCodec.PaletteEntries;
-            if (dataFormat == PvrDataFormat.SmallVq)
+            if (dataFormat == PvrDataFormat.SmallVq || dataFormat == PvrDataFormat.SmallVqMipmaps)
             {
                 if (textureWidth <= 16)
                 {
@@ -171,26 +171,11 @@ namespace VrSharp.Pvr
                 }
                 else if (textureWidth <= 32)
                 {
-                    paletteEntries = 128; // Actually 32
-                }
-                else if (textureWidth <= 64)
+					paletteEntries = 256; // Actually 64 (Previous version: 128/32)
+				}
+				else if (textureWidth <= 64)
                 {
                     paletteEntries = 512; // Actually 128
-                }
-                else
-                {
-                    paletteEntries = 1024; // Actually 256
-                }
-            }
-            else if (dataFormat == PvrDataFormat.SmallVqMipmaps)
-            {
-                if (textureWidth <= 16)
-                {
-                    paletteEntries = 64; // Actually 16
-                }
-                else if (textureWidth <= 32)
-                {
-                    paletteEntries = 256; // Actually 64
                 }
                 else
                 {
@@ -234,25 +219,31 @@ namespace VrSharp.Pvr
                 mipmapOffsets = new int[(int)Math.Log(textureWidth, 2) + 1];
 
                 int mipmapOffset = 0;
-                
-                // Calculate the padding for the first mipmap offset
-                if (dataFormat == PvrDataFormat.SquareTwiddledMipmaps)
-                {
-                    // A 1x1 mipmap takes up as much space as a 2x1 mipmap
-                    mipmapOffset = (dataCodec.Bpp) >> 3;
-                }
-                else if (dataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt || dataFormat == PvrDataFormat.Index8Mipmaps || dataFormat == PvrDataFormat.Index4Mipmaps)
-                {
-                    // A 1x1 mipmap takes up as much space as a 2x2 mipmap
-                    mipmapOffset = (3 * dataCodec.Bpp) >> 3;
-                }
+
+				// Calculate the padding for the first mipmap offset
+				if (dataFormat == PvrDataFormat.SquareTwiddledMipmaps)
+				{
+					// A 1x1 mipmap takes up as much space as a 2x1 mipmap
+					mipmapOffset = (dataCodec.Bpp) >> 3;
+				}
+				else if (dataFormat == PvrDataFormat.SquareTwiddledMipmapsAlt || dataFormat == PvrDataFormat.Index8Mipmaps || dataFormat == PvrDataFormat.Index4Mipmaps)
+				{
+					// A 1x1 mipmap takes up as much space as a 2x2 mipmap
+					mipmapOffset = (3 * dataCodec.Bpp) >> 3;
+				}
+				// What about VQ mipmaps? Not sure...
+				else
+				{
+					// A 1x1 mipmap takes up as much space as a 2x1 mipmap
+					mipmapOffset = (3 * dataCodec.Bpp) >> 3;
+				}
 
 				for (int i = mipmapOffsets.Length - 1, size = 1; i >= 0; i--, size <<= 1)
-                {
-                    mipmapOffsets[i] = mipmapOffset;
+				{
+					mipmapOffsets[i] = mipmapOffset;
 
-                    mipmapOffset += Math.Max((size * size * dataCodec.Bpp) >> 3, 1);
-                }
+					mipmapOffset += Math.Max((size * size * dataCodec.Bpp) >> 3, 1);
+				}
             }
 
             initalized = true;

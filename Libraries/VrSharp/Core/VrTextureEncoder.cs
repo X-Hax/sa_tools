@@ -21,7 +21,6 @@ namespace VrSharp
 		protected VrPixelCodec pixelCodec; // Pixel codec
         protected VrDataCodec dataCodec;   // Data codec
 
-		protected VQCodeBook codeBook;
 		protected QuantizedPalette vqPalette;
 
 		protected byte[][] texturePalette; // The texture's palette
@@ -417,7 +416,8 @@ namespace VrSharp
 
 				// Quantize the image
 				WuQuantizer quantizer = new WuQuantizer();
-				img = (Bitmap)quantizer.QuantizeImage(img, maxColors);
+				vqPalette = quantizer.CreatePalette(img, maxColors);
+				img = (Bitmap)quantizer.QuantizeImage(img, vqPalette);
 			}
 
 			int bitsPerPixel = Image.GetPixelFormatSize(img.PixelFormat);
@@ -540,66 +540,6 @@ namespace VrSharp
 			return destination;
 		}
 
-		#endregion
-
-		#region VQ
-		protected byte[] BitmapToRawVQ(Bitmap source, int codeBookSize, out byte[][] palette)
-		{
-			Bitmap img = source;
-			byte[] destination = new byte[img.Width * img.Height];
-
-			// If this is not a 32-bit ARGB bitmap, convert it to one
-			if (img.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppArgb)
-			{
-				Bitmap newImage = new Bitmap(img.Width, img.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(newImage))
-				{
-					g.DrawImage(img, 0, 0, img.Width, img.Height);
-				}
-				img = newImage;
-			}
-
-			// Create code book
-			codeBook = VectorQuantizer.CreateCodebook(img, codeBookSize / 4);
-
-			// Write palette
-			palette = new byte[codeBookSize][];
-			for (int i = 0; i < codeBook.Entries.Length; i++)
-			{
-				byte[] pixels = codeBook.Entries[i].ToArray();
-				for (int j = 0; j < 4; j++)
-				{
-					int paletteIndex = i * 4 + j;
-					palette[paletteIndex] = new byte[4];
-					palette[paletteIndex][0] = pixels[j * 4]; // The order was reversed in the Shenmue modding SDK
-					palette[paletteIndex][1] = pixels[j * 4 + 1];
-					palette[paletteIndex][2] = pixels[j * 4 + 2];
-					palette[paletteIndex][3] = pixels[j * 4 + 3];
-				}
-			}
-
-			// Quantize image
-			return VectorQuantizer.QuantizeImage(img, codeBook);
-		}
-
-		protected byte[] BitmapToRawVQResized(Bitmap source, int size, int minSize, VQCodeBook codeBook)
-		{
-			if (size > minSize)
-				minSize = size;
-
-			// Resize the image
-			Bitmap img = new Bitmap(minSize, minSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(img))
-			{
-				using (ImageAttributes attr = new ImageAttributes())
-				{
-					attr.SetWrapMode(WrapMode.TileFlipXY);
-					g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-					g.DrawImage(source, new Rectangle(0, 0, size, size), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, attr);
-				}
-			}
-			return VectorQuantizer.QuantizeImage(img, codeBook);
-		}	
 		#endregion
 	}
 }
