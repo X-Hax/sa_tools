@@ -108,7 +108,7 @@ namespace TextureLib
 
 			// Get codec
 			currentOffset += 0x10;
-			GvrPixelCodec pixelCodec = GvrPixelCodec.GetPixelCodec(GvrDataFormat);
+			GvrDataCodec dataCodec = GvrDataCodec.GetDataCodec(GvrDataFormat);
 #if DEBUG
 			Console.WriteLine("\nTEXTURE INFO");
 			Console.WriteLine("Width: " + Width.ToString());
@@ -121,17 +121,17 @@ namespace TextureLib
 			Console.WriteLine("Requires palette file: " + RequiresPaletteFile.ToString());
 #endif
 			// Calculate the expected size of the texture data chunk
-			int dataSize = pixelCodec.CalculateTextureSize(Width, Height);
+			int dataSize = dataCodec.CalculateTextureSize(Width, Height);
 
 			// Decode the internal palette
-			if (pixelCodec.PaletteEntries != 0 && GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette))
+			if (dataCodec.PaletteEntries != 0 && GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette))
 			{
 				PixelCodec paletteCodec = PixelCodec.GetPixelCodec(GvrPaletteFormat, false);
-				int paletteSize = paletteCodec.BytesPerPixel * pixelCodec.PaletteEntries;
+				int paletteSize = paletteCodec.BytesPerPixel * dataCodec.PaletteEntries;
 				byte[] paletteData = new byte[paletteSize];
 				Array.Copy(data, currentOffset, paletteData, 0, paletteSize);
 				currentOffset += paletteSize;
-				Palette = new TexturePalette(paletteData, paletteCodec, pixelCodec.PaletteEntries, bigEndian: true);
+				Palette = new TexturePalette(paletteData, paletteCodec, dataCodec.PaletteEntries, bigEndian: true);
 			}
 
 			// Set external palette
@@ -144,7 +144,7 @@ namespace TextureLib
 				for (int size = Width >> 1; size > 0; size >>= 1)
 				{
 					//Console.WriteLine("Mip size {0}", size);
-					dataSize += pixelCodec.CalculateTextureSize(size, size);
+					dataSize += dataCodec.CalculateTextureSize(size, size);
 				}
 			}
 
@@ -153,9 +153,9 @@ namespace TextureLib
 			Array.Copy(data, currentOffset, HeaderlessData, 0, dataSize);
 
 			// Decode data
-			int textureAddress = HeaderlessData.Length - pixelCodec.CalculateTextureSize(Width, Height);
+			int textureAddress = HeaderlessData.Length - dataCodec.CalculateTextureSize(Width, Height);
 			ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
-			byte[] result = pixelCodec.Decode(HeaderlessData, Width, Height, null);
+			byte[] result = dataCodec.Decode(HeaderlessData, Width, Height, null);
 
 			// Apply palette if the texture is indexed
 			if (Indexed)
@@ -178,10 +178,10 @@ namespace TextureLib
 					int size = Width;
 					for (int i = 0; i < mipmapIndex; i++, size >>= 1)
 					{
-						mipOffset += pixelCodec.CalculateTextureSize(size, size);
+						mipOffset += dataCodec.CalculateTextureSize(size, size);
 					}
 					byte[] mipData = HeaderlessData[mipOffset..].ToArray();
-					byte[] mipRawData = pixelCodec.Decode(mipData, size, size, null);
+					byte[] mipRawData = dataCodec.Decode(mipData, size, size, null);
 					if (Indexed)
 						mipRawData = ApplyPalette(mipRawData, size, size).ToArray();
 					Bitmap mipBitmap = new Bitmap(size, size, PixelFormat.Format32bppArgb);
@@ -244,8 +244,8 @@ namespace TextureLib
 			}
 			GvrPaletteFormat = paletteFormat;
 
-			// Determine the pixel codec
-			GvrPixelCodec pixelCodec = GvrPixelCodec.GetPixelCodec(dataFormat);
+			// Determine the data codec
+			GvrDataCodec dataCodec = GvrDataCodec.GetDataCodec(dataFormat);
 
 			MemoryStream outputStream = new();
 			outputPalette = null;
@@ -255,19 +255,19 @@ namespace TextureLib
 				outputPalette = inputPalette;
 
 			// Encoding to an indexed format
-			if (pixelCodec.PaletteEntries > 0)
+			if (dataCodec.PaletteEntries > 0)
 			{
 				bool index8 = dataFormat == GvrDataFormat.Index8;
 				// If the user hasn't specified a palette, get one from the quantized bitmap
 				if (outputPalette == null)
 				{
 					// Quantize the image using the default quantizer to get a palette (ignore the output bitmap data because only the palette is needed)
-					TextureFunctions.QuantizeImage(CalculateLossyForPalette(texture, GvrPixelCodec.GetPixelCodecForPalette(paletteFormat)), index8, out outputPalette, dither);
+					TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(texture, GvrDataCodec.GetGvrDataCodecForPalette(paletteFormat)), index8, out outputPalette, dither);
 					// Sort the palette by luminance
 					outputPalette.SortByLuminance();
 				}
 				// Quantize the image using the specific quantizer created from the palette (ignore the output palette data because there's a palette already)
-				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(CalculateLossyForPalette(texture, GvrPixelCodec.GetPixelCodecForPalette(paletteFormat)), index8, out _, dither, outputPalette);
+				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(texture, GvrDataCodec.GetGvrDataCodecForPalette(paletteFormat)), index8, out _, dither, outputPalette);
 				// If the palette was created from the image (as opposed to user specified), encode it with the specified pixel codec
 				if (inputPalette == null)
 					outputPalette.Encode(PixelCodec.GetPixelCodec(paletteFormat, paletteSACompatible), true);
@@ -275,13 +275,13 @@ namespace TextureLib
 				if (!paletteExternal)
 				{
 					PixelCodec paletteCodec = PixelCodec.GetPixelCodec(GvrPaletteFormat, paletteSACompatible);
-					int paletteSize = paletteCodec.BytesPerPixel * pixelCodec.PaletteEntries;
+					int paletteSize = paletteCodec.BytesPerPixel * dataCodec.PaletteEntries;
 					byte[] paletteData = new byte[paletteSize];
 					Array.Copy(outputPalette.RawData, 0, paletteData, 0, outputPalette.RawData.Length);
 					outputStream.Write(paletteData);
 				}
 				// Encode the indexed texture itself
-				outputStream.Write(pixelCodec.Encode(indexedBitmapData, texture.Width, texture.Height));
+				outputStream.Write(dataCodec.Encode(indexedBitmapData, texture.Width, texture.Height));
 				// Encode mipmaps if specified
 				if (mipmaps)
 				{
@@ -289,7 +289,7 @@ namespace TextureLib
 					// GVR mipmap order: from largest to smallest
 					for (int size = texture.Width >> 1; size > 0; size >>= 1)
 					{
-						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(indexedBitmapData, texture.Width, texture.Height), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), pixelCodec, size, outputStream);
+						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(indexedBitmapData, texture.Width, texture.Height), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), dataCodec, size, outputStream);
 					}
 				}
 			}
@@ -298,34 +298,19 @@ namespace TextureLib
 			{
 				byte[] encodedBytes = new byte[texture.Width * texture.Height * 4];
 				TextureFunctions.BitmapToRaw(texture, encodedBytes);
-				outputStream.Write(pixelCodec.Encode(encodedBytes, texture.Width, texture.Height));
+				outputStream.Write(dataCodec.Encode(encodedBytes, texture.Width, texture.Height));
 				// Encode mipmaps if specified
 				if (mipmaps)
 				{
 					// GVR mipmap order: from largest to smallest
 					for (int size = texture.Width >> 1; size > 0; size >>= 1)
 					{
-						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(encodedBytes, texture.Width, texture.Height), null, pixelCodec, size, outputStream);
+						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(encodedBytes, texture.Width, texture.Height), null, dataCodec, size, outputStream);
 					}
 				}
 			}
 			// Set the texture's raw data
 			RawData = outputStream.ToArray();
-		}
-
-		/// <summary>
-		/// Encodes a bitmap with the specified pixel codec, then decodes it back with degraded colors for the base of the indexed image.
-		/// </summary>
-		/// <param name="texture">Bitmap to encode.</param>
-		/// <param name="gvrPaletteCodec">GVR codec to use.</param>
-		/// <returns></returns>
-		internal static Bitmap CalculateLossyForPalette(Bitmap texture, GvrPixelCodec gvrPaletteCodec)
-		{
-			byte[] encoded = gvrPaletteCodec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
-			byte[] decoded = gvrPaletteCodec.Decode(encoded, texture.Width, texture.Height, null);
-			Bitmap output = new Bitmap(texture.Width, texture.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			TextureFunctions.RawToBitmap(output, decoded);
-			return output;
 		}
 	}
 }

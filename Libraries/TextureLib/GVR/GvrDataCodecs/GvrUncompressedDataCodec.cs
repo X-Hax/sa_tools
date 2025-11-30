@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal abstract class UncompressedPixelCodec : GvrPixelCodec
+	internal abstract class GvrUncompressedDataCodec : GvrDataCodec
 	{
 		protected enum ByteType
 		{

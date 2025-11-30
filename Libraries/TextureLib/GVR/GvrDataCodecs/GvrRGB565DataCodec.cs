@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class GvrRGB565PixelCodec : UncompressedPixelCodec
+	internal class GvrRGB565DataCodec : GvrUncompressedDataCodec
 	{
 		protected override ByteType Type => ByteType.HalfPixel;
 

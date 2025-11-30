@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class GvrIndex8PixelCodec : UncompressedPixelCodec
+	internal class GvrIndex8DataCodec : GvrUncompressedDataCodec
 	{
 		public override int PaletteEntries => 256;
 		protected override ByteType Type => ByteType.Pixel;

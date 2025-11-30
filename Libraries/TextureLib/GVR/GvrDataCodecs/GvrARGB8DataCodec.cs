@@ -15,7 +15,7 @@ namespace TextureLib
        From: https://wiki.tockdom.com/wiki/Image_Formats#RGBA32_(RGBA8)
     */
 
-    internal class GvrARGB8PixelCodec : UncompressedPixelCodec
+    internal class GvrARGB8DataCodec : GvrUncompressedDataCodec
 	{
 		protected override ByteType Type => ByteType.QuarterPixel;
 

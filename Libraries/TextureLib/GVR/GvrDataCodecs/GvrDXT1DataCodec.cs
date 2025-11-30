@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class GvrDXT1PixelCodec : GvrPixelCodec
+	internal class GvrDXT1DataCodec : GvrDataCodec
 	{
 		private const int _alphaThreshold = 16;
 
@@ -43,8 +43,8 @@ namespace TextureLib
 					{
 						for(int x = 0; x < blockWidth; x += tileSize)
 						{
-							GvrRGB565PixelCodec.RGB565ToRGBA8(src[sourceIndex..], colorDst);
-                            GvrRGB565PixelCodec.RGB565ToRGBA8(src[(sourceIndex + 2)..], colorDst[4..]);
+							GvrRGB565DataCodec.RGB565ToRGBA8(src[sourceIndex..], colorDst);
+                            GvrRGB565DataCodec.RGB565ToRGBA8(src[(sourceIndex + 2)..], colorDst[4..]);
 
 							ushort col1 = (ushort)((src[sourceIndex] << 8) | src[sourceIndex + 1]);
 							ushort col2 = (ushort)((src[sourceIndex + 2] << 8) | src[sourceIndex + 3]);
@@ -175,20 +175,20 @@ namespace TextureLib
 				}
 				else
 				{
-                    GvrRGB565PixelCodec.RGBA8ToRGB565(block[60..], destination);
-                    GvrRGB565PixelCodec.RGB565ToRGBA8(destination, paletteDst[4..]);
+                    GvrRGB565DataCodec.RGBA8ToRGB565(block[60..], destination);
+                    GvrRGB565DataCodec.RGB565ToRGBA8(destination, paletteDst[4..]);
 				}
 			}
 			else
 			{
 
                 // Compressing the colors
-                GvrRGB565PixelCodec.RGBA8ToRGB565(block[(col1Index * 4)..], destination);
-                GvrRGB565PixelCodec.RGB565ToRGBA8(destination, paletteDst);
+                GvrRGB565DataCodec.RGBA8ToRGB565(block[(col1Index * 4)..], destination);
+                GvrRGB565DataCodec.RGB565ToRGBA8(destination, paletteDst);
 				ushort col1 = (ushort)((destination[0] << 8) | destination[1]);
 
-                GvrRGB565PixelCodec.RGBA8ToRGB565(block[(col2Index * 4)..], destination);
-                GvrRGB565PixelCodec.RGB565ToRGBA8(destination, paletteDst[4..]);
+                GvrRGB565DataCodec.RGBA8ToRGB565(block[(col2Index * 4)..], destination);
+                GvrRGB565DataCodec.RGB565ToRGBA8(destination, paletteDst[4..]);
 				ushort col2 = (ushort)((destination[0] << 8) | destination[1]);
 
 				// checking if they ended up equal
@@ -250,8 +250,8 @@ namespace TextureLib
 			}
 
             // write the colors to the destination
-            GvrRGB565PixelCodec.RGBA8ToRGB565(paletteDst, destination);
-            GvrRGB565PixelCodec.RGBA8ToRGB565(paletteDst[4..], destination[2..]);
+            GvrRGB565DataCodec.RGBA8ToRGB565(paletteDst, destination);
+            GvrRGB565DataCodec.RGBA8ToRGB565(paletteDst[4..], destination[2..]);
 
 			for(int i = 0; i < 4; i++)
 			{

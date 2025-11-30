@@ -81,16 +81,17 @@ namespace TextureLib
 			{
 				int indexRange = dataCodec.GetPaletteEntries(texture.Width);
 				bool index8 = dataCodec is Index8DataCodec or Index8MipmapsDataCodec;
+				PvrDataCodec qDataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
 				// If the user hasn't specified a palette, get one from the quantized bitmap
 				if (outputPalette == null)
 				{
 					// Quantize the image using the default quantizer to get a palette (ignore the output bitmap data because only the palette is needed)
-					TextureFunctions.QuantizeImage(CalculateLossyForPaletteOrVq(texture, pixelCodec), index8, out outputPalette, dither);
+					TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(texture, qDataCodec), index8, out outputPalette, dither);
 					// Sort the palette by luminance
 					outputPalette.SortByLuminance();
 				}
 				// Quantize the image using the specific quantizer created from the palette (ignore the output palette data because there's a palette already)
-				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(CalculateLossyForPaletteOrVq(texture, pixelCodec), index8, out _, dither, outputPalette);
+				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(texture, qDataCodec), index8, out _, dither, outputPalette);
 				// If the palette was created from the image (as opposed to user specified), encode it with the specified pixel codec
 				if (inputPalette == null)
 					outputPalette.Encode(pixelCodec, false);
@@ -114,16 +115,6 @@ namespace TextureLib
 			}
 			// Set the texture's raw data
 			RawData = outputStream.ToArray();
-		}
-
-		internal static Bitmap CalculateLossyForPaletteOrVq(Bitmap texture, PixelCodec pixelCodec)
-		{
-			PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
-			byte[] encoded = dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
-			byte[] decoded = dataCodec.Decode(encoded, texture.Width, texture.Height, null);
-			Bitmap output = new Bitmap(texture.Width, texture.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			TextureFunctions.RawToBitmap(output, decoded);
-			return output;
 		}
 
         private static void EncodeColored(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
@@ -165,7 +156,8 @@ namespace TextureLib
             PixelCodec pixelCodec = dataCodec.PixelCodec;
             if (pixelCodec is not ARGB8888PixelCodec)
             {
-                texture = CalculateLossyForPaletteOrVq(texture, pixelCodec);
+				PvrDataCodec qDataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
+				texture = TextureFunctions.CalculateLossyForPaletteOrVq(texture, qDataCodec);
             }
 
             int evalDataLength = texture.Width * texture.Height * 4;

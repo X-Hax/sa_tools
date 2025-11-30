@@ -13,6 +13,22 @@ namespace TextureLib
     public static partial class TextureFunctions
     {
 		/// <summary>
+		/// Encodes a bitmap with the specified data/pixel codec, then decodes it back with degraded colors to use as the base of an indexed image.
+		/// </summary>
+		/// <param name="texture">Bitmap to encode.</param>
+		/// <param name="codec">PVR or GVR data codec to use.</param>
+		/// <returns>Reencoded Bitmap.</returns>
+		public static Bitmap CalculateLossyForPaletteOrVq(Bitmap texture, DataCodec codec)
+		{
+			//PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
+			byte[] encoded = codec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
+			byte[] decoded = codec.Decode(encoded, texture.Width, texture.Height, null);
+			Bitmap output = new Bitmap(texture.Width, texture.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			TextureFunctions.RawToBitmap(output, decoded);
+			return output;
+		}
+
+		/// <summary>
 		/// Encodes a mipmap, optionally with a quantizer.
 		/// </summary>
 		/// <param name="image">ImageSharp image to encode.</param>

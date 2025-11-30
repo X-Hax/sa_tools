@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace TextureLib
 {
-	internal abstract class GvrPixelCodec: DataCodec
+	internal abstract class GvrDataCodec: DataCodec
 	{
-		private static readonly Dictionary<GvrDataFormat, GvrPixelCodec> _codecs = new()
+		private static readonly Dictionary<GvrDataFormat, GvrDataCodec> _codecs = new()
 		{
-			{ GvrDataFormat.Intensity4, new GvrIntensity4PixelCodec() },
-			{ GvrDataFormat.Intensity8, new GvrIntensity8PixelCodec() },
-			{ GvrDataFormat.IntensityA4, new GvrIntensityA4PixelCodec() },
-			{ GvrDataFormat.IntensityA8, new GvrIntensityA8PixelCodec() },
-			{ GvrDataFormat.Rgb565, new GvrRGB565PixelCodec() },
-			{ GvrDataFormat.Rgb5a3, new GvrRGB5A3PixelCodec() },
-			{ GvrDataFormat.Argb8888, new GvrARGB8PixelCodec() },
-			{ GvrDataFormat.Index4, new GvrIndex4PixelCodec() },
-			{ GvrDataFormat.Index8, new GvrIndex8PixelCodec() },
-			{ GvrDataFormat.Index14, new GvrIndex14PixelCodec() },
-			{ GvrDataFormat.Dxt1, new GvrDXT1PixelCodec() },
+			{ GvrDataFormat.Intensity4, new GvrIntensity4DataCodec() },
+			{ GvrDataFormat.Intensity8, new GvrIntensity8DataCodec() },
+			{ GvrDataFormat.IntensityA4, new GvrIntensityA4DataCodec() },
+			{ GvrDataFormat.IntensityA8, new GvrIntensityA8DataCodec() },
+			{ GvrDataFormat.Rgb565, new GvrRGB565DataCodec() },
+			{ GvrDataFormat.Rgb5a3, new GvrRGB5A3DataCodec() },
+			{ GvrDataFormat.Argb8888, new GvrARGB8DataCodec() },
+			{ GvrDataFormat.Index4, new GvrIndex4DataCodec() },
+			{ GvrDataFormat.Index8, new GvrIndex8DataCodec() },
+			{ GvrDataFormat.Index14, new GvrIndex14DataCodec() },
+			{ GvrDataFormat.Dxt1, new GvrDXT1DataCodec() },
 		};
 
 		/// <summary>
@@ -50,9 +50,9 @@ namespace TextureLib
 
 		protected abstract void InternalEncode(ReadOnlySpan<byte> src, int width, int height, Span<byte> dst);
 
-		public static GvrPixelCodec GetPixelCodec(GvrDataFormat pixelFormat)
+		public static GvrDataCodec GetDataCodec(GvrDataFormat pixelFormat)
 		{
-			if(_codecs.TryGetValue(pixelFormat, out GvrPixelCodec? result))
+			if(_codecs.TryGetValue(pixelFormat, out GvrDataCodec? result))
 			{
 				return result;
 			}
@@ -60,18 +60,18 @@ namespace TextureLib
 			throw new NotImplementedException($"Pixel format \"{pixelFormat}\" is not implemented");
 		}
 
-		public static GvrPixelCodec GetPixelCodecForPalette(GvrPaletteFormat paletteFormat, bool saCompatible = true)
+		public static GvrDataCodec GetGvrDataCodecForPalette(GvrPaletteFormat paletteFormat, bool saCompatible = true)
 		{
 			switch (paletteFormat)
 			{
 				case GvrPaletteFormat.IntensityA8orArgb1555:
-					return saCompatible ? new GvrRGBA1555PixelCodec() : new GvrIntensityA8PixelCodec();
+					return saCompatible ? new GvrRGBA1555DataCodec() : new GvrIntensityA8DataCodec();
                 case GvrPaletteFormat.Rgb5A3orArgb4444:
-                    return saCompatible ? new GvrRGBA4444PixelCodec() : new GvrRGB5A3PixelCodec();
+                    return saCompatible ? new GvrRGBA4444DataCodec() : new GvrRGB5A3DataCodec();
                 case GvrPaletteFormat.Argb8888:
-                    return new GvrARGB8PixelCodec();
+                    return new GvrARGB8DataCodec();
 				case GvrPaletteFormat.Rgb565:
-                    return new GvrRGB565PixelCodec();
+                    return new GvrRGB565DataCodec();
 				default:
 					throw new NotImplementedException();
             }
