@@ -79,7 +79,34 @@ namespace TextureLib
 			}
 			else
 			{
-				EncodeIndexed(texture, dataCodec, dither, outputStream, out outputPalette);
+				int indexRange = dataCodec.GetPaletteEntries(texture.Width);
+				bool index8 = dataCodec is Index8DataCodec or Index8MipmapsDataCodec;
+				// If the user hasn't specified a palette, get one from the quantized bitmap
+				if (outputPalette == null)
+				{
+					// Quantize the image using the default quantizer to get a palette (ignore the output bitmap data because only the palette is needed)
+					TextureFunctions.QuantizeImage(CalculateLossyForPaletteOrVq(texture, pixelCodec), index8, out outputPalette, dither);
+					// Sort the palette by luminance
+					outputPalette.SortByLuminance();
+				}
+				// Quantize the image using the specific quantizer created from the palette (ignore the output palette data because there's a palette already)
+				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(CalculateLossyForPaletteOrVq(texture, pixelCodec), index8, out _, dither, outputPalette);
+				// If the palette was created from the image (as opposed to user specified), encode it with the specified pixel codec
+				if (inputPalette == null)
+					outputPalette.Encode(pixelCodec, false);
+				// If the palette is embedded, write it to texture data
+				if (!dataCodec.NeedsExternalPalette)
+				{
+					EncodePalette(outputPalette, indexRange, dataCodec.PixelCodec, outputStream);
+				}
+				// If the texture has mipmaps, write them first
+				if (dataCodec.HasMipmaps)
+				{
+					PaletteQuantizer quantizer = TexturePalette.CreatePaletteQuantizer(outputPalette, outputPalette.GetNumColors(), 0, dither);
+					EncodeMipMaps(TextureFunctions.BitmapToImageSharp(texture), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, outputStream);
+				}
+				// Encode the indexed texture itself
+				outputStream.Write(dataCodec.Encode(indexedBitmapData, texture.Width, texture.Height));
 			}
 			// Set the texture's raw data
 			RawData = outputStream.ToArray();
@@ -94,36 +121,6 @@ namespace TextureLib
 			TextureFunctions.RawToBitmap(output, decoded);
 			return output;
 		}
-
-        private static void EncodeIndexed(Bitmap texture, PvrDataCodec dataCodec, bool dither, MemoryStream writer, out TexturePalette palette)
-        {
-			palette = null;
-			/*
-            bool index8 = dataCodec is Index8DataCodec or Index8MipmapsDataCodec;
-
-            int indexRange = dataCodec.GetPaletteEntries(texture.Width);
-
-            if (texture is not IndexTexture indexTexture)
-            {
-                indexTexture = CalculateLossyForPaletteOrVq(texture, dataCodec.PixelCodec).Palettize(index8, dither);
-            }
-
-            palette = indexTexture.Palette ?? TexturePalette.CreateDefaultPalette(index8);
-
-            if (!dataCodec.NeedsExternalPalette)
-            {
-                EncodePalette(palette, indexRange, dataCodec.PixelCodec, writer);
-            }
-
-            if (dataCodec.HasMipmaps)
-            {
-                PaletteQuantizer quantizer = palette.CreatePaletteQuantizer(indexRange, indexRange * indexTexture.PaletteRow, dither);
-                EncodeMipMaps(indexTexture.ToImageSharp(), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, writer);
-            }
-
-            writer.Write(dataCodec.Encode(indexTexture.Data, texture.Width, texture.Height));
-			*/
-        }
 
         private static void EncodeColored(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
         {
@@ -154,28 +151,26 @@ namespace TextureLib
         {
             for (int size = 1; size < image.Width; size <<= 1)
             {
-                Image<Rgba32> mipMapImage = image.Clone();
+				byte[] mipMapPixels;
+				Image<Rgba32> mipMapImage = image.Clone();
                 mipMapImage.Mutate(x => x.Resize(size, size));
-
-                byte[] mipMapPixels;
-                if (quantizer != null)
+				// If there is a quantizer, use it.
+				if (quantizer != null)
                 {
                     IndexedImageFrame<Rgba32> mipMapFrame = quantizer.QuantizeFrame(mipMapImage.Frames[0], new(0, 0, size, size));
-
                     mipMapPixels = new byte[size * size];
                     Span<byte> pixelData = mipMapPixels;
-
                     for (int y = 0; y < size; y++)
                     {
                         mipMapFrame.DangerousGetRowSpan(y).CopyTo(pixelData[(y * size)..]);
                     }
                 }
-                else
-                {
+				// If no quantizer is specified, copy image data directly.
+				else
+				{
                     mipMapPixels = new byte[size * size * 4];
                     mipMapImage.CopyPixelDataTo(mipMapPixels);
                 }
-
                 writer.Write(dataCodec.Encode(mipMapPixels, size, size));
             }
         }

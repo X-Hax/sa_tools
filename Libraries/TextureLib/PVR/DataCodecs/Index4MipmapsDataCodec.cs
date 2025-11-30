@@ -37,7 +37,7 @@ namespace TextureLib
 					int sourceIndex = twiddleMap[x, y] / 2;
 
 					byte index = (byte)((source[sourceIndex] >> ((y & 0x1) * 4)) & 0xF);
-					destination[destinationIndex] = (byte)(index); //  (byte)(index | (index << 4));
+					destination[destinationIndex] = (byte)(index | (index << 4));
 
                     destinationIndex++;
 				}
@@ -61,7 +61,7 @@ namespace TextureLib
 					{
 						int destinationIndex = twiddleMap[x, y] / 2;
 
-						destination[destinationIndex] |= (byte)((source[sourceIndex] & 0xF0) >> ((~y & 0x1) * 4));
+						destination[destinationIndex] |= (byte)((source[sourceIndex] << 4) >> ((~y & 0x1) * 4));
 
 						sourceIndex++;
 					}

@@ -206,7 +206,6 @@ namespace TextureLib
             }
         }
 
-     
         private ReadOnlySpan<byte> DecodeInternalPalette(PvrDataCodec dataCodec, out int bytesRead)
         {
             Span<byte> result = null;

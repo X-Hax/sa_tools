@@ -352,11 +352,7 @@ namespace TextureLib
 				else
 				{
 					mipMapPixels = new byte[size * size * 4];
-					Span<byte> pixelData = mipMapPixels;
-					for (int y = 0; y < size; y++)
-					{
-						mipMapImage.Frames[0].CopyPixelDataTo(pixelData);
-					}
+					mipMapImage.CopyPixelDataTo(mipMapPixels);
 				}
 				writer.Write(pixelCodec.Encode(mipMapPixels, size, size));
 			}
