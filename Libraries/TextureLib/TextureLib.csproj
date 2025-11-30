@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputPath>..\..\build\lib\</OutputPath>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<DebugType>embedded</DebugType>
+		<Platforms>AnyCPU;x86;x64</Platforms>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+	</ItemGroup>
+</Project>
