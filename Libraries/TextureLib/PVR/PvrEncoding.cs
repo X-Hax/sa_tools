@@ -1,68 +1,114 @@
-﻿using SixLabors.ImageSharp;
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TextureLib
 {
-    public class PvrEncoding
+    public partial class PvrTexture
     {
-       
+		/// <summary>
+		/// Encodes a PVR texture from Bitmap.
+		/// </summary>
+		/// <param name="texture">Source Bitmap.</param>
+		/// <param name="dataFormat">Target PVR data format.</param>
+		/// <param name="pixelFormat">Target PVR pixel format or pixel format for indexed images.</param>
+		/// <param name="mipmaps">Encode mipmaps.</param>
+		/// <param name="outputPalette">Output palette for indexed images.</param>
+		/// <param name="inputPalette">Input palette for indexed images. Used to create indexed textures with a user-specified palette.</param>
+		/// <param name="gbix">Global index.</param>
+		/// <param name="dither">Use dithering for encoding indexed images.</param>
+		/// <param name="paletteExternal">Save the palette to an external file.</param>
+		public PvrTexture(Bitmap texture, PvrDataFormat dataFormat, PvrPixelFormat pixelFormat, bool mipmaps, out TexturePalette? outputPalette, TexturePalette inputPalette = null, uint gbix = 0, bool dither = false, bool paletteExternal = false)
+		{
+			// Disable mipmaps if using incompatible texture encoder settings
+			if (mipmaps)
+			{
+				if (texture.Width != texture.Height)
+				{
+					// TODO: Remove
+					Console.WriteLine("Mipmaps disabled because the texture is rectangular");
+					mipmaps = false;
+				}
+			}
 
-        /*
-        private static ColorTexture CalculateLossy(Texture texture, PixelCodec pixelCodec)
+			// Set common texture data
+			Gbix = gbix;
+			PvrDataFormat = dataFormat;
+			PvrPixelFormat = pixelFormat;
+			Width = texture.Width;
+			Height = texture.Height;
+			if (mipmaps)
+			{
+				HasMipmaps = true;
+			}
+			if (dataFormat == PvrDataFormat.Index8 || dataFormat == PvrDataFormat.Index4 || dataFormat == PvrDataFormat.Index4Mipmaps || dataFormat == PvrDataFormat.Index8Mipmaps)
+			{
+				Indexed = true;
+				RequiresPaletteFile = paletteExternal;
+			}
+
+			// Determine the pixel and data codecs
+			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(pixelFormat);
+			PvrDataCodec dataCodec = PvrDataCodec.Create(dataFormat, pixelCodec);
+
+			// Check texture dimensions
+			if (!dataCodec.CheckDimensionsValid(Width, Height))
+			{
+				throw new InvalidOperationException($"The dimensions ({Width}x{Height}) of the specified image are not valid for data format {PvrDataFormat}.");
+			}
+
+			MemoryStream outputStream = new();
+			outputPalette = null;
+
+			// If the user has specified a palette, use it
+			if (inputPalette != null)
+				outputPalette = inputPalette;
+
+			if (dataCodec is VqDataCodec)
+			{
+				EncodeVQ(texture, dataCodec, outputStream);
+			}
+			else if (dataCodec.GetPaletteEntries(Width) == 0)
+			{
+				EncodeColored(texture, dataCodec, outputStream);
+			}
+			else
+			{
+				EncodeIndexed(texture, dataCodec, dither, outputStream, out outputPalette);
+			}
+			// Set the texture's raw data
+			RawData = outputStream.ToArray();
+		}
+
+		internal static Bitmap CalculateLossyForPaletteOrVq(Bitmap texture, PixelCodec pixelCodec)
+		{
+			PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
+			byte[] encoded = dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
+			byte[] decoded = dataCodec.Decode(encoded, texture.Width, texture.Height, null);
+			Bitmap output = new Bitmap(texture.Width, texture.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			TextureFunctions.RawToBitmap(output, decoded);
+			return output;
+		}
+
+        private static void EncodeIndexed(Bitmap texture, PvrDataCodec dataCodec, bool dither, MemoryStream writer, out TexturePalette palette)
         {
-            PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
-            byte[] encoded = dataCodec.Encode(texture.GetColorPixels(), texture.Width, texture.Height);
-            byte[] decoded = dataCodec.Decode(encoded, texture.Width, texture.Height, null);
-            return new(texture.Width, texture.Height, decoded);
-        }
-
-        public override void EncodeTexture()
-        {
-
-            PixelCodec pixelCodec = TextureFunctions.GetPixelCodec(PvrPixelFormat);
-            PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat, pixelCodec);
-
-            if (!dataCodec.CheckDimensionsValid(Width, Height))
-            {
-                throw new InvalidOperationException($"The dimensions ({Width}x{Height}) of the specified image are not valid for data format {PvrDataFormat}.");
-            }
-
-            //palette = null;
-
-            if (dataCodec is VqDataCodec)
-            {
-                EncodeVQ(texture, dataCodec, writer);
-            }
-            else if (dataCodec.GetPaletteEntries(Width) == 0)
-            {
-                EncodeColored(texture, dataCodec, writer);
-            }
-            else
-            {
-                EncodeIndexed(texture, dataCodec, ditherIndex, writer, out palette);
-            }
-
-        }
-
-        private static void EncodeIndexed(Texture texture, PVRDataCodec dataCodec, bool dither, EndianStackWriter writer, out TexturePalette palette)
-        {
-            bool index4 = dataCodec is Index4DataCodec or Index4MipmapsDataCodec;
+			palette = null;
+			/*
+            bool index8 = dataCodec is Index8DataCodec or Index8MipmapsDataCodec;
 
             int indexRange = dataCodec.GetPaletteEntries(texture.Width);
+
             if (texture is not IndexTexture indexTexture)
             {
-                indexTexture = CalculateLossy(texture, dataCodec.PixelCodec).Palettize(index4, dither);
+                indexTexture = CalculateLossyForPaletteOrVq(texture, dataCodec.PixelCodec).Palettize(index8, dither);
             }
 
-            palette = indexTexture.Palette ?? TexturePalette.GetDefaultPalette(index4);
+            palette = indexTexture.Palette ?? TexturePalette.CreateDefaultPalette(index8);
 
             if (!dataCodec.NeedsExternalPalette)
             {
@@ -76,33 +122,35 @@ namespace TextureLib
             }
 
             writer.Write(dataCodec.Encode(indexTexture.Data, texture.Width, texture.Height));
+			*/
         }
 
-        private static void EncodeColored(Texture texture, PVRDataCodec dataCodec, EndianStackWriter writer)
+        private static void EncodeColored(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
         {
             if (dataCodec.HasMipmaps)
             {
-                Image<Rgba32> image = texture.ToImageSharp();
+                Image<Rgba32> image = TextureFunctions.BitmapToImageSharp(texture);
                 EncodeMipMaps(image, null, dataCodec, writer);
             }
 
-            byte[] mainImageData = dataCodec.Encode(texture.Data, texture.Width, texture.Height);
+            byte[] mainImageData = dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
             writer.Write(mainImageData);
         }
 
-        private static void EncodePalette(TexturePalette palette, int paletteEntries, PVPixelCodec pixelCodec, EndianStackWriter writer)
+        private static void EncodePalette(TexturePalette palette, int paletteEntries, PixelCodec pixelCodec, MemoryStream writer)
         {
-            ReadOnlySpan<byte> paletteColors = palette.ColorData;
+            ReadOnlySpan<byte> paletteColors = palette.RawData;
 
             Span<byte> destination = new byte[pixelCodec.BytesPerPixel * paletteEntries / pixelCodec.Pixels];
             for (int i = 0; i < paletteEntries; i += pixelCodec.Pixels)
             {
-                pixelCodec.EncodePixel(paletteColors[(i * 4)..], destination[(i * pixelCodec.BytesPerPixel)..]);
+                pixelCodec.EncodePixel(paletteColors[(i * 4)..], destination[(i * pixelCodec.BytesPerPixel)..], false);
             }
 
             writer.Write(destination);
         }
-        private static void EncodeMipMaps(Image<Rgba32> image, IQuantizer<Rgba32>? quantizer, PVRDataCodec dataCodec, EndianStackWriter writer)
+
+        private static void EncodeMipMaps(Image<Rgba32> image, IQuantizer<Rgba32>? quantizer, PvrDataCodec dataCodec, MemoryStream writer)
         {
             for (int size = 1; size < image.Width; size <<= 1)
             {
@@ -132,17 +180,17 @@ namespace TextureLib
             }
         }
 
-        private static void EncodeVQ(Texture texture, PVRDataCodec dataCodec, EndianStackWriter writer)
+        private static void EncodeVQ(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
         {
             if (!dataCodec.CheckDimensionsValid(texture.Width, texture.Height))
             {
-                throw new InvalidDataException($"Resolution ({texture.Width}x{texture.Height}) of texture {texture.Name} not valid!");
-            }
+				throw new InvalidOperationException($"The dimensions ({texture.Width}x{texture.Height}) of the specified image are not valid for data codec {dataCodec}.");
+			}
 
-            PVPixelCodec pixelCodec = dataCodec.PixelCodec;
-            if (pixelCodec is not ARGB8PixelCodec)
+            PixelCodec pixelCodec = dataCodec.PixelCodec;
+            if (pixelCodec is not ARGB8888PixelCodec)
             {
-                texture = CalculateLossy(texture, pixelCodec);
+                texture = CalculateLossyForPaletteOrVq(texture, pixelCodec);
             }
 
             int evalDataLength = texture.Width * texture.Height * 4;
@@ -160,7 +208,7 @@ namespace TextureLib
             }
 
             Span<byte> evalData = new byte[evalDataLength];
-            Image<Rgba32> image = texture.ToImageSharp();
+            Image<Rgba32> image = TextureFunctions.BitmapToImageSharp(texture);
             int destinationAddress = 0;
 
             for (int i = 0; i < textureCount; i++)
@@ -197,7 +245,7 @@ namespace TextureLib
             int paletteIndex = 0;
             for (int i = 0; i < clusters.Length; i += 4 * pixelCodec.Pixels)
             {
-                pixelCodec.EncodePixel(clusters[i..], palette[paletteIndex..]);
+                pixelCodec.EncodePixel(clusters[i..], palette[paletteIndex..], false);
                 paletteIndex += pixelCodec.BytesPerPixel;
             }
 
@@ -224,7 +272,6 @@ namespace TextureLib
 
             writer.Write(dataCodec.Encode(textures, texture.Width, texture.Height));
         }
-        */
-        
-    }
+
+	}
 }

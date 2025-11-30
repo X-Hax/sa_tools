@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace TextureLib
 {
     // Class for Dreamcast PVR textures
-    public class PvrTexture : GenericTexture
+    public partial class PvrTexture : GenericTexture
     {
         const uint Magic_GBIX = 0x58494247;
         const uint Magic_PVRT = 0x54525650;
@@ -16,7 +17,29 @@ namespace TextureLib
         private byte[] HeaderlessData; // Raw data without the header
         public bool RLE; // Whether the texture is RLE compressed or not (not implemented)
 
-        public PvrTexture(byte[] data, int offset = 0, string name = null, TexturePalette extPalette = null)
+		public override byte[] GetBytes()
+		{
+			List<byte> result = new();
+			if (Gbix != 0)
+			{
+				result.AddRange(BitConverter.GetBytes(Magic_GBIX));
+				result.AddRange(BitConverter.GetBytes((uint)8));
+				result.AddRange(BitConverter.GetBytes(Gbix));
+				result.AddRange(BitConverter.GetBytes((uint)0x20202020));
+			}
+			result.AddRange(BitConverter.GetBytes(Magic_PVRT));
+			result.AddRange(BitConverter.GetBytes((uint)(RawData.Length + 8)));
+			result.Add((byte)PvrPixelFormat);
+			result.Add((byte)PvrDataFormat);
+			result.Add((byte)PaletteBank);
+			result.Add((byte)PaletteStartIndex);			
+			result.AddRange(BitConverter.GetBytes((ushort)Width));
+			result.AddRange(BitConverter.GetBytes((ushort)Height));
+			result.AddRange(RawData);
+			return result.ToArray();
+		}
+
+		public PvrTexture(byte[] data, int offset = 0, string name = null, TexturePalette extPalette = null)
         {
             InitTexture(data, offset, name);
             Palette = extPalette;
@@ -48,7 +71,6 @@ namespace TextureLib
                 Gbix = BitConverter.ToUInt32(RawData, gbixOffset + 0x8);
             else
                 Gbix = 0;
-            Console.WriteLine("GBIXOffset: {0}", gbixOffset);
             currentOffset = pvrtOffset;
             // Parse header
             int chunksize = BitConverter.ToInt32(RawData, currentOffset + 0x4);
@@ -58,7 +80,7 @@ namespace TextureLib
             PaletteStartIndex = RawData[currentOffset + 0xB];
             Width = ByteConverter.ToUInt16(RawData, currentOffset + 0xC);
             Height = ByteConverter.ToUInt16(RawData, currentOffset + 0xE);
-            // Override pixel format for Bitmap
+            // Override pixel format for Bitmap (because Bitmap can only be in ARGB8888)
             if (PvrDataFormat is PvrDataFormat.Bitmap || PvrDataFormat is PvrDataFormat.BitmapMipmaps)
                 PvrPixelFormat = PvrPixelFormat.Argb8888orYUV420;
             // Set texture properties
@@ -95,8 +117,8 @@ namespace TextureLib
 
             if (PvrPixelFormat is PvrPixelFormat.Argb8888orYUV420 && dataSize > RawData.Length)
                 throw new NotImplementedException("YUV420 support is not implemented");
-
-            Console.WriteLine("\nTEXTURE INFO");
+#if DEBUG
+			Console.WriteLine("\nTEXTURE INFO");
             Console.WriteLine("Width: " + Width.ToString());
             Console.WriteLine("Height: " + Height.ToString());
             Console.WriteLine("Gbix: " + Gbix.ToString());
@@ -104,9 +126,8 @@ namespace TextureLib
             Console.WriteLine("Data format: " + PvrDataFormat.ToString());
             Console.WriteLine("Mipmaps: " + HasMipmaps.ToString());
             Console.WriteLine("Indexed: " + Indexed.ToString());
-            Console.WriteLine("Palette entries: " + paletteEntries.ToString());
-
-            if (paletteEntries > 0 && !dataCodec.NeedsExternalPalette)
+#endif
+			if (paletteEntries > 0 && !dataCodec.NeedsExternalPalette)
             {
                 dataSize += paletteEntries / pixelCodec.Pixels * pixelCodec.BytesPerPixel;
             }
@@ -124,7 +145,6 @@ namespace TextureLib
             //System.IO.File.WriteAllBytes("data.bin", HeaderlessData);
             int textureAddress = HeaderlessData.Length - dataCodec.CalculateTextureSize(Width, Height);
 
-            Console.WriteLine("Offset: " + textureAddress.ToString("X"));
             ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
             byte[] result = dataCodec.Decode(textureData, Width, Height, palette);
 
@@ -133,16 +153,8 @@ namespace TextureLib
                 result = ApplyPalette(result, Width, Height).ToArray();
             }
 
-            //System.IO.File.WriteAllBytes("test.bin", result);
-            //System.IO.File.WriteAllBytes("pal.bin", palette.ToArray());
-            //TextureFunctions.RGBAtoBGRA(result);
-            //System.IO.File.WriteAllBytes("test_reverse.bin", result);
-
             Image = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
             TextureFunctions.RawToBitmap(Image, result);
-
-            //if (PvrDataFormat is PvrDataFormat.Bitmap || PvrDataFormat is PvrDataFormat.BitmapMipmaps)
-            //Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             if (HasMipmaps)
             {
@@ -157,7 +169,7 @@ namespace TextureLib
                     mipmapOffsets[i] = mipmapOffset;
                     byte[] src = HeaderlessData[mipmapOffsets[i]..];
                     int mipDataSize = Math.Max(1, HeaderlessData.Length - paletteSize - src.Length);
-                    Console.WriteLine("Mipmap {0} ({1}x{1}) : {2} (size {3})", i, sizex, mipmapOffsets[i].ToString("X"), mipDataSize.ToString());
+                    //Console.WriteLine("Mipmap {0} ({1}x{1}) : {2} (size {3})", i, sizex, mipmapOffsets[i].ToString("X"), mipDataSize.ToString());
                     byte[] mipRawData = dataCodec.Decode(src, sizex, sizex, palette);
                     // Workarounds for 1x1 mipmaps
                     if (sizex == 1)
@@ -171,23 +183,23 @@ namespace TextureLib
                             byte[] newmipdata = new byte[4];
                             Array.Copy(mipRawData, 12, newmipdata, 0, 4);
                             mipRawData = newmipdata;
-                            Console.WriteLine("\tVQ Mipmap for 1x1 : {0} (size {1})", (mipmapOffset + 1).ToString("X"), mipDataSize.ToString());
+                            //Console.WriteLine("\tVQ Mipmap for 1x1 : {0} (size {1})", (mipmapOffset + 1).ToString("X"), mipDataSize.ToString());
                         }
                         // In YUV422 textures, the 1x1 mipmap is stored as RGB565
                         else if (PvrPixelFormat == PvrPixelFormat.Yuv422)
                         {
                             PvrDataCodec dataCodecTemp = PvrDataCodec.Create(PvrDataFormat, new RGB565PixelCodec());
                             mipRawData = dataCodecTemp.Decode(src, sizex, sizex, palette);
-                            Console.WriteLine("\tYUV Mipmap for 1x1 in RGB565 format");
+                            //Console.WriteLine("\tYUV Mipmap for 1x1 in RGB565 format");
                         }
                     }
                     if (Indexed)
                         mipRawData = ApplyPalette(mipRawData, sizex, sizex).ToArray();
-                    Console.WriteLine("MipRawData {0}", mipRawData.Length);
+                    //Console.WriteLine("MipRawData {0}", mipRawData.Length);
                     //TextureFunctions.RGBAtoBGRA(mipRawData);
                     Bitmap mipBitmap = new Bitmap(sizex, sizex, PixelFormat.Format32bppArgb);
                     TextureFunctions.RawToBitmap(mipBitmap, mipRawData);
-                    Console.WriteLine(mipBitmap.GetPixel(0, 0).ToString());
+                    //Console.WriteLine(mipBitmap.GetPixel(0, 0).ToString());
                     MipmapImages[i] = mipBitmap;
                     mipmapOffset += dataCodec.CalculateTextureSize(sizex, sizex);
                 }
@@ -219,5 +231,5 @@ namespace TextureLib
 
             return result;
         }
-    }
+	}
 }

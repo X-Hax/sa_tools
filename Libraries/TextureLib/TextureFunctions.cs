@@ -10,13 +10,20 @@ namespace TextureLib
 {
     public static partial class TextureFunctions
     {
-		/// <summary>Quantizes a Bitmap using a specified palette or WuQuantizer, outputs raw indexed bytes and a TexturePalette.</summary>
-		public static byte[] QuantizeImage(Bitmap bitmap, bool index8, out TexturePalette outputPalette, bool dither = false, TexturePalette inputPalette = null)
-        {
+		/// <summary>Converts a Bitmap to an ImageSharp image.</summary>
+		public static SixLabors.ImageSharp.Image<Rgba32> BitmapToImageSharp(Bitmap bitmap)
+		{
 			// Create raw bitmap data array compatible with ImageSharp
 			byte[] rawBitmap = BitmapToRaw(bitmap);
 			// Load ImageSharp image
-			SixLabors.ImageSharp.Image<Rgba32> image = SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(rawBitmap, bitmap.Width, bitmap.Height);
+			return SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(rawBitmap, bitmap.Width, bitmap.Height);
+		}
+
+		/// <summary>Quantizes a Bitmap using a specified palette or WuQuantizer, outputs raw indexed bytes and a TexturePalette.</summary>
+		public static byte[] QuantizeImage(Bitmap bitmap, bool index8, out TexturePalette outputPalette, bool dither = false, TexturePalette inputPalette = null)
+        {
+			// Convert Bitmap to ImageSharp
+			SixLabors.ImageSharp.Image<Rgba32> image = BitmapToImageSharp(bitmap);
 			// Set the quantizer
 			IQuantizer quantizer = inputPalette != null ? TexturePalette.CreatePaletteQuantizer(inputPalette, inputPalette.GetNumColors(), 0, dither):
 				new WuQuantizer(new QuantizerOptions { Dither = dither ? QuantizerConstants.DefaultDither : null, MaxColors = index8 ? 256 : 16 });

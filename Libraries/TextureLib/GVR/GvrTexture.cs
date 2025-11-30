@@ -23,7 +23,7 @@ namespace TextureLib
 		private GvrDataFlags GvrDataFlags;
 		private byte[] HeaderlessData;
 
-		public byte[] GetBytes()
+		public override byte[] GetBytes()
 		{
 			ByteConverter.SetBigEndian(true);
 			List<byte> result = new();

@@ -33,6 +33,7 @@ namespace TexTool
 		static string outputFilenameNoExt;
 		static string outputExtension;
 		static string outputFullFilename;
+		static string outputPaletteExtension;
 		static string paletteFilename;
 		static ProgramMode programMode;
 		static TargetFileFormat targetFileFormat;
@@ -55,6 +56,8 @@ namespace TexTool
 		// PVR stuff
 		static PvrDataFormat targetPvrFormat;
 		static PvrPixelFormat targetPvrPixelFormat;
+		static bool autoPvrDataFormat;
+		static bool autoPvrPixelFormat;
 
 		static void ParseCommandLine(string[] args)
 		{
@@ -72,6 +75,8 @@ namespace TexTool
 				programMode = ProgramMode.Error;
 				return;
 			}
+			// Check mipmaps flag
+			useMipmaps = args.Contains("-m");
 			// Determine whether it's supposed to decode or encode the texture
 			switch (Path.GetExtension(inputFilename).ToLowerInvariant())
 			{
@@ -93,8 +98,16 @@ namespace TexTool
 					programMode = ProgramMode.Error;
 					break;
 			}
+			// Check arguments for encoder
 			if (programMode == ProgramMode.Encode)
 			{
+				// Check gbix
+				if (args.Contains("-gbix"))
+					gbix = uint.Parse(args[FindArgument(args, "-gbix") + 1]);
+				// Check dithering flag
+				useDitheringForIndexed = args.Contains("-dither");
+				// Check external palette flag
+				encodeExternalPalette = args.Contains("-extpal");
 				// Determine the target texture file format
 				if (args.Contains("-pvr"))
 					targetFileFormat = TargetFileFormat.Pvr;
@@ -107,6 +120,50 @@ namespace TexTool
 				// Get target texture pixel/data format from command line arguments
 				switch (targetFileFormat)
 				{
+					// Data format
+					case TargetFileFormat.Pvr:
+						if (args.Contains("-tw") || args.Contains("-sq"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.SquareTwiddledMipmaps : PvrDataFormat.SquareTwiddled;
+						else if (args.Contains("-vq"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.VqMipmaps : PvrDataFormat.Vq;
+						else if (args.Contains("-i4"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.Index4Mipmaps : PvrDataFormat.Index4;
+						else if (args.Contains("-i8"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.Index8Mipmaps : PvrDataFormat.Index8;
+						else if (args.Contains("-rect"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.RectangleMipmaps : PvrDataFormat.Rectangle; // No actual difference
+						else if (args.Contains("-st"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.RectangleStrideMipmaps : PvrDataFormat.RectangleStride; // No actual difference
+						else if (args.Contains("-recttw"))
+							targetPvrFormat = PvrDataFormat.RectangleTwiddled;
+						else if (args.Contains("-bmp"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.BitmapMipmaps : PvrDataFormat.Bitmap;
+						else if (args.Contains("-svq"))
+							targetPvrFormat = useMipmaps ? PvrDataFormat.SmallVqMipmaps : PvrDataFormat.SmallVq;
+						else if (args.Contains("-dma"))
+							targetPvrFormat = PvrDataFormat.SquareTwiddledMipmapsAlt;
+						else
+							autoPvrDataFormat = true;
+						// Pixel format
+						if (args.Contains("-1555"))
+							targetPvrPixelFormat = PvrPixelFormat.Argb1555;
+						else if (args.Contains("-565"))
+							targetPvrPixelFormat = PvrPixelFormat.Rgb565;
+						else if (args.Contains("-4444"))
+							targetPvrPixelFormat = PvrPixelFormat.Argb4444;
+						else if (args.Contains("-y422"))
+							targetPvrPixelFormat = PvrPixelFormat.Yuv422;
+						else if (args.Contains("-bump"))
+							targetPvrPixelFormat = PvrPixelFormat.Bump88;
+						else if (args.Contains("-555"))
+							targetPvrPixelFormat = PvrPixelFormat.Rgb555;
+						else if (args.Contains("-8888"))
+							targetPvrPixelFormat = PvrPixelFormat.Argb8888;
+						//else if (args.Contains("-y420"))
+						//targetPvrPixelFormat = PvrPixelFormat.Argb8888orYUV420; // Not implemented and probably doesn't exist
+						else
+							autoPvrPixelFormat = true;
+						break;
 					case TargetFileFormat.Gvr:
 						if (args.Contains("-int4"))
 							targetGvrFormat = GvrDataFormat.Intensity4;
@@ -166,7 +223,6 @@ namespace TexTool
 								autoGvrPaletteFormat = true;
 						}
 						break;
-					case TargetFileFormat.Pvr:
 					case TargetFileFormat.Xvr:
 					case TargetFileFormat.Dds:
 						// TODO
@@ -175,17 +231,6 @@ namespace TexTool
 				}
 
 			}
-			// Check gbix
-			if (args.Contains("-gbix"))
-			{
-				gbix = uint.Parse(args[FindArgument(args, "-gbix") + 1]);
-			}
-			// Check mipmaps flag
-			useMipmaps = args.Contains("-m");
-			// Check dithering flag
-			useDitheringForIndexed = args.Contains("-dither");
-			// Check external palette flag
-			encodeExternalPalette = args.Contains("-extpal");
 			// Check if palette filename is specified
 			if (args.Contains("-p"))
 			{
@@ -212,9 +257,11 @@ namespace TexTool
 				{
 					case TargetFileFormat.Pvr:
 						outputExtension = ".pvr";
+						outputPaletteExtension = ".pvp";
 						break;
 					case TargetFileFormat.Gvr:
 						outputExtension = ".gvr";
+						outputPaletteExtension = ".gvp";
 						break;
 					case TargetFileFormat.Xvr:
 						outputExtension = ".xvr";
@@ -281,14 +328,7 @@ namespace TexTool
 						case TargetFileFormat.Pvr:
 							Console.WriteLine("PVR data format: {0}", targetPvrFormat.ToString());
 							Console.WriteLine("PVR pixel format: {0}", targetPvrPixelFormat.ToString());
-							switch (targetPvrFormat)
-							{
-								case PvrDataFormat.Index4:
-								case PvrDataFormat.Index8:
-								case PvrDataFormat.Index4Mipmaps:
-								case PvrDataFormat.Index8Mipmaps:
-									break;
-							}
+							// TODO: Put something here?
 							break;
 						case TargetFileFormat.Gvr:
 							Console.WriteLine("GVR format: {0}", targetGvrFormat.ToString());
@@ -327,24 +367,44 @@ namespace TexTool
 					// Read the input bitmap
 					Bitmap inputBitmap = new Bitmap(inputFilename);
 					TexturePalette outputTexturePalette = null;
-					// Set formats for auto mode
-					if (autoGvrDataFormat)
+					GenericTexture result = null;
+					switch (targetFileFormat)
 					{
-						Console.WriteLine("Auto GVR formats not implemented yet");
-						return;
+						case TargetFileFormat.Pvr:
+							if (autoPvrDataFormat)
+							{
+								Console.WriteLine("Auto PVR formats not implemented yet");
+								return;
+							}
+							if (autoPvrPixelFormat)
+							{
+								Console.WriteLine("Auto PVR pixel formats not implemented yet");
+								return;
+							}
+							// Encode texture
+							result = new PvrTexture(inputBitmap, targetPvrFormat, targetPvrPixelFormat, useMipmaps, out outputTexturePalette, inputPalette, gbix, useDitheringForIndexed, encodeExternalPalette);
+							break;
+						case TargetFileFormat.Gvr:
+							// Set formats for auto mode
+							if (autoGvrDataFormat)
+							{
+								Console.WriteLine("Auto GVR formats not implemented yet");
+								return;
+							}
+							if (autoGvrPaletteFormat)
+							{
+								Console.WriteLine("Auto GVR palette formats not implemented yet");
+								return;
+							}
+							// Encode texture
+							result = new GvrTexture(inputBitmap, targetGvrFormat, useMipmaps, out outputTexturePalette, inputPalette, gbix, targetGvrPaletteFormat, useDitheringForIndexed, encodeExternalPalette, saCompatibleGvrPalettes);
+							break;
 					}
-					if (autoGvrPaletteFormat)
-					{
-						Console.WriteLine("Auto GVR palette formats not implemented yet");
-						return;
-					}
-					// Encode texture
-					GvrTexture result = new GvrTexture(inputBitmap, targetGvrFormat, useMipmaps, out outputTexturePalette, inputPalette, gbix, targetGvrPaletteFormat, useDitheringForIndexed, encodeExternalPalette, saCompatibleGvrPalettes);
 					// Save the encoded texture
-					File.WriteAllBytes(outputFilenameNoExt + ".gvr", result.GetBytes());
+					File.WriteAllBytes(outputFilenameNoExt + outputExtension, result.GetBytes());
 					// Save the encoded palette if available
 					if (encodeExternalPalette && outputTexturePalette != null)
-						outputTexturePalette.SaveGVP(outputFilenameNoExt + ".gvp");
+						outputTexturePalette.Save(outputFilenameNoExt + outputPaletteExtension, targetFileFormat == TargetFileFormat.Gvr ? true : false);
 					Console.WriteLine("Finished!"); 
 					return;
 				case ProgramMode.Error:

@@ -229,7 +229,12 @@ namespace TextureLib
             File.WriteAllBytes(outputPath, GetBytes(true));
         }
 
-        public void SavePNG(string outputPath)
+		public void Save(string outputPath, bool gvp)
+		{
+			File.WriteAllBytes(outputPath, GetBytes(gvp));
+		}
+
+		public void SavePNG(string outputPath)
         {
             byte[] colorsBitmap = new byte[DecodedData.Length];
             Array.Copy(DecodedData, 0, colorsBitmap, 0, DecodedData.Length);
