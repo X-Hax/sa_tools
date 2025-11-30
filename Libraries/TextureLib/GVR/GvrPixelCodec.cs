@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TextureLib
 {
-	internal abstract class GvrPixelCodec
+	internal abstract class GvrPixelCodec: DataCodec
 	{
 		private static readonly Dictionary<GvrDataFormat, GvrPixelCodec> _codecs = new()
 		{
@@ -32,7 +32,7 @@ namespace TextureLib
 
 		protected abstract int InternalCalculateTextureSize(int width, int height);
 
-		public byte[] Decode(ReadOnlySpan<byte> src, int width, int height)
+		public override byte[] Decode(ReadOnlySpan<byte> src, int width, int height, ReadOnlySpan<byte> palette)
 		{
 			byte[] result = new byte[width * height * (PaletteEntries > 0 ? 1 : 4)];
 			InternalDecode(src, width, height, result);
@@ -41,7 +41,7 @@ namespace TextureLib
 
 		protected abstract void InternalDecode(ReadOnlySpan<byte> src, int width, int height, Span<byte> dst);
 
-		public byte[] Encode(ReadOnlySpan<byte> src, int width, int height)
+		public override byte[] Encode(ReadOnlySpan<byte> src, int width, int height)
 		{
 			byte[] result = new byte[CalculateTextureSize(width, height)];
 			InternalEncode(src, width, height, result);

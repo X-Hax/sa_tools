@@ -4,9 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace TextureLib
@@ -157,7 +155,7 @@ namespace TextureLib
 			// Decode data
 			int textureAddress = HeaderlessData.Length - pixelCodec.CalculateTextureSize(Width, Height);
 			ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
-			byte[] result = pixelCodec.Decode(HeaderlessData, Width, Height);
+			byte[] result = pixelCodec.Decode(HeaderlessData, Width, Height, null);
 
 			// Apply palette if the texture is indexed
 			if (Indexed)
@@ -183,7 +181,7 @@ namespace TextureLib
 						mipOffset += pixelCodec.CalculateTextureSize(size, size);
 					}
 					byte[] mipData = HeaderlessData[mipOffset..].ToArray();
-					byte[] mipRawData = pixelCodec.Decode(mipData, size, size);
+					byte[] mipRawData = pixelCodec.Decode(mipData, size, size, null);
 					if (Indexed)
 						mipRawData = ApplyPalette(mipRawData, size, size).ToArray();
 					Bitmap mipBitmap = new Bitmap(size, size, PixelFormat.Format32bppArgb);
@@ -288,7 +286,11 @@ namespace TextureLib
 				if (mipmaps)
 				{
 					PaletteQuantizer quantizer = TexturePalette.CreatePaletteQuantizer(outputPalette, outputPalette.GetNumColors(), 0, dither);
-					EncodeMipMaps(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(indexedBitmapData, texture.Width, texture.Height), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), pixelCodec, outputStream);
+					// GVR mipmap order: from largest to smallest
+					for (int size = texture.Width >> 1; size > 0; size >>= 1)
+					{
+						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(indexedBitmapData, texture.Width, texture.Height), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), pixelCodec, size, outputStream);
+					}
 				}
 			}
 			// Encoding to a non-indexed format
@@ -300,7 +302,11 @@ namespace TextureLib
 				// Encode mipmaps if specified
 				if (mipmaps)
 				{
-					EncodeMipMaps(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(encodedBytes, texture.Width, texture.Height), null, pixelCodec, outputStream);
+					// GVR mipmap order: from largest to smallest
+					for (int size = texture.Width >> 1; size > 0; size >>= 1)
+					{
+						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(encodedBytes, texture.Width, texture.Height), null, pixelCodec, size, outputStream);
+					}
 				}
 			}
 			// Set the texture's raw data
@@ -316,46 +322,10 @@ namespace TextureLib
 		internal static Bitmap CalculateLossyForPalette(Bitmap texture, GvrPixelCodec gvrPaletteCodec)
 		{
 			byte[] encoded = gvrPaletteCodec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
-			byte[] decoded = gvrPaletteCodec.Decode(encoded, texture.Width, texture.Height);
+			byte[] decoded = gvrPaletteCodec.Decode(encoded, texture.Width, texture.Height, null);
 			Bitmap output = new Bitmap(texture.Width, texture.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			TextureFunctions.RawToBitmap(output, decoded);
 			return output;
-		}
-
-		/// <summary>
-		/// Encodes mipmaps, optionally with a quantizer.
-		/// </summary>
-		/// <param name="image">ImageSharp image to encode.</param>
-		/// <param name="quantizer">Quantizer to use (optional).</param>
-		/// <param name="pixelCodec">GVR codec to use.</param>
-		/// <param name="writer">Output memory stream.</param>
-		internal static void EncodeMipMaps(Image<Rgba32> image, IQuantizer<Rgba32>? quantizer, GvrPixelCodec pixelCodec, MemoryStream writer)
-		{
-			for (int size = image.Width >> 1; size > 0; size >>= 1)
-			{
-				byte[] mipMapPixels;
-				Image<Rgba32> mipMapImage = image.Clone();
-				mipMapImage.Mutate(x => x.Resize(size, size));
-				// If there is a quantizer, use it.
-				// Since indexed GVR apparently can't have mipmaps, this whole thing is unnecessary. Also it seems to be broken for Index4's 1x1 mipmap.
-				if (quantizer != null)
-				{
-					IndexedImageFrame<Rgba32> mipMapFrame = quantizer.QuantizeFrame(mipMapImage.Frames[0], new(0, 0, size, size));
-					mipMapPixels = new byte[size * size];
-					Span<byte> pixelData = mipMapPixels;
-					for (int y = 0; y < size; y++)
-					{
-						mipMapFrame.DangerousGetRowSpan(y).CopyTo(pixelData[(y * size)..]);
-					}
-				}
-				// If no quantizer is specified, copy image data directly.
-				else
-				{
-					mipMapPixels = new byte[size * size * 4];
-					mipMapImage.CopyPixelDataTo(mipMapPixels);
-				}
-				writer.Write(pixelCodec.Encode(mipMapPixels, size, size));
-			}
 		}
 	}
 }

@@ -1,15 +1,51 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace TextureLib
 {
     public static partial class TextureFunctions
     {
+		/// <summary>
+		/// Encodes a mipmap, optionally with a quantizer.
+		/// </summary>
+		/// <param name="image">ImageSharp image to encode.</param>
+		/// <param name="quantizer">Quantizer to use (optional).</param>
+		/// <param name="codec">Data codec to use.</param>
+		/// <param name="size">Size of the mipmap.</param>
+		/// <param name="writer">Output memory stream.</param>
+		public static void EncodeMipMap(Image<Rgba32> image, IQuantizer<Rgba32>? quantizer, DataCodec codec, int size, MemoryStream writer)
+		{
+			byte[] mipMapPixels;
+			Image<Rgba32> mipMapImage = image.Clone();
+			mipMapImage.Mutate(x => x.Resize(size, size));
+			// If there is a quantizer, use it.
+			// Since indexed GVR apparently can't have mipmaps, this whole thing is unnecessary. Also it seems to be broken for Index4's 1x1 mipmap.
+			if (quantizer != null)
+			{
+				IndexedImageFrame<Rgba32> mipMapFrame = quantizer.QuantizeFrame(mipMapImage.Frames[0], new(0, 0, size, size));
+				mipMapPixels = new byte[size * size];
+				Span<byte> pixelData = mipMapPixels;
+				for (int y = 0; y < size; y++)
+				{
+					mipMapFrame.DangerousGetRowSpan(y).CopyTo(pixelData[(y * size)..]);
+				}
+			}
+			// If no quantizer is specified, copy image data directly.
+			else
+			{
+				mipMapPixels = new byte[size * size * 4];
+				mipMapImage.CopyPixelDataTo(mipMapPixels);
+			}
+			writer.Write(codec.Encode(mipMapPixels, size, size));
+		}
+
 		/// <summary>Converts a Bitmap to an ImageSharp image.</summary>
 		public static SixLabors.ImageSharp.Image<Rgba32> BitmapToImageSharp(Bitmap bitmap)
 		{

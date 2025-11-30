@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal abstract class PvrDataCodec
+	internal abstract class PvrDataCodec: DataCodec
 	{
 		public PixelCodec PixelCodec { get; }
 
@@ -61,7 +61,7 @@ namespace TextureLib
 		}
 
 		public abstract int CalculateTextureSize(int width, int height);
-		public byte[] Decode(ReadOnlySpan<byte> source, int width, int height, ReadOnlySpan<byte> palette)
+		public override byte[] Decode(ReadOnlySpan<byte> source, int width, int height, ReadOnlySpan<byte> palette)
 		{
 			byte[] result = new byte[width * height * (NeedsExternalPalette ? 1 : 4)];
 			Span<byte> destination = result;
@@ -74,7 +74,7 @@ namespace TextureLib
 		protected abstract void InternalDecode(ReadOnlySpan<byte> source, int width, int height, ReadOnlySpan<byte> palette, Span<byte> destination);
 
 
-		public byte[] Encode(ReadOnlySpan<byte> source, int width, int height)
+		public override byte[] Encode(ReadOnlySpan<byte> source, int width, int height)
 		{
 			byte[] result = new byte[CalculateTextureSize(width, height)];
 			Span<byte> destination = result;

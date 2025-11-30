@@ -103,7 +103,11 @@ namespace TextureLib
 				if (dataCodec.HasMipmaps)
 				{
 					PaletteQuantizer quantizer = TexturePalette.CreatePaletteQuantizer(outputPalette, outputPalette.GetNumColors(), 0, dither);
-					EncodeMipMaps(TextureFunctions.BitmapToImageSharp(texture), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, outputStream);
+					// PVR mipmap order: from smallest to largest
+					for (int size = 1; size < texture.Width; size <<= 1)
+					{
+						TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(texture), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, size, outputStream);
+					}
 				}
 				// Encode the indexed texture itself
 				outputStream.Write(dataCodec.Encode(indexedBitmapData, texture.Width, texture.Height));
@@ -127,7 +131,11 @@ namespace TextureLib
             if (dataCodec.HasMipmaps)
             {
                 Image<Rgba32> image = TextureFunctions.BitmapToImageSharp(texture);
-                EncodeMipMaps(image, null, dataCodec, writer);
+				// PVR mipmap order: from smallest to largest
+				for (int size = 1; size < texture.Width; size <<= 1)
+				{
+					TextureFunctions.EncodeMipMap(image, null, dataCodec, size, writer);
+				}
             }
 
             byte[] mainImageData = dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), texture.Width, texture.Height);
@@ -145,34 +153,6 @@ namespace TextureLib
             }
 
             writer.Write(destination);
-        }
-
-        private static void EncodeMipMaps(Image<Rgba32> image, IQuantizer<Rgba32>? quantizer, PvrDataCodec dataCodec, MemoryStream writer)
-        {
-            for (int size = 1; size < image.Width; size <<= 1)
-            {
-				byte[] mipMapPixels;
-				Image<Rgba32> mipMapImage = image.Clone();
-                mipMapImage.Mutate(x => x.Resize(size, size));
-				// If there is a quantizer, use it.
-				if (quantizer != null)
-                {
-                    IndexedImageFrame<Rgba32> mipMapFrame = quantizer.QuantizeFrame(mipMapImage.Frames[0], new(0, 0, size, size));
-                    mipMapPixels = new byte[size * size];
-                    Span<byte> pixelData = mipMapPixels;
-                    for (int y = 0; y < size; y++)
-                    {
-                        mipMapFrame.DangerousGetRowSpan(y).CopyTo(pixelData[(y * size)..]);
-                    }
-                }
-				// If no quantizer is specified, copy image data directly.
-				else
-				{
-                    mipMapPixels = new byte[size * size * 4];
-                    mipMapImage.CopyPixelDataTo(mipMapPixels);
-                }
-                writer.Write(dataCodec.Encode(mipMapPixels, size, size));
-            }
         }
 
         private static void EncodeVQ(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
