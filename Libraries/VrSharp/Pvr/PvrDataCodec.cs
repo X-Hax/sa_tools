@@ -133,13 +133,18 @@ namespace VrSharp.Pvr
         {
             public override bool CanEncode
             {
-                get { return false; }
+                get { return true; }
             }
 
             public override int Bpp
             {
                 get { return 2; }
             }
+
+			public override bool VQ
+			{
+				get { return true; }
+			}
 
             public override int PaletteEntries
             {
@@ -185,7 +190,26 @@ namespace VrSharp.Pvr
 
             public override byte[] Encode(byte[] source, int sourceIndex, int width, int height)
             {
-                return null;
+				// Destination data & index
+				int compressedWidth = (int)(width / 2.0);
+				int compressedHeight = (int)(height / 2.0);
+				byte[] destination = new byte[compressedWidth * compressedHeight];
+				int destinationIndex = 0;
+				// Get the size of each block to process.
+				int size = Math.Min(compressedWidth, compressedHeight);
+				// Twiddle map
+				int[] twiddleMap = MakeTwiddleMap(size);
+				// Encode texture data
+				for (int y = 0; y < compressedHeight; y++)
+				{
+					for (int x = 0; x < compressedWidth; x++)
+					{
+						destinationIndex = (twiddleMap[x] << 1) | twiddleMap[y];
+						destination[destinationIndex] = source[sourceIndex];
+						sourceIndex++;
+					}
+				}
+				return destination;
             }
         }
         #endregion
