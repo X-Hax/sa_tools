@@ -2,15 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
-using System.DirectoryServices.ActiveDirectory;
 using SAModel.Direct3D.TextureSystem;
 using SAModel.GC;
-using static VrSharp.Xvr.DirectXTexUtility;
-using SharpDX.Direct3D9;
-using Newtonsoft.Json.Linq;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SAModel.SAEditorCommon.UI
 {

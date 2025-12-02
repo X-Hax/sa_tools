@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
-using System.DirectoryServices.ActiveDirectory;
-using SAModel.Direct3D.TextureSystem;
 using SAModel.GC;
-using static VrSharp.Xvr.DirectXTexUtility;
-using SharpDX.Direct3D9;
 
 namespace SAModel.SAEditorCommon.UI
 {
