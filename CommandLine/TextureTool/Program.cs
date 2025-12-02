@@ -18,7 +18,7 @@ namespace TexTool
 	}
 
 	enum TargetFileFormat
-	{ 
+	{
 		Pvr,
 		Gvr,
 		Xvr,
@@ -45,7 +45,7 @@ namespace TexTool
 		static bool useMipmaps;
 		static bool useDitheringForIndexed;
 		static bool encodeExternalPalette;
-		
+
 		// GVR stuff
 		static GvrDataFormat targetGvrFormat;
 		static GvrPaletteFormat targetGvrPaletteFormat;
@@ -58,6 +58,10 @@ namespace TexTool
 		static PvrPixelFormat targetPvrPixelFormat;
 		static bool autoPvrDataFormat;
 		static bool autoPvrPixelFormat;
+
+		// DDS stuff
+		static DdsFormat targetDdsFormat;
+		static bool autoDdsDataFormat;
 
 		static void ParseCommandLine(string[] args)
 		{
@@ -225,11 +229,28 @@ namespace TexTool
 						break;
 					case TargetFileFormat.Xvr:
 					case TargetFileFormat.Dds:
-						// TODO
+						if (args.Contains("-888"))
+							targetDdsFormat = DdsFormat.Rgb888;
+						else if (args.Contains("-565"))
+							targetDdsFormat = DdsFormat.Rgb565;
+						else if (args.Contains("-1555"))
+							targetDdsFormat = DdsFormat.Argb1555;
+						else if (args.Contains("-4444"))
+							targetDdsFormat = DdsFormat.Argb4444;
+						else if (args.Contains("-8888"))
+							targetDdsFormat = DdsFormat.Argb8888;
+						else if (args.Contains("-dxt1"))
+							targetDdsFormat = DdsFormat.Dxt1;
+						else if (args.Contains("-dxt3"))
+							targetDdsFormat = DdsFormat.Dxt3;
+						else if (args.Contains("-dxt5"))
+							targetDdsFormat = DdsFormat.Dxt5;
+						else
+							autoDdsDataFormat = true;
+						break;
 					default:
 						break;
 				}
-
 			}
 			// Check if palette filename is specified
 			if (args.Contains("-p"))
@@ -280,7 +301,7 @@ namespace TexTool
 		}
 
 		static void Main(string[] args)
-		{
+		{			
 			ParseCommandLine(args);
 
 			Console.WriteLine("Input file: {0}", inputFilename);
@@ -325,15 +346,18 @@ namespace TexTool
 					inputPalette = string.IsNullOrEmpty(paletteFilename) ? null :
 						new TexturePalette(File.ReadAllBytes(paletteFilename), false);
 					// Output encoder parameters
-					Console.WriteLine("GBIX: {0}", gbix.ToString());
 					switch (targetFileFormat)
 					{
+						case TargetFileFormat.Dds:
+							Console.WriteLine("DDS data format: {0}", targetDdsFormat.ToString());
+							break;
 						case TargetFileFormat.Pvr:
+							Console.WriteLine("GBIX: {0}", gbix.ToString());
 							Console.WriteLine("PVR data format: {0}", targetPvrFormat.ToString());
 							Console.WriteLine("PVR pixel format: {0}", targetPvrPixelFormat.ToString());
-							// TODO: Put something here?
 							break;
 						case TargetFileFormat.Gvr:
+							Console.WriteLine("GBIX: {0}", gbix.ToString());
 							Console.WriteLine("GVR format: {0}", targetGvrFormat.ToString());
 							switch (targetGvrFormat)
 							{
@@ -373,7 +397,18 @@ namespace TexTool
 					GenericTexture result = null;
 					switch (targetFileFormat)
 					{
+						case TargetFileFormat.Dds:
+							// Set formats for auto mode
+							if (autoDdsDataFormat)
+							{
+								Console.WriteLine("Auto DDS formats not implemented yet");
+								return;
+							}
+							// Encode texture
+							result = new DdsTexture(inputBitmap, targetDdsFormat, useMipmaps);
+							break;
 						case TargetFileFormat.Pvr:
+							// Set formats for auto mode
 							if (autoPvrDataFormat)
 							{
 								Console.WriteLine("Auto PVR formats not implemented yet");

@@ -1,134 +1,175 @@
-﻿using BCnEncoder.Decoder;
-using BCnEncoder.Encoder;
-using BCnEncoder.ImageSharp;
-using BCnEncoder.Shared;
-using BCnEncoder.Shared.ImageFiles;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using static TextureLib.DirectXTexUtility;
+
+// Class for DDS textures
+
+// TODO: Lossless conversion between DXT1 GVR and DXT1 DDS
 
 namespace TextureLib
 {
-	// Class for DDS textures
+	// Formats supported by this library
+	public enum DdsFormat
+	{
+		Rgb888,
+		Argb8888,
+		Rgb565,
+		Argb1555,
+		Argb4444,
+		Dxt1,
+		Dxt3,
+		Dxt5,
+		Unsupported
+	}
+
+	/* Other formats for potential support in the future (probably useless):
+	// D3DFMT_P8 // PVR and GVR Index8
+	// D3DFMT_DXT2 // DDS DXT2 (DXT3 premultiplied by alpha)
+	// D3DFMT_DXT4 // DDS DXT4 (DXT5 premultiplied by alpha)
+	// D3DFMT_P8 // PVR and GVR Index8
+	// D3DFMT_V8U8 // PVR Bump
+	// D3DFMT_A4L4 // GVR IntensityA8
+	// D3DFMT_L8 // GVR Intensity8
+	// D3DFMT_UYVY or D3DFMT_YUY2? // PVR YUV422
+	*/
+
 	public class DdsTexture : GenericTexture
 	{
-		public DdsPixelFormat DdsPixelFormat;
-		public DdsHeaderFlags DdsHeaderFlags;
-		public DdsPixelBitFormat DdsDataFormat;
-		private PixelCodec pixelCodec;
+		public DdsFormat DdsFormat;
+		private byte[] HeaderlessData;
 
+		/// <summary>
+		/// Initializes a DDS texture from a byte array that contains DDS texture header and data.
+		/// </summary>
+		/// <param name="data">Byte array containing GVR texture header and data.</param>
+		/// <param name="offset">Offset to the beginning of the GVR texture header.</param>
+		/// <param name="name">Texture name, if applicable.</param>		
 		public DdsTexture(byte[] data, int offset = 0, string name = null)
 		{
 			InitTexture(data, offset, name);
+			// Load the DDS header
+			DDSHeader header = DdsFunctions.GetDdsHeader(data, offset);
 			// Read information about the texture
-			Height = (ushort)BitConverter.ToUInt32(RawData, 0xC);
-			Width = (ushort)BitConverter.ToUInt32(RawData, 0x10);
-
-			DdsPixelFormat = (DdsPixelFormat)(RawData[0x50]);
-			DdsHeaderFlags = (DdsHeaderFlags)BitConverter.ToUInt32(RawData, 0x8);
-			uint amask = BitConverter.ToUInt32(RawData, 0x68);
-			uint rmask = BitConverter.ToUInt32(RawData, 0x5C);
-			uint gmask = BitConverter.ToUInt32(RawData, 0x60);
-			uint bmask = BitConverter.ToUInt32(RawData, 0x64);
-			if (amask == 0)
-				DdsDataFormat = DdsPixelBitFormat.RGB565;
-			else if (amask == 32768 && rmask == 31744)
-				DdsDataFormat = DdsPixelBitFormat.ARGB1555;
-			else if (amask == 61440 && rmask == 3840)
-				DdsDataFormat = DdsPixelBitFormat.ARGB4444;
-			else if (amask == 4278190080 && rmask == 16711680)
-				DdsDataFormat = DdsPixelBitFormat.ARGB8888;
-
-			MemoryStream rawStream = new MemoryStream(RawData);
-			DdsFile ddsFile = DdsFile.Load(rawStream);
-			bool mipmaps = ddsFile.Faces[0].MipMaps.Length > 1;
-			rawStream.Seek(0, SeekOrigin.Begin);
-
-			BcDecoder decoder = new BcDecoder();			
-			Image<Rgba32> image = decoder.DecodeToImageRgba32(rawStream);
-
-			// Decode main image
-			MemoryStream imageStream = new();
-			image.SaveAsPng(imageStream);
-			Image = new Bitmap(imageStream);
-
-			// Decode mipmaps
-			if (mipmaps)
+			DdsFormat = DdsFunctions.IdentifyPixelFormat(header.PixelFormat);
+			Width = (int)header.Width;
+			Height = (int)header.Height;
+			HasMipmaps = header.Flags.HasFlag(DDSHeader.HeaderFlags.MIPMAP) && header.MipMapCount > 1;
+#if DEBUG
+			Console.WriteLine("\nTEXTURE INFO");
+			Console.WriteLine("Width: " + Width.ToString());
+			Console.WriteLine("Height: " + Height.ToString());
+			Console.WriteLine("Data format: " + DdsFormat.ToString());
+			Console.WriteLine("Mipmaps: " + HasMipmaps.ToString());
+#endif
+			// Set pixel and data codec
+			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(DdsFormat);
+			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec);
+			// Set up headerless data
+			HeaderlessData = new byte[RawData.Length - 128];
+			Array.Copy(RawData, 128, HeaderlessData, 0, HeaderlessData.Length);
+			// Decode main texture
+			int textureAddress = 0;
+			int textureSize = dataCodec.CalculateTextureSize(Width, Height);
+			ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
+			byte[] result = dataCodec.Decode(textureData, Width, Height, null);
+			Image = new Bitmap(Width, Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			TextureFunctions.RawToBitmap(Image, result);
+			// Decode mipmaps if present
+			if (HasMipmaps)
 			{
-				HasMipmaps = true;
-				rawStream.Seek(0, SeekOrigin.Begin);
-				Image<Rgba32>[] mips = decoder.DecodeAllMipMapsToImageRgba32(rawStream);
-				MipmapImages = new Bitmap[mips.Length];
-				for (int i = 0; i < mips.Length; i++)
-				{
-					MemoryStream mipStream = new();
-					mips[i].SaveAsPng(mipStream);
-					MipmapImages[i] = new Bitmap(mipStream);
-				}
-			}
-			// Get the codecs and make sure we can decode using them
-			//dataCodec = DDSDataCodec.GetDataCodec(dataFormat);
-			// We need a pixel codec if this is a palettized texture
-			// Placeholder because palette data doesn't work properly yet
-			//if (dataCodec != null && dataCodec.PaletteEntries != 0)
-			/*
-			pixelCodec = PixelCodec.GetPixelCodec(DdsPixelFormat);
-
-			if (pixelCodec != null)
-			{
-				dataCodec.PixelCodec = pixelCodec;
-				canDecode = true;
-			}
-			//}
-			//else
-			//{
-			pixelFormat = DDSPixelFormat.Invalid;
-
-			if (dataCodec != null)
-			{
-				canDecode = true;
-			}
-			//}
-
-			// If the texture contains mipmaps, gets the offsets of them
-			if (canDecode && paletteEntries == 0 && (dataFlags & DDSHeaderFlags.MipmapCount - 1) != 0)
-			{
-				//mipmapOffsets = new int[(int)Math.Log(textureWidth, 2)];
-				mipmapOffsets = new int[2];
+				int mipCount = (int)header.MipMapCount;
 				int mipmapOffset = 0;
-				for (int i = 0, size = textureWidth; i < mipmapOffsets.Length; i++, size >>= 1)
+				int mipSize = Width;
+				MipmapImages = new Bitmap[mipCount];
+				for (int m = 0; m < mipCount; m++)
 				{
-					mipmapOffsets[i] = mipmapOffset;
-					mipmapOffset += Math.Max(size * size * (dataCodec.Bpp >> 3), 32);
+					int mipDataSize = dataCodec.CalculateTextureSize(mipSize, mipSize);
+					ReadOnlySpan<byte> mipData = HeaderlessData[mipmapOffset..];
+					byte[] mipmapResult = dataCodec.Decode(mipData, mipSize, mipSize, null);
+					MipmapImages[m] = new Bitmap(mipSize, mipSize, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+					TextureFunctions.RawToBitmap(MipmapImages[m], mipmapResult);
+					mipSize >>= 1;
+					mipmapOffset += mipDataSize;
 				}
 			}
-			dataOffset = 0x80;
-			*/
 		}
 
-		private PixelCodec GetPixelCodecForDds(DdsPixelFormat pixelFormat)
+		/// <summary>
+		/// Encodes a DDS texture from a Bitmap.
+		/// </summary>
+		/// <param name="texture">Source Bitmap.</param>
+		/// <param name="dataFormat">Target DDS data format.</param>
+		/// <param name="mipmaps">Encode mipmaps.</param>
+		public DdsTexture(Bitmap texture, DdsFormat dataFormat, bool mipmaps)
 		{
-			switch (pixelFormat)
+			// Set texture parameters
+			Image = new Bitmap(texture);
+			Width = texture.Width;
+			Height = texture.Height;
+			DdsFormat = dataFormat;
+			HasMipmaps = mipmaps;
+			MemoryStream outputStream = new();
+			// Set pixel and data codec
+			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(DdsFormat);
+			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec);
+			// Encode main texture
+			outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), Width, Height));
+			// Encode mipmaps
+			if (HasMipmaps)
 			{
-				case DdsPixelFormat.RGB:
-					return new RGB565PixelCodec();
-				case DdsPixelFormat.RGBA:
-					return new RGB5A3PixelCodec();
-				case DdsPixelFormat.YUV:
-					throw new NotImplementedException(pixelFormat.ToString());
-				default:
-					return null;
+				// Calculate the number of mip levels
+				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
+				MipmapImages = new Bitmap[mipLevels];
+				MipmapImages[0] = new Bitmap(texture);
+				// DDS mipmap order: from largest to smallest
+				int mipLevel = 1;
+				for (int size = texture.Width >> 1; size > 0; size >>= 1)
+				{
+					MipmapImages[mipLevel] = new Bitmap(texture, size, size);
+					outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), size, size)); 
+				}
 			}
+			// Set data arrays
+			HeaderlessData = outputStream.ToArray();
+			RawData = GetBytes();
 		}
-
 
 		public override byte[] GetBytes()
 		{
-			MemoryStream ms = new();
-
-			return ms.ToArray();
+			DDSHeader outHeader;
+			DirectXTexUtility.TexMetadata meta = new DirectXTexUtility.TexMetadata
+			{
+				Width = Width,
+				Height = Height,
+				Depth = 1, 
+				ArraySize = 1, 
+				MipLevels = MipmapImages == null ? 1: MipmapImages.Length,
+				MiscFlags2 = 0,
+				Format = DdsFunctions.GetDxgiFormat(DdsFormat),
+				Dimension = TexDimension.TEXTURE2D
+			};
+			DirectXTexUtility.GenerateDDSHeader(meta, DDSFlags.NONE, out outHeader, out _);
+			// There is no DXGI format for RGB888 so for this format R8G8B8G8UNORM is used as a workaround to generate the header.
+			// If R8G8B8G8UNORM is written into the header, override it with RGB888 parameters.
+			if (DdsFunctions.ComparePixelFormats(outHeader.PixelFormat, PixelFormats.R8G8B8G8))
+			{
+				// Fix pixel format
+				outHeader.PixelFormat = PixelFormats.R8G8B8;
+				// Fix pitch
+				outHeader.PitchOrLinearSize = (outHeader.Width * 24 + 7) / 8; // 24 is bpp
+			}
+			// If there are no mipmaps, remove the mipmaps capability (for some reason DirectXTexUtility enables it but PaintShopPro doesn't)
+			if (!HasMipmaps)
+			{
+				outHeader.Flags &= ~DDSHeader.HeaderFlags.MIPMAP;
+				outHeader.Caps &= ~(uint)DDSHeader.SurfaceFlags.MIPMAP;
+			}
+			List<byte> result = new List<byte>();
+			result.AddRange(outHeader.GetBytes());
+			result.AddRange(HeaderlessData);
+			return result.ToArray();
 		}
 	}
 }
