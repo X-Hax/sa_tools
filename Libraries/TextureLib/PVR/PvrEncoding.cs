@@ -37,6 +37,7 @@ namespace TextureLib
 			}
 
 			// Set common texture data
+			Image = texture;
 			Gbix = gbix;
 			PvrDataFormat = dataFormat;
 			PvrPixelFormat = pixelFormat;
@@ -45,6 +46,16 @@ namespace TextureLib
 			if (mipmaps)
 			{
 				HasMipmaps = true;
+				// Calculate the number of mip levels
+				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
+				// Generate mipmaps for the preview version
+				MipmapImages = new Bitmap[mipLevels];
+				int mipWidth = Width;
+				for (int m = 0; m < mipLevels; m++)
+				{
+					MipmapImages[m] = new Bitmap(Image, Width, Width);
+					mipWidth >>= 1;
+				}
 			}
 			if (dataFormat == PvrDataFormat.Index8 || dataFormat == PvrDataFormat.Index4 || dataFormat == PvrDataFormat.Index4Mipmaps || dataFormat == PvrDataFormat.Index8Mipmaps)
 			{
@@ -114,7 +125,8 @@ namespace TextureLib
 				outputStream.Write(dataCodec.Encode(indexedBitmapData, texture.Width, texture.Height));
 			}
 			// Set the texture's raw data
-			RawData = outputStream.ToArray();
+			HeaderlessData = outputStream.ToArray();
+			RawData = GetBytes();
 		}
 
         private static void EncodeColored(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)

@@ -23,14 +23,13 @@ namespace TextureLib
 
 		public override byte[] GetBytes()
 		{
-			ByteConverter.SetBigEndian(true);
 			List<byte> result = new();
 			if (Gbix != 0)
 			{
 				result.AddRange(BitConverter.GetBytes(Magic_GBIX));
 				result.AddRange(BitConverter.GetBytes((uint)8));
-				result.AddRange(ByteConverter.GetBytes(Gbix));
-				result.AddRange(ByteConverter.GetBytes((uint)0));
+				result.AddRange(ByteConverter.GetBytesBE(Gbix));
+				result.AddRange(BitConverter.GetBytes((uint)0));
 			}
 			result.AddRange(BitConverter.GetBytes(Magic_GVRT));
 			result.AddRange(BitConverter.GetBytes((uint)(RawData.Length + 8)));
@@ -39,10 +38,9 @@ namespace TextureLib
 			int flag = ((byte)GvrPaletteFormat << 4) | (byte)GvrDataFlags;
 			result.Add((byte)flag);
 			result.Add((byte)GvrDataFormat);
-			result.AddRange(ByteConverter.GetBytes((ushort)Width));
-			result.AddRange(ByteConverter.GetBytes((ushort)Height));
-			result.AddRange(RawData);
-			ByteConverter.RestoreBigEndian();
+			result.AddRange(ByteConverter.GetBytesBE((ushort)Width));
+			result.AddRange(ByteConverter.GetBytesBE((ushort)Height));
+			result.AddRange(HeaderlessData);
 			return result.ToArray();
 		}
 
@@ -55,28 +53,27 @@ namespace TextureLib
 		/// <param name="extPalette">Texture palette for decoding indexed textures, if applicable</param>
 		public GvrTexture(byte[] data, int offset = 0, string name = null, TexturePalette extPalette = null)
 		{
-			ByteConverter.SetBigEndian(true);
 			InitTexture(data, offset, name);
 			int currentOffset = offset;
 
 			// Get global index
 			if (BitConverter.ToUInt32(RawData, offset) == Magic_GBIX || BitConverter.ToUInt32(RawData, offset) == Magic_GCIX)
 			{
-				Gbix = ByteConverter.ToUInt32(RawData, currentOffset + 0x8);
+				Gbix = ByteConverter.ToUInt32BE(RawData, currentOffset + 0x8);
 				currentOffset += 0x10;
 			}
 
 			// Parse header
 			if (BitConverter.ToUInt32(RawData, currentOffset) == Magic_GVRT)
 			{
-				int chunksize = ByteConverter.ToInt32(RawData, currentOffset + 0x4);
+				int chunksize = ByteConverter.ToInt32BE(RawData, currentOffset + 0x4);
 				PaletteBank = RawData[currentOffset + 0x8]; // Not confirmed
 				PaletteStartIndex = RawData[currentOffset + 0x9]; // Not confirmed
 				GvrPaletteFormat = (GvrPaletteFormat)(RawData[currentOffset + 0x0A] >> 4); // Only the first 4 bits matter
 				GvrDataFlags = (GvrDataFlags)(RawData[currentOffset + 0x0A] & 0x0F); // Only the last 4 bits matter
 				GvrDataFormat = (GvrDataFormat)RawData[currentOffset + 0x0B];
-				Width = ByteConverter.ToUInt16(RawData, currentOffset + 0xC);
-				Height = ByteConverter.ToUInt16(RawData, currentOffset + 0xE);
+				Width = ByteConverter.ToUInt16BE(RawData, currentOffset + 0xC);
+				Height = ByteConverter.ToUInt16BE(RawData, currentOffset + 0xE);
 			}
 
 			// Set general texture properties
@@ -189,9 +186,6 @@ namespace TextureLib
 					MipmapImages[mipmapIndex] = mipBitmap;
 				}
 			}
-
-			// Important!
-			ByteConverter.RestoreBigEndian();
 		}
 
 		/// <summary>
@@ -227,6 +221,7 @@ namespace TextureLib
 			}
 
 			// Set common texture data
+			Image = texture;
 			Gbix = gbix;
 			GvrDataFormat = dataFormat;
 			Width = texture.Width;
@@ -235,6 +230,16 @@ namespace TextureLib
 			{
 				HasMipmaps = true;
 				GvrDataFlags |= GvrDataFlags.Mipmaps;
+				// Calculate the number of mip levels
+				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
+				// Generate mipmaps for the preview version
+				MipmapImages = new Bitmap[mipLevels];
+				int mipWidth = Width;
+				for (int m = 0; m < mipLevels; m++)
+				{
+					MipmapImages[m] = new Bitmap(Image, Width, Width);
+					mipWidth >>= 1;
+				}
 			}
 			if (dataFormat == GvrDataFormat.Index8 || dataFormat == GvrDataFormat.Index4 || dataFormat == GvrDataFormat.Index14)
 			{
@@ -310,7 +315,8 @@ namespace TextureLib
 				}
 			}
 			// Set the texture's raw data
-			RawData = outputStream.ToArray();
+			HeaderlessData = outputStream.ToArray();
+			RawData = GetBytes();
 		}
 	}
 }

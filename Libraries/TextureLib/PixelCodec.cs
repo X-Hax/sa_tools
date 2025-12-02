@@ -52,5 +52,29 @@ namespace TextureLib
                     throw new NotImplementedException(paletteFormat.ToString());
             }
         }
-    }
+
+		public static PixelCodec GetPixelCodec(DdsFormat ddsFormat)
+		{
+			switch (ddsFormat)
+			{
+				case DdsFormat.Argb8888:
+					return new ABGR8888PixelCodec();
+				case DdsFormat.Argb1555:
+					return new ARGB1555PixelCodec();
+				case DdsFormat.Argb4444:
+					return new ARGB4444PixelCodec();
+				case DdsFormat.Rgb565:
+					return new RGB565PixelCodec();
+				case DdsFormat.Dxt1:
+				case DdsFormat.Dxt3:
+				case DdsFormat.Dxt5:
+					return null;
+				case DdsFormat.Rgb888:
+					return new RGB888PixelCodec();
+				case DdsFormat.Unsupported:
+				default:
+					throw new NotImplementedException(ddsFormat.ToString());
+			}
+		}
+	}
 }

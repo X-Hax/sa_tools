@@ -35,7 +35,7 @@ namespace TextureLib
 			result.Add((byte)PaletteStartIndex);			
 			result.AddRange(BitConverter.GetBytes((ushort)Width));
 			result.AddRange(BitConverter.GetBytes((ushort)Height));
-			result.AddRange(RawData);
+			result.AddRange(HeaderlessData);
 			return result.ToArray();
 		}
 
