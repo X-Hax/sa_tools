@@ -38,7 +38,8 @@ namespace TextureLib
 	public class DdsTexture : GenericTexture
 	{
 		public DdsFormat DdsFormat;
-		private byte[] HeaderlessData;
+		public byte[] HeaderlessData;
+		public bool UseAlpha; // For XVR
 
 		/// <summary>
 		/// Initializes a DDS texture from a byte array that contains DDS texture header and data.
@@ -49,15 +50,29 @@ namespace TextureLib
 		public DdsTexture(byte[] data, int offset = 0, string name = null)
 		{
 			InitTexture(data, offset, name);
-			// Load the DDS header
-			DDSHeader header = DdsFunctions.GetDdsHeader(data, offset);
+			// Check if dealing with DDS or XVR
+			DdsFunctions.DdsTextureHeaderType type = DdsFunctions.CheckHeaderType(data, offset);
+			DDSHeader header; // Standard DDS header
+			switch (type)
+			{
+				// If this is a DDS, just load its header
+				case DdsFunctions.DdsTextureHeaderType.Dds:
+					header = DdsFunctions.GetDdsHeader(data, offset);
+					break;
+				case DdsFunctions.DdsTextureHeaderType.Xvr:
+					header = XvrTexture.GetDdsHeaderFromXvr(data, offset);
+					Gbix = XvrTexture.GetGbixFromXvr(data, offset);
+					break;
+				default:
+					throw new Exception("Texture not in DDS or XVR format");
+			}
 			// Read information about the texture
 			DdsFormat = DdsFunctions.IdentifyPixelFormat(header.PixelFormat);
 			Width = (int)header.Width;
 			Height = (int)header.Height;
 			HasMipmaps = header.Flags.HasFlag(DDSHeader.HeaderFlags.MIPMAP) && header.MipMapCount > 1;
 #if DEBUG
-			Console.WriteLine("\nTEXTURE INFO");
+			Console.WriteLine("\nDDS TEXTURE INFO");
 			Console.WriteLine("Width: " + Width.ToString());
 			Console.WriteLine("Height: " + Height.ToString());
 			Console.WriteLine("Data format: " + DdsFormat.ToString());
@@ -65,10 +80,11 @@ namespace TextureLib
 #endif
 			// Set pixel and data codec
 			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(DdsFormat);
-			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec);
+			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec, true);
 			// Set up headerless data
-			HeaderlessData = new byte[RawData.Length - 128];
-			Array.Copy(RawData, 128, HeaderlessData, 0, HeaderlessData.Length);
+			int headerSize = type == DdsFunctions.DdsTextureHeaderType.Xvr ? 64 : 128;
+			HeaderlessData = new byte[RawData.Length - headerSize];
+			Array.Copy(RawData, headerSize, HeaderlessData, 0, HeaderlessData.Length);
 			// Decode main texture
 			int textureAddress = 0;
 			int textureSize = dataCodec.CalculateTextureSize(Width, Height);
@@ -76,6 +92,7 @@ namespace TextureLib
 			byte[] result = dataCodec.Decode(textureData, Width, Height, null);
 			Image = new Bitmap(Width, Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			TextureFunctions.RawToBitmap(Image, result);
+			UseAlpha = TextureFunctions.GetAlphaLevelFromBitmap(Image) > BitmapAlphaLevel.None;
 			// Decode mipmaps if present
 			if (HasMipmaps)
 			{
@@ -110,10 +127,11 @@ namespace TextureLib
 			Height = texture.Height;
 			DdsFormat = dataFormat;
 			HasMipmaps = mipmaps;
+			UseAlpha = TextureFunctions.GetAlphaLevelFromBitmap(texture) > BitmapAlphaLevel.None;
 			MemoryStream outputStream = new();
 			// Set pixel and data codec
 			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(DdsFormat);
-			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec);
+			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec, UseAlpha);
 			// Encode main texture
 			outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), Width, Height));
 			// Encode mipmaps

@@ -16,6 +16,7 @@ namespace TextureLib
 			switch (CompressionFormat)
 			{
 				case CompressionFormat.Bc1: // DXT1, 4 bpp				
+				case CompressionFormat.Bc1WithAlpha: // DXT1, 4 bpp with alpha		
 					return width * height / 2;
 				case CompressionFormat.Bc2: // DXT3, 8 bpp
 				case CompressionFormat.Bc3: // DXT5, 8 bpp

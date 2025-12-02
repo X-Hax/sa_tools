@@ -45,12 +45,12 @@ namespace TextureLib
 
 		protected abstract void InternalEncode(ReadOnlySpan<byte> source, int width, int height, Span<byte> destination);
 
-		public static DdsDataCodec GetDataCodec(DdsFormat fmt, PixelCodec px)
+		public static DdsDataCodec GetDataCodec(DdsFormat fmt, PixelCodec px, bool useAlpha)
 		{
 			switch (fmt)
 			{
 				case DdsFormat.Dxt1:
-					return new BCDataCodec(px) { CompressionFormat = BCnEncoder.Shared.CompressionFormat.Bc1 };
+					return new BCDataCodec(px) { CompressionFormat = useAlpha ? BCnEncoder.Shared.CompressionFormat.Bc1WithAlpha : BCnEncoder.Shared.CompressionFormat.Bc1 };
 				case DdsFormat.Dxt3:
 					return new BCDataCodec(px) { CompressionFormat = BCnEncoder.Shared.CompressionFormat.Bc2 };
 				case DdsFormat.Dxt5:

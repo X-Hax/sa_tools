@@ -6,6 +6,13 @@ namespace TextureLib
 {
 	public static class DdsFunctions
 	{
+		public enum DdsTextureHeaderType
+		{
+			Dds,
+			Xvr,
+			Unknown
+		}
+
 		public static DDSHeader GetDdsHeader(byte[] data, int offset)
 		{
 			return new DDSHeader
@@ -98,6 +105,18 @@ namespace TextureLib
 				default:
 					return DXGIFormat.UNKNOWN;
 			}
+		}
+
+		public static DdsTextureHeaderType CheckHeaderType(byte[] data, int offset)
+		{
+			const uint MagicXVRT = 0x54525658;
+			const uint MagicDDS = 0x20534444;
+			uint test = BitConverter.ToUInt32(data, offset);
+			if (test == MagicDDS)
+				return DdsTextureHeaderType.Dds;
+			else if (test == MagicXVRT)
+				return DdsTextureHeaderType.Xvr;
+			return DdsTextureHeaderType.Unknown;
 		}
 	}
 }

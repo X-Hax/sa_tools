@@ -10,8 +10,53 @@ using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
 namespace TextureLib
 {
-    public static partial class TextureFunctions
+	public enum BitmapAlphaLevel
+	{
+		None = 0,
+		OneBitAlpha = 1,
+		FullAlpha = 2
+	}
+
+	public static partial class TextureFunctions
     {
+
+		/// <summary>
+		/// Checks how many levels of transparency a Bitmap has.
+		/// </summary>
+		/// <returns>
+		/// 0 if the Bitmap has only opaque pixels,
+		/// 1 if the Bitmap has fully transparent and fully opaque pixels,
+		/// 2 if the Bitmap contains partially transparent pixels.
+		/// </returns>
+		public static BitmapAlphaLevel GetAlphaLevelFromBitmap(Bitmap img)
+		{
+			Bitmap argb = (img.PixelFormat == PixelFormat.Format32bppArgb) ? img : new Bitmap(img);
+			BitmapData bmpd = argb.LockBits(new System.Drawing.Rectangle(System.Drawing.Point.Empty, argb.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			int stride = bmpd.Stride;
+			byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
+			Marshal.Copy(bmpd.Scan0, bits, 0, bits.Length);
+			argb.UnlockBits(bmpd);
+			BitmapAlphaLevel tlevel = BitmapAlphaLevel.None;
+			for (int y = 0; y < argb.Height; y++)
+			{
+				int srcaddr = y * Math.Abs(stride);
+				for (int x = 0; x < argb.Width; x++)
+				{
+					System.Drawing.Color c = System.Drawing.Color.FromArgb(BitConverter.ToInt32(bits, srcaddr + (x * 4)));
+					if (c.A == 0)
+						tlevel = BitmapAlphaLevel.OneBitAlpha;
+					else if (c.A < 255)
+					{
+						tlevel = BitmapAlphaLevel.FullAlpha;
+						break;
+					}
+				}
+				if (tlevel == BitmapAlphaLevel.FullAlpha)
+					break;
+			}
+			return tlevel;
+		}
+
 		/// <summary>
 		/// Encodes a bitmap with the specified data/pixel codec, then decodes it back with degraded colors to use as the base of an indexed image.
 		/// </summary>

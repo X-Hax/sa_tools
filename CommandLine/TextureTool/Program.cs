@@ -63,6 +63,10 @@ namespace TexTool
 		static DdsFormat targetDdsFormat;
 		static bool autoDdsDataFormat;
 
+		// XVR stuff
+		static int targetXvrFormat;
+		static bool autoXvrFormat;
+
 		static void ParseCommandLine(string[] args)
 		{
 			if (args.Length == 0)
@@ -228,6 +232,11 @@ namespace TexTool
 						}
 						break;
 					case TargetFileFormat.Xvr:
+						if (args.Contains("-f"))
+							targetXvrFormat = int.Parse(args[FindArgument(args, "-f") + 1]);
+						else
+							autoXvrFormat = true;
+						break;
 					case TargetFileFormat.Dds:
 						if (args.Contains("-888"))
 							targetDdsFormat = DdsFormat.Rgb888;
@@ -303,13 +312,14 @@ namespace TexTool
 		static void Main(string[] args)
 		{			
 			ParseCommandLine(args);
-
+			Console.WriteLine("Program mode: {0}", programMode.ToString());
 			Console.WriteLine("Input file: {0}", inputFilename);
 			Console.WriteLine("Output file: {0}", outputFullFilename);
-			Console.WriteLine("Mode: {0}", programMode.ToString());
 			Console.WriteLine("Target format: {0}", targetFileFormat.ToString());
 			Console.WriteLine("Mipmaps: {0}", useMipmaps.ToString());
-			Console.WriteLine("Dithering: {0}", useDitheringForIndexed.ToString());
+			if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 || targetGvrFormat == GvrDataFormat.Index14 ||
+				targetPvrFormat == PvrDataFormat.Index4 || targetPvrFormat == PvrDataFormat.Index8)
+				Console.WriteLine("Dithering: {0}", useDitheringForIndexed.ToString());
 			switch (programMode)
 			{
 				case ProgramMode.Decode:
@@ -330,6 +340,9 @@ namespace TexTool
 						case ".dds":
 							inputTexture = new DdsTexture(inputFile);
 							break;
+						case ".xvr":
+							inputTexture = new XvrTexture(inputFile);
+							break;
 						default:
 							Console.WriteLine("{0}: input texture format not implemented", inputFile);
 							return;
@@ -349,7 +362,11 @@ namespace TexTool
 					switch (targetFileFormat)
 					{
 						case TargetFileFormat.Dds:
-							Console.WriteLine("DDS data format: {0}", targetDdsFormat.ToString());
+							Console.WriteLine("DDS format: {0}", targetDdsFormat.ToString());
+							break;
+						case TargetFileFormat.Xvr:
+							Console.WriteLine("GBIX: {0}", gbix.ToString());
+							Console.WriteLine("XVR format: {0} ({1})", targetXvrFormat.ToString(), XvrTexture.GetDxgiFormatFromXvrPixelFormat((byte)targetXvrFormat).ToString());
 							break;
 						case TargetFileFormat.Pvr:
 							Console.WriteLine("GBIX: {0}", gbix.ToString());
@@ -406,6 +423,16 @@ namespace TexTool
 							}
 							// Encode texture
 							result = new DdsTexture(inputBitmap, targetDdsFormat, useMipmaps);
+							break;
+						case TargetFileFormat.Xvr:
+							// Set formats for auto mode
+							if (autoXvrFormat)
+							{
+								Console.WriteLine("Auto XVR formats not implemented yet");
+								return;
+							}
+							// Encode texture
+							result = new XvrTexture(inputBitmap, targetXvrFormat, useMipmaps, gbix);
 							break;
 						case TargetFileFormat.Pvr:
 							// Set formats for auto mode
