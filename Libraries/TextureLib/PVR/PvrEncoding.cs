@@ -7,65 +7,17 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
+// PVR encoding methods that were split out of the main .cs file.
+
 namespace TextureLib
 {
     public partial class PvrTexture
     {
-		/// <summary>
-		/// Encodes a PVR texture from Bitmap.
-		/// </summary>
-		/// <param name="texture">Source Bitmap.</param>
-		/// <param name="dataFormat">Target PVR data format.</param>
-		/// <param name="pixelFormat">Target PVR pixel format or pixel format for indexed images.</param>
-		/// <param name="mipmaps">Encode mipmaps.</param>
-		/// <param name="outputPalette">Output palette for indexed images.</param>
-		/// <param name="inputPalette">Input palette for indexed images. Used to create indexed textures with a user-specified palette.</param>
-		/// <param name="gbix">Global index.</param>
-		/// <param name="dither">Use dithering for encoding indexed images.</param>
-		/// <param name="paletteExternal">Save the palette to an external file.</param>
-		public PvrTexture(Bitmap texture, PvrDataFormat dataFormat, PvrPixelFormat pixelFormat, bool mipmaps, out TexturePalette? outputPalette, TexturePalette inputPalette = null, uint gbix = 0, bool dither = false, bool paletteExternal = false)
+		public override void Encode()
 		{
-			// Disable mipmaps if using incompatible texture encoder settings
-			if (mipmaps)
-			{
-				if (texture.Width != texture.Height)
-				{
-					// TODO: Remove
-					Console.WriteLine("Mipmaps disabled because the texture is rectangular");
-					mipmaps = false;
-				}
-			}
-
-			// Set common texture data
-			Image = texture;
-			Gbix = gbix;
-			PvrDataFormat = dataFormat;
-			PvrPixelFormat = pixelFormat;
-			Width = texture.Width;
-			Height = texture.Height;
-			if (mipmaps)
-			{
-				HasMipmaps = true;
-				// Calculate the number of mip levels
-				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
-				// Generate mipmaps for the preview version
-				MipmapImages = new Bitmap[mipLevels];
-				int mipWidth = Width;
-				for (int m = 0; m < mipLevels; m++)
-				{
-					MipmapImages[m] = new Bitmap(Image, Width, Width);
-					mipWidth >>= 1;
-				}
-			}
-			if (dataFormat == PvrDataFormat.Index8 || dataFormat == PvrDataFormat.Index4 || dataFormat == PvrDataFormat.Index4Mipmaps || dataFormat == PvrDataFormat.Index8Mipmaps)
-			{
-				Indexed = true;
-				RequiresPaletteFile = paletteExternal;
-			}
-
 			// Determine the pixel and data codecs
-			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(pixelFormat);
-			PvrDataCodec dataCodec = PvrDataCodec.Create(dataFormat, pixelCodec);
+			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(PvrPixelFormat);
+			PvrDataCodec dataCodec = PvrDataCodec.Create(PvrDataFormat, pixelCodec);
 
 			// Check texture dimensions
 			if (!dataCodec.CheckDimensionsValid(Width, Height))
@@ -74,62 +26,63 @@ namespace TextureLib
 			}
 
 			MemoryStream outputStream = new();
-			outputPalette = null;
 
-			// If the user has specified a palette, use it
-			if (inputPalette != null)
-				outputPalette = inputPalette;
-
+			// Check whether to use a generated or specified palette
+			bool autoPalette = Palette == null;
+			
+			// VQ encoder
 			if (dataCodec is VqDataCodec)
 			{
-				EncodeVQ(texture, dataCodec, outputStream);
+				EncodeVQ(Image, dataCodec, outputStream);
 			}
+			// Regular encoder
 			else if (dataCodec.GetPaletteEntries(Width) == 0)
 			{
-				EncodeColored(texture, dataCodec, outputStream);
+				EncodeColored(Image, dataCodec, outputStream);
 			}
+			// Indexed encoder
 			else
 			{
-				int indexRange = dataCodec.GetPaletteEntries(texture.Width);
+				int indexRange = dataCodec.GetPaletteEntries(Image.Width);
 				bool index8 = dataCodec is Index8DataCodec or Index8MipmapsDataCodec;
 				PvrDataCodec qDataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);
 				// If the user hasn't specified a palette, get one from the quantized bitmap
-				if (outputPalette == null)
+				if (autoPalette)
 				{
 					// Quantize the image using the default quantizer to get a palette (ignore the output bitmap data because only the palette is needed)
-					TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(texture, qDataCodec), index8, out outputPalette, dither);
+					TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(Image, qDataCodec), index8, out Palette, useDithering);
 					// Sort the palette by luminance
-					outputPalette.SortByLuminance();
+					Palette.SortByLuminance();
 				}
 				// Quantize the image using the specific quantizer created from the palette (ignore the output palette data because there's a palette already)
-				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(texture, qDataCodec), index8, out _, dither, outputPalette);
+				byte[] indexedBitmapData = TextureFunctions.QuantizeImage(TextureFunctions.CalculateLossyForPaletteOrVq(Image, qDataCodec), index8, out _, useDithering, Palette);
 				// If the palette was created from the image (as opposed to user specified), encode it with the specified pixel codec
-				if (inputPalette == null)
-					outputPalette.Encode(pixelCodec, false);
+				if (autoPalette)
+					Palette.Encode(pixelCodec, false);
 				// If the palette is embedded, write it to texture data
 				if (!dataCodec.NeedsExternalPalette)
 				{
-					EncodePalette(outputPalette, indexRange, dataCodec.PixelCodec, outputStream);
+					EncodePalette(Palette, indexRange, dataCodec.PixelCodec, outputStream);
 				}
 				// If the texture has mipmaps, write them first
 				if (dataCodec.HasMipmaps)
 				{
-					PaletteQuantizer quantizer = TexturePalette.CreatePaletteQuantizer(outputPalette, outputPalette.GetNumColors(), 0, dither);
+					PaletteQuantizer quantizer = TexturePalette.CreatePaletteQuantizer(Palette, Palette.GetNumColors(), 0, useDithering);
 					// PVR mipmap order: from smallest to largest
-					for (int size = 1; size < texture.Width; size <<= 1)
+					for (int size = 1; size < Image.Width; size <<= 1)
 					{
-						TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(texture), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, size, outputStream);
+						TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(Image), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, size, outputStream);
 					}
 				}
 				// Encode the indexed texture itself
-				outputStream.Write(dataCodec.Encode(indexedBitmapData, texture.Width, texture.Height));
+				outputStream.Write(dataCodec.Encode(indexedBitmapData, Image.Width, Image.Height));
 			}
 			// Set the texture's raw data
 			HeaderlessData = outputStream.ToArray();
 			RawData = GetBytes();
 		}
 
-        private static void EncodeColored(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
+		private static void EncodeColored(Bitmap texture, PvrDataCodec dataCodec, MemoryStream writer)
         {
             if (dataCodec.HasMipmaps)
             {
@@ -251,6 +204,5 @@ namespace TextureLib
 
             writer.Write(dataCodec.Encode(textures, texture.Width, texture.Height));
         }
-
 	}
 }

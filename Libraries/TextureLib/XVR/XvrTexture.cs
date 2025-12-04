@@ -9,22 +9,34 @@ namespace TextureLib
 {
 	public class XvrTexture : DdsTexture
 	{
-		public int XvrType = -1;
+		public XvrFormat XvrType = XvrFormat.Invalid;
 
-		public XvrTexture(byte[] data, int offset = 0, string name = null) : base(data, offset, name)
+		/// <summary>
+		/// Initializes an XVR texture from a byte array that contains XVR texture header and data.
+		/// </summary>
+		/// <param name="data">Byte array containing XVR texture header and data.</param>
+		/// <param name="offset">Offset to the beginning of the GBIX or XVRT header.</param>
+		/// <param name="name">Texture name, if applicable.</param>
+		public XvrTexture(byte[] data, int offset = 0, string name = null) : base(data, offset, 0, name)
 		{
-			XvrType = BitConverter.ToInt32(data, offset + 0xC);
+			Gbix = BitConverter.ToUInt32(data, offset + 0x10);
+			XvrType = (XvrFormat)BitConverter.ToInt32(data, offset + 0xC);
 #if DEBUG
 			Console.WriteLine("\nXVR TEXTURE INFO");
 			Console.WriteLine("GBIX: {0}", Gbix);
-			Console.WriteLine("XVR TYPE: {0} ({1})", XvrType, GetDxgiFormatFromXvrPixelFormat((byte)XvrType).ToString());
+			Console.WriteLine("XVR TYPE: {0} ({1})", XvrFormats.GetDxgiFormatFromXvrPixelFormat(XvrType).ToString(), XvrType);
 #endif
 		}
 
-		public XvrTexture(Bitmap texture, int xvrFormat, bool mipmaps, uint gbix = 0) : base(texture, GetDdsFormatFromXvrPixelFormat(xvrFormat), mipmaps)
-		{
-			Gbix = gbix;
-		}
+		/// <summary>
+		/// Encodes an XVR texture from Bitmap.
+		/// </summary>
+		/// <param name="texture">Source Bitmap.</param>
+		/// <param name="xvrFormat">Target XVR data format.</param>
+		/// <param name="mipmaps">Encode mipmaps.</param>
+		/// <param name="gbix">Global index (optional).</param>		
+		/// <param name="name">Textre name (optional).</param>
+		public XvrTexture(Bitmap texture, XvrFormat xvrFormat, bool mipmaps, uint gbix = 0, string name = null) : base(texture, XvrFormats.GetDdsFormatFromXvrPixelFormat(xvrFormat), mipmaps, gbix, name) { }
 
 		public override byte[] GetBytes()
 		{
@@ -38,9 +50,9 @@ namespace TextureLib
 			if (HasMipmaps)
 				flags |= XvrFlags.Mips;
 			result.AddRange(BitConverter.GetBytes((uint)flags));
-			if (XvrType == -1)
-				XvrType = GetXvrPixelFormatFromDdsFormat(DdsFormat);
-			result.AddRange(BitConverter.GetBytes(XvrType));
+			if (XvrType == XvrFormat.Invalid)
+				XvrType = XvrFormats.GetXvrPixelFormatFromDdsFormat(DdsFormat);
+			result.AddRange(BitConverter.GetBytes((uint)XvrType));
 			result.AddRange(BitConverter.GetBytes(Gbix));
 			result.AddRange(BitConverter.GetBytes((ushort)Width));
 			result.AddRange(BitConverter.GetBytes((ushort)Height));
@@ -50,113 +62,19 @@ namespace TextureLib
 			return result.ToArray();
 		}
 
-		public static DXGIFormat GetDxgiFormatFromXvrPixelFormat(byte pixelFormat)
-		{
-			switch (pixelFormat)
-			{
-				case 11:
-				case 1:
-					return DXGIFormat.B8G8R8A8UNORM;
-				case 12:
-				case 2:
-					return DXGIFormat.B5G6R5UNORM;
-				case 13:
-				case 3:
-					return DXGIFormat.B5G5R5A1UNORM;
-				case 14:
-				case 4:
-					return DXGIFormat.B4G4R4A4UNORM;
-				case 5:
-					return DXGIFormat.P8;
-				case 6:
-					return DXGIFormat.BC1UNORM;
-				case 7:
-				case 8:
-					return DXGIFormat.BC2UNORM;
-				case 9:
-				case 10:
-					return DXGIFormat.BC3UNORM;
-				case 15:
-					return DXGIFormat.YUY2;
-				case 16:
-					return DXGIFormat.R8G8SNORM;
-				case 17:
-					return DXGIFormat.A8UNORM;
-				case 18: //D3DFMT_X1R5G5B5
-				case 19: //D3DFMT_X8R8G8B8
-					return DXGIFormat.UNKNOWN;
-				default:
-					return DXGIFormat.BC1UNORM;
-			}
-		}
-
-		public int GetXvrPixelFormatFromDdsFormat(DdsFormat format)
-		{
-			switch (format)
-			{
-				case DdsFormat.Argb8888:
-					return 1;
-				case DdsFormat.Rgb565:
-					return 2;
-				case DdsFormat.Argb1555:
-					return 3;
-				case DdsFormat.Argb4444:
-					return 4;
-				case DdsFormat.Dxt1:
-					return 6;
-				case DdsFormat.Dxt3:
-					return 7;
-				case DdsFormat.Dxt5:
-					return 9;
-				case DdsFormat.Rgb888:
-				default:
-					throw new NotImplementedException(string.Format("XVR conversin from DDS format {0} is not implemented.", format));
-			}
-		}
-
-		public static DdsFormat GetDdsFormatFromXvrPixelFormat(int xvrPixelFormat)
-		{
-			switch (xvrPixelFormat)
-			{
-				case 1:
-				case 11:
-					return DdsFormat.Argb8888;
-				case 2:
-				case 12:
-					return DdsFormat.Rgb565;
-				case 3:
-				case 13:
-					return DdsFormat.Argb1555;
-				case 4:
-				case 14:
-					return DdsFormat.Argb4444;
-				case 6:
-					return DdsFormat.Dxt1;
-				case 7:
-				case 8:
-					return DdsFormat.Dxt3;
-				case 9:
-				case 10:
-					return DdsFormat.Dxt5;
-				default:
-					throw new NotImplementedException(string.Format("Conversion for XVR format {0} is not implemented.", xvrPixelFormat));
-			}
-		}
-
-		[Flags]
-		private enum XvrFlags : byte
-		{
-			Mips = 1,
-			Alpha = 2,
-		}
-
+		/// <summary>
+		/// Reads the header of an XVR texture and creates a DDS texture header used by DirectXTexUtility.
+		/// </summary>
+		/// <param name="data">Souce byte array containing the XVR texture header.</param>
+		/// <param name="offset">Offset where the header starts.</param>
+		/// <returns>DirectXTexUtility's DDSHeader structure.</returns>
 		public static DDSHeader GetDdsHeaderFromXvr(byte[] data, int offset)
 		{
-			int flags = BitConverter.ToInt32(data, offset + 8);
-			bool useAlpha = (flags & (int)XvrFlags.Alpha) > 0;
-			bool useMips = (flags & (int)XvrFlags.Mips) > 0;
+			XvrFlags flags = (XvrFlags)BitConverter.ToUInt32(data, offset + 8);
+			bool useAlpha = flags.HasFlag(XvrFlags.Alpha);
+			bool useMips = flags.HasFlag(XvrFlags.Mips);
 			int pixelFormat = BitConverter.ToInt32(data, offset + 0xC);
-			DXGIFormat fmt = GetDxgiFormatFromXvrPixelFormat((byte)pixelFormat);
+			DXGIFormat fmt = XvrFormats.GetDxgiFormatFromXvrPixelFormat((XvrFormat)pixelFormat);
 			// GBIX at 0x10
 			int textureWidth = BitConverter.ToUInt16(data, offset + 0x14);
 			int textureHeight = BitConverter.ToUInt16(data, offset + 0x16);
@@ -181,9 +99,11 @@ namespace TextureLib
 			return ddsHeader;
 		}
 
-		public static uint GetGbixFromXvr(byte[] data, int offset)
+		[Flags]
+		private enum XvrFlags
 		{
-			return BitConverter.ToUInt32(data, offset + 0x10);
+			Mips = 1,
+			Alpha = 2,
 		}
 	}
 }

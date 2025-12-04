@@ -14,6 +14,7 @@ namespace TexTool
 	{
 		Decode,
 		Encode,
+		Convert,
 		Error
 	}
 
@@ -85,15 +86,28 @@ namespace TexTool
 			}
 			// Check mipmaps flag
 			useMipmaps = args.Contains("-m");
-			// Determine whether it's supposed to decode or encode the texture
+			// Determine the target texture file format
+			if (args.Contains("-pvr"))
+				targetFileFormat = TargetFileFormat.Pvr;
+			if (args.Contains("-gvr"))
+				targetFileFormat = TargetFileFormat.Gvr;
+			if (args.Contains("-xvr"))
+				targetFileFormat = TargetFileFormat.Xvr;
+			if (args.Contains("-dds"))
+				targetFileFormat = TargetFileFormat.Dds;
+			else
+				targetFileFormat = TargetFileFormat.Png;
+			// Determine whether it's supposed to decode, encode or convert the texture
 			switch (Path.GetExtension(inputFilename).ToLowerInvariant())
 			{
 				case ".pvr":
 				case ".gvr":
 				case ".xvr":
 				case ".dds":
-					programMode = ProgramMode.Decode;
-					targetFileFormat = TargetFileFormat.Png;
+					if (targetFileFormat == TargetFileFormat.Png)
+						programMode = ProgramMode.Decode;
+					else
+						programMode = ProgramMode.Convert;
 					break;
 				case ".png":
 				case ".bmp":
@@ -106,8 +120,8 @@ namespace TexTool
 					programMode = ProgramMode.Error;
 					break;
 			}
-			// Check arguments for encoder
-			if (programMode == ProgramMode.Encode)
+			// Check arguments for the encoder
+			if (programMode == ProgramMode.Encode || programMode == ProgramMode.Convert)
 			{
 				// Check gbix
 				if (args.Contains("-gbix"))
@@ -115,16 +129,7 @@ namespace TexTool
 				// Check dithering flag
 				useDitheringForIndexed = args.Contains("-dither");
 				// Check external palette flag
-				encodeExternalPalette = args.Contains("-extpal");
-				// Determine the target texture file format
-				if (args.Contains("-pvr"))
-					targetFileFormat = TargetFileFormat.Pvr;
-				if (args.Contains("-gvr"))
-					targetFileFormat = TargetFileFormat.Gvr;
-				if (args.Contains("-xvr"))
-					targetFileFormat = TargetFileFormat.Xvr;
-				if (args.Contains("-dds"))
-					targetFileFormat = TargetFileFormat.Dds;
+				encodeExternalPalette = args.Contains("-extpal");				
 				// Get target texture pixel/data format from command line arguments
 				switch (targetFileFormat)
 				{
@@ -310,7 +315,7 @@ namespace TexTool
 		}
 
 		static void Main(string[] args)
-		{			
+		{
 			ParseCommandLine(args);
 			Console.WriteLine("Program mode: {0}", programMode.ToString());
 			Console.WriteLine("Input file: {0}", inputFilename);
@@ -322,6 +327,9 @@ namespace TexTool
 				Console.WriteLine("Dithering: {0}", useDitheringForIndexed.ToString());
 			switch (programMode)
 			{
+				case ProgramMode.Convert:
+					Console.WriteLine("Texture conversion not implemented yet.");
+					return;
 				case ProgramMode.Decode:
 					// Read palette file if specified
 					inputPalette = string.IsNullOrEmpty(paletteFilename) ? null : 
@@ -447,7 +455,7 @@ namespace TexTool
 								return;
 							}
 							// Encode texture
-							result = new PvrTexture(inputBitmap, targetPvrFormat, targetPvrPixelFormat, useMipmaps, out outputTexturePalette, inputPalette, gbix, useDitheringForIndexed, encodeExternalPalette);
+							result = new PvrTexture(inputBitmap, targetPvrFormat, targetPvrPixelFormat, useMipmaps, inputPalette, gbix, null, useDitheringForIndexed, encodeExternalPalette);
 							break;
 						case TargetFileFormat.Gvr:
 							// Set formats for auto mode
@@ -462,7 +470,7 @@ namespace TexTool
 								return;
 							}
 							// Encode texture
-							result = new GvrTexture(inputBitmap, targetGvrFormat, useMipmaps, out outputTexturePalette, inputPalette, gbix, targetGvrPaletteFormat, useDitheringForIndexed, encodeExternalPalette, saCompatibleGvrPalettes);
+							result = new GvrTexture(inputBitmap, targetGvrFormat, useMipmaps, inputPalette, gbix, null, targetGvrPaletteFormat, useDitheringForIndexed, encodeExternalPalette, saCompatibleGvrPalettes);
 							break;
 					}
 					// Save the encoded texture

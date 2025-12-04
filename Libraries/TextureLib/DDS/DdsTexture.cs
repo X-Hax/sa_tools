@@ -6,8 +6,6 @@ using static TextureLib.DirectXTexUtility;
 
 // Class for DDS textures
 
-// TODO: Lossless conversion between DXT1 GVR and DXT1 DDS
-
 namespace TextureLib
 {
 	// Formats supported by this library
@@ -46,22 +44,48 @@ namespace TextureLib
 		/// </summary>
 		/// <param name="data">Byte array containing GVR texture header and data.</param>
 		/// <param name="offset">Offset to the beginning of the GVR texture header.</param>
+		/// <param name="gbix">Global index, if applicable.</param>		
 		/// <param name="name">Texture name, if applicable.</param>		
-		public DdsTexture(byte[] data, int offset = 0, string name = null)
+		public DdsTexture(byte[] data, int offset = 0, uint gbix = 0, string name = null)
 		{
 			InitTexture(data, offset, name);
+			Gbix = gbix;
+			Decode();
+		}
+
+		/// <summary>
+		/// Encodes a DDS texture from a Bitmap.
+		/// </summary>
+		/// <param name="texture">Source Bitmap.</param>
+		/// <param name="dataFormat">Target DDS data format.</param>
+		/// <param name="mipmaps">Encode mipmaps.</param>
+		/// <param name="gbix">Global Index (optional).</param>
+		/// <param name="name">Texture name (optional).</param>
+		public DdsTexture(Bitmap texture, DdsFormat dataFormat, bool mipmaps, uint gbix = 0, string name = null)
+		{
+			Image = new Bitmap(texture);
+			DdsFormat = dataFormat;
+			HasMipmaps = mipmaps;
+			Name = name;
+			Gbix = gbix;
+			Encode();
+		}
+
+		public override void Decode()
+		{
 			// Check if dealing with DDS or XVR
-			DdsFunctions.DdsTextureHeaderType type = DdsFunctions.CheckHeaderType(data, offset);
+			DdsFunctions.DdsTextureHeaderType type = DdsFunctions.CheckHeaderType(RawData, 0);
 			DDSHeader header; // Standard DDS header
 			switch (type)
 			{
 				// If this is a DDS, just load its header
 				case DdsFunctions.DdsTextureHeaderType.Dds:
-					header = DdsFunctions.GetDdsHeader(data, offset);
+					header = DdsFunctions.GetDdsHeader(RawData, 0);
 					break;
+				// If this is an XVR, retrieve the header and GBIX
 				case DdsFunctions.DdsTextureHeaderType.Xvr:
-					header = XvrTexture.GetDdsHeaderFromXvr(data, offset);
-					Gbix = XvrTexture.GetGbixFromXvr(data, offset);
+					header = XvrTexture.GetDdsHeaderFromXvr(RawData, 0);
+					Gbix = BitConverter.ToUInt32(RawData, 0x10);
 					break;
 				default:
 					throw new Exception("Texture not in DDS or XVR format");
@@ -113,40 +137,30 @@ namespace TextureLib
 			}
 		}
 
-		/// <summary>
-		/// Encodes a DDS texture from a Bitmap.
-		/// </summary>
-		/// <param name="texture">Source Bitmap.</param>
-		/// <param name="dataFormat">Target DDS data format.</param>
-		/// <param name="mipmaps">Encode mipmaps.</param>
-		public DdsTexture(Bitmap texture, DdsFormat dataFormat, bool mipmaps)
+		public override void Encode()
 		{
-			// Set texture parameters
-			Image = new Bitmap(texture);
-			Width = texture.Width;
-			Height = texture.Height;
-			DdsFormat = dataFormat;
-			HasMipmaps = mipmaps;
-			UseAlpha = TextureFunctions.GetAlphaLevelFromBitmap(texture) > BitmapAlphaLevel.None;
+			Width = Image.Width;
+			Height = Image.Height;
+			UseAlpha = TextureFunctions.GetAlphaLevelFromBitmap(Image) > BitmapAlphaLevel.None;
 			MemoryStream outputStream = new();
 			// Set pixel and data codec
 			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(DdsFormat);
 			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec, UseAlpha);
 			// Encode main texture
-			outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(texture), Width, Height));
+			outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(Image), Width, Height));
 			// Encode mipmaps
 			if (HasMipmaps)
 			{
 				// Calculate the number of mip levels
 				int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
 				MipmapImages = new Bitmap[mipLevels];
-				MipmapImages[0] = new Bitmap(texture);
+				MipmapImages[0] = new Bitmap(Image);
 				// DDS mipmap order: from largest to smallest
 				int mipLevel = 1;
-				for (int size = texture.Width >> 1; size > 0; size >>= 1)
+				for (int size = Image.Width >> 1; size > 0; size >>= 1)
 				{
-					MipmapImages[mipLevel] = new Bitmap(texture, size, size);
-					outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), size, size)); 
+					MipmapImages[mipLevel] = new Bitmap(Image, size, size);
+					outputStream.Write(dataCodec.Encode(TextureFunctions.BitmapToRaw(MipmapImages[mipLevel]), size, size));
 				}
 			}
 			// Set data arrays
@@ -156,7 +170,6 @@ namespace TextureLib
 
 		public override byte[] GetBytes()
 		{
-			DDSHeader outHeader;
 			DirectXTexUtility.TexMetadata meta = new DirectXTexUtility.TexMetadata
 			{
 				Width = Width,
@@ -168,7 +181,7 @@ namespace TextureLib
 				Format = DdsFunctions.GetDxgiFormat(DdsFormat),
 				Dimension = TexDimension.TEXTURE2D
 			};
-			DirectXTexUtility.GenerateDDSHeader(meta, DDSFlags.NONE, out outHeader, out _);
+			DirectXTexUtility.GenerateDDSHeader(meta, DDSFlags.NONE, out DDSHeader outHeader, out _);
 			// There is no DXGI format for RGB888 so for this format R8G8B8G8UNORM is used as a workaround to generate the header.
 			// If R8G8B8G8UNORM is written into the header, override it with RGB888 parameters.
 			if (DdsFunctions.ComparePixelFormats(outHeader.PixelFormat, PixelFormats.R8G8B8G8))

@@ -5,48 +5,43 @@ using System.IO;
 
 namespace TextureLib
 {
-    // Class for BMP, GIF, JPG and PNG textures
-    public class GdiTexture : GenericTexture
-    {
-        public PixelFormat GdiPixelFormat;
+	// Class for BMP, GIF, JPG and PNG textures
+	public class GdiTexture : GenericTexture
+	{
+		/// <summary>Pixel format of the Image (GDI).</summary>
+		public PixelFormat GdiPixelFormat;
 
-        public GdiTexture(byte[] data, int offset = 0, string name = null)
-        {
-            InitTexture(data, offset, name);
-            // Init Bitmap
-            using (var ms = new MemoryStream(RawData))
-            {
-                Bitmap b = new Bitmap(ms);
-                Image = (Bitmap)b.Clone();
-                b.Dispose();
-            }
-            // Set texture properties
-            Width = Image.Width;
-            Height = Image.Height;
-            HasMipmaps = false;
-            RequiresPaletteFile = false;
-            GdiPixelFormat = Image.PixelFormat;
-            switch (Image.PixelFormat)
-            {
-                case PixelFormat.Format1bppIndexed: // Probably won't work
-                    Indexed = true;
-                    Palette = TexturePalette.FromIndexedBitmap(Image);
-                    break;
-                case PixelFormat.Format4bppIndexed:
-                    Indexed = true;
-                    Palette = TexturePalette.FromIndexedBitmap(Image);
-                    break;
-                case PixelFormat.Format8bppIndexed:
-                    Indexed = true;
-                    Palette = TexturePalette.FromIndexedBitmap(Image);
-                    break;
-                default:
-                    Indexed = false;
-                    break;
-            }
-        }
+		/// <summary>
+		/// Initializes a GDI texture from a byte array that contains a BMP/JPG/GIF/PNG header and data.
+		/// </summary>
+		/// <param name="data">Byte array containing texture data.</param>
+		/// <param name="offset">Offset where texture data begins.</param>
+		/// <param name="name">Texture name (optional).</param>
+		public GdiTexture(byte[] data, int offset = 0, string name = null)
+		{
+			InitTexture(data, offset, name);
+			Decode();
+		}
 
-		// This function creates mipmaps from the original image
+		/// <summary>
+		/// Creates a GDI texture from a Bitmap.
+		/// </summary>
+		/// <param name="texture">Source Bitmap.</param>
+		/// <param name="mipmaps">Whether to generate mipmaps or not.</param>
+		/// <param name="gbix">Global Index.</param>
+		public GdiTexture(Bitmap texture, bool mipmaps, uint gbix = 0, string name = null)
+		{
+			Image = new Bitmap(texture);
+			Gbix = gbix;
+			Name = name;
+			HasMipmaps = mipmaps;
+			SetTextureProperties();
+			Encode();
+		}
+
+		/// <summary>
+		/// Generates mipmaps from the original Image.
+		/// </summary>
 		private void GenerateMipmaps()
 		{
 			// Calculate mipmap levels based on texture dimensions
@@ -82,5 +77,64 @@ namespace TextureLib
 			Image.Save(ms, ImageFormat.Png);
 			return ms.ToArray();
 		}
-    }
+
+		public override void Decode()
+		{
+			LoadBitmapFromRawData();
+			SetTextureProperties();
+			if (HasMipmaps)
+				GenerateMipmaps();
+		}
+
+		public override void Encode()
+		{
+			if (HasMipmaps)
+				GenerateMipmaps();
+			RawData = GetBytes();
+		}
+
+		/// <summary>
+		/// Sets texture properties such as width etc. based on the Image parameters.
+		/// </summary>
+		private void SetTextureProperties()
+		{
+			Width = Image.Width;
+			Height = Image.Height;
+			switch (Image.PixelFormat)
+			{
+				case PixelFormat.Format1bppIndexed: // This probably won't work so it should be converted to ARGB8888
+					Bitmap newImage = new Bitmap(Image.Width, Image.Height, PixelFormat.Format32bppArgb);
+					using (Graphics g = Graphics.FromImage(newImage))
+						g.DrawImage(Image, 0, 0, Image.Width, Image.Height);
+					Indexed = false;
+					Image = newImage;
+					break;
+				case PixelFormat.Format4bppIndexed:
+					Indexed = true;
+					Palette = TexturePalette.FromIndexedBitmap(Image);
+					break;
+				case PixelFormat.Format8bppIndexed:
+					Indexed = true;
+					Palette = TexturePalette.FromIndexedBitmap(Image);
+					break;
+				default:
+					Indexed = false;
+					break;
+			}
+			GdiPixelFormat = Image.PixelFormat;
+		}
+
+		/// <summary>
+		/// Retrieves the Image from raw data.
+		/// </summary>
+		private void LoadBitmapFromRawData()
+		{
+			using (var ms = new MemoryStream(RawData))
+			{
+				Bitmap b = new Bitmap(ms);
+				Image = (Bitmap)b.Clone();
+				b.Dispose();
+			}
+		}
+	}
 }

@@ -1,43 +1,59 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
 
-// Early WIP texture library for SA Tools' 3D editors and Texture Editor
+// Texture library for SA Tools' 3D editors and Texture Editor
 // Mostly based on https://github.com/X-Hax/SA3D.Archival and https://github.com/nickworonekin/puyotools
 
-// TODO: Rework GVR codecs into data codec + standard pixel codec pairings
-// TODO: Class for Xbox XVR textures
-// TODO: Class for DDS textures
 // TODO: Smart GVR-PVR-XVR-DDS conversion
+// TODO: Rework GVR codecs into data codec + standard pixel codec pairings?
+// TODO: Class for textures that failed to initialize
 
 namespace TextureLib
 {
     public abstract class GenericTexture
     {
-        public string Name; // Texture name or file name without file extension
-        public int Width; // Texture width
-        public int Height; // Texture height
-        public uint Gbix; // Texture Global Index
-        public byte[] RawData; // Texture bytes in the original format including header
+		// Common properties and data
+		/// <summary>Texture name.</summary>
+		public string Name;
+		/// <summary>Texture width.</summary>
+		public int Width;
+		/// <summary>Texture height.</summary>
+		public int Height;
+		/// <summary>Texture Global Index.</summary>
+		public uint Gbix;
+		/// <summary>Texture bytes in the original format including the header.</summary>
+		public byte[] RawData;
 
-        public bool HasMipmaps; // Whether the texture has mipmaps or not
-        public bool Indexed; // Whether the texture is palettized or not
-        public bool RequiresPaletteFile; // Whether the texture requires an external palette file or not
+		// Flags
+		/// <summary>Whether the texture has mipmaps or not.</summary>
+		public bool HasMipmaps;
+		/// <summary>Whether the texture is palettized or not.</summary>
+		public bool Indexed;
+		/// <summary>Whether the Indexed texture requires an external palette file or not.</summary>
+		public bool RequiresPaletteFile;
+		/// <summary>The texture's color palette (for Indexed textures).</summary>
+		public TexturePalette Palette;
+		/// <summary> Number of palette bank in the PVP file (for Indexed textures).</summary>
+		public int PaletteBank;
+		/// <summary>Starting color in the palette (for Indexed textures).</summary>
+		public int PaletteStartIndex;
+		/// <summary>Original texture dimensions for the PVMX archive.</summary>
+		public Size PvmxOriginalDimensions;
+		/// <summary>Additional fields for the PAK archive.</summary>
+		public PakMetadata PakMetadata;
+		/// <summary>Texture converted to Bitmap.</summary>
+		public Bitmap Image;
+		/// <summary>Texture mipmaps converted to Bitmaps. The first item (0) is the full size image.</summary>
+		public Bitmap[] MipmapImages;
 
-        public TexturePalette Palette; // The texture's color palette (for Indexed)
-        public int PaletteBank; // Number of palette bank in the PVP file (for Indexed)
-        public int PaletteStartIndex; // Starting color in the palette (for Indexed)
-
-        public Size PvmxOriginalDimensions; // Original texture dimensions for the PVMX archive
-        public PakMetadata PakMetadata; // Additional fields for the PAK archive
-
-        public Bitmap Image; // Texture converted to Bitmap
-        public Bitmap[] MipmapImages; // Mipmaps converted to Bitmaps and mipmap dimensions
-
-        // This function does the basic initialization for all texture types
-        public bool InitTexture(byte[] data, int offset = 0, string name = null)
+		/// <summary>
+		/// This function does the basic initialization for all texture types.
+		/// </summary>
+		/// <param name="data">Byte array containing texture data, including the header.</param>
+		/// <param name="offset">Offset where the texture's header starts.</param>
+		/// <param name="name">Texture name (optional).</param>
+		/// <returns>Returns true if texture data was read successfully. This only concerns texture raw data, not decoding or conversion.</returns>
+		public bool InitTexture(byte[] data, int offset = 0, string name = null)
         {
             // Set texture name
             if (!string.IsNullOrEmpty(name))
@@ -52,9 +68,43 @@ namespace TextureLib
             return false;
         }
 
+		/// <summary>
+		/// Retrieves the texture's byte array.
+		/// </summary>
+		/// <returns>Byte array containing texture header and data.</returns>
 		public abstract byte[] GetBytes();
 
-        public Span<byte> ApplyPalette(byte[] src, int width, int height)
+		/// <summary>
+		/// Sets the selected palette and decodes the texture with it. This will update the texture's Image and Mipmaps.
+		/// </summary>
+		/// <param name="newPalette">Palette to use in decoding the texture.</param>
+		public void SetPalette(TexturePalette newPalette)
+		{
+			Palette = newPalette;
+			Decode();
+		}
+
+		/// <summary>
+		/// Updates the texture's Image and Mipmaps by decoding its raw data.
+		/// This method is called automatically when a texture is created from raw data. Normally there is no need to call it manually.
+		/// </summary>
+		public abstract void Decode();
+
+		/// <summary>
+		/// Updates the texture's raw data by encoding its Image and Mipmaps with the current texture properties.
+		/// This method is called automatically when a texture is created from a Bitmap. Normally there is no need to call it manually.
+		/// </summary>
+		public abstract void Encode();
+
+		/// <summary>
+		/// Applies the currently selected palette to the Indexed texture's decoded data (raw Index8 bytes).
+		/// This method is used internally at final steps of texture decoding. For a generic method, use SetPalette.
+		/// </summary>
+		/// <param name="src">Byte array of decoded texture data.</param>
+		/// <param name="width">Texture width.</param>
+		/// <param name="height">Texture height.</param>
+		/// <returns>Byte array containing the palettized texture's raw decoded data (ARGB8888).</returns>
+		internal Span<byte> ApplyPalette(byte[] src, int width, int height)
         {
             bool index8 = false;
             if (this is PvrTexture pvr)
@@ -78,10 +128,5 @@ namespace TextureLib
             }
             return result;
         }
-
     }
-
-    // Class for textures that failed to initialize
-    //public class InvalidTexture : GenericTexture { }
-
 }
