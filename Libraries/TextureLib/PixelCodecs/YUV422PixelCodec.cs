@@ -8,50 +8,50 @@ namespace TextureLib
 
         public override int Pixels => 2;
 
-        public override void DecodePixel(ReadOnlySpan<byte> src, Span<byte> dst, bool bigEndian)
+        public override void DecodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
         {
 			if(dst.Length > 4)
 			{
-				sbyte u = (sbyte)(src[bigEndian ? 3 : 0] - 128);
-				byte y1 = src[bigEndian ? 2 : 1];
-				sbyte v = (sbyte)(src[bigEndian ? 1 : 2] - 128);
-				byte y2 = src[bigEndian ? 0 : 3];
+				sbyte u = (sbyte)(src[BigEndian ? 3 : 0] - 128);
+				byte y1 = src[BigEndian ? 2 : 1];
+				sbyte v = (sbyte)(src[BigEndian ? 1 : 2] - 128);
+				byte y2 = src[BigEndian ? 0 : 3];
 
 				YUV2RGB(y1, u, v, dst);
 				YUV2RGB(y2, u, v, dst[4..]);
 			}
 			else
 			{
-				sbyte u = (sbyte)(src[bigEndian ? 3 : 0] - 128);
-				byte y1 = src[bigEndian ? 2 : 1];
-				sbyte v = (sbyte)(src[bigEndian ? 1 : 2] - 128);
-				byte y2 = src[bigEndian ? 0 : 3];
+				sbyte u = (sbyte)(src[BigEndian ? 3 : 0] - 128);
+				byte y1 = src[BigEndian ? 2 : 1];
+				sbyte v = (sbyte)(src[BigEndian ? 1 : 2] - 128);
+				byte y2 = src[BigEndian ? 0 : 3];
 
 				YUV2RGB(y2, u, v, dst);
 			}
 		}
 
-        public override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst, bool bigEndian)
+        public override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
         {
 			if(src.Length > 4)
 			{
 				(byte y1, byte u1, byte v1) = RGB2YUV(src);
 				(byte y2, byte u2, byte v2) = RGB2YUV(src[4..]);
 
-				dst[bigEndian ? 3 : 0] = (byte)((u1 + u2) / 2);
-				dst[bigEndian ? 2 : 1] = y1;
-				dst[bigEndian ? 1 : 2] = (byte)((v1 + v2) / 2);
-				dst[bigEndian ? 0 : 3] = y2;
+				dst[BigEndian ? 3 : 0] = (byte)((u1 + u2) / 2);
+				dst[BigEndian ? 2 : 1] = y1;
+				dst[BigEndian ? 1 : 2] = (byte)((v1 + v2) / 2);
+				dst[BigEndian ? 0 : 3] = y2;
 
 			}
 			else
 			{
 				(byte y, byte u, byte v) = RGB2YUV(src);
 
-				dst[bigEndian ? 3 : 0] = u;
-				dst[bigEndian ? 2 : 1] = y;
-				dst[bigEndian ? 1 : 2] = v;
-				dst[bigEndian ? 0 : 3] = y;
+				dst[BigEndian ? 3 : 0] = u;
+				dst[BigEndian ? 2 : 1] = y;
+				dst[BigEndian ? 1 : 2] = v;
+				dst[BigEndian ? 0 : 3] = y;
 			}
 
 		}

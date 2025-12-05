@@ -9,8 +9,8 @@ namespace TextureLib
 		{
 			{ GvrDataFormat.Intensity4, new GvrIntensity4DataCodec() },
 			{ GvrDataFormat.Intensity8, new GvrIntensity8DataCodec() },
-			{ GvrDataFormat.IntensityA4, new GvrIntensityA4DataCodec() },
-			{ GvrDataFormat.IntensityA8, new GvrIntensityA8DataCodec() },
+			{ GvrDataFormat.IntensityA44, new GvrIntensityA44DataCodec() },
+			{ GvrDataFormat.IntensityA88, new GvrIntensityA88DataCodec() },
 			{ GvrDataFormat.Rgb565, new GvrRGB565DataCodec() },
 			{ GvrDataFormat.Rgb5a3, new GvrRGB5A3DataCodec() },
 			{ GvrDataFormat.Argb8888, new GvrARGB8DataCodec() },
@@ -65,7 +65,7 @@ namespace TextureLib
 			switch (paletteFormat)
 			{
 				case GvrPaletteFormat.IntensityA8orArgb1555:
-					return saCompatible ? new GvrRGBA1555DataCodec() : new GvrIntensityA8DataCodec();
+					return saCompatible ? new GvrRGBA1555DataCodec() : new GvrIntensityA88DataCodec();
                 case GvrPaletteFormat.Rgb5A3orArgb4444:
                     return saCompatible ? new GvrRGBA4444DataCodec() : new GvrRGB5A3DataCodec();
                 case GvrPaletteFormat.Argb8888:

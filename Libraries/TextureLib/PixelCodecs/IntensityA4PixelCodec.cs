@@ -6,7 +6,7 @@ namespace TextureLib
 	{
         public override int BytesPerPixel => 1;
 
-        public override void DecodePixel(ReadOnlySpan<byte> src, Span<byte> dst, bool bigEndian)
+        public override void DecodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
         {
 			byte value = src[0];
 
@@ -19,7 +19,7 @@ namespace TextureLib
 			dst[3] = alpha;
 		}
 
-        public override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst, bool bigEndian)
+        public override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
         {
 			byte intensity = TextureFunctions.GetLuminance(src);
 			byte alpha = src[3];

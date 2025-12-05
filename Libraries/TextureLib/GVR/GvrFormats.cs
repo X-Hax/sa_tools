@@ -14,8 +14,8 @@ namespace TextureLib
     {
         Intensity4 = 0x00,
         Intensity8 = 0x01,
-        IntensityA4 = 0x02,
-        IntensityA8 = 0x03,
+        IntensityA44 = 0x02,
+        IntensityA88 = 0x03,
         Rgb565 = 0x04,
         Rgb5a3 = 0x05,
         Argb8888 = 0x06,

@@ -4,7 +4,7 @@ namespace TextureLib
 {
     internal class BitmapDataCodec : RectangleDataCodec
     {
-        public BitmapDataCodec(PixelCodec pixelCodec) : base(new ARGB8888PixelCodec()) { }
+        public BitmapDataCodec(PixelCodec pixelCodec) : base(new ARGB8888PixelCodec() { BigEndian = true }) { }
 
         // Like Rectangle but with ARGB8888 in Big Endian mode
         protected override void InternalDecode(ReadOnlySpan<byte> source, int width, int height, ReadOnlySpan<byte> palette, Span<byte> destination)
@@ -18,7 +18,7 @@ namespace TextureLib
                 {
                     PixelCodec.DecodePixel(
                         source[srcAddress..],
-                        destination[dstAddress..], true);
+                        destination[dstAddress..]);
 
                     srcAddress += PixelCodec.BytesPerPixel;
                     dstAddress += 4 * PixelCodec.Pixels;

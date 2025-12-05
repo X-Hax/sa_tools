@@ -30,7 +30,7 @@ namespace TextureLib
 				{
 					PixelCodec.DecodePixel(
 						source[srcAddress..],
-						destination[dstAddress..], false);
+						destination[dstAddress..]);
 
 					srcAddress += PixelCodec.BytesPerPixel;
 					dstAddress += 4 * PixelCodec.Pixels;
@@ -49,7 +49,7 @@ namespace TextureLib
 				{
 					PixelCodec.EncodePixel(
 						source[srcAddress..],
-						destination[dstAddress..], false);
+						destination[dstAddress..]);
 
 					srcAddress += 4 * PixelCodec.Pixels;
 					dstAddress += PixelCodec.BytesPerPixel;

@@ -38,7 +38,7 @@ namespace TextureLib
 
 								int destinationIndex = (((yStart + y) * width) + xStart + x) * 4;
 
-								PixelCodec.DecodePixel(pixelBuffer, destination[destinationIndex..], false);
+								PixelCodec.DecodePixel(pixelBuffer, destination[destinationIndex..]);
 							}
 						}
 
@@ -59,7 +59,7 @@ namespace TextureLib
 								int sourceIndex = sourceBlockIndex + (twiddleMap[x, y] * PixelCodec.BytesPerPixel);
 								int destinationIndex = (((yStart + y) * width) + xStart + x) * 4;
 
-								PixelCodec.DecodePixel(source[sourceIndex..], destination[destinationIndex..], false);
+								PixelCodec.DecodePixel(source[sourceIndex..], destination[destinationIndex..]);
 							}
 						}
 
@@ -88,8 +88,8 @@ namespace TextureLib
 						{
 							for(int x = 0; x < size; x += PixelCodec.Pixels)
 							{
-								int sourceIndex = (((y + xStart) * width) + xStart + x) * 4;
-								PixelCodec.EncodePixel(source[sourceIndex..], pixelBuffer, false);
+								int sourceIndex = (((y + yStart) * width) + xStart + x) * 4;
+								PixelCodec.EncodePixel(source[sourceIndex..], pixelBuffer);
 
 								for(int px = 0; px < PixelCodec.Pixels; px++)
 								{
@@ -99,7 +99,7 @@ namespace TextureLib
 							}
 						}
 
-						destinationBlockIndex += size * PixelCodec.BytesPerPixel;
+						destinationBlockIndex += size * size * PixelCodec.BytesPerPixel;
 					}
 				}
 			}
@@ -113,14 +113,14 @@ namespace TextureLib
 						{
 							for(int x = 0; x < size; x += PixelCodec.Pixels)
 							{
-								int sourceIndex = (((y + xStart) * width) + xStart + x) * 4;
+								int sourceIndex = (((y + yStart) * width) + xStart + x) * 4;
 								int destinationIndex = destinationBlockIndex + (twiddleMap[x / PixelCodec.Pixels, y] * PixelCodec.BytesPerPixel);
 
-								PixelCodec.EncodePixel(source[sourceIndex..], destination[destinationIndex..], false);
+								PixelCodec.EncodePixel(source[sourceIndex..], destination[destinationIndex..]);
 							}
 						}
 
-						destinationBlockIndex += size * PixelCodec.BytesPerPixel;
+						destinationBlockIndex += size * size * PixelCodec.BytesPerPixel;
 					}
 				}
 			}

@@ -1,13 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using TextureLib;
 
-// Class that converts DXT1 texture data between DDS and Gamecube GVR.
-// This class was made solely for the above purpose and may not be suitable for other conversions.
-// In particular, there are assumptions regarding byte order that would need to be adjusted.
-
-namespace TextureTool
+namespace TextureLib
 {
+	// Some stuff for lossless conversions, will be moved out later
+
+	public static class TextureConversion
+	{
+
+		/// <summary>Dictionary of GVR and DDS formats that can be converted losslessly between each other. ARGB8888 and Indexed formats not included.</summary>
+		public static Dictionary<GvrDataFormat, DdsFormat> CompatibleFormatsGvrDds= new Dictionary<GvrDataFormat, DdsFormat>()
+		{
+			{ GvrDataFormat.Rgb565, DdsFormat.Rgb565 },
+			{ GvrDataFormat.Dxt1, DdsFormat.Dxt1 }
+			// IntensityA4 could be converted to D3DFMT_A4L4
+			// Intensity8 could be converted to D3DFMT_L8 or D3DFMT_A8
+			// IntensityA8 could be converted to D3DFMT_A8L8	
+		};
+	}
+
+	/// <summary>
+	/// Class that converts DXT1 texture data between DDS and Gamecube GVR.
+	/// This class was made solely for the above purpose and may not be suitable for other conversions.
+	/// In particular, there are assumptions regarding byte order that would need to be adjusted.
+	/// </summary>
 	public class DxtConverter
 	{
 		// A DXT1 data block. Consists of two RGB565 colors and 16 2-bit palette indices. 16 (4x4) pixels and 8 bytes total.

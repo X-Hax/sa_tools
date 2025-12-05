@@ -26,7 +26,7 @@ namespace TextureLib
 			{
 				PixelCodec.DecodePixel(
 					source[0..],
-					destination[0..4], false);
+					destination[0..4]);
 			}
 			else
 			{
@@ -40,7 +40,7 @@ namespace TextureLib
 			{
 				PixelCodec.EncodePixel(
 					source[0..],
-					destination.Slice(destination.Length - PixelCodec.BytesPerPixel, PixelCodec.BytesPerPixel), false);
+					destination.Slice(destination.Length - PixelCodec.BytesPerPixel, PixelCodec.BytesPerPixel));
 			}
 			else
 			{

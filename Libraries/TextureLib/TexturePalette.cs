@@ -96,7 +96,7 @@ namespace TextureLib
             for (int index = 0; index < numColors; index++)
             {
                 paletteCodec.DecodePixel(srcData[srcAddress..],
-                   dest[dstAddress..], ByteConverter.BigEndian);
+                   dest[dstAddress..]); // In Big Endian
 
                 srcAddress += paletteCodec.BytesPerPixel;
                 dstAddress += 4 * paletteCodec.Pixels;
@@ -116,24 +116,25 @@ namespace TextureLib
         /// <param name="bigEndian">Whether the data is Big Endian or not.</param>
         public TexturePalette(byte[] rawEncodedData, PixelCodec codec, int numColors, int colorsStartOffset = 0, bool bigEndian = false)
         {
-            bool bigEndianBk = ByteConverter.BigEndian;
-            ByteConverter.BigEndian = bigEndian;
+            ByteConverter.SetBigEndian(bigEndian);
             ReadOnlySpan<byte> srcData = rawEncodedData[colorsStartOffset..];
             int srcAddress = 0;
             int dstAddress = 0;
             DecodedData = new byte[numColors * 4];
             Span<byte> dest = DecodedData[dstAddress..];
-
-            for (int index = 0; index < numColors; index++)
+			codec.BigEndian = bigEndian;
+			RawData = new byte[codec.BytesPerPixel * numColors];
+			Array.Copy(rawEncodedData, colorsStartOffset, RawData, 0, RawData.Length);
+			for (int index = 0; index < numColors; index++)
             {
                 //Console.WriteLine("Color {0}", index);
                 codec.DecodePixel(srcData[srcAddress..],
-                   dest[dstAddress..], ByteConverter.BigEndian);
+                   dest[dstAddress..]);
 
                 srcAddress += codec.BytesPerPixel;
                 dstAddress += 4 * codec.Pixels;
             }
-            ByteConverter.BigEndian = bigEndianBk;
+			ByteConverter.RestoreBigEndian();
             DecodedData = dest.ToArray();
             //File.WriteAllBytes("pal_dec", DecodedData);
             paletteCodec = codec;
@@ -166,6 +167,7 @@ namespace TextureLib
         {
             if (codec != null)
                 paletteCodec = codec;
+			codec.BigEndian = encodeAsBigEndian;
             isBigEndian = encodeAsBigEndian;
             int numColors = GetNumColors();
             RawData = new byte[paletteCodec.BytesPerPixel * numColors];
@@ -175,7 +177,7 @@ namespace TextureLib
             for (int index = 0; index < numColors; index++)
             {
                 paletteCodec.EncodePixel(DecodedData[srcAddress..],
-                   dest[dstAddress..], encodeAsBigEndian);
+                   dest[dstAddress..]);
                 srcAddress += 4;
                 dstAddress += paletteCodec.BytesPerPixel;
             }

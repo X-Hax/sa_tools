@@ -19,7 +19,7 @@ namespace TextureLib
 		public GvrPaletteFormat GvrPaletteFormat;
 		public GvrDataFormat GvrDataFormat;
 		private GvrDataFlags GvrDataFlags;
-		private byte[] HeaderlessData;
+		public byte[] HeaderlessData;
 
 		// Encoder parameters
 		private bool useDithering;
@@ -186,7 +186,7 @@ namespace TextureLib
 			currentOffset += 0x10;
 			GvrDataCodec dataCodec = GvrDataCodec.GetDataCodec(GvrDataFormat);
 #if DEBUG
-			Console.WriteLine("\nTEXTURE INFO");
+			Console.WriteLine("\nGVR TEXTURE INFO");
 			Console.WriteLine("Width: " + Width.ToString());
 			Console.WriteLine("Height: " + Height.ToString());
 			Console.WriteLine("Gbix: " + Gbix.ToString());
@@ -196,14 +196,14 @@ namespace TextureLib
 			Console.WriteLine("Indexed: " + Indexed.ToString());
 			Console.WriteLine("Requires palette file: " + RequiresPaletteFile.ToString());
 #endif
-			// Calculate the expected size of the texture data chunk
+			// Calculate the expected size of the texture data chunk. However, this may not be the final size if the texture has a CLUT or mipmaps.
 			int dataSize = dataCodec.CalculateTextureSize(Width, Height);
-
-			// Decode the internal palette
+			int paletteSize = 0;
+			// Manage the texture's CLUT (internal palette)
 			if (dataCodec.PaletteEntries != 0 && GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette))
-			{
+			{				
 				PixelCodec paletteCodec = PixelCodec.GetPixelCodec(GvrPaletteFormat, false);
-				int paletteSize = paletteCodec.BytesPerPixel * dataCodec.PaletteEntries;
+				paletteSize = paletteCodec.BytesPerPixel * dataCodec.PaletteEntries;
 				byte[] paletteData = new byte[paletteSize];
 				Array.Copy(RawData, currentOffset, paletteData, 0, paletteSize);
 				currentOffset += paletteSize;
@@ -221,13 +221,18 @@ namespace TextureLib
 			}
 
 			// Set up data without header
-			HeaderlessData = new byte[dataSize];
-			Array.Copy(RawData, currentOffset, HeaderlessData, 0, dataSize);
+			HeaderlessData = new byte[dataSize + paletteSize];
+			Array.Copy(RawData, currentOffset - paletteSize, HeaderlessData, 0, dataSize + paletteSize);
+
+			// Set up data to decode the main texture and mipmaps.
+			// This is used instead of HeaderlessData because the data codec includes palette size in the calculation and that interferes with decoding.
+			byte[] textureToDecode = new byte[dataSize];
+			Array.Copy(RawData, currentOffset, textureToDecode, 0, dataSize);
 
 			// Decode data
-			int textureAddress = HeaderlessData.Length - dataCodec.CalculateTextureSize(Width, Height);
-			ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
-			byte[] result = dataCodec.Decode(HeaderlessData, Width, Height, null);
+			int textureAddress = textureToDecode.Length - dataCodec.CalculateTextureSize(Width, Height);
+			ReadOnlySpan<byte> textureData = textureToDecode[textureAddress..];
+			byte[] result = dataCodec.Decode(textureToDecode, Width, Height, null);
 
 			// Apply palette if the texture is indexed
 			if (Indexed)
@@ -252,7 +257,7 @@ namespace TextureLib
 					{
 						mipOffset += dataCodec.CalculateTextureSize(size, size);
 					}
-					byte[] mipData = HeaderlessData[mipOffset..].ToArray();
+					byte[] mipData = textureToDecode[mipOffset..].ToArray();
 					byte[] mipRawData = dataCodec.Decode(mipData, size, size, null);
 					if (Indexed)
 						mipRawData = ApplyPalette(mipRawData, size, size).ToArray();

@@ -39,9 +39,13 @@ namespace TextureLib
                 PvrDataFormat.RectangleTwiddled => new RectangleTwiddledDataCodec(pixelCodec),
                 PvrDataFormat.SmallVq => new SmallVqDataCodec(pixelCodec),
                 PvrDataFormat.SmallVqMipmaps => new SmallVqMipmapsDataCodec(pixelCodec),
-                PvrDataFormat.SquareTwiddledMipmapsAlt => new SquareTwiddledMipmapsDMADataCodec(pixelCodec),
                 PvrDataFormat.Bitmap => new BitmapDataCodec(pixelCodec),
-				_ => throw new ArgumentException($"No codec for format \"{format}\" implemented")
+				// Duplicate/unsupported
+				PvrDataFormat.SquareTwiddledMipmapsAlt => new SquareTwiddledMipmapsDataCodec(pixelCodec),
+				PvrDataFormat.RectangleMipmaps => new RectangleDataCodec(pixelCodec),
+				PvrDataFormat.RectangleStrideMipmaps => new StrideDataCodec(pixelCodec),
+				// BitmapMipmaps
+				_ => throw new ArgumentException(string.Format("No codec for PVR data format {0} ({1}) is currently implemented. Please share this texture with SA Tools developers.", format.ToString(), format))
 			};
 		}
 

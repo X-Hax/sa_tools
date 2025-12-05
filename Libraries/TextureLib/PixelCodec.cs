@@ -8,9 +8,11 @@ namespace TextureLib
 
         public virtual int Pixels => 1;
 
-        public abstract void DecodePixel(ReadOnlySpan<byte> source, Span<byte> destination, bool bigEndian);
+		public bool BigEndian;
 
-        public abstract void EncodePixel(ReadOnlySpan<byte> source, Span<byte> destination, bool bigEndian);
+        public abstract void DecodePixel(ReadOnlySpan<byte> source, Span<byte> destination);
+
+        public abstract void EncodePixel(ReadOnlySpan<byte> source, Span<byte> destination);
 
         public static PixelCodec GetPixelCodec(PvrPixelFormat pixelFormat)
         {
@@ -22,10 +24,9 @@ namespace TextureLib
                     return new RGB555PixelCodec();
                 case PvrPixelFormat.Argb4444:
                     return new ARGB4444PixelCodec();
-                case PvrPixelFormat.Argb8888orYUV420:
-                    return new ARGB8888PixelCodec();
-                case PvrPixelFormat.Argb8888:
-                    return new ARGB8888PixelCodec();
+                case PvrPixelFormat.Argb8888orYUV420: // YUV420 not implemented
+				case PvrPixelFormat.Argb8888:
+					return new ARGB8888PixelCodec();
                 case PvrPixelFormat.Rgb565:
                     return new RGB565PixelCodec();
                 case PvrPixelFormat.Yuv422:
@@ -41,13 +42,13 @@ namespace TextureLib
             switch (paletteFormat)
             {
                 case GvrPaletteFormat.IntensityA8orArgb1555:
-                    return saCompatible ? new ARGB1555PixelCodec() : new IntensityA8PixelCodec();
+                    return saCompatible ? new ARGB1555PixelCodec() { BigEndian = true } : new IntensityA8PixelCodec();
                 case GvrPaletteFormat.Rgb565:
                     return new RGB565PixelCodec();
                 case GvrPaletteFormat.Rgb5A3orArgb4444:
-                    return saCompatible ? new ARGB4444PixelCodec() : new RGB5A3PixelCodec();
+                    return saCompatible ? new ARGB4444PixelCodec() { BigEndian = true } : new RGB5A3PixelCodec();
                 case GvrPaletteFormat.Argb8888:
-                    return new ARGB8888PixelCodec();
+                    return new ARGB8888PixelCodec() { BigEndian = true };
                 default:
                     throw new NotImplementedException(paletteFormat.ToString());
             }
@@ -58,19 +59,19 @@ namespace TextureLib
 			switch (ddsFormat)
 			{
 				case DdsFormat.Argb8888:
-					return new ABGR8888PixelCodec();
+					return new ABGR8888PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb1555:
-					return new ARGB1555PixelCodec();
+					return new ARGB1555PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb4444:
-					return new ARGB4444PixelCodec();
+					return new ARGB4444PixelCodec() { BigEndian = false };
 				case DdsFormat.Rgb565:
-					return new RGB565PixelCodec();
+					return new RGB565PixelCodec() { BigEndian = false };
 				case DdsFormat.Dxt1:
 				case DdsFormat.Dxt3:
 				case DdsFormat.Dxt5:
 					return null;
 				case DdsFormat.Rgb888:
-					return new RGB888PixelCodec();
+					return new RGB888PixelCodec() { BigEndian = false };
 				case DdsFormat.Unsupported:
 				default:
 					throw new NotImplementedException(ddsFormat.ToString());

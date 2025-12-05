@@ -105,7 +105,7 @@ namespace TextureLib
             Span<byte> destination = new byte[pixelCodec.BytesPerPixel * paletteEntries / pixelCodec.Pixels];
             for (int i = 0; i < paletteEntries; i += pixelCodec.Pixels)
             {
-                pixelCodec.EncodePixel(paletteColors[(i * 4)..], destination[(i * pixelCodec.BytesPerPixel)..], false);
+                pixelCodec.EncodePixel(paletteColors[(i * 4)..], destination[(i * pixelCodec.BytesPerPixel)..]);
             }
 
             writer.Write(destination);
@@ -177,7 +177,7 @@ namespace TextureLib
             int paletteIndex = 0;
             for (int i = 0; i < clusters.Length; i += 4 * pixelCodec.Pixels)
             {
-                pixelCodec.EncodePixel(clusters[i..], palette[paletteIndex..], false);
+                pixelCodec.EncodePixel(clusters[i..], palette[paletteIndex..]);
                 paletteIndex += pixelCodec.BytesPerPixel;
             }
 

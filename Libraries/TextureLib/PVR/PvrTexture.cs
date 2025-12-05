@@ -28,7 +28,7 @@ namespace TextureLib
 				result.AddRange(BitConverter.GetBytes((uint)0x20202020));
 			}
 			result.AddRange(BitConverter.GetBytes(Magic_PVRT));
-			result.AddRange(BitConverter.GetBytes((uint)(RawData.Length + 8)));
+			result.AddRange(BitConverter.GetBytes((uint)(HeaderlessData.Length + 8)));
 			result.Add((byte)PvrPixelFormat);
 			result.Add((byte)PvrDataFormat);
 			result.Add((byte)PaletteBank);
@@ -187,7 +187,7 @@ namespace TextureLib
 			if (PvrPixelFormat is PvrPixelFormat.Argb8888orYUV420 && dataSize > RawData.Length)
 				throw new NotImplementedException("YUV420 support is not implemented");
 #if DEBUG
-			Console.WriteLine("\nTEXTURE INFO");
+			Console.WriteLine("\nPVR TEXTURE INFO");
 			Console.WriteLine("Width: " + Width.ToString());
 			Console.WriteLine("Height: " + Height.ToString());
 			Console.WriteLine("Gbix: " + Gbix.ToString());
@@ -290,7 +290,7 @@ namespace TextureLib
 
                 for (int i = 0; i < paletteEntries; i += pixelCodec.Pixels)
                 {
-                    pixelCodec.DecodePixel(HeaderlessData[srcAddress..], result[(i * 4)..], false);
+                    pixelCodec.DecodePixel(HeaderlessData[srcAddress..], result[(i * 4)..]);
                     srcAddress += pixelCodec.BytesPerPixel;
                 }
 

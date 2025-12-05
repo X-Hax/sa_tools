@@ -6,20 +6,20 @@ namespace TextureLib
 	{
         public override int BytesPerPixel => 4;
 
-        public override void DecodePixel(ReadOnlySpan<byte> src, Span<byte> dst, bool bigEndian)
+        public override void DecodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
         {
-			dst[0] = src[bigEndian ? 3 : 0]; // A
-			dst[1] = src[bigEndian ? 2 : 1]; // R
-			dst[2] = src[bigEndian ? 1 : 2]; // G
-			dst[3] = src[bigEndian ? 0 : 3]; // B
+			dst[0] = src[BigEndian ? 3 : 0]; // A
+			dst[1] = src[BigEndian ? 2 : 1]; // R
+			dst[2] = src[BigEndian ? 1 : 2]; // G
+			dst[3] = src[BigEndian ? 0 : 3]; // B
 		}
 
-        public override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst, bool bigEndian)
+        public override void EncodePixel(ReadOnlySpan<byte> src, Span<byte> dst)
         {
-			dst[bigEndian ? 3 : 0] = src[0];
-			dst[bigEndian ? 2 : 1] = src[1];
-			dst[bigEndian ? 1 : 2] = src[2];
-			dst[bigEndian ? 0 : 3] = src[3];
+			dst[BigEndian ? 3 : 0] = src[0];
+			dst[BigEndian ? 2 : 1] = src[1];
+			dst[BigEndian ? 1 : 2] = src[2];
+			dst[BigEndian ? 0 : 3] = src[3];
 		}
 	}
 }
