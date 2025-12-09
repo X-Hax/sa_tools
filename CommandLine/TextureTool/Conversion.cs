@@ -106,12 +106,18 @@ namespace TextureTool
 				// Converting to PNG
 				case TextureFileFormat.Png:
 					result = new GdiTexture(inputTexture.Image, inputTexture.HasMipmaps, gbix);
+					// Transfer mipmaps, if they exist
+					if (inputTexture.HasMipmaps && useMipmaps)
+					{
+						result.MipmapImages = inputTexture.MipmapImages;
+						Console.WriteLine("Mipmaps decoded from the original texture");
+					}
 					break;
 				// Converting to DDS
 				case TextureFileFormat.Dds:
 					// Convert from GVR
 					if (inputTexture is GvrTexture gvrr)
-						result = new DdsTexture(gvrr);
+						result = new DdsTexture(gvrr, useMipmaps);
 					else
 					{
 						// Set formats for auto mode
@@ -195,6 +201,10 @@ namespace TextureTool
 			// Save the encoded palette if available
 			if (encodeExternalPalette && outputTexturePalette != null)
 				outputTexturePalette.Save(outputFilenameNoExt + outputPaletteExtension, targetFileFormat == TextureFileFormat.Gvr ? true : false);
+			// Save mipmaps if specified (PNG only)
+			if (targetFileFormat == TextureFileFormat.Png && useMipmaps && result.HasMipmaps && result.MipmapImages != null)
+				for (int m = 0; m < result.MipmapImages.Length; m++)
+					result.MipmapImages[m].Save(outputFilenameNoExt + "_mip" + m.ToString() + outputExtension);
 			Console.WriteLine("\nFinished!");
 		}
 	}
