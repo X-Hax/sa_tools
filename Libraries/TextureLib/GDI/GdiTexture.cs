@@ -118,7 +118,7 @@ namespace TextureLib
 			int mipWidth = Width;
 			int mipHeight = Height;
 			// Generate individual mipmaps
-			for (int m = 0; m < levels; m++)
+			for (int m = 0; m < levels - 1; m++)
 			{
 				// Divide original or previous dimensions by two for each mipmap
 				mipWidth = mipWidth / 2;
