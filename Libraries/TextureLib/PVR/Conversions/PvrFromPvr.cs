@@ -48,6 +48,7 @@ namespace TextureLib
 			PaletteStartIndex = src.PaletteStartIndex;
 			PakMetadata = src.PakMetadata;
 			PvmxOriginalDimensions = src.PvmxOriginalDimensions;
+			bool forceMipmaps = false;
 			bool lossless = true;
 			// Converting to a different pixel format -> Reencode
 			if (src.PvrPixelFormat != PvrPixelFormat)
@@ -114,11 +115,54 @@ namespace TextureLib
 				default:
 					break;
 			}
+			if (!src.HasMipmaps)
+			{
+				switch (PvrDataFormat)
+				{
+					case PvrDataFormat.SquareTwiddledMipmaps:
+						PvrDataFormat = PvrDataFormat.SquareTwiddled;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.SquareTwiddledMipmapsAlt:
+						PvrDataFormat = PvrDataFormat.SquareTwiddled;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.RectangleMipmaps:
+						PvrDataFormat = PvrDataFormat.Rectangle;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.RectangleStrideMipmaps:
+						PvrDataFormat = PvrDataFormat.RectangleStride;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.SmallVqMipmaps:
+						PvrDataFormat = PvrDataFormat.SmallVq;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.VqMipmaps:
+						PvrDataFormat = PvrDataFormat.Vq;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.Index4Mipmaps:
+						PvrDataFormat = PvrDataFormat.Index4;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.Index8Mipmaps:
+						PvrDataFormat = PvrDataFormat.Index8;
+						forceMipmaps = true;
+						break;
+					case PvrDataFormat.BitmapMipmaps:
+						PvrDataFormat = PvrDataFormat.Bitmap;
+						forceMipmaps = true;
+						break;
+				}
+			}
 			// Lossy encoding
 			if (!lossless)
 			{
 				Encode();
-				Decode();
+				if (forceMipmaps)
+					AddMipmaps();
 			}
 			// Lossless conversion
 			else
@@ -178,21 +222,22 @@ namespace TextureLib
 									mipmapOffset += inputDataCodec.CalculateTextureSize(sizex, sizex);
 								}
 							}
-							else
-								HasMipmaps = false;
 						}
 						// Write texture
 						outputStream.Write(outputDataCodec.Encode(mainTexRaw, Width, Height));
 						// Update the texture's data arrays
 						HeaderlessData = outputStream.ToArray();
 						RawData = GetBytes();
-						// Update the texture's mipmaps and preview image
-						Decode();
+						// Force add mipmaps, if necessary
+						if (forceMipmaps)
+						{
+							HasMipmaps = false;
+							AddMipmaps();
+						}
 						break;
 					// For other formats, use lossy conversion
 					default:
 						Encode();
-						Decode();
 						break;
 				}
 			}

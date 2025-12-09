@@ -147,6 +147,8 @@ namespace TextureLib
 			if (!losslessConversion)
 			{
 				Encode();
+				if (forceMipmaps)
+					AddMipmaps();
 			}
 			// If the conversion is lossless, unwrap the pixels using the "bypass" GVR data codec and wrap it using the PVR data codec and the "bypass" pixel codec.
 			else

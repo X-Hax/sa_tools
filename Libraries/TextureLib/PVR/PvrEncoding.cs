@@ -73,6 +73,7 @@ namespace TextureLib
 					{
 						TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(Image), quantizer.CreatePixelSpecificQuantizer<Rgba32>(Configuration.Default), dataCodec, size, outputStream);
 					}
+					HasMipmaps = true;
 				}
 				// Encode the indexed texture itself
 				outputStream.Write(dataCodec.Encode(indexedBitmapData, Image.Width, Image.Height));
