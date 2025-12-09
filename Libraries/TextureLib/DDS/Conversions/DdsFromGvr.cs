@@ -17,7 +17,36 @@ namespace TextureLib
 			// IntensityA8 could be converted to D3DFMT_A8L8	
 		};
 
-		public DdsTexture(GvrTexture gvr)
+		/// <summary>Create a new DDS texture from a GVR texture, data format determined automatically.</summary>
+		public DdsTexture(GvrTexture gvr, bool forceMipmaps = false, bool maxQuality = false)
+		{
+			DdsFormat targetFormat;
+			switch (gvr.GvrDataFormat)
+			{
+				case GvrDataFormat.Rgb565:
+					targetFormat = DdsFormat.Rgb565;
+					break;
+				case GvrDataFormat.Dxt1:
+					targetFormat = DdsFormat.Dxt1;
+					break;
+				case GvrDataFormat.Rgb5a3:
+					targetFormat = maxQuality ? DdsFormat.Argb8888 : DdsFormat.Dxt5;
+					break;
+				case GvrDataFormat.Argb8888:
+				default:
+					targetFormat = DdsFormat.Argb8888;
+					break;
+			}
+			ConvertFromGvr(gvr, targetFormat, forceMipmaps);
+		}
+
+		/// <summary>Create a new DDS texture from a GVR texture, data format is specified manually.</summary>
+		public DdsTexture(GvrTexture gvr, DdsFormat targetFormat, bool forceMipmaps = false)
+		{
+			ConvertFromGvr(gvr, targetFormat, forceMipmaps);
+		}
+
+		private void ConvertFromGvr(GvrTexture gvr, DdsFormat targetDddsFormat, bool forceMipmaps = false)
 		{
 			// Set common texture properties
 			Image = gvr.Image;
@@ -29,34 +58,26 @@ namespace TextureLib
 			PaletteBank = gvr.PaletteBank;
 			PaletteStartIndex = gvr.PaletteStartIndex;
 			PakMetadata = gvr.PakMetadata;
-			switch (gvr.GvrDataFormat)
-			{
-				case GvrDataFormat.Argb8888:
-					DdsFormat = DdsFormat.Argb8888;
-					break;
-				case GvrDataFormat.Rgb565:
-					DdsFormat = DdsFormat.Rgb565;
-					break;
-				case GvrDataFormat.Dxt1:
-					DdsFormat = DdsFormat.Dxt1;
-					break;
-				case GvrDataFormat.Rgb5a3:
-					DdsFormat = DdsFormat.Dxt5;
-					break;
-				default:
-					DdsFormat = DdsFormat.Argb8888;
-					break;
-			}
+			DdsFormat = targetDddsFormat;
 			// Check lossless
 			bool lossless = false;
 			foreach (var item in CompatibleFormatsGvrDds)
 				if (item.Key == gvr.GvrDataFormat && item.Value == DdsFormat)
 					lossless = true;
-			if (lossless)
+			// If the encoding is not lossless, perform a full conversion
+			if (!lossless)
 			{
+				HasMipmaps = forceMipmaps ? true : gvr.HasMipmaps;
+				Encode();
+			}
+			// Otherwise perform lossless conversion
+			else
+			{
+#if DEBUG
 				Console.WriteLine("Using lossless conversion");
+#endif
 				GvrDataCodec inputCodec = GvrDataCodec.GetDataCodec(gvr.GvrDataFormat);
-				DdsDataCodec outputCodec = DdsDataCodec.GetDataCodec(DdsFormat, null, true);
+				DdsDataCodec outputCodec = DdsDataCodec.GetDataCodec(DdsFormat, new Bypass16BitPixelCodec(), true);
 				MemoryStream outputStream = new();
 				// If it's DXT1, use the converter
 				if (gvr.GvrDataFormat == GvrDataFormat.Dxt1)
@@ -91,6 +112,15 @@ namespace TextureLib
 				// If not, use the bypass codec
 				else
 				{
+					inputCodec = new GvrBypass16BitDataCodec();
+					int currentOffset = 0;
+					// Account for CLUT
+					if (gvr.Indexed && !gvr.RequiresPaletteFile)
+					{
+						PixelCodec paletteCodec = PixelCodec.GetPixelCodec(gvr.GvrPaletteFormat);
+						int paletteSize = paletteCodec.BytesPerPixel * GvrDataCodec.GetDataCodec(gvr.GvrDataFormat).PaletteEntries;
+						currentOffset += paletteSize;
+					}
 					// Mipmaps + main texture
 					if (HasMipmaps)
 					{
@@ -98,7 +128,7 @@ namespace TextureLib
 						MipmapImages = new Bitmap[mipLevels];
 						for (int mipmapIndex = 0; mipmapIndex < mipLevels; mipmapIndex++)
 						{
-							int mipOffset = 0;
+							int mipOffset = currentOffset;
 							int size = Width;
 							for (int i = 0; i < mipmapIndex; i++, size >>= 1)
 							{
@@ -111,20 +141,18 @@ namespace TextureLib
 						}
 					}
 					// Just main texture
-
-					byte[] ddsdxt = new byte[inputCodec.CalculateTextureSize(Width, Height)];
-					Array.Copy(gvr.HeaderlessData, 0, ddsdxt, 0, ddsdxt.Length);
-					outputStream.Write(DxtConverter.ConvertDxt(ddsdxt, Width, Height, true));
+					byte[] maintex = inputCodec.Decode(gvr.HeaderlessData[currentOffset..], Width, Height, null);
+					outputStream.Write(outputCodec.Encode(maintex, Width, Height));
 				}
+				// Update raw data arrays
 				HeaderlessData = outputStream.ToArray();
 				RawData = GetBytes();
-				Decode();
-			}
-			// Otherwise use full encoding
-			else
-			{
-				Encode();
-				Decode();
+				// Check if mipmaps need to be force created
+				if (forceMipmaps && !gvr.HasMipmaps)
+				{
+					HasMipmaps = false;
+					AddMipmaps();
+				}
 			}
 		}
 	}

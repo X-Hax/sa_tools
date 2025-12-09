@@ -106,7 +106,7 @@ namespace TextureTool
 				// Converting to PNG
 				case TextureFileFormat.Png:
 					result = new GdiTexture(inputTexture.Image, inputTexture.HasMipmaps, gbix);
-					// Transfer mipmaps, if they exist
+					// Transfer mipmaps if they exist
 					if (inputTexture.HasMipmaps && useMipmaps)
 					{
 						result.MipmapImages = inputTexture.MipmapImages;
@@ -115,19 +115,52 @@ namespace TextureTool
 					break;
 				// Converting to DDS
 				case TextureFileFormat.Dds:
-					// Convert from GVR
-					if (inputTexture is GvrTexture gvrr)
-						result = new DdsTexture(gvrr, useMipmaps);
-					else
+					switch (inputTexture)
 					{
-						// Set formats for auto mode
-						if (autoDdsDataFormat)
-						{
-							Console.WriteLine("Auto DDS formats not implemented yet");
-							return;
-						}
-						// Encode texture
-						result = new DdsTexture(inputTexture.Image, targetDdsFormat, useMipmaps);
+						// Convert from PVR
+						case PvrTexture pvrd:
+							result = autoDdsDataFormat ? new DdsTexture(pvrd, useMipmaps, false) : new DdsTexture(pvrd, targetDdsFormat, useMipmaps);
+							break;
+						// Convert from GVR
+						case GvrTexture gvrd:
+							result = autoDdsDataFormat ? new DdsTexture(gvrd, useMipmaps) : new DdsTexture(gvrd, targetDdsFormat, useMipmaps);
+							break;
+						// Convert from XVR
+						case XvrTexture xvrd:
+							// Auto format
+							if (autoDdsDataFormat)
+							{
+								// If the source texture doesn't have mipmaps but the destination does, the texture will be reencoded
+								if (!xvrd.HasMipmaps && useMipmaps)
+									result = new DdsTexture(xvrd, targetDdsFormat, useMipmaps);
+								// Otherwise it should be the same as the original texture
+								else
+									result = inputTexture;
+							}
+							// If the format is specified manually, convert the texture
+							else
+								result = new DdsTexture(xvrd, false, true, useMipmaps);								
+							break;
+						// Convert from DDS
+						case DdsTexture ddsd:
+							// Auto format
+							if (autoDdsDataFormat)
+							{
+								// If the source texture doesn't have mipmaps but the destination does, the texture will be reencoded
+								if (!ddsd.HasMipmaps && useMipmaps)
+									result = new DdsTexture(ddsd, targetDdsFormat, useMipmaps);
+								// Otherwise it should be the same as the original texture
+								else
+									result = inputTexture;
+							}
+							// If the format is specified manually, convert the texture
+							else
+								result = new DdsTexture(ddsd, false, true, useMipmaps);
+							break;
+						// Convert from PNG
+						case GdiTexture gdid:
+							result = autoDdsDataFormat ? new DdsTexture(gdid, useMipmaps, false, true) : new DdsTexture(gdid, targetDdsFormat, useMipmaps);
+							break;
 					}
 					break;
 				// Converting to XVR
@@ -159,10 +192,19 @@ namespace TextureTool
 							break;
 						// Convert from GVR
 						case GvrTexture gvrt:
-							result = autoPvrDataFormat ? new PvrTexture(gvrt, useMipmaps) : new PvrTexture(gvrt, targetPvrFormat);
+							// Auto pixel & data
+							if (autoPvrDataFormat && autoPvrPixelFormat)
+								result = new PvrTexture(gvrt, useMipmaps);
+							// Auto pixel - TODO
+							//else if (autoPvrPixelFormat)
+								//result = new PvrTexture(gvrt, useMipmaps);
+							// Auto data
+							else if (autoPvrDataFormat)
+								result = new PvrTexture(gvrt, targetPvrFormat, useMipmaps);
 							break;
 						// Convert from DDS or XVR
 						case DdsTexture ddst:
+							// Auto pixel & data
 							result = autoPvrDataFormat ? new PvrTexture(ddst, useMipmaps) : new PvrTexture(ddst, targetPvrFormat);
 							break;
 						// Convert from PNG

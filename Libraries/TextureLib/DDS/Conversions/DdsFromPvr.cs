@@ -17,7 +17,43 @@ namespace TextureLib
 			// Rgb555 could be converted to D3DFMT_X1R5G5B5
 		};
 
-		public DdsTexture(PvrTexture pvr)
+		/// <summary>Create a new DDS texture from a PVR texture, data format determined automatically.</summary>
+		public DdsTexture(PvrTexture pvr, bool forceMipmaps = false, bool maxQuality = false)
+		{
+			DdsFormat targetFormat;
+			switch (pvr.PvrPixelFormat)
+			{
+				case PvrPixelFormat.Rgb565:
+					targetFormat = DdsFormat.Rgb565;
+					break;
+				case PvrPixelFormat.Argb4444:
+					targetFormat = DdsFormat.Argb4444;
+					break;
+				case PvrPixelFormat.Argb1555:
+				case PvrPixelFormat.Rgb555:
+					targetFormat = DdsFormat.Argb1555;
+					break;
+				case PvrPixelFormat.Argb8888:
+				case PvrPixelFormat.Argb8888orYUV420:
+				default:
+					targetFormat = DdsFormat.Argb8888;
+					break;
+			}
+			// VQ textures -> DXT textures?
+			if (pvr.PvrDataFormat == PvrDataFormat.Vq || pvr.PvrDataFormat == PvrDataFormat.VqMipmaps ||
+				pvr.PvrDataFormat == PvrDataFormat.SmallVq || pvr.PvrDataFormat == PvrDataFormat.SmallVqMipmaps)
+				if (!maxQuality)
+					targetFormat = AutoDdsFormatFromImage(pvr.Image, maxQuality, maxQuality ? false : true);
+			ConvertFromPvr(pvr, targetFormat, forceMipmaps);
+		}
+
+		/// <summary>Create a new DDS texture from a PVR texture, data format specified manually.</summary>
+		public DdsTexture(PvrTexture pvr, DdsFormat targetFormat, bool forceMipmaps = false)
+		{
+			ConvertFromPvr(pvr, targetFormat, forceMipmaps);
+		}
+
+		private void ConvertFromPvr(PvrTexture pvr, DdsFormat targetFormat, bool forceMipmaps = false)
 		{
 			// Set common texture properties
 			Image = pvr.Image;
@@ -25,50 +61,82 @@ namespace TextureLib
 			Name = pvr.Name;
 			Width = pvr.Width;
 			Height = pvr.Height;
-			HasMipmaps = pvr.HasMipmaps;
+			HasMipmaps = forceMipmaps ? true : pvr.HasMipmaps;
 			PaletteBank = pvr.PaletteBank;
 			PaletteStartIndex = pvr.PaletteStartIndex;
 			PakMetadata = pvr.PakMetadata;
-			switch (pvr.PvrPixelFormat)
-			{
-				case PvrPixelFormat.Argb8888:
-				case PvrPixelFormat.Argb8888orYUV420:
-					DdsFormat = DdsFormat.Argb8888;
-					break;
-				case PvrPixelFormat.Rgb565:
-					DdsFormat = DdsFormat.Rgb565;
-					break;
-				case PvrPixelFormat.Argb1555:
-				case PvrPixelFormat.Rgb555:
-					DdsFormat = DdsFormat.Argb1555;
-					break;
-				case PvrPixelFormat.Argb4444:
-					DdsFormat = DdsFormat.Argb4444;
-					break;
-				default:
-					DdsFormat = DdsFormat.Argb8888;
-					break;
-			}
+			DdsFormat = targetFormat;
+			PvmxOriginalDimensions = pvr.PvmxOriginalDimensions;
 			// Check lossless
 			bool lossless = false;
 			foreach (var item in CompatibleFormatsPvrDds)
 				if (item.Key == pvr.PvrPixelFormat && item.Value == DdsFormat)
 					lossless = true;
-			if (lossless)
+			// But not VQ or Indexed or Bitmap
+			switch (pvr.PvrDataFormat)
 			{
-				Console.WriteLine("Using lossless conversion");
-				PvrDataCodec inputCodec = PvrDataCodec.Create(pvr.PvrDataFormat, new Bypass16BitPixelCodec());
-				DdsDataCodec outputCodec = DdsDataCodec.GetDataCodec(DdsFormat, null, true);
-				MemoryStream outputStream = new();
-				HeaderlessData = outputStream.ToArray();
-				RawData = GetBytes();
-				Decode();
+				case PvrDataFormat.Bitmap:
+				case PvrDataFormat.BitmapMipmaps:
+				case PvrDataFormat.Index4:
+				case PvrDataFormat.Index4Mipmaps:
+				case PvrDataFormat.Index8:
+				case PvrDataFormat.Index8Mipmaps:
+				case PvrDataFormat.SmallVq:
+				case PvrDataFormat.SmallVqMipmaps:
+				case PvrDataFormat.Vq:
+				case PvrDataFormat.VqMipmaps:
+					lossless = false;
+					break;
 			}
-			// Otherwise use full encoding
-			else
+			// Lossy conversion
+			if (!lossless)
 			{
 				Encode();
-				Decode();
+			}
+			// Lossless conversion
+			else
+			{
+#if DEBUG
+				Console.WriteLine("Using lossless conversion");
+#endif
+				PvrDataCodec inputDataCodec = PvrDataCodec.Create(pvr.PvrDataFormat, new Bypass16BitPixelCodec());
+				DdsDataCodec outputDataCodec = DdsDataCodec.GetDataCodec(DdsFormat, new Bypass16BitPixelCodec(), true);
+				MemoryStream outputStream = new();
+				// Original texture data
+				int textureAddress = pvr.HeaderlessData.Length - inputDataCodec.CalculateTextureSize(Width, Height);
+				ReadOnlySpan<byte> textureData = pvr.HeaderlessData[textureAddress..];
+				byte[] mainTexRaw = inputDataCodec.Decode(textureData, Width, Height, null);
+				// Write the original texture
+				outputStream.Write(outputDataCodec.Encode(mainTexRaw, Width, Height));
+				// Unwrap mipmaps, if present and required
+				if (HasMipmaps && pvr.HasMipmaps)
+				{
+					// Calculate the number of mip levels
+					int mipLevels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
+					// Convert mipmaps if they're already there
+					for (int i = mipLevels - 1, sizex = 1; i >= 0; i--, sizex <<= 1)
+					{
+						int[] mipmapOffsets = new int[mipLevels];
+						// Start offset for the first mipmap
+						int mipmapOffset = 0;
+						mipmapOffsets[i] = mipmapOffset;
+						byte[] srcdata = pvr.HeaderlessData[mipmapOffsets[i]..];
+						int mipDataSize = Math.Max(1, pvr.HeaderlessData.Length - srcdata.Length);
+						byte[] mipRawData = inputDataCodec.Decode(srcdata, sizex, sizex, null);
+						if (HasMipmaps && sizex != Width)
+							outputStream.Write(outputDataCodec.Encode(mipRawData, sizex, sizex));
+						mipmapOffset += inputDataCodec.CalculateTextureSize(sizex, sizex);
+					}
+				}
+				// Update raw data arrays
+				HeaderlessData = outputStream.ToArray();
+				RawData = GetBytes();
+				// Force mipmaps if required
+				if (HasMipmaps && !pvr.HasMipmaps)
+				{
+					HasMipmaps = false;
+					AddMipmaps();
+				}
 			}
 		}
 	}

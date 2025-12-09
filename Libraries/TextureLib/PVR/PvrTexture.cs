@@ -13,7 +13,7 @@ namespace TextureLib
         public PvrPixelFormat PvrPixelFormat;
         public PvrDataFormat PvrDataFormat;
 
-        private byte[] HeaderlessData; // Raw data without the header
+        public byte[] HeaderlessData; // Raw data without the header
 		private bool useDithering;
 
 		public override byte[] GetBytes()
