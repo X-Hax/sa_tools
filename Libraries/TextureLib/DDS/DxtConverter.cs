@@ -3,22 +3,6 @@ using System.Collections.Generic;
 
 namespace TextureLib
 {
-	// Some stuff for lossless conversions, will be moved out later
-
-	public static class TextureConversion
-	{
-
-		/// <summary>Dictionary of GVR and DDS formats that can be converted losslessly between each other. ARGB8888 and Indexed formats not included.</summary>
-		public static Dictionary<GvrDataFormat, DdsFormat> CompatibleFormatsGvrDds= new Dictionary<GvrDataFormat, DdsFormat>()
-		{
-			{ GvrDataFormat.Rgb565, DdsFormat.Rgb565 },
-			{ GvrDataFormat.Dxt1, DdsFormat.Dxt1 }
-			// IntensityA4 could be converted to D3DFMT_A4L4
-			// Intensity8 could be converted to D3DFMT_L8 or D3DFMT_A8
-			// IntensityA8 could be converted to D3DFMT_A8L8	
-		};
-	}
-
 	/// <summary>
 	/// Class that converts DXT1 texture data between DDS and Gamecube GVR.
 	/// This class was made solely for the above purpose and may not be suitable for other conversions.
@@ -112,6 +96,9 @@ namespace TextureLib
 		/// <returns>Converted byte array containing DXT1 compressed texture data in the target format.</returns>
 		public static byte[] ConvertDxt(byte[] src, int width, int height, bool fromGvr)
 		{
+			// DXT block minimum dimensions
+			width = Math.Max(width, 4);
+			height = Math.Max(height, 4);
 			const int CmprTileSizeBytes = 32; // GVR CMPR block size in bytes
 			const int CmprTileWidth = 8; // GVR CMPR block width and height
 
@@ -120,9 +107,9 @@ namespace TextureLib
 
 			List<byte> res = new List<byte>();
 
-			int numDxtBlocks = src.Length / DxtBlockSizeBytes;
 			int numDxtBlockHz = width / DxtBlockSizeWidth;
 			int numDxtBlockVt = height / DxtBlockSizeWidth;
+			int numDxtBlocks = numDxtBlockHz * numDxtBlockVt;
 
 			int numTiles = src.Length / CmprTileSizeBytes;
 			int numTileHz = width / CmprTileWidth;
@@ -131,7 +118,8 @@ namespace TextureLib
 #if DEBUG
 			Console.WriteLine(fromGvr ? "From GVR" : "From DDS");
 			Console.WriteLine("DXT blocks: {0} ({1}x{2})", numDxtBlocks, numDxtBlockHz, numDxtBlockVt);
-			Console.WriteLine("CMPT blocks: {0} ({1}x{2})", numTiles, numTileHz, numTileVt);
+			Console.WriteLine("CMPR blocks: {0} ({1}x{2})", numTiles, numTileHz, numTileVt);
+			Console.WriteLine("Dimensions: {0}x{1}", width,height);
 #endif
 			// From GVR to DDS
 			if (fromGvr)
@@ -144,19 +132,35 @@ namespace TextureLib
 					tiles.Add(new GamecubeDxtTile(src, p * CmprTileSizeBytes, fromGvr));
 				}
 				// Write out DXT blocks
-				for (int y = 0; y < numTileVt; y++)
+				if (numTileVt > 0)
 				{
-					// First row
-					for (int x = 0; x < numTileHz; x++)
+					for (int y = 0; y < numTileVt; y++)
 					{
-						res.AddRange(tiles[numTileHz * y + x].TopLeft.GetBytes());
-						res.AddRange(tiles[numTileHz * y + x].TopRight.GetBytes());
+						// First row
+						for (int x = 0; x < numTileHz; x++)
+						{
+							res.AddRange(tiles[numTileHz * y + x].TopLeft.GetBytes());
+							res.AddRange(tiles[numTileHz * y + x].TopRight.GetBytes());
+						}
+						// Second row
+						for (int x = 0; x < numTileHz; x++)
+						{
+							res.AddRange(tiles[numTileHz * y + x].BottomLeft.GetBytes());
+							res.AddRange(tiles[numTileHz * y + x].BottomRight.GetBytes());
+						}
 					}
-					// Second row
-					for (int x = 0; x < numTileHz; x++)
+				}
+				// If there isn't enough data to form a Gamecube block, process all blocks in sequential order
+				else
+				{
+					int blockCount = 0;
+					DxtBlock block = null;
+					for (int b = 0; b < numDxtBlocks; b++)
 					{
-						res.AddRange(tiles[numTileHz * y + x].BottomLeft.GetBytes());
-						res.AddRange(tiles[numTileHz * y + x].BottomRight.GetBytes());
+						Console.WriteLine("Block {0}", b);
+						block = new DxtBlock(src, 8 * b);
+						res.AddRange(block.GetBytes());
+						blockCount++;
 					}
 				}
 			}

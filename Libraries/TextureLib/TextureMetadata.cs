@@ -1,19 +1,6 @@
-﻿using System;
-
-namespace TextureLib
+﻿namespace TextureLib
 {
-    // Various classes and enums used by TextureLib, will be moved to respective .cs files for PVR, GVR etc.
-
-    public enum TextureFormat
-    {
-        Gdi,
-        Pvr,
-        Gvr,
-        Xvr,
-        Dds,
-        Invalid
-    }
-
+	///<summary>Flags specified in the metadata in PAK archives</summary>
     public enum NinjaSurfaceFlags : uint
     {
         Mipmapped = 0x80000000,
@@ -24,13 +11,12 @@ namespace TextureLib
         Palettized = 0x00008000
     }
 
-    // Extra fields for entries in PAK archives (stored in the .inf file)
-    public class PakMetadata
+	///<summary>Extra fields for entries in PAK archives stored in the .inf file</summary>
+	public class PakMetadata
     {
         public GvrDataFormat PakGvrFormat;
         public NinjaSurfaceFlags PakNinjaFlags;
         public string PakFolderName;
         public string PakLongPath;
     }
-
 }

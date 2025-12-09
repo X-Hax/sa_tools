@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace TextureLib
 {
@@ -211,7 +210,6 @@ namespace TextureLib
 			Array.Copy(RawData, currentOffset, HeaderlessData, 0, dataSize);
 
 			ReadOnlySpan<byte> palette = DecodeInternalPalette(dataCodec, out int paletteSize);
-			//System.IO.File.WriteAllBytes("data.bin", HeaderlessData);
 			int textureAddress = HeaderlessData.Length - dataCodec.CalculateTextureSize(Width, Height);
 
 			ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
@@ -222,7 +220,7 @@ namespace TextureLib
 				result = ApplyPalette(result, Width, Height).ToArray();
 			}
 
-			Image = new Bitmap(Width, Height, PixelFormat.Format32bppArgb);
+			Image = new Bitmap(Width, Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			TextureFunctions.RawToBitmap(Image, result);
 
 			if (HasMipmaps)
@@ -266,7 +264,7 @@ namespace TextureLib
 						mipRawData = ApplyPalette(mipRawData, sizex, sizex).ToArray();
 					//Console.WriteLine("MipRawData {0}", mipRawData.Length);
 					//TextureFunctions.RGBAtoBGRA(mipRawData);
-					Bitmap mipBitmap = new Bitmap(sizex, sizex, PixelFormat.Format32bppArgb);
+					Bitmap mipBitmap = new Bitmap(sizex, sizex, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 					TextureFunctions.RawToBitmap(mipBitmap, mipRawData);
 					//Console.WriteLine(mipBitmap.GetPixel(0, 0).ToString());
 					MipmapImages[i] = mipBitmap;

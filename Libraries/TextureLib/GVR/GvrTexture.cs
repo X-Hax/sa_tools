@@ -337,5 +337,15 @@ namespace TextureLib
 			HeaderlessData = outputStream.ToArray();
 			RawData = GetBytes();
 		}
+
+		public override void AddMipmaps()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void RemoveMipmaps()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

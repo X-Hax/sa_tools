@@ -33,7 +33,7 @@ namespace TextureLib
 	// D3DFMT_UYVY or D3DFMT_YUY2? // PVR YUV422
 	*/
 
-	public class DdsTexture : GenericTexture
+	public partial class DdsTexture : GenericTexture
 	{
 		public DdsFormat DdsFormat;
 		public byte[] HeaderlessData;

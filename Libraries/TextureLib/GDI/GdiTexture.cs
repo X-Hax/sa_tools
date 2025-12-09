@@ -16,11 +16,17 @@ namespace TextureLib
 		/// </summary>
 		/// <param name="data">Byte array containing texture data.</param>
 		/// <param name="offset">Offset where texture data begins.</param>
+		/// <param name="mipmaps">Whether to generate mipmaps or not.</param>
+		/// <param name="gbix">Global Index (optional).</param>
 		/// <param name="name">Texture name (optional).</param>
-		public GdiTexture(byte[] data, int offset = 0, string name = null)
+		public GdiTexture(byte[] data, int offset = 0, bool mipmaps = false, uint gbix = 0, string name = null)
 		{
 			InitTexture(data, offset, name);
 			Decode();
+			Gbix = gbix;
+			SetTextureProperties();
+			if (mipmaps)
+				AddMipmaps();
 		}
 
 		/// <summary>
@@ -28,8 +34,9 @@ namespace TextureLib
 		/// </summary>
 		/// <param name="texture">Source Bitmap.</param>
 		/// <param name="mipmaps">Whether to generate mipmaps or not.</param>
-		/// <param name="gbix">Global Index.</param>
-		public GdiTexture(Bitmap texture, bool mipmaps, uint gbix = 0, string name = null)
+		/// <param name="gbix">Global Index (optional).</param>
+		/// <param name="name">Texture name (optional).</param>
+		public GdiTexture(Bitmap texture, bool mipmaps = false, uint gbix = 0, string name = null)
 		{
 			Image = new Bitmap(texture);
 			Gbix = gbix;
@@ -37,38 +44,6 @@ namespace TextureLib
 			HasMipmaps = mipmaps;
 			SetTextureProperties();
 			Encode();
-		}
-
-		/// <summary>
-		/// Generates mipmaps from the original Image.
-		/// </summary>
-		private void GenerateMipmaps()
-		{
-			// Calculate mipmap levels based on texture dimensions
-			int levels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
-			MipmapImages = new Bitmap[levels];
-			// Set initial width before division
-			int mipWidth = Width;
-			int mipHeight = Height;
-			// Generate individual mipmaps
-			for (int m = 0; m < levels; m++)
-			{
-				// Divide original or previous dimensions by two for each mipmap
-				mipWidth = mipWidth / 2;
-				mipHeight = mipHeight / 2;
-				Bitmap mip = new Bitmap(mipWidth, mipHeight);
-				// Write mipmap image onto the bitmap from largest to smallest
-				using (Graphics gfx = Graphics.FromImage(mip))
-				{
-					gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-					gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-					gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-					gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-					gfx.DrawImage(Image, 0, 0, mipWidth, mipHeight);
-				}
-				// Save bitmap to the dictionary
-				MipmapImages[m] = mip;
-			}
 		}
 
 		public override byte[] GetBytes()
@@ -83,19 +58,17 @@ namespace TextureLib
 			LoadBitmapFromRawData();
 			SetTextureProperties();
 			if (HasMipmaps)
-				GenerateMipmaps();
+				AddMipmaps();
 		}
 
 		public override void Encode()
 		{
 			if (HasMipmaps)
-				GenerateMipmaps();
+				AddMipmaps();
 			RawData = GetBytes();
 		}
 
-		/// <summary>
-		/// Sets texture properties such as width etc. based on the Image parameters.
-		/// </summary>
+		/// <summary>Sets texture properties such as width etc. based on the Image parameters.</summary>
 		private void SetTextureProperties()
 		{
 			Width = Image.Width;
@@ -124,9 +97,7 @@ namespace TextureLib
 			GdiPixelFormat = Image.PixelFormat;
 		}
 
-		/// <summary>
-		/// Retrieves the Image from raw data.
-		/// </summary>
+		/// <summary>Retrieves the Image from raw data.</summary>
 		private void LoadBitmapFromRawData()
 		{
 			using (var ms = new MemoryStream(RawData))
@@ -135,6 +106,42 @@ namespace TextureLib
 				Image = (Bitmap)b.Clone();
 				b.Dispose();
 			}
+		}
+
+		public override void AddMipmaps()
+		{
+			HasMipmaps = true;
+			// Calculate mipmap levels based on texture dimensions
+			int levels = (int)Math.Floor(Math.Log2(Math.Max(Width, Height))) + 1;
+			MipmapImages = new Bitmap[levels];
+			// Set initial width before division
+			int mipWidth = Width;
+			int mipHeight = Height;
+			// Generate individual mipmaps
+			for (int m = 0; m < levels; m++)
+			{
+				// Divide original or previous dimensions by two for each mipmap
+				mipWidth = mipWidth / 2;
+				mipHeight = mipHeight / 2;
+				Bitmap mip = new Bitmap(mipWidth, mipHeight);
+				// Write mipmap image onto the bitmap from largest to smallest
+				using (Graphics gfx = Graphics.FromImage(mip))
+				{
+					gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+					gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+					gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+					gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+					gfx.DrawImage(Image, 0, 0, mipWidth, mipHeight);
+				}
+				// Save bitmap to the dictionary
+				MipmapImages[m] = mip;
+			}
+		}
+
+		public override void RemoveMipmaps()
+		{
+			HasMipmaps = false;
+			MipmapImages = null;
 		}
 	}
 }
