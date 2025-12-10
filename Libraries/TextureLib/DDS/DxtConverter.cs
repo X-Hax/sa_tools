@@ -174,29 +174,44 @@ namespace TextureLib
 				{
 					blocks.Add(new DxtBlock(src, p * DxtBlockSizeBytes));
 				}
-				// Build Gamecube CMPR blocks
 				List<GamecubeDxtTile> tiles = new List<GamecubeDxtTile>();
-				for (int y = 0; y < numTileVt; y++)
+				// Build Gamecube CMPR blocks
+				if (numTileVt > 0)
 				{
-					for (int x = 0; x < numTileHz; x++)
+					for (int y = 0; y < numTileVt; y++)
 					{
-						GamecubeDxtTile tile = new GamecubeDxtTile()
+						for (int x = 0; x < numTileHz; x++)
 						{
-							TopLeft = blocks[numDxtBlockHz * y * 2 + x * 2],
-							TopRight = blocks[numDxtBlockHz * y * 2 + x * 2 + 1],
-							BottomLeft = blocks[numDxtBlockHz * (y * 2 + 1) + x * 2],
-							BottomRight = blocks[numDxtBlockHz * (y * 2 + 1) + x * 2 + 1]
-						};
-						tiles.Add(tile);
+							GamecubeDxtTile tile = new GamecubeDxtTile()
+							{
+								TopLeft = blocks[numDxtBlockHz * y * 2 + x * 2],
+								TopRight = blocks[numDxtBlockHz * y * 2 + x * 2 + 1],
+								BottomLeft = blocks[numDxtBlockHz * (y * 2 + 1) + x * 2],
+								BottomRight = blocks[numDxtBlockHz * (y * 2 + 1) + x * 2 + 1]
+							};
+							tiles.Add(tile);
+						}
+					}
+					// Write out CMPR blocks
+					for (int t = 0; t < tiles.Count; t++)
+					{
+						res.AddRange(tiles[t].TopLeft.GetBytes());
+						res.AddRange(tiles[t].TopRight.GetBytes());
+						res.AddRange(tiles[t].BottomLeft.GetBytes());
+						res.AddRange(tiles[t].BottomRight.GetBytes());
 					}
 				}
-				// Write out CMPR blocks
-				for (int t = 0; t < tiles.Count; t++)
+				// If there isn't enough data to form a Gamecube block, process all blocks in sequential order
+				else
 				{
-					res.AddRange(tiles[t].TopLeft.GetBytes());
-					res.AddRange(tiles[t].TopRight.GetBytes());
-					res.AddRange(tiles[t].BottomLeft.GetBytes());
-					res.AddRange(tiles[t].BottomRight.GetBytes());
+					int blockCount = 0;
+					DxtBlock block = null;
+					for (int b = 0; b < numDxtBlocks; b++)
+					{
+						block = new DxtBlock(src, 8 * b);
+						res.AddRange(block.GetBytes());
+						blockCount++;
+					}
 				}
 			}
 			return res.ToArray();

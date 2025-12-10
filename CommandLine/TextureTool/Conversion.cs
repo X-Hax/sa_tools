@@ -123,7 +123,7 @@ namespace TextureTool
 							break;
 						// Convert from GVR
 						case GvrTexture gvrd:
-							result = autoDdsDataFormat ? new DdsTexture(gvrd, useMipmaps) : new DdsTexture(gvrd, targetDdsFormat, useMipmaps);
+							result = autoDdsDataFormat ? new DdsTexture(gvrd, useMipmaps, false) : new DdsTexture(gvrd, targetDdsFormat, useMipmaps);
 							break;
 						// Convert from XVR
 						case XvrTexture xvrd:
@@ -139,7 +139,7 @@ namespace TextureTool
 							}
 							// If the format is specified manually, convert the texture
 							else
-								result = new DdsTexture(xvrd, false, true, useMipmaps);								
+								result = new DdsTexture(xvrd, false, true, useMipmaps);
 							break;
 						// Convert from DDS
 						case DdsTexture ddsd:
@@ -197,7 +197,7 @@ namespace TextureTool
 								result = new PvrTexture(gvrt, useMipmaps);
 							// Auto pixel - TODO
 							//else if (autoPvrPixelFormat)
-								//result = new PvrTexture(gvrt, useMipmaps);
+							//result = new PvrTexture(gvrt, useMipmaps);
 							// Auto data
 							else if (autoPvrDataFormat)
 								result = new PvrTexture(gvrt, targetPvrFormat, useMipmaps);
@@ -223,19 +223,31 @@ namespace TextureTool
 					break;
 				// Converting to GVR
 				case TextureFileFormat.Gvr:
-					// Set formats for auto mode
-					if (autoGvrDataFormat)
 					{
-						Console.WriteLine("Auto GVR formats not implemented yet");
-						return;
+						switch (inputTexture)
+						{
+							// Convert from PVR
+							case PvrTexture pvrg:
+								//result = autoGvrDataFormat ? new GvrTexture(pvrg, useMipmaps, false) : new GvrTexture(pvrg, targetDdsFormat, useMipmaps);
+								break;
+							// Convert from GVR
+							case GvrTexture gvrd:
+								result = autoGvrDataFormat ? new GvrTexture(gvrd, useMipmaps, true, false) : new GvrTexture(gvrd, targetGvrFormat, useMipmaps);
+								break;
+							// Convert from XVR
+							case XvrTexture xvrd:
+								result = autoGvrDataFormat ? new GvrTexture(xvrd, useMipmaps, false) : new GvrTexture(xvrd, targetGvrFormat, useMipmaps);
+								break;
+							// Convert from DDS
+							case DdsTexture ddsd:
+								result = autoGvrDataFormat ? new GvrTexture(ddsd, useMipmaps, false) : new GvrTexture(ddsd, targetGvrFormat, useMipmaps);
+								break;
+							// Convert from PNG
+							case GdiTexture gdid:
+								result = autoGvrDataFormat ? new GvrTexture(gdid, useMipmaps, false, true) : new GvrTexture(gdid, targetGvrFormat, useMipmaps);
+								break;
+						}
 					}
-					if (autoGvrPaletteFormat)
-					{
-						Console.WriteLine("Auto GVR palette formats not implemented yet");
-						return;
-					}
-					// Encode texture
-					result = new GvrTexture(inputTexture.Image, targetGvrFormat, useMipmaps, inputPalette, gbix, null, targetGvrPaletteFormat, useDitheringForIndexed, encodeExternalPalette, saCompatibleGvrPalettes);
 					break;
 			}
 			// Save the encoded texture

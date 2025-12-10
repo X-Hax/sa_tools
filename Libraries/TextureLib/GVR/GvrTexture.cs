@@ -10,7 +10,7 @@ using SixLabors.ImageSharp.Processing.Processors.Quantization;
 namespace TextureLib
 {
 	// Class for Gamecube and Wii GVR textures
-	public class GvrTexture : GenericTexture
+	public partial class GvrTexture : GenericTexture
 	{
 		const uint Magic_GBIX = 0x58494247;
 		const uint Magic_GCIX = 0x58494347;
@@ -83,12 +83,6 @@ namespace TextureLib
 				{
 					// TODO: Remove
 					Console.WriteLine("Mipmaps disabled because the texture is rectangular");
-					mipmaps = false;
-				}
-				if (dataFormat == GvrDataFormat.Index4 || dataFormat == GvrDataFormat.Index8 || dataFormat == GvrDataFormat.Index14)
-				{
-					// TODO: Remove
-					Console.WriteLine("Mipmaps disabled because the texture is indexed");
 					mipmaps = false;
 				}
 			}
@@ -313,8 +307,9 @@ namespace TextureLib
 					// GVR mipmap order: from largest to smallest
 					for (int size = Image.Width >> 1; size > 0; size >>= 1)
 					{
-						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(indexedBitmapData, Image.Width, Image.Height), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), dataCodec, size, outputStream);
+						TextureFunctions.EncodeMipMap(TextureFunctions.BitmapToImageSharp(Image), quantizer.CreatePixelSpecificQuantizer<Rgba32>(SixLabors.ImageSharp.Configuration.Default), dataCodec, size, outputStream);
 					}
+					GvrDataFlags |= GvrDataFlags.Mipmaps;
 				}
 			}
 			// Encoding to a non-indexed format
@@ -331,21 +326,12 @@ namespace TextureLib
 					{
 						TextureFunctions.EncodeMipMap(SixLabors.ImageSharp.Image.LoadPixelData<Rgba32>(encodedBytes, Image.Width, Image.Height), null, dataCodec, size, outputStream);
 					}
+					GvrDataFlags |= GvrDataFlags.Mipmaps;
 				}
 			}
 			// Set the texture's raw data
 			HeaderlessData = outputStream.ToArray();
 			RawData = GetBytes();
-		}
-
-		public override void AddMipmaps()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void RemoveMipmaps()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

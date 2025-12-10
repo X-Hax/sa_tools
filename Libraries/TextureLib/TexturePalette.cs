@@ -127,7 +127,6 @@ namespace TextureLib
 			Array.Copy(rawEncodedData, colorsStartOffset, RawData, 0, RawData.Length);
 			for (int index = 0; index < numColors; index++)
             {
-                //Console.WriteLine("Color {0}", index);
                 codec.DecodePixel(srcData[srcAddress..],
                    dest[dstAddress..]);
 
@@ -136,9 +135,9 @@ namespace TextureLib
             }
 			ByteConverter.RestoreBigEndian();
             DecodedData = dest.ToArray();
-            //File.WriteAllBytes("pal_dec", DecodedData);
             paletteCodec = codec;
-        }
+			isBigEndian = bigEndian;
+		}
 
         /// <summary>
         /// Creates a palette from a Bitmap containing colors for the palette (width = number of colors, height = 1).
