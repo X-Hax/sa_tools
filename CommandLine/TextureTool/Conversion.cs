@@ -197,7 +197,7 @@ namespace TextureTool
 								result = new PvrTexture(gvrt, useMipmaps);
 							// Auto pixel - TODO
 							//else if (autoPvrPixelFormat)
-							//result = new PvrTexture(gvrt, useMipmaps);
+								//result = new PvrTexture(gvrt, useMipmaps);
 							// Auto data
 							else if (autoPvrDataFormat)
 								result = new PvrTexture(gvrt, targetPvrFormat, useMipmaps);
@@ -228,7 +228,7 @@ namespace TextureTool
 						{
 							// Convert from PVR
 							case PvrTexture pvrg:
-								//result = autoGvrDataFormat ? new GvrTexture(pvrg, useMipmaps, false) : new GvrTexture(pvrg, targetDdsFormat, useMipmaps);
+								result = autoGvrDataFormat ? new GvrTexture(pvrg, useMipmaps, true, false) : new GvrTexture(pvrg, targetGvrFormat, useMipmaps);
 								break;
 							// Convert from GVR
 							case GvrTexture gvrd:

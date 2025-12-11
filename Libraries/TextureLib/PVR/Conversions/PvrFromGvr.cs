@@ -59,7 +59,7 @@ namespace TextureLib
 						PvrDataFormat = PvrDataFormat.SquareTwiddled;
 						forceMipmaps = true;
 						break;
-					case PvrDataFormat.SquareTwiddledMipmapsAlt:
+					case PvrDataFormat.SquareTwiddledMipmapsDma:
 						PvrDataFormat = PvrDataFormat.SquareTwiddled;
 						forceMipmaps = true;
 						break;

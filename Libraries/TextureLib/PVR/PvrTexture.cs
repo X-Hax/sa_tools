@@ -27,13 +27,15 @@ namespace TextureLib
 				result.AddRange(BitConverter.GetBytes((uint)0x20202020));
 			}
 			result.AddRange(BitConverter.GetBytes(Magic_PVRT));
-			result.AddRange(BitConverter.GetBytes((uint)(HeaderlessData.Length + 8)));
+			result.AddRange(BitConverter.GetBytes((uint)(HeaderlessData.Length + (PvrDataFormat == PvrDataFormat.SquareTwiddledMipmapsDma ? 12 : 8))));
 			result.Add((byte)PvrPixelFormat);
 			result.Add((byte)PvrDataFormat);
 			result.Add((byte)PaletteBank);
 			result.Add((byte)PaletteStartIndex);			
 			result.AddRange(BitConverter.GetBytes((ushort)Width));
 			result.AddRange(BitConverter.GetBytes((ushort)Height));
+			if (PvrDataFormat == PvrDataFormat.SquareTwiddledMipmapsDma)
+				result.AddRange(new byte[4]);
 			result.AddRange(HeaderlessData);
 			return result.ToArray();
 		}
@@ -160,7 +162,7 @@ namespace TextureLib
 				case PvrDataFormat.RectangleMipmaps:
 				case PvrDataFormat.RectangleStrideMipmaps:
 				case PvrDataFormat.BitmapMipmaps:
-				case PvrDataFormat.SquareTwiddledMipmapsAlt:
+				case PvrDataFormat.SquareTwiddledMipmapsDma:
 					HasMipmaps = true;
 					break;
 				case PvrDataFormat.Index4:
@@ -207,11 +209,16 @@ namespace TextureLib
 				}
 			}
 			HeaderlessData = new byte[dataSize];
+			// DMA offset
+			if (PvrDataFormat == PvrDataFormat.SquareTwiddledMipmapsDma)
+			{
+				currentOffset += 4;
+				dataSize -= 4;
+			}
 			Array.Copy(RawData, currentOffset, HeaderlessData, 0, dataSize);
 
 			ReadOnlySpan<byte> palette = DecodeInternalPalette(dataCodec, out int paletteSize);
 			int textureAddress = HeaderlessData.Length - dataCodec.CalculateTextureSize(Width, Height);
-
 			ReadOnlySpan<byte> textureData = HeaderlessData[textureAddress..];
 			byte[] result = dataCodec.Decode(textureData, Width, Height, palette);
 

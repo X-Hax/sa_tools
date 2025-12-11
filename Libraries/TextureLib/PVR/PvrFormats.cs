@@ -67,7 +67,7 @@
 		SmallVq = 0x10,
 		/// <summary>NJD_TEXFMT_SMALLVQ_MM.</summary>
 		SmallVqMipmaps = 0x11,
-		/// <summary>NJD_TEXFMT_TWIDDLED_MM_DMA. Twiddled mipmapped DMA texture, contents identical to NJD_TEXFMT_TWIDDLED_MM except 6 dummy bytes at the start.</summary>
-		SquareTwiddledMipmapsAlt = 0x12,
+		/// <summary>NJD_TEXFMT_TWIDDLED_MM_DMA. Twiddled mipmapped DMA texture, contents identical to NJD_TEXFMT_TWIDDLED_MM except 4 dummy bytes at the start.</summary>
+		SquareTwiddledMipmapsDma = 0x12,
 	}
 }

@@ -7,6 +7,26 @@ namespace TextureLib
 {
 	public partial class GvrTexture
 	{
+		public static GvrDataFormat AutoGvrDataFormatFromPvr(PvrPixelFormat pixelFormat, bool maxQuality = false)
+		{
+			switch (pixelFormat)
+			{
+				case PvrPixelFormat.Argb1555:
+				case PvrPixelFormat.Argb4444:
+					return maxQuality ? GvrDataFormat.Argb8888 : GvrDataFormat.Rgb5a3;
+				case PvrPixelFormat.Rgb555:
+				case PvrPixelFormat.Rgb565:
+					return GvrDataFormat.Rgb565;
+				case PvrPixelFormat.Argb8888:
+				case PvrPixelFormat.Argb8888orYUV420:
+					return GvrDataFormat.Argb8888;
+				case PvrPixelFormat.Yuv422:
+				case PvrPixelFormat.Bump88:
+				default:
+					return maxQuality ? GvrDataFormat.Argb8888 : GvrDataFormat.Rgb5a3;
+			}
+		}
+
 		public static GvrDataFormat AutoGvrDataFormatFromDds(DdsFormat ddsFormat, bool maxQuality = false)
 		{
 			switch (ddsFormat)

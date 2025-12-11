@@ -125,7 +125,7 @@ namespace TextureTool
 						else if (args.Contains("-svq"))
 							targetPvrFormat = useMipmaps ? PvrDataFormat.SmallVqMipmaps : PvrDataFormat.SmallVq;
 						else if (args.Contains("-dma"))
-							targetPvrFormat = PvrDataFormat.SquareTwiddledMipmapsAlt;
+							targetPvrFormat = PvrDataFormat.SquareTwiddledMipmapsDma;
 						else
 							autoPvrDataFormat = true;
 						// Pixel format

@@ -41,7 +41,7 @@ namespace TextureLib
                 PvrDataFormat.SmallVqMipmaps => new SmallVqMipmapsDataCodec(pixelCodec),
                 PvrDataFormat.Bitmap => new BitmapDataCodec(pixelCodec),
 				// Duplicate/unsupported
-				PvrDataFormat.SquareTwiddledMipmapsAlt => new SquareTwiddledMipmapsDataCodec(pixelCodec),
+				PvrDataFormat.SquareTwiddledMipmapsDma => new SquareTwiddledMipmapsDataCodec(pixelCodec),
 				PvrDataFormat.RectangleMipmaps => new RectangleDataCodec(pixelCodec),
 				PvrDataFormat.RectangleStrideMipmaps => new StrideDataCodec(pixelCodec),
 				// BitmapMipmaps

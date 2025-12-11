@@ -84,7 +84,7 @@ namespace TextureLib
 				// Converting to Square format - check width/height
 				case PvrDataFormat.SquareTwiddled:
 				case PvrDataFormat.SquareTwiddledMipmaps:
-				case PvrDataFormat.SquareTwiddledMipmapsAlt:
+				case PvrDataFormat.SquareTwiddledMipmapsDma:
 					if (src.Width != src.Height)
 					{
 						Image = new System.Drawing.Bitmap(Math.Min(src.Width, src.Height), Math.Min(src.Width, src.Height));
@@ -123,7 +123,7 @@ namespace TextureLib
 						PvrDataFormat = PvrDataFormat.SquareTwiddled;
 						forceMipmaps = true;
 						break;
-					case PvrDataFormat.SquareTwiddledMipmapsAlt:
+					case PvrDataFormat.SquareTwiddledMipmapsDma:
 						PvrDataFormat = PvrDataFormat.SquareTwiddled;
 						forceMipmaps = true;
 						break;
@@ -175,7 +175,7 @@ namespace TextureLib
 					case PvrDataFormat.SmallVqMipmaps:
 					case PvrDataFormat.VqMipmaps:
 					case PvrDataFormat.SquareTwiddledMipmaps:
-					case PvrDataFormat.SquareTwiddledMipmapsAlt:
+					case PvrDataFormat.SquareTwiddledMipmapsDma:
 						HasMipmaps = true;
 						break;
 				}
