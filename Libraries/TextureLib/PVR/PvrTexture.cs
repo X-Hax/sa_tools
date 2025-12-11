@@ -233,10 +233,9 @@ namespace TextureLib
 				int mipmapOffset = paletteSize;
 				for (int i = mipLevels - 1, sizex = 1; i >= 0; i--, sizex <<= 1)
 				{
-					mipmapOffsets[i] = mipmapOffset;
+					mipmapOffsets[i] = sizex == 1 ? 2 : mipmapOffset;
 					byte[] src = HeaderlessData[mipmapOffsets[i]..];
-					int mipDataSize = Math.Max(1, HeaderlessData.Length - paletteSize - src.Length);
-					//Console.WriteLine("Mipmap {0} ({1}x{1}) : {2} (size {3})", i, sizex, mipmapOffsets[i].ToString("X"), mipDataSize.ToString());
+					//Console.WriteLine("Mipmap {0} ({1}x{1}) : 0x{2})", i, sizex, mipmapOffsets[i].ToString("X"));
 					byte[] mipRawData = dataCodec.Decode(src, sizex, sizex, palette);
 					// Workarounds for 1x1 mipmaps
 					if (sizex == 1)
@@ -246,27 +245,21 @@ namespace TextureLib
 						{
 							src = HeaderlessData[(mipmapOffset + 1)..];
 							mipRawData = dataCodec.Decode(src, sizex * 2, sizex * 2, palette);
-							mipDataSize = HeaderlessData.Length - paletteSize - src.Length;
 							byte[] newmipdata = new byte[4];
 							Array.Copy(mipRawData, 12, newmipdata, 0, 4);
 							mipRawData = newmipdata;
-							//Console.WriteLine("\tVQ Mipmap for 1x1 : {0} (size {1})", (mipmapOffset + 1).ToString("X"), mipDataSize.ToString());
 						}
 						// In YUV422 textures, the 1x1 mipmap is stored as RGB565
 						else if (PvrPixelFormat == PvrPixelFormat.Yuv422)
 						{
 							PvrDataCodec dataCodecTemp = PvrDataCodec.Create(PvrDataFormat, new RGB565PixelCodec());
 							mipRawData = dataCodecTemp.Decode(src, sizex, sizex, palette);
-							//Console.WriteLine("\tYUV Mipmap for 1x1 in RGB565 format");
-						}
+						}					
 					}
 					if (Indexed)
 						mipRawData = ApplyPalette(mipRawData, sizex, sizex).ToArray();
-					//Console.WriteLine("MipRawData {0}", mipRawData.Length);
-					//TextureFunctions.RGBAtoBGRA(mipRawData);
 					Bitmap mipBitmap = new Bitmap(sizex, sizex, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 					TextureFunctions.RawToBitmap(mipBitmap, mipRawData);
-					//Console.WriteLine(mipBitmap.GetPixel(0, 0).ToString());
 					MipmapImages[i] = mipBitmap;
 					mipmapOffset += dataCodec.CalculateTextureSize(sizex, sizex);
 				}
