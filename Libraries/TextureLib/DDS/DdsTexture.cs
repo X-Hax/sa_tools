@@ -207,5 +207,11 @@ namespace TextureLib
 		{
 			return new DdsTexture(RawData, 0, Gbix, Name);
 		}
+
+		public static bool Identify(byte[] data, int offset)
+		{
+			const uint Magic_DDS = 0x20534444;
+			return (BitConverter.ToUInt32(data,offset) == Magic_DDS);
+		}
 	}
 }

@@ -27,12 +27,7 @@ namespace TextureLib
 			Console.WriteLine("XVR TYPE: {0} ({1})", XvrFormats.GetDxgiFormatFromXvrPixelFormat(XvrType).ToString(), XvrType);
 #endif
 		}
-
-		public XvrTexture Clone()
-		{
-			return new XvrTexture(RawData, 0, Name);
-		}
-
+		
 		/// <summary>
 		/// Encodes an XVR texture from Bitmap.
 		/// </summary>
@@ -103,6 +98,17 @@ namespace TextureLib
 				ddsHeader.PixelFormat.Flags |= PixelFormats.DDSALPHAPIXELS;
 			return ddsHeader;
 			
+		}
+
+		public XvrTexture Clone()
+		{
+			return new XvrTexture(RawData, 0, Name);
+		}
+
+		public static bool Identify(byte[] data, int offset)
+		{
+			const uint Magic_XVRT = 0x54525658;
+			return BitConverter.ToUInt32(data, offset) == Magic_XVRT;
 		}
 
 		[Flags]

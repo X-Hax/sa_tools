@@ -62,11 +62,6 @@ namespace TextureLib
 			Decode();
 		}
 
-		public GvrTexture Clone()
-		{
-			return new GvrTexture(RawData, 0, Name, Palette);
-		}
-		
 		/// <summary>
 		/// Encodes a GVR texture from Bitmap.
 		/// </summary>
@@ -337,6 +332,32 @@ namespace TextureLib
 			// Set the texture's raw data
 			HeaderlessData = outputStream.ToArray();
 			RawData = GetBytes();
+		}
+
+		public GvrTexture Clone()
+		{
+			return new GvrTexture(RawData, 0, Name, Palette);
+		}
+
+		public static bool Identify(byte[] data, int offset)
+		{
+			int gbixOffset = 0x00;
+			int pvrtOffset = 0x00;
+			if (BitConverter.ToUInt32(data, offset) == Magic_GVRT)
+				return true;
+			else if (BitConverter.ToUInt32(data, offset + 4) == Magic_GVRT)
+				return true;
+			else if (BitConverter.ToUInt32(data, offset) == Magic_GBIX || BitConverter.ToUInt32(data, offset) == Magic_GCIX)
+			{
+				gbixOffset = offset;
+				pvrtOffset = offset + 8 + BitConverter.ToInt32(data, gbixOffset + 4);
+			}
+			else if (BitConverter.ToUInt32(data, offset + 4) == Magic_GBIX || BitConverter.ToUInt32(data, offset + 4) == Magic_GCIX)
+			{
+				gbixOffset = offset + 4;
+				pvrtOffset = offset + 0x0C + BitConverter.ToInt32(data, gbixOffset + 4);
+			}
+			return (BitConverter.ToUInt32(data, pvrtOffset) == Magic_GVRT);
 		}
 	}
 }

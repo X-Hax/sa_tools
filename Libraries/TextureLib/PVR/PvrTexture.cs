@@ -110,12 +110,7 @@ namespace TextureLib
 			}
 			Encode();
 		}
-
-		public PvrTexture Clone()
-		{
-			return new PvrTexture(RawData, 0, Name, Palette);
-		}
-
+		
 		public override void Decode()
 		{
 			int currentOffset = 0;
@@ -302,5 +297,31 @@ namespace TextureLib
 
             return result;
         }
+
+		public PvrTexture Clone()
+		{
+			return new PvrTexture(RawData, 0, Name, Palette);
+		}
+
+		public static bool Identify(byte[] data, int offset)
+		{
+			int gbixOffset = 0x00;
+			int pvrtOffset = 0x00;
+			if (BitConverter.ToUInt32(data, offset) == Magic_PVRT)
+				return true;
+			else if (BitConverter.ToUInt32(data, offset + 4) == Magic_PVRT)
+				return true;
+			else if (BitConverter.ToUInt32(data, offset) == Magic_GBIX)
+			{
+				gbixOffset = offset;
+				pvrtOffset = offset + 0x08 + BitConverter.ToInt32(data, gbixOffset + 4);
+			}
+			else if (BitConverter.ToUInt32(data, offset + 4) == Magic_GBIX)
+			{
+				gbixOffset = offset + 0x04;
+				pvrtOffset = offset + 0x0C + BitConverter.ToInt32(data, gbixOffset + 4);
+			}
+			return (BitConverter.ToUInt32(data, pvrtOffset) == Magic_PVRT);
+		}
 	}
 }
