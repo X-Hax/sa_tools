@@ -1,4 +1,6 @@
-﻿namespace TextureLib
+﻿using System.Text;
+
+namespace TextureLib
 {
 	/// <summary>Class for invalid, unknown or non-texture data (e.g. some files in SA2 PAKs)</summary>
 	public class InvalidTexture : GenericTexture
@@ -40,6 +42,19 @@
 		public override void RemoveMipmaps()
 		{
 			return;
+		}
+
+		public override bool CanHaveMipmaps()
+		{
+			return false;
+		}
+
+		public override string Info()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("INVALID TEXTURE INFO");
+			sb.AppendLine("Size: " + RawData.Length.ToString());
+			return sb.ToString();
 		}
 	}
 }

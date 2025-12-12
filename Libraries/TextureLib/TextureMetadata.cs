@@ -1,5 +1,16 @@
 ﻿namespace TextureLib
 {
+	/// <summary>Texture file types used in texture identification.</summary>
+	public enum TextureFileType	
+	{
+		Pvr,
+		Gvr,
+		Dds,
+		Xvr,
+		Gdi,
+		Unknown
+	}
+
 	///<summary>Flags specified in the metadata in PAK archives</summary>
     public enum NinjaSurfaceFlags : uint
     {

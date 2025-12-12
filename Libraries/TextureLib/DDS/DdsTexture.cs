@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using static TextureLib.DirectXTexUtility;
 
 // Class for DDS textures
@@ -95,13 +96,6 @@ namespace TextureLib
 			Width = (int)header.Width;
 			Height = (int)header.Height;
 			HasMipmaps = header.Flags.HasFlag(DDSHeader.HeaderFlags.MIPMAP) && header.MipMapCount > 1;
-#if DEBUG
-			Console.WriteLine("\nDDS TEXTURE INFO");
-			Console.WriteLine("Width: " + Width.ToString());
-			Console.WriteLine("Height: " + Height.ToString());
-			Console.WriteLine("Data format: " + DdsFormat.ToString());
-			Console.WriteLine("Mipmaps: " + HasMipmaps.ToString());
-#endif
 			// Set pixel and data codec
 			PixelCodec pixelCodec = PixelCodec.GetPixelCodec(DdsFormat);
 			DdsDataCodec dataCodec = DdsDataCodec.GetDataCodec(DdsFormat, pixelCodec, true);
@@ -205,13 +199,30 @@ namespace TextureLib
 
 		public DdsTexture Clone()
 		{
-			return new DdsTexture(RawData, 0, Gbix, Name);
+			return new DdsTexture(RawData, 0, Gbix, Name) { PakMetadata = PakMetadata, PvmxOriginalDimensions = PvmxOriginalDimensions };
 		}
 
-		public static bool Identify(byte[] data, int offset)
+		public static bool Identify(byte[] data, int offset = 0)
 		{
 			const uint Magic_DDS = 0x20534444;
 			return (BitConverter.ToUInt32(data,offset) == Magic_DDS);
+		}
+
+		public override bool CanHaveMipmaps()
+		{
+			// Technically even rectangular DDS textures have mipmaps I think, but the games' main formats only allow for square mipmaps.
+			return Width == Height;
+		}
+
+		public override string Info()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("DDS TEXTURE INFO");
+			sb.AppendLine("Width: " + Width.ToString());
+			sb.AppendLine("Height: " + Height.ToString());
+			sb.AppendLine("Data format: " + DdsFormat.ToString());
+			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
+			return sb.ToString();
 		}
 	}
 }

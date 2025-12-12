@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Text;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
@@ -77,15 +78,8 @@ namespace TextureLib
 		public GvrTexture(Bitmap texture, GvrDataFormat dataFormat, bool mipmaps, TexturePalette inputPalette = null, uint gbix = 0, string name = null, GvrPaletteFormat paletteFormat = GvrPaletteFormat.Rgb5A3orArgb4444, bool dither = false, bool paletteExternal = false, bool paletteSACompatible = true)
 		{
 			// Disable mipmaps if using incompatible texture encoder settings
-			if (mipmaps)
-			{
-				if (texture.Width != texture.Height)
-				{
-					// TODO: Remove
-					Console.WriteLine("Mipmaps disabled because the texture is rectangular");
-					mipmaps = false;
-				}
-			}
+			if (mipmaps && texture.Width != texture.Height)
+				mipmaps = false;
 			// Set common texture data
 			Name = name;
 			Image = new Bitmap(texture);
@@ -179,17 +173,6 @@ namespace TextureLib
 			// Get codec
 			currentOffset += 0x10;
 			GvrDataCodec dataCodec = GvrDataCodec.GetDataCodec(GvrDataFormat);
-#if DEBUG
-			Console.WriteLine("\nGVR TEXTURE INFO");
-			Console.WriteLine("Width: " + Width.ToString());
-			Console.WriteLine("Height: " + Height.ToString());
-			Console.WriteLine("Gbix: " + Gbix.ToString());
-			Console.WriteLine("Data format: " + GvrDataFormat.ToString());
-			Console.WriteLine("Palette format: " + (RequiresPaletteFile ? "External" : GvrPaletteFormat.ToString()));
-			Console.WriteLine("Mipmaps: " + HasMipmaps.ToString());
-			Console.WriteLine("Indexed: " + Indexed.ToString());
-			Console.WriteLine("Requires palette file: " + RequiresPaletteFile.ToString());
-#endif
 			// Calculate the expected size of the texture data chunk. However, this may not be the final size if the texture has a CLUT or mipmaps.
 			int dataSize = dataCodec.CalculateTextureSize(Width, Height);
 			int paletteSize = 0;
@@ -336,10 +319,10 @@ namespace TextureLib
 
 		public GvrTexture Clone()
 		{
-			return new GvrTexture(RawData, 0, Name, Palette);
+			return new GvrTexture(RawData, 0, Name, Palette) { PakMetadata = PakMetadata, PvmxOriginalDimensions = PvmxOriginalDimensions };
 		}
 
-		public static bool Identify(byte[] data, int offset)
+		public static bool Identify(byte[] data, int offset = 0)
 		{
 			int gbixOffset = 0x00;
 			int pvrtOffset = 0x00;
@@ -358,6 +341,33 @@ namespace TextureLib
 				pvrtOffset = offset + 0x0C + BitConverter.ToInt32(data, gbixOffset + 4);
 			}
 			return (BitConverter.ToUInt32(data, pvrtOffset) == Magic_GVRT);
+		}
+
+		public override bool CanHaveMipmaps()
+		{
+			return Width == Height;
+		}
+
+		public override string Info()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("GVR TEXTURE INFO");
+			sb.AppendLine("Width: " + Width.ToString());
+			sb.AppendLine("Height: " + Height.ToString());
+			sb.AppendLine("Gbix: " + Gbix.ToString());
+			sb.AppendLine(string.Format("Data format: {0} ({1})" + GvrDataFormat.ToString(), GvrDataFormat));
+			sb.AppendLine("Palette format: " + (RequiresPaletteFile ? "External" : GvrPaletteFormat.ToString()));
+			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
+			sb.AppendLine("Indexed: " + Indexed.ToString());
+			sb.AppendLine("Requires palette file: " + RequiresPaletteFile.ToString());
+			sb.AppendLine("Flags: " + GvrDataFlags.ToString());
+			if (GvrDataFlags.HasFlag(GvrDataFlags.Mipmaps))
+				sb.Append(" Mipmaps ");
+			if (GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette))
+				sb.Append(" InternalPalette ");
+			if (GvrDataFlags.HasFlag(GvrDataFlags.ExternalPalette))
+				sb.Append(" ExternalPalette");
+			return sb.ToString();
 		}
 	}
 }

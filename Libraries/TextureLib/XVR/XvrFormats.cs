@@ -30,6 +30,13 @@ namespace TextureLib
 		Invalid = -1
 	}
 
+	[Flags]
+	public enum XvrFlags
+	{
+		Mips = 1,
+		Alpha = 2,
+	}
+
 	/// <summary>
 	/// Class used for conversions of XVR and DDS format values.
 	/// </summary>

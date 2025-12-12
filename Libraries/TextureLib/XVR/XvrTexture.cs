@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using static TextureLib.DirectXTexUtility;
 
 // Class for XVR textures (PSO BB)
@@ -21,11 +22,6 @@ namespace TextureLib
 		{
 			Gbix = BitConverter.ToUInt32(data, offset + 0x10);
 			XvrType = (XvrFormat)BitConverter.ToInt32(data, offset + 0xC);
-#if DEBUG
-			Console.WriteLine("\nXVR TEXTURE INFO");
-			Console.WriteLine("GBIX: {0}", Gbix);
-			Console.WriteLine("XVR TYPE: {0} ({1})", XvrFormats.GetDxgiFormatFromXvrPixelFormat(XvrType).ToString(), XvrType);
-#endif
 		}
 		
 		/// <summary>
@@ -97,25 +93,31 @@ namespace TextureLib
 			if (useAlpha)
 				ddsHeader.PixelFormat.Flags |= PixelFormats.DDSALPHAPIXELS;
 			return ddsHeader;
-			
 		}
 
 		public XvrTexture Clone()
 		{
-			return new XvrTexture(RawData, 0, Name);
+			return new XvrTexture(RawData, 0, Name) { PakMetadata = PakMetadata, PvmxOriginalDimensions = PvmxOriginalDimensions };
 		}
 
-		public static bool Identify(byte[] data, int offset)
+		public static bool Identify(byte[] data, int offset = 0)
 		{
 			const uint Magic_XVRT = 0x54525658;
 			return BitConverter.ToUInt32(data, offset) == Magic_XVRT;
 		}
 
-		[Flags]
-		private enum XvrFlags
+		public override string Info()
 		{
-			Mips = 1,
-			Alpha = 2,
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("XVR TEXTURE INFO");
+			sb.AppendLine(string.Format("GBIX: {0}", Gbix));
+			sb.AppendLine(string.Format("XVR TYPE: {0} ({1})", XvrFormats.GetDxgiFormatFromXvrPixelFormat(XvrType).ToString(), XvrType));
+			sb.Append("XVR flags: ");
+			if (UseAlpha)
+				sb.Append("Use Alpha ");
+			if (HasMipmaps)
+				sb.Append(" Mipmaps");
+			return sb.ToString() + base.Info();
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 namespace TextureLib
 {
@@ -68,15 +69,8 @@ namespace TextureLib
 		public PvrTexture(Bitmap texture, PvrDataFormat dataFormat, PvrPixelFormat pixelFormat, bool mipmaps, TexturePalette inputPalette = null, uint gbix = 0, string name = null, bool dither = false, bool paletteExternal = false)
 		{
 			// Disable mipmaps if using incompatible texture encoder settings
-			if (mipmaps)
-			{
-				if (texture.Width != texture.Height)
-				{
-					// TODO: Remove
-					Console.WriteLine("Mipmaps disabled because the texture is rectangular");
-					mipmaps = false;
-				}
-			}
+			if (mipmaps && texture.Width != texture.Height)
+				mipmaps = false;
 			// Set common texture properties
 			Image = texture;
 			Gbix = gbix;
@@ -187,16 +181,6 @@ namespace TextureLib
 
 			if (PvrPixelFormat is PvrPixelFormat.Argb8888orYUV420 && dataSize > RawData.Length)
 				throw new NotImplementedException("YUV420 support is not implemented");
-#if DEBUG
-			Console.WriteLine("\nPVR TEXTURE INFO");
-			Console.WriteLine("Width: " + Width.ToString());
-			Console.WriteLine("Height: " + Height.ToString());
-			Console.WriteLine("Gbix: " + Gbix.ToString());
-			Console.WriteLine("Pixel format: {0} ({1} bytes per {2} pixels)", PvrPixelFormat.ToString(), pixelCodec.BytesPerPixel.ToString(), pixelCodec.Pixels.ToString());
-			Console.WriteLine("Data format: " + PvrDataFormat.ToString());
-			Console.WriteLine("Mipmaps: " + HasMipmaps.ToString());
-			Console.WriteLine("Indexed: " + Indexed.ToString());
-#endif
 			if (paletteEntries > 0 && !dataCodec.NeedsExternalPalette)
 			{
 				dataSize += paletteEntries / pixelCodec.Pixels * pixelCodec.BytesPerPixel;
@@ -300,10 +284,10 @@ namespace TextureLib
 
 		public PvrTexture Clone()
 		{
-			return new PvrTexture(RawData, 0, Name, Palette);
+			return new PvrTexture(RawData, 0, Name, Palette) { PakMetadata = PakMetadata, PvmxOriginalDimensions = PvmxOriginalDimensions };
 		}
 
-		public static bool Identify(byte[] data, int offset)
+		public static bool Identify(byte[] data, int offset = 0)
 		{
 			int gbixOffset = 0x00;
 			int pvrtOffset = 0x00;
@@ -322,6 +306,37 @@ namespace TextureLib
 				pvrtOffset = offset + 0x0C + BitConverter.ToInt32(data, gbixOffset + 4);
 			}
 			return (BitConverter.ToUInt32(data, pvrtOffset) == Magic_PVRT);
+		}
+
+		public override bool CanHaveMipmaps()
+		{
+			switch (PvrDataFormat)
+			{
+				case PvrDataFormat.None:
+				case PvrDataFormat.Bitmap:
+				case PvrDataFormat.BitmapMipmaps:
+				case PvrDataFormat.Rectangle:
+				case PvrDataFormat.RectangleMipmaps:
+				case PvrDataFormat.RectangleStride:
+				case PvrDataFormat.RectangleStrideMipmaps:
+				case PvrDataFormat.RectangleTwiddled:
+					return false;
+			}
+			return Width == Height;
+		}
+
+		public override string Info()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("PVR TEXTURE INFO");
+			sb.AppendLine("Width: " + Width.ToString());
+			sb.AppendLine("Height: " + Height.ToString());
+			sb.AppendLine("Gbix: " + Gbix.ToString());
+			sb.AppendLine(string.Format("Pixel format: {0} ({1})", PvrPixelFormat.ToString(), PvrPixelFormat));
+			sb.AppendLine(string.Format("Data format: {0} ({1})" + PvrDataFormat.ToString(), PvrDataFormat));
+			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
+			sb.AppendLine("Indexed: " + Indexed.ToString());
+			return sb.ToString();
 		}
 	}
 }

@@ -4,9 +4,7 @@ using System.Drawing;
 // Texture library for SA Tools' 3D editors and Texture Editor
 // Mostly based on https://github.com/X-Hax/SA3D.Archival and https://github.com/nickworonekin/puyotools
 
-// TODO: Smart GVR-PVR-XVR-DDS conversion
 // TODO: Rework GVR codecs into data codec + standard pixel codec pairings?
-// TODO: Class for textures that failed to initialize
 
 namespace TextureLib
 {
@@ -139,6 +137,56 @@ namespace TextureLib
 		/// Removes mipmaps from texture data, without reencoding the original texture whenever possible. 
 		/// Also changes the PVR format to the non-mipmapped one if necessary.
 		/// </summary>
-		public abstract void RemoveMipmaps();		
+		public abstract void RemoveMipmaps();
+
+		/// <summary>
+		/// Checks whether the texture's current allows mipmaps (the actual texture may or may not have them).
+		/// </summary>
+		/// <returns></returns>
+		public abstract bool CanHaveMipmaps();
+
+		/// <summary>
+		/// Prints out the texture's information, such as flags, dimensions, pixel and data formats etc.
+		/// </summary>
+		/// <returns></returns>
+		public abstract string Info();
+
+		/// <summary>
+		/// Checks data at the specified offset and returns the texture file format.
+		/// </summary>
+		/// <param name="data">Byte array to check.</param>
+		/// <param name="offset">Offset where texture header starts.</param>
+		/// <returns></returns>
+		public TextureFileType GetTextureFileType(byte[] data, int offset = 0)
+		{
+			if (PvrTexture.Identify(data, offset))
+				return TextureFileType.Pvr;
+			else if (GvrTexture.Identify(data, offset))
+				return TextureFileType.Gvr;
+			else if (XvrTexture.Identify(data, offset))
+				return TextureFileType.Xvr;
+			else if (DdsTexture.Identify(data, offset))
+				return TextureFileType.Dds;
+			return TextureFileType.Unknown;
+		}
+
+		/// <summary>
+		/// Loads texture data at the specified offset and returns a PVR, GVR, XVR, DDS or Invalid texture.
+		/// </summary>
+		/// <param name="data">Byte array to load.</param>
+		/// <param name="offset">Offset to load.</param>
+		/// <returns></returns>
+		public GenericTexture LoadTexture(byte[] data, int offset = 0)
+		{
+			if (PvrTexture.Identify(data, offset))
+				return new PvrTexture(data, offset);
+			else if (GvrTexture.Identify(data, offset))
+				return new GvrTexture(data, offset);
+			else if (XvrTexture.Identify(data, offset))
+				return new XvrTexture(data, offset);
+			else if (DdsTexture.Identify(data, offset))
+				return new DdsTexture(data, offset);
+			return new InvalidTexture(data, offset);
+		}
 	}
 }

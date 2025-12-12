@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text;
 
 namespace TextureLib
 {
@@ -44,11 +45,6 @@ namespace TextureLib
 			HasMipmaps = mipmaps;
 			SetTextureProperties();
 			Encode();
-		}
-
-		public GdiTexture Clone()
-		{
-			return new GdiTexture(RawData, 0, HasMipmaps, Gbix, Name);
 		}
 
 		public override byte[] GetBytes()
@@ -147,6 +143,27 @@ namespace TextureLib
 		{
 			HasMipmaps = false;
 			MipmapImages = null;
+		}
+
+		public GdiTexture Clone()
+		{
+			return new GdiTexture(RawData, 0, HasMipmaps, Gbix, Name) { PakMetadata = PakMetadata, PvmxOriginalDimensions = PvmxOriginalDimensions };
+		}
+
+		public override bool CanHaveMipmaps()
+		{
+			return Width == Height;
+		}
+
+		public override string Info()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("GDI TEXTURE INFO");
+			sb.AppendLine("Width: " + Width.ToString());
+			sb.AppendLine("Height: " + Height.ToString());
+			sb.AppendLine("Pixel format: " + GdiPixelFormat.ToString());
+			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
+			return sb.ToString();
 		}
 	}
 }
