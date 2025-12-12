@@ -139,6 +139,6 @@ namespace TextureLib
 		/// Removes mipmaps from texture data, without reencoding the original texture whenever possible. 
 		/// Also changes the PVR format to the non-mipmapped one if necessary.
 		/// </summary>
-		public abstract void RemoveMipmaps();
+		public abstract void RemoveMipmaps();		
 	}
 }

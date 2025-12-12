@@ -28,6 +28,11 @@ namespace TextureLib
 #endif
 		}
 
+		public XvrTexture Clone()
+		{
+			return new XvrTexture(RawData, 0, Name);
+		}
+
 		/// <summary>
 		/// Encodes an XVR texture from Bitmap.
 		/// </summary>
@@ -97,6 +102,7 @@ namespace TextureLib
 			if (useAlpha)
 				ddsHeader.PixelFormat.Flags |= PixelFormats.DDSALPHAPIXELS;
 			return ddsHeader;
+			
 		}
 
 		[Flags]

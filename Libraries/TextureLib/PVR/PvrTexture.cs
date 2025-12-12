@@ -111,6 +111,11 @@ namespace TextureLib
 			Encode();
 		}
 
+		public PvrTexture Clone()
+		{
+			return new PvrTexture(RawData, 0, Name, Palette);
+		}
+
 		public override void Decode()
 		{
 			int currentOffset = 0;

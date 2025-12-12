@@ -61,6 +61,11 @@ namespace TextureLib
 			Palette = extPalette;
 			Decode();
 		}
+
+		public GvrTexture Clone()
+		{
+			return new GvrTexture(RawData, 0, Name, Palette);
+		}
 		
 		/// <summary>
 		/// Encodes a GVR texture from Bitmap.

@@ -46,6 +46,11 @@ namespace TextureLib
 			Encode();
 		}
 
+		public GdiTexture Clone()
+		{
+			return new GdiTexture(RawData, 0, HasMipmaps, Gbix, Name);
+		}
+
 		public override byte[] GetBytes()
 		{
 			MemoryStream ms = new();

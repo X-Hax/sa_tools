@@ -202,5 +202,10 @@ namespace TextureLib
 			result.AddRange(HeaderlessData);
 			return result.ToArray();
 		}
+
+		public DdsTexture Clone()
+		{
+			return new DdsTexture(RawData, 0, Gbix, Name);
+		}
 	}
 }
