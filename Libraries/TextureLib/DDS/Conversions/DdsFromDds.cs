@@ -2,7 +2,8 @@
 {
 	public partial class DdsTexture
 	{
-		/// <summary>Create a new DDS texture from an existing DDS texture, data format is determined automatically.</summary>
+		/// <summary>Create a new DDS texture from an existing DDS texture, data format is determined automatically.
+		/// This conversion may be lossy. If you want a lossless copy of the texture, use the Clone() method.</summary>
 		/// <param name="dds">Source DDS texture.</param>
 		/// <param name="maxQuality">Prefer maximum quality (RGB888/RGBA8888) and higher quality DXT formats.</param>
 		/// <param name="useDxt">Whether to consider DXT formats for encoding or not.</param>
@@ -25,7 +26,8 @@
 			Decode();
 		}
 
-		/// <summary>Create a new DDS texture from an existing DDS texture, data format is specified manually.</summary>
+		/// <summary>Create a new DDS texture from an existing DDS texture, data format is specified manually.
+		/// This conversion may be lossy. If you want a lossless copy of the texture, use the Clone() method.</summary>
 		/// <param name="dds">Source DDS texture.</param>
 		/// <param name="format">Target DDS format.</param>
 		/// <param name="forceMipmaps">Force add mipmaps even if the source texture doesn't have them.</param>

@@ -17,7 +17,13 @@ namespace TextureLib
 			// IntensityA8 could be converted to D3DFMT_A8L8	
 		};
 
-		/// <summary>Create a new DDS texture from a GVR texture, data format determined automatically.</summary>
+		/// <summary>
+		/// Create a new DDS texture from a GVR texture. DDS data format is determined automatically.
+		/// This conversion is lossless for RGB565 or DXT1 GVR textures.
+		/// </summary>
+		/// <param name="gvr">Source GVR texture.</param>
+		/// <param name="forceMipmaps">Whether the target texture should have mipmaps even if the source texture doesn't.</param>
+		/// <param name="maxQuality">Whether to prefer ARGB8888 format if a lossless conversion cannot be done with other formats.</param>
 		public DdsTexture(GvrTexture gvr, bool forceMipmaps = false, bool maxQuality = false)
 		{
 			DdsFormat targetFormat;
@@ -40,7 +46,11 @@ namespace TextureLib
 			ConvertFromGvr(gvr, targetFormat, forceMipmaps);
 		}
 
-		/// <summary>Create a new DDS texture from a GVR texture, data format is specified manually.</summary>
+		/// <summary>Create a new DDS texture from a GVR texture, data format is specified manually.
+		/// This conversion is lossless for RGB565 or DXT1 GVR textures if the DDS format matches.</summary>
+		/// <param name="gvr">Source GVR texture.</param>
+		/// <param name="targetFormat">Target DDS format.</param>
+		/// <param name="forceMipmaps">Whether the target texture should have mipmaps even if the source texture doesn't.</param>
 		public DdsTexture(GvrTexture gvr, DdsFormat targetFormat, bool forceMipmaps = false)
 		{
 			ConvertFromGvr(gvr, targetFormat, forceMipmaps);

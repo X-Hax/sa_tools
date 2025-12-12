@@ -6,6 +6,13 @@ namespace TextureLib
 {
 	public partial class DdsTexture
 	{
+		/// <summary>
+		/// Determine the most optimal DDS format to store the image data of the specified Bitmap.
+		/// </summary>
+		/// <param name="image">Bitmap to analyze.</param>
+		/// <param name="maxQuality">Whether to prefer RGB888, ARGB8888 and higher quality DXT compression to lossy codecs and DXT1/3.</param>
+		/// <param name="useDxt">Whether to consider DXT1, DXT3 or DXT5 formats.</param>
+		/// <returns>Recommended DDS texture format.</returns>
 		public static DdsFormat AutoDdsFormatFromImage(Bitmap image, bool maxQuality = false, bool useDxt = true)
 		{
 			DdsFormat targetFormat;
