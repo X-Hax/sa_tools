@@ -1,13 +1,13 @@
 ﻿namespace TextureLib
 {
 	/// <summary>Texture file types used in texture identification.</summary>
-	public enum TextureFileType	
+	public enum TextureFileFormat	
 	{
 		Pvr,
 		Gvr,
 		Dds,
 		Xvr,
-		Gdi,
+		Png,
 		Unknown
 	}
 

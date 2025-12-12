@@ -157,17 +157,19 @@ namespace TextureLib
 		/// <param name="data">Byte array to check.</param>
 		/// <param name="offset">Offset where texture header starts.</param>
 		/// <returns></returns>
-		public TextureFileType GetTextureFileType(byte[] data, int offset = 0)
+		public static TextureFileFormat GetTextureFileType(byte[] data, int offset = 0)
 		{
 			if (PvrTexture.Identify(data, offset))
-				return TextureFileType.Pvr;
+				return TextureFileFormat.Pvr;
 			else if (GvrTexture.Identify(data, offset))
-				return TextureFileType.Gvr;
+				return TextureFileFormat.Gvr;
 			else if (XvrTexture.Identify(data, offset))
-				return TextureFileType.Xvr;
+				return TextureFileFormat.Xvr;
 			else if (DdsTexture.Identify(data, offset))
-				return TextureFileType.Dds;
-			return TextureFileType.Unknown;
+				return TextureFileFormat.Dds;
+			else if (GdiTexture.Identify(data,offset))
+				return TextureFileFormat.Png;
+			return TextureFileFormat.Unknown;
 		}
 
 		/// <summary>
@@ -176,7 +178,7 @@ namespace TextureLib
 		/// <param name="data">Byte array to load.</param>
 		/// <param name="offset">Offset to load.</param>
 		/// <returns></returns>
-		public GenericTexture LoadTexture(byte[] data, int offset = 0)
+		public static GenericTexture LoadTexture(byte[] data, int offset = 0)
 		{
 			if (PvrTexture.Identify(data, offset))
 				return new PvrTexture(data, offset);
