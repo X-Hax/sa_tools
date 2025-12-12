@@ -95,6 +95,18 @@ namespace TextureLib
 		public abstract void Encode();
 
 		/// <summary>
+		/// Imports a new Bitmap and encodes the texture.
+		/// </summary>
+		/// <param name="bmp">Image to use.</param>
+		public void ImportBitmap(Bitmap bmp)
+		{
+			Image = new Bitmap(bmp);
+			Width = Image.Width;
+			Height = Image.Height;
+			Encode();
+		}
+
+		/// <summary>
 		/// Applies the currently selected palette to the Indexed texture's decoded data (raw Index8 bytes).
 		/// This method is used internally at final steps of texture decoding. For a generic method, use SetPalette.
 		/// </summary>
