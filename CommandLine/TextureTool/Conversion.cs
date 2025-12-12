@@ -13,12 +13,6 @@ namespace TextureTool
 			Console.WriteLine("Output file: {0}", outputFullFilename);
 			Console.WriteLine("Source format: {0}", sourceFileFormat.ToString().ToUpperInvariant());
 			Console.WriteLine("Target format: {0}", targetFileFormat.ToString().ToUpperInvariant());
-			Console.WriteLine("Force mipmaps: {0}", useMipmaps.ToString());
-			// Show dithering flag if applicable
-			if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 || targetGvrFormat == GvrDataFormat.Index14 ||
-				targetPvrFormat == PvrDataFormat.Index4 || targetPvrFormat == PvrDataFormat.Index8 ||
-				targetPvrFormat == PvrDataFormat.Index4Mipmaps || targetPvrFormat == PvrDataFormat.Index8Mipmaps)
-				Console.WriteLine("Use dithering: {0}", useDitheringForIndexed.ToString());
 			// Read palette file if specified
 			inputPalette = string.IsNullOrEmpty(paletteFilename) ? null :
 				new TexturePalette(File.ReadAllBytes(paletteFilename), false);
@@ -26,7 +20,7 @@ namespace TextureTool
 				Console.WriteLine("Using palette file: {0}", paletteFilename);
 			// Read input texture data
 			byte[] inputFile = File.ReadAllBytes(inputFilename);
-			// Get input texture format from file extension. This is temporary, should have methods to auto-detect input texture format
+			// Load texture
 			switch (sourceFileFormat)
 			{
 				case TextureFileFormat.Pvr:
@@ -98,6 +92,13 @@ namespace TextureTool
 					}
 					break;
 			}
+			// Show mipmaps flag
+			Console.WriteLine("Force mipmaps: {0}", useMipmaps.ToString());
+			// Show dithering flag if applicable
+			if (targetGvrFormat == GvrDataFormat.Index4 || targetGvrFormat == GvrDataFormat.Index8 || targetGvrFormat == GvrDataFormat.Index14 ||
+				targetPvrFormat == PvrDataFormat.Index4 || targetPvrFormat == PvrDataFormat.Index8 ||
+				targetPvrFormat == PvrDataFormat.Index4Mipmaps || targetPvrFormat == PvrDataFormat.Index8Mipmaps)
+				Console.WriteLine("Use dithering: {0}", useDitheringForIndexed.ToString());
 			// Read the input texture
 			TexturePalette outputTexturePalette = null;
 			GenericTexture result = null;
@@ -192,14 +193,11 @@ namespace TextureTool
 							break;
 						// Convert from GVR
 						case GvrTexture gvrt:
-							// Auto pixel & data
-							if (autoPvrDataFormat && autoPvrPixelFormat)
-								result = new PvrTexture(gvrt, useMipmaps);
-							// Auto pixel - TODO
-							//else if (autoPvrPixelFormat)
-								//result = new PvrTexture(gvrt, useMipmaps);
 							// Auto data
-							else if (autoPvrDataFormat)
+							if (autoPvrDataFormat)
+								result = new PvrTexture(gvrt, useMipmaps);
+							// Manual data
+							else
 								result = new PvrTexture(gvrt, targetPvrFormat, useMipmaps);
 							break;
 						// Convert from DDS or XVR

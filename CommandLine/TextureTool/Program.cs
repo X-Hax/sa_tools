@@ -5,15 +5,6 @@ namespace TextureTool
 	// This tool is used for prototype development and testing of the SA Tools' texture library (TextureLib) and is not meant for general use (yet).
 
 	// TODO: Check handling of paths
-	
-	enum TextureFileFormat
-	{
-		Pvr,
-		Gvr,
-		Xvr,
-		Dds,
-		Png
-	}
 
 	partial class Program
 	{

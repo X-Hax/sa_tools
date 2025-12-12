@@ -37,30 +37,12 @@ namespace TextureTool
 			else
 				targetFileFormat = TextureFileFormat.Png;
 			// Determine the input file format
-			switch (Path.GetExtension(inputFilename).ToLowerInvariant())
+			sourceFileFormat = GenericTexture.GetTextureFileType(File.ReadAllBytes(inputFilename));
+			if (sourceFileFormat == TextureFileFormat.Unknown)
 			{
-				case ".pvr":
-					sourceFileFormat = TextureFileFormat.Pvr;
-					break;
-				case ".gvr":
-					sourceFileFormat = TextureFileFormat.Gvr;
-					break;
-				case ".xvr":
-					sourceFileFormat = TextureFileFormat.Xvr;
-					break;
-				case ".dds":
-					sourceFileFormat = TextureFileFormat.Dds;
-					break;
-				case ".png":
-				case ".bmp":
-				case ".jpg":
-				case ".gif":
-					sourceFileFormat = TextureFileFormat.Png;
-					break;
-				default:
-					Console.WriteLine("Unsupported input format: {0}", inputFilename);
-					programError = true;
-					break;
+				Console.WriteLine("Unsupported input format: {0}", inputFilename);
+				programError = true;
+				return;
 			}
 			// Set output filename
 			if (args.Contains("-o"))
@@ -167,9 +149,9 @@ namespace TextureTool
 							targetGvrFormat = GvrDataFormat.Index4;
 						else if (args.Contains("-i8"))
 							targetGvrFormat = GvrDataFormat.Index8;
-						else if (args.Contains("-i14"))
-							targetGvrFormat = GvrDataFormat.Index14;
-						else if (args.Contains("-dxt"))
+						//else if (args.Contains("-i14"))
+							//targetGvrFormat = GvrDataFormat.Index14;
+						else if (args.Contains("-dxt") || args.Contains("-dxt1"))
 							targetGvrFormat = GvrDataFormat.Dxt1;
 						else
 							autoGvrDataFormat = true;
@@ -280,6 +262,5 @@ namespace TextureTool
 				outputFullFilename = outputFilenameNoExt + outputExtension;
 			}
 		}
-
 	}
 }
