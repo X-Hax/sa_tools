@@ -2,6 +2,7 @@
 using BCnEncoder.Encoder;
 using BCnEncoder.ImageSharp;
 using BCnEncoder.Shared;
+using PSO.PRS;
 using SAModel.SAEditorCommon;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -364,7 +365,7 @@ namespace TextureEditor
 			nonIndexedPAK = false;
 			byte[] datafile = File.ReadAllBytes(fname);
 			if (Path.GetExtension(fname).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				datafile = FraGag.Compression.Prs.Decompress(datafile);
+				datafile = PRS.Decompress(datafile);
 			List<TextureInfo> newtextures;
 			if (PVMXFile.Identify(datafile))
 			{
@@ -515,7 +516,7 @@ namespace TextureEditor
 			customPaletteLoaded = false;
 			byte[] datafile = File.ReadAllBytes(filename);
 			if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				datafile = FraGag.Compression.Prs.Decompress(datafile);
+				datafile = PRS.Decompress(datafile);
 
 			// Check if the file is a PVR/GVR/XVR
 			PuyoArchiveType puyotype = PuyoArchiveType.Unknown;
@@ -874,7 +875,7 @@ namespace TextureEditor
 				}
 			}
 			if (Path.GetExtension(archiveFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-				FraGag.Compression.Prs.Compress(data, archiveFilename);
+				File.WriteAllBytes(archiveFilename, PRS.Compress(data, 255));
 			else
 				File.WriteAllBytes(archiveFilename, data);
 			unsaved = false;

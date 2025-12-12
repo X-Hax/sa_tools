@@ -1,4 +1,5 @@
 using ArchiveLib;
+using PSO.PRS;
 using System;
 using System.Drawing;
 using System.IO;
@@ -125,7 +126,7 @@ namespace ArchiveTool
                 outputPath = Path.ChangeExtension(filePath, ".PVM.PRS");
                 Console.WriteLine("Compressing to PRS...");
                 byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pvm"));
-                pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
+                pvmdata = PRS.Compress(pvmdata, 255);
                 File.WriteAllBytes(outputPath, pvmdata);
                 File.Delete(Path.ChangeExtension(filePath, ".PVM"));
             }

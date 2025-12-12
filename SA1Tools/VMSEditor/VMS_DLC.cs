@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using SAModel;
 using System.IO;
+using PSO.PRS;
 
 namespace VMSEditor
 {
@@ -316,7 +317,7 @@ namespace VMSEditor
                 header.TextureData = File.ReadAllBytes(Path.ChangeExtension(filename, ".pvm"));
                 if (File.Exists(Path.ChangeExtension(filename, ".bin")))
                 {
-                    header.ModelData = FraGag.Compression.Prs.Compress(File.ReadAllBytes(Path.ChangeExtension(filename, ".bin")));
+                    header.ModelData = PRS.Compress(File.ReadAllBytes(Path.ChangeExtension(filename, ".bin")), 255);
                 }
                 else header.ModelData = ConvertModel(Path.ChangeExtension(filename, ".sa1mdl"));
                 if (header.ContainsSound) header.SoundData = File.ReadAllBytes(Path.ChangeExtension(filename, ".mlt"));
@@ -369,7 +370,7 @@ namespace VMSEditor
                     byte[] prsdata = new byte[prs_size];
                     Array.Copy(file, prs_pointer, prsdata, 0, prs_size);
                     if (writeall) File.WriteAllBytes(Path.Combine(dir, fname + ".prs"), prsdata);
-                    prsdata = FraGag.Compression.Prs.Decompress(prsdata);
+                    prsdata = PRS.Decompress(prsdata);
                     if (writeall) File.WriteAllBytes(Path.Combine(dir, fname + ".bin"), prsdata);
                     // Model pointer
                     uint modelpointer = BitConverter.ToUInt32(prsdata, 0) - 0xCCA4000;
@@ -753,7 +754,7 @@ namespace VMSEditor
             result.AddRange(BitConverter.GetBytes(addr + 4 + 0xCCA4000));
             result.AddRange(mdlarr);
             byte[] res_arr = result.ToArray();
-            result = FraGag.Compression.Prs.Compress(res_arr).ToList();
+            result = PRS.Compress(res_arr, 255).ToList();
             if (result.Count % 16 != 0)
             {
                 do

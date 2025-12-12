@@ -12,6 +12,7 @@ using static ArchiveLib.ARCXFile;
 using static ArchiveLib.MLTFile;
 using static ArchiveLib.gcaxMLTFile;
 using static ArchiveLib.AFSFile;
+using PSO.PRS;
 
 namespace ArchiveTool
 {
@@ -28,7 +29,7 @@ namespace ArchiveTool
             Console.WriteLine("Compressing file to PRS: {0}", Path.GetFullPath(filePath));
             Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".prs")));
             byte[] bindata = File.ReadAllBytes(filePath);
-            bindata = FraGag.Compression.Prs.Compress(bindata);
+            bindata = PRS.Compress(bindata, 255);
             File.WriteAllBytes(Path.ChangeExtension(filePath, ".prs"), bindata);
             Console.WriteLine("PRS archive was compiled successfully!");
         }
@@ -236,7 +237,7 @@ namespace ArchiveTool
                 if (compressPRS)
                 {
                     Console.WriteLine("Compressing to PRS...");
-                    data = FraGag.Compression.Prs.Compress(data);
+                    data = PRS.Compress(data, 255);
                     outputPath = Path.ChangeExtension(outputPath, ".PRS");
                 }
                 Console.WriteLine("Output file: {0}", outputPath);
@@ -294,7 +295,7 @@ namespace ArchiveTool
 			if (compressPRS)
 			{
 				Console.WriteLine("Compressing to PRS...");
-				data = FraGag.Compression.Prs.Compress(data);
+				data = PRS.Compress(data, 255);
 				outputPath = Path.ChangeExtension(outputPath, ".PRS");
 			}
 			Console.WriteLine("Output file: {0}", outputPath);
@@ -385,7 +386,7 @@ namespace ArchiveTool
                 {
                     Console.WriteLine("Compressing to PRS...");
                     byte[] pvmdata = File.ReadAllBytes(Path.ChangeExtension(filePath, ".pvm"));
-                    pvmdata = FraGag.Compression.Prs.Compress(pvmdata);
+                    pvmdata = PRS.Compress(pvmdata, 255);
                     outputPath = Path.ChangeExtension(filePath, ".prs");
                     File.WriteAllBytes(outputPath, pvmdata);
                     File.Delete(Path.ChangeExtension(filePath, ".pvm"));

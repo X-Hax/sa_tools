@@ -1,4 +1,5 @@
-﻿using SAModel;
+﻿using PSO.PRS;
+using SAModel;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -20,7 +21,7 @@ namespace SplitTools.SAArc
 				var file = File.ReadAllBytes(filename);
 				if (Path.GetExtension(filename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					file = FraGag.Compression.Prs.Decompress(file);
+					file = PRS.Decompress(file);
 				}
 
 				Directory.CreateDirectory(Path.GetFileNameWithoutExtension(filename));
@@ -129,7 +130,7 @@ namespace SplitTools.SAArc
 				
 				if (Path.GetExtension(mtnFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					FraGag.Compression.Prs.Compress(mtnFile.ToArray(), mtnFilename);
+					File.WriteAllBytes(mtnFilename, PRS.Compress(mtnFile.ToArray(), 255));
 				}
 				else
 				{

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using SplitTools;
 using System.Windows.Forms;
+using PSO.PRS;
 
 namespace SAModel.DataToolbox
 {
@@ -71,7 +72,7 @@ namespace SAModel.DataToolbox
 			byte[] datafile_temp = File.ReadAllBytes(SourceFilename);
 			// Decompress PRS
 			if (Path.GetExtension(SourceFilename).ToLowerInvariant() == ".prs") 
-				datafile_temp = FraGag.Compression.Prs.Decompress(datafile_temp);
+				datafile_temp = PRS.Decompress(datafile_temp);
 			// Decompress REL
 			if (Path.GetExtension(SourceFilename).ToLowerInvariant() == ".rel")
 			{

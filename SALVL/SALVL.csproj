@@ -14,8 +14,6 @@
 		<Platforms>AnyCPU;x86;x64</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj">
-		</ProjectReference>
 		<ProjectReference Include="..\Libraries\SplitTools\SplitTools.csproj">
 		</ProjectReference>
 		<ProjectReference Include="..\Libraries\SAEditorCommon\SAEditorCommon.csproj">

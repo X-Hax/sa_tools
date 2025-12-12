@@ -4,6 +4,7 @@ using System.IO;
 using System.Drawing;
 using ArchiveLib;
 using static ArchiveLib.GenericArchive;
+using PSO.PRS;
 
 namespace ArchiveTool
 {
@@ -51,7 +52,7 @@ namespace ArchiveTool
 					arc = new NinjaBinaryFile(arcdata);
 					break;
 				case (".prs"):
-                    arcdata = FraGag.Compression.Prs.Decompress(arcdata);
+                    arcdata = PRS.Decompress(arcdata);
 					if (ARCXFile.Identify(arcdata))
 						arc = new ARCXFile(arcdata);
 					else if (PuyoFile.Identify(arcdata) == PuyoArchiveType.Unknown)
@@ -153,7 +154,7 @@ namespace ArchiveTool
                 Directory.CreateDirectory(outputPath);
                 byte[] filedata = File.ReadAllBytes(filename_full);
                 if (Path.GetExtension(filename_full).ToLowerInvariant() == ".prs")
-                    filedata = FraGag.Compression.Prs.Decompress(filedata);
+                    filedata = PRS.Decompress(filedata);
                 PuyoFile puyo = new PuyoFile(filedata);
                 using (TextWriter texList = File.CreateText(Path.Combine(outputPath, "index.txt")))
                 {
@@ -190,7 +191,7 @@ namespace ArchiveTool
             filePath = args[1];
             byte[] filedata = File.ReadAllBytes(filePath);
             if (Path.GetExtension(filePath).Equals(".prs", StringComparison.OrdinalIgnoreCase))
-                filedata = FraGag.Compression.Prs.Decompress(filedata);
+                filedata = PRS.Decompress(filedata);
             NjArchive njarc = new NjArchive(filedata);
             Console.WriteLine("Extracting Ninja archive: {0}", Path.GetFullPath(filePath));
             outputPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath));

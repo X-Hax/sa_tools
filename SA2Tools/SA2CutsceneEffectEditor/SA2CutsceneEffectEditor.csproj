@@ -13,8 +13,11 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\FraGag.Compression.Prs\FraGag.Compression.Prs.csproj" />
+    <PackageReference Include="PRS" Version="1.1.2" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SAEditorCommon\SAEditorCommon.csproj" />
     <ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
     <ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />

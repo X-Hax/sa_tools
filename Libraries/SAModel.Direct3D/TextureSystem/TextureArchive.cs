@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using ArchiveLib;
+using PSO.PRS;
 using static ArchiveLib.GenericArchive;
 
 namespace SAModel.Direct3D.TextureSystem
@@ -76,7 +77,7 @@ namespace SAModel.Direct3D.TextureSystem
 					arr.Add(new BMPInfo(Path.GetFileNameWithoutExtension(filename), new System.Drawing.Bitmap(filename)));
 					return arr.ToArray();
 				case ".prs":
-                    file = FraGag.Compression.Prs.Decompress(file);
+                    file = PRS.Decompress(file);
                     goto default;
                 case ".pvm":
                 case ".gvm":

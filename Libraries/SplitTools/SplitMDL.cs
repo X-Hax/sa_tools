@@ -1,4 +1,5 @@
-﻿using SAModel;
+﻿using PSO.PRS;
+using SAModel;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,7 +30,7 @@ namespace SplitTools.SAArc
 				
 				if (Path.GetExtension(mdlFilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					mdlFile = FraGag.Compression.Prs.Decompress(mdlFilename);
+					mdlFile = PRS.Decompress(File.ReadAllBytes(mdlFilename));
 				}
 				else
 				{
@@ -62,7 +63,7 @@ namespace SplitTools.SAArc
 					var data = File.ReadAllBytes(animationPaths[j]);
 					if (Path.GetExtension(animationPaths[j]).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 					{
-						data = FraGag.Compression.Prs.Decompress(data);
+						data = PRS.Decompress(data);
 					}
 
 					animFiles[j] = (Path.GetFileNameWithoutExtension(animationPaths[j]), data);
@@ -319,7 +320,7 @@ namespace SplitTools.SAArc
 				
 				if (Path.GetExtension(mdlfilename).Equals(".prs", StringComparison.OrdinalIgnoreCase))
 				{
-					FraGag.Compression.Prs.Compress(mdlFile.ToArray(), mdlfilename);
+					File.WriteAllBytes(mdlfilename, PRS.Compress(mdlFile.ToArray(), 255));
 				}
 				else
 				{
