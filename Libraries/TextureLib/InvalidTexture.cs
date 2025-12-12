@@ -12,6 +12,11 @@
 			Height = Image.Height;
 		}
 
+		public InvalidTexture Clone()
+		{
+			return new InvalidTexture(RawData, 0, Name);
+		}
+
 		public override byte[] GetBytes()
 		{
 			return RawData;
