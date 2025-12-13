@@ -183,10 +183,25 @@ namespace ArchiveTool
                 }
             }
         }
-        /// <summary>
-        /// Extract an NjUtil archive.
-        /// </summary>
-        static void ExtractNjUtil(string[] args)
+
+		/// <summary>
+		/// Decompress a PRS.
+		/// </summary>
+		static void DecompressPRS(string[] args)
+		{
+			filePath = args[1];
+			Console.WriteLine("Decompressing file from PRS: {0}", Path.GetFullPath(filePath));
+			Console.WriteLine("Output file: {0}", Path.GetFullPath(Path.ChangeExtension(filePath, ".bin")));
+			byte[] bindata = File.ReadAllBytes(filePath);
+			bindata = PRS.Decompress(bindata);
+			File.WriteAllBytes(Path.ChangeExtension(filePath, ".bin"), bindata);
+			Console.WriteLine("PRS archive was decompressed successfully!");
+		}
+
+		/// <summary>
+		/// Extract an NjUtil archive.
+		/// </summary>
+		static void ExtractNjUtil(string[] args)
         {
             filePath = args[1];
             byte[] filedata = File.ReadAllBytes(filePath);
