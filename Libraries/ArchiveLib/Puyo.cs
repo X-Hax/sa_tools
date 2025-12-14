@@ -45,6 +45,8 @@ namespace ArchiveLib
         public PuyoArchiveType Type;
 		public PuyoArchiveFlags Flags;
 
+		public bool PaletteRequired;
+
 		[FlagsAttribute]
         public enum PuyoArchiveFlags : ushort
         {
@@ -120,6 +122,7 @@ namespace ArchiveLib
 							gvme.Palette = Palette;
 					}
 				}
+				PaletteRequired = false;
 			}
 		}
 
@@ -137,7 +140,10 @@ namespace ArchiveLib
 				Title = "External palette file"
 			})
 				if (a.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+				{
 					SetPalette(a.FileName);
+					PaletteRequired = false;
+				}
 		}
 
         public PuyoFile(PuyoArchiveType type = PuyoArchiveType.PVMFile) 
@@ -286,10 +292,14 @@ namespace ArchiveLib
 					case PuyoArchiveType.PVMFile:
 						PvrTexture pvrt = new PvrTexture(pvrchunk);
 						Entries.Add(new PVMEntry(pvrchunk, entryfn + ".pvr"));
+						if (pvrt.RequiresPaletteFile)
+							PaletteRequired = true;
 						break;
 					case PuyoArchiveType.GVMFile:
 						GvrTexture gvrt = new GvrTexture(pvrchunk);
 						Entries.Add(new GVMEntry(pvrchunk, entryfn + ".gvr"));
+						if (gvrt.RequiresPaletteFile)
+							PaletteRequired = true;
 						break;
 					case PuyoArchiveType.XVMFile:
 						XvrTexture xvrt = new XvrTexture(pvrchunk);
