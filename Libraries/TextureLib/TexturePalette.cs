@@ -141,11 +141,11 @@ namespace TextureLib
         /// <param name="startBank">The "starting bank" of the palette.</param>
         /// <param name="startColor">The "starting color" of the palette bank.</param>
         /// <param name="bigEndian">Whether the data will be encoded in Big Endian or not.</param>
-        public TexturePalette(Bitmap bitmap, PixelCodec codec, int startBank = 0, int startColor = 0, bool bigEndian = false)
+        public TexturePalette(Bitmap bitmap, PixelCodec codec = null, int startBank = 0, int startColor = 0, bool bigEndian = false)
         {
             StartBank = startBank;
             StartColor = startColor;
-            paletteCodec = codec;
+            paletteCodec = codec != null ? codec : new ARGB8888PixelCodec();
             TextureFunctions.BitmapToRaw(bitmap, DecodedData);
 			//TextureFunctions.RGBAtoBGRA(DecodedData);
             Encode(codec, bigEndian);

@@ -8,7 +8,18 @@ using System.Drawing;
 
 namespace TextureLib
 {
-    public abstract class GenericTexture
+	/// <summary>Texture file types used in texture identification.</summary>
+	public enum TextureFileFormat
+	{
+		Pvr,
+		Gvr,
+		Dds,
+		Xvr,
+		Png,
+		Unknown
+	}
+
+	public abstract class GenericTexture
     {
 		// Common properties and data
 		/// <summary>Texture name.</summary>

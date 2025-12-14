@@ -7,8 +7,9 @@ namespace TextureLib
         IntensityA8orArgb1555 = 0x00,
         Rgb565 = 0x01,
         Rgb5A3orArgb4444 = 0x02,
-        Argb8888 = 0x06
-    }
+        Argb8888 = 0x06,
+		Invalid = 0xFF // For Texture Editor
+	}
 
     public enum GvrDataFormat : byte
     {
@@ -23,6 +24,7 @@ namespace TextureLib
         Index8 = 0x09,
         Index14 = 0xA, // Palette index is 14 bit (from 0 to 16383), top 2 bits are ignored
         Dxt1 = 0x0E,
+		Invalid = 0xFF // For Texture Editor
     }
 
     [Flags]
