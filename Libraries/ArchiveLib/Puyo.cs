@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using VrSharp;
-using VrSharp.Gvr;
-using VrSharp.Pvr;
-using VrSharp.Xvr;
-using SAModel;
+using TextureLib;
 using static ArchiveLib.GenericArchive;
 
 // PVM/GVM archives used in Dreamcast/Gamecube games and their ports.
@@ -46,7 +42,6 @@ namespace ArchiveLib
 		const uint Magic_PVPL = 0x4C505650; // Palette data chunk
 		const uint Magic_PVPN = 0x4E505650; // Palette name chunk
 		
-		public bool PaletteRequired;
         public PuyoArchiveType Type;
 		public PuyoArchiveFlags Flags;
 
@@ -107,25 +102,24 @@ namespace ArchiveLib
 		{
 			if (File.Exists(palettePath))
 			{
-				VpPalette Palette = null;
+				TexturePalette Palette = null;
 				bool gvm = Type == PuyoArchiveType.GVMFile;
-				Palette = gvm ? (VpPalette)new GvpPalette(palettePath) : (VpPalette)new PvpPalette(palettePath);
+				Palette = new TexturePalette(File.ReadAllBytes(palettePath));
 				foreach (GenericArchiveEntry entry in Entries)
 				{
 					if (entry is PVMEntry pvme)
 					{
 						PvrTexture pvrt = new PvrTexture(pvme.Data);
-						if (pvrt.NeedsExternalPalette)
-							pvme.Palette = (PvpPalette)Palette;
+						if (pvrt.RequiresPaletteFile)
+							pvme.Palette = Palette;
 					}
 					else if (entry is GVMEntry gvme)
 					{
 						GvrTexture gvrt = new GvrTexture(gvme.Data);
-						if (gvrt.NeedsExternalPalette)
-							gvme.Palette = (GvpPalette)Palette;
+						if (gvrt.RequiresPaletteFile)
+							gvme.Palette = Palette;
 					}
 				}
-				PaletteRequired = false;
 			}
 		}
 
@@ -200,7 +194,7 @@ namespace ArchiveLib
 
         public PuyoFile(byte[] pvmdata)
         {
-            bool bigendianbk = ByteConverter.BigEndian;
+            ByteConverter.BackupBigEndian();
             Entries = new List<GenericArchiveEntry>();
             Type = Identify(pvmdata);
             switch (Type)
@@ -291,14 +285,10 @@ namespace ArchiveLib
 				{
 					case PuyoArchiveType.PVMFile:
 						PvrTexture pvrt = new PvrTexture(pvrchunk);
-						if (pvrt.NeedsExternalPalette)
-							PaletteRequired = true;
 						Entries.Add(new PVMEntry(pvrchunk, entryfn + ".pvr"));
 						break;
 					case PuyoArchiveType.GVMFile:
 						GvrTexture gvrt = new GvrTexture(pvrchunk);
-						if (gvrt.NeedsExternalPalette)
-							PaletteRequired = true;
 						Entries.Add(new GVMEntry(pvrchunk, entryfn + ".gvr"));
 						break;
 					case PuyoArchiveType.XVMFile:
@@ -307,7 +297,7 @@ namespace ArchiveLib
 						break;
 				}
             }
-            ByteConverter.BigEndian = bigendianbk;
+            ByteConverter.RestoreBigEndian();
         }
 
 		public override byte[] GetBytes()
@@ -357,24 +347,24 @@ namespace ArchiveLib
 						PvrTexture pvrt = new PvrTexture(pvme.Data);
 						if (Flags.HasFlag(PuyoArchiveFlags.PixelDataFormat))
 						{
-							entrytable.Add((byte)pvrt.PixelFormat);
-							entrytable.Add((byte)pvrt.DataFormat);
+							entrytable.Add((byte)pvrt.PvrPixelFormat);
+							entrytable.Add((byte)pvrt.PvrDataFormat);
 						}
-						dimensions |= (ushort)(((byte)Math.Log(pvrt.TextureWidth, 2) - 2) & 0xF);
-						dimensions |= (ushort)((((byte)Math.Log(pvrt.TextureHeight, 2) - 2) & 0xF) << 4);
-						gbix = pvrt.GlobalIndex;
+						dimensions |= (ushort)(((byte)Math.Log(pvrt.Width, 2) - 2) & 0xF);
+						dimensions |= (ushort)((((byte)Math.Log(pvrt.Height, 2) - 2) & 0xF) << 4);
+						gbix = pvrt.Gbix;
 					}
 					else if (Entries[i] is GVMEntry gvme)
 					{
 						GvrTexture gvrt = new GvrTexture(gvme.Data);
 						if (Flags.HasFlag(PuyoArchiveFlags.PixelDataFormat))
 						{
-							entrytable.Add((byte)gvrt.PixelFormat);
-							entrytable.Add((byte)gvrt.DataFormat);
+							entrytable.Add((byte)gvrt.GvrPaletteFormat);
+							entrytable.Add((byte)gvrt.GvrDataFormat);
 						}
-						dimensions |= (ushort)(((byte)Math.Log(gvrt.TextureWidth, 2) - 2) & 0xF);
-						dimensions |= (ushort)((((byte)Math.Log(gvrt.TextureHeight, 2) - 2) & 0xF) << 4);
-						gbix = gvrt.GlobalIndex;
+						dimensions |= (ushort)(((byte)Math.Log(gvrt.Width, 2) - 2) & 0xF);
+						dimensions |= (ushort)((((byte)Math.Log(gvrt.Height, 2) - 2) & 0xF) << 4);
+						gbix = gvrt.Gbix;
 					}
 					if (Flags.HasFlag(PuyoArchiveFlags.TextureDimensions))
 						entrytable.AddRange(ByteConverter.GetBytes(dimensions));
@@ -443,14 +433,14 @@ namespace ArchiveLib
     public class PVMEntry : GenericArchiveEntry
     {
         public uint GBIX;
-        public PvpPalette Palette;
+        public TexturePalette Palette;
 
         public PVMEntry(byte[] pvrdata, string name)
         {
             Name = name;
             Data = pvrdata;
             PvrTexture pvrt = new PvrTexture(pvrdata);
-            GBIX = pvrt.GlobalIndex;
+            GBIX = pvrt.Gbix;
         }
 
         public PVMEntry(string filename)
@@ -458,7 +448,7 @@ namespace ArchiveLib
             Name = Path.GetFileName(filename);
             Data = File.ReadAllBytes(filename);
             PvrTexture pvrt = new PvrTexture(Data);
-            GBIX = pvrt.GlobalIndex;
+            GBIX = pvrt.Gbix;
         }
 
         public uint GetGBIX()
@@ -469,23 +459,23 @@ namespace ArchiveLib
         public override Bitmap GetBitmap()
         {
             PvrTexture pvrt = new PvrTexture(Data);
-            if (pvrt.NeedsExternalPalette)
+            if (pvrt.RequiresPaletteFile)
                 pvrt.SetPalette(Palette);
-            return pvrt.ToBitmap();
+            return pvrt.Image;
         }
     }
 
     public class GVMEntry : GenericArchiveEntry
     {
         public uint GBIX;
-        public GvpPalette Palette;
+        public TexturePalette Palette;
 
         public GVMEntry(byte[] gvrdata, string name)
         {
             Name = name;
             Data = gvrdata;
             GvrTexture gvrt = new GvrTexture(gvrdata);
-            GBIX = gvrt.GlobalIndex;
+            GBIX = gvrt.Gbix;
         }
 
         public GVMEntry(string filename)
@@ -493,7 +483,7 @@ namespace ArchiveLib
             Name = Path.GetFileName(filename);
             Data = File.ReadAllBytes(filename);
             GvrTexture gvrt = new GvrTexture(Data);
-            GBIX = gvrt.GlobalIndex;
+            GBIX = gvrt.Gbix;
         }
 
         public uint GetGBIX()
@@ -504,9 +494,9 @@ namespace ArchiveLib
         public override Bitmap GetBitmap()
         {
             GvrTexture gvrt = new GvrTexture(Data);
-            if (gvrt.NeedsExternalPalette)
+            if (gvrt.RequiresPaletteFile)
                 gvrt.SetPalette(Palette);
-            return gvrt.ToBitmap();
+            return gvrt.Image;
         }
     }
 
@@ -519,7 +509,7 @@ namespace ArchiveLib
 			Name = name;
 			Data = xvrdata;
 			XvrTexture xvrt = new XvrTexture(xvrdata);
-			GBIX = xvrt.GlobalIndex;
+			GBIX = xvrt.Gbix;
 		}
 
 		public XVMEntry(string filename)
@@ -527,7 +517,7 @@ namespace ArchiveLib
 			Name = Path.GetFileName(filename);
 			Data = File.ReadAllBytes(filename);
 			XvrTexture xvrt = new XvrTexture(Data);
-			GBIX = xvrt.GlobalIndex;
+			GBIX = xvrt.Gbix;
 		}
 
 		public uint GetGBIX()
@@ -538,7 +528,7 @@ namespace ArchiveLib
 		public override Bitmap GetBitmap()
 		{
 			XvrTexture xvrt = new XvrTexture(Data);
-			return xvrt.ToBitmap();
+			return xvrt.Image;
 		}
 	}
 }

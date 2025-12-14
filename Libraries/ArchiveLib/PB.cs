@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using VrSharp.Pvr;
+using TextureLib;
 using static ArchiveLib.GenericArchive;
 
 // Headerless PVMs from Sonic Adventure (Dreamcast).
@@ -157,11 +157,11 @@ namespace ArchiveLib
 			Data = pvrdata;
 			PvrTexture pvrt = new PvrTexture(Data);
 			Offset = offset;
-			PixelFormat = pvrt.PixelFormat;
-			DataFormat = pvrt.DataFormat;
-			GBIX = pvrt.GlobalIndex;
-			Width = pvrt.TextureWidth;
-			Height = pvrt.TextureHeight;
+			PixelFormat = pvrt.PvrPixelFormat;
+			DataFormat = pvrt.PvrDataFormat;
+			GBIX = pvrt.Gbix;
+			Width = (ushort)pvrt.Width;
+			Height = (ushort)pvrt.Height;
 		}
 
 		public PBEntry(string filename, int offset)
@@ -170,11 +170,11 @@ namespace ArchiveLib
             PvrTexture pvrt = new PvrTexture(Data);
             Name = Path.GetFileNameWithoutExtension(filename);
             Offset = offset;
-            PixelFormat = pvrt.PixelFormat;
-            DataFormat = pvrt.DataFormat;
-            GBIX = pvrt.GlobalIndex;
-            Width = pvrt.TextureWidth;
-            Height = pvrt.TextureHeight;
+            PixelFormat = pvrt.PvrPixelFormat;
+            DataFormat = pvrt.PvrDataFormat;
+            GBIX = pvrt.Gbix;
+            Width = (ushort)pvrt.Width;
+            Height = (ushort)pvrt.Height;
         }
 
         public PBEntry(int offset, PvrPixelFormat pxformat, PvrDataFormat dataformat, uint gbix, ushort width, ushort height)
@@ -189,7 +189,7 @@ namespace ArchiveLib
 
         public override Bitmap GetBitmap()
         {
-            return new PvrTexture(Data).ToBitmap();
+            return new PvrTexture(Data).Image;
         }
 
         public byte[] GetPVR(byte[] data)
