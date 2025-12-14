@@ -150,9 +150,14 @@ namespace ArchiveLib
         {
             Type = type;
 			Flags |= PuyoArchiveFlags.Filenames;
-			Flags |= PuyoArchiveFlags.PVRT;
 			Flags |= PuyoArchiveFlags.GlobalIndex;
-        }
+			Flags |= PuyoArchiveFlags.PVRT;
+			// The flags above are used commonly in SA1DC.
+			// The flags below are often used in general.
+			Flags |= PuyoArchiveFlags.TextureDimensions;
+			Flags |= PuyoArchiveFlags.PixelDataFormat;
+
+		}
 
         /// <summary>
         /// This function checks the specified offset in a byte array to verify if it begins with a PVR/GVR/XVR texture header. 
