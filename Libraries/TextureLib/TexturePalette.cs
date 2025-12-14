@@ -304,6 +304,15 @@ namespace TextureLib
 			return Color.FromArgb(isBigEndian ? ByteConverter.ToInt32BE(DecodedData, retrieveColorID * 4) : ByteConverter.ToInt32(DecodedData, retrieveColorID * 4));
 		}
 
+		/// <summary>Returns the maximum number of palette banks available with this palette.</summary>
+		/// <param name="index8">Count as 256-color banks if true, as 16-color banks if false.</param>
+		/// <returns></returns>
+		public int GetMaxBanks(bool index8)
+		{
+			int numColorsInBank = index8 ? 256 : 16;
+			return (int)Math.Round((float)GetNumColors() / numColorsInBank);
+		}
+
 		/// <summary>Retrieves the palette from an indexed Bitmap.</summary>
 		/// <param name="bitmap">Source Bitmap.</param>
 		/// <param name="forceIndex8">Create a 256-color palette even if the Bitmap has 16 colors or less.</param>
@@ -391,6 +400,8 @@ namespace TextureLib
 			sb.AppendLine(string.Format("Num colors: {0}", GetNumColors()));
 			sb.AppendLine(string.Format("Start bank: {0}", StartBank.ToString()));
 			sb.AppendLine(string.Format("Start color: {0}", StartColor.ToString()));
+			sb.AppendLine(string.Format("Max banks 4-bit: {0}", GetMaxBanks(false).ToString()));
+			sb.AppendLine(string.Format("Max banks 8-bit: {0}", GetMaxBanks(true).ToString()));
 			return sb.ToString();
 		}
 	}
