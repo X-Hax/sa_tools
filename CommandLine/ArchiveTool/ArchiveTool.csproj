@@ -16,6 +16,5 @@
 		<ProjectReference Include="..\..\Libraries\ArchiveLib\ArchiveLib.csproj" />
 		<ProjectReference Include="..\..\Libraries\SplitTools\SplitTools.csproj" />
 		<ProjectReference Include="..\..\Libraries\SAModel\SAModel.csproj" />
-		<ProjectReference Include="..\..\Libraries\VrSharp\VrSharp.csproj" />
 	</ItemGroup>
 </Project>

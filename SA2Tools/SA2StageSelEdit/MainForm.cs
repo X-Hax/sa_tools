@@ -4,13 +4,12 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing.Imaging;
 using ArchiveLib;
 using SAModel.Direct3D.TextureSystem;
 using SplitTools;
-using Pfim;
 using System.Linq;
 using SAModel.SAEditorCommon.ProjectManagement;
+using TextureLib;
 
 namespace SA2StageSelEdit
 {
@@ -125,56 +124,10 @@ namespace SA2StageSelEdit
 				openFile(fd.FileName);
 		}
 
-		private bool CheckIfDDS(Stream input)
-		{
-			using (MemoryStream ms = new MemoryStream())
-			{
-				input.CopyTo(ms);
-				byte[] dds = ms.ToArray();
-				uint check = BitConverter.ToUInt32(dds.ToArray(), 0);
-				if (check == 0x20534444) // DDS header
-					return true;
-				else
-					return false;
-			}
-		}
-
 		private Bitmap LoadDDS(MemoryStream str)
 		{
-			// Check if the texture is DDS
-			if (CheckIfDDS(str))
-			{
-				str.Seek(0, SeekOrigin.Begin);
-				PixelFormat pxformat;
-				var image = Pfim.Pfimage.FromStream(str, new Pfim.PfimConfig());
-				switch (image.Format)
-				{
-					case Pfim.ImageFormat.Rgba32:
-						pxformat = PixelFormat.Format32bppArgb;
-						break;
-					case Pfim.ImageFormat.Rgb24:
-						pxformat = PixelFormat.Format24bppRgb;
-						break;
-					case Pfim.ImageFormat.R5g5b5:
-						pxformat = PixelFormat.Format16bppRgb555;
-						break;
-					case Pfim.ImageFormat.R5g5b5a1:
-						pxformat = PixelFormat.Format16bppArgb1555;
-						break;
-					case Pfim.ImageFormat.R5g6b5:
-						pxformat = PixelFormat.Format16bppRgb565;
-						break;
-					default:
-						throw new Exception("Unsupported image format: " + image.Format.ToString());
-				}
-				var bitmap = new Bitmap(image.Width, image.Height, pxformat);
-				BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pxformat);
-				System.Runtime.InteropServices.Marshal.Copy(image.Data, 0, bmpData.Scan0, image.DataLen);
-				bitmap.UnlockBits(bmpData);
-				return bitmap;
-			}
-			else // Not DDS
-				return new Bitmap(str);
+			GenericTexture texture = GenericTexture.LoadTexture(str.ToArray());
+			return texture.Image;
 		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)

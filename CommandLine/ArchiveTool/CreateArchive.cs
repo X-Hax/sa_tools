@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using VrSharp.Pvr;
 using ArchiveLib;
 using SplitTools;
 using static ArchiveLib.DATFile;
@@ -13,6 +12,7 @@ using static ArchiveLib.MLTFile;
 using static ArchiveLib.gcaxMLTFile;
 using static ArchiveLib.AFSFile;
 using PSO.PRS;
+using TextureLib;
 
 namespace ArchiveTool
 {
@@ -375,10 +375,9 @@ namespace ArchiveTool
                     PvrDataFormat pdf = PvrDataFormat.Rectangle;
                     if (tempTexture.Width == tempTexture.Height)
                         pdf = PvrDataFormat.SquareTwiddled;
-                    PvrTextureEncoder encoder = new PvrTextureEncoder(tempTexture, ppf, pdf);
-                    encoder.GlobalIndex = GBIX;
+					PvrTexture pvrenc = new PvrTexture(tempTexture, pdf, ppf, false) { Gbix = GBIX };
                     string pvrPath = Path.ChangeExtension(texturePath, ".pvr");
-                    encoder.Save(pvrPath);
+                    File.WriteAllBytes(pvrPath, pvrenc.GetBytes());
                     puyo.Entries.Add(new PVMEntry(pvrPath));
                 }
                 File.WriteAllBytes(outputPath, puyo.GetBytes());

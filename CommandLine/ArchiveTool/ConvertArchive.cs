@@ -3,9 +3,7 @@ using PSO.PRS;
 using System;
 using System.Drawing;
 using System.IO;
-using VrSharp;
-using VrSharp.Gvr;
-using VrSharp.Pvr;
+using TextureLib;
 
 namespace ArchiveTool
 {
@@ -50,9 +48,9 @@ namespace ArchiveTool
                     {
                         if (!File.Exists(Path.Combine(fileNameFromFolder, file.Name)))
                             File.WriteAllBytes(Path.Combine(fileNameFromFolder, file.Name), file.Data);
-                        Stream data = File.Open(Path.Combine(fileNameFromFolder, file.Name), FileMode.Open);
-                        VrTexture vrfile = new GvrTexture(data);
-                        Bitmap tempTexture = vrfile.ToBitmap();
+                        byte[] data = File.ReadAllBytes(Path.Combine(fileNameFromFolder, file.Name));
+						GvrTexture vrfile = new GvrTexture(data);
+                        Bitmap tempTexture = vrfile.Image;
                         System.Drawing.Imaging.BitmapData bmpd = tempTexture.LockBits(new Rectangle(Point.Empty, tempTexture.Size), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         int stride = bmpd.Stride;
                         byte[] bits = new byte[Math.Abs(stride) * bmpd.Height];
@@ -96,12 +94,10 @@ namespace ArchiveTool
                             else
                                 pdf = PvrDataFormat.RectangleTwiddled;
                         }
-                        PvrTextureEncoder encoder = new PvrTextureEncoder(tempTexture, ppf, pdf);
-                        encoder.GlobalIndex = vrfile.GlobalIndex;
+						PvrTexture pvrenc = new PvrTexture(tempTexture, pdf, ppf, vrfile.HasMipmaps) { Gbix = vrfile.Gbix };
                         string pvrPath = Path.ChangeExtension(Path.Combine(fileNameFromFolder, file.Name), ".pvr");
                         if (!File.Exists(pvrPath))
-                            encoder.Save(pvrPath);
-                        data.Close();
+							File.WriteAllBytes(pvrPath, pvrenc.GetBytes());
                         File.Delete(Path.Combine(fileNameFromFolder, file.Name));
                         MemoryStream readfile = new MemoryStream(File.ReadAllBytes(pvrPath));
                         pvmFile.Entries.Add(new PVMEntry(pvrPath));
