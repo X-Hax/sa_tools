@@ -1,31 +1,42 @@
-﻿using SixLabors.ImageSharp.PixelFormats;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing.Processors.Quantization;
 
-// Other formats: PNG (1 pixel height), Adobe ACT, JASC PAL, Microsoft PAL, PaintShopPro TXT, GIMP GPL
+// Other formats to consider implementing: Adobe ACT, JASC PAL, Microsoft PAL, PaintShopPro TXT, GIMP GPL
 
 namespace TextureLib
 {
+	/// <summary>Class used to manage texture palettes (PVP and GVP files).</summary>
     public class TexturePalette
     {
         private const uint Magic_PVPL = 0x4C505650; // PVPL
         private const uint Magic_GVPL = 0x4C505647; // GVPL
         private const uint Magic_PVRP = 0x50525650; // PVRP
 
+		/// <summary>Default palette bank ID (stored in the PVP/GVP file).</summary>
         public int StartBank;
-        public int StartColor;
 
-        public byte[] DecodedData; // ARGB8888 color data
-        public byte[] RawData; // Encoded data without header
+		/// <summary>Default palette color ID (stored in the PVP/GVP file, not implemented).</summary>
+		public int StartColor;
+		
+		/// <summary>Decoded ARGB8888 color data.</summary>
+		public byte[] DecodedData;
 
-        private PixelCodec paletteCodec; // Codec used for the palette format
+		/// <summary>Encoded data without header.</summary>
+		public byte[] RawData;
+		
+		/// <summary>Codec used for the palette format.</summary>
+		private PixelCodec paletteCodec;
 
-        private bool isBigEndian; // Whether the data in RawData is Big Endian or not 
+		/// <summary>Whether the encoded data in RawData is Big Endian or not.</summary>
+		private bool isBigEndian;
 
-        public int GetNumColors() => DecodedData.Length / 4;
+		/// <summary>Gets the total number of colors in palette data.</summary>
+		public int GetNumColors() => DecodedData.Length / 4;
 
         /// <summary>
         /// Creates a palette from a byte array containing a header (PVP or GVP) and data.
@@ -38,17 +49,14 @@ namespace TextureLib
             int sectionSize = 0; // Size stored in the header
             int colorsSize = 0; // Size of the section that contains color data
             int colorsStartOffset = 0; // Offset of the section that contains color data
-            byte paletteFmt; // Palette format ID
-            bool isGvr = false; // Whether or not the palette was loaded from a GVR file (values are Big Endian)
-
-            ByteConverter.BackupBigEndian();
+            ushort paletteFmt; // Palette format ID
 
             switch (BitConverter.ToUInt32(data, 0))
             {
                 case Magic_PVRP: // Some format used in old Kamui demos
                     sectionSize = BitConverter.ToInt32(data, 4);
                     colorsSize = sectionSize - 4;
-                    paletteFmt = data[8]; // 9 is unknown
+					paletteFmt = BitConverter.ToUInt16(data, 8);
                     paletteCodec = PixelCodec.GetPixelCodec((PvrPixelFormat)paletteFmt);
                     numColors = colorsSize / paletteCodec.BytesPerPixel;
                     colorsStartOffset = 0xC;
@@ -56,37 +64,27 @@ namespace TextureLib
                 case Magic_PVPL:
                     sectionSize = BitConverter.ToInt32(data, 4);
                     colorsSize = sectionSize - 8;
-                    paletteFmt = data[8]; // 9 is unknown
-                    StartBank = BitConverter.ToInt16(data, 0xA);
+					paletteFmt = BitConverter.ToUInt16(data, 8);
+					StartBank = BitConverter.ToInt16(data, 0xA);
                     StartColor = BitConverter.ToInt16(data, 0xC);
                     numColors = BitConverter.ToInt16(data, 0xE);
                     colorsStartOffset = 0x10;
                     paletteCodec = PixelCodec.GetPixelCodec((PvrPixelFormat)paletteFmt);
                     break;
                 case Magic_GVPL:
-                    ByteConverter.BigEndian = true;
                     sectionSize = BitConverter.ToInt32(data, 4); // Section size is Little Endian, everything else is Big Endian
                     colorsSize = sectionSize - 8;
-                    paletteFmt = data[9]; // 8 is unknown
-                    StartBank = ByteConverter.ToInt16(data, 0xA);
-                    StartColor = ByteConverter.ToInt16(data, 0xC);
-                    numColors = ByteConverter.ToInt16(data, 0xE);
+					paletteFmt = ByteConverter.ToUInt16BE(data, 8);
+					StartBank = ByteConverter.ToInt16BE(data, 0xA);
+                    StartColor = ByteConverter.ToInt16BE(data, 0xC);
+                    numColors = ByteConverter.ToInt16BE(data, 0xE);
                     colorsStartOffset = 0x10;
                     paletteCodec = PixelCodec.GetPixelCodec((GvrPaletteFormat)paletteFmt, saCompatible);
-                    isBigEndian = isGvr = true;
+                    isBigEndian = true;
                     break;
                 default:
                     throw new NotImplementedException("TexturePalette: The data is not supported.");
             }
-#if DEBUG
-            Console.WriteLine("\nPALETTE INFO");
-            Console.Write("Pixel format: {0}", paletteFmt.ToString());
-            Console.Write(" ({0})\n", isGvr ? (GvrPaletteFormat)paletteFmt : (PvrPixelFormat)paletteFmt);
-            Console.WriteLine("Codec: {0}", paletteCodec.ToString());
-            Console.WriteLine("Num colors: {0}", numColors);
-            Console.WriteLine("Start bank: {0}", StartBank.ToString());
-            Console.WriteLine("Start color: {0}", StartColor.ToString());
-#endif
             RawData = data[colorsStartOffset..];
             int srcAddress = 0;
             int dstAddress = 0;
@@ -96,18 +94,16 @@ namespace TextureLib
             for (int index = 0; index < numColors; index++)
             {
                 paletteCodec.DecodePixel(srcData[srcAddress..],
-                   dest[dstAddress..]); // In Big Endian
+                   dest[dstAddress..]); // In Big Endian if set
 
                 srcAddress += paletteCodec.BytesPerPixel;
                 dstAddress += 4 * paletteCodec.Pixels;
             }
             DecodedData = dest.ToArray();
-
-            ByteConverter.RestoreBigEndian();
         }
 
         /// <summary>
-        /// Creates a palette from a byte array containing headerless encoded data.
+        /// Creates a palette from a byte array containing encoded palette data without a header.
         /// </summary>
         /// <param name="rawEncodedData">Loaded byte array.</param>
         /// <param name="codec">The pixel codec for the format of the data.</param>
@@ -116,7 +112,6 @@ namespace TextureLib
         /// <param name="bigEndian">Whether the data is Big Endian or not.</param>
         public TexturePalette(byte[] rawEncodedData, PixelCodec codec, int numColors, int colorsStartOffset = 0, bool bigEndian = false)
         {
-            ByteConverter.SetBigEndian(bigEndian);
             ReadOnlySpan<byte> srcData = rawEncodedData[colorsStartOffset..];
             int srcAddress = 0;
             int dstAddress = 0;
@@ -133,7 +128,6 @@ namespace TextureLib
                 srcAddress += codec.BytesPerPixel;
                 dstAddress += 4 * codec.Pixels;
             }
-			ByteConverter.RestoreBigEndian();
             DecodedData = dest.ToArray();
             paletteCodec = codec;
 			isBigEndian = bigEndian;
@@ -145,7 +139,7 @@ namespace TextureLib
         /// <param name="bitmap">Loaded Bitmap.</param>
         /// <param name="codec">The pixel codec for the format of the data.</param>
         /// <param name="startBank">The "starting bank" of the palette.</param>
-        /// <param name="startColor">The "starting color" on the palette bank.</param>
+        /// <param name="startColor">The "starting color" of the palette bank.</param>
         /// <param name="bigEndian">Whether the data will be encoded in Big Endian or not.</param>
         public TexturePalette(Bitmap bitmap, PixelCodec codec, int startBank = 0, int startColor = 0, bool bigEndian = false)
         {
@@ -182,7 +176,12 @@ namespace TextureLib
             }
         }
 
-        public byte[] GetBytes(bool gvp)
+		/// <summary>
+		/// Retrieves the palette's byte array, including the PVP or GVP header.
+		/// </summary>
+		/// <param name="gvp">Whether to use a GVP header instead of PVP.</param>
+		/// <returns>Byte array that can be saved to a PVP/GVP file.</returns>
+		public byte[] GetBytes(bool gvp)
         {
             ByteConverter.SetBigEndian(gvp);
             List<byte> result = new List<byte>();
@@ -213,6 +212,7 @@ namespace TextureLib
             result.AddRange(ByteConverter.GetBytes((ushort)GetNumColors()));
             byte[] writeData = new byte[RawData.Length];
             RawData.CopyTo(writeData, 0);
+			// If Endianness of the encoded data doesn't match the output format, reverse it.
             if ((!isBigEndian && gvp) || (isBigEndian && !gvp))
                 ByteConverter.SwapEndianArray(writeData, paletteCodec.BytesPerPixel);
             result.AddRange(writeData);
@@ -220,21 +220,25 @@ namespace TextureLib
             return result.ToArray();
         }
 
+		/// <summary>Saves the palette as a PVP file.</summary>
         public void SavePVP(string outputPath)
         {
             File.WriteAllBytes(outputPath, GetBytes(false));
         }
 
-        public void SaveGVP(string outputPath)
+		/// <summary>Saves the palette as a GVP file.</summary>
+		public void SaveGVP(string outputPath)
         {
             File.WriteAllBytes(outputPath, GetBytes(true));
         }
 
+		/// <summary>Saves the palette as a PVP or GVP file.</summary>
 		public void Save(string outputPath, bool gvp)
 		{
 			File.WriteAllBytes(outputPath, GetBytes(gvp));
 		}
 
+		/// <summary>Saves the palette as a PNG file.</summary>
 		public void SavePNG(string outputPath)
         {
             byte[] colorsBitmap = new byte[DecodedData.Length];
@@ -245,7 +249,10 @@ namespace TextureLib
             img.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
         }
 
-        public static TexturePalette CreateDefaultPalette(bool index8, PixelCodec codec = null)
+		/// <summary>Creates a palette from a black-to-white gradient.</summary>
+		/// <param name="index8">Generate a 256-color palette if true, 16-color palette if false.</param>
+		/// <param name="codec">Pixel codec to use (ARGB8888 if not specified).</param>
+		public static TexturePalette CreateDefaultPalette(bool index8, PixelCodec codec = null)
         {
             if (codec == null)
                 codec = new ARGB8888PixelCodec();
@@ -271,6 +278,7 @@ namespace TextureLib
             return new TexturePalette(rawData, codec, numColors);
         }
 
+		/// <summary>Converts the palette's raw data to an array of System.Drawing.Color.</summary>
         public Color[] ToColorArray()
         {
             List<Color> colors = new List<Color>();
@@ -283,7 +291,24 @@ namespace TextureLib
             return colors.ToArray();
         }
 
-        public static TexturePalette FromIndexedBitmap(Bitmap bitmap, bool forceIndex8 = false)
+		/// <summary>Retrieves a specific palette color as a System.Drawing.Color.</summary>
+		/// <param name="colorID">Color to retrieve.</param>
+		/// <param name="bankID">Bank ID to use (optional).</param>
+		/// <param name="colorOffset">Offset start color ID (optional).</param>
+		public Color GetColorAnyBank(int colorID, int bankID = 0, int colorOffset = 0)
+		{
+			int numColorsInBank = GetNumColors() < 256 ? 16 : 256;
+			int retrieveColorID = bankID * numColorsInBank + colorOffset + colorID;
+			if (retrieveColorID > GetNumColors() - 1)
+				return Color.FromArgb(0, 0, 0);
+			return Color.FromArgb(isBigEndian ? ByteConverter.ToInt32BE(DecodedData, retrieveColorID * 4) : ByteConverter.ToInt32(DecodedData, retrieveColorID * 4));
+		}
+
+		/// <summary>Retrieves the palette from an indexed Bitmap.</summary>
+		/// <param name="bitmap">Source Bitmap.</param>
+		/// <param name="forceIndex8">Create a 256-color palette even if the Bitmap has 16 colors or less.</param>
+		/// <returns></returns>
+		public static TexturePalette FromIndexedBitmap(Bitmap bitmap, bool forceIndex8 = false)
         {
             int numColors = bitmap.Palette.Entries.Length;
             bool index8 = forceIndex8 || numColors > 16;
@@ -353,6 +378,20 @@ namespace TextureLib
 			}
 
 			DecodedData = newPalette;
+		}
+
+		/// <summary>
+		/// Outputs a string containing basic information about the palette's data.
+		/// </summary>
+		public string Info()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("PALETTE INFO");
+			sb.AppendLine(string.Format("Codec: {0}", paletteCodec.ToString()));
+			sb.AppendLine(string.Format("Num colors: {0}", GetNumColors()));
+			sb.AppendLine(string.Format("Start bank: {0}", StartBank.ToString()));
+			sb.AppendLine(string.Format("Start color: {0}", StartColor.ToString()));
+			return sb.ToString();
 		}
 	}
 }

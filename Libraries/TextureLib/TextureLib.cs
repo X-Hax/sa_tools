@@ -76,9 +76,13 @@ namespace TextureLib
 		/// Sets the selected palette and decodes the texture with it. This will update the texture's Image and Mipmaps.
 		/// </summary>
 		/// <param name="newPalette">Palette to use in decoding the texture.</param>
-		public void SetPalette(TexturePalette newPalette)
+		/// <param name="bankID">Palette bank ID for multi-bank palettes (optional).</param>
+		/// <param name="startColor">Adjust the bank's start color index (optional).</param>
+		public void SetPalette(TexturePalette newPalette, int bankID = 0, int startColor = 0)
 		{
 			Palette = newPalette;
+			PaletteBank = bankID;
+			PaletteStartIndex = startColor;
 			Decode();
 		}
 
@@ -107,7 +111,7 @@ namespace TextureLib
 		}
 
 		/// <summary>
-		/// Applies the currently selected palette to the Indexed texture's decoded data (raw Index8 bytes).
+		/// Applies the currently selected palette (or a default palette) to the Indexed texture's decoded data (raw Index8 bytes).
 		/// This method is used internally at final steps of texture decoding. For a generic method, use SetPalette.
 		/// </summary>
 		/// <param name="src">Byte array of decoded texture data.</param>
@@ -126,11 +130,14 @@ namespace TextureLib
                 Palette = TexturePalette.CreateDefaultPalette(index8);
             for (int colorID = 0; colorID < src.Length; colorID++)
             {
-                byte decodedID = src[colorID];
+                int decodedID = src[colorID];
                 if (!index8)
                 {
-                    decodedID = (byte)(decodedID >> 4); // This is because the Index4 codec expects 8 bit
+                    decodedID = decodedID >> 4; // This is because the Index4 codec expects 8 bit
                 }
+				// Add bank and color offset if specified
+				decodedID += PaletteBank * 4 + PaletteStartIndex;
+				// Get color
                 result[colorID * 4 + 0] = Palette.DecodedData[decodedID * 4 + 0];
                 result[colorID * 4 + 1] = Palette.DecodedData[decodedID * 4 + 1];
                 result[colorID * 4 + 2] = Palette.DecodedData[decodedID * 4 + 2];

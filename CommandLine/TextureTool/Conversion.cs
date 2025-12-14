@@ -17,7 +17,10 @@ namespace TextureTool
 			inputPalette = string.IsNullOrEmpty(paletteFilename) ? null :
 				new TexturePalette(File.ReadAllBytes(paletteFilename), false);
 			if (inputPalette != null)
-				Console.WriteLine("Using palette file: {0}", paletteFilename);
+			{
+				Console.WriteLine("Input palette: {0}", paletteFilename);
+				Console.WriteLine(inputPalette.Info());
+			}
 			// Read input texture data
 			byte[] inputFile = File.ReadAllBytes(inputFilename);
 			// Load texture
@@ -252,7 +255,11 @@ namespace TextureTool
 			File.WriteAllBytes(outputFilenameNoExt + outputExtension, result.GetBytes());
 			// Save the encoded palette if available
 			if (encodeExternalPalette && outputTexturePalette != null)
+			{
+				Console.WriteLine("Output palette: {0}", outputFilenameNoExt + outputPaletteExtension);
+				Console.WriteLine(outputTexturePalette.Info());
 				outputTexturePalette.Save(outputFilenameNoExt + outputPaletteExtension, targetFileFormat == TextureFileFormat.Gvr ? true : false);
+			}
 			// Save mipmaps if specified (PNG only)
 			if (targetFileFormat == TextureFileFormat.Png && useMipmaps && result.HasMipmaps && result.MipmapImages != null)
 				for (int m = 0; m < result.MipmapImages.Length; m++)
