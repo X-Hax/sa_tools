@@ -98,7 +98,7 @@ namespace TextureLib
 					break;
 				case DdsFormat.Rgb888:
 				case DdsFormat.Argb8888:
-					PvrPixelFormat = PvrPixelFormat.Argb8888;
+					PvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 					break;
 				case DdsFormat.Argb4444:
 					PvrPixelFormat = PvrPixelFormat.Argb4444;
@@ -110,7 +110,7 @@ namespace TextureLib
 				case DdsFormat.Dxt3:
 				case DdsFormat.Dxt5:
 					if (maxQuality)
-						PvrPixelFormat = PvrPixelFormat.Argb8888;
+						PvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 					else
 						switch (alphaLevel)
 						{

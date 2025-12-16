@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class IntensityA8PixelCodec : PixelCodec
+	public class IntensityA8PixelCodec : PixelCodec
 	{
         public override int BytesPerPixel => 2;
 
@@ -23,5 +23,9 @@ namespace TextureLib
 			dst[1] = TextureFunctions.GetLuminance(src);
 		}
 
-    }
+		public override string Info()
+		{
+			return "Intensity8A8, 16 bit (2 bytes per pixel)";
+		}
+	}
 }

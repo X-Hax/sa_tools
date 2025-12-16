@@ -54,5 +54,10 @@ namespace TextureLib
 			dst[BigEndian ? 1 : 0] = (byte)(azimuth * byte.MaxValue);
 			dst[BigEndian ? 0 : 1] = (byte)(elevation * byte.MaxValue);
 		}
+
+		public override string Info()
+		{
+			return "BUMP88, 16 bit (2 bytes per pixel)" + (BigEndian ? ", Big Endian" : "");
+		}
 	}
 }

@@ -24,5 +24,10 @@ namespace TextureLib
 			dst[BigEndian ? 1 : 1] = src[1]; // G
 			dst[BigEndian ? 2 : 0] = src[2]; // B
 		}
+
+		public override string Info()
+		{
+			return "RGB888, 24 bit (3 bytes per pixel)" + (BigEndian ? ", Big Endian" : "");
+		}
 	}
 }

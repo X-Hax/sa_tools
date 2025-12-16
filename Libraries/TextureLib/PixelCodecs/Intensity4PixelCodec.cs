@@ -31,5 +31,9 @@ namespace TextureLib
 			dst[0] = (byte)((first & 0xF0) | (second >> 4));
 		}
 
-    }
+		public override string Info()
+		{
+			return "Intensity4, 4 bit (2 pixels per byte)";
+		}
+	}
 }

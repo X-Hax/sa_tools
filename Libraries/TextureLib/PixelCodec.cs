@@ -10,6 +10,8 @@ namespace TextureLib
 
 		public bool BigEndian;
 
+		public abstract string Info();
+
         public abstract void DecodePixel(ReadOnlySpan<byte> source, Span<byte> destination);
 
         public abstract void EncodePixel(ReadOnlySpan<byte> source, Span<byte> destination);
@@ -25,7 +27,7 @@ namespace TextureLib
                 case PvrPixelFormat.Argb4444:
                     return new ARGB4444PixelCodec();
                 case PvrPixelFormat.Argb8888orYUV420: // YUV420 not implemented
-				case PvrPixelFormat.Argb8888:
+				case PvrPixelFormat.Argb8888Alt:
 					return new ARGB8888PixelCodec();
                 case PvrPixelFormat.Rgb565:
                     return new RGB565PixelCodec();
@@ -59,7 +61,7 @@ namespace TextureLib
 			switch (ddsFormat)
 			{
 				case DdsFormat.Argb8888:
-					return new ABGR8888PixelCodec() { BigEndian = false };
+					return new ARGB8888PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb1555:
 					return new ARGB1555PixelCodec() { BigEndian = false };
 				case DdsFormat.Argb4444:

@@ -24,6 +24,12 @@
 			ConvertFromGdi(gdi, targetDataFormat, pvrPixelFormat);
 		}
 
+		/// <summary>Create a new PVR texture from an existing GDI texture, data and pixel format set manually.</summary>
+		public PvrTexture(GdiTexture gdi, PvrDataFormat targetDataFormat, PvrPixelFormat pvrPixelFormat)
+		{
+			ConvertFromGdi(gdi, targetDataFormat, pvrPixelFormat);
+		}
+
 		private void ConvertFromGdi(GdiTexture gdi, PvrDataFormat targetPvrDataFormat, PvrPixelFormat targetPixelFormat)
 		{
 			// Set common texture properties
@@ -33,7 +39,9 @@
 			Width = gdi.Width;
 			Height = gdi.Height;
 			PvrDataFormat = targetPvrDataFormat;
+			PvrPixelFormat = targetPixelFormat;
 			PaletteBank = gdi.PaletteBank;
+			Palette = gdi.Palette;
 			PaletteStartIndex = gdi.PaletteStartIndex;
 			PakMetadata = gdi.PakMetadata;
 			PvmxOriginalDimensions = gdi.PvmxOriginalDimensions;

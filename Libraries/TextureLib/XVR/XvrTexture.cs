@@ -110,14 +110,19 @@ namespace TextureLib
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("XVR TEXTURE INFO");
+			sb.AppendLine("Width: " + Width.ToString());
+			sb.AppendLine("Height: " + Height.ToString());
 			sb.AppendLine(string.Format("GBIX: {0}", Gbix));
-			sb.AppendLine(string.Format("XVR TYPE: {0} ({1})", XvrFormats.GetDxgiFormatFromXvrPixelFormat(XvrType).ToString(), XvrType));
+			sb.AppendLine("Data format: " + DdsFormat.ToString());
+			sb.AppendLine(string.Format("XVR format: {0} (0x{1})", XvrFormats.GetDxgiFormatFromXvrPixelFormat(XvrType).ToString(), ((int)XvrType).ToString("X")));
+			sb.Append("Mipmaps: " + HasMipmaps.ToString());
 			sb.Append("XVR flags: ");
 			if (UseAlpha)
 				sb.Append("Use Alpha ");
 			if (HasMipmaps)
-				sb.Append(" Mipmaps");
-			return sb.ToString() + base.Info();
+				sb.Append("Mipmaps");
+			sb.Append(System.Environment.NewLine);
+			return sb.ToString();
 		}
 	}
 }

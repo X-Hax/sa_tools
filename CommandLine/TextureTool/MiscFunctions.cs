@@ -30,14 +30,15 @@ namespace TextureTool
 			Console.WriteLine("-extpal : Save the palette file; Prefer external palettes to internal CLUT in GVR textures.");
 			Console.WriteLine("-m : Force add mipmaps to PVR/GVR/XVR/DDS; Save individual mipmaps to PNGs when decoding.");
 			Console.WriteLine("-p <palette file> : Use the specified PVP/GVP palette file to encode or decode an Indexed texture.");
-			Console.WriteLine("\nPVR PIXEL CODEC OPTIONS:");
+			Console.WriteLine("\nPVR PIXEL CODEC/PALETTE CODEC OPTIONS:");
 			Console.WriteLine("-565 : Encode to RGB565 pixel format.");
 			Console.WriteLine("-1555 : Encode to ARGB1555 pixel format.");
 			Console.WriteLine("-4444 : Encode to ARGB4444 pixel format.");
 			Console.WriteLine("-y422 : Encode to YUV422 pixel format.");
 			Console.WriteLine("-bump : Encode to BUMP88 pixel format.");
-			Console.WriteLine("-8888 : Encode to ARGB8888 pixel format.");
-			Console.WriteLine("PVR DATA CODEC OPTIONS:");
+			Console.WriteLine("-8888 : Encode to ARGB8888 pixel format (format ID 6).");
+			Console.WriteLine("-8888alt : Encode to ARGB8888 pixel format (format ID 7).");
+			Console.WriteLine("\nPVR DATA CODEC OPTIONS:");
 			Console.WriteLine("-tw or -sq : Encode to Square Twiddled data format.");
 			Console.WriteLine("-rect : Encode to Rectangular data format.");
 			Console.WriteLine("-recttw : Encode to Rectangular Twiddled data format.");
@@ -59,7 +60,7 @@ namespace TextureTool
 			Console.WriteLine("-i4 : Encode to Indexed 4-bit format.");
 			Console.WriteLine("-i8 : Encode to Indexed 8-bit format.");
 			Console.WriteLine("-dxt or -dxt1 : Encode to DXT1 format.");
-			Console.WriteLine("GVR PALETTE FORMAT OPTIONS:");
+			Console.WriteLine("\nGVR PALETTE FORMAT OPTIONS:");
 			Console.WriteLine("-p_565 : Palette is in RGB565 format.");
 			Console.WriteLine("-p_1555 : Palette is in ARGB1555 format.");
 			Console.WriteLine("-p_4444 : Palette is in ARGB4444 format.");

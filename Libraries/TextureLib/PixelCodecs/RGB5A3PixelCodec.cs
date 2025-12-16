@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-    internal class RGB5A3PixelCodec : PixelCodec
+	public class RGB5A3PixelCodec : PixelCodec
     {
         public override int BytesPerPixel => 2;
 
@@ -51,5 +51,10 @@ namespace TextureLib
                 dst[BigEndian ? 1 : 0] = (byte)((src[1] & 0xF0) | (src[2] >> 4));
             }
         }
-    }
+
+		public override string Info()
+		{
+			return "RGB5A3 (RGB555/ARGB3444), 16 bit (2 bytes per pixel)" + (BigEndian ? ", Big Endian" : "");
+		}
+	}
 }

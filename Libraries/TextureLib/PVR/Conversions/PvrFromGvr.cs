@@ -102,12 +102,12 @@ namespace TextureLib
 					PvrPixelFormat = PvrPixelFormat.Rgb565;
 					break;
 				case GvrDataFormat.Argb8888:
-					PvrPixelFormat = PvrPixelFormat.Argb8888;
+					PvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 					break;
 				case GvrDataFormat.Rgb5a3:
 				case GvrDataFormat.Dxt1:
 					if (maxQuality)
-						PvrPixelFormat = PvrPixelFormat.Argb8888;
+						PvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 					else
 						switch (alphaLevel)
 						{
@@ -126,7 +126,7 @@ namespace TextureLib
 				case GvrDataFormat.Intensity8:
 				case GvrDataFormat.IntensityA44:
 				case GvrDataFormat.IntensityA88:
-					PvrPixelFormat = PvrPixelFormat.Argb8888; // Could be Bump but who needs that?
+					PvrPixelFormat = PvrPixelFormat.Argb8888Alt; // Could be Bump but who needs that?
 					break;
 				case GvrDataFormat.Index4:
 				case GvrDataFormat.Index8:
@@ -149,16 +149,16 @@ namespace TextureLib
 								PvrPixelFormat = PvrPixelFormat.Rgb565;
 								break;
 							case GvrPaletteFormat.Argb8888:
-								PvrPixelFormat = PvrPixelFormat.Argb8888;
+								PvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 								break;
 							case GvrPaletteFormat.IntensityA8orArgb1555:
-								PvrPixelFormat = saCompatible ? PvrPixelFormat.Argb1555 : PvrPixelFormat.Argb8888;
+								PvrPixelFormat = saCompatible ? PvrPixelFormat.Argb1555 : PvrPixelFormat.Argb8888Alt;
 								break;
 							case GvrPaletteFormat.Rgb5A3orArgb4444:
 								if (saCompatible)
 									PvrPixelFormat = PvrPixelFormat.Argb4444;
 								else if (maxQuality)
-									PvrPixelFormat = PvrPixelFormat.Argb8888;
+									PvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 								else
 								{
 									switch (alphaLevel)

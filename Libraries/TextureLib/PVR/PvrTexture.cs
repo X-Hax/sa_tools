@@ -332,8 +332,8 @@ namespace TextureLib
 			sb.AppendLine("Width: " + Width.ToString());
 			sb.AppendLine("Height: " + Height.ToString());
 			sb.AppendLine("Gbix: " + Gbix.ToString());
-			sb.AppendLine(string.Format("Pixel format: {0} ({1})", PvrPixelFormat.ToString(), PvrPixelFormat));
-			sb.AppendLine(string.Format("Data format: {0} ({1})" + PvrDataFormat.ToString(), PvrDataFormat));
+			sb.AppendLine(string.Format("Pixel format: {0} (0x{1})", PvrPixelFormat.ToString(), ((int)PvrPixelFormat).ToString("X")));
+			sb.AppendLine(string.Format("Data format: {0} (0x{1})", PvrDataFormat.ToString(), ((int)PvrDataFormat).ToString("X")));
 			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
 			sb.AppendLine("Indexed: " + Indexed.ToString());
 			return sb.ToString();

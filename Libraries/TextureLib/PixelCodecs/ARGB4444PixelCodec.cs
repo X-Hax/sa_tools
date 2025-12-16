@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class ARGB4444PixelCodec : PixelCodec
+	public class ARGB4444PixelCodec : PixelCodec
 	{
         public override int BytesPerPixel => 2;
 
@@ -25,6 +25,11 @@ namespace TextureLib
         {
 			dst[BigEndian ? 0 : 1] = (byte)((src[3] & 0xF0) | (src[0] >> 4));
 			dst[BigEndian ? 1 : 0] = (byte)((src[1] & 0xF0) | (src[2] >> 4));
+		}
+
+		public override string Info()
+		{
+			return "ARGB4444, 16 bit (2 bytes per pixel)" + (BigEndian ? ", Big Endian" : "");
 		}
 	}
 }

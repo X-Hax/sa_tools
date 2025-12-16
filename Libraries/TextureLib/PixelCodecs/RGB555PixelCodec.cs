@@ -25,5 +25,10 @@ namespace TextureLib
             dst[BigEndian ? 0 : 1] = (byte)(((src[0] & 0xF8) >> 1) | (src[1] >> 6));
             dst[BigEndian ? 1 : 0] = (byte)(((src[1] & 0xF8) << 2) | ((src[2] & 0xF8) >> 3));
         }
-    }
+
+		public override string Info()
+		{
+			return "RGB555, 16 bit (2 bytes per pixel)" + (BigEndian ? ", Big Endian" : "");
+		}
+	}
 }

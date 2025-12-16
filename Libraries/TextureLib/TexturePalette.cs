@@ -324,11 +324,13 @@ namespace TextureLib
             byte[] colorData = new byte[(index8 ? 256 : 16) * 4];
 			for (int i = 0; i < bitmap.Palette.Entries.Length; i++)
 			{
-				byte[] color = BitConverter.GetBytes(bitmap.Palette.Entries[i].ToArgb());
+				Color c = bitmap.Palette.Entries[i];
 				// Convert from BGRA because Windows bullshit!
-				byte temp = color[i];     // Store R
-				color[i] = color[i + 2]; // R becomes B
-				color[i + 2] = temp;     // B becomes original R
+				byte[] color = new byte[4];
+				color[0] = c.B;
+				color[1] = c.G;
+				color[2] = c.R;
+				color[3] = c.A;
 				Array.Copy(color, 0, colorData, i * 4, 4);
 			}
             return new TexturePalette(colorData, new ARGB8888PixelCodec(), index8 ? 256 : 16);
@@ -396,7 +398,7 @@ namespace TextureLib
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("PALETTE INFO");
-			sb.AppendLine(string.Format("Codec: {0}", paletteCodec.ToString()));
+			sb.AppendLine(string.Format("Codec: {0}", paletteCodec.Info()));
 			sb.AppendLine(string.Format("Num colors: {0}", GetNumColors()));
 			sb.AppendLine(string.Format("Start bank: {0}", StartBank.ToString()));
 			sb.AppendLine(string.Format("Start color: {0}", StartColor.ToString()));

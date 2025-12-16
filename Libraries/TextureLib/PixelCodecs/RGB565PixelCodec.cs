@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class RGB565PixelCodec : PixelCodec
+	public class RGB565PixelCodec : PixelCodec
 	{
         public override int BytesPerPixel => 2;
 
@@ -24,6 +24,11 @@ namespace TextureLib
         {
 			dst[BigEndian ? 1 : 0] = (byte)(((src[1] & 0x1C) << 3) | ((src[2] & 0xF8) >> 3));
 			dst[BigEndian ? 0 : 1] = (byte)((src[0] & 0xF8) | ((src[1] & 0xE0) >> 5));
+		}
+
+		public override string Info()
+		{
+			return "RGB565, 16 bit (2 bytes per pixel)" + (BigEndian ? ", Big Endian" : "");
 		}
 	}
 }

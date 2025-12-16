@@ -42,7 +42,7 @@ namespace TextureLib
 			}
 			// Indexed encoder
 			else
-			{
+			{				
 				int indexRange = dataCodec.GetPaletteEntries(Image.Width);
 				bool index8 = dataCodec is Index8DataCodec or Index8MipmapsDataCodec;
 				PvrDataCodec qDataCodec = PvrDataCodec.Create(PvrDataFormat.Rectangle, pixelCodec);

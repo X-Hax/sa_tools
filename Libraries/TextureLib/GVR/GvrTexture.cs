@@ -355,18 +355,19 @@ namespace TextureLib
 			sb.AppendLine("Width: " + Width.ToString());
 			sb.AppendLine("Height: " + Height.ToString());
 			sb.AppendLine("Gbix: " + Gbix.ToString());
-			sb.AppendLine(string.Format("Data format: {0} ({1})" + GvrDataFormat.ToString(), GvrDataFormat));
+			sb.AppendLine(string.Format("Data format: {0} (0x{1})" + GvrDataFormat.ToString(), ((int)(GvrDataFormat)).ToString("X")));
 			sb.AppendLine("Palette format: " + (RequiresPaletteFile ? "External" : GvrPaletteFormat.ToString()));
 			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
 			sb.AppendLine("Indexed: " + Indexed.ToString());
 			sb.AppendLine("Requires palette file: " + RequiresPaletteFile.ToString());
 			sb.AppendLine("Flags: " + GvrDataFlags.ToString());
 			if (GvrDataFlags.HasFlag(GvrDataFlags.Mipmaps))
-				sb.Append(" Mipmaps ");
+				sb.Append("Mipmaps (0x1) ");
 			if (GvrDataFlags.HasFlag(GvrDataFlags.InternalPalette))
-				sb.Append(" InternalPalette ");
+				sb.Append("InternalPalette (0x8) ");
 			if (GvrDataFlags.HasFlag(GvrDataFlags.ExternalPalette))
-				sb.Append(" ExternalPalette");
+				sb.Append("ExternalPalette (0x2)");
+			sb.Append(System.Environment.NewLine);
 			return sb.ToString();
 		}
 	}

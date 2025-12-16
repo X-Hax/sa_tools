@@ -176,7 +176,7 @@ namespace TextureLib
 			sb.AppendLine("Width: " + Width.ToString());
 			sb.AppendLine("Height: " + Height.ToString());
 			sb.AppendLine("Pixel format: " + GdiPixelFormat.ToString());
-			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());
+			sb.AppendLine("Mipmaps: " + HasMipmaps.ToString());			
 			return sb.ToString();
 		}
 	}

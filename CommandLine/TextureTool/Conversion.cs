@@ -8,7 +8,7 @@ namespace TextureTool
 	{
 		static void Conversion()
 		{
-			Console.WriteLine("GENERAL INFO");
+			Console.WriteLine("--GENERAL INFO--");
 			Console.WriteLine("Input file: {0}", inputFilename);
 			Console.WriteLine("Output file: {0}", outputFullFilename);
 			Console.WriteLine("Source format: {0}", sourceFileFormat.ToString().ToUpperInvariant());
@@ -19,8 +19,10 @@ namespace TextureTool
 			if (inputPalette != null)
 			{
 				Console.WriteLine("Input palette: {0}", paletteFilename);
-				Console.WriteLine(inputPalette.Info());
+				Console.WriteLine("\n--INPUT PALETTE--\n" + inputPalette.Info());
 			}
+			else
+				Console.WriteLine();
 			// Read input texture data
 			byte[] inputFile = File.ReadAllBytes(inputFilename);
 			// Load texture
@@ -45,9 +47,10 @@ namespace TextureTool
 					Console.WriteLine("{0}: input texture format not implemented", inputFile);
 					return;
 			}
+			Console.Write("--INPUT TEXTURE--\n" + inputTexture.Info());
 			// Encode
 			// Output encoder parameters
-			Console.WriteLine("\nENCODER PARAMETERS");
+			Console.WriteLine("\n--ENCODER PARAMETERS--");
 			switch (targetFileFormat)
 			{
 				case TextureFileFormat.Png:
@@ -103,7 +106,8 @@ namespace TextureTool
 				targetPvrFormat == PvrDataFormat.Index4Mipmaps || targetPvrFormat == PvrDataFormat.Index8Mipmaps)
 				Console.WriteLine("Use dithering: {0}", useDitheringForIndexed.ToString());
 			// Read the input texture
-			TexturePalette outputTexturePalette = null;
+			if (inputPalette != null)
+				inputTexture.Palette = inputPalette;
 			GenericTexture result = null;
 			switch (targetFileFormat)
 			{
@@ -219,6 +223,8 @@ namespace TextureTool
 							// Auto pixel
 							else if (autoPvrPixelFormat)
 								result = new PvrTexture(gdix, targetPvrFormat);
+							// Manual
+							result = new PvrTexture(gdix, targetPvrFormat, targetPvrPixelFormat);
 							break;
 					}
 					break;
@@ -253,18 +259,21 @@ namespace TextureTool
 			}
 			// Save the encoded texture
 			File.WriteAllBytes(outputFilenameNoExt + outputExtension, result.GetBytes());
+			// Output info
+			Console.Write("\n--OUTPUT TEXTURE--\n" + result.Info());
 			// Save the encoded palette if available
-			if (encodeExternalPalette && outputTexturePalette != null)
+			if (encodeExternalPalette && result.Palette != null)
 			{
 				Console.WriteLine("Output palette: {0}", outputFilenameNoExt + outputPaletteExtension);
-				Console.WriteLine(outputTexturePalette.Info());
-				outputTexturePalette.Save(outputFilenameNoExt + outputPaletteExtension, targetFileFormat == TextureFileFormat.Gvr ? true : false);
+				Console.WriteLine("\n--OUTPUT PALETTE--\n" + result.Palette.Info());
+				result.Palette.Save(outputFilenameNoExt + outputPaletteExtension, targetFileFormat == TextureFileFormat.Gvr ? true : false);
+				result.Palette.SavePNG(outputFilenameNoExt + "_p.png");
 			}
 			// Save mipmaps if specified (PNG only)
 			if (targetFileFormat == TextureFileFormat.Png && useMipmaps && result.HasMipmaps && result.MipmapImages != null)
 				for (int m = 0; m < result.MipmapImages.Length; m++)
 					result.MipmapImages[m].Save(outputFilenameNoExt + "_mip" + m.ToString() + outputExtension);
-			Console.WriteLine("\nFinished!");
+			Console.WriteLine("Finished!");
 		}
 	}
 }

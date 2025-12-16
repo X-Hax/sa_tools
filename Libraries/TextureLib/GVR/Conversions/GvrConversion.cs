@@ -17,7 +17,7 @@ namespace TextureLib
 				case PvrPixelFormat.Rgb555:
 				case PvrPixelFormat.Rgb565:
 					return GvrDataFormat.Rgb565;
-				case PvrPixelFormat.Argb8888:
+				case PvrPixelFormat.Argb8888Alt:
 				case PvrPixelFormat.Argb8888orYUV420:
 					return GvrDataFormat.Argb8888;
 				case PvrPixelFormat.Yuv422:

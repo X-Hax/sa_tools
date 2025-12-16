@@ -21,5 +21,9 @@ namespace TextureLib
 			dst[0] = TextureFunctions.GetLuminance(src);
 		}
 
-    }
+		public override string Info()
+		{
+			return "Intensity8, 8 bit (1 byte per pixel)";
+		}
+	}
 }
