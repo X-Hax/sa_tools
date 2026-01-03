@@ -170,15 +170,17 @@ namespace TextureLib
 		public abstract void RemoveMipmaps();
 
 		/// <summary>
-		/// Checks whether the texture's current allows mipmaps (the actual texture may or may not have them).
+		/// Checks whether the texture's current format allows mipmaps. 
+		/// The actual texture may or may not have them. 
+		/// To check whether mipmaps are present or not, use the HasMipmaps property.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>True if the texture format supports mipmaps.</returns>
 		public abstract bool CanHaveMipmaps();
 
 		/// <summary>
 		/// Prints out the texture's information, such as flags, dimensions, pixel and data formats etc.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>String with various information.</returns>
 		public abstract string Info();
 
 		/// <summary>
@@ -186,7 +188,7 @@ namespace TextureLib
 		/// </summary>
 		/// <param name="data">Byte array to check.</param>
 		/// <param name="offset">Offset where texture header starts.</param>
-		/// <returns></returns>
+		/// <returns>TextureFileFormat value (Pvr, Gvr etc.).</returns>
 		public static TextureFileFormat GetTextureFileType(byte[] data, int offset = 0)
 		{
 			if (PvrTexture.Identify(data, offset))
@@ -219,6 +221,142 @@ namespace TextureLib
 			else if (DdsTexture.Identify(data, offset))
 				return new DdsTexture(data, offset);
 			return new InvalidTexture(data, offset);
+		}
+
+		/// <summary>
+		/// Loads texture data from the specified file and returns a PVR, GVR, XVR, DDS or Invalid texture.
+		/// </summary>
+		/// <param name="file">Path to the input file.</param>
+		/// <returns></returns>
+		public static GenericTexture LoadTexture(string file)
+		{
+			return LoadTexture(System.IO.File.ReadAllBytes(file));
+		}
+
+		/// <summary>
+		/// Converts any texture to a PVR texture.
+		/// </summary>
+		/// <param name="maxQuality">Prefer higher quality pixel formats to avoid data loss.</param>
+		/// <param name="forceMipmaps">Force add mipmaps if they are not in the original texture.</param>
+		/// <param name="useCompressed">Use VQ compression formats.</param>
+		/// <returns>A PVR texture.</returns>
+		/// <exception cref="Exception"></exception>
+		public PvrTexture ToPvr(bool maxQuality = false, bool forceMipmaps = false, bool useCompressed = false)
+		{
+			switch (this)
+			{
+				case PvrTexture:
+					return (PvrTexture)this;
+				case GvrTexture gvr:
+					return new PvrTexture(gvr, forceMipmaps, true, maxQuality);
+				case DdsTexture dds:
+					return new PvrTexture(dds, forceMipmaps);
+				case GdiTexture gdi:
+					return new PvrTexture(gdi, forceMipmaps);
+				default:
+					throw new Exception("Cannot convert texture to PVR");
+			}
+		}
+
+		/// <summary>
+		/// Converts any texture to a GDI (PNG) texture.
+		/// </summary>
+		/// <returns>A GDI Texture.</returns>
+		/// <exception cref="Exception"></exception>
+		public GdiTexture ToGdi()
+		{
+			switch (this)
+			{
+				case GdiTexture gdi:
+					return (GdiTexture)this;
+				case PvrTexture pvr:
+					return new GdiTexture(pvr.Image, pvr.HasMipmaps, pvr.Gbix, pvr.Name);
+				case GvrTexture gvr:
+					return new GdiTexture(gvr.Image, gvr.HasMipmaps, gvr.Gbix, gvr.Name);
+				case XvrTexture xvr:
+					return new GdiTexture(xvr.Image, xvr.HasMipmaps, xvr.Gbix, xvr.Name); ;
+				case DdsTexture dds:
+					return new GdiTexture(dds.Image, dds.HasMipmaps, dds.Gbix, dds.Name); ;
+				default:
+					throw new Exception("Cannot convert texture to GDI");
+			}
+		}
+
+		/// <summary>
+		/// Converts any texture to a GVR texture.
+		/// </summary>
+		/// <param name="forceMipmaps">Force add mipmaps if the input texture doesn't have them.</param>
+		/// <param name="useCompressed">Allow usage of the DXT1 compression format.</param>
+		/// <param name="maxQuality">Use higher quality formats to avoid data loss.</param>
+		/// <returns>A GVR texture.</returns>
+		/// <exception cref="Exception"></exception>
+		public GvrTexture ToGvr(bool forceMipmaps = false, bool useCompressed = false, bool maxQuality = false)
+		{
+			switch (this)
+			{
+				case GvrTexture:
+					return (GvrTexture)this;
+				case PvrTexture pvr:
+					return new GvrTexture(pvr, forceMipmaps, useCompressed, maxQuality);
+				case DdsTexture gvr:
+					return new GvrTexture(gvr, forceMipmaps, maxQuality);
+				case GdiTexture gdi:
+					return new GvrTexture(gdi);
+				default:
+					throw new Exception("Cannot convert texture to GVR");
+			}
+		}
+
+		/// <summary>
+		/// Converts any texture to a DDS texture.
+		/// </summary>
+		/// <param name="forceMipmaps">Force add mipmaps if the original texture doesn't have them.</param>
+		/// <param name="useCompressed">Allow use of DXT formats.</param>
+		/// <param name="maxQuality">Prefer maximum quality.</param>
+		/// <returns>A DDS texture.</returns>
+		/// <exception cref="Exception"></exception>
+		public DdsTexture ToDds(bool forceMipmaps = false, bool useCompressed = false, bool maxQuality = false)
+		{
+			switch (this)
+			{
+				case XvrTexture:
+				case DdsTexture:
+					return (DdsTexture)this;
+				case PvrTexture pvr:
+					return new DdsTexture(pvr, forceMipmaps, maxQuality);
+				case GvrTexture gvr:
+					return new DdsTexture(gvr, forceMipmaps, maxQuality);
+				case GdiTexture gdi:
+					return new DdsTexture(gdi, forceMipmaps, maxQuality, useCompressed);
+				default:
+					throw new Exception("Cannot convert texture to DDS");
+			}
+		}
+
+		/// <summary>
+		/// Converts any texture to a XVR texture.
+		/// </summary>
+		/// <param name="forceMipmaps">Force add mipmaps if the original texture doesn't have them.</param>
+		/// <param name="useCompressed">Allow use of DXT formats.</param>
+		/// <param name="maxQuality">Prefer maximum quality.</param>
+		/// <returns>An XVR texture.</returns>
+		/// <exception cref="Exception"></exception>
+		public XvrTexture ToXvr(bool forceMipmaps = false, bool useCompressed = false, bool maxQuality = false)
+		{
+			switch (this)
+			{
+				case XvrTexture:
+				case DdsTexture:
+					return (XvrTexture)this;
+				case PvrTexture pvr:
+					return (XvrTexture)(new DdsTexture(pvr, forceMipmaps, maxQuality));
+				case GvrTexture gvr:
+					return (XvrTexture)(new DdsTexture(gvr, forceMipmaps, maxQuality));
+				case GdiTexture gdi:
+					return (XvrTexture)(new DdsTexture(gdi, forceMipmaps, maxQuality, useCompressed));
+				default:
+					throw new Exception("Cannot convert texture to XVR");
+			}
 		}
 	}
 }
