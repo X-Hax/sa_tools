@@ -304,6 +304,39 @@ namespace TextureLib
 			return Color.FromArgb(isBigEndian ? ByteConverter.ToInt32BE(DecodedData, retrieveColorID * 4) : ByteConverter.ToInt32(DecodedData, retrieveColorID * 4));
 		}
 
+		/// <summary>
+		/// Adds a new color to the palette.
+		/// </summary>
+		/// <param name="color">Color to add.</param>
+		public void AddColor(Color color)
+		{
+			byte[] newData = new byte[DecodedData.Length + 4];
+			Array.Copy(DecodedData, 0, newData, 0, DecodedData.Length);
+			newData[DecodedData.Length] = color.B;
+			newData[DecodedData.Length + 1] = color.G;
+			newData[DecodedData.Length + 2] = color.R;
+			newData[DecodedData.Length + 3] = color.A;
+			DecodedData = newData;
+		}
+
+		/// <summary>
+		/// Adds new colors to the palette.
+		/// </summary>
+		/// <param name="colors">Color array to add.</param>
+		public void AddColors(Color[] colors)
+		{
+			byte[] newData = new byte[DecodedData.Length + 4 * colors.Length];
+			Array.Copy(DecodedData, 0, newData, 0, DecodedData.Length);
+			for (int i = 0; i < colors.Length; i++)
+			{
+				newData[DecodedData.Length + 4 * i + 0] = colors[i].B;
+				newData[DecodedData.Length + 4 * i + 1] = colors[i].G;
+				newData[DecodedData.Length + 4 * i + 2] = colors[i].R;
+				newData[DecodedData.Length + 4 * i + 3] = colors[i].A;
+			}
+			DecodedData = newData;
+		}
+
 		/// <summary>Returns the maximum number of palette banks available with this palette.</summary>
 		/// <param name="index8">Count as 256-color banks if true, as 16-color banks if false.</param>
 		/// <returns></returns>
