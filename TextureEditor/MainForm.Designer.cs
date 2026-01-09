@@ -103,13 +103,8 @@
 			indexTextBox = new System.Windows.Forms.TextBox();
 			mipmapCheckBox = new System.Windows.Forms.CheckBox();
 			tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			textureSizeLabel = new System.Windows.Forms.Label();
 			importExportPanel = new System.Windows.Forms.Panel();
-			saveTextureButton = new System.Windows.Forms.Button();
-			exportButton = new System.Windows.Forms.Button();
 			importButton = new System.Windows.Forms.Button();
-			dataFormatLabel = new System.Windows.Forms.Label();
-			pixelFormatLabel = new System.Windows.Forms.Label();
 			palettePreview = new System.Windows.Forms.PictureBox();
 			panel3 = new System.Windows.Forms.Panel();
 			buttonLoadPalette = new System.Windows.Forms.Button();
@@ -123,10 +118,18 @@
 			numericUpDownStartBank = new System.Windows.Forms.NumericUpDown();
 			comboBoxCurrentPaletteBank = new System.Windows.Forms.ComboBox();
 			labelPaletteFormat = new System.Windows.Forms.Label();
-			texturePreviewZoomTrackBar = new System.Windows.Forms.TrackBar();
 			textureImage = new System.Windows.Forms.PictureBox();
+			trackBarMipmapLevel = new System.Windows.Forms.TrackBar();
 			labelZoomInfo = new System.Windows.Forms.Label();
+			texturePreviewZoomTrackBar = new System.Windows.Forms.TrackBar();
 			extraFormatLabel = new System.Windows.Forms.Label();
+			pixelFormatLabel = new System.Windows.Forms.Label();
+			dataFormatLabel = new System.Windows.Forms.Label();
+			textureSizeLabel = new System.Windows.Forms.Label();
+			labelMipmapLevel = new System.Windows.Forms.Label();
+			panelExport = new System.Windows.Forms.Panel();
+			saveTextureButton = new System.Windows.Forms.Button();
+			exportButton = new System.Windows.Forms.Button();
 			globalIndex = new System.Windows.Forms.NumericUpDown();
 			textureName = new System.Windows.Forms.TextBox();
 			statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -155,8 +158,10 @@
 			panelPaletteInfo.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownStartColor).BeginInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDownStartBank).BeginInit();
-			((System.ComponentModel.ISupportInitialize)texturePreviewZoomTrackBar).BeginInit();
 			((System.ComponentModel.ISupportInitialize)textureImage).BeginInit();
+			((System.ComponentModel.ISupportInitialize)trackBarMipmapLevel).BeginInit();
+			((System.ComponentModel.ISupportInitialize)texturePreviewZoomTrackBar).BeginInit();
+			panelExport.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)globalIndex).BeginInit();
 			statusStrip1.SuspendLayout();
 			contextMenuStrip1.SuspendLayout();
@@ -839,95 +844,59 @@
 			tableLayoutPanel1.ColumnCount = 2;
 			tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			tableLayoutPanel1.Controls.Add(textureSizeLabel, 0, 3);
-			tableLayoutPanel1.Controls.Add(importExportPanel, 0, 7);
-			tableLayoutPanel1.Controls.Add(dataFormatLabel, 0, 0);
-			tableLayoutPanel1.Controls.Add(pixelFormatLabel, 0, 1);
-			tableLayoutPanel1.Controls.Add(palettePreview, 0, 9);
-			tableLayoutPanel1.Controls.Add(panel3, 0, 11);
-			tableLayoutPanel1.Controls.Add(panelPaletteInfo, 1, 9);
-			tableLayoutPanel1.Controls.Add(texturePreviewZoomTrackBar, 0, 4);
-			tableLayoutPanel1.Controls.Add(textureImage, 0, 6);
-			tableLayoutPanel1.Controls.Add(labelZoomInfo, 0, 5);
+			tableLayoutPanel1.Controls.Add(importExportPanel, 0, 9);
+			tableLayoutPanel1.Controls.Add(palettePreview, 0, 12);
+			tableLayoutPanel1.Controls.Add(panel3, 0, 14);
+			tableLayoutPanel1.Controls.Add(panelPaletteInfo, 1, 12);
+			tableLayoutPanel1.Controls.Add(textureImage, 0, 8);
+			tableLayoutPanel1.Controls.Add(trackBarMipmapLevel, 0, 5);
+			tableLayoutPanel1.Controls.Add(labelZoomInfo, 0, 6);
+			tableLayoutPanel1.Controls.Add(texturePreviewZoomTrackBar, 0, 7);
 			tableLayoutPanel1.Controls.Add(extraFormatLabel, 0, 2);
+			tableLayoutPanel1.Controls.Add(pixelFormatLabel, 0, 1);
+			tableLayoutPanel1.Controls.Add(dataFormatLabel, 0, 0);
+			tableLayoutPanel1.Controls.Add(textureSizeLabel, 0, 3);
+			tableLayoutPanel1.Controls.Add(labelMipmapLevel, 0, 4);
+			tableLayoutPanel1.Controls.Add(panelExport, 0, 10);
 			tableLayoutPanel1.Location = new System.Drawing.Point(5, 122);
 			tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			tableLayoutPanel1.Name = "tableLayoutPanel1";
-			tableLayoutPanel1.RowCount = 12;
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+			tableLayoutPanel1.RowCount = 15;
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			tableLayoutPanel1.Size = new System.Drawing.Size(432, 408);
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			tableLayoutPanel1.Size = new System.Drawing.Size(433, 505);
 			tableLayoutPanel1.TabIndex = 13;
-			// 
-			// textureSizeLabel
-			// 
-			textureSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			textureSizeLabel.AutoSize = true;
-			textureSizeLabel.Location = new System.Drawing.Point(0, 66);
-			textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
-			textureSizeLabel.Name = "textureSizeLabel";
-			textureSizeLabel.Size = new System.Drawing.Size(85, 15);
-			textureSizeLabel.TabIndex = 17;
-			textureSizeLabel.Text = "Actual Size: ---";
-			textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			textureSizeLabel.Visible = false;
 			// 
 			// importExportPanel
 			// 
 			importExportPanel.AutoSize = true;
 			importExportPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			importExportPanel.Controls.Add(saveTextureButton);
-			importExportPanel.Controls.Add(exportButton);
 			importExportPanel.Controls.Add(importButton);
-			importExportPanel.Location = new System.Drawing.Point(4, 225);
+			importExportPanel.Location = new System.Drawing.Point(4, 289);
 			importExportPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			importExportPanel.Name = "importExportPanel";
-			importExportPanel.Size = new System.Drawing.Size(239, 31);
+			importExportPanel.Size = new System.Drawing.Size(66, 28);
 			importExportPanel.TabIndex = 20;
-			// 
-			// saveTextureButton
-			// 
-			saveTextureButton.AutoSize = true;
-			saveTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			saveTextureButton.Enabled = false;
-			saveTextureButton.Location = new System.Drawing.Point(170, 3);
-			saveTextureButton.Name = "saveTextureButton";
-			saveTextureButton.Size = new System.Drawing.Size(66, 25);
-			saveTextureButton.TabIndex = 23;
-			saveTextureButton.Text = "Save As...";
-			saveTextureButton.UseVisualStyleBackColor = true;
-			saveTextureButton.Click += saveTextureButton_Click;
-			// 
-			// exportButton
-			// 
-			exportButton.AutoSize = true;
-			exportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			exportButton.Enabled = false;
-			exportButton.Location = new System.Drawing.Point(71, 3);
-			exportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			exportButton.Name = "exportButton";
-			exportButton.Size = new System.Drawing.Size(93, 25);
-			exportButton.TabIndex = 22;
-			exportButton.Text = "Export As PNG";
-			exportButton.UseVisualStyleBackColor = true;
-			exportButton.Click += exportButton_Click;
 			// 
 			// importButton
 			// 
 			importButton.AutoSize = true;
 			importButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			importButton.Enabled = false;
-			importButton.Location = new System.Drawing.Point(4, 3);
+			importButton.Location = new System.Drawing.Point(0, 0);
 			importButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			importButton.Name = "importButton";
 			importButton.Size = new System.Drawing.Size(62, 25);
@@ -936,34 +905,10 @@
 			importButton.UseVisualStyleBackColor = true;
 			importButton.Click += importButton_Click;
 			// 
-			// dataFormatLabel
-			// 
-			dataFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			dataFormatLabel.AutoSize = true;
-			dataFormatLabel.Location = new System.Drawing.Point(0, 3);
-			dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
-			dataFormatLabel.Name = "dataFormatLabel";
-			dataFormatLabel.Size = new System.Drawing.Size(129, 15);
-			dataFormatLabel.TabIndex = 14;
-			dataFormatLabel.Text = "Data Format: Unknown";
-			dataFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// pixelFormatLabel
-			// 
-			pixelFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			pixelFormatLabel.AutoSize = true;
-			pixelFormatLabel.Location = new System.Drawing.Point(0, 24);
-			pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
-			pixelFormatLabel.Name = "pixelFormatLabel";
-			pixelFormatLabel.Size = new System.Drawing.Size(129, 15);
-			pixelFormatLabel.TabIndex = 16;
-			pixelFormatLabel.Text = "Pixel Format: Unknown";
-			pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
 			// palettePreview
 			// 
 			palettePreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			palettePreview.Location = new System.Drawing.Point(0, 259);
+			palettePreview.Location = new System.Drawing.Point(0, 356);
 			palettePreview.Margin = new System.Windows.Forms.Padding(0);
 			palettePreview.Name = "palettePreview";
 			palettePreview.Size = new System.Drawing.Size(33, 33);
@@ -979,7 +924,7 @@
 			panel3.Controls.Add(buttonLoadPalette);
 			panel3.Controls.Add(buttonSavePalette);
 			panel3.Controls.Add(buttonResetPalette);
-			panel3.Location = new System.Drawing.Point(4, 374);
+			panel3.Location = new System.Drawing.Point(4, 471);
 			panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panel3.Name = "panel3";
 			panel3.Size = new System.Drawing.Size(171, 31);
@@ -1036,7 +981,7 @@
 			panelPaletteInfo.Controls.Add(numericUpDownStartBank);
 			panelPaletteInfo.Controls.Add(comboBoxCurrentPaletteBank);
 			panelPaletteInfo.Controls.Add(labelPaletteFormat);
-			panelPaletteInfo.Location = new System.Drawing.Point(251, 262);
+			panelPaletteInfo.Location = new System.Drawing.Point(252, 359);
 			panelPaletteInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			panelPaletteInfo.Name = "panelPaletteInfo";
 			panelPaletteInfo.Size = new System.Drawing.Size(177, 106);
@@ -1118,21 +1063,10 @@
 			labelPaletteFormat.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			labelPaletteFormat.Visible = false;
 			// 
-			// texturePreviewZoomTrackBar
-			// 
-			texturePreviewZoomTrackBar.Location = new System.Drawing.Point(4, 87);
-			texturePreviewZoomTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-			texturePreviewZoomTrackBar.Maximum = 8;
-			texturePreviewZoomTrackBar.Name = "texturePreviewZoomTrackBar";
-			texturePreviewZoomTrackBar.Size = new System.Drawing.Size(200, 45);
-			texturePreviewZoomTrackBar.TabIndex = 18;
-			texturePreviewZoomTrackBar.Value = 4;
-			texturePreviewZoomTrackBar.Scroll += texturePreviewZoomTrackBar_Scroll;
-			// 
 			// textureImage
 			// 
 			textureImage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			textureImage.Location = new System.Drawing.Point(0, 158);
+			textureImage.Location = new System.Drawing.Point(0, 222);
 			textureImage.Margin = new System.Windows.Forms.Padding(0);
 			textureImage.Name = "textureImage";
 			textureImage.Size = new System.Drawing.Size(64, 64);
@@ -1144,15 +1078,35 @@
 			textureImage.MouseClick += textureImage_MouseClick;
 			textureImage.MouseMove += textureImage_MouseMove;
 			// 
+			// trackBarMipmapLevel
+			// 
+			trackBarMipmapLevel.Location = new System.Drawing.Point(3, 108);
+			trackBarMipmapLevel.Name = "trackBarMipmapLevel";
+			trackBarMipmapLevel.Size = new System.Drawing.Size(237, 45);
+			trackBarMipmapLevel.TabIndex = 34;
+			trackBarMipmapLevel.Scroll += trackBarMipmapLevel_Scroll;
+			// 
 			// labelZoomInfo
 			// 
 			labelZoomInfo.AutoSize = true;
-			labelZoomInfo.Location = new System.Drawing.Point(4, 135);
+			labelZoomInfo.Location = new System.Drawing.Point(4, 156);
 			labelZoomInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			labelZoomInfo.Name = "labelZoomInfo";
 			labelZoomInfo.Size = new System.Drawing.Size(67, 15);
 			labelZoomInfo.TabIndex = 19;
 			labelZoomInfo.Text = "Zoom: N/A";
+			labelZoomInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// texturePreviewZoomTrackBar
+			// 
+			texturePreviewZoomTrackBar.Location = new System.Drawing.Point(4, 174);
+			texturePreviewZoomTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			texturePreviewZoomTrackBar.Maximum = 8;
+			texturePreviewZoomTrackBar.Name = "texturePreviewZoomTrackBar";
+			texturePreviewZoomTrackBar.Size = new System.Drawing.Size(239, 45);
+			texturePreviewZoomTrackBar.TabIndex = 18;
+			texturePreviewZoomTrackBar.Value = 4;
+			texturePreviewZoomTrackBar.Scroll += texturePreviewZoomTrackBar_Scroll;
 			// 
 			// extraFormatLabel
 			// 
@@ -1164,8 +1118,93 @@
 			extraFormatLabel.Size = new System.Drawing.Size(129, 15);
 			extraFormatLabel.TabIndex = 15;
 			extraFormatLabel.Text = "Pixel Format: Unknown";
-			extraFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			extraFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			extraFormatLabel.Visible = false;
+			// 
+			// pixelFormatLabel
+			// 
+			pixelFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			pixelFormatLabel.AutoSize = true;
+			pixelFormatLabel.Location = new System.Drawing.Point(0, 24);
+			pixelFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+			pixelFormatLabel.Name = "pixelFormatLabel";
+			pixelFormatLabel.Size = new System.Drawing.Size(129, 15);
+			pixelFormatLabel.TabIndex = 16;
+			pixelFormatLabel.Text = "Pixel Format: Unknown";
+			pixelFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// dataFormatLabel
+			// 
+			dataFormatLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			dataFormatLabel.AutoSize = true;
+			dataFormatLabel.Location = new System.Drawing.Point(0, 3);
+			dataFormatLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+			dataFormatLabel.Name = "dataFormatLabel";
+			dataFormatLabel.Size = new System.Drawing.Size(129, 15);
+			dataFormatLabel.TabIndex = 14;
+			dataFormatLabel.Text = "Data Format: Unknown";
+			dataFormatLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// textureSizeLabel
+			// 
+			textureSizeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			textureSizeLabel.AutoSize = true;
+			textureSizeLabel.Location = new System.Drawing.Point(0, 66);
+			textureSizeLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+			textureSizeLabel.Name = "textureSizeLabel";
+			textureSizeLabel.Size = new System.Drawing.Size(85, 15);
+			textureSizeLabel.TabIndex = 17;
+			textureSizeLabel.Text = "Actual Size: ---";
+			textureSizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			textureSizeLabel.Visible = false;
+			// 
+			// labelMipmapLevel
+			// 
+			labelMipmapLevel.AutoSize = true;
+			labelMipmapLevel.Location = new System.Drawing.Point(0, 87);
+			labelMipmapLevel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+			labelMipmapLevel.Name = "labelMipmapLevel";
+			labelMipmapLevel.Size = new System.Drawing.Size(110, 15);
+			labelMipmapLevel.TabIndex = 33;
+			labelMipmapLevel.Text = "Mipmap Level: N/A";
+			labelMipmapLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// panelExport
+			// 
+			panelExport.Controls.Add(saveTextureButton);
+			panelExport.Controls.Add(exportButton);
+			panelExport.Location = new System.Drawing.Point(4, 323);
+			panelExport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			panelExport.Name = "panelExport";
+			panelExport.Size = new System.Drawing.Size(240, 30);
+			panelExport.TabIndex = 35;
+			// 
+			// saveTextureButton
+			// 
+			saveTextureButton.AutoSize = true;
+			saveTextureButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			saveTextureButton.Enabled = false;
+			saveTextureButton.Location = new System.Drawing.Point(93, 0);
+			saveTextureButton.Name = "saveTextureButton";
+			saveTextureButton.Size = new System.Drawing.Size(91, 25);
+			saveTextureButton.TabIndex = 23;
+			saveTextureButton.Text = "Save Texture...";
+			saveTextureButton.UseVisualStyleBackColor = true;
+			saveTextureButton.Click += saveTextureButton_Click;
+			// 
+			// exportButton
+			// 
+			exportButton.AutoSize = true;
+			exportButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			exportButton.Enabled = false;
+			exportButton.Location = new System.Drawing.Point(0, 0);
+			exportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+			exportButton.Name = "exportButton";
+			exportButton.Size = new System.Drawing.Size(86, 25);
+			exportButton.TabIndex = 22;
+			exportButton.Text = "Export PNG...";
+			exportButton.UseVisualStyleBackColor = true;
+			exportButton.Click += exportButton_Click;
 			// 
 			// globalIndex
 			// 
@@ -1281,8 +1320,11 @@
 			panelPaletteInfo.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)numericUpDownStartColor).EndInit();
 			((System.ComponentModel.ISupportInitialize)numericUpDownStartBank).EndInit();
-			((System.ComponentModel.ISupportInitialize)texturePreviewZoomTrackBar).EndInit();
 			((System.ComponentModel.ISupportInitialize)textureImage).EndInit();
+			((System.ComponentModel.ISupportInitialize)trackBarMipmapLevel).EndInit();
+			((System.ComponentModel.ISupportInitialize)texturePreviewZoomTrackBar).EndInit();
+			panelExport.ResumeLayout(false);
+			panelExport.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)globalIndex).EndInit();
 			statusStrip1.ResumeLayout(false);
 			statusStrip1.PerformLayout();
@@ -1403,5 +1445,8 @@
 		private System.Windows.Forms.ToolStripMenuItem ddsPvmxToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem ddsPakHighQualityToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exportAllXVRToolStripMenuItem;
+		private System.Windows.Forms.Label labelMipmapLevel;
+		private System.Windows.Forms.TrackBar trackBarMipmapLevel;
+		private System.Windows.Forms.Panel panelExport;
 	}
 }

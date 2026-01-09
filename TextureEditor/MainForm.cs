@@ -254,6 +254,8 @@ namespace TextureEditor
 					scale = 16.0f;
 					break;
 			}
+			if (trackBarMipmapLevel.Enabled && trackBarMipmapLevel.Value > 0)
+				scale = scale * (float)(Math.Pow(2, trackBarMipmapLevel.Value));
 			float newwidth = ((float)image.Width * scale);
 			float newheight = ((float)image.Height * scale);
 			if (newwidth < 1)
@@ -299,7 +301,10 @@ namespace TextureEditor
 				return;
 			GenericTexture texinfo = textures[listBox1.SelectedIndex];
 			Bitmap image;
-			image = texinfo.Image;
+			if (texinfo.HasMipmaps)
+				image = texinfo.MipmapImages[trackBarMipmapLevel.Value];
+			else
+				image = texinfo.Image;
 			textureImage.Image = ScaleBitmapToWindow(image, textureFilteringToolStripMenuItem.Checked ? System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic : System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor);
 		}
 
@@ -1114,8 +1119,9 @@ namespace TextureEditor
 						break;
 				}
 				suppress = false;
+				UpdateTextureMipmap();
 				UpdateTextureView();
-				ShowHidePaletteInfo(actualPaletteColors);
+				ShowHidePaletteInfo(actualPaletteColors);				
 			}
 			else
 			{
@@ -1127,6 +1133,7 @@ namespace TextureEditor
 				textureSizeLabel.Hide();
 				indexTextBox.Text = "-1";
 				textureImage.Image = new Bitmap(64, 64);
+				UpdateTextureMipmap();
 				UpdateTextureView();
 				ShowHidePaletteInfo(actualPaletteColors);
 			}
@@ -1316,7 +1323,7 @@ namespace TextureEditor
 							case PuyoArchiveType.PVMFile:
 								arc.Entries.Add(new PVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
 								MemoryStream strp = new MemoryStream();
-								textures.Add(new PvrTexture(arc.Entries[i].Data) { Name = Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0] } );
+								textures.Add(new PvrTexture(arc.Entries[i].Data) { Name = Path.GetFileNameWithoutExtension(otherfiles[i]).Split('.')[0] });
 								break;
 							case PuyoArchiveType.GVMFile:
 								arc.Entries.Add(new GVMEntry(datafile, Path.GetFileNameWithoutExtension(otherfiles[i])));
@@ -1417,7 +1424,7 @@ namespace TextureEditor
 						{
 							Size size = new Size(tex.Image.Width, tex.Image.Height);
 							if (tex.PvmxOriginalDimensions.Width != 0)
-								size = new Size(tex.PvmxOriginalDimensions.Width, tex.PvmxOriginalDimensions.Height);							
+								size = new Size(tex.PvmxOriginalDimensions.Width, tex.PvmxOriginalDimensions.Height);
 							pvmx.Entries.Add(new PVMXFile.PVMXEntry(tex.Name + TextureFunctions.IdentifyTextureFileExtension(tex.RawData), tex.Gbix, tex.GetBytes(), size.Width, size.Height));
 						}
 						File.WriteAllBytes(archiveFilename, pvmx.GetBytes());
@@ -1433,23 +1440,23 @@ namespace TextureEditor
 						foreach (GenericTexture item in textures)
 						{
 							// TODO: PAK quality options and DDS/PNG
-								string name = item.Name.ToLowerInvariant();
-								if (name.Length > 0x1C)
-									name = name.Substring(0, 0x1C);
-								name = name.Trim();
-								pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", item.GetBytes().ToArray()));
-								// Create a new PAK INF entry
-								PAKInfEntry entry = new PAKInfEntry();
-								byte[] namearr = Encoding.ASCII.GetBytes(name);
-								Array.Copy(namearr, entry.Filename, namearr.Length);
-								entry.GlobalIndex = item.Gbix;
-								entry.nWidth = (uint)item.Image.Width;
-								entry.nHeight = (uint)item.Image.Height;
-								entry.TypeInf = entry.PixelFormatInf = item.PakMetadata.PakGvrFormat;
-								entry.fSurfaceFlags = item.PakMetadata.PakNinjaFlags;
-								if (item.HasMipmaps)
-									entry.fSurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
-								inf.AddRange(entry.GetBytes());
+							string name = item.Name.ToLowerInvariant();
+							if (name.Length > 0x1C)
+								name = name.Substring(0, 0x1C);
+							name = name.Trim();
+							pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", item.GetBytes().ToArray()));
+							// Create a new PAK INF entry
+							PAKInfEntry entry = new PAKInfEntry();
+							byte[] namearr = Encoding.ASCII.GetBytes(name);
+							Array.Copy(namearr, entry.Filename, namearr.Length);
+							entry.GlobalIndex = item.Gbix;
+							entry.nWidth = (uint)item.Image.Width;
+							entry.nHeight = (uint)item.Image.Height;
+							entry.TypeInf = entry.PixelFormatInf = item.PakMetadata.PakGvrFormat;
+							entry.fSurfaceFlags = item.PakMetadata.PakNinjaFlags;
+							if (item.HasMipmaps)
+								entry.fSurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+							inf.AddRange(entry.GetBytes());
 						}
 						// Insert the INF file
 						if (!nonIndexedPAK)
@@ -1471,7 +1478,7 @@ namespace TextureEditor
 		// TODO: Add DDS/PNG and quality options
 		private void ConvertTextures(TextureFormat newfmt)
 		{
-			for (int i = 0; i< textures.Count; i++)
+			for (int i = 0; i < textures.Count; i++)
 			{
 				switch (newfmt)
 				{
@@ -1979,7 +1986,7 @@ namespace TextureEditor
 			}
 		}
 
-		
+
 
 		private void buttonResetPalette_Click(object sender, EventArgs e)
 		{
@@ -2051,7 +2058,7 @@ namespace TextureEditor
 				}
 			}
 		}
-		
+
 		private Bitmap ProcessIndexedBitmap(GenericTexture tex, PalettedTextureFormat indxfmt)
 		{
 			// Prepare the mask
@@ -2156,8 +2163,8 @@ namespace TextureEditor
 					currentPalette.AddColor(Color.Black);
 				while (currentPalette.GetNumColors() < rowsize);
 
-			currentPalette.Encode(codec);			
-			
+			currentPalette.Encode(codec);
+
 			// Refresh bank preview
 			int rowsize_stored = rowsize - currentPalette.StartColor;
 			int numrows = currentPalette.GetNumColors() / rowsize_stored;
@@ -2201,6 +2208,39 @@ namespace TextureEditor
 			}
 			result.Palette = newAliasForPalette;
 			return result;
+		}
+		#endregion
+
+		#region Mipmap preview
+		private void trackBarMipmapLevel_Scroll(object sender, EventArgs e)
+		{
+			GenericTexture currentTexture = textures[listBox1.SelectedIndex];
+			if (!currentTexture.HasMipmaps)
+				return;
+			UpdateTextureMipmap();
+			UpdateTextureView();
+		}
+
+		private void UpdateTextureMipmap()
+		{
+			if (listBox1.SelectedIndex != -1)
+			{
+				GenericTexture currentTexture = textures[listBox1.SelectedIndex];
+				if (currentTexture.HasMipmaps)
+				{
+					trackBarMipmapLevel.Maximum = currentTexture.MipmapImages.Length - 1;
+					trackBarMipmapLevel.Value = Math.Min(trackBarMipmapLevel.Value, currentTexture.MipmapImages.Length - 1);
+					trackBarMipmapLevel.Enabled = true;
+					int mipmapW = currentTexture.Image.Width / (int)Math.Pow(2, trackBarMipmapLevel.Value);
+					int mipmapH = currentTexture.Image.Width / (int)Math.Pow(2, trackBarMipmapLevel.Value);
+					labelMipmapLevel.Text = $"Mipmap Level: {trackBarMipmapLevel.Value} ({mipmapW}x{mipmapH})";
+					return;
+				}
+			}
+			// Texture not selected or no mipmaps
+			trackBarMipmapLevel.Value = 0;
+			trackBarMipmapLevel.Enabled = false;
+			labelMipmapLevel.Text = "Mipmap Level: N/A";
 		}
 		#endregion
 	}
