@@ -305,6 +305,14 @@ namespace TextureLib
 		}
 
 		/// <summary>
+		/// Removes all colors in the palette. Used by Texture Editor.
+		/// </summary>
+		public void Clear()
+		{
+			DecodedData = new byte[0];
+		}
+
+		/// <summary>
 		/// Adds a new color to the palette.
 		/// </summary>
 		/// <param name="color">Color to add.</param>
