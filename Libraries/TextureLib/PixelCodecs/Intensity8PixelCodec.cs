@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class Intensity8PixelCodec : PixelCodec
+	public class Intensity8PixelCodec : PixelCodec
 	{
         public override int BytesPerPixel => 1;
 

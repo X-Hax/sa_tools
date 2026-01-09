@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class ARGB8888PixelCodec : PixelCodec
+	public class ARGB8888PixelCodec : PixelCodec
 	{
 		public enum ColorOrderType
 		{

@@ -4,7 +4,7 @@
 
 namespace TextureLib
 {
-	internal class RGB888PixelCodec : PixelCodec
+	public class RGB888PixelCodec : PixelCodec
 	{
 		public override int BytesPerPixel => 3;
 

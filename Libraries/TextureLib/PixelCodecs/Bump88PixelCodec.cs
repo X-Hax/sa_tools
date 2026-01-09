@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class Bump88PixelCodec : PixelCodec
+	public class Bump88PixelCodec : PixelCodec
 	{
         public override int BytesPerPixel => 2;
 

@@ -2,7 +2,7 @@
 
 namespace TextureLib
 {
-	internal class YUV422PixelCodec : PixelCodec
+	public class YUV422PixelCodec : PixelCodec
 	{
         public override int BytesPerPixel => 4;
 
