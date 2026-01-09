@@ -26,7 +26,7 @@ namespace TextureLib
                     return new RGB555PixelCodec();
                 case PvrPixelFormat.Argb4444:
                     return new ARGB4444PixelCodec();
-                case PvrPixelFormat.Argb8888orYUV420: // YUV420 not implemented
+                case PvrPixelFormat.Argb8888: // YUV420 not implemented
 				case PvrPixelFormat.Argb8888Alt:
 					return new ARGB8888PixelCodec();
                 case PvrPixelFormat.Rgb565:

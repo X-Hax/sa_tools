@@ -146,7 +146,7 @@ namespace TextureLib
 			Height = ByteConverter.ToUInt16(RawData, currentOffset + 0xE);
 			// Override pixel format for Bitmap (because Bitmap can only be in ARGB8888)
 			if (PvrDataFormat is PvrDataFormat.Bitmap || PvrDataFormat is PvrDataFormat.BitmapMipmaps)
-				PvrPixelFormat = PvrPixelFormat.Argb8888orYUV420;
+				PvrPixelFormat = PvrPixelFormat.Argb8888;
 			// Set texture properties
 			switch (PvrDataFormat)
 			{
@@ -179,7 +179,7 @@ namespace TextureLib
 			int dataSize = dataCodec.CalculateTextureSize(Width, Height);
 			int paletteEntries = dataCodec.GetPaletteEntries(Width);
 
-			if (PvrPixelFormat is PvrPixelFormat.Argb8888orYUV420 && dataSize > RawData.Length)
+			if (PvrPixelFormat is PvrPixelFormat.Argb8888 && dataSize > RawData.Length)
 				throw new NotImplementedException("YUV420 support is not implemented");
 			if (paletteEntries > 0 && !dataCodec.NeedsExternalPalette)
 			{

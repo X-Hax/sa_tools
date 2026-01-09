@@ -18,7 +18,7 @@
 		/// NJD_TEXFMT_ARGB_8888 or NJD_TEXFMT_YUV_420. ARGB_8888 is used in palette PVP files. Neither format is seen in PVR files.
 		/// This format ID is used in code when building a texture manually in memory from raw headerless data.
 		/// </summary>
-		Argb8888orYUV420 = 0x06,
+		Argb8888 = 0x06,
 		/// <summary>
 		/// Same as NJD_TEXFMT_ARGB_8888.
 		/// This ID is not defined in official Ninja headers, but there are several textures in Kamui samples and Naomi games (Initial D) using it. 

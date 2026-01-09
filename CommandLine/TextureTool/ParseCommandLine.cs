@@ -124,7 +124,7 @@ namespace TextureTool
 						else if (args.Contains("-555"))
 							targetPvrPixelFormat = PvrPixelFormat.Rgb555;
 						else if (args.Contains("-8888"))
-							targetPvrPixelFormat = PvrPixelFormat.Argb8888orYUV420;
+							targetPvrPixelFormat = PvrPixelFormat.Argb8888;
 						else if (args.Contains("-8888alt"))
 							targetPvrPixelFormat = PvrPixelFormat.Argb8888Alt;
 						//else if (args.Contains("-y420"))

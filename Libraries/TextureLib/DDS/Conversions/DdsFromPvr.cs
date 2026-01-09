@@ -34,7 +34,7 @@ namespace TextureLib
 					targetFormat = DdsFormat.Argb1555;
 					break;
 				case PvrPixelFormat.Argb8888Alt:
-				case PvrPixelFormat.Argb8888orYUV420:
+				case PvrPixelFormat.Argb8888:
 				default:
 					targetFormat = DdsFormat.Argb8888;
 					break;
