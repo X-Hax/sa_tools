@@ -2,34 +2,35 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using static TextureEditor.TexturePalette;
+using TextureLib;
+using static TextureEditor.TextureFunctions;
 
 namespace TextureEditor
 {
 	public partial class IndexedImageImportDialog : Form
 	{
         Bitmap bitmap;
-        TextureInfo texinfo;
+        GenericTexture texinfo;
         bool SACompatible;
         bool gamecube;
         public PalettedTextureFormat outFormat;
-        public PalettePixelCodec outCodec;
+        public PixelCodec outCodec;
 
-		public IndexedImageImportDialog(Bitmap setbitmap, TextureInfo settexinfo, bool setSACompatible=true)
+		public IndexedImageImportDialog(Bitmap setbitmap, GenericTexture settexinfo, bool setSACompatible = true)
 		{
-            gamecube = settexinfo is GvrTextureInfo;
-            bitmap = setbitmap;
-            texinfo = settexinfo;
-            SACompatible = setSACompatible;
-            InitializeComponent();
-            labelPaletteInfo.Text = "Counting colors, please wait...";
-        }
+			gamecube = settexinfo is GvrTexture;
+			bitmap = setbitmap;
+			texinfo = settexinfo;
+			SACompatible = setSACompatible;
+			InitializeComponent();
+			labelPaletteInfo.Text = "Counting colors, please wait...";
+		}
 
         private void ProcessBitmap()
         {
             int usedColors = 0;
             int totalColors = bitmap.Palette.Entries.Length;
-            if (texinfo is PvrTextureInfo)
+            if (texinfo is PvrTexture)
             {
                 radioButtonRGB5A3.Enabled = radioButtonIntensity8A.Enabled = false;
             }
@@ -66,22 +67,22 @@ namespace TextureEditor
                 radioButtonIndex4.Enabled = radioButtonIndex8.Enabled = false;
                 radioButtonNonIndexed.Checked = true;
             }
-            int tlevel = TextureFunctions.GetAlphaLevelFromBitmap(bitmap);
+			BitmapAlphaLevel tlevel = TextureLib.TextureFunctions.GetAlphaLevelFromBitmap(bitmap);
             string transparency = "";
             switch (tlevel)
             {
-                case 0:
+                case BitmapAlphaLevel.None:
                     radioButtonRGB565.Checked = true;
                     transparency = "no transparency";
                     break;
-                case 1:
+                case BitmapAlphaLevel.OneBitAlpha:
                     transparency = "1-bit transparency";
                     if (SACompatible || !gamecube) 
                         radioButtonARGB1555.Checked = true;
                     else
                         radioButtonRGB5A3.Checked = true;
                     break;
-                case 2:
+                case BitmapAlphaLevel.FullAlpha:
                     transparency = "partial transparency";
                     if (SACompatible || !gamecube)
                         radioButtonARGB4444.Checked = true;
@@ -115,19 +116,19 @@ namespace TextureEditor
 
         private void IndexedImageImportDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Pixel codec
-            if (radioButtonRGB565.Checked)
-                outCodec = PalettePixelCodec.RGB565;
-            else if (radioButtonARGB1555.Checked)
-                outCodec = PalettePixelCodec.ARGB1555;
-            else if (radioButtonARGB4444.Checked)
-                outCodec = PalettePixelCodec.ARGB4444;
-            else if (radioButtonARGB8888.Checked)
-                outCodec = PalettePixelCodec.ARGB8888;
-            else if (radioButtonIntensity8A.Checked)
-                outCodec = PalettePixelCodec.Intensity8A;
-            else if (radioButtonRGB5A3.Checked)
-                outCodec = PalettePixelCodec.RGB5A3;
+			// Pixel codec
+			if (radioButtonRGB565.Checked)
+				outCodec = new RGB565PixelCodec();
+			else if (radioButtonARGB1555.Checked)
+				outCodec = new ARGB1555PixelCodec();
+			else if (radioButtonARGB4444.Checked)
+				outCodec = new ARGB4444PixelCodec();
+			else if (radioButtonARGB8888.Checked)
+				outCodec = new ARGB8888PixelCodec();
+			else if (radioButtonIntensity8A.Checked)
+				outCodec = new IntensityA8PixelCodec();
+			else if (radioButtonRGB5A3.Checked)
+				outCodec = new RGB5A3PixelCodec();
             // Indexed format
             if (radioButtonIndex8.Checked)
                 outFormat = PalettedTextureFormat.Index8;
