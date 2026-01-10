@@ -264,7 +264,7 @@ namespace ArchiveLib
                     Array.Copy(gbixb, 0, pvrchunk, 8, 4);
                 }
 
-                // Set filename if the PVM/GVM has filenames
+                // Set filename if the PVM/GVM has filenames. Those are stored without extension in PVM/GVM/XVM.
                 string entryfn = t.ToString("D3");
                 if (Flags.HasFlag(PuyoArchiveFlags.Filenames))
                 {
@@ -345,6 +345,7 @@ namespace ArchiveLib
 					entrytable.AddRange(ByteConverter.GetBytes((ushort)i));
 					if (Flags.HasFlag(PuyoArchiveFlags.Filenames))
 					{
+						// Names without extension
 						byte[] namestring = System.Text.Encoding.ASCII.GetBytes(Path.GetFileNameWithoutExtension(Entries[i].Name));
 						byte[] namefull = new byte[28];
 						Array.Copy(namestring, namefull, namestring.Length);
@@ -445,6 +446,9 @@ namespace ArchiveLib
         public uint GBIX;
         public TexturePalette Palette;
 
+		/// <summary>Create a new PVM entry from raw texture data with a GBIX/PVR header.</summary>
+		/// <param name="pvrdata">Byte array with PVR texture data.</param>
+		/// <param name="name">Texture filename with extension.</param>
         public PVMEntry(byte[] pvrdata, string name)
         {
             Name = name;
