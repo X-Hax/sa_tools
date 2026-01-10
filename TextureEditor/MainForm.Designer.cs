@@ -1162,6 +1162,7 @@
 			numericUpDownStartColor.Name = "numericUpDownStartColor";
 			numericUpDownStartColor.Size = new System.Drawing.Size(71, 23);
 			numericUpDownStartColor.TabIndex = 31;
+			toolTip1.SetToolTip(numericUpDownStartColor, "Changes the palette's default color offset stored in the palette file. This has no effect in SA Tools or the games.\r\n");
 			numericUpDownStartColor.ValueChanged += numericUpDownStartColor_ValueChanged;
 			// 
 			// labelStartColor
@@ -1192,6 +1193,7 @@
 			numericUpDownStartBank.Name = "numericUpDownStartBank";
 			numericUpDownStartBank.Size = new System.Drawing.Size(71, 23);
 			numericUpDownStartBank.TabIndex = 29;
+			toolTip1.SetToolTip(numericUpDownStartBank, "Changes the palette's default bank ID stored in the palette file. This has no effect in SA Tools or the games.");
 			numericUpDownStartBank.ValueChanged += numericUpDownStartBank_ValueChanged;
 			// 
 			// comboBoxCurrentPaletteBank
@@ -1203,6 +1205,7 @@
 			comboBoxCurrentPaletteBank.Name = "comboBoxCurrentPaletteBank";
 			comboBoxCurrentPaletteBank.Size = new System.Drawing.Size(69, 23);
 			comboBoxCurrentPaletteBank.TabIndex = 27;
+			toolTip1.SetToolTip(comboBoxCurrentPaletteBank, "Currently selected palette bank in a multi-bank palette.");
 			comboBoxCurrentPaletteBank.SelectedIndexChanged += comboBoxCurrentPaletteBank_SelectedIndexChanged;
 			// 
 			// labelPaletteFormat
@@ -1226,6 +1229,8 @@
 			labelCurrentPaletteColor.Size = new System.Drawing.Size(174, 15);
 			labelCurrentPaletteColor.TabIndex = 35;
 			labelCurrentPaletteColor.Text = "Color 255: A255 R255 G255 B255";
+			toolTip1.SetToolTip(labelCurrentPaletteColor, "Selected palette color information.");
+			labelCurrentPaletteColor.Visible = false;
 			// 
 			// globalIndex
 			// 

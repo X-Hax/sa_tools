@@ -679,12 +679,12 @@ namespace TextureEditor
 
 		private void texturePreviewZoomTrackBar_Scroll(object sender, EventArgs e)
 		{
-			UpdateTextureInformation();
+			UpdateTextureView();
 		}
 
 		private void textureFilteringToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			UpdateTextureInformation();
+			UpdateTextureView();
 		}
 
 		private void generateNewGbixToolStripMenuItem_Click(object sender, EventArgs e)
@@ -876,7 +876,6 @@ namespace TextureEditor
 						flags.Add("VQ");
 					string ninjaFlagsString = string.Join(", ", flags);
 					pixelFormatLabel.Text = $"PAK Ninja Surface Flags: {ninjaFlagsString}";
-					pixelFormatLabel.Show();
 
 				}
 				else if (currentFormat == TextureArchiveFormat.PVMX)
@@ -939,7 +938,11 @@ namespace TextureEditor
 						break;
 					case GvrTexture gvr:
 						dataFormatLabel.Text = $"GVR Data Format: {gvr.GvrDataFormat}";
-						pixelFormatLabel.Text = $"GVR Palette Format: {gvr.GvrPaletteFormat}";
+						// The GVR palette format field is only relevant for textures with an internal CLUT
+						if (gvr.Indexed && !gvr.RequiresPaletteFile)
+							pixelFormatLabel.Text = $"GVR Palette Format: {gvr.GvrPaletteFormat}";
+						else
+							pixelFormatLabel.Hide();
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = gvr.Image.Width;
 						numericUpDownOrigSizeY.Value = gvr.Image.Height;
@@ -983,10 +986,9 @@ namespace TextureEditor
 						}
 						break;
 					case XvrTexture xvr:
-						dataFormatLabel.Text = $"Data Format: DDS";
+						dataFormatLabel.Text = $"Data Format: DDS (XVR)";
 						dataFormatLabel.Hide();
 						dataFormatLabel.Show();
-						pixelFormatLabel.Show();
 						pixelFormatLabel.Text = $"XVR Format: {xvr.XvrType}";
 						numericUpDownOrigSizeX.Enabled = numericUpDownOrigSizeY.Enabled = false;
 						numericUpDownOrigSizeX.Value = xvr.Image.Width;
@@ -1860,10 +1862,12 @@ namespace TextureEditor
 			int colorID = (coordinates.Y / 17) * 16 + coordinates.X / 17;
 			Color c = currentPalette.GetColorAnyBank(colorID);
 			labelCurrentPaletteColor.Text = $"Color {colorID}: A{c.A} R{c.R} G{c.G} B{c.B}";
+			labelCurrentPaletteColor.Show();
 		}
 
 		private void ShowHidePaletteInfo()
 		{
+			labelCurrentPaletteColor.Hide();
 			if (listBox1.SelectedIndex == -1)
 			{
 				labelPaletteFormat.Hide();
@@ -1932,7 +1936,8 @@ namespace TextureEditor
 			if (currentPalette != null && paletteSet != comboBoxCurrentPaletteBank.SelectedIndex)
 			{
 				paletteSet = comboBoxCurrentPaletteBank.SelectedIndex;
-				UpdateTextureInformation();
+				textures[listBox1.SelectedIndex].SetPalette(currentPalette, paletteSet);
+				UpdateTextureView();
 			}
 		}
 
