@@ -1314,24 +1314,29 @@ namespace TextureEditor
 						// Add individual PAK entries
 						foreach (GenericTexture item in textures)
 						{
-							// TODO: PAK quality options and DDS/PNG
+							string extension = "";
+							if (!(item is InvalidTexture))
+								extension = GenericTexture.IdentifyTextureFileExtension(item.RawData);
 							string name = item.Name.ToLowerInvariant();
 							if (name.Length > 0x1C)
 								name = name.Substring(0, 0x1C);
 							name = name.Trim();
-							pak.Entries.Add(new PAKFile.PAKEntry(name + ".dds", longdir + '\\' + name + ".dds", item.GetBytes().ToArray()));
+							pak.Entries.Add(new PAKFile.PAKEntry(name + extension, longdir + '\\' + name + extension, item.GetBytes().ToArray()));
 							// Create a new PAK INF entry
-							PAKInfEntry entry = new PAKInfEntry();
-							byte[] namearr = Encoding.ASCII.GetBytes(name);
-							Array.Copy(namearr, entry.Filename, namearr.Length);
-							entry.GlobalIndex = item.Gbix;
-							entry.nWidth = (uint)item.Image.Width;
-							entry.nHeight = (uint)item.Image.Height;
-							entry.TypeInf = entry.PixelFormatInf = item.PakMetadata.PakGvrFormat;
-							entry.fSurfaceFlags = item.PakMetadata.PakNinjaFlags;
-							if (item.HasMipmaps)
-								entry.fSurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
-							inf.AddRange(entry.GetBytes());
+							if (!usingSocPak)
+							{
+								PAKInfEntry entry = new PAKInfEntry();
+								byte[] namearr = Encoding.ASCII.GetBytes(name);
+								Array.Copy(namearr, entry.Filename, namearr.Length);
+								entry.GlobalIndex = item.Gbix;
+								entry.nWidth = (uint)item.Image.Width;
+								entry.nHeight = (uint)item.Image.Height;
+								entry.TypeInf = entry.PixelFormatInf = item.PakMetadata.PakGvrFormat;
+								entry.fSurfaceFlags = item.PakMetadata.PakNinjaFlags;
+								if (item.HasMipmaps)
+									entry.fSurfaceFlags |= NinjaSurfaceFlags.Mipmapped;
+								inf.AddRange(entry.GetBytes());
+							}
 						}
 						// Insert the INF file
 						if (!usingSocPak)
@@ -1350,27 +1355,42 @@ namespace TextureEditor
 			unsaved = false;
 		}
 
-		// TODO: Add DDS/PNG and quality options
 		private void ConvertTextures(TextureFormat newfmt)
 		{
 			for (int i = 0; i < textures.Count; i++)
 			{
+				if (textures[i] is InvalidTexture)
+					continue;
 				switch (newfmt)
 				{
 					case TextureFormat.PVM:
+						if (textures[i] is PvrTexture)
+							continue;
 						textures[i] = textures[i].ToPvr();
 						break;
 					case TextureFormat.GVM:
+						if (textures[i] is GvrTexture)
+							continue;
 						textures[i] = textures[i].ToGvr();
 						break;
 					case TextureFormat.XVM:
+						if (textures[i] is XvrTexture)
+							continue;
 						textures[i] = textures[i].ToXvr();
 						break;
 					case TextureFormat.PVMX:
-						textures[i] = textures[i].ToGdi();
+						if (textures[i] is DdsTexture)
+							continue;
+						else if (textures[i] is GdiTexture)
+							continue;
+						textures[i] = useDDSInPVMXToolStripMenuItem.Checked ? textures[i].ToDds() : textures[i].ToGdi();
 						break;
 					case TextureFormat.PAK:
-						textures[i] = textures[i].ToDds();
+						if (textures[i] is GvrTexture)
+							continue;
+						else if (textures[i] is DdsTexture)
+							continue;
+						textures[i] = useDDSInPAKsToolStripMenuItem.Checked ? textures[i].ToDds() : textures[i].ToGdi();
 						break;
 				}
 			}
