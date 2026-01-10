@@ -62,8 +62,10 @@ namespace TextureLib
             // Set texture name
             if (!string.IsNullOrEmpty(name))
                 Name = name;
-            // Copy raw data
-            if (data != null)
+			// Init metadata
+			PakMetadata = new PakMetadata();
+			// Copy raw data
+			if (data != null)
             {
                 RawData = new byte[data.Length - offset];
                 Array.Copy(data, offset, RawData, 0, data.Length - offset);
