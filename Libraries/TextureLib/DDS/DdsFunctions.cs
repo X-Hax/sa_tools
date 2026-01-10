@@ -89,7 +89,7 @@ namespace TextureLib
 				case DdsFormat.Rgb888:
 					return DXGIFormat.R8G8B8G8UNORM; // R8G8B8G8UNORM is wrong, this is just a workaround because the real R8G8B8 is not a DXGI format
 				case DdsFormat.Argb8888:
-					return DXGIFormat.R8G8B8A8UNORM;
+					return DXGIFormat.B8G8R8A8UNORM;
 				case DdsFormat.Rgb565:
 					return DXGIFormat.B5G6R5UNORM;
 				case DdsFormat.Argb1555:
